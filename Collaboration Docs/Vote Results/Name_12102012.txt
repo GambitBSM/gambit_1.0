@@ -1,0 +1,35 @@
+Vote on official collaboration and overall code name.
+
+18 votes received, of a possible 22.
+Voted (in no particular order):  Are Lars Torsten Jan Hugh Pat Antje Abram Savage Ben Jonathan Csaba Aldo Anders Christoph Greg Joakim Martin.
+Did not vote: Christophe Jack Rogan Andy
+
+Votes:
+1.   D C F B A G E 
+2.   A
+3.   G F C A B D E
+4.   A E F C D B G
+5.   A B F C D E G
+6.   A F C
+7.   A E F G 
+8.   D B A
+9.   A F B G C D E 
+10.  D A E C B F G
+11.  A E B D
+12.  F E C B
+13.  F D G E A C B 
+14.  G A
+15.  F A D B G
+16.  A B G C
+17.  F A D C G E B
+18.  C A
+
+A = GAMBIT
+B = NUMBAT
+C = MOSCITO
+D = SCITO
+E = FellRunner
+F = GANESHA
+G = RavenFit
+
+Winner: A (GAMBIT).  Runner-Up: GANESHA.  Corresponding decision taken to append 'Bit' to module names.
