@@ -5,10 +5,15 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 
+static const int NMXHEP = 5000;
 
-// Templated wrapping of variables and functions from dynamic libraries
-// Written by Hugh Dickingson
+/*! \brief Templated wrapping of variables and functions from dynamic libraries
+ * \author Hugh Dickinson
+ * \data 2012-XX-XX
+ */
+
 /*********************************************************************************/
 /** Helper traits class to hold the type of a user variable */
 template <typename TagT>
@@ -158,20 +163,42 @@ class FortranFunctor {
 	}
 	
 };
-// End of Hugh Dickinson's template set-up
+// End of template set-up
 
 
-// List of functions and variable that can be called from libraries
+// List of functions and variables that can be called from libraries
 FUNCTION(HWIGIN, hwigin, 0)
 FUNCTION(INIMAS, inimas, 0)
 FUNCTION(HWUINC, hwuinc, 0)
-FUNCTION(HWUSTA, hwusta, 1)
 FUNCTION(HWABEG, hwabeg, 0)
-FUNCTION(HWEINI, hwwini, 0)
+FUNCTION(HWEINI, hweini, 0)
+FUNCTION(HWUINE, hwuine, 0)
+FUNCTION(HWEFIN, hwefin, 0)
+FUNCTION(HWEPRO, hwepro, 0)
+FUNCTION(HWBGEN, hwbgen, 0)
+FUNCTION(HWDHOB, hwdhob, 0)
+FUNCTION(HWCFOR, hwcfor, 0)
+FUNCTION(HWCDEC, hwcdec, 0)
+FUNCTION(HWDHAD, hwdhad, 0)
+FUNCTION(HWDHVY, hwdhvy, 0)
+FUNCTION(HWMEVT, hwmevt, 0)
+FUNCTION(HWUFNE, hwufne, 0)
 
-VARIABLE(PART1, part1, , std::string)
-VARIABLE(PART2, part2, , std::string)
-
+struct hwproc_type{
+	double ebeam1, ebeam2, pbeam1, pbeam2;
+	int iproc, maxev;
+};
+VARIABLE(HWPROC, hwproc, , hwproc_type)
+struct hwbmch_type{
+	char part1[8], part2[8];
+};
+VARIABLE(HWBMCH, hwbmch, , hwbmch_type)
+// Struct for event common block
+struct hepevt_type{
+	int nevhep, nhep, isthep[NMXHEP], idhep[NMXHEP], jmohep[NMXHEP][2], jdahep[NMXHEP][2];
+	double phep[5][NMXHEP], vhep[4][NMXHEP];
+};
+VARIABLE(HEPEVT, hepevt, , hepevt_type)
 
 
 namespace GAMBIT {
@@ -180,12 +207,16 @@ namespace GAMBIT {
 	using std::endl; // SUFit logger does this?
 	using std::string;
 	using std::stringstream;
-
+	using std::vector;
 
   namespace Backend {
-
-    // Base class for Backend
-    class BackendBitBase {
+	  
+	/*! \brief Base class for interface with external codes 
+	 * \author Are Raklev
+	 * \author Anders Kvellestad
+	 * \data 2012-11-08
+	 */
+	class BackendBitBase {
     public:
 
       // Standard constructor
@@ -199,6 +230,12 @@ namespace GAMBIT {
 		
 	  // Unload library
 	  virtual void unLoadLib() = 0;
+	
+	  // Initialize program
+	  virtual void initialize() = 0;
+
+	  // Clean up
+	  virtual void finalize() = 0;
 		
 	  // Load a function pointer from the library, wrap it in a FortranFunctor, and return that functor
 	  template <typename TagT>
@@ -210,6 +247,7 @@ namespace GAMBIT {
 	  template<typename TagT>
 	  void SetUserVariable(typename VarType<TagT>::type const & value){
 		std::string symbolName = FortranFunctor<TagT>::FortranSymbolName(VarName<TagT>::name(), VarName<TagT>::module());
+		cout << symbolName << endl;
 		typename VarType<TagT>::type * varPtr = static_cast<typename VarType<TagT>::type *>(dlsym(pHandle, symbolName.c_str()));
 		checkDLStatus();
 		*varPtr = value;
@@ -219,6 +257,7 @@ namespace GAMBIT {
 	  template<typename TagT>
 	  typename VarType<TagT>::type const & GetUserVariable() const {
 		std::string symbolName = FortranFunctor<TagT>::FortranSymbolName(VarName<TagT>::name(), VarName<TagT>::module());
+		cout << symbolName << endl;
 		typename VarType<TagT>::type * varPtr = static_cast<typename VarType<TagT>::type *>(dlsym(pHandle, symbolName.c_str()));
 		checkDLStatus();
 		return *varPtr;
@@ -236,13 +275,21 @@ namespace GAMBIT {
       
     };
 
-    // Backend class for Fortran Herwig
+	
+	/*! \brief Interface for Fortran Herwig event generator. 
+	 * \author Are Raklev
+	 * \author Anders Kvellestad
+	 * \data 2012-11-08
+	 */
     class FHerwig : public BackendBitBase {
     public:
 
       // Constructor
       FHerwig() {
+		_hadronize = true;
+		_soft = true;
 	    _libName = "/Applications/Physics/herwig/libherwig.so";
+		loadLib();
       }
 
       // Destructor
@@ -250,6 +297,17 @@ namespace GAMBIT {
 		unLoadLib();
 	  }
 
+		// Initialize Herwig
+		void initialize();
+
+		// Finalize Herwig run
+		void finalize();
+		
+		// Generate one event
+		void generateEvent();
+
+	private:
+		
       // Load library
       void loadLib();
 
@@ -257,11 +315,60 @@ namespace GAMBIT {
 	  void unLoadLib();
 		
 	  // Check status of dynamic library	
-	  void checkDLStatus() const;
+	  void checkDLStatus() const;		
 		
+	  bool _hadronize;
+	  bool _soft;
     };
 
+	  
+	/*! \brief Four-vector class for particles. 
+	 * \author Are Raklev
+	 * \author Anders Kvellestad
+	 * \data 2012-11-08
+	 */
+	  
+	class Vector4 {
+		  
+	  public:
+		// Constructor
+		Vector4(double x = 0, double y = 0, double z = 0, double t = 0){
+			_x = x; _y = y; _z = z; _t = t;
+		}
+		
+		// Output components
+		double px() const {return _x;}
+		double py() const {return _y;}
+		double pz() const {return _z;}
+		double e()  const {return _t;}
+		
+	  private:
+		double _x, _y, _z, _t;
+	};
+	  
+	  
+	/*! \brief Event class for storing particles. 
+	 * \author Are Raklev
+	 * \author Anders Kvellestad
+	 * \data 2012-11-08
+	 */
+	class Event {
+		  
+	  public:
+		// Constructor
+		Event(int capacity = 1000){
+		  _entries.reserve(capacity);
+		}
+		
+		void append(Vector4 particle);
+		
+	  private:
+		vector<Vector4> _entries;
+		int _size;
 
+	};		  
+	  
+	  
   } // Backend namespace ending
 
 } // GAMBIT namespace ending
