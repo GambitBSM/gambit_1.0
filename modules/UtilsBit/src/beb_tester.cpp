@@ -15,14 +15,14 @@ int main(int argc, char * argv[]){
 	
   A.initialize();
 
-	// Some checing of what the settings are
-  cout << A.GetUserVariable<tags::HWPROC>().pbeam1 << endl;
-  cout << A.GetUserVariable<tags::HWBMCH>().part1 << endl;
-  cout << A.GetUserVariable<tags::HWBMCH>().part2 << endl;
+  // Some checking of what the settings are
+  //cout << A.GetUserVariable<tags::HWPROC>().pbeam1 << endl;
+  //cout << A.GetUserVariable<tags::HWBMCH>().part1 << endl;
+  //cout << A.GetUserVariable<tags::HWBMCH>().part2 << endl;
 	
   // Event loop
   for(int i = 1; i < 10; i++){
-	  A.generateEvent();
+	A.generateEvent();
   }
 	
   A.finalize();

@@ -1,7 +1,7 @@
 #include "backend.h"
 #include <dlfcn.h>     // Needed for dlopen
 
-#include "../../CoreBit/include/logcore.hh"
+#include "../SUFit/include/core/logcore.hh"
 
 namespace GAMBIT {
 
@@ -51,8 +51,8 @@ namespace GAMBIT {
 	  void FHerwig::initialize() {
 		  // Set beam energy, process type and mex events
 		  hwproc_type hwtemp1;
-		  hwtemp1.pbeam1 = 3000.;
-		  hwtemp1.pbeam2 = 3000.;
+		  hwtemp1.pbeam1 = 3500.;
+		  hwtemp1.pbeam2 = 3500.;
 		  hwtemp1.iproc = 1500;
 		  hwtemp1.maxev = 999999999;	// Choose ridiculously large number so that we never get to it
 		  SetUserVariable<tags::HWPROC>(hwtemp1);
@@ -123,14 +123,30 @@ namespace GAMBIT {
 		// Get event from common block
 		hepevt_type hepevt_temp;
 		hepevt_temp = GetUserVariable<tags::HEPEVT>();
-		  // Test that this is working correctly wrt indices
-		  cout << hepevt_temp.isthep[0] << " " << hepevt_temp.idhep[0]  << " " << hepevt_temp.phep[0][0];
-		  cout << " " << hepevt_temp.phep[0][1] << " " << hepevt_temp.phep[0][2] << " " << hepevt_temp.phep[0][3] << endl;
+		  
+		Event list;
+		// Fill particles
+		for(int i = 0; i < hepevt_temp.nhep; i++){
+		  Vector4 momentum(hepevt_temp.phep[i][0],hepevt_temp.phep[i][1],hepevt_temp.phep[i][2],hepevt_temp.phep[i][3]);
+		  Particle particle(momentum,hepevt_temp.idhep[i]);
+		  list.append(particle);
+		}
+		  
+		// Test that this is working correctly wrt indices		  
+		list.print();
 	  }
 	  
 	  // Append a particle to the event record
-	  void Event::append(Vector4 particle){
-		  _entries.push_back(particle);
+	  void Event::append(Particle particle){
+		_entries.push_back(particle);
+	  }
+	  
+	  // Print particles in event
+	  void Event::print(){
+		for(int i = 0; i < int(_entries.size()); ++i){
+		  cout << i << " " << _entries[i].pdg() << " " << _entries[i].px() << " " <<  _entries[i].py() << " "
+			   << _entries[i].pz() << " " << _entries[i].e() << endl;
+		}
 	  }
 	  
   } // End of Backend namespace
