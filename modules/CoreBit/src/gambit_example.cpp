@@ -1,8 +1,8 @@
-// some specifics
+// some specifics -- probably in time these will be replaced
 #include "mssmX.hpp"
 #include "RandomScanner.hpp"
 
-// some core classes
+// some standard gambit classes
 #include "ModelParametersSusy.hpp"
 #include "gambit_core.hpp"
 #include "exceptions.hpp"
@@ -50,7 +50,7 @@ int main( int argc, const char* argv[] )
   logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug2.txt",2);
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
-  SUFIT_MSG_INFO("starting example");
+  GAMBIT_MSG_INFO("starting example");
 
   //typedef std::vector<HandlerBase const*> HandlerCollection ;
 
@@ -97,15 +97,15 @@ int main( int argc, const char* argv[] )
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
 
   try{
-    SUFIT_MSG_LOG("gambit example        ");
-    //SUFIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
-    //SUFIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
-    /*  SUFIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
-        SUFIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
-        SUFIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
+    GAMBIT_MSG_LOG("gambit example        ");
+    //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
+    //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
+    /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
+        GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
+        GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
     */
   }catch( ::gambit::exceptions::gambit_exception_base & e){
-    SUFIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
+    GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
 
 
@@ -134,14 +134,14 @@ int main( int argc, const char* argv[] )
 
 
 
-  //SUFIT_MSG_LOG(std::endl<<"  ------------- running scanner ");
+  //GAMBIT_MSG_LOG(std::endl<<"  ------------- running scanner ");
   //RandomScanner myScanner(myLLHsummer,aModel);
   // first one manual step:
-  //SUFIT_MSG_LOG(std::endl<<"------------- first just one step ");
+  //GAMBIT_MSG_LOG(std::endl<<"------------- first just one step ");
   //myScanner.doScanStep();
-  //SUFIT_MSG_LOG(std::endl<<"------------- more steps ");
+  //GAMBIT_MSG_LOG(std::endl<<"------------- more steps ");
   //myScanner.runStepping(steps);
-  //SUFIT_MSG_LOG(std::endl<<"---------------- MAIN ENDS HERE ");
+  //GAMBIT_MSG_LOG(std::endl<<"---------------- MAIN ENDS HERE ");
 
   return 1;
 

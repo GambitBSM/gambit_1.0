@@ -49,9 +49,9 @@ namespace gambit {
     }
     virtual void doScanStep(){
 
-      SUFIT_MSG_DEBUG("enter");
+      GAMBIT_MSG_DEBUG("enter");
       ModelParametersPtr workset= this->_usedModel->getModelParameters();
-      SUFIT_MSG_DEBUG("running scan step at parameter version: " << workset->getVersion());
+      GAMBIT_MSG_DEBUG("running scan step at parameter version: " << workset->getVersion());
 
       // make new set of random values
       std::vector<std::string> modelVarKeys=workset->getKeys();
@@ -63,7 +63,7 @@ namespace gambit {
         double newvalue=rangelow+Random()*(rangehigh-rangelow);
         workset->setValue(*it,newvalue);
       }
-      //SUFIT_MSG_DEBUG("workset is:"<<*workset);
+      //GAMBIT_MSG_DEBUG("workset is:"<<*workset);
 
       double current_LLH=0;
       try{
@@ -71,14 +71,14 @@ namespace gambit {
         //current_LLH=_LLHcalculator->getLLH();
         current_LLH = 0.5;
         if(current_LLH>0){}else{}; // <<-- just to remove not-used warning
-        SUFIT_MSG_INFO("Got LLH:" << current_LLH);
+        GAMBIT_MSG_INFO("Got LLH:" << current_LLH);
         *_dumpfile<<std::string("Good model:")<<*workset<<std::endl;
       }catch( ::gambit::exceptions::gambit_exception_base & e){
-        SUFIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e));
+        GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e));
         // do something more.. record/skip model
         *_dumpfile<<std::string("Bad model:")<<*workset<<std::endl;
       }catch(...){
-        SUFIT_MSG_ERROR("Caught exception... ? ");
+        GAMBIT_MSG_ERROR("Caught exception... ? ");
         throw;  // this should not be the case...
       }
 
@@ -92,7 +92,7 @@ namespace gambit {
     }
     virtual void runStepping(int maxsteps=100){
       for (int i=0;i<maxsteps;i++){
-        SUFIT_MSG_INFO("scanning at step;"<<i);
+        GAMBIT_MSG_INFO("scanning at step;"<<i);
         doScanStep();
       }
     }

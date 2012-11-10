@@ -1,4 +1,5 @@
 #include "logcore.hpp"
+#include "gambit_core.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -7,7 +8,6 @@
 #include <vector>
 #include <map>
 #include <stdlib.h>
-#include "gambit_core.hpp"
 
 #include <cxxabi.h>
 #include <execinfo.h>
@@ -363,22 +363,22 @@ int main(){
 
   gambit::setLogLevel(gambit::sDEBUG);
 
-  SUFIT_MSG_DEBUG(" entering a");
-  SUFIT_MSG_WARNING(" WW 2") ;
-  SUFIT_MSG_INFO(" leaving b");
+  GAMBIT_MSG_DEBUG(" entering a");
+  GAMBIT_MSG_WARNING(" WW 2") ;
+  GAMBIT_MSG_INFO(" leaving b");
   //  gambit::logsetup::setfile_range("_bbaaa",-10000,10000);
   if(0)
-    SUFIT_MSG_WARNING(" hello in d");
+    GAMBIT_MSG_WARNING(" hello in d");
   else
-    SUFIT_MSG_WARNING(" hello in q") ;
+    GAMBIT_MSG_WARNING(" hello in q") ;
 
-  SUFIT_MSG_DEBUG(" entering a");
+  GAMBIT_MSG_DEBUG(" entering a");
 
-  SUFIT_MSG_LOG(" exit c");
+  GAMBIT_MSG_LOG(" exit c");
 
-  SUFIT_MSG_WARNING(" hello in d");
-  SUFIT_MSG_ERROR(" and something ");
-  SUFIT_MSG_FATAL(" ... bad ");
+  GAMBIT_MSG_WARNING(" hello in d");
+  GAMBIT_MSG_ERROR(" and something ");
+  GAMBIT_MSG_FATAL(" ... bad ");
 
   return 0;
 }

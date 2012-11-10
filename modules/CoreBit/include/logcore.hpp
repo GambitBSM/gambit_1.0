@@ -12,18 +12,18 @@
  *
  * as well as the user macros:
  *
- *  SUFIT_MSG_DEBUG(text)
- *  SUFIT_MSG_DEBUG(detail_level,text)  // with optional level. default is 0. Use a higher integer for even lower level debug messages.
+ *  GAMBIT_MSG_DEBUG(text)
+ *  GAMBIT_MSG_DEBUG(detail_level,text)  // with optional level. default is 0. Use a higher integer for even lower level debug messages.
  *
- *  SUFIT_MSG_INFO(text)
+ *  GAMBIT_MSG_INFO(text)
  *
- *  SUFIT_MSG_LOG(text)
+ *  GAMBIT_MSG_LOG(text)
  *
- *  SUFIT_MSG_WARNING(text)
+ *  GAMBIT_MSG_WARNING(text)
  *
- *  SUFIT_MSG_ERROR(text)
+ *  GAMBIT_MSG_ERROR(text)
  *
- *  SUFIT_MSG_FATAL(text)
+ *  GAMBIT_MSG_FATAL(text)
  *
  */
 
@@ -40,53 +40,53 @@
 // the stringstreams may make the logging slow, but it makes use easier,
 // look at DarkSusyEngine for examples
 
-#ifndef SUFIT_BUILDOPT_LOGLIMIT
-#define SUFIT_BUILDOPT_LOGLIMIT -1000
+#ifndef GAMBIT_BUILDOPT_LOGLIMIT
+#define GAMBIT_BUILDOPT_LOGLIMIT -1000
 #endif
 
 // shorthand helper macro for the implementation of the user macros below:
-#define SUFIT_MSG_IMP_DBG0sel_(text)            \
-  SUFIT_MSG_IMP_DBG1_(text,0)
-#define SUFIT_MSG_IMP_DBG1sel_(text,dblevel)    \
-  SUFIT_MSG_IMP_DBG1_(text,dblevel)
+#define GAMBIT_MSG_IMP_DBG0sel_(text)            \
+  GAMBIT_MSG_IMP_DBG1_(text,0)
+#define GAMBIT_MSG_IMP_DBG1sel_(text,dblevel)    \
+  GAMBIT_MSG_IMP_DBG1_(text,dblevel)
 
 // ** begin MSG_DEBUG internals:
-// SUFIT_MSG_DEBUG has an optional argument. This requires the following
+// GAMBIT_MSG_DEBUG has an optional argument. This requires the following
 // complicated definition:
-#define SUFIT_MSG_DBG_IMPL_ARGPIC_HELP_(arg1, arg2, arg3, ...) arg3
-#define SUFIT_MSG_DBG_IMPL_ARGPIC_(...)                                 \
-  SUFIT_MSG_DBG_IMPL_ARGPIC_HELP_(__VA_ARGS__,                          \
-                                  SUFIT_MSG_IMP_DBG1sel_, SUFIT_MSG_IMP_DBG0sel_ ,)
-#define SUFIT_MSG_DEBUG(...) SUFIT_MSG_DBG_IMPL_ARGPIC_(__VA_ARGS__)(__VA_ARGS__)
+#define GAMBIT_MSG_DBG_IMPL_ARGPIC_HELP_(arg1, arg2, arg3, ...) arg3
+#define GAMBIT_MSG_DBG_IMPL_ARGPIC_(...)                                 \
+  GAMBIT_MSG_DBG_IMPL_ARGPIC_HELP_(__VA_ARGS__,                          \
+                                  GAMBIT_MSG_IMP_DBG1sel_, GAMBIT_MSG_IMP_DBG0sel_ ,)
+#define GAMBIT_MSG_DEBUG(...) GAMBIT_MSG_DBG_IMPL_ARGPIC_(__VA_ARGS__)(__VA_ARGS__)
 // Specific implementation for MSG_DEBUG:
-#define SUFIT_MSG_IMP0_(method,text)                            \
+#define GAMBIT_MSG_IMP0_(method,text)                            \
   do { std::stringstream ss; ss <<text;                         \
     method(__FILE__,__LINE__,__FUNCTION__,ss.str());}while (0)
 
 // The if statement allows optional logging of messages with log level <0.
 // should be optimized out by compiler when not required.
-#define SUFIT_MSG_IMP_DBG1_(text,dblevel)                               \
-  do { if((0==(dblevel))||(((SUFIT_BUILDOPT_LOGLIMIT)<0)&&(0<(dblevel)))){std::stringstream ss; ss <<text; \
+#define GAMBIT_MSG_IMP_DBG1_(text,dblevel)                               \
+  do { if((0==(dblevel))||(((GAMBIT_BUILDOPT_LOGLIMIT)<0)&&(0<(dblevel)))){std::stringstream ss; ss <<text; \
       ::gambit::logsetup::__priv_debug(__FILE__,__LINE__,__FUNCTION__,ss.str(),dblevel);}}while (0)
 // ** end of MSG_DEBUG internals.
 
 #endif
 
-#define SUFIT_MSG_FATAL(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_fatal,text<<"'"<<std::endl<<"stacktrace:'"<<::gambit::logsetup::stacktrace())
-#define SUFIT_MSG_ERROR(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_error,text)
-#define SUFIT_MSG_WARNING(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_warning,text)
-#define SUFIT_MSG_LOG(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_log,text)
-#define SUFIT_MSG_INFO(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_info,text)
-//#define SUFIT_MSG_DEBUG(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_debug,text)
+#define GAMBIT_MSG_FATAL(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_fatal,text<<"'"<<std::endl<<"stacktrace:'"<<::gambit::logsetup::stacktrace())
+#define GAMBIT_MSG_ERROR(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_error,text)
+#define GAMBIT_MSG_WARNING(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_warning,text)
+#define GAMBIT_MSG_LOG(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_log,text)
+#define GAMBIT_MSG_INFO(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_info,text)
+//#define GAMBIT_MSG_DEBUG(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_debug,text)
 /*! \brief. debug message.
- *  syntax: SUFIT_MSG_DEBUG("message"); or:
- *          SUFIT_MSG_DEBUG(level,"message"); // where level is a positive int.
+ *  syntax: GAMBIT_MSG_DEBUG("message"); or:
+ *          GAMBIT_MSG_DEBUG(level,"message"); // where level is a positive int.
  *          0 is the default. higher values (1,2,3,4) means more detailed debug message.
  *  \author Johan Lundberg
  */
-#define SUFIT_MSG_DEBUG(...) SUFIT_MSG_DBG_IMPL_ARGPIC_(__VA_ARGS__)(__VA_ARGS__)
+#define GAMBIT_MSG_DEBUG(...) GAMBIT_MSG_DBG_IMPL_ARGPIC_(__VA_ARGS__)(__VA_ARGS__)
 
-/*! clear out those below the requested debug level. By defauls SUFIT_BUILDOPT_LOGKILL
+/*! clear out those below the requested debug level. By defauls GAMBIT_BUILDOPT_LOGKILL
  *  should not be set. The numbers have nothing to do with the internal values of the severity enum.
  *
  *-N: turn off also debug specified with optional debug level: debug level N and below
@@ -97,21 +97,21 @@
  * 4: turn off also warning
  */
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#if ( SUFIT_BUILDOPT_LOGLIMIT > 0 )
-#undef  SUFIT_MSG_IMP_DBG0sel_
-#define SUFIT_MSG_IMP_DBG0sel_(text) do{}while(0)
+#if ( GAMBIT_BUILDOPT_LOGLIMIT > 0 )
+#undef  GAMBIT_MSG_IMP_DBG0sel_
+#define GAMBIT_MSG_IMP_DBG0sel_(text) do{}while(0)
 #endif
-#if ( SUFIT_BUILDOPT_LOGLIMIT > 1 )
-#undef  SUFIT_MSG_INFO
-#define SUFIT_MSG_INFO(text) do{}while(0)
+#if ( GAMBIT_BUILDOPT_LOGLIMIT > 1 )
+#undef  GAMBIT_MSG_INFO
+#define GAMBIT_MSG_INFO(text) do{}while(0)
 #endif
-#if ( SUFIT_BUILDOPT_LOGLIMIT > 2 )
-#undef  SUFIT_MSG_LOG
-#define SUFIT_MSG_LOG(text) do{}while(0)
+#if ( GAMBIT_BUILDOPT_LOGLIMIT > 2 )
+#undef  GAMBIT_MSG_LOG
+#define GAMBIT_MSG_LOG(text) do{}while(0)
 #endif
-#if ( SUFIT_BUILDOPT_LOGLIMIT > 3 )
-#undef  SUFIT_MSG_WARNING
-#define SUFIT_MSG_WARNING(text) do{}while(0)
+#if ( GAMBIT_BUILDOPT_LOGLIMIT > 3 )
+#undef  GAMBIT_MSG_WARNING
+#define GAMBIT_MSG_WARNING(text) do{}while(0)
 #endif
 #endif
 

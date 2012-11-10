@@ -27,7 +27,7 @@ namespace gambit {
   protected:
     void assert_contains(std::string inkey) const{
       if(_values.count(inkey)!=1){
-        SUFIT_MSG_FATAL("key not found"+inkey);
+        GAMBIT_MSG_FATAL("key not found"+inkey);
       }
     }
   public:

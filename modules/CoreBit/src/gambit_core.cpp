@@ -1,8 +1,8 @@
 #include "gambit_core.hpp"
-#include <iostream>
-#include <signal.h>
 #include "exceptions.hpp"
 #include <boost/exception_ptr.hpp>
+#include <iostream>
+#include <signal.h>
 
 namespace gambit {
 
@@ -32,6 +32,6 @@ namespace gambit {
       // Controlled termination.
       // Add other cleanups here if required.
     }
-    SUFIT_MSG_FATAL("received system signal "<<i );
+    GAMBIT_MSG_FATAL("received system signal "<<i );
   }
 }

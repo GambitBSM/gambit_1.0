@@ -95,7 +95,7 @@ namespace gambit{
 
   public:
   gambit_exception_base() throw() {
-  //SUFIT_MSG_INFO(exception_origin(*this));
+  //GAMBIT_MSG_INFO(exception_origin(*this));
   }
   gambit_exception_base(const gambit_exception_base& rhs)throw(){
   boost::exception::operator=(rhs);
@@ -103,11 +103,11 @@ namespace gambit{
   try {
   std::string tmp;
   tmp=get_exception_origin(*this);
-  if(!tmp.empty()) SUFIT_MSG_DEBUG("copying exception. origin:"<<tmp,2);
+  if(!tmp.empty()) GAMBIT_MSG_DEBUG("copying exception. origin:"<<tmp,2);
   tmp=get_exception_text(*this);
-  if(!tmp.empty()) SUFIT_MSG_DEBUG("copying exception. text  :"<<tmp,3);
+  if(!tmp.empty()) GAMBIT_MSG_DEBUG("copying exception. text  :"<<tmp,3);
   tmp=get_exception_trace(*this);
-  if(!tmp.empty()) SUFIT_MSG_DEBUG("copying exception. trace :"<<tmp,4);
+  if(!tmp.empty()) GAMBIT_MSG_DEBUG("copying exception. trace :"<<tmp,4);
   }catch(...){
   try{
   std::cerr<<"error copying exception from "<<get_exception_origin(*this)<<" "<< get_exception_text(*this)<<" "<<get_exception_trace(*this);

@@ -18,9 +18,9 @@ namespace gambit {
     u_longlong getVersion() const {
       return _paramversion ;
     }
-    ModelParametersBase():_paramversion(1) {SUFIT_MSG_DEBUG("hi.");}
+    ModelParametersBase():_paramversion(1) {GAMBIT_MSG_DEBUG("hi.");}
   protected:
-    virtual ~ModelParametersBase(){SUFIT_MSG_DEBUG("bye.");}
+    virtual ~ModelParametersBase(){GAMBIT_MSG_DEBUG("bye.");}
     void updateVersion(){ _paramversion++;}
   private:
     u_longlong _paramversion;

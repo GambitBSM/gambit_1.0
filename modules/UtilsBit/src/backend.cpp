@@ -42,7 +42,7 @@ namespace GAMBIT {
 	if(error){
 		cout << "Error with Fortran Herwig library!" << endl;
 		cout << error << endl;
-	  //SUFIT_MSG_WARNING("Error with Fortran Herwig library!");
+	  //GAMBIT_MSG_WARNING("Error with Fortran Herwig library!");
 	//cout << "Did SUFit output anything?" << endl;
 	}
   }

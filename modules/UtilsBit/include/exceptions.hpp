@@ -10,7 +10,7 @@
  *
  * Declares the namespace gambit::exceptions, defining methods as well the user macro:
  *
- * SUFIT_THROW_EXCEPTION(e);
+ * GAMBIT_THROW_EXCEPTION(e);
  *
  * \date 2011 Aug
  * \author Johan Lundberg
@@ -21,13 +21,13 @@
  * Example use:
  * \code
  * using namespace gambit::exceptions;
- * SUFIT_THROW_EXCEPTION(e_unphysical << i_text("mass is negative"));
+ * GAMBIT_THROW_EXCEPTION(e_unphysical << i_text("mass is negative"));
  * \endcode
  *
  * The macro enforces use of gambit_exception_base or derived exceptions, and
  * adds various debug information to e before throwing.
  */
-#define SUFIT_THROW_EXCEPTION(e) do{                                    \
+#define GAMBIT_THROW_EXCEPTION(e) do{                                    \
     ::gambit::exceptions::Compiletime_Cast_Test< ::gambit::exceptions::gambit_exception_base>(e); \
     BOOST_THROW_EXCEPTION(e) ; }while(0)
 
@@ -38,7 +38,7 @@ namespace gambit{
    *
    * sufic static/public exception related methods and classes.
    *
-   * Note that the throwing macro SUFIT_THROW_EXCEPTION(e) is also defined in exceptions.hh. Please read its
+   * Note that the throwing macro GAMBIT_THROW_EXCEPTION(e) is also defined in exceptions.hh. Please read its
    * documentation first.
    *
    *  \author Johan Lundberg
@@ -120,7 +120,7 @@ namespace gambit{
      * Example use:
      * \code
      * using namespace gambit::exceptions;
-     * SUFIT_THROW_EXCEPTION(e_unphysical << i_trace_do() << i_text("mass is negative"));
+     * GAMBIT_THROW_EXCEPTION(e_unphysical << i_trace_do() << i_text("mass is negative"));
      * \endcode
      */
     i_trace i_trace_do() throw();
