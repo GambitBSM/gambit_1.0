@@ -196,7 +196,7 @@ VARIABLE(HWBMCH, hwbmch, , hwbmch_type)
 // Struct for event common block
 struct hepevt_type{
 	int nevhep, nhep, isthep[NMXHEP], idhep[NMXHEP], jmohep[NMXHEP][2], jdahep[NMXHEP][2];
-	double phep[5][NMXHEP], vhep[4][NMXHEP];
+	double phep[NMXHEP][5], vhep[NMXHEP][4];
 };
 VARIABLE(HEPEVT, hepevt, , hepevt_type)
 
@@ -321,8 +321,7 @@ namespace GAMBIT {
 	  bool _soft;
     };
 
-	  
-	/*! \brief Four-vector class for particles. 
+	/*! \brief Four-vector class. 
 	 * \author Are Raklev
 	 * \author Anders Kvellestad
 	 * \data 2012-11-08
@@ -345,7 +344,30 @@ namespace GAMBIT {
 	  private:
 		double _x, _y, _z, _t;
 	};
-	  
+	
+	/*! \brief Particle class. 
+	 * \author Are Raklev
+	 * \author Anders Kvellestad
+	 * \data 2012-11-08
+	 */
+	class Particle {
+	  public:
+		Particle(Vector4 momentum, int pdg){
+		  _p = momentum;
+		  _pdg = pdg;
+		}
+	
+		// Output 
+		double px() const {return _p.px();}
+		double py() const {return _p.py();}
+		double pz() const {return _p.pz();}
+		double e()  const {return _p.e();}
+		int pdg() const {return _pdg;}
+		
+	  private:
+		Vector4 _p;
+		int _pdg;
+	};
 	  
 	/*! \brief Event class for storing particles. 
 	 * \author Are Raklev
@@ -360,10 +382,14 @@ namespace GAMBIT {
 		  _entries.reserve(capacity);
 		}
 		
-		void append(Vector4 particle);
+		// Append a particle to event
+		void append(Particle particle);
+		
+		// Print event record. Mostly for debugging purposes
+		void print();
 		
 	  private:
-		vector<Vector4> _entries;
+		vector<Particle> _entries;
 		int _size;
 
 	};		  
