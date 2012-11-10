@@ -1,4 +1,4 @@
-#include "core/exceptions.hh"
+#include "exceptions.hpp"
 #include <iostream>
 #include <boost/exception/all.hpp>
 #include <boost/exception/info.hpp>
@@ -8,9 +8,9 @@
 
 #include <cxxabi.h>
 #include <execinfo.h>
-#include "core/logcore.hh"
+#include "logcore.hpp"
 
-namespace sufit{
+namespace gambit{
 
   namespace exceptions{
 
@@ -53,7 +53,7 @@ namespace sufit{
 
       bool needendl=0;
       std::string tmp;
-      if(const sufit_exception_base *tmp=dynamic_cast<const sufit_exception_base*>(&e)){
+      if(const gambit_exception_base *tmp=dynamic_cast<const gambit_exception_base*>(&e)){
         out<<tmp->getName();
         needendl=1;
       }
@@ -94,10 +94,10 @@ namespace sufit{
   Additional code for optional debug messages from exceptions
 
   public:
-  sufit_exception_base() throw() {
+  gambit_exception_base() throw() {
   //SUFIT_MSG_INFO(exception_origin(*this));
   }
-  sufit_exception_base(const sufit_exception_base& rhs)throw(){
+  gambit_exception_base(const gambit_exception_base& rhs)throw(){
   boost::exception::operator=(rhs);
   std::exception::operator=(rhs);
   try {
@@ -114,9 +114,9 @@ namespace sufit{
   }catch(...){}
   }
   }
-  virtual ~sufit_exception_base() throw(){
+  virtual ~gambit_exception_base() throw(){
   }
-  virtual sufit_exception_base & operator=(const sufit_exception_base& rhs)throw(){
+  virtual gambit_exception_base & operator=(const gambit_exception_base& rhs)throw(){
   std::exception::operator=(rhs);
   boost::exception::operator=(rhs);
   return (*this);

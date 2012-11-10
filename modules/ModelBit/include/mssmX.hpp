@@ -1,9 +1,9 @@
-#ifndef sufit_mssmX_h_
-#define sufit_mssmX_h_ 1
+#ifndef gambit_mssmX_hpp_
+#define gambit_mssmX_hpp_ 1
 
-#include "core/ModelBase.hh"
+#include "ModelBase.hpp"
 
-namespace sufit {
+namespace gambit {
   /*! \brief Empty example model.
   //
   // mssmX class. Option nu_dimensions for mssm X may be 24,25, 100, etc..

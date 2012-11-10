@@ -1,21 +1,15 @@
-//#include "demo_main.hh"
-
 // some specifics
-#include "mssmX.hh"
-#include "DarkSusyEngine.hh"
-#include "RandomScanner.hh"
+#include "mssmX.hpp"
+#include "RandomScanner.hpp"
 
 // some core classes
-#include "core/SimpleHandleToComparator.hh"
-#include "core/SimplePoissonComparator.hh"
-#include "core/LLHSumComparator.hh"
-#include "core/ModelParametersSusy.hh"
-#include "core/Handler.hh"
-#include "core/sufit_core.hh"
+#include "ModelParametersSusy.hpp"
+#include "gambit_core.hpp"
+#include "exceptions.hpp"
 #include <stdio.h>
 
-//! brief helper for dsexample_main
-using namespace sufit;
+//! brief helper for gambit_example
+using namespace gambit;
 ModelBasePtr make_a_model(bool do_cmssm){
   if (do_cmssm){
     ModelParametersPtr tmp(new ModelParameters_CMSSM5);
@@ -27,23 +21,20 @@ ModelBasePtr make_a_model(bool do_cmssm){
 }
 
 /*!
-//  \brief Example of sufit core framework use
+//  \brief Example of gambit core framework use
 //
 //   A program to demo what can be done with the current code.
 //
-//   \author Johan Lundberg
-//   \date July - September 2011
+//   \author GAMBIT Collab
+//   \date Oct 2012 -> ??
 //
-// This simple example takes two optional arguments.
-//
-// #1  number of scan steps
-// #2  0 for pmssm, (default)
-//     1 for cmssm
-//    the selection of arg 2 is done by the simple function selectmodel
-//    (TODO: cmssm fortran calls seems to not do the work right..- ivestigate TODO )
 */
+
 int main( int argc, const char* argv[] )
 {
+
+  std::cout<< "This is a skeleton example for gambit."<<std::endl;
+  std::cout<< "At the moment it just hooks up to the pieces of SUFit that have been retained."<<std::endl;
 
   int steps=100;
   if(argc>1) steps=atoi(argv[1]);
@@ -51,20 +42,17 @@ int main( int argc, const char* argv[] )
 
   bool do_cmssm=false;
   if(argc>2) do_cmssm=atoi(argv[2])>0;
-  std::cout<< "Running with do_cmssm="<<do_cmssm<<std::endl;
 
-  logsetup::setfile("_sufit_msgs_ds_errors.txt");              // setup detailed debug
-  logsetup::setfile_upto_LOG("_sufit_msgs_ds_normal.txt");     // into files, depending
-  logsetup::setfile_upto_DEBUG("_sufit_msgs_ds_debug0.txt");   // on debug level.
-  logsetup::setfile_upto_DEBUG("_sufit_msgs_ds_debug1.txt",1);
-  logsetup::setfile_upto_DEBUG("_sufit_msgs_ds_debug2.txt",2);
+  logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
+  logsetup::setfile_upto_LOG("_gambit_msgs_example_normal.txt");     // into files, depending
+  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug0.txt");   // on debug level.
+  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug1.txt",1);
+  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug2.txt",2);
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   SUFIT_MSG_INFO("starting example");
 
-  //  std::tr1::shared_ptr<const ModelParameters> blahoo( new ModelParameters);
-
-  typedef std::vector<HandlerBase const*> HandlerCollection ;
+  //typedef std::vector<HandlerBase const*> HandlerCollection ;
 
   // Modelparameters defines a state of a model. Some modelparameters may
   // only work with some models, but that is up to the programmers of those classes.
@@ -95,44 +83,42 @@ int main( int argc, const char* argv[] )
     pars->redefineValue("ab/m",   0.15 ,-0.1  , 10);
   }
 
-  //  DarkSusyEngine myDS(aModel);
-  DarkSusyEngine myDS(aModel);
+  //typedef shared_ptr<Handler<double> > shared_dbl;
 
-  typedef shared_ptr<Handler<double> > shared_dbl;
+  //shared_dbl vM20 = myDS.ds_mass("vM20",20); // ds_pid
+  //shared_dbl vM21 = myDS.ds_mass("vM21",21); // ds_pid
 
-  shared_dbl vM20 = myDS.ds_mass("vM20",20); // ds_pid
-  shared_dbl vM21 = myDS.ds_mass("vM21",21); // ds_pid
-
-  shared_dbl vM22 = myDS.ds_mass("vM22",22); // ds_pid
+  //shared_dbl vM22 = myDS.ds_mass("vM22",22); // ds_pid
 
   //  shared_dbl vOmega=myDS.dsrdomega("vOmega");// using default opt
-  shared_dbl vSigmaV=myDS.dssigmav("vSigmaV"); // using default option
-  shared_dbl vSigmaV13=myDS.dssigmav("vSigmaV2",13);
+  //shared_dbl vSigmaV=myDS.dssigmav("vSigmaV"); // using default option
+  //shared_dbl vSigmaV13=myDS.dssigmav("vSigmaV2",13);
   // shared_dbl vPositron=myDS.dshaloyield("vPositron",5.2,51); //egev,yieldk
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
 
   try{
-    SUFIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
-    SUFIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
+    SUFIT_MSG_LOG("gambit example        ");
+    //SUFIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
+    //SUFIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
     /*  SUFIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
         SUFIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
         SUFIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
     */
-  }catch( ::sufit::exceptions::sufit_exception_base & e){
+  }catch( ::gambit::exceptions::gambit_exception_base & e){
     SUFIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
 
 
   // Example 2: use the LLH provided by some Engine:
-  ComparatorBasePtr mySillyLLH_1(new simpleHandleToComparator(vSigmaV)) ;
-  ComparatorBasePtr mySillyLLH_2(new simpleHandleToComparator(vM20)) ;
+  //ComparatorBasePtr mySillyLLH_1(new simpleHandleToComparator(vSigmaV)) ;
+  //ComparatorBasePtr mySillyLLH_2(new simpleHandleToComparator(vM20)) ;
 
   // Example 4: a combined likelihood using the above:
   // add other likelihood components:
-  std::vector<ComparatorBasePtr > llh_in_vector;
-  llh_in_vector.push_back(mySillyLLH_1);
-  llh_in_vector.push_back(mySillyLLH_2);
-  ComparatorBasePtr myLLHsummer(new LLHSumComparator(llh_in_vector));
+  //std::vector<ComparatorBasePtr > llh_in_vector;
+  //llh_in_vector.push_back(mySillyLLH_1);
+  //llh_in_vector.push_back(mySillyLLH_2);
+  //ComparatorBasePtr myLLHsummer(new LLHSumComparator(llh_in_vector));
 
   //////////////////////
   //
@@ -148,14 +134,14 @@ int main( int argc, const char* argv[] )
 
 
 
-  SUFIT_MSG_LOG(std::endl<<"  ------------- running scanner ");
-  RandomScanner myScanner(myLLHsummer,aModel);
+  //SUFIT_MSG_LOG(std::endl<<"  ------------- running scanner ");
+  //RandomScanner myScanner(myLLHsummer,aModel);
   // first one manual step:
-  SUFIT_MSG_LOG(std::endl<<"------------- first just one step ");
-  myScanner.doScanStep();
-  SUFIT_MSG_LOG(std::endl<<"------------- more steps ");
-  myScanner.runStepping(steps);
-  SUFIT_MSG_LOG(std::endl<<"---------------- MAIN ENDS HERE ");
+  //SUFIT_MSG_LOG(std::endl<<"------------- first just one step ");
+  //myScanner.doScanStep();
+  //SUFIT_MSG_LOG(std::endl<<"------------- more steps ");
+  //myScanner.runStepping(steps);
+  //SUFIT_MSG_LOG(std::endl<<"---------------- MAIN ENDS HERE ");
 
   return 1;
 

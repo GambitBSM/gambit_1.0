@@ -1,14 +1,14 @@
-#ifndef __SUFIT_EXCEPTIONS_HH__
-#define __SUFIT_EXCEPTIONS_HH__
+#ifndef __gambit_exceptions_hpp__
+#define __gambit_exceptions_hpp__
 #include <boost/exception/info.hpp>
 #include <string>
 #include <boost/throw_exception.hpp>
 
 
-/*! \file exceptions.hh
+/*! \file exceptions.hpp
  * \brief Interface for exception throwing
  *
- * Declares the namespace sufit::exceptions, defining methods as well the user macro:
+ * Declares the namespace gambit::exceptions, defining methods as well the user macro:
  *
  * SUFIT_THROW_EXCEPTION(e);
  *
@@ -16,25 +16,25 @@
  * \author Johan Lundberg
  */
 
-/*! \brief user method for throwing exceptions deriving from sufit_exception_base
+/*! \brief user method for throwing exceptions deriving from gambit_exception_base
  *
  * Example use:
  * \code
- * using namespace sufit::exceptions;
+ * using namespace gambit::exceptions;
  * SUFIT_THROW_EXCEPTION(e_unphysical << i_text("mass is negative"));
  * \endcode
  *
- * The macro enforces use of sufit_exception_base or derived exceptions, and
+ * The macro enforces use of gambit_exception_base or derived exceptions, and
  * adds various debug information to e before throwing.
  */
 #define SUFIT_THROW_EXCEPTION(e) do{                                    \
-    ::sufit::exceptions::Compiletime_Cast_Test< ::sufit::exceptions::sufit_exception_base>(e); \
+    ::gambit::exceptions::Compiletime_Cast_Test< ::gambit::exceptions::gambit_exception_base>(e); \
     BOOST_THROW_EXCEPTION(e) ; }while(0)
 
 
-namespace sufit{
+namespace gambit{
 
-  /*! \brief sufit exceptions
+  /*! \brief gambit exceptions
    *
    * sufic static/public exception related methods and classes.
    *
@@ -45,13 +45,13 @@ namespace sufit{
    *  \date 2011 Aug */
   namespace exceptions{
 
-    /*! \brief sufit exception base class
+    /*! \brief gambit exception base class
      *  \author Johan Lundberg
      *  \date 2011 Aug
      */
-    class sufit_exception_base: virtual public boost::exception, virtual public std::exception {
+    class gambit_exception_base: virtual public boost::exception, virtual public std::exception {
     public:
-      virtual inline std::string getName() const {return "sufit_exception_base";}
+      virtual inline std::string getName() const {return "gambit_exception_base";}
     };
 
     /*! \brief configuraton exception
@@ -60,7 +60,7 @@ namespace sufit{
      * is internally inconsistent
      *  \author Johan Lundberg
      *  \date 2011 Aug */
-    class e_configuration: virtual public sufit_exception_base {
+    class e_configuration: virtual public gambit_exception_base {
     public:
       virtual inline std::string getName() const {return "e_configuration";}
     };
@@ -70,7 +70,7 @@ namespace sufit{
      * Base exception for cases when you can not calculate the resuls.
      *  \author Johan Lundberg
      *  \date 2011 Aug */
-    class e_incalculable: virtual public sufit_exception_base {
+    class e_incalculable: virtual public gambit_exception_base {
     public:
       virtual inline std::string getName() const {return "e_incalculable";}
     };
@@ -97,9 +97,9 @@ namespace sufit{
     };
 
     //! \brief object for adding a text description to a thrown boost exception
-    typedef boost::error_info<struct tag_sufit_exception_info,std::string> i_text;
+    typedef boost::error_info<struct tag_gambit_exception_info,std::string> i_text;
     //! \brief object for adding a stacktrace (as text) to a thrown boost exception
-    typedef boost::error_info<struct tag_sufit_exception_trace,std::string> i_trace;
+    typedef boost::error_info<struct tag_gambit_exception_trace,std::string> i_trace;
 
     /*! \brief Method for compile time test of type. If cast does not work, it does not compile
      * compiles if there is any conversion is possible.
@@ -119,7 +119,7 @@ namespace sufit{
      *
      * Example use:
      * \code
-     * using namespace sufit::exceptions;
+     * using namespace gambit::exceptions;
      * SUFIT_THROW_EXCEPTION(e_unphysical << i_trace_do() << i_text("mass is negative"));
      * \endcode
      */

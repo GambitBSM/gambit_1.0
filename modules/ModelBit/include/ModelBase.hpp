@@ -1,11 +1,11 @@
-#ifndef sufit_ModelBase
-#define sufit_ModelBase 1
+#ifndef gambit_ModelBase
+#define gambit_ModelBase 1
 
-#include "ModelParameters.hh"
-#include "Uncopyable.hh"
-#include "shared_ptr.hh"
+#include "ModelParameters.hpp"
+#include "Uncopyable.hpp"
+#include "shared_ptr.hpp"
 
-namespace sufit {
+namespace gambit {
   class ModelBase;
   typedef shared_ptr<ModelBase> ModelBasePtr;
 

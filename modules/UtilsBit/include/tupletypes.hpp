@@ -1,11 +1,11 @@
-#ifndef __sufit_import_boost_tuple_
-#define __sufit_import_boost_tuple_ 1
+#ifndef __gambit_import_boost_tuple_
+#define __gambit_import_boost_tuple_ 1
 
 #include "boost/tuple/tuple.hpp"
 #include "boost/tuple/tuple_comparison.hpp"
 #include "boost/tuple/tuple_io.hpp"
 
-namespace sufit {
+namespace gambit {
 
   using namespace boost::tuples; // required for get<> and opertors to work.
 

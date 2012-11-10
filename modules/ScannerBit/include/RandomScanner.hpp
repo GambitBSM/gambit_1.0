@@ -1,10 +1,10 @@
-#ifndef sufit_RandomScanner_h_
-#define sufit_RandomScanner_h_ 1
+#ifndef gambit_RandomScanner_hpp_
+#define gambit_RandomScanner_hpp_ 1
 
-#include "core/ScannerBase.hh"
+#include "ScannerBase.hpp"
 #include <iostream>
 #include <vector>
-#include "core/exceptions.hh"
+#include "exceptions.hpp"
 #include <fstream>
 
 // Selected Random numbers:
@@ -12,18 +12,26 @@ extern "C" {
 #include "rngs.h"
 }
 
-namespace sufit {
+namespace gambit {
 
   /*! \brief Random Scanner
   //
-  // \author Johan Lundberg, Joachim Ripken
+  // Gutted of ComparatorBase dependency for GAMBIT example
+  //
+  // \author Johan Lundberg
   // \date July 2011
+  //
+  // \author Pat Scott
+  // \date November 2012
   */
   class RandomScanner : public ScannerBase{
   public:
-    RandomScanner(ComparatorBasePtr inLLHcalc,ModelBasePtr  usedModel,int nScansPerModel=10,
-                  std::string const& dumpfilename=std::string("_RandomScanDumpfile.txt")):
-      ScannerBase(inLLHcalc,usedModel),_nScansPerModel(nScansPerModel),
+    //FIXME PS replaced with chopped-down version for now
+    //RandomScanner(ComparatorBasePtr inLLHcalc,ModelBasePtr  usedModel,int nScansPerModel=10,
+    //              std::string const& dumpfilename=std::string("_RandomScanDumpfile.txt")):
+      RandomScanner(ModelBasePtr  usedModel,int nScansPerModel=10,
+                    std::string const& dumpfilename=std::string("_RandomScanDumpfile.txt")):
+      ScannerBase(usedModel),_nScansPerModel(nScansPerModel),
       _dumpfile(0){
       PlantSeeds(-1); // from rngs.h
       std::cout<<"workset is:"<<*(usedModel->getModelParameters());
@@ -59,11 +67,13 @@ namespace sufit {
 
       double current_LLH=0;
       try{
-        current_LLH=_LLHcalculator->getLLH();
+        //FIXME PS replaced with constant like for now
+        //current_LLH=_LLHcalculator->getLLH();
+        current_LLH = 0.5;
         if(current_LLH>0){}else{}; // <<-- just to remove not-used warning
         SUFIT_MSG_INFO("Got LLH:" << current_LLH);
         *_dumpfile<<std::string("Good model:")<<*workset<<std::endl;
-      }catch( ::sufit::exceptions::sufit_exception_base & e){
+      }catch( ::gambit::exceptions::gambit_exception_base & e){
         SUFIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e));
         // do something more.. record/skip model
         *_dumpfile<<std::string("Bad model:")<<*workset<<std::endl;

@@ -1,14 +1,14 @@
-#ifndef sufit_modelparameters_h_
-#define sufit_modelparameters_h_ 1
+#ifndef gambit_modelparameters_hpp_
+#define gambit_modelparameters_hpp_ 1
 
-#include "ModelParametersBase.hh"
-#include "shared_ptr.hh"
+#include "ModelParametersBase.hpp"
+#include "shared_ptr.hpp"
 #include <map>
 #include <iostream>
 #include <sstream>
-#include "logcore.hh"
+#include "logcore.hpp"
 
-namespace sufit {
+namespace gambit {
   class ModelParameters;
   typedef shared_ptr<ModelParameters> ModelParametersPtr;
 

@@ -1,11 +1,11 @@
-#ifndef sufit_ModelParametersBase
-#define sufit_ModelParametersBase 1
+#ifndef gambit_ModelParametersBase_hpp
+#define gambit_ModelParametersBase_hpp 1
 
 #include <vector>
-#include "sufitCommonTypes.hh"
-#include "logcore.hh"
+#include "gambitCommonTypes.hpp"
+#include "logcore.hpp"
 
-namespace sufit {
+namespace gambit {
   /*! \brief virtual base class for model parameters.
   //
   // This class is only taking care of the version

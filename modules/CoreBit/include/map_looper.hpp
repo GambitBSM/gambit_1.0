@@ -1,8 +1,8 @@
-#ifndef _sufit_map_looper_hh_
-#define _sufit_map_looper_hh_
+#ifndef _gambit_map_looper_hpp_
+#define _gambit_map_looper_hpp_
 #include "boost/tuple/tuple_io.hpp"
 
-namespace sufit {
+namespace gambit {
 
   /*! \brief ease looping over map like object.
   //

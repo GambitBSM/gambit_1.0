@@ -1,13 +1,13 @@
-#ifndef __sufit_logcore_hh_
-#define __sufit_logcore_hh_ 1
+#ifndef __gambit_logcore_hpp_
+#define __gambit_logcore_hpp_ 1
 #include <string>
 #include <sstream>
 #include <limits.h>
 
-/*! \file logcore.hh
+/*! \file logcore.hpp
  * \brief Interface for logging.
  *
- * Declares the class sufit::logsetup, defining methods e.g. for setting
+ * Declares the class gambit::logsetup, defining methods e.g. for setting
  * the logfiles and active log/debug levels.
  *
  * as well as the user macros:
@@ -67,17 +67,17 @@
 // should be optimized out by compiler when not required.
 #define SUFIT_MSG_IMP_DBG1_(text,dblevel)                               \
   do { if((0==(dblevel))||(((SUFIT_BUILDOPT_LOGLIMIT)<0)&&(0<(dblevel)))){std::stringstream ss; ss <<text; \
-      ::sufit::logsetup::__priv_debug(__FILE__,__LINE__,__FUNCTION__,ss.str(),dblevel);}}while (0)
+      ::gambit::logsetup::__priv_debug(__FILE__,__LINE__,__FUNCTION__,ss.str(),dblevel);}}while (0)
 // ** end of MSG_DEBUG internals.
 
 #endif
 
-#define SUFIT_MSG_FATAL(text) SUFIT_MSG_IMP0_(::sufit::logsetup::__priv_fatal,text<<"'"<<std::endl<<"stacktrace:'"<<::sufit::logsetup::stacktrace())
-#define SUFIT_MSG_ERROR(text) SUFIT_MSG_IMP0_(::sufit::logsetup::__priv_error,text)
-#define SUFIT_MSG_WARNING(text) SUFIT_MSG_IMP0_(::sufit::logsetup::__priv_warning,text)
-#define SUFIT_MSG_LOG(text) SUFIT_MSG_IMP0_(::sufit::logsetup::__priv_log,text)
-#define SUFIT_MSG_INFO(text) SUFIT_MSG_IMP0_(::sufit::logsetup::__priv_info,text)
-//#define SUFIT_MSG_DEBUG(text) SUFIT_MSG_IMP0_(::sufit::logsetup::__priv_debug,text)
+#define SUFIT_MSG_FATAL(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_fatal,text<<"'"<<std::endl<<"stacktrace:'"<<::gambit::logsetup::stacktrace())
+#define SUFIT_MSG_ERROR(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_error,text)
+#define SUFIT_MSG_WARNING(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_warning,text)
+#define SUFIT_MSG_LOG(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_log,text)
+#define SUFIT_MSG_INFO(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_info,text)
+//#define SUFIT_MSG_DEBUG(text) SUFIT_MSG_IMP0_(::gambit::logsetup::__priv_debug,text)
 /*! \brief. debug message.
  *  syntax: SUFIT_MSG_DEBUG("message"); or:
  *          SUFIT_MSG_DEBUG(level,"message"); // where level is a positive int.
@@ -115,12 +115,12 @@
 #endif
 #endif
 
-namespace sufit {
+namespace gambit {
   /*! \brief Logging facility
    *
    * The logsetup defines only static methods and no object can be made.
    *
-   * The main user interface are the _macros_ listed in logcore.hh
+   * The main user interface are the _macros_ listed in logcore.h
    *
    * The list above is in order of severity. A fatal message terminates the execution by
    * calling exit() after the message is handled.
@@ -130,17 +130,17 @@ namespace sufit {
    *
    * To log all messages of severity WARNING or higher to the file errors.txt, do:
    * \code
-   * sufit::logsetup::setfile_downto_WARNING("errors.txt")
+   * gambit::logsetup::setfile_downto_WARNING("errors.txt")
    * \endcode
    * The logcore supports independent logging to stdout/stderr and files.
    *
    * For example: To set the level threshold to LOG for printing to stdout/stderr:
    * \code
-   * sufit::logsetup::setEchoLevel(sufit::logsetup::sLOG);
+   * gambit::logsetup::setEchoLevel(gambit::logsetup::sLOG);
    * \endcode
    * For example: To set the level threshold to DEBUG for writing to files:
    * \code
-   * sufit::logsetup::setLogLevel(sufit::logsetup::sDEBUG);
+   * gambit::logsetup::setLogLevel(gambit::logsetup::sDEBUG);
    * \endcode
    * Note: the use of the setfile_... methods do not modify the logging level. Files are
    *       automatically open and closed as required.
@@ -198,9 +198,9 @@ namespace sufit {
     std::string demangle_traceline(const char* name) throw();
 
     //! default log filename for errors
-    inline std::string _default_errfile(){ return "_sufit.logs.err" ;};
+    inline std::string _default_errfile(){ return "_gambit.logs.err" ;};
     //! default log filename for non-errors
-    inline std::string _default_logfile(){ return "_sufit.logs.log" ;};
+    inline std::string _default_logfile(){ return "_gambit.logs.log" ;};
 
     // these methods should not be called by the user but needs
     // to be public so they can be called from the logging macros

@@ -1,0 +1,152 @@
+# simple makefile. 
+#
+# Lundberg 2011-Aug 22
+# Pat Scott 2012-Nov 9
+#
+###
+
+export
+
+CC = icc 
+LN = $(CC) -lstdc++ -rdynamic 
+CFLAGS = -O3 -Wall -g 
+
+FC = ifort
+
+######################################################
+# Explicit options for gambit building:
+# 
+# CoreBit/include/logcore.hpp:
+# hard disable (via macros) of low-level gambit debugging.
+# There are also in-code options, but this could potentially lead to
+# a speedup and smaller code. -1000 allows all log messages to be treated.
+#
+COMPOPTS= -DSUFIT_BUILDOPT_LOGLIMIT=-10 
+
+# Location of gambit sub-directories
+COREDIR = CoreBit
+MODELDIR = ModelBit
+UTILSDIR = UtilsBit
+SCANDIR = ScannerBit
+HECOLLIDERDIR = HEColliderBit
+DOCDIR = ../doc
+
+# Boost is required. Read README for details
+BOOSTINC=$(BOOST)/include/
+BOOSTLIB=$(BOOST)/lib/
+CCEXTRA= -pipe -pg -std=c++0x 
+GCC++EXTRA=-Woverloaded-virtual
+CFLAGS= -O0 $(COMPOPTS) \
+	-I$(BOOSTINC) \
+	-I$(COREDIR)/include \
+	-I$(MODELDIR)/include \
+	-I$(UTILSDIR)/include \
+	-I$(SCANDIR)/include \
+	-I$(HECOLLIDERDIR)/include 
+
+COMMONLIBS = -lm 
+
+TARGETS = gambit_example
+
+default: mh gambit_example 
+.PHONY: default
+
+all: mh doxygen gambit_example 
+.PHONY: all
+
+clean: 
+	@echo cleaning
+	@rm -rf $(TARGETS) $(COREDIR)/build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
+	@rm -rf $(DOCDIR)/html 
+.PHONY: clean
+
+# also removes ~ files
+distclean: clean
+	rm -vrf $(COREDIR)/src/*~ $(COREDIR)/include/*~  
+.PHONY: distclean
+
+$(COREDIR)/build/.minihelp:
+	@echo "*******************************************"
+	@echo "* gambit.                                  "
+	@echo "*                                          "
+	@echo "*   make rules:                            "
+	@echo "*                                          "
+	@echo "* make doxygen   ...creates docs           "
+	@echo "* make clean     ...cleans                 "
+	@echo "* make distclean ...cleans even more       "
+	@echo "*                                          "
+	@echo "*   file targets:                          "
+	@echo "*                                          "
+	@for t in $(TARGETS); do \
+	echo "* make $$t" ; done 
+	@echo "*******************************************"
+	@touch $(COREDIR)/build/.minihelp
+mh: $(COREDIR)/build/.minihelp
+
+
+COREINC:=$(wildcard $(COREDIR)/include/*hpp)
+CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
+CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(CORESRC)))))
+
+# PS - temporary hack
+OTHERINC = $(UTILSDIR)/include/exceptions.hpp
+OTHERSRC = $(UTILSDIR)/src/exceptions.cpp
+OTHERLIBS = $(UTILSDIR)/build/exceptions.o
+
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.c 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.f 
+	@echo ___________Compiling $<:
+	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f 
+	@echo ___________Compiling $<:
+	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+
+gambit_example: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(COREDIR)/build/gambit_example.o 
+	@echo ___________Linking $@:
+	$(LN) $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(CFLAGS) -o $@
+
+# PS - dependencies on non-core source files need to be added here
+$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(COREINC) $(CORESRC)
+	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
+	@echo "Documentation found in $@"
+
+doxygen: $(DOCDIR)/html/index.html
+.PHONY: doxygen
+
+headertest:
+	@echo "simple, standalone header test: "
+	@for q in $(COREDIR)/include/*.hpp $(COREDIR)/include/*.hpp ; do \
+	echo "==================================================" ;\
+	echo "======= testing: $(CC) $(CFLAGS) $$q -o /dev/null";\
+	if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
+ht: headertest
+
+ifneq ($(MAKECMDGOALS),clean) 
+ifneq ($(MAKECMDGOALS),distclean) 
+ifneq ($(MAKECMDGOALS),doxygen) 
+ifneq ($(MAKECMDGOALS),mh)
+$(COREDIR)/build/%.d: $(COREDIR)/src/%.cpp $(COREDIR)/build/.minihelp
+	@echo ___________Dependency calc $< 
+	@echo "$(COREDIR)/build/`$(CC) $(CFLAGS) -MM $<`" > $@
+-include $(CORELIBS:.o=.d)
+endif
+endif
+endif
+endif
+

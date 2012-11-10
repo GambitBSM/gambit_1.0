@@ -1,4 +1,4 @@
-#include "core/logcore.hh"
+#include "logcore.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -7,13 +7,13 @@
 #include <vector>
 #include <map>
 #include <stdlib.h>
-#include "core/sufit_core.hh"
+#include "gambit_core.hpp"
 
 #include <cxxabi.h>
 #include <execinfo.h>
 #include <cstring>
 
-namespace sufit {
+namespace gambit {
 
   namespace logsetup {
 
@@ -46,13 +46,13 @@ namespace sufit {
         level_to_filename[sDEBUG3]=_default_logfile();
         level_to_filename[sDEBUG4]=_default_logfile();
 
-        sufit_core::init(); // request exit handler to be run at signals
+        gambit_core::init(); // request exit handler to be run at signals
         atexit(doatexit); // register destruction of static
       }
       ~logcore_imp(){
         for(std::map<std::string,std::ofstream*>::reverse_iterator it=filename_to_ostream.rbegin();
             it!=filename_to_ostream.rend();it++){
-          __priv_sufit_message(sDEBUG,"",0,"logcore","closing logfile: "+it->first);
+          __priv_gambit_message(sDEBUG,"",0,"logcore","closing logfile: "+it->first);
         }
         for(std::map<std::string,std::ofstream*>::reverse_iterator it=filename_to_ostream.rbegin();
             it!=filename_to_ostream.rend();
@@ -104,7 +104,7 @@ namespace sufit {
           if(!found) unused_files.push_back(it0->first);
         }
         for(std::vector<std::string>::reverse_iterator it=unused_files.rbegin();it!=unused_files.rend();it++){
-          __priv_sufit_message(sDEBUG,"",0,"logcore","closing logfile: "+*it);
+          __priv_gambit_message(sDEBUG,"",0,"logcore","closing logfile: "+*it);
         }
         for(std::vector<std::string>::reverse_iterator it=unused_files.rbegin();it!=unused_files.rend();it++){
           (*filename_to_ostream[*it])<<"END OF RECORD"<<std::endl;
@@ -113,7 +113,7 @@ namespace sufit {
         }
       }
 
-      void __priv_sufit_message(int int_severity,std::string filename,int linenno,std::string prettyf,std::string message){
+      void __priv_gambit_message(int int_severity,std::string filename,int linenno,std::string prettyf,std::string message){
 
         if((int_severity<_level)&&(int_severity<_echolevel)) return;
         static long msgnum=-1;
@@ -152,7 +152,7 @@ namespace sufit {
           // now find out where to put this message:
           if (!filename_to_ostream.count(thisfilename)){
             if((filename_to_ostream[thisfilename]=new std::ofstream(thisfilename.c_str()))){
-              __priv_sufit_message(sDEBUG,"",0,"logcore","opened logfile: "+thisfilename);
+              __priv_gambit_message(sDEBUG,"",0,"logcore","opened logfile: "+thisfilename);
             }else{
               std::cerr<< "logging.cpp fatal log system error. could not open logfile "<<thisfilename<<std::endl;
               exit(5);
@@ -160,7 +160,7 @@ namespace sufit {
           }
         }
         msgnum++ ;
-        stream << "[sufitmsg#"<<msgnum<<"]:" ;
+        stream << "[gambitmsg#"<<msgnum<<"]:" ;
         stream << sevstring  ;
         stream << filename ;
         if(linenno>0){
@@ -223,10 +223,10 @@ namespace sufit {
     /*! \brief function to demangle stacktrace strings.
      *
      * For example, it turns this string:
-     *  ./exeption.bin(_ZN5sufit8logsetup10stacktraceEv+0x4c) [0x805c61a]
+     *  ./exeption.bin(_ZN5gambit8logsetup10stacktraceEv+0x4c) [0x805c61a]
      *
      * into this string:
-     *  ./exeption.bin(sufit::stacktrace()+0x4c) [0x805c61a]
+     *  ./exeption.bin(gambit::stacktrace()+0x4c) [0x805c61a]
      *
      * \date 2011 Aug 23
      * \author Johan Lundberg
@@ -330,23 +330,23 @@ namespace sufit {
 
     void __priv_debug(std::string filename,int linenno,std::string prettyf,std::string message,unsigned int level) {
       if(level==0) level=sDEBUG;
-      logcore_imp::instance()->__priv_sufit_message(-abs(level) ,filename,linenno,prettyf,message);
+      logcore_imp::instance()->__priv_gambit_message(-abs(level) ,filename,linenno,prettyf,message);
     }
     void __priv_info(std::string filename,int linenno,std::string prettyf,std::string message) {
-      logcore_imp::instance()->__priv_sufit_message(sINFO  ,filename,linenno,prettyf,message);
+      logcore_imp::instance()->__priv_gambit_message(sINFO  ,filename,linenno,prettyf,message);
     }
     void __priv_log(std::string filename,int linenno,std::string prettyf,std::string message) {
-      logcore_imp::instance()->__priv_sufit_message(sLOG   ,filename,linenno,prettyf,message);
+      logcore_imp::instance()->__priv_gambit_message(sLOG   ,filename,linenno,prettyf,message);
     }
     void __priv_warning(std::string filename,int linenno,std::string prettyf,std::string message) {
-      logcore_imp::instance()->__priv_sufit_message(sWARNING  ,filename,linenno,prettyf,message);
+      logcore_imp::instance()->__priv_gambit_message(sWARNING  ,filename,linenno,prettyf,message);
     }
     void __priv_error(std::string filename,int linenno,std::string prettyf,std::string message) {
-      logcore_imp::instance()->__priv_sufit_message(sERROR   ,filename,linenno,prettyf,message);
+      logcore_imp::instance()->__priv_gambit_message(sERROR   ,filename,linenno,prettyf,message);
     }
     void __priv_fatal(std::string filename,int linenno,std::string prettyf,std::string message) {
-      logcore_imp::instance()->__priv_sufit_message(sFATAL ,filename,linenno,prettyf,message);
-      logcore_imp::instance()->__priv_sufit_message(sFATAL ,"",0,"logcore","calling 'exit' now!");
+      logcore_imp::instance()->__priv_gambit_message(sFATAL ,filename,linenno,prettyf,message);
+      logcore_imp::instance()->__priv_gambit_message(sFATAL ,"",0,"logcore","calling 'exit' now!");
       exit(1);
     }
 
@@ -359,14 +359,14 @@ namespace sufit {
  * example use of logging. enable this with gcc option -DLOGCORE_MAIN_ENABLE
  */
 int main(){
-  using namespace sufit;
+  using namespace gambit;
 
-  sufit::setLogLevel(sufit::sDEBUG);
+  gambit::setLogLevel(gambit::sDEBUG);
 
   SUFIT_MSG_DEBUG(" entering a");
   SUFIT_MSG_WARNING(" WW 2") ;
   SUFIT_MSG_INFO(" leaving b");
-  //  sufit::logsetup::setfile_range("_bbaaa",-10000,10000);
+  //  gambit::logsetup::setfile_range("_bbaaa",-10000,10000);
   if(0)
     SUFIT_MSG_WARNING(" hello in d");
   else

@@ -1,12 +1,12 @@
-#ifndef _sufit_coreUtils_h_
-#define _sufit_coreUtils_h_ 1
+#ifndef _gambit_coreUtils_h_
+#define _gambit_coreUtils_h_ 1
 
 #include <boost/foreach.hpp>
 #include <map>
 #include <vector>
 #include <iostream>
 
-namespace sufit{
+namespace gambit{
   /* \bfrief a set of methods, defines, functions relevat for the core code.
      \date 2011-08-15
      \author Johan Lundberg

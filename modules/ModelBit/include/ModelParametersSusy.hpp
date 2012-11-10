@@ -1,9 +1,9 @@
-#ifndef _sufit_model_parameters_susy_hh_
-#define _sufit_model_parameters_susy_hh_
+#ifndef _gambit_model_parameters_susy_hpp_
+#define _gambit_model_parameters_susy_hpp_
 
-#include "ModelParameters.hh"
+#include "ModelParameters.hpp"
 
-namespace sufit{
+namespace gambit{
   /*! \brief pMSSM7 parameter set.
    * Defined names: mu m2 ma tanb mqtild at/m ab/m
    *

@@ -1,7 +1,7 @@
-#ifndef sufit_Uncopyable_h_
-#define sufit_Uncopyable_h_ 1
+#ifndef gambit_Uncopyable_h_
+#define gambit_Uncopyable_h_ 1
 
-namespace sufit {
+namespace gambit {
   /*! \brief Class used to copy-protect classes
   //
   // Good for handlers, etc.

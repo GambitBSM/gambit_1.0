@@ -1,7 +1,7 @@
-#ifndef sufitCommonTypes_h_
-#define sufitCommonTypes_h_
+#ifndef gambitCommonTypes_hpp_
+#define gambitCommonTypes_hpp_
 
-/*! \brief Simple sufit type definitions.
+/*! \brief Simple gambit type definitions.
 //
 // No coposit classes or helpers here, only
 // typedefs etc. Should not include any other (large) headers
@@ -10,7 +10,7 @@
 // \date July 2011
 */
 
-namespace sufit {
+namespace gambit {
   typedef long long longlong ;
   typedef unsigned long long u_longlong ;
 }

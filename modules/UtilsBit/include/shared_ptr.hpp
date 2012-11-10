@@ -1,10 +1,10 @@
-#ifndef sufit_shared_ptr_h_
-#define sufit_shared_ptr_h_ 1
+#ifndef gambit_shared_ptr_h_
+#define gambit_shared_ptr_h_ 1
 
 /*! \file
-// \brief Adds shared_pointer to sufit::
+// \brief Adds shared_pointer to gambit::
 //
-// example : sufit::shared_ptr<double>::type myPtr.
+// example : gambit::shared_ptr<double>::type myPtr.
 //
 // for now we use the shared pointer from tr1. This works
 // with (at least) gcc 4.2 and later. TODO: setup the makefiles
@@ -15,7 +15,7 @@
 //
 // if you have an older version of gcc, install boost and add the
 // compiler option:
-//     -Dsufit_use_boost=1
+//     -Dgambit_use_boost=1
 //
 // boost installation:
 //
@@ -27,7 +27,7 @@
 */
 
 
-#ifndef sufit_no_boost
+#ifndef gambit_no_boost
 #include <boost/tr1/memory.hpp>
 //#warning "using boost/tr1"
 #else
@@ -35,7 +35,7 @@
 //#warning "using tr1"
 #endif
 
-namespace sufit {
+namespace gambit {
 
   using std::tr1::weak_ptr;
   using std::tr1::shared_ptr;
