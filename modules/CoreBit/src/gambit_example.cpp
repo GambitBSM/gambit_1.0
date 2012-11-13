@@ -3,10 +3,13 @@
 #include "RandomScanner.hpp"
 
 // some standard gambit classes
-#include "ModelParametersSusy.hpp"
 #include "gambit_core.hpp"
+#include "module_rollcall.hpp"
 #include "exceptions.hpp"
 #include <stdio.h>
+
+// model classes - probably to be replaced too
+#include "ModelParametersSusy.hpp"
 
 //! brief helper for gambit_example
 using namespace gambit;
@@ -40,9 +43,7 @@ int main( int argc, const char* argv[] )
   if(argc>1) steps=atoi(argv[1]);
   std::cout<< "Running with steps="<<steps<<std::endl;
 
-  bool do_cmssm=false;
-  if(argc>2) do_cmssm=atoi(argv[2])>0;
-
+  // Setup logs
   logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
   logsetup::setfile_upto_LOG("_gambit_msgs_example_normal.txt");     // into files, depending
   logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug0.txt");   // on debug level.
@@ -51,6 +52,37 @@ int main( int argc, const char* argv[] )
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
+
+  // Iterate over all the physics module classes present, and instantiate them
+
+
+
+  // Instantiate the ScannerBit module
+
+
+  // Instantiate the ModelBit module
+
+
+
+  // Read in the .gam file
+
+
+  // Resolve dependencies in observables and likelihoods
+
+
+
+  // Gather pointers to requested observables and likelihoods
+
+
+
+  // Launch scanner
+
+
+
+
+
+  // From here is basically just legacy SUFit code, for inspiration/example purposes
+
 
   //typedef std::vector<HandlerBase const*> HandlerCollection ;
 
@@ -65,6 +97,7 @@ int main( int argc, const char* argv[] )
   // be something which can be setup with a custom Lagrangian, or it can be almost
   // empty (as in case om mssmX).
   //
+  bool do_cmssm=true;
   ModelBasePtr aModel=make_a_model(do_cmssm);
   ModelParametersPtr pars=aModel->getModelParameters();
   if(do_cmssm){

@@ -1,5 +1,5 @@
-#ifndef gambit_shared_ptr_h_
-#define gambit_shared_ptr_h_ 1
+#ifndef gambit_shared_ptr_hpp_
+#define gambit_shared_ptr_hpp_ 1
 
 /*! \file
 // \brief Adds shared_pointer to gambit::
