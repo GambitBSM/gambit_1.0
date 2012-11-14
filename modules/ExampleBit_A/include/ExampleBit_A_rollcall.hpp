@@ -22,6 +22,8 @@
 //
 //  *********************************************
 
+#ifndef __ExampleBit_A_rollcall_hpp__
+#define __ExampleBit_A_rollcall_hpp__
 
 #include"observable.hpp"
 
@@ -31,14 +33,22 @@
 // Observable: Number of events in some hypothetical process 
 CREATE_OBS_OR_LIKE(ExampleBit_A, nevents, double)
 // Dependencies: Number of events depends on cross-section and charge
-SET_DEPENDENCY(ExampleBit_A, nevents, xsection, double)
-SET_DEPENDENCY(ExampleBit_A, nevents, charge, double)
+//SET_DEPENDENCY(ExampleBit_A, nevents, xsection, double)
+//SET_DEPENDENCY(ExampleBit_A, nevents, charge, double)
 
 // Likelihood: Likelihood of seeing number of events
 CREATE_OBS_OR_LIKE(ExampleBit_A, nevents_like, double)
 // Dependency: Likelihood calcualtion requires number of events
-SET_DEPENDENCY(ExampleBit_A, nevents_like, nevents, double)
+//SET_DEPENDENCY(ExampleBit_A, nevents_like, nevents, double)
 
 // Observable: name of the author of ExampleBitA's dog
 CREATE_OBS_OR_LIKE(ExampleBit_A, authors_dogs_name, std::string)
 // Dog is independent.
+
+#endif /* defined(__ExampleBit_A_rollcall_hpp__) */
+
+// this to go into a source file
+double ExampleBit_A::nevents () {return 5.0;};
+double ExampleBit_A::nevents_like () {return 1.5;};
+std::string ExampleBit_A::authors_dogs_name () {return "Millie";};
+

@@ -42,7 +42,7 @@ CFLAGS= -O0 $(COMPOPTS) \
 	-I$(MODELDIR)/include \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
-	-I$(HECOLLIDERDIR)/include 
+	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include
 
 COMMONLIBS = -lm 
 
@@ -89,7 +89,8 @@ CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
 CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(CORESRC)))))
 
 # PS - temporary hack
-OTHERINC = $(UTILSDIR)/include/exceptions.hpp
+OTHERINC = $(UTILSDIR)/include/exceptions.hpp $(UTILSDIR)/include/module.hpp \
+$(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp
 OTHERSRC = $(UTILSDIR)/src/exceptions.cpp
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o
 

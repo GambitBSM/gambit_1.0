@@ -16,11 +16,13 @@
 //
 //  *********************************************
 
+#ifndef __module_rollcall_hpp__
+#define __module_rollcall_hpp__
 
 #include"module.hpp"
 
 // Generate backend header code
-#include"backend_rollcall.hpp"
+//#include"backend_rollcall.hpp"
 
 // Generate module header code
 CREATE_MODULE(ExampleBit_A)
@@ -30,3 +32,4 @@ CREATE_MODULE(ExampleBit_B)
 #include"ExampleBit_A_rollcall.hpp"
 #include"ExampleBit_B_rollcall.hpp"
 
+#endif /* defined(__module_rollcall__) */

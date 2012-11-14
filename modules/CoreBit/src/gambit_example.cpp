@@ -54,6 +54,41 @@ int main( int argc, const char* argv[] )
   GAMBIT_MSG_INFO("starting example");
 
   // Iterate over all the physics module classes present, and instantiate them
+  module_map["ExampleBit_A_cls"] = &createInstance<ExampleBit_A_cls>; 
+  /* Save module name into list of strings of available module names */ \
+  module_names.push_back("ExampleBit_A_cls");
+
+  //can't get this to really work
+  module *myBit;
+  myBit = module_map[module_names[0]]();
+  //std::cout << "My name is " << myBit->name() <<"\n";
+  //bool canDoNevents = myBit->provides<Tags::nevents>();
+  //std::cout << "I can do nevents " << canDoNevents;
+
+  ExampleBit_A_cls myExA;
+  std::cout << "My name is " << myExA.name() <<"\n";
+  std::cout << "I can do nevents " << myExA.provides<Tags::nevents>() <<"\n";
+  std::cout << "I can do nevents_like " << myExA.provides<Tags::nevents_like>() <<"\n";
+  std::cout << "I can do nevents_postcuts " << myExA.provides<Tags::nevents_postcuts>() <<"\n";
+  std::cout << "I can do xsection " << myExA.provides<Tags::xsection>() <<"\n";
+  std::cout << "I can do dogsname " << myExA.provides<Tags::authors_dogs_name>() <<"\n";
+
+  std::cout << "Core says: report on n_events_like!"<<"\n";
+  myExA.report<Tags::nevents_like>();
+  std::cout << "Core says: report on n_events_postcuts!"<<"\n";
+  myExA.report<Tags::nevents_postcuts>();
+  std::cout << "Core says: report on the dog!"<<"\n";
+  myExA.report<Tags::authors_dogs_name>();
+
+  std::cout << "\n";
+
+  ExampleBit_B_cls myExB;
+  std::cout << "My name is " << myExB.name() <<"\n";
+  std::cout << "I can do nevents " << myExB.provides<Tags::nevents>() <<"\n";
+  std::cout << "I can do nevents_like " << myExB.provides<Tags::nevents_like>() <<"\n";
+  std::cout << "I can do nevents_postcuts " << myExB.provides<Tags::nevents_postcuts>() <<"\n";
+  std::cout << "I can do xsection " << myExB.provides<Tags::xsection>() <<"\n";
+  std::cout << "I can do dogsname " << myExB.provides<Tags::authors_dogs_name>() <<"\n";
 
 
 
@@ -130,7 +165,7 @@ int main( int argc, const char* argv[] )
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
 
   try{
-    GAMBIT_MSG_LOG("gambit example        ");
+    GAMBIT_MSG_LOG("gambit example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
     //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
     /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );

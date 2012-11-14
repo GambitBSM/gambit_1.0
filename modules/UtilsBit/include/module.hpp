@@ -11,20 +11,33 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 10 2012 (inspired by Abram Krislock's 
+//  Nov 10-14 2012 (inspired by Abram Krislock's 
 //               ModuleBit.hpp)
 //
 //  *********************************************
 
-#ifndef __Module__
-#define __Module__
+#ifndef __module__
+#define __module__
 
 #include <iostream>
 #include <typeinfo>
+#include "observable.hpp"
 
-// Create a generic map from module names to instantiation method for them.
-// When the macro CREATE_MODULE is called, it adds the module name and its 
-// constructor to this map.
+// Abstract base class for a generic module that can provide observable and 
+// likelihood functions.  The only real reason this is here is so that I can
+// later create a vector of pointers to this class which are actually pointers
+// to the various daughter classes. 
+class module { 
+  public: 
+    virtual std::string name() = 0;    
+    virtual void * result_address() { return 0; } 
+    virtual bool provides() { return false; }    
+    virtual void report() {}
+}; 
+
+// Create a generic map from {module names} to {module instantiation methods}.
+// When the macro CREATE_MODULE is called, it should add to this map the module 
+// name and a function calling the module constructor.
 template<typename specific_module_name> 
   module * createInstance() { 
     return new specific_module_name;
@@ -34,61 +47,45 @@ map_type module_map;
 
 // Create vector of strings that will contain the names of the all the
 // module daughter classes that are created by calls to CREATE_MODULE
-std::vector<std::string>> module_names
-
+std::vector<std::string> module_names;
 
 #define CREATE_MODULE(MODULE) \
-/*  Create a generic module that can provide observable and 
-//  likelihood functions */ \
+/*  Create a specific module daughter class */ \
 \
-class MODULE {  \
+class MODULE##_cls : public module { \
   \
   public: \
     \
-    std::string name() { /* probably never needed and can be deleted */\
-      return "MODULE"; \
+    std::string name() { \
+      return #MODULE; \
     } \
     \
     template <typename Tag> \
-    typename ObjectType<Tag>::type * result_address() { \
+    typename obs_or_like_traits<Tag>::type * result_address() { \
       std::cout<<"I do not support this tag: \n"; \
       std::cout<<typeid(Tag).name()<<"\n"; \
       return 0; \
     } \
     \
-    template <typename Tag> \ /* can turn this into just a constant member variable instead of a function?? */ \
+    template <typename Tag> \
     bool provides() { \
       return false; \
     } \
     \
     template <typename Tag> \
     void report() { \
+      std::cout<<"I do not support this tag. \n"; \
       /* Report stuff to the core about the observable or likelihood <Tag> */\
     } \
+\
 }; \
+\
+
+//This doesn't work in a header -- still need to sort out how to automatically 
+//register new modules as present, so that they can be instantiated automatically
 /* Save instantiation method and module name into map */ \
-module_map["MODULE"] = &createInstance<MODULE>; \
+//module_map["MODULE##_cls"] = &createInstance<MODULE##_cls>; \
 /* Save module name into list of strings of available module names */ \
-module_names.push_back("MODULE")
+//module_names.push_back("MODULE##_cls");
 
-#define PROVIDE_OBS_OR_LIKE(MODULE, TAG) \
-/*  Indicate that a specific module can provide a given observable or 
-//  likelihood function, identified by TAG */ \
-template <> \
-obs_or_like_traits<Tags::TAG>::type * MODULE::result_address<Tags::TAG>() { \
-  return obs_or_like_policies<Tags::TAG>::value; \
-} \
-\
-template <> \
-bool MODULE::provides<Tags::TAG>() { \
-  return true; \
-} \
-\
-template <> \
-void MODULE::report<Tags::TAG>() { \
-  /* Report stuff to the core about the observable or likelihood TAG */\
-  std::cout<<"Dear Core, I provide the function with tag: \n"; \
-  std::cout<<typeid(Tags::TAG).name()<<"\n"; \
-}
-
-#endif /* defined(__Module__) */
+#endif /* defined(__module__) */
