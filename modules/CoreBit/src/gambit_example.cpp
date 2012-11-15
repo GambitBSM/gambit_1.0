@@ -3,10 +3,12 @@
 #include "RandomScanner.hpp"
 
 // some standard gambit classes
-#include "ModelParametersSusy.hpp"
 #include "gambit_core.hpp"
+#include "module_rollcall.hpp"
 #include "exceptions.hpp"
-#include <stdio.h>
+
+// model classes - probably to be replaced too
+#include "ModelParametersSusy.hpp"
 
 //! brief helper for gambit_example
 using namespace gambit;
@@ -33,16 +35,19 @@ ModelBasePtr make_a_model(bool do_cmssm){
 int main( int argc, const char* argv[] )
 {
 
+  std::cout<<std::endl;
   std::cout<< "This is a skeleton example for gambit."<<std::endl;
-  std::cout<< "At the moment it just hooks up to the pieces of SUFit that have been retained."<<std::endl;
+  std::cout<< "At the moment it does the following:"<<std::endl;
+  std::cout<< "  * hooks up to the pieces of SUFit that have been retained"<<std::endl;
+  std::cout<< "  * creates and registers modules"<<std::endl;
+  std::cout<< "  * creates and registers module functions and their dependencies"<<std::endl;
+  std::cout<<std::endl;
 
   int steps=100;
   if(argc>1) steps=atoi(argv[1]);
   std::cout<< "Running with steps="<<steps<<std::endl;
 
-  bool do_cmssm=false;
-  if(argc>2) do_cmssm=atoi(argv[2])>0;
-
+  // Setup logs
   logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
   logsetup::setfile_upto_LOG("_gambit_msgs_example_normal.txt");     // into files, depending
   logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug0.txt");   // on debug level.
@@ -51,6 +56,120 @@ int main( int argc, const char* argv[] )
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
+
+  // Iterate over all the physics module classes present, and instantiate them
+
+  // ...or do it by hand for now
+  module_map["ExampleBit_A_cls"] = &createInstance<ExampleBit_A_cls>; 
+  /* Save module name into list of strings of available module names */ \
+  module_names.push_back("ExampleBit_A_cls");
+
+  //can't get this to really work yet
+  module *myBit;
+  myBit = module_map[module_names[0]]();
+  std::cout << "My name is " << myBit->name() <<"\n";
+  //std::cout << "I can do nevents " << myBit->provides<Tags::nevents>();
+
+  //Here are a bunch of example calls to the two example modules, testing their capabilities
+  ExampleBit_A_cls myExA;
+  std::cout << "My name is " << myExA.name() <<"\n";
+  std::cout << "I can do nevents " << myExA.provides<Tags::nevents>() <<"\n";
+  if (myExA.requires<Tags::nevents_like,Tags::nevents>()) { 
+    std::cout << "I require nevents_like to do this though.\n";
+  }
+  std::cout << "I can do nevents_like " << myExA.provides<Tags::nevents_like>() <<"\n";
+  if (myExA.requires<Tags::nevents,Tags::nevents_like>()) { 
+    std::cout << "I require nevents to do this though.\n";
+  }
+  std::cout << "I can do nevents_postcuts " << myExA.provides<Tags::nevents_postcuts>() <<"\n";
+  std::cout << "I can do xsection " << myExA.provides<Tags::xsection>() <<"\n";
+  std::cout << "I can do dogsname " << myExA.provides<Tags::authors_dogs_name>() <<"\n";
+
+  std::cout << "Core says: report on n_events_like!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents_like>();
+  if (myExA.provides<Tags::nevents_like>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents_like>()<<"\n" ;
+  }
+  std::cout << "Core says: report on n_events_postcuts!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents_postcuts>();
+  if (myExA.provides<Tags::nevents_postcuts>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents_postcuts>()<<"\n" ;
+  }
+  std::cout << "Core says: report on n_events!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents>();
+  if (myExA.provides<Tags::nevents>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents>()<<"\n" ;
+  }
+  std::cout << "Core says: report on n_events again!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents>();
+  if (myExA.provides<Tags::nevents>()) {
+    std::cout << "OK, so what is it now, then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents>()<<"\n" ;
+  }
+  std::cout << "Core says: report on the dog!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::authors_dogs_name>();
+  if (myExA.provides<Tags::authors_dogs_name>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::authors_dogs_name>()<<"\n" ;
+  }
+
+
+  std::cout << "\n";
+
+  ExampleBit_B_cls myExB;
+  std::cout << "My name is " << myExB.name() <<"\n";
+  std::cout << "I can do nevents " << myExB.provides<Tags::nevents>() <<"\n";
+  std::cout << "I can do nevents_like " << myExB.provides<Tags::nevents_like>() <<"\n";
+  std::cout << "I can do nevents_postcuts " << myExB.provides<Tags::nevents_postcuts>() <<"\n";
+  std::cout << "I can do xsection " << myExB.provides<Tags::xsection>() <<"\n";
+  std::cout << "I can do dogsname " << myExB.provides<Tags::authors_dogs_name>() <<"\n";
+  std::cout << "Core says: report on n_events!\n";
+  std::cout << myExB.name() << " says: ";
+  std::cout << "  "; myExB.report<Tags::nevents>();
+  if (myExB.provides<Tags::nevents>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExB.name() << " says: " << myExB.result<Tags::nevents>()<<"\n" ;
+  }
+
+  std::cout << "\n";
+
+
+ 
+
+  // Instantiate the ScannerBit module
+
+
+  // Instantiate the ModelBit module
+
+
+
+  // Read in the .gam file
+
+
+  // Resolve dependencies in observables and likelihoods.  Raise exception if dependency tree has closed loops.
+
+
+
+  // Gather pointers to requested observables and likelihoods
+
+
+
+  // Launch scanner
+
+
+
+
+
+  // From here is basically just legacy SUFit code, for inspiration/example purposes
+
 
   //typedef std::vector<HandlerBase const*> HandlerCollection ;
 
@@ -65,6 +184,7 @@ int main( int argc, const char* argv[] )
   // be something which can be setup with a custom Lagrangian, or it can be almost
   // empty (as in case om mssmX).
   //
+  bool do_cmssm=true;
   ModelBasePtr aModel=make_a_model(do_cmssm);
   ModelParametersPtr pars=aModel->getModelParameters();
   if(do_cmssm){
@@ -97,7 +217,7 @@ int main( int argc, const char* argv[] )
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
 
   try{
-    GAMBIT_MSG_LOG("gambit example        ");
+    GAMBIT_MSG_LOG("gambit example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
     //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
     /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );

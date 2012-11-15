@@ -3,9 +3,8 @@
 # Lundberg 2011-Aug 22
 #
 ###
-#
-# READ README.TXT 
 
+export
 
 CC = g++ 
 LN = $(CC) -lstdc++ -rdynamic -dynamic 
@@ -42,7 +41,7 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(MODELDIR)/include \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
-	-I$(HECOLLIDERDIR)/include 
+	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include
 
 COMMONLIBS = -lm 
 
@@ -88,10 +87,11 @@ COREINC:=$(wildcard $(COREDIR)/include/*hpp)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
 CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(CORESRC)))))
 
-# PS - temporary hack
-OTHERINC = $(UTILSDIR)/include/exceptions.hpp
-OTHERSRC = $(UTILSDIR)/src/exceptions.cpp
-OTHERLIBS = $(UTILSDIR)/build/exceptions.o
+# PS - temporary hacks - these can be combined into much more streamlined statements later (this whole thing needs to be replaced with config+automake anyway)
+OTHERINC = $(UTILSDIR)/include/exceptions.hpp $(UTILSDIR)/include/module.hpp \
+$(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp
+OTHERSRC = $(UTILSDIR)/src/exceptions.cpp ExampleBit_A/src/ExampleBit_A.cpp ExampleBit_B/src/ExampleBit_B.cpp   
+OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
@@ -105,6 +105,30 @@ $(COREDIR)/build/%.o: $(COREDIR)/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
 
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.c 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.f 
+	@echo ___________Compiling $<:
+	$(FC) $(CFLAGS) -c $< -o $@
+
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.cpp 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.c 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.f 
+	@echo ___________Compiling $<:
+	$(FC) $(CFLAGS) -c $< -o $@
+
 $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -115,7 +139,7 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c
 
 $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f 
 	@echo ___________Compiling $<:
-	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+	$(FC) $(CFLAGS) -c $< -o $@
 
 gambit_example: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(COREDIR)/build/gambit_example.o 
 	@echo ___________Linking $@:
