@@ -19,7 +19,7 @@
 #ifndef __module_rollcall_hpp__
 #define __module_rollcall_hpp__
 
-#include"module.hpp"
+#include "module.hpp"
 
 // Generate backend header code
 //#include"backend_rollcall.hpp"

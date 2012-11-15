@@ -12,7 +12,7 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 10-14 2012 (inspired by Abram Krislock's 
+//  Nov 15 2012 (inspired by Abram Krislock's 
 //               Objects.hpp)
 //
 //  *********************************************
@@ -20,85 +20,118 @@
 #ifndef __observable_hpp__
 #define __observable_hpp__
 
-template <typename Tag>
+template <typename Tag, typename Module>
 struct obs_or_like_traits {
 // A way to fetch a trait of an observable or likelihood
-// (like its type), based on its tag.
+// (like its type), based on its tag and the module to which it belongs.
     typedef double type;  // Scalar numerical value by default.
 };
 
-template <typename Tag>
+template <typename Tag, typename Module>
 struct obs_or_like_policies {
 // Methods and functions associated with an observable 
-// or likelihood, identified by its tag.
-    static typename obs_or_like_traits<Tag>::type (*value)();
+// or likelihood, identified by its tag and the module to which it belongs.
+    static typename obs_or_like_traits<Tag,Module>::type (*value)();
 };
 
 
-//Todo: hoist templates as far as possible
-//      work out how the hell to log module daughter classes at compile time
-//      define new SET_DEPENDENCY(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) 
-//       macro for giving dependency to an obs or like
+// Equivalent classes for dependencies, where both a dependent and 
+// independent tag need to be specified
+template <typename indepTag, typename depTag, typename Module>
+struct dep_traits {
+    typedef double type;  // Scalar numerical value by default.
+};
 
-#define CREATE_OBS_OR_LIKE(MODULE, TAG, TYPE) \
+template <typename indepTag, typename depTag, typename Module>
+struct dep_policies {
+    static typename dep_traits<indepTag,depTag,Module>::type (*value)();
+};
+
+
+// Work out which versions of the macros to call, depending on
+// whether this file is being included in a main or a linked
+// object.
+#ifdef __in_module__
+  #define CREATE_OBS_OR_LIKE CREATE_OBS_OR_LIKE_IN_MODULE
+  #define SET_DEPENDENCY SET_DEPENDENCY_IN_MODULE
+#else
+  #define CREATE_OBS_OR_LIKE CREATE_OBS_OR_LIKE_IN_DRIVER
+  #define SET_DEPENDENCY SET_DEPENDENCY_IN_DRIVER
+#endif
+
+
+/* Just register (prototype) the function TAG in namespace for
+   MODULE. */ \
+#define CREATE_OBS_OR_LIKE_IN_MODULE(MODULE, TAG, TYPE) \
+namespace MODULE { TYPE TAG (); }\
+
+/* Do nothing. */ \
+#define SET_DEPENDENCY_IN_MODULE(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) \
+
+
 /* Create an observable or likelihood object identified by TAG,  
    with a given return type TYPE, and associate it with MODULE */ \
+#define CREATE_OBS_OR_LIKE_IN_DRIVER(MODULE, TAG, TYPE) \
 \
-namespace Tags { \
 /* Add the observable or likelihood to the global list of calculable 
    observables */ \
-  struct TAG; \
-  namespace MODULE { \
-  /* Add the observable or likelihood to the MODULE-specific list of 
-     calculable observables.  We need a nested namespace here as 
-     multiple modules could define the same observable
-     in different ways, with different return types */ \
-    struct TAG{}; \
-  } \
-} \
+namespace Tags { struct TAG; } \
 \
-namespace MODULE { \
 /* Register (prototype) the function TAG in namespace for MODULE */ \
-  TYPE TAG (); \
-}\
+namespace MODULE { TYPE TAG (); }\
 \
-template <> \
 /* Indicate that MODULE can provide the observable or likelihood 
    function TAG */ \
-bool MODULE##_cls::provides<Tags::TAG>() { \
-  return true; \
-} \
+template <> bool MODULE##_cls::provides<Tags::TAG>() { return true; } \
 \
-template<> \
 /* Register the return TYPE of the observable or likelihood 
    function TAG in MODULE */ \
-struct obs_or_like_traits<Tags::MODULE::TAG> { \
+template<> \
+struct obs_or_like_traits<Tags::TAG,MODULE##_cls> { \
   typedef TYPE type; \
 }; \
 \
-template<> \
 /* Set up a function pointer to function TAG in MODULE */ \
-/*  static typename obs_or_like_traits<Tags::MODULE::TAG>::type \
-   * obs_or_like_policies<Tags::MODULE::TAG>::value = NULL; */\
-  static typename obs_or_like_traits<Tags::MODULE::TAG>::type \
-   (*obs_or_like_policies<Tags::MODULE::TAG>::value)() = MODULE::TAG; \
+template<> \
+  static typename obs_or_like_traits<Tags::TAG,MODULE##_cls>::type \
+   (*obs_or_like_policies<Tags::TAG,MODULE##_cls>::value)() = MODULE::TAG; \
 \
+/* Set up an alias function to call the function pointed to by the one above */ \
 template <> \
-/* Set up a function to return a pointer to the value returned by 
-   this function pointer */ \
-typename obs_or_like_traits<Tags::MODULE::TAG>::type \
- * MODULE##_cls::result_address<Tags::MODULE::TAG>() { \
-  /* return obs_or_like_policies<Tags::MODULE::TAG>::value; */ \
-  return &((*obs_or_like_policies<Tags::MODULE::TAG>::value)()); \
-} \
+  obs_or_like_traits<Tags::TAG,MODULE##_cls>::type MODULE##_cls::result<Tags::TAG>() { \
+    return obs_or_like_policies<Tags::TAG,MODULE##_cls>::value(); \
+  } \
 \
-template <> \
 /* Set up an auxilary method to report stuff to the core about the
-   observable or likelihood TAG */\
+   observable or likelihood TAG.  Not actually sure what this would
+   be used for at this stage. */\
+template <> \
 void MODULE##_cls::report<Tags::TAG>() { \
-  std::cout<<"Dear Core, I provide the function with tag: \n"; \
-  std::cout<<typeid(Tags::MODULE::TAG).name()<<"\n"; \
+  std::cout<<"Dear Core, I provide the function with tag: "<<#TAG<<"\n"; \
 }
+
+
+/* Set function OBSLIKE_TAG in module MODULE to depend on function 
+   DEP_TAG, which must have type TYPE */ \
+#define SET_DEPENDENCY_IN_DRIVER(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) \
+/* Add the dependency to the global list of (presumably)
+   calculable observables; if nothing actually reports that
+   it can calculate this, the core shall throw an error. */ \
+namespace Tags { struct DEP_TAG; } \
+\
+/* Indicate that the implementation of OBSLIKE_TAG in MODULE 
+   requires the observable or likelihood function DEP_TAG to
+   have been computed previously in order to run correctly. */ \
+template <> \
+bool MODULE##_cls::requires<Tags::DEP_TAG, Tags::OBSLIKE_TAG>() { return true; } \
+\
+/* Register the required TYPE of the required observable or likelihood 
+   function DEP_TAG in MODULE */ \
+template<> \
+struct dep_traits<Tags::DEP_TAG,Tags::OBSLIKE_TAG,MODULE##_cls> { \
+  typedef TYPE type; \
+}; \
+
 
 #endif /* defined(__observable_hpp__) */
 

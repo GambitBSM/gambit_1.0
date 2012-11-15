@@ -6,7 +6,6 @@
 #include "gambit_core.hpp"
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
-#include <stdio.h>
 
 // model classes - probably to be replaced too
 #include "ModelParametersSusy.hpp"
@@ -36,8 +35,13 @@ ModelBasePtr make_a_model(bool do_cmssm){
 int main( int argc, const char* argv[] )
 {
 
+  std::cout<<std::endl;
   std::cout<< "This is a skeleton example for gambit."<<std::endl;
-  std::cout<< "At the moment it just hooks up to the pieces of SUFit that have been retained."<<std::endl;
+  std::cout<< "At the moment it does the following:"<<std::endl;
+  std::cout<< "  * hooks up to the pieces of SUFit that have been retained"<<std::endl;
+  std::cout<< "  * creates and registers modules"<<std::endl;
+  std::cout<< "  * creates and registers module functions and their dependencies"<<std::endl;
+  std::cout<<std::endl;
 
   int steps=100;
   if(argc>1) steps=atoi(argv[1]);
@@ -54,31 +58,69 @@ int main( int argc, const char* argv[] )
   GAMBIT_MSG_INFO("starting example");
 
   // Iterate over all the physics module classes present, and instantiate them
+
+  // ...or do it by hand for now
   module_map["ExampleBit_A_cls"] = &createInstance<ExampleBit_A_cls>; 
   /* Save module name into list of strings of available module names */ \
   module_names.push_back("ExampleBit_A_cls");
 
-  //can't get this to really work
+  //can't get this to really work yet
   module *myBit;
   myBit = module_map[module_names[0]]();
-  //std::cout << "My name is " << myBit->name() <<"\n";
-  //bool canDoNevents = myBit->provides<Tags::nevents>();
-  //std::cout << "I can do nevents " << canDoNevents;
+  std::cout << "My name is " << myBit->name() <<"\n";
+  //std::cout << "I can do nevents " << myBit->provides<Tags::nevents>();
 
+  //Here are a bunch of example calls to the two example modules, testing their capabilities
   ExampleBit_A_cls myExA;
   std::cout << "My name is " << myExA.name() <<"\n";
   std::cout << "I can do nevents " << myExA.provides<Tags::nevents>() <<"\n";
+  if (myExA.requires<Tags::nevents_like,Tags::nevents>()) { 
+    std::cout << "I require nevents_like to do this though.\n";
+  }
   std::cout << "I can do nevents_like " << myExA.provides<Tags::nevents_like>() <<"\n";
+  if (myExA.requires<Tags::nevents,Tags::nevents_like>()) { 
+    std::cout << "I require nevents to do this though.\n";
+  }
   std::cout << "I can do nevents_postcuts " << myExA.provides<Tags::nevents_postcuts>() <<"\n";
   std::cout << "I can do xsection " << myExA.provides<Tags::xsection>() <<"\n";
   std::cout << "I can do dogsname " << myExA.provides<Tags::authors_dogs_name>() <<"\n";
 
-  std::cout << "Core says: report on n_events_like!"<<"\n";
-  myExA.report<Tags::nevents_like>();
-  std::cout << "Core says: report on n_events_postcuts!"<<"\n";
-  myExA.report<Tags::nevents_postcuts>();
-  std::cout << "Core says: report on the dog!"<<"\n";
-  myExA.report<Tags::authors_dogs_name>();
+  std::cout << "Core says: report on n_events_like!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents_like>();
+  if (myExA.provides<Tags::nevents_like>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents_like>()<<"\n" ;
+  }
+  std::cout << "Core says: report on n_events_postcuts!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents_postcuts>();
+  if (myExA.provides<Tags::nevents_postcuts>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents_postcuts>()<<"\n" ;
+  }
+  std::cout << "Core says: report on n_events!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents>();
+  if (myExA.provides<Tags::nevents>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents>()<<"\n" ;
+  }
+  std::cout << "Core says: report on n_events again!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::nevents>();
+  if (myExA.provides<Tags::nevents>()) {
+    std::cout << "OK, so what is it now, then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents>()<<"\n" ;
+  }
+  std::cout << "Core says: report on the dog!\n";
+  std::cout << "  " << myExA.name() << " says: ";
+  std::cout << "  "; myExA.report<Tags::authors_dogs_name>();
+  if (myExA.provides<Tags::authors_dogs_name>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::authors_dogs_name>()<<"\n" ;
+  }
+
 
   std::cout << "\n";
 
@@ -89,8 +131,18 @@ int main( int argc, const char* argv[] )
   std::cout << "I can do nevents_postcuts " << myExB.provides<Tags::nevents_postcuts>() <<"\n";
   std::cout << "I can do xsection " << myExB.provides<Tags::xsection>() <<"\n";
   std::cout << "I can do dogsname " << myExB.provides<Tags::authors_dogs_name>() <<"\n";
+  std::cout << "Core says: report on n_events!\n";
+  std::cout << myExB.name() << " says: ";
+  std::cout << "  "; myExB.report<Tags::nevents>();
+  if (myExB.provides<Tags::nevents>()) {
+    std::cout << "OK, so what is it then?\n";
+    std::cout << "  " << myExB.name() << " says: " << myExB.result<Tags::nevents>()<<"\n" ;
+  }
+
+  std::cout << "\n";
 
 
+ 
 
   // Instantiate the ScannerBit module
 
@@ -102,7 +154,7 @@ int main( int argc, const char* argv[] )
   // Read in the .gam file
 
 
-  // Resolve dependencies in observables and likelihoods
+  // Resolve dependencies in observables and likelihoods.  Raise exception if dependency tree has closed loops.
 
 
 
