@@ -58,16 +58,31 @@ int main( int argc, const char* argv[] )
   GAMBIT_MSG_INFO("starting example");
 
   // Iterate over all the physics module classes present, and instantiate them
+  //
+  // still working out how to loop over a boost:mpl sequence propoerly at runtime
+  //struct do_this_wrapper {
+  //template<typename U> 
+  //  void operator()(U) {
+  //    doThis<U>();
+  //  }
+  //};
+  //boost::mpl::for_each<module_list>(do_this_wrapper())
 
-  // ...or do it by hand for now
-  module_map["ExampleBit_A_cls"] = &createInstance<ExampleBit_A_cls>; 
+  // ...probably needs some variant of this set up in do_this_wrapper
+  //template<typename specific_module_name> 
+  //module * createInstance() { 
+  //  return new specific_module_name;
+  //}
+  //typedef std::map<std::string, module*(*)()> map_type;
+
+  //module_map["ExampleBit_A_cls"] = &createInstance<ExampleBit_A_cls>; 
   /* Save module name into list of strings of available module names */ \
-  module_names.push_back("ExampleBit_A_cls");
+  //module_names.push_back("ExampleBit_A_cls");
 
-  //can't get this to really work yet
-  module *myBit;
-  myBit = module_map[module_names[0]]();
-  std::cout << "My name is " << myBit->name() <<"\n";
+  //module *myBit;
+  //myBit = module_map[module_names[0]]();
+  //std::cout << "My name is " << myBit->name() <<"\n";
+  //the following does not work
   //std::cout << "I can do nevents " << myBit->provides<Tags::nevents>();
 
   //Here are a bunch of example calls to the two example modules, testing their capabilities

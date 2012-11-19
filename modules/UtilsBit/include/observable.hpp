@@ -93,7 +93,7 @@ struct obs_or_like_traits<Tags::TAG,MODULE##_cls> { \
 \
 /* Set up a function pointer to function TAG in MODULE */ \
 template<> \
-  static typename obs_or_like_traits<Tags::TAG,MODULE##_cls>::type \
+  typename obs_or_like_traits<Tags::TAG,MODULE##_cls>::type \
    (*obs_or_like_policies<Tags::TAG,MODULE##_cls>::value)() = MODULE::TAG; \
 \
 /* Set up an alias function to call the function pointed to by the one above */ \

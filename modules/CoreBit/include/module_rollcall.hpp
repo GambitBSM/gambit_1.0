@@ -24,12 +24,22 @@
 // Generate backend header code
 //#include"backend_rollcall.hpp"
 
-// Generate module header code
-CREATE_MODULE(ExampleBit_A)
-CREATE_MODULE(ExampleBit_B)
+// Example code for adding a new module:
+// //Generate module header code
+//     CREATE_MODULE(your_module_name)
+// //Increment module counter
+//     #include BOOST_PP_UPDATE_COUNTER()
+// //Generate module member function header codes
+//     #include"your_module_name_rollcall.hpp"
 
-// Generate module member function header codes
+CREATE_MODULE(ExampleBit_A)
+#include BOOST_PP_UPDATE_COUNTER()
 #include"ExampleBit_A_rollcall.hpp"
+
+CREATE_MODULE(ExampleBit_B)
+#include BOOST_PP_UPDATE_COUNTER()
 #include"ExampleBit_B_rollcall.hpp"
+
+FINALISE_MODULES
 
 #endif /* defined(__module_rollcall__) */

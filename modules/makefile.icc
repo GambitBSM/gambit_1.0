@@ -56,7 +56,7 @@ all: mh doxygen gambit_example
 
 clean: 
 	@echo cleaning
-	@rm -rf $(TARGETS) $(COREDIR)/build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
+	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -rf $(DOCDIR)/html 
 .PHONY: clean
 
