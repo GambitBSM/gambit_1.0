@@ -341,6 +341,14 @@ namespace GAMBIT {
 		double pz() const {return _z;}
 		double e()  const {return _t;}
 		
+		double m()  const {
+			double s2 = _t*_t - _x*_x - _y*_y - _z*_z;
+			return (s2 >= 0.) ? sqrt(s2) : -sqrt(-s2);
+		}
+		double m2() const {return _t*_t - _x*_x - _y*_y - _z*_z;}
+		double pT() const {return sqrt(_x*_x + _y*_y);}
+		
+		
 	  private:
 		double _x, _y, _z, _t;
 	};
@@ -363,6 +371,10 @@ namespace GAMBIT {
 		double pz() const {return _p.pz();}
 		double e()  const {return _p.e();}
 		int pdg() const {return _pdg;}
+		
+		double m()  const {return _p.m();}
+		double m2() const {return _p.m2();}
+		double pT() const {return _p.pT();}
 		
 	  private:
 		Vector4 _p;
