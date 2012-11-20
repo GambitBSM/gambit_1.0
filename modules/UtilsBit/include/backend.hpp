@@ -347,7 +347,9 @@ namespace GAMBIT {
 		}
 		double m2() const {return _t*_t - _x*_x - _y*_y - _z*_z;}
 		double pT() const {return sqrt(_x*_x + _y*_y);}
-		
+		double theta() const {return atan2(sqrt(_x*_x + _y*_y), _z);}
+		double phi() const {return atan2(_y,_x);}
+
 		
 	  private:
 		double _x, _y, _z, _t;
@@ -375,6 +377,9 @@ namespace GAMBIT {
 		double m()  const {return _p.m();}
 		double m2() const {return _p.m2();}
 		double pT() const {return _p.pT();}
+		double theta() const {return _p.theta();}
+		double phi() const {return _p.phi();}
+
 		
 	  private:
 		Vector4 _p;
