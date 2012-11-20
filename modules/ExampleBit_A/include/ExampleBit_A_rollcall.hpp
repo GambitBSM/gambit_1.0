@@ -26,24 +26,21 @@
 #define __ExampleBit_A_rollcall_hpp__
 
 #include "observable.hpp"
+#include "free_current_module.hpp"
 
-// CREATE_OBS_OR_LIKE(module, like_or_obs_name, return_type)
-// SET_DEPENDENCY(module, like_or_obs_name, dependency_name, dependency_type)
+#define CURRENT_MODULE ExampleBit_A
+#define CONTENTS(OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
+  /* OBS_OR_LIKE(like_or_obs_name, return_type)                     /* To add more functions to this module, add    */ \
+  /* DEPENDENCY(like_or_obs_name, dependency_name, dependency_type) /*  new commands to this macro, in this form.   */ \
+  OBS_OR_LIKE(nevents, double)                /* Observable: Number of events in some hypothetical process          */ \
+   DEPENDENCY(nevents, xsection, double)      /* Dependencies: Number of events depends on  - cross-section         */ \
+   DEPENDENCY(nevents, charge, double)        /*                                            - charge                */ \
+  OBS_OR_LIKE(nevents_like, double)           /* Likelihood: Likelihood of seeing number of events                  */ \
+   DEPENDENCY(nevents_like, nevents, double)  /* Dependency: Likelihood calculation requires number of events       */ \
+  OBS_OR_LIKE(authors_dogs_name, std::string) /* Observable: name of the author of ExampleBitA's dog                */ \
+                                              /* Dog is independent.                                                */ \
 
-// Observable: Number of events in some hypothetical process 
-CREATE_OBS_OR_LIKE(ExampleBit_A, nevents, double)
-// Dependencies: Number of events depends on cross-section and charge
-SET_DEPENDENCY(ExampleBit_A, nevents, xsection, double)
-SET_DEPENDENCY(ExampleBit_A, nevents, charge, double)
-
-// Likelihood: Likelihood of seeing number of events
-CREATE_OBS_OR_LIKE(ExampleBit_A, nevents_like, double)
-// Dependency: Likelihood calcualtion requires number of events
-SET_DEPENDENCY(ExampleBit_A, nevents_like, nevents, double)
-
-// Observable: name of the author of ExampleBitA's dog
-CREATE_OBS_OR_LIKE(ExampleBit_A, authors_dogs_name, std::string)
-// Dog is independent.
+#include "complete_module.hpp"
 
 #endif /* defined(__ExampleBit_A_rollcall_hpp__) */
 

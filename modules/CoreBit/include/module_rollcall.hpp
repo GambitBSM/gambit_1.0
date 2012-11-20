@@ -24,22 +24,21 @@
 // Generate backend header code
 //#include"backend_rollcall.hpp"
 
-// Example code for adding a new module:
-// //Generate module header code
-//     CREATE_MODULE(your_module_name)
-// //Increment module counter
-//     #include BOOST_PP_UPDATE_COUNTER()
-// //Generate module member function header codes
-//     #include"your_module_name_rollcall.hpp"
+// To add a new module, just add another two lines as follows.
+//   Within MODULE_ROSTER:
+//     DEF_MODULE(your_module_name)  // Creates the module
+//   Just before MAP_MODULE_ROSTER:
+//     #include "your_module_name_rollcall.hpp" // registers observables, etc
 
-CREATE_MODULE(ExampleBit_A)
-#include BOOST_PP_UPDATE_COUNTER()
-#include"ExampleBit_A_rollcall.hpp"
+#define MODULE_ROSTER(DEF_MODULE) \
+  DEF_MODULE(ExampleBit_A) \
+  DEF_MODULE(ExampleBit_B) \
 
-CREATE_MODULE(ExampleBit_B)
-#include BOOST_PP_UPDATE_COUNTER()
-#include"ExampleBit_B_rollcall.hpp"
+MODULE_ROSTER(CREATE_MODULE) // Create all the modules
 
-FINALISE_MODULES
+#include "ExampleBit_A_rollcall.hpp"
+#include "ExampleBit_B_rollcall.hpp"
+
+//MAP_MODULE_ROSTER(MODULE_ROSTER(CREATE_MODULE)) // Map the module objects to strings -- todo
 
 #endif /* defined(__module_rollcall__) */

@@ -26,29 +26,23 @@
 #define __ExampleBit_B_rollcall_hpp__
 
 #include "observable.hpp"
+#include "free_current_module.hpp"
 
-// CREATE_OBS_OR_LIKE(module, like_or_obs_name, return_type)
-// SET_DEPENDENCY(module, like_or_obs_name, dependency_name, dependency_type)
+#define CURRENT_MODULE ExampleBit_B
+#define CONTENTS(OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
+  /* OBS_OR_LIKE(like_or_obs_name, return_type)                     /* To add more functions to this module, add    */ \
+  /* DEPENDENCY(like_or_obs_name, dependency_name, dependency_type) /*  new commands to this macro, in this form.   */ \
+  OBS_OR_LIKE(xsection, double)                          /* Observable: cross-section for some hypothetical process */ \
+  OBS_OR_LIKE(nevents_postcuts, int)                     /* Observable: number of events for process after cuts     */ \
+   DEPENDENCY(nevents_postcuts, nevents, double)         /* Dependency: post-cut events needs pre-cut events        */ \
+  OBS_OR_LIKE(authors_dogs_name, std::string)            /* Observable: name of the author of ExampleBit_B's dog    */ \
+  OBS_OR_LIKE(nevents, int)               /* Observable: num. events, defined as integer just to annoy ExampleBit_A */ \
 
-// Observable: cross-section for some hypothetical process 
-CREATE_OBS_OR_LIKE(ExampleBit_B, xsection, double)
-
-// Observable: number of events in some hypothetical process after cuts
-CREATE_OBS_OR_LIKE(ExampleBit_B, nevents_postcuts, int)
-// Dependency: post-cut number of events requires pre-cut number of events
-SET_DEPENDENCY(ExampleBit_B, nevents_postcuts, nevents, double)
-
-// Observable: name of the author of ExampleBit_B's dog
-CREATE_OBS_OR_LIKE(ExampleBit_B, authors_dogs_name, std::string)
-// Dog is independent.
-
-// Observable: number of events, defined as an integer just to annoy ExampleBit_A
-CREATE_OBS_OR_LIKE(ExampleBit_B, nevents, int)
+#include "complete_module.hpp"
 
 #endif /* defined(__ExampleBit_B_rollcall_hpp__) */
 
-// Might want to allow specification of LaTeX labels for observables like this:
-// CREATE_OBS_OR_LIKE(module, like_or_obs_name, LaTeX_label, return_type)
-// SET_DEPENDENCY(module, like_or_obs_name, dependency_name, dependency_type)
+// Might want to later allow specification of LaTeX labels for observables like this:
+// OBS_OR_LIKE(like_or_obs_name, LaTeX_label, return_type)
 
 
