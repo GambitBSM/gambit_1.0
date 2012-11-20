@@ -59,7 +59,7 @@ int main( int argc, const char* argv[] )
 
   // Iterate over all the physics module classes present, and instantiate them
   //
-  // still working out how to loop over a boost:mpl sequence propoerly at runtime
+  // still working out how to loop over a boost:mpl sequence properly at runtime
   //struct do_this_wrapper {
   //template<typename U> 
   //  void operator()(U) {
@@ -85,73 +85,70 @@ int main( int argc, const char* argv[] )
   //the following does not work
   //std::cout << "I can do nevents " << myBit->provides<Tags::nevents>();
 
-  //Here are a bunch of example calls to the two example modules, testing their capabilities
-  ExampleBit_A_cls myExA;
-  std::cout << "My name is " << myExA.name() <<"\n";
-  std::cout << "I can do nevents " << myExA.provides<Tags::nevents>() <<"\n";
-  if (myExA.requires<Tags::nevents_like,Tags::nevents>()) { 
+  //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
+  std::cout << "My name is " << ExampleBit_A_obj.name() <<"\n";
+  std::cout << "I can do nevents " << ExampleBit_A_obj.provides<Tags::nevents>() <<"\n";
+  if (ExampleBit_A_obj.requires<Tags::nevents_like,Tags::nevents>()) { 
     std::cout << "I require nevents_like to do this though.\n";
   }
-  std::cout << "I can do nevents_like " << myExA.provides<Tags::nevents_like>() <<"\n";
-  if (myExA.requires<Tags::nevents,Tags::nevents_like>()) { 
+  std::cout << "I can do nevents_like " << ExampleBit_A_obj.provides<Tags::nevents_like>() <<"\n";
+  if (ExampleBit_A_obj.requires<Tags::nevents,Tags::nevents_like>()) { 
     std::cout << "I require nevents to do this though.\n";
   }
-  std::cout << "I can do nevents_postcuts " << myExA.provides<Tags::nevents_postcuts>() <<"\n";
-  std::cout << "I can do xsection " << myExA.provides<Tags::xsection>() <<"\n";
-  std::cout << "I can do dogsname " << myExA.provides<Tags::authors_dogs_name>() <<"\n";
+  std::cout << "I can do nevents_postcuts " << ExampleBit_A_obj.provides<Tags::nevents_postcuts>() <<"\n";
+  std::cout << "I can do xsection " << ExampleBit_A_obj.provides<Tags::xsection>() <<"\n";
+  std::cout << "I can do dogsname " << ExampleBit_A_obj.provides<Tags::authors_dogs_name>() <<"\n";
 
   std::cout << "Core says: report on n_events_like!\n";
-  std::cout << "  " << myExA.name() << " says: ";
-  std::cout << "  "; myExA.report<Tags::nevents_like>();
-  if (myExA.provides<Tags::nevents_like>()) {
+  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
+  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents_like>();
+  if (ExampleBit_A_obj.provides<Tags::nevents_like>()) {
     std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents_like>()<<"\n" ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_like>()<<"\n" ;
   }
   std::cout << "Core says: report on n_events_postcuts!\n";
-  std::cout << "  " << myExA.name() << " says: ";
-  std::cout << "  "; myExA.report<Tags::nevents_postcuts>();
-  if (myExA.provides<Tags::nevents_postcuts>()) {
+  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
+  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents_postcuts>();
+  if (ExampleBit_A_obj.provides<Tags::nevents_postcuts>()) {
     std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents_postcuts>()<<"\n" ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_postcuts>()<<"\n" ;
   }
   std::cout << "Core says: report on n_events!\n";
-  std::cout << "  " << myExA.name() << " says: ";
-  std::cout << "  "; myExA.report<Tags::nevents>();
-  if (myExA.provides<Tags::nevents>()) {
+  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
+  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents>();
+  if (ExampleBit_A_obj.provides<Tags::nevents>()) {
     std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents>()<<"\n" ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>()<<"\n" ;
   }
   std::cout << "Core says: report on n_events again!\n";
-  std::cout << "  " << myExA.name() << " says: ";
-  std::cout << "  "; myExA.report<Tags::nevents>();
-  if (myExA.provides<Tags::nevents>()) {
+  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
+  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents>();
+  if (ExampleBit_A_obj.provides<Tags::nevents>()) {
     std::cout << "OK, so what is it now, then?\n";
-    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::nevents>()<<"\n" ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>()<<"\n" ;
   }
   std::cout << "Core says: report on the dog!\n";
-  std::cout << "  " << myExA.name() << " says: ";
-  std::cout << "  "; myExA.report<Tags::authors_dogs_name>();
-  if (myExA.provides<Tags::authors_dogs_name>()) {
+  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
+  std::cout << "  "; ExampleBit_A_obj.report<Tags::authors_dogs_name>();
+  if (ExampleBit_A_obj.provides<Tags::authors_dogs_name>()) {
     std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << myExA.name() << " says: " << myExA.result<Tags::authors_dogs_name>()<<"\n" ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::authors_dogs_name>()<<"\n" ;
   }
 
 
   std::cout << "\n";
-
-  ExampleBit_B_cls myExB;
-  std::cout << "My name is " << myExB.name() <<"\n";
-  std::cout << "I can do nevents " << myExB.provides<Tags::nevents>() <<"\n";
-  std::cout << "I can do nevents_like " << myExB.provides<Tags::nevents_like>() <<"\n";
-  std::cout << "I can do nevents_postcuts " << myExB.provides<Tags::nevents_postcuts>() <<"\n";
-  std::cout << "I can do xsection " << myExB.provides<Tags::xsection>() <<"\n";
-  std::cout << "I can do dogsname " << myExB.provides<Tags::authors_dogs_name>() <<"\n";
+  std::cout << "My name is " << ExampleBit_B_obj.name() <<"\n";
+  std::cout << "I can do nevents " << ExampleBit_B_obj.provides<Tags::nevents>() <<"\n";
+  std::cout << "I can do nevents_like " << ExampleBit_B_obj.provides<Tags::nevents_like>() <<"\n";
+  std::cout << "I can do nevents_postcuts " << ExampleBit_B_obj.provides<Tags::nevents_postcuts>() <<"\n";
+  std::cout << "I can do xsection " << ExampleBit_B_obj.provides<Tags::xsection>() <<"\n";
+  std::cout << "I can do dogsname " << ExampleBit_B_obj.provides<Tags::authors_dogs_name>() <<"\n";
   std::cout << "Core says: report on n_events!\n";
-  std::cout << myExB.name() << " says: ";
-  std::cout << "  "; myExB.report<Tags::nevents>();
-  if (myExB.provides<Tags::nevents>()) {
+  std::cout << ExampleBit_B_obj.name() << " says: ";
+  std::cout << "  "; ExampleBit_B_obj.report<Tags::nevents>();
+  if (ExampleBit_B_obj.provides<Tags::nevents>()) {
     std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << myExB.name() << " says: " << myExB.result<Tags::nevents>()<<"\n" ;
+    std::cout << "  " << ExampleBit_B_obj.name() << " says: " << ExampleBit_B_obj.result<Tags::nevents>()<<"\n" ;
   }
 
   std::cout << "\n";

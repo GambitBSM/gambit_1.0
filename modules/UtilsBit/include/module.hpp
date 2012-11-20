@@ -41,18 +41,15 @@ class module {
     virtual void result() {};
 };
 
-#define PASTE(X,Y) PASTE_HIDDEN(X,Y)
-#define PASTE_HIDDEN(X,Y) X##Y
-
-#ifndef __in_module__
+//#ifndef __in_module__
 // Create a sequence of module daughter class types
-typedef boost::mpl::vector<> PASTE(module_list_,BOOST_PP_COUNTER);
-#endif
+//typedef boost::mpl::vector<> PASTE(module_list_,BOOST_PP_COUNTER);
+//#endif
 
 //  Create a specific module daughter class 
 #define CREATE_MODULE(MODULE) \
 \
-class MODULE##_cls : public module { \
+class PASTE(MODULE,_cls) : public module { \
   public: \
     /* module name */ \
     std::string name() { return #MODULE; } \
@@ -69,16 +66,16 @@ class MODULE##_cls : public module { \
       } \
     /* alias for function TAG */ \
     template <typename TAG> \
-    typename obs_or_like_traits<TAG,MODULE##_cls>::type result() { \
+    typename obs_or_like_traits<TAG,PASTE(MODULE,_cls)>::type result() { \
       std::cout<<"I do not support this tag. \n"; \
       return 0; \
     } \
 }; \
 \
 /* Add the new daughter class to the sequence of registered modules */ \
-typedef boost::mpl::push_back<PASTE(module_list_,BOOST_PP_COUNTER), MODULE##_cls>::type \
+//typedef boost::mpl::push_back<PASTE(module_list_,BOOST_PP_COUNTER), PASTE(MODULE,_cls)>::type \
  PASTE(module_list_,BOOST_PP_ADD(BOOST_PP_COUNTER,1)); \
 
-#define FINALISE_MODULES typedef PASTE(module_list_,BOOST_PP_COUNTER) module_list;
+//#define FINALISE_MODULES typedef PASTE(module_list_,BOOST_PP_COUNTER) module_list;
 
 #endif /* defined(__module__) */
