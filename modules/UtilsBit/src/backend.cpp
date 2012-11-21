@@ -1,7 +1,7 @@
-#include "backend.h"
-#include <dlfcn.h>     // Needed for dlopen
+#include "backend.hpp"
+#include "logcore.hpp"
 
-#include "../SUFit/include/core/logcore.hh"
+#include <dlfcn.h>     // Needed for dlopen
 
 namespace GAMBIT {
 
@@ -15,41 +15,58 @@ namespace GAMBIT {
 	 */
 	  
 	  void FHerwig::loadLib() {
-		  cout << "Trying to loading Fortran Herwig library from:" << endl;
-		  cout << _libName.c_str() << endl;
+		  GAMBIT_MSG_INFO("Trying to loading Fortran Herwig library from:");
+		  GAMBIT_MSG_INFO(_libName.c_str());
 		  pHandle = dlopen(_libName.c_str(), RTLD_LAZY);
 		  if(pHandle){
-			  cout << "Succeded in loading Fortran Herwig" << endl;
+			  GAMBIT_MSG_INFO("Succeded in loading Fortran Herwig");
 			  _libState = true;
 		  } else {
-			  cout << "Failed to load Fortran Herwig. Help!" << endl;
-			  cout << dlerror() << endl;
+			  GAMBIT_MSG_ERROR(dlerror());
+			  GAMBIT_MSG_FATAL("Failed to load Fortran Herwig. Help!");
 		  }
 	  }
 
   // Unload library
   void FHerwig::unLoadLib() {
 	if(_libState){
-	  cout << "Unloading Fortran Herwig library..." << endl;
+	  GAMBIT_MSG_INFO("Unloading Fortran Herwig library...");
 	  dlclose(pHandle);
 	  _libState = false;
 	}
   }
 
-  // Check library status
-  void FHerwig::checkDLStatus() const {
-	const char * error = dlerror();
-	if(error){
-		cout << "Error with Fortran Herwig library!" << endl;
-		cout << error << endl;
-	  //GAMBIT_MSG_WARNING("Error with Fortran Herwig library!");
-	//cout << "Did SUFit output anything?" << endl;
-	}
-  }
+	  // Clone object (avoiding re-initialization)
+	  FHerwig FHerwig::clone(int seed) {
+		  FHerwig tempGen = *this;
+		  tempGen.setSeed(seed);
+		  return tempGen;
+	  }
+
+	  // Set random seed
+	  void FHerwig::setSeed(int value) {
+		  hwevnt_type temp = GetUserVariable<tags::HWEVNT>();
+		  cout << temp.avwgt << " " <<  temp.evwgt << " " << temp.gamwt << endl;
+		  cout << temp.tlout << " " <<  temp.wbigst << " " << temp.wgtmax << endl;
+		  cout << temp.wgtsum << " " <<  temp.wsqsum << " " << temp.idhw[0] << endl;
+		  cout << temp.nrn[0] << " " <<  temp.nrn[1] << " " << temp.numer << endl;
+		  temp.nrn[0] = value;
+		  temp.nrn[1] = value+1;
+		  SetUserVariable<tags::HWEVNT>(temp);
+	  }
+	  
+	  // Check library status
+	  void FHerwig::checkDLStatus() const {
+		  const char * error = dlerror();
+		  if(error){
+			  GAMBIT_MSG_ERROR(error);
+			  GAMBIT_MSG_FATAL("Error with Fortran Herwig library!");
+		  }
+	  }
 
 	  // Initialize Herwig for event generation
 	  void FHerwig::initialize() {
-		  // Set beam energy, process type and mex events
+		  // Set beam energy, process type and max events
 		  hwproc_type hwtemp1;
 		  hwtemp1.pbeam1 = 3500.;
 		  hwtemp1.pbeam2 = 3500.;
@@ -133,7 +150,7 @@ namespace GAMBIT {
 		}
 		  
 		// Test that this is working correctly wrt indices		  
-		list.print();
+		//list.print();
 	  }
 	  
 	  // Append a particle to the event record

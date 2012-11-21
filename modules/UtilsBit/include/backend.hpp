@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cmath>
 
 static const int NMXHEP = 5000;
 
@@ -199,12 +200,18 @@ struct hepevt_type{
 	double phep[NMXHEP][5], vhep[NMXHEP][4];
 };
 VARIABLE(HEPEVT, hepevt, , hepevt_type)
+// Struct for generator information 
+struct hwevnt_type{
+	double avwgt, evwgt, gamwt, tlout, wbigst, wgtmax, wgtsum, wsqsum;
+	int idhw[NMXHEP], ierror, istat, lwevt, maxer, maxpr, nowgt, nrn[2], numer, numeru, nwgts, gensof;
+};
+VARIABLE(HWEVNT, hwevnt, , hwevnt_type)
 
 
 namespace GAMBIT {
 	
 	using std::cout;
-	using std::endl; // SUFit logger does this?
+	using std::endl; // logger does this?
 	using std::string;
 	using std::stringstream;
 	using std::vector;
@@ -306,6 +313,13 @@ namespace GAMBIT {
 		// Generate one event
 		void generateEvent();
 
+		// Clone object (avoiding re-initialization)
+		// Clone is created with new random seed
+		FHerwig clone(int seed);
+		
+		// Set random seed
+		void setSeed(int value);
+		
 	private:
 		
       // Load library
