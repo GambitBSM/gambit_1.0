@@ -31,8 +31,8 @@ HECOLLIDERDIR = HEColliderBit
 DOCDIR = ../doc
 
 # Boost is required. Read README for details
-BOOSTINC=$(BOOST)/include/
-BOOSTLIB=$(BOOST)/lib/
+BOOSTINC=$(BOOST)/include
+BOOSTLIB=$(BOOST)/lib
 CCEXTRA=-Wextra -pipe -g -pg
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
@@ -45,7 +45,7 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 
 COMMONLIBS = -lm 
 
-TARGETS = gambit_example
+TARGETS = gambit_example 
 
 default: mh gambit_example 
 .PHONY: default

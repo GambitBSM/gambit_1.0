@@ -1,29 +1,46 @@
-#include "backend.h"
+#include "backend.hpp"
 
 #include <dlfcn.h>
 #include <iostream>
 
 using std::cout;
-using std::endl; // SUFit logger does this?
+using std::endl;
 
-int main(int argc, char * argv[]){
+int main(int argc, char * argv[])
+{
+	// Program to test backend
 
-  // Program to test backend
+	// Get an object for the Fortran Herwig generator
+	GAMBIT::Backend::FHerwig A;
 
-  // Get an object for the Fortran Herwig generator
-  GAMBIT::Backend::FHerwig A;
+
+	A.initialize();
+
+
+	A.setSeed(8236819);
+
+	// Some checking of what the settings are
+	cout << A.GetUserVariable<tags::HWEVNT>().nrn[0] << endl;
+	//cout << A.GetUserVariable<tags::HWBMCH>().part1 << endl;
+	//cout << A.GetUserVariable<tags::HWBMCH>().part2 << endl;
 	
-  A.initialize();
+	// Event loop
+	for(int i = 1; i < 10; i++)
+	{
+		A.generateEvent();
+	}
+	
+	
+	GAMBIT::Backend::FHerwig B = A.clone(1289161); 
 
-  // Some checking of what the settings are
-  //cout << A.GetUserVariable<tags::HWPROC>().pbeam1 << endl;
-  //cout << A.GetUserVariable<tags::HWBMCH>().part1 << endl;
-  //cout << A.GetUserVariable<tags::HWBMCH>().part2 << endl;
+
+	// Event loop
+	for(int i = 1; i < 10; i++)
+	{
+		B.generateEvent();
+	}
 	
-  // Event loop
-  for(int i = 1; i < 10; i++){
-	A.generateEvent();
-  }
+	A.finalize();
 	
-  A.finalize();
+	B.finalize();
 }

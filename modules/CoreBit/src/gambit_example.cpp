@@ -32,6 +32,29 @@ ModelBasePtr make_a_model(bool do_cmssm){
 //
 */
 
+// Spacing utility for stream overload below
+std::string spacing(int len, int maxlen) {
+  int offset = 0;
+  if (len < maxlen) {offset=maxlen-len;}
+  return std::string(offset+5,' ');
+}   
+
+// Define an overloading of the stream operator for maps (needs to go into a header somewhere)
+typedef std::basic_ostream<char, std::char_traits<char> > stream;
+stream& operator<<(stream& os, const std::map<std::string,std::string>& map){
+  unsigned int maxlen = 0;
+  std::map<std::string,std::string>::const_iterator it;
+
+  for (it = map.begin(); it != map.end(); it++) {
+    if ((*it).first.length() > maxlen) maxlen = (*it).first.length(); }
+    
+  for (it = map.begin(); it != map.end(); it++) {
+    if (it != map.begin()) {os << std::endl;}
+    os << " " << (*it).first << spacing((*it).first.length(), maxlen) << "(" << (*it).second << ")";}
+
+  return os;
+}
+
 int main( int argc, const char* argv[] )
 {
 
@@ -86,7 +109,11 @@ int main( int argc, const char* argv[] )
   //std::cout << "I can do nevents " << myBit->provides<Tags::nevents>();
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
-  std::cout << "My name is " << ExampleBit_A_obj.name() <<"\n";
+  std::cout << "My name is " << ExampleBit_A_obj.name() << std::endl;
+  std::cout << " I can calculate: " << std::endl << ExampleBit_A_obj.iCanDo << std::endl;
+  std::cout << " ...but I may need: " << std::endl << ExampleBit_A_obj.iMayNeed << std::endl;
+  std::cout << std::endl;
+
   std::cout << "I can do nevents " << ExampleBit_A_obj.provides<Tags::nevents>() <<"\n";
   if (ExampleBit_A_obj.requires<Tags::nevents_like,Tags::nevents>()) { 
     std::cout << "I require nevents_like to do this though.\n";
@@ -137,7 +164,10 @@ int main( int argc, const char* argv[] )
 
 
   std::cout << "\n";
-  std::cout << "My name is " << ExampleBit_B_obj.name() <<"\n";
+  std::cout << "My name is " << ExampleBit_B_obj.name() << std::endl;
+  std::cout << " I can calculate: " << std::endl << ExampleBit_B_obj.iCanDo << std::endl;
+  std::cout << " ...but I may need: " << std::endl << ExampleBit_B_obj.iMayNeed << std::endl;
+  std::cout << std::endl;
   std::cout << "I can do nevents " << ExampleBit_B_obj.provides<Tags::nevents>() <<"\n";
   std::cout << "I can do nevents_like " << ExampleBit_B_obj.provides<Tags::nevents_like>() <<"\n";
   std::cout << "I can do nevents_postcuts " << ExampleBit_B_obj.provides<Tags::nevents_postcuts>() <<"\n";

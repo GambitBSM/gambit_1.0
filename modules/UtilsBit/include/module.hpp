@@ -39,6 +39,8 @@ class module {
     virtual bool requires() { return false; };
     virtual void report() {};
     virtual void result() {};
+    //const std::map<std::string,std::string> iCanDo;
+    //const std::map<std::string,std::string> iMayNeed;
 };
 
 //#ifndef __in_module__
@@ -54,12 +56,18 @@ class PASTE(MODULE,_cls) : public module { \
     /* module name */ \
     std::string name() { return #MODULE; } \
     \
+    /* all provided observables/likelihoods, their dependencies and
+       their types, as strings */ \
+    static const std::map<std::string,std::string> iCanDo; \
+    static const std::map<std::string,std::string> iMayNeed; \
+    \
     /* module provides observable/likelihood TAG? */ \
     template <typename TAG> bool provides() { return false; } \
     \
     /* module requires observable/likelihood DEP_TAG to compute TAG */ \
     template <typename DEP_TAG, typename TAG> \
       bool requires() { return false; } \
+    \
     /* report on observable/likelihood TAG */ \
     template <typename TAG> void report() { \
       std::cout<<"I do not support this tag. \n"; \
