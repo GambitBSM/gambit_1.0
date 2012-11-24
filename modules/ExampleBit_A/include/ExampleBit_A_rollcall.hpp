@@ -25,22 +25,18 @@
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__
 
-#include "observable.hpp"
-#include "free_current_module.hpp"
+#define CONTENTS_ExampleBit_A(DEF, OBS_OR_LIKE, DEPENDENCY)              /* Give the module contents to be registered.   */ \
+  /* OBS_OR_LIKE(M, like_or_obs_name, return_type)                       /* To add more functions to this module, add    */ \
+  /* DEPENDENCY(M, like_or_obs_name, dependency_name, dependency_type)   /*  new commands to this macro, in this form.   */ \
+  OBS_OR_LIKE(DEF, nevents, double)                /* Observable: Number of events in some hypothetical process          */ \
+   DEPENDENCY(DEF, nevents, xsection, double)      /* Dependencies: Number of events depends on  - cross-section         */ \
+   DEPENDENCY(DEF, nevents, charge, double)        /*                                            - charge                */ \
+  OBS_OR_LIKE(DEF, nevents_like, double)           /* Likelihood: Likelihood of seeing number of events                  */ \
+   DEPENDENCY(DEF, nevents_like, nevents, double)  /* Dependency: Likelihood calculation requires number of events       */ \
+  OBS_OR_LIKE(DEF, authors_dogs_name, std::string) /* Observable: name of the author of ExampleBitA's dog                */ \
+                                                   /* Dog is independent.                                                */ \
 
-#define CURRENT_MODULE ExampleBit_A
-#define CONTENTS(OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
-  /* OBS_OR_LIKE(like_or_obs_name, return_type)                     /* To add more functions to this module, add    */ \
-  /* DEPENDENCY(like_or_obs_name, dependency_name, dependency_type) /*  new commands to this macro, in this form.   */ \
-  OBS_OR_LIKE(nevents, double)                /* Observable: Number of events in some hypothetical process          */ \
-   DEPENDENCY(nevents, xsection, double)      /* Dependencies: Number of events depends on  - cross-section         */ \
-   DEPENDENCY(nevents, charge, double)        /*                                            - charge                */ \
-  OBS_OR_LIKE(nevents_like, double)           /* Likelihood: Likelihood of seeing number of events                  */ \
-   DEPENDENCY(nevents_like, nevents, double)  /* Dependency: Likelihood calculation requires number of events       */ \
-  OBS_OR_LIKE(authors_dogs_name, std::string) /* Observable: name of the author of ExampleBitA's dog                */ \
-                                              /* Dog is independent.                                                */ \
-
-#include "complete_module.hpp"
+COMPLETE(ExampleBit_A)
 
 #endif /* defined(__ExampleBit_A_rollcall_hpp__) */
 

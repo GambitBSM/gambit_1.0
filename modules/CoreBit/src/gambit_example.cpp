@@ -39,11 +39,27 @@ std::string spacing(int len, int maxlen) {
   return std::string(offset+5,' ');
 }   
 
-// Define an overloading of the stream operator for maps (needs to go into a header somewhere)
+// Define overloadings of the stream operator for string-to-X maps 
+// (needs to go into a header somewhere, and should really be templated
 typedef std::basic_ostream<char, std::char_traits<char> > stream;
+// string-to-string
 stream& operator<<(stream& os, const std::map<std::string,std::string>& map){
   unsigned int maxlen = 0;
   std::map<std::string,std::string>::const_iterator it;
+
+  for (it = map.begin(); it != map.end(); it++) {
+    if ((*it).first.length() > maxlen) maxlen = (*it).first.length(); }
+    
+  for (it = map.begin(); it != map.end(); it++) {
+    if (it != map.begin()) {os << std::endl;}
+    os << " " << (*it).first << spacing((*it).first.length(), maxlen) << "(" << (*it).second << ")";}
+
+  return os;
+}
+// string-to-int
+stream& operator<<(stream& os, const std::map<std::string,int>& map){
+  unsigned int maxlen = 0;
+  std::map<std::string,int>::const_iterator it;
 
   for (it = map.begin(); it != map.end(); it++) {
     if ((*it).first.length() > maxlen) maxlen = (*it).first.length(); }
@@ -114,7 +130,10 @@ int main( int argc, const char* argv[] )
   std::cout << " ...but I may need: " << std::endl << ExampleBit_A_obj.iMayNeed << std::endl;
   std::cout << std::endl;
 
-  std::cout << "I can do nevents " << ExampleBit_A_obj.provides<Tags::nevents>() <<"\n";
+  //{typedef at<tag_map,int_<tagstr2int["nevents"]> >::type temp
+  //typedef at<ExampleBit_A_tag_map,int_<5> >::type temp;
+  //std::cout << "I can do nevents " << ExampleBit_A_obj.provides<temp>() << std::endl;
+  std::cout << "I can do nevents " << ExampleBit_A_obj.provides<Tags::nevents>() << std::endl;
   if (ExampleBit_A_obj.requires<Tags::nevents_like,Tags::nevents>()) { 
     std::cout << "I require nevents_like to do this though.\n";
   }
@@ -183,8 +202,10 @@ int main( int argc, const char* argv[] )
 
   std::cout << "\n";
 
-
- 
+  std::cout << ts_map["nevents"] << std::endl;
+  std::cout << ts_map["charge"] << std::endl;
+  std::cout << ts_map.size() << std::endl;
+  std::cout << ts_map << std::endl;
 
   // Instantiate the ScannerBit module
 

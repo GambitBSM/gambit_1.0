@@ -18,27 +18,24 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 15 2012
+//  Nov 15++ 2012
 //
 //  *********************************************
 
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
 
-#include "observable.hpp"
-#include "free_current_module.hpp"
-
 #define CURRENT_MODULE ExampleBit_B
-#define CONTENTS(OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
-  /* OBS_OR_LIKE(like_or_obs_name, return_type)                     /* To add more functions to this module, add    */ \
-  /* DEPENDENCY(like_or_obs_name, dependency_name, dependency_type) /*  new commands to this macro, in this form.   */ \
-  OBS_OR_LIKE(xsection, double)                          /* Observable: cross-section for some hypothetical process */ \
-  OBS_OR_LIKE(nevents_postcuts, int)                     /* Observable: number of events for process after cuts     */ \
-   DEPENDENCY(nevents_postcuts, nevents, double)         /* Dependency: post-cut events needs pre-cut events        */ \
-  OBS_OR_LIKE(authors_dogs_name, std::string)            /* Observable: name of the author of ExampleBit_B's dog    */ \
-  OBS_OR_LIKE(nevents, int)               /* Observable: num. events, defined as integer just to annoy ExampleBit_A */ \
+#define CONTENTS_ExampleBit_B(DEF, OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
+  /* OBS_OR_LIKE(like_or_obs_name, return_type)                          /* To add more functions to this module, add    */ \
+  /* DEPENDENCY(like_or_obs_name, dependency_name, dependency_type)      /*  new commands to this macro, in this form.   */ \
+  OBS_OR_LIKE(DEF, xsection, double)                          /* Observable: cross-section for some hypothetical process */ \
+  OBS_OR_LIKE(DEF, nevents_postcuts, int)                     /* Observable: number of events for process after cuts     */ \
+   DEPENDENCY(DEF, nevents_postcuts, nevents, double)         /* Dependency: post-cut events needs pre-cut events        */ \
+  OBS_OR_LIKE(DEF, authors_dogs_name, std::string)            /* Observable: name of the author of ExampleBit_B's dog    */ \
+  OBS_OR_LIKE(DEF, nevents, int)               /* Observable: num. events, defined as integer just to annoy ExampleBit_A */ \
 
-#include "complete_module.hpp"
+COMPLETE(ExampleBit_B)
 
 #endif /* defined(__ExampleBit_B_rollcall_hpp__) */
 
