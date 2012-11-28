@@ -9,7 +9,9 @@
 
 #include "backend-common.hpp"
 
-#define DARKSUSY_LIB "/home/Jonathan/darksusy-5.0.6/lib"
+// Fill in below with the name of the shared library, once I actually
+// am able to build it
+#define DARKSUSY_LIB "/home/Jonathan/darksusy-5.0.6/lib/libdarksusy.so"
 
 // List of functions and variables that can be called from libraries
 
@@ -48,9 +50,7 @@ namespace GAMBIT {
 
 			// Constructor
 			DarkSUSY(){
-				// Fill in below with the name of the shared library, once I actually
-				// am able to build it
-				_libName = "DARKSUSY_LIB/...";
+			        _libName = DARKSUSY_LIB;
 				loadLib();
 			}
 
