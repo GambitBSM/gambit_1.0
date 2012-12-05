@@ -37,6 +37,7 @@ namespace GAMBIT {
 	}
   }
 
+	  // This is not going to work. The momory will simply be overwritten.
 	  // Clone object (avoiding re-initialization)
 	  FHerwig FHerwig::clone(int seed) {
 		  FHerwig tempGen = *this;

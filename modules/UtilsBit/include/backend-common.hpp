@@ -1,5 +1,4 @@
-/* General GAMBIT backend header. This contains bits
- * from backend.h that are not Herwig specific.
+/* General GAMBIT backend header.
  *  \author Jonathan Cornell
  *  \date 2012-11-27
  */
