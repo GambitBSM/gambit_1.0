@@ -13,9 +13,13 @@ int main(int argc, char * argv[])
 	// Get an object for the Fortran Herwig generator
 	GAMBIT::Backend::FHerwig A;
 
+	A.setSeed(134991);
+
+	cout << A.GetUserVariable<tags::HWEVNT>().nrn[0] << endl;
 
 	A.initialize();
 
+	cout << A.GetUserVariable<tags::HWEVNT>().nrn[0] << endl;
 
 	A.setSeed(8236819);
 

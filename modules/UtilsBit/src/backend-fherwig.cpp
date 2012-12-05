@@ -37,7 +37,7 @@ namespace GAMBIT {
 	}
   }
 
-	  // This is not going to work. The momory will simply be overwritten.
+	  // This is not going to work. The memory will simply be overwritten.
 	  // Clone object (avoiding re-initialization)
 	  FHerwig FHerwig::clone(int seed) {
 		  FHerwig tempGen = *this;
@@ -48,10 +48,10 @@ namespace GAMBIT {
 	  // Set random seed
 	  void FHerwig::setSeed(int value) {
 		  hwevnt_type temp = GetUserVariable<tags::HWEVNT>();
-		  cout << temp.avwgt << " " <<  temp.evwgt << " " << temp.gamwt << endl;
-		  cout << temp.tlout << " " <<  temp.wbigst << " " << temp.wgtmax << endl;
-		  cout << temp.wgtsum << " " <<  temp.wsqsum << " " << temp.idhw[0] << endl;
-		  cout << temp.nrn[0] << " " <<  temp.nrn[1] << " " << temp.numer << endl;
+		  //cout << temp.avwgt << " " <<  temp.evwgt << " " << temp.gamwt << endl;
+		  //cout << temp.tlout << " " <<  temp.wbigst << " " << temp.wgtmax << endl;
+		  //cout << temp.wgtsum << " " <<  temp.wsqsum << " " << temp.idhw[0] << endl;
+		  //cout << temp.nrn[0] << " " <<  temp.nrn[1] << " " << temp.numer << endl;
 		  temp.nrn[0] = value;
 		  temp.nrn[1] = value+1;
 		  SetUserVariable<tags::HWEVNT>(temp);
