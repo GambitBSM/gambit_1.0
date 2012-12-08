@@ -120,9 +120,9 @@ int main( int argc, const char* argv[] )
 
   //module *myBit;
   //myBit = module_map[module_names[0]]();
-  //std::cout << "My name is " << myBit->name() <<"\n";
+  //std::cout << "My name is " << myBit->name() << std::endl;
   //the following does not work
-  //std::cout << "I can do nevents " << myBit->provides<Tags::nevents>();
+  //std::cout << "I can do nevents " << myBit->provides("nevents");
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   std::cout << "My name is " << ExampleBit_A_obj.name() << std::endl;
@@ -130,82 +130,81 @@ int main( int argc, const char* argv[] )
   std::cout << " ...but I may need: " << std::endl << ExampleBit_A_obj.iMayNeed << std::endl;
   std::cout << std::endl;
 
-  //{typedef at<tag_map,int_<tagstr2int["nevents"]> >::type temp
-  //typedef at<ExampleBit_A_tag_map,int_<5> >::type temp;
-  //std::cout << "I can do nevents " << ExampleBit_A_obj.provides<temp>() << std::endl;
-  std::cout << "I can do nevents " << ExampleBit_A_obj.provides<Tags::nevents>() << std::endl;
-  if (ExampleBit_A_obj.requires<Tags::nevents_like,Tags::nevents>()) { 
-    std::cout << "I require nevents_like to do this though.\n";
+  std::cout << "I can do nevents (tag-style) " << ExampleBit_A_obj.provides<Tags::nevents>() << std::endl;
+  std::cout << "I can do nevents (string-style) " << ExampleBit_A_obj.provides("nevents") << std::endl;
+  if (ExampleBit_A_obj.requires("nevents_like","nevents")) { 
+    std::cout << "I require nevents_like to do this though." << std::endl;
   }
-  std::cout << "I can do nevents_like " << ExampleBit_A_obj.provides<Tags::nevents_like>() <<"\n";
-  if (ExampleBit_A_obj.requires<Tags::nevents,Tags::nevents_like>()) { 
-    std::cout << "I require nevents to do this though.\n";
+  std::cout << "I can do nevents_like " << ExampleBit_A_obj.provides("nevents_like") << std::endl;
+  if (ExampleBit_A_obj.requires("nevents","nevents_like")) { 
+    std::cout << "I require nevents to do this though." << std::endl;
   }
-  std::cout << "I can do nevents_postcuts " << ExampleBit_A_obj.provides<Tags::nevents_postcuts>() <<"\n";
-  std::cout << "I can do xsection " << ExampleBit_A_obj.provides<Tags::xsection>() <<"\n";
-  std::cout << "I can do dogsname " << ExampleBit_A_obj.provides<Tags::authors_dogs_name>() <<"\n";
+  std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A_obj.provides<Tags::nevents_postcuts>() << std::endl;
+  std::cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A_obj.provides("nevents_postcuts") << std::endl;
+  std::cout << "I can do xsection " << ExampleBit_A_obj.provides("xsection") << std::endl;
+  std::cout << "I can do dogsname " << ExampleBit_A_obj.provides("authors_dogs_name") << std::endl;
 
-  std::cout << "Core says: report on n_events_like!\n";
+  std::cout << "Core says: report on n_events_like!" << std::endl;
   std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents_like>();
-  if (ExampleBit_A_obj.provides<Tags::nevents_like>()) {
-    std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_like>()<<"\n" ;
+  std::cout << "  "; ExampleBit_A_obj.report("nevents_like");
+  if (ExampleBit_A_obj.provides("nevents_like")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_like>() << std::endl ;
   }
-  std::cout << "Core says: report on n_events_postcuts!\n";
+  std::cout << "Core says: report on n_events_postcuts!" << std::endl;
   std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents_postcuts>();
-  if (ExampleBit_A_obj.provides<Tags::nevents_postcuts>()) {
-    std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_postcuts>()<<"\n" ;
+  std::cout << "  "; ExampleBit_A_obj.report("nevents_postcuts");
+  if (ExampleBit_A_obj.provides("nevents_postcuts")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_postcuts>() << std::endl ;
   }
-  std::cout << "Core says: report on n_events!\n";
+  std::cout << "Core says: report on n_events!" << std::endl;
   std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents>();
-  if (ExampleBit_A_obj.provides<Tags::nevents>()) {
-    std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>()<<"\n" ;
+  std::cout << "  "; ExampleBit_A_obj.report("nevents");
+  if (ExampleBit_A_obj.provides("nevents")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>() << std::endl ;
   }
-  std::cout << "Core says: report on n_events again!\n";
+  std::cout << "Core says: report on n_events again!" << std::endl;
   std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report<Tags::nevents>();
-  if (ExampleBit_A_obj.provides<Tags::nevents>()) {
-    std::cout << "OK, so what is it now, then?\n";
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>()<<"\n" ;
+  std::cout << "  "; ExampleBit_A_obj.report("nevents");
+  if (ExampleBit_A_obj.provides("nevents")) {
+    std::cout << "OK, so what is it now, then?" << std::endl;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>() << std::endl ;
   }
-  std::cout << "Core says: report on the dog!\n";
+  std::cout << "Core says: report on the dog!" << std::endl;
   std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report<Tags::authors_dogs_name>();
-  if (ExampleBit_A_obj.provides<Tags::authors_dogs_name>()) {
-    std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::authors_dogs_name>()<<"\n" ;
+  std::cout << "  "; ExampleBit_A_obj.report("authors_dogs_name");
+  if (ExampleBit_A_obj.provides("authors_dogs_name")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::authors_dogs_name>() << std::endl ;
   }
 
 
-  std::cout << "\n";
+  std::cout <<  std::endl;
   std::cout << "My name is " << ExampleBit_B_obj.name() << std::endl;
   std::cout << " I can calculate: " << std::endl << ExampleBit_B_obj.iCanDo << std::endl;
   std::cout << " ...but I may need: " << std::endl << ExampleBit_B_obj.iMayNeed << std::endl;
   std::cout << std::endl;
-  std::cout << "I can do nevents " << ExampleBit_B_obj.provides<Tags::nevents>() <<"\n";
-  std::cout << "I can do nevents_like " << ExampleBit_B_obj.provides<Tags::nevents_like>() <<"\n";
-  std::cout << "I can do nevents_postcuts " << ExampleBit_B_obj.provides<Tags::nevents_postcuts>() <<"\n";
-  std::cout << "I can do xsection " << ExampleBit_B_obj.provides<Tags::xsection>() <<"\n";
-  std::cout << "I can do dogsname " << ExampleBit_B_obj.provides<Tags::authors_dogs_name>() <<"\n";
-  std::cout << "Core says: report on n_events!\n";
+  std::cout << "I can do nevents " << ExampleBit_B_obj.provides("nevents") << std::endl;
+  std::cout << "I can do nevents_like " << ExampleBit_B_obj.provides("nevents_like") << std::endl;
+  std::cout << "I can do nevents_postcuts " << ExampleBit_B_obj.provides("nevents_postcuts") << std::endl;
+  std::cout << "I can do xsection " << ExampleBit_B_obj.provides("xsection") << std::endl;
+  std::cout << "I can do dogsname " << ExampleBit_B_obj.provides("authors_dogs_name") << std::endl;
+  std::cout << "Core says: report on n_events!" << std::endl;
   std::cout << ExampleBit_B_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_B_obj.report<Tags::nevents>();
-  if (ExampleBit_B_obj.provides<Tags::nevents>()) {
-    std::cout << "OK, so what is it then?\n";
-    std::cout << "  " << ExampleBit_B_obj.name() << " says: " << ExampleBit_B_obj.result<Tags::nevents>()<<"\n" ;
+  std::cout << "  "; ExampleBit_B_obj.report("nevents");
+  if (ExampleBit_B_obj.provides("nevents")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_B_obj.name() << " says: " << ExampleBit_B_obj.result<Tags::nevents>() << std::endl ;
   }
 
-  std::cout << "\n";
+  std::cout <<  std::endl;
 
-  std::cout << ts_map["nevents"] << std::endl;
-  std::cout << ts_map["charge"] << std::endl;
-  std::cout << ts_map.size() << std::endl;
-  std::cout << ts_map << std::endl;
+  //std::cout << ts_map["nevents"] << std::endl;
+  //std::cout << ts_map["charge"] << std::endl;
+  //std::cout << ts_map.size() << std::endl;
+  //std::cout << ts_map << std::endl;
 
   // Instantiate the ScannerBit module
 

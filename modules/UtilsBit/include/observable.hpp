@@ -22,9 +22,10 @@
 
 #include <map>
 #include <boost/assign.hpp>
-#include <boost/mpl/map.hpp>
-#include <boost/mpl/pair.hpp>
-#include <boost/mpl/at.hpp>
+#include <boost/preprocessor/stringize.hpp>
+//#include <boost/mpl/map.hpp>
+//#include <boost/mpl/pair.hpp>
+//#include <boost/mpl/at.hpp>
 
 #define __DUMMY__
 #define __DUMMY_FUNC__(...)
@@ -66,6 +67,8 @@ struct dep_policies {
   SUMMARISE_OBS(MODULE,CONTENTS_##MODULE(MODULE,OBS_SUMMARY, __DUMMY_FUNC__)) \
   /* Make string map of names+types of all dependencies */                    \
   SUMMARISE_DEP(MODULE,CONTENTS_##MODULE(MODULE,__DUMMY_FUNC__, DEP_SUMMARY)) \
+  /* Make the module constructor */                                           \
+  MAKE_CONSTRUCTOR(MODULE)                                                    \
   /* Instantiate the bastard at last (action?! for reals?) */                 \
   MAKE_INSTANCE(MODULE)                                                       \
 
@@ -78,12 +81,14 @@ struct dep_policies {
   #define SUMMARISE_OBS           __DUMMY_FUNC__
   #define SUMMARISE_DEP           __DUMMY_FUNC__
   #define MAKE_INSTANCE           __DUMMY_FUNC__
+  #define MAKE_CONSTRUCTOR        __DUMMY_FUNC__
 #else
   #define CREATE_OBS_OR_LIKE      CREATE_OBS_OR_LIKE_IN_DRIVER
   #define SET_DEPENDENCY          SET_DEPENDENCY_IN_DRIVER
   #define SUMMARISE_OBS           SUMMARISE_OBS_IN_DRIVER
   #define SUMMARISE_DEP           SUMMARISE_DEP_IN_DRIVER  
   #define MAKE_INSTANCE           MAKE_INSTANCE_IN_DRIVER
+  #define MAKE_CONSTRUCTOR        MAKE_CONSTRUCTOR_IN_DRIVER
 #endif
 
 
@@ -135,7 +140,8 @@ namespace MODULE { TYPE TAG (); }                                            \
      be used for at this stage. */                                           \
   template <>                                                                \
   void PASTE(MODULE,_cls)::report<Tags::TAG>() {                             \
-    std::cout<<"Dear Core, I provide the function with tag: "<<#TAG<<"\n";   \
+    std::cout<<"Dear Core, I provide the function with tag: "<<              \
+     #TAG<<std::endl;                                                        \
   }
 
 
@@ -162,9 +168,7 @@ namespace MODULE { TYPE TAG (); }                                            \
   };                                                                         \
 
 
-// Set up 1) a map with all the function names and their type names
-//        2) a map from the function names to integers, which then
-//           will constitute the keys for a map to the tags 
+// Set up a map with all the function names and their type names
 #define OBS_SUMMARY(MODULE, TAG, TYPE) (#TAG, #TYPE)
 #define SUMMARISE_OBS_IN_DRIVER(MODULE, DETAILS)                             \
   const std::map<std::string,std::string>                                    \
@@ -176,6 +180,23 @@ namespace MODULE { TYPE TAG (); }                                            \
 #define SUMMARISE_DEP_IN_DRIVER(MODULE, DETAILS)                             \
   const std::map<std::string,std::string>                                    \
    PASTE(MODULE,_cls)::iMayNeed = boost::assign::map_list_of DETAILS;
+
+// Set up the module's constructor
+#define MAKE_CONSTRUCTOR_IN_DRIVER(MODULE)                                   \
+  void PASTE(MODULE,_cls)::PASTE(MODULE,_cls_deferred_constructor)() {       \
+    CONTENTS_##MODULE(MODULE,CONSTRUCT_PROVIDES,CONSTRUCT_REQUIRES) }        \
+
+// Make the map entries in the constructor corresponding to observables / likes
+#define CONSTRUCT_PROVIDES(MODULE, TAG, TYPE)                                \
+  map_bools[#TAG] = &PASTE(MODULE,_cls)::provides<Tags::TAG>;                \
+  map_voids[#TAG] = &PASTE(MODULE,_cls)::report<Tags::TAG>;                  \
+  //map_any[#TAG]   = &PASTE(MODULE,_cls)::result<Tags::TAG>;                \
+
+// Make the map entries in the constructor corresponding to depedencies
+#define CONSTRUCT_REQUIRES(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE)               \
+  map_bools[BOOST_PP_STRINGIZE(DEP_TAG##OBSLIKE_TAG)] =                      \
+   &PASTE(MODULE,_cls)::requires<Tags::OBSLIKE_TAG, Tags::DEP_TAG>;          \
+
 
 
 // Instantiate a module daughter class, naming the new object MODULE_obj 

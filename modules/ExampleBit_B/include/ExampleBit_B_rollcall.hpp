@@ -27,8 +27,8 @@
 
 #define CURRENT_MODULE ExampleBit_B
 #define CONTENTS_ExampleBit_B(DEF, OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
-  /* OBS_OR_LIKE(like_or_obs_name, return_type)                          /* To add more functions to this module, add    */ \
-  /* DEPENDENCY(like_or_obs_name, dependency_name, dependency_type)      /*  new commands to this macro, in this form.   */ \
+  /* OBS_OR_LIKE(DEF,like_or_obs_name, return_type)                          /* To add more functions to this module, add    */ \
+  /* DEPENDENCY(DEF,like_or_obs_name, dependency_name, dependency_type)      /*  new commands to this macro, in this form.   */ \
   OBS_OR_LIKE(DEF, xsection, double)                          /* Observable: cross-section for some hypothetical process */ \
   OBS_OR_LIKE(DEF, nevents_postcuts, int)                     /* Observable: number of events for process after cuts     */ \
    DEPENDENCY(DEF, nevents_postcuts, nevents, double)         /* Dependency: post-cut events needs pre-cut events        */ \

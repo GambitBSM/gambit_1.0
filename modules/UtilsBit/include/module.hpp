@@ -22,6 +22,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <observable.hpp>
+#include <boost/any.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 
 // Abstract base class for a generic module that can provide observable and 
@@ -46,7 +47,12 @@ class module {
 #define CREATE_MODULE(MODULE)                                             \
                                                                           \
 class PASTE(MODULE,_cls) : public module {                                \
+                                                                          \
   public:                                                                 \
+    /* module constructor */                                              \
+    PASTE(MODULE,_cls)() {PASTE(MODULE,_cls_deferred_constructor)();}     \
+    void PASTE(MODULE,_cls_deferred_constructor)();                       \
+                                                                          \
     /* module name */                                                     \
     std::string name() { return #MODULE; }                                \
                                                                           \
@@ -57,24 +63,52 @@ class PASTE(MODULE,_cls) : public module {                                \
                                                                           \
     /* module provides observable/likelihood TAG? */                      \
     template <typename TAG> bool provides() { return false; }             \
+    /* overloaded, non-templated version */                               \
+    bool provides(std::string s) {                                        \
+      if (map_bools.find(s) == map_bools.end()) { return false; }         \
+      return (this->*map_bools[s])(); }                                   \
                                                                           \
     /* module requires observable/likelihood DEP_TAG to compute TAG */    \
     template <typename DEP_TAG, typename TAG>                             \
       bool requires() { return false; }                                   \
+    /* overloaded, non-templated version */                               \
+    bool requires(std::string dep, std::string obs) {                     \
+      if (map_bools.find(dep+obs) == map_bools.end()) { return false; }   \
+      return (this->*map_bools[dep+obs])(); }                             \
                                                                           \
     /* report on observable/likelihood TAG */                             \
     template <typename TAG> void report() {                               \
-      std::cout<<"I do not support this tag. \n";                         \
-      }                                                                   \
+      std::cout<<"I do not support this tag."<<std::endl; }               \
+    /* overloaded, non-templated version */                               \
+    void report(std::string s) {                                          \
+      if (map_voids.find(s) == map_voids.end()) {                         \
+        std::cout<<"I do not support this tag."<<std::endl; }             \
+      else {                                                              \
+        (this->*map_voids[s])(); }                                        \
+    }                                                                     \
+                                                                          \
     /* alias for function TAG */                                          \
     template <typename TAG>                                               \
     typename obs_or_like_traits<TAG,PASTE(MODULE,_cls)>::type result() {  \
       std::cout<<"I do not support this tag. \n";                         \
-      return 0;                                                           \
-    }                                                                     \
+      return 0; }                                                         \
+    /* overloaded, non-templated version */                               \
+    /*boost::any result(std::string s) {                                    \
+      if (map_any.find(s) == map_any.end()) {                             \
+        /* replace with gambit exception */                               \
+    /*    std::cout<<"don't have it";exit(1); }                             \
+      else {return boost::any((this->*map_any[s])());}                    \
+    }*/                                                                     \
+                                                                          \
+  private:                                                                \
+    /* maps from tag strings to tag-specialisted functions */             \
+    std::map<std::string, bool(PASTE(MODULE,_cls)::*)()> map_bools;       \
+    std::map<std::string, void(PASTE(MODULE,_cls)::*)()> map_voids;       \
+    std::map<std::string, boost::any(PASTE(MODULE,_cls)::*)()> map_any;   \
 };                                                                        \
 
 
+//  For the string to integer tag map.
 
 //  Create a Boost preprocessor sequence out of the strings
 //  of all available observable or likelihood functions offered
@@ -95,11 +129,11 @@ class PASTE(MODULE,_cls) : public module {                                \
 //  into a a Boost preprocessor sequence element.
 #define DEP_TAGSTRING_BRACKETS(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) (#DEP_TAG)
 
-//  Helper macros for Boost preprocessor enum macro calls.
-//   Returns sequence element  
-#define SEQ_ENTRY(Z,N,DATA) BOOST_PP_SEQ_ELEM(N,DATA)
 //   Defines map entry for tag string to index map 
-#define MAPMAKER(Z,N,DATA) (ts_arr[N], ts_indx[N])
+#define MAPMAKER1(Z,N,DATA) (ts_arr[N], ts_indx[N])
+
+//  Helper macro for Boost preprocessor enum macro calls; returns sequence element  
+#define SEQ_ENTRY(Z,N,DATA) BOOST_PP_SEQ_ELEM(N,DATA)
 
 
 #endif /* defined(__module__) */

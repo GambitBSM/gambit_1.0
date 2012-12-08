@@ -26,8 +26,8 @@
 #define __ExampleBit_A_rollcall_hpp__
 
 #define CONTENTS_ExampleBit_A(DEF, OBS_OR_LIKE, DEPENDENCY)              /* Give the module contents to be registered.   */ \
-  /* OBS_OR_LIKE(M, like_or_obs_name, return_type)                       /* To add more functions to this module, add    */ \
-  /* DEPENDENCY(M, like_or_obs_name, dependency_name, dependency_type)   /*  new commands to this macro, in this form.   */ \
+  /* OBS_OR_LIKE(DEF, like_or_obs_name, return_type)                     /* To add more functions to this module, add    */ \
+  /* DEPENDENCY(DEF, like_or_obs_name, dependency_name, dependency_type) /*  new commands to this macro, in this form.   */ \
   OBS_OR_LIKE(DEF, nevents, double)                /* Observable: Number of events in some hypothetical process          */ \
    DEPENDENCY(DEF, nevents, xsection, double)      /* Dependencies: Number of events depends on  - cross-section         */ \
    DEPENDENCY(DEF, nevents, charge, double)        /*                                            - charge                */ \

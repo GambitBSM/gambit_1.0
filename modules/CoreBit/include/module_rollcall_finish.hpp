@@ -26,14 +26,18 @@
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/seq/size.hpp>
 
+#include <boost/mpl/map.hpp>
+
 // Make an array of all the observables and likelihoods available from any module, as well as
 // their stated dependencies
-std::string ts_arr [] = {BOOST_PP_ENUM(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),SEQ_ENTRY,TAGSTRING_SEQ)};
+const std::string ts_arr [] = {BOOST_PP_ENUM(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),SEQ_ENTRY,TAGSTRING_SEQ)};
 // Make an integer array with one unique entry for each entry in ts_arr
-int ts_indx [] = {BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),__DUMMY__)};
+//const int ts_indx [] = {BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),__DUMMY__)};
 // Match up the indices in ts_indx with the strings in ts_arr using a map
-std::map<std::string, int> ts_map = boost::assign::map_list_of 
- BOOST_PP_REPEAT(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),MAPMAKER,__DUMMY__);  
+//const std::map<std::string, int> ts_map = boost::assign::map_list_of 
+// BOOST_PP_REPEAT(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),MAPMAKER1,__DUMMY__);  
+// Make a Boost MPL map of (integer types specialised to the indices) to (the true tags)  
+//typedef boost::mpl::map < BOOST_PP_ENUM(BOOST_PP_SEQ_SIZE(TAG_SEQ),MAPMAKER2,TAG_SEQ) > tt_map;
 
 #endif /* defined(__in_module__) */
 #endif /* defined(__module_rollcall_finish__) */
