@@ -21,31 +21,30 @@
 #define __observable_hpp__
 
 #include <map>
+#include <string>
+#include <iostream>
+#include <dictionary.hpp>
 #include <boost/assign.hpp>
 #include <boost/preprocessor/stringize.hpp>
-//#include <boost/mpl/map.hpp>
-//#include <boost/mpl/pair.hpp>
-//#include <boost/mpl/at.hpp>
 
 #define __DUMMY__
 #define __DUMMY_FUNC__(...)
 #define PASTE(X,Y) PASTE_HIDDEN(X,Y)
 #define PASTE_HIDDEN(X,Y) X##Y
 
-template <typename Tag, typename Module>
-struct obs_or_like_traits {
 // A way to fetch a trait of an observable or likelihood
 // (like its type), based on its tag and the module to which it belongs.
+template <typename Tag, typename Module>
+struct obs_or_like_traits {
     typedef double type;  // Scalar numerical value by default.
 };
 
-template <typename Tag, typename Module>
-struct obs_or_like_policies {
 // Methods and functions associated with an observable 
 // or likelihood, identified by its tag and the module to which it belongs.
+template <typename Tag, typename Module>
+struct obs_or_like_policies {
     static typename obs_or_like_traits<Tag,Module>::type (*value)();
 };
-
 
 // Equivalent classes for dependencies, where both a dependent and 
 // independent tag need to be specified
@@ -181,27 +180,30 @@ namespace MODULE { TYPE TAG (); }                                            \
   const std::map<std::string,std::string>                                    \
    PASTE(MODULE,_cls)::iMayNeed = boost::assign::map_list_of DETAILS;
 
+
 // Set up the module's constructor
 #define MAKE_CONSTRUCTOR_IN_DRIVER(MODULE)                                   \
   void PASTE(MODULE,_cls)::PASTE(MODULE,_cls_deferred_constructor)() {       \
     CONTENTS_##MODULE(MODULE,CONSTRUCT_PROVIDES,CONSTRUCT_REQUIRES) }        \
 
-// Make the map entries in the constructor corresponding to observables / likes
+
+// Make the map entries in the constructor for observables / likes
 #define CONSTRUCT_PROVIDES(MODULE, TAG, TYPE)                                \
   map_bools[#TAG] = &PASTE(MODULE,_cls)::provides<Tags::TAG>;                \
   map_voids[#TAG] = &PASTE(MODULE,_cls)::report<Tags::TAG>;                  \
-  //map_any[#TAG]   = &PASTE(MODULE,_cls)::result<Tags::TAG>;                \
+  moduleDict.set<TYPE(PASTE(MODULE,_cls)::*)()>                              \
+   (#TAG, &PASTE(MODULE,_cls)::result<Tags::TAG>);                           \
 
-// Make the map entries in the constructor corresponding to depedencies
+
+// Make the map entries in the constructor for depedencies
 #define CONSTRUCT_REQUIRES(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE)               \
   map_bools[BOOST_PP_STRINGIZE(DEP_TAG##OBSLIKE_TAG)] =                      \
    &PASTE(MODULE,_cls)::requires<Tags::OBSLIKE_TAG, Tags::DEP_TAG>;          \
-
 
 
 // Instantiate a module daughter class, naming the new object MODULE_obj 
 #define MAKE_INSTANCE_IN_DRIVER(MODULE) MODULE##_cls MODULE##_obj;
 
 
-#endif /* defined(__observable_hpp__) */
+#endif // defined(__observable_hpp__) 
 

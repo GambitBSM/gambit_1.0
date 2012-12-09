@@ -36,9 +36,9 @@ namespace gambit{
 
   /*! \brief gambit exceptions
    *
-   * sufic static/public exception related methods and classes.
+   * gambit static/public exception related methods and classes.
    *
-   * Note that the throwing macro GAMBIT_THROW_EXCEPTION(e) is also defined in exceptions.hh. Please read its
+   * Note that the throwing macro GAMBIT_THROW_EXCEPTION(e) is also defined in exceptions.hpp. Please read its
    * documentation first.
    *
    *  \author Johan Lundberg

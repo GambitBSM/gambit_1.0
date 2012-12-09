@@ -71,6 +71,8 @@ stream& operator<<(stream& os, const std::map<std::string,int>& map){
   return os;
 }
 
+gambit::dict masterDict;
+
 int main( int argc, const char* argv[] )
 {
 
@@ -149,8 +151,26 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_A_obj.report("nevents_like");
   if (ExampleBit_A_obj.provides("nevents_like")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_like>() << std::endl ;
+    typedef obs_or_like_traits<Tags::nevents_like,ExampleBit_A_cls>::type testType; //in this case the underlying type is double
+    //Call the module function by its tag  
+    testType nevents_like = ExampleBit_A_obj.result<Tags::nevents_like>() ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
+    //Call the module function by its string name (could use TestType here too insead of double) 
+    double nevents_like2 = ExampleBit_A_obj.result<double>("nevents_like") ;
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
+    //So have a go at sending it to the dictionary 
+    masterDict.set<testType>("nevents_like",nevents_like);
+    //Now pull it back  
+    testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
+    // and show off
+    std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
+    // Try pulling it out as the wrong type (raises exception; uncomment to see)
+    //int nevents_like_fail = masterDict.get<int>("nevents_like");
+    // Try pulling something out that is not in the dictionary (raises exception; uncomment to see)
+    //int nevents_fail = masterDict.get<int>("nevents");
   }
+  
+
   std::cout << "Core says: report on n_events_postcuts!" << std::endl;
   std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
   std::cout << "  "; ExampleBit_A_obj.report("nevents_postcuts");
@@ -177,7 +197,15 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_A_obj.report("authors_dogs_name");
   if (ExampleBit_A_obj.provides("authors_dogs_name")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::authors_dogs_name>() << std::endl ;
+    typedef obs_or_like_traits<Tags::authors_dogs_name,ExampleBit_A_cls>::type testType; //in this case the underlying type is std::string
+    testType authors_dogs_name = ExampleBit_A_obj.result<Tags::authors_dogs_name>();
+    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << authors_dogs_name << std::endl ;
+    //So have a go at sending it to the dictionary 
+    masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
+    //Now pull it back  
+    testType authors_dogs_name_pulled = masterDict.get<testType>("authors_dogs_name");
+    // and show off
+    std::cout << "  This is what I put into and retrieved from the master dictionary: " << authors_dogs_name_pulled << std::endl ;
   }
 
 

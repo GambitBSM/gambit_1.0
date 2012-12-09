@@ -19,10 +19,10 @@
 #ifndef __module__
 #define __module__
 
+#include <map>
+#include <string>
 #include <iostream>
-#include <stdio.h>
 #include <observable.hpp>
-#include <boost/any.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 
 // Abstract base class for a generic module that can provide observable and 
@@ -92,19 +92,25 @@ class PASTE(MODULE,_cls) : public module {                                \
     typename obs_or_like_traits<TAG,PASTE(MODULE,_cls)>::type result() {  \
       std::cout<<"I do not support this tag. \n";                         \
       return 0; }                                                         \
-    /* overloaded, non-templated version */                               \
-    /*boost::any result(std::string s) {                                    \
-      if (map_any.find(s) == map_any.end()) {                             \
-        /* replace with gambit exception */                               \
-    /*    std::cout<<"don't have it";exit(1); }                             \
-      else {return boost::any((this->*map_any[s])());}                    \
-    }*/                                                                     \
+    /* overloaded, 'stringy' version */                                   \
+    /* Yes, it's very hard to read.  This is a templated member function  \
+       that uses an input string s to pull a pointer to another member    \
+       function out of the module's private dictionary.  It then          \
+       dereferences that pointer, calls the other member function and     \
+       returns the result.  The template type is the type of the return   \
+       value, and of the return value of the other member function that   \
+       this one calls.  The 'other member function' is in fact the        \
+       function that this one overloads. */                                                     \
+    template <typename Type>                                              \
+    Type result(std::string s) {                                          \
+      return ( this ->*                                                   \
+       ( moduleDict.get<Type(PASTE(MODULE,_cls)::*)()>(s) ) )(); }        \
                                                                           \
   private:                                                                \
     /* maps from tag strings to tag-specialisted functions */             \
     std::map<std::string, bool(PASTE(MODULE,_cls)::*)()> map_bools;       \
     std::map<std::string, void(PASTE(MODULE,_cls)::*)()> map_voids;       \
-    std::map<std::string, boost::any(PASTE(MODULE,_cls)::*)()> map_any;   \
+    gambit::dict moduleDict;                                              \
 };                                                                        \
 
 

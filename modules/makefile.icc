@@ -90,7 +90,8 @@ CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst
 
 # PS - temporary hacks - these can be combined into much more streamlined statements later (this whole thing needs to be replaced with config+automake anyway)
 OTHERINC = $(UTILSDIR)/include/exceptions.hpp $(UTILSDIR)/include/module.hpp \
-$(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp
+$(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp \
+$(UTILSDIR)/include/dictionary.hpp
 OTHERSRC = $(UTILSDIR)/src/exceptions.cpp ExampleBit_A/src/ExampleBit_A.cpp ExampleBit_B/src/ExampleBit_B.cpp   
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o
 
