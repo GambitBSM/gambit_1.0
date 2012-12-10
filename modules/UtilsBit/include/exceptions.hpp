@@ -8,6 +8,10 @@
 /*! \file exceptions.hpp
  * \brief Interface for exception throwing
  *
+ * TODO: (Pat) these need to be rewritten so that the functions at the bottom are properly encapsulated
+ *       into the actual exception objects, by adding new member functions to the exception classes and
+ *       setting the "what" internal string at construction (although it should have a class default).
+ *
  * Declares the namespace gambit::exceptions, defining methods as well the user macro:
  *
  * GAMBIT_THROW_EXCEPTION(e);

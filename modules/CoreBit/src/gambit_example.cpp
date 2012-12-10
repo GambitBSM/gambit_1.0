@@ -152,22 +152,26 @@ int main( int argc, const char* argv[] )
   if (ExampleBit_A_obj.provides("nevents_like")) {
     std::cout << "OK, so what is it then?" << std::endl;
     typedef obs_or_like_traits<Tags::nevents_like,ExampleBit_A_cls>::type testType; //in this case the underlying type is double
-    //Call the module function by its tag  
+    // Call the module function by its tag  
     testType nevents_like = ExampleBit_A_obj.result<Tags::nevents_like>() ;
     std::cout << "  " << ExampleBit_A_obj.name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
-    //Call the module function by its string name (could use TestType here too insead of double) 
+    // Call the module function by its string name (could use TestType here too insead of double) 
     double nevents_like2 = ExampleBit_A_obj.result<double>("nevents_like") ;
     std::cout << "  " << ExampleBit_A_obj.name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
-    //So have a go at sending it to the dictionary 
+    // So have a go at sending it to the dictionary 
     masterDict.set<testType>("nevents_like",nevents_like);
-    //Now pull it back  
+    // Now pull it back  
     testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
     // and show off
     std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
+    // You can send it in as a different type, and it will be converted -- but you must read it out with that type agan
+    //masterDict.set<float>("nevents_like",nevents_like);
     // Try pulling it out as the wrong type (raises exception; uncomment to see)
     //int nevents_like_fail = masterDict.get<int>("nevents_like");
     // Try pulling something out that is not in the dictionary (raises exception; uncomment to see)
     //int nevents_fail = masterDict.get<int>("nevents");
+    // You can also clear a dictionary like this:
+    masterDict.purge();    
   }
   
 
