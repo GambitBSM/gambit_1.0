@@ -45,6 +45,7 @@
 #define MODULE_ROSTER(DEF_MODULE) \
   DEF_MODULE(ExampleBit_A) \
   DEF_MODULE(ExampleBit_B) \
+  DEF_MODULE(TinyDarkBit) \
 
 // Create all the modules
 MODULE_ROSTER(CREATE_MODULE) 
@@ -52,6 +53,7 @@ MODULE_ROSTER(CREATE_MODULE)
 // Add the module functions
 #include <ExampleBit_A_rollcall.hpp>
 #include <ExampleBit_B_rollcall.hpp>
+#include <TinyDarkBit_rollcall.hpp>
 
 // Register module functions
 #include <module_rollcall_finish.hpp>
