@@ -89,12 +89,13 @@ namespace GAMBIT{
 
 	  };
 
-	  void DarkSUSY::rdomega(){
+	  double DarkSUSY::rdomega(){
       int omtype, fast, ierr, iwar, nfc;
       double xf, oh2;
       omtype = fast = 1;
       oh2 = Function<tags::DSRDOMEGA>()(omtype, fast, xf, ierr, iwar, nfc);
-      cout << "Omega h^2 with coannihilations is " << oh2 << endl;
+      // cout << "Omega h^2 with coannihilations is " << oh2 << endl;
+      return oh2;
 	  };
 
 	  void DarkSUSY::finalize (){

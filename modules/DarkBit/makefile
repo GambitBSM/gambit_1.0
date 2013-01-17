@@ -1,8 +1,8 @@
-DEPS=include/backend-darksusy.hpp include/backend-common.hpp
+DEPS=include/backend-darksusy.hpp ../UtilsBit/include/backend-common.hpp
 ODIR=build
 SDIR=src
 LIBS=-ldl -lgfortran
-INCLUDE=-Iinclude
+INCLUDE=-Iinclude -I../UtilsBit/include
 
 OBJ=build/backend-darksusy.o build/darksusy_test.o
 
