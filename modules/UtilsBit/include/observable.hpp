@@ -185,6 +185,12 @@ namespace MODULE { TYPE TAG (); }                                            \
 #define MAKE_CONSTRUCTOR_IN_DRIVER(MODULE)                                   \
   void PASTE(MODULE,_cls)::PASTE(MODULE,_cls_deferred_constructor)() {       \
     CONTENTS_##MODULE(MODULE,CONSTRUCT_PROVIDES,CONSTRUCT_REQUIRES) }        \
+                                                                             \
+  /* Set up module's initialization routine */                               \
+  namespace MODULE { void initialize (); }                                   \
+  void PASTE(MODULE,_cls)::initialize() {                                    \
+    MODULE::initialize();                                                    \
+  }                                                                          \
 
 
 // Make the map entries in the constructor for observables / likes

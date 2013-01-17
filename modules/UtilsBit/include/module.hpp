@@ -53,6 +53,9 @@ class PASTE(MODULE,_cls) : public module {                                \
     PASTE(MODULE,_cls)() {PASTE(MODULE,_cls_deferred_constructor)();}     \
     void PASTE(MODULE,_cls_deferred_constructor)();                       \
                                                                           \
+    /* register module initialization routine */                          \
+    virtual void initialize();                                            \
+                                                                          \
     /* module name */                                                     \
     std::string name() { return #MODULE; }                                \
                                                                           \
@@ -100,7 +103,7 @@ class PASTE(MODULE,_cls) : public module {                                \
        returns the result.  The template type is the type of the return   \
        value, and of the return value of the other member function that   \
        this one calls.  The 'other member function' is in fact the        \
-       function that this one overloads. */                                                     \
+       function that this one overloads. */                               \
     template <typename Type>                                              \
     Type result(std::string s) {                                          \
       return ( this ->*                                                   \

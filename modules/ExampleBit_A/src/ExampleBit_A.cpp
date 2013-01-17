@@ -26,6 +26,8 @@ namespace ExampleBit_A {
 
 double count = 3.5;
 
+void initialize () {} ; // CW Dummy initialization routine
+
 double nevents () {return count++;};
 double nevents_like () {return 1.5;};
 std::string authors_dogs_name () {return "Millie";};
