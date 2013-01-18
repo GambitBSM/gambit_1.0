@@ -13,6 +13,7 @@
 //
 //  Pat Scott
 //  Nov 23 2012
+//  Jan 18 2013
 //
 //  *********************************************
 
@@ -22,35 +23,35 @@
 
 #include <module.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/seq/size.hpp>
 
-#include <boost/mpl/map.hpp>
+//  For the string to integer tag map.
+
+//  Create a Boost preprocessor sequence out of the strings
+//  of all available observable or likelihood functions offered
+//  by all modules.
+#define TAGSTRING_SEQ MODULE_ROSTER(CREATE_TAGSTRING_SEQ)
+
+//  Create a Boost preprocessor sequence out of the strings
+//  of all available observable or likelihood functions offered
+//  by a given MODULE.
+#define CREATE_TAGSTRING_SEQ(MODULE)                                      \
+  CONTENTS_##MODULE(MODULE,OBS_TAGSTRING_BRACKETS,DEP_TAGSTRING_BRACKETS)
+
+//  Process an individual OBS_OR_LIKE CONTENTS entry
+//  into a a Boost preprocessor sequence element.
+#define OBS_TAGSTRING_BRACKETS(MODULE, TAG, TYPE) (#TAG)
+
+//  Process an individual DEPENDENCY CONTENTS entry
+//  into a a Boost preprocessor sequence element.
+#define DEP_TAGSTRING_BRACKETS(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) (#DEP_TAG)
+
+//  Helper macro for Boost preprocessor enum macro calls; returns sequence element  
+#define SEQ_ENTRY(Z,N,DATA) BOOST_PP_SEQ_ELEM(N,DATA)
 
 // Make an array of all the observables and likelihoods available from any module, as well as
 // their stated dependencies
 const std::string ts_arr [] = {BOOST_PP_ENUM(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),SEQ_ENTRY,TAGSTRING_SEQ)};
-// Make an integer array with one unique entry for each entry in ts_arr
-//const int ts_indx [] = {BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),__DUMMY__)};
-// Match up the indices in ts_indx with the strings in ts_arr using a map
-//const std::map<std::string, int> ts_map = boost::assign::map_list_of 
-// BOOST_PP_REPEAT(BOOST_PP_SEQ_SIZE(TAGSTRING_SEQ),MAPMAKER1,__DUMMY__);  
-// Make a Boost MPL map of (integer types specialised to the indices) to (the true tags)  
-//typedef boost::mpl::map < BOOST_PP_ENUM(BOOST_PP_SEQ_SIZE(TAG_SEQ),MAPMAKER2,TAG_SEQ) > tt_map;
 
 #endif /* defined(__in_module__) */
 #endif /* defined(__module_rollcall_finish__) */
-
-
-//#ifndef __in_module__
-//using namespace boost::mpl;
-//#include <boost/mpl/map.hpp>
-//#include <boost/mpl/pair.hpp>
-//#include <boost/mpl/at.hpp>
-//typedef map< pair <int_<5>,Tags::nevents>::type > PASTE(CURRENT_MODULE,_tag_map);
-//at<map<pair<int,unsigned> >,int >::type PASTE(CURRENT_MODULE,_rabbit);
-//#endif
-
-//MAP_MODULE_ROSTER(MODULE_ROSTER(CREATE_MODULE)) // Map the module objects to strings -- todo
-

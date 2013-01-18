@@ -13,6 +13,7 @@
 //  Pat Scott
 //  Nov 15 2012 (inspired by Abram Krislock's 
 //               ModuleBit.hpp)
+//  Jan 18 2013
 //
 //  *********************************************
 
@@ -26,11 +27,7 @@
 #include <boost/preprocessor/seq/elem.hpp>
 
 // Abstract base class for a generic module that can provide observable and 
-// likelihood functions.  The only real reason this is here is so that I can
-// later create a vector of pointers to this class which are actually pointers
-// to the various daughter classes.  Although so far that seems to be useless
-// as I can't call any of the templated members of the daughter classes via
-// a pointer of the base class type. (see commented code at l 67 of gambit_example.cpp) 
+// likelihood functions.
 class module { 
   public: 
     virtual std::string name() = 0; 
@@ -38,23 +35,31 @@ class module {
     virtual bool requires() { return false; };
     virtual void report() {};
     virtual void result() {};
-    //const std::map<std::string,std::string> iCanDo;
-    //const std::map<std::string,std::string> iMayNeed;
+    const std::map<std::string,std::string> iCanDo;
+    const std::map<std::string,std::string> iMayNeed;
 };
 
 
-//  Create a specific module daughter class 
+//  Create a specific module
 #define CREATE_MODULE(MODULE)                                             \
                                                                           \
-class PASTE(MODULE,_cls) : public module {                                \
+  /* Prototype the module initialisation function */                      \
+  namespace MODULE { void initialize (); }                                \
                                                                           \
-  public:                                                                 \
+  /* Create the specific module daughter class */                         \
+  class PASTE(MODULE,_cls) : public module {                              \
+                                                                          \
+   public:                                                                \
+                                                                          \
     /* module constructor */                                              \
-    PASTE(MODULE,_cls)() {PASTE(MODULE,_cls_deferred_constructor)();}     \
-    void PASTE(MODULE,_cls_deferred_constructor)();                       \
+    PASTE(MODULE,_cls)() {                                                \
+      deferred_constructor () ;                                           \
+      initialize () ;                                                     \
+    }                                                                     \
                                                                           \
-    /* register module initialization routine */                          \
-    virtual void initialize();                                            \
+    /* module constructor subroutines */                                  \
+    void deferred_constructor () ;                                        \
+    void initialize() { MODULE::initialize () ; }                         \
                                                                           \
     /* module name */                                                     \
     std::string name() { return #MODULE; }                                \
@@ -109,56 +114,12 @@ class PASTE(MODULE,_cls) : public module {                                \
       return ( this ->*                                                   \
        ( moduleDict.get<Type(PASTE(MODULE,_cls)::*)()>(s) ) )(); }        \
                                                                           \
-  private:                                                                \
+   private:                                                               \
     /* maps from tag strings to tag-specialisted functions */             \
     std::map<std::string, bool(PASTE(MODULE,_cls)::*)()> map_bools;       \
     std::map<std::string, void(PASTE(MODULE,_cls)::*)()> map_voids;       \
     gambit::dict moduleDict;                                              \
 };                                                                        \
 
-
-//  For the string to integer tag map.
-
-//  Create a Boost preprocessor sequence out of the strings
-//  of all available observable or likelihood functions offered
-//  by all modules.
-#define TAGSTRING_SEQ MODULE_ROSTER(CREATE_TAGSTRING_SEQ)
-
-//  Create a Boost preprocessor sequence out of the strings
-//  of all available observable or likelihood functions offered
-//  by a given MODULE.
-#define CREATE_TAGSTRING_SEQ(MODULE)                                      \
-  CONTENTS_##MODULE(MODULE,OBS_TAGSTRING_BRACKETS,DEP_TAGSTRING_BRACKETS)
-
-//  Process an individual OBS_OR_LIKE CONTENTS entry
-//  into a a Boost preprocessor sequence element.
-#define OBS_TAGSTRING_BRACKETS(MODULE, TAG, TYPE) (#TAG)
-
-//  Process an individual DEPENDENCY CONTENTS entry
-//  into a a Boost preprocessor sequence element.
-#define DEP_TAGSTRING_BRACKETS(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) (#DEP_TAG)
-
-//   Defines map entry for tag string to index map 
-#define MAPMAKER1(Z,N,DATA) (ts_arr[N], ts_indx[N])
-
-//  Helper macro for Boost preprocessor enum macro calls; returns sequence element  
-#define SEQ_ENTRY(Z,N,DATA) BOOST_PP_SEQ_ELEM(N,DATA)
-
-
 #endif /* defined(__module__) */
-
-
-
-
-//#ifndef __in_module__
-// Create a sequence of module daughter class types
-//typedef boost::mpl::vector<> PASTE(module_list_,BOOST_PP_COUNTER);
-//#endif
-
-
-/* Add the new daughter class to the sequence of registered modules */    \
-//typedef boost::mpl::push_back<PASTE(module_list_,BOOST_PP_COUNTER), PASTE(MODULE,_cls)>::type \
- PASTE(module_list_,BOOST_PP_ADD(BOOST_PP_COUNTER,1)); \
-
-//#define FINALISE_MODULES typedef PASTE(module_list_,BOOST_PP_COUNTER) module_list;
 

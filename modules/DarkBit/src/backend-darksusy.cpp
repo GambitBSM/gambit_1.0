@@ -22,6 +22,7 @@ namespace GAMBIT{
 			  _libState = true;
 		  } else {
         std::cout << "Failed loading DarkSUSY" << std::endl;
+        std::cout << dlerror() << std::endl;
 			  // GAMBIT_MSG_ERROR(dlerror());
 			  // GAMBIT_MSG_FATAL("Failed to load DarkSUSY. Help!");
 		  }

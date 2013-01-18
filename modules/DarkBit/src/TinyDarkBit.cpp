@@ -1,7 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  Functions of module ExampleBit_A
+//  Functions of module TinyDarkBit
 //
 //  Put your functions in files like this
 //  if you wish to add observables or likelihoods
@@ -14,8 +14,8 @@
 //
 //  (add name and date if you modify)
 //
-//  Pat Scott
-//  Nov 15 2012
+//  Chrisoph Weniger
+//  Jan 17 2013
 //
 //  *********************************************
 
@@ -45,8 +45,8 @@ void TinyDarkBit::initialize()
   std::cout << "********************************************" << std::endl;
 
   // GAMBIT::Backend::DarkSUSY TinyDarkBit::A;
-  TinyDarkBit::myDarkSUSY.initialize();
-  TinyDarkBit::myDarkSUSY.model();
+  //TinyDarkBit::myDarkSUSY.initialize();
+  //TinyDarkBit::myDarkSUSY.model();
 
   std::cout << "**********************************************" << std::endl;
   std::cout << "*** Initialization of TinyDarkBit complete ***" << std::endl;

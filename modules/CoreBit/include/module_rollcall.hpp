@@ -55,8 +55,8 @@ MODULE_ROSTER(CREATE_MODULE)
 #include <ExampleBit_B_rollcall.hpp>
 #include <TinyDarkBit_rollcall.hpp>
 
-// Register module functions
-#include <module_rollcall_finish.hpp>
+// Finish registering module functions (presently redundant)
+//#include <module_rollcall_finish.hpp>
 
 #endif /* defined(__module_rollcall__) */
 
