@@ -131,7 +131,7 @@ int main( int argc, const char* argv[] )
   std::cout << "My name is " << TinyDarkBit_obj.name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit_obj.iCanDo << std::endl;
   std::cout << " ...but I may need: " << std::endl << TinyDarkBit_obj.iMayNeed << std::endl;
-  std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit_obj.result<double>("omega_DM") << std::endl;
+  //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit_obj.result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl;
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities

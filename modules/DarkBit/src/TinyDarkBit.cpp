@@ -37,8 +37,8 @@ void TinyDarkBit::initialize()
   std::cout << "***       Initializing TinyDarkBit       ***" << std::endl;
   std::cout << "********************************************" << std::endl;
 
-  TinyDarkBit::myDarkSUSY.initialize();
-  TinyDarkBit::myDarkSUSY.model();
+  //TinyDarkBit::myDarkSUSY.initialize();
+  //TinyDarkBit::myDarkSUSY.model();
 
   std::cout << "**********************************************" << std::endl;
   std::cout << "*** Initialization of TinyDarkBit complete ***" << std::endl;
