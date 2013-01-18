@@ -21,16 +21,9 @@
 
 #define __in_module__
 #include "module_rollcall.hpp"
-#include "backend-darksusy.hpp"
 
 #include <dlfcn.h>
 #include <iostream>
-
-namespace TinyDarkBit {
-  double omega_DM();
-  void initialize();
-  GAMBIT::Backend::DarkSUSY myDarkSUSY;
-}
 
 double TinyDarkBit::omega_DM ()
 {
@@ -44,9 +37,8 @@ void TinyDarkBit::initialize()
   std::cout << "***       Initializing TinyDarkBit       ***" << std::endl;
   std::cout << "********************************************" << std::endl;
 
-  // GAMBIT::Backend::DarkSUSY TinyDarkBit::A;
-  //TinyDarkBit::myDarkSUSY.initialize();
-  //TinyDarkBit::myDarkSUSY.model();
+  TinyDarkBit::myDarkSUSY.initialize();
+  TinyDarkBit::myDarkSUSY.model();
 
   std::cout << "**********************************************" << std::endl;
   std::cout << "*** Initialization of TinyDarkBit complete ***" << std::endl;

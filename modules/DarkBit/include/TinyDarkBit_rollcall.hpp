@@ -25,6 +25,15 @@
 #ifndef __TinyDarkBit_rollcall_hpp__
 #define __TinyDarkBit_rollcall_hpp__
 
+
+//PS This will go into backend_rollcall or similar when we get the backends into a proper rollcall system too
+#include "backend-darksusy.hpp"
+#ifdef __in_module__
+  namespace TinyDarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; }
+#else
+  namespace TinyDarkBit { GAMBIT::Backend::DarkSUSY myDarkSUSY; }
+#endif
+
 #define CONTENTS_TinyDarkBit(DEF, OBS_OR_LIKE, DEPENDENCY)              /* Give the module contents to be registered.   */ \
   /* OBS_OR_LIKE(DEF, like_or_obs_name, return_type)                     /* To add more functions to this module, add    */ \
   /* DEPENDENCY(DEF, like_or_obs_name, dependency_name, dependency_type) /*  new commands to this macro, in this form.   */ \
@@ -36,7 +45,5 @@
    DEPENDENCY(DEF, omega_DM, par5, double) \
 
 COMPLETE(TinyDarkBit)
-
-namespace TinyDarkBit { void initialize (); }
 
 #endif /* defined(__TinyDarkBit_rollcall_hpp__) */
