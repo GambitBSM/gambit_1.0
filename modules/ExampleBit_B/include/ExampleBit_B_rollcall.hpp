@@ -19,13 +19,13 @@
 //
 //  Pat Scott
 //  Nov 15++ 2012
+//  Jan 18 2013
 //
 //  *********************************************
 
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
 
-#define CURRENT_MODULE ExampleBit_B
 #define CONTENTS_ExampleBit_B(DEF, OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
   /* OBS_OR_LIKE(DEF,like_or_obs_name, return_type)                          /* To add more functions to this module, add    */ \
   /* DEPENDENCY(DEF,like_or_obs_name, dependency_name, dependency_type)      /*  new commands to this macro, in this form.   */ \

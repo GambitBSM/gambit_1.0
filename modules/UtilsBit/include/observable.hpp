@@ -14,6 +14,7 @@
 //  Pat Scott
 //  Nov 15++ 2012 (initially inspired by Abram  
 //                 Krislock's Objects.hpp)
+//  Jan 18 2013
 //
 //  *********************************************
 
@@ -183,8 +184,10 @@ namespace MODULE { TYPE TAG (); }                                            \
 
 // Set up the module's constructor
 #define MAKE_CONSTRUCTOR_IN_DRIVER(MODULE)                                   \
-  void PASTE(MODULE,_cls)::PASTE(MODULE,_cls_deferred_constructor)() {       \
-    CONTENTS_##MODULE(MODULE,CONSTRUCT_PROVIDES,CONSTRUCT_REQUIRES) }        \
+  /* Deferred constructor (function info registration) */                    \
+  void PASTE(MODULE,_cls)::deferred_constructor () {                         \
+    CONTENTS_##MODULE(MODULE,CONSTRUCT_PROVIDES,CONSTRUCT_REQUIRES)          \
+  }                                                                          \
 
 
 // Make the map entries in the constructor for observables / likes

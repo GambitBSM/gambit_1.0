@@ -69,7 +69,7 @@ namespace GAMBIT {
 			void model ();
 
 			// Calculate relic density
-			void rdomega ();
+			double rdomega ();
 
 
 		private:

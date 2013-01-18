@@ -13,22 +13,22 @@
 static const int NMXHEP = 5000;
 
 // List of functions and variables that can be called from libraries
-FUNCTION(HWIGIN, hwigin, 0)
-FUNCTION(INIMAS, inimas, 0)
-FUNCTION(HWUINC, hwuinc, 0)
-FUNCTION(HWABEG, hwabeg, 0)
-FUNCTION(HWEINI, hweini, 0)
-FUNCTION(HWUINE, hwuine, 0)
-FUNCTION(HWEFIN, hwefin, 0)
-FUNCTION(HWEPRO, hwepro, 0)
-FUNCTION(HWBGEN, hwbgen, 0)
-FUNCTION(HWDHOB, hwdhob, 0)
-FUNCTION(HWCFOR, hwcfor, 0)
-FUNCTION(HWCDEC, hwcdec, 0)
-FUNCTION(HWDHAD, hwdhad, 0)
-FUNCTION(HWDHVY, hwdhvy, 0)
-FUNCTION(HWMEVT, hwmevt, 0)
-FUNCTION(HWUFNE, hwufne, 0)
+SUBROUTINE(HWIGIN, hwigin, 0)
+SUBROUTINE(INIMAS, inimas, 0)
+SUBROUTINE(HWUINC, hwuinc, 0)
+SUBROUTINE(HWABEG, hwabeg, 0)
+SUBROUTINE(HWEINI, hweini, 0)
+SUBROUTINE(HWUINE, hwuine, 0)
+SUBROUTINE(HWEFIN, hwefin, 0)
+SUBROUTINE(HWEPRO, hwepro, 0)
+SUBROUTINE(HWBGEN, hwbgen, 0)
+SUBROUTINE(HWDHOB, hwdhob, 0)
+SUBROUTINE(HWCFOR, hwcfor, 0)
+SUBROUTINE(HWCDEC, hwcdec, 0)
+SUBROUTINE(HWDHAD, hwdhad, 0)
+SUBROUTINE(HWDHVY, hwdhvy, 0)
+SUBROUTINE(HWMEVT, hwmevt, 0)
+SUBROUTINE(HWUFNE, hwufne, 0)
 
 struct hwproc_type{
 	double ebeam1, ebeam2, pbeam1, pbeam2;

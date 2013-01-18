@@ -8,8 +8,9 @@
 export
 
 CC = icc 
-LN = $(CC) -lstdc++ -rdynamic 
-CFLAGS = -O3 -Wall -g 
+LN = $(CC)
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran
+CFLAGS = -O3 -Wall -g
 
 FC = ifort
 
@@ -42,11 +43,11 @@ CFLAGS= -O0 $(COMPOPTS) \
 	-I$(MODELDIR)/include \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
-	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include
+	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include -IDarkBit/include
 
 COMMONLIBS = -lm 
 
-TARGETS = gambit_example
+TARGETS = gambit_example 
 
 default: mh gambit_example 
 .PHONY: default
@@ -91,9 +92,12 @@ CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst
 # PS - temporary hacks - these can be combined into much more streamlined statements later (this whole thing needs to be replaced with config+automake anyway)
 OTHERINC = $(UTILSDIR)/include/exceptions.hpp $(UTILSDIR)/include/module.hpp \
 $(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp \
-$(UTILSDIR)/include/dictionary.hpp
-OTHERSRC = $(UTILSDIR)/src/exceptions.cpp ExampleBit_A/src/ExampleBit_A.cpp ExampleBit_B/src/ExampleBit_B.cpp   
-OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o
+$(UTILSDIR)/include/dictionary.hpp \
+DarkBit/include/TinyDarkBit_rollcall.hpp DarkBit/include/backend-common.hpp DarkBit/include/backend-darksusy.hpp
+OTHERSRC = $(UTILSDIR)/src/exceptions.cpp ExampleBit_A/src/ExampleBit_A.cpp ExampleBit_B/src/ExampleBit_B.cpp   \
+DarkBit/src/TinyDarkBit.cpp
+OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
+DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
@@ -131,6 +135,18 @@ ExampleBit_B/build/%.o: ExampleBit_B/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
+DarkBit/build/%.o: DarkBit/src/%.cpp 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+DarkBit/build/%.o: DarkBit/src/%.c 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+DarkBit/build/%.o: DarkBit/src/%.f 
+	@echo ___________Compiling $<:
+	$(FC) $(CFLAGS) -c $< -o $@
+
 $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -145,7 +161,7 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f
 
 gambit_example: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(COREDIR)/build/gambit_example.o 
 	@echo ___________Linking $@:
-	$(LN) $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(CFLAGS) -o $@
+	$(LN) $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(CFLAGS) -o $@ $(LNFLAGS)
 
 # PS - dependencies on non-core source files need to be added here
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(COREINC) $(CORESRC)

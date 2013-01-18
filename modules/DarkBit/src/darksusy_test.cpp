@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
 
   A.model();
 
-  A.rdomega();
+  cout << A.rdomega() << endl;
 
 	// Some checking of what the settings are
 	// cout << A.GetUserVariable<tags::DSIO>().prtlevel << endl;

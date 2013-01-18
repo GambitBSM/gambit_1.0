@@ -16,6 +16,10 @@
 //
 //  Pat Scott
 //  Nov 15 2012
+//  Jan 18 2013
+//
+//  Chrisoph Weniger
+//  Jan 17 2013
 //
 //  *********************************************
 
@@ -26,8 +30,17 @@ namespace ExampleBit_A {
 
 double count = 3.5;
 
-double nevents () {return count++;};
-double nevents_like () {return 1.5;};
-std::string authors_dogs_name () {return "Millie";};
+// Initialization routine
+void initialize () {
+  std::cout << std::endl;
+  std::cout << "********************************************" << std::endl;
+  std::cout << "***       Initializing ExampleBit_A      ***" << std::endl;
+  std::cout << "********************************************" << std::endl;
+}
+
+// Module functions
+double nevents () { return count++; } ;
+double nevents_like () { return 1.5; } ;
+std::string authors_dogs_name () { return "Millie"; } ;
 
 }

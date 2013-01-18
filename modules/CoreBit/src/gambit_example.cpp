@@ -126,6 +126,14 @@ int main( int argc, const char* argv[] )
   //the following does not work
   //std::cout << "I can do nevents " << myBit->provides("nevents");
 
+  // Some basic TinyDarkBit functionality
+  std::cout << "*** Start Dark ***" << std::endl;
+  std::cout << "My name is " << TinyDarkBit_obj.name() << std::endl;
+  std::cout << " I can calculate: " << std::endl << TinyDarkBit_obj.iCanDo << std::endl;
+  std::cout << " ...but I may need: " << std::endl << TinyDarkBit_obj.iMayNeed << std::endl;
+  std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit_obj.result<double>("omega_DM") << std::endl;
+  std::cout << "*** End Dark ***" << std::endl;
+
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   std::cout << "My name is " << ExampleBit_A_obj.name() << std::endl;
   std::cout << " I can calculate: " << std::endl << ExampleBit_A_obj.iCanDo << std::endl;
