@@ -14,7 +14,7 @@
 //
 //  (add name and date if you modify)
 //
-//  Chrisoph Weniger
+//  Christoph Weniger
 //  Jan 17 2013
 //
 //  *********************************************
