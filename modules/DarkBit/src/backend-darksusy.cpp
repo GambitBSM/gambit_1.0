@@ -1,6 +1,7 @@
 /* Backend for DarkSUSY. This is liberally copied from the GAMBIT Herwig Backend.
  * \author Jonathan Cornell
  * \date 2012-11-27
+ * \modified Christoph Weniger Jan 20 2013
  *
  */
 
@@ -50,7 +51,7 @@ namespace GAMBIT{
 		  Function<tags::DSINIT>()();
 	  }
 
-	  void DarkSUSY::model(){
+	  void DarkSUSY::model(double m1, double m2, double m3, double mu, double ma, double tanbe){
 	  /* This generates the particle masses, couplings, and widths
 	   * for a certain set of SUSY model parameters. For my current testing
 	   * purposes, I'm just going to hardcode in a set of parameters that I
@@ -61,12 +62,12 @@ namespace GAMBIT{
 		  int i;
 		  int unphys, hwarning;
 
-		  mssmpar.m1=500;
-		  mssmpar.m2=1000;
-		  mssmpar.m3=3500;
-		  mssmpar.mu=400;
-		  mssmpar.ma=1000;
-		  mssmpar.tanbe=10;
+		  mssmpar.m1=m1; //       500;
+		  mssmpar.m2=m2; //       1000;
+		  mssmpar.m3=m3; //       3500;
+		  mssmpar.mu=mu; //       400;
+		  mssmpar.ma=ma; //       1000;
+		  mssmpar.tanbe=tanbe; // 10;
 		  for(i=0; i<=2; i++){
 			  mssmpar.mass2u[i]=mssmpar.mass2q[i]=mssmpar.mass2d[i]=2000*2000;
 			  mssmpar.mass2e[i]=mssmpar.mass2l[i]=2000*2000;

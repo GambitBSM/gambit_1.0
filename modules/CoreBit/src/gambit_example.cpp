@@ -127,6 +127,12 @@ int main( int argc, const char* argv[] )
   //std::cout << "I can do nevents " << myBit->provides("nevents");
 
   // Some basic TinyDarkBit functionality
+  masterDict.set<double>("m1", 500);
+  masterDict.set<double>("m2", 1000);
+  masterDict.set<double>("m3", 3500);
+  masterDict.set<double>("mu", 400);
+  masterDict.set<double>("ma", 1000);
+  masterDict.set<double>("tanbe", 10);
   std::cout << "*** Start Dark ***" << std::endl;
   std::cout << "My name is " << TinyDarkBit_obj.name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit_obj.iCanDo << std::endl;

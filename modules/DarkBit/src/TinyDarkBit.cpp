@@ -15,7 +15,7 @@
 //  (add name and date if you modify)
 //
 //  Christoph Weniger
-//  Jan 17 2013
+//  Jan 17++ 2013
 //
 //  *********************************************
 
@@ -25,8 +25,17 @@
 #include <dlfcn.h>
 #include <iostream>
 
+extern gambit::dict masterDict;
+
 double TinyDarkBit::omega_DM ()
 {
+  double m1 = masterDict.get<double>("m1");
+  double m2 = masterDict.get<double>("m2");
+  double m3 = masterDict.get<double>("m3");
+  double mu = masterDict.get<double>("mu");
+  double ma = masterDict.get<double>("ma");
+  double tanbe = masterDict.get<double>("tanbe");
+  TinyDarkBit::myDarkSUSY.model(m1, m2, m3, mu, ma, tanbe);
   return TinyDarkBit::myDarkSUSY.rdomega();
 }
 
@@ -38,7 +47,6 @@ void TinyDarkBit::initialize()
   std::cout << "********************************************" << std::endl;
 
   //TinyDarkBit::myDarkSUSY.initialize();
-  //TinyDarkBit::myDarkSUSY.model();
 
   std::cout << "**********************************************" << std::endl;
   std::cout << "*** Initialization of TinyDarkBit complete ***" << std::endl;

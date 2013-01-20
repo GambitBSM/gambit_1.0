@@ -2,6 +2,7 @@
  * that are specific to a darkSUSY backend.
  * \author Jonathan Cornell
  * \date 2012-11-27
+ * \modified Christoph Weniger Jan 20 2013
  */
 
 #ifndef DARKSUSY_BACKEND_H
@@ -66,7 +67,7 @@ namespace GAMBIT {
 			void finalize ();
 
 			// Generate particle spectra; calculate widths, and couplings
-			void model ();
+			void model (double, double, double, double, double, double);
 
 			// Calculate relic density
 			double rdomega ();
