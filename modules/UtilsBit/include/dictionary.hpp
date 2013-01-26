@@ -24,9 +24,9 @@
 #include <exceptions.hpp> 
 #include <boost/any.hpp>
 
-namespace gambit { class dict; }
+namespace GAMBIT { class dict; }
 
-class gambit::dict {
+class GAMBIT::dict {
 
   // Local shorthand for different types
   typedef std::string str;

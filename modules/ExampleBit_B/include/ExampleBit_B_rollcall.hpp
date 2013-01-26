@@ -26,7 +26,7 @@
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
 
-#define CONTENTS_ExampleBit_B(DEF, OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
+//#define CONTENTS_ExampleBit_B(DEF, OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
   /* OBS_OR_LIKE(DEF,like_or_obs_name, return_type)                          /* To add more functions to this module, add    */ \
   /* DEPENDENCY(DEF,like_or_obs_name, dependency_name, dependency_type)      /*  new commands to this macro, in this form.   */ \
   OBS_OR_LIKE(DEF, xsection, double)                          /* Observable: cross-section for some hypothetical process */ \
@@ -35,7 +35,7 @@
   OBS_OR_LIKE(DEF, authors_dogs_name, std::string)            /* Observable: name of the author of ExampleBit_B's dog    */ \
   OBS_OR_LIKE(DEF, nevents, int)               /* Observable: num. events, defined as integer just to annoy ExampleBit_A */ \
 
-COMPLETE(ExampleBit_B)
+//COMPLETE(ExampleBit_B)
 
 #endif /* defined(__ExampleBit_B_rollcall_hpp__) */
 

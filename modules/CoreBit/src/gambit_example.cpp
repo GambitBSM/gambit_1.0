@@ -71,7 +71,7 @@ stream& operator<<(stream& os, const std::map<std::string,int>& map){
   return os;
 }
 
-gambit::dict masterDict;
+GAMBIT::dict masterDict;
 
 int main( int argc, const char* argv[] )
 {
@@ -98,86 +98,61 @@ int main( int argc, const char* argv[] )
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
 
-  // Iterate over all the physics module classes present, and instantiate them
-  //
-  // still working out how to loop over a boost:mpl sequence properly at runtime
-  //struct do_this_wrapper {
-  //template<typename U> 
-  //  void operator()(U) {
-  //    doThis<U>();
-  //  }
-  //};
-  //boost::mpl::for_each<module_list>(do_this_wrapper())
-
-  // ...probably needs some variant of this set up in do_this_wrapper
-  //template<typename specific_module_name> 
-  //module * createInstance() { 
-  //  return new specific_module_name;
-  //}
-  //typedef std::map<std::string, module*(*)()> map_type;
-
-  //module_map["ExampleBit_A_cls"] = &createInstance<ExampleBit_A_cls>; 
-  /* Save module name into list of strings of available module names */ \
-  //module_names.push_back("ExampleBit_A_cls");
-
-  //module *myBit;
-  //myBit = module_map[module_names[0]]();
-  //std::cout << "My name is " << myBit->name() << std::endl;
-  //the following does not work
-  //std::cout << "I can do nevents " << myBit->provides("nevents");
-
-  // Some basic TinyDarkBit functionality
+   // Some basic TinyDarkBit functionality
   masterDict.set<double>("m1", 500);
   masterDict.set<double>("m2", 1000);
   masterDict.set<double>("m3", 3500);
   masterDict.set<double>("mu", 400);
   masterDict.set<double>("ma", 1000);
   masterDict.set<double>("tanbe", 10);
-  std::cout << "*** Start Dark ***" << std::endl;
-  std::cout << "My name is " << TinyDarkBit_obj.name() << std::endl;
-  std::cout << " I can calculate: " << std::endl << TinyDarkBit_obj.iCanDo << std::endl;
-  std::cout << " ...but I may need: " << std::endl << TinyDarkBit_obj.iMayNeed << std::endl;
-  //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit_obj.result<double>("omega_DM") << std::endl;
-  std::cout << "*** End Dark ***" << std::endl;
+  //std::cout << "*** Start Dark ***" << std::endl;
+  //std::cout << "My name is " << TinyDarkBit::name() << std::endl;
+  //std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
+  //std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
+  //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
+  //std::cout << "*** End Dark ***" << std::endl;
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
-  std::cout << "My name is " << ExampleBit_A_obj.name() << std::endl;
-  std::cout << " I can calculate: " << std::endl << ExampleBit_A_obj.iCanDo << std::endl;
-  std::cout << " ...but I may need: " << std::endl << ExampleBit_A_obj.iMayNeed << std::endl;
-  std::cout << std::endl;
+  std::cout << "My name is " << GAMBIT::ExampleBit_A::name() << std::endl;
+  //std::cout << " I can calculate: " << std::endl << GAMBIT::ExampleBit_A::iCanDo << std::endl;
+  //std::cout << " ...but I may need: " << std::endl << GAMBIT::ExampleBit_A::iMayNeed << std::endl;
+  //std::cout << std::endl;
 
-  std::cout << "I can do nevents (tag-style) " << ExampleBit_A_obj.provides<Tags::nevents>() << std::endl;
-  std::cout << "I can do nevents (string-style) " << ExampleBit_A_obj.provides("nevents") << std::endl;
-  if (ExampleBit_A_obj.requires("nevents_like","nevents")) { 
+  std::cout << "I can do nevents (tag-style) " << GAMBIT::ExampleBit_A::provides<GAMBIT::Tags::nevents>() << std::endl;
+  std::cout << "I can do nevents (string-style) " << GAMBIT::ExampleBit_A::provides("nevents") << std::endl;
+  if (GAMBIT::ExampleBit_A::requires("nevents_like","nevents")) { 
     std::cout << "I require nevents_like to do this though." << std::endl;
   }
-  std::cout << "I can do nevents_like " << ExampleBit_A_obj.provides("nevents_like") << std::endl;
-  if (ExampleBit_A_obj.requires("nevents","nevents_like")) { 
+  std::cout << "I can do nevents_like " << GAMBIT::ExampleBit_A::provides("nevents_like") << std::endl;
+  if (GAMBIT::ExampleBit_A::requires("nevents","nevents_like")) { 
     std::cout << "I require nevents to do this though." << std::endl;
   }
-  std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A_obj.provides<Tags::nevents_postcuts>() << std::endl;
-  std::cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A_obj.provides("nevents_postcuts") << std::endl;
-  std::cout << "I can do xsection " << ExampleBit_A_obj.provides("xsection") << std::endl;
-  std::cout << "I can do dogsname " << ExampleBit_A_obj.provides("authors_dogs_name") << std::endl;
+  //std::cout << "I can do nevents_postcuts (tag-style) " << GAMBIT::ExampleBit_A::provides<GAMBIT::Tags::nevents_postcuts>() << std::endl;
+  std::cout << "I can do nevents_postcuts (string-style) " << GAMBIT::ExampleBit_A::provides("nevents_postcuts") << std::endl;
+  std::cout << "I can do xsection " << GAMBIT::ExampleBit_A::provides("xsection") << std::endl;
+  std::cout << "I can do dogsname " << GAMBIT::ExampleBit_A::provides("authors_dogs_name") << std::endl;
 
   std::cout << "Core says: report on n_events_like!" << std::endl;
-  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report("nevents_like");
-  if (ExampleBit_A_obj.provides("nevents_like")) {
+  std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: ";
+  std::cout << "  "; GAMBIT::ExampleBit_A::report("nevents_like");
+  std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: Well, actually...";
+  std::cout << "  "; GAMBIT::ExampleBit_A::report<GAMBIT::Tags::nevents_like>();
+  std::cout << "  "; GAMBIT::ExampleBit_A::report<GAMBIT::ExampleBit_A::Tags::nevents_like>();
+ if (GAMBIT::ExampleBit_A::provides("nevents_like")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    typedef obs_or_like_traits<Tags::nevents_like,ExampleBit_A_cls>::type testType; //in this case the underlying type is double
+    typedef GAMBIT::obs_or_like_traits<GAMBIT::ExampleBit_A::Tags::nevents_like>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
-    testType nevents_like = ExampleBit_A_obj.result<Tags::nevents_like>() ;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
-    // Call the module function by its string name (could use TestType here too insead of double) 
-    double nevents_like2 = ExampleBit_A_obj.result<double>("nevents_like") ;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
+    //testType nevents_like = GAMBIT::ExampleBit_A::result<Tags::nevents_like>() ;
+  //  std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
+  //  // Call the module function by its string name (could use TestType here too insead of double) 
+  //  double nevents_like2 = GAMBIT::ExampleBit_A::result<double>("nevents_like") ;
+  //  std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
     // So have a go at sending it to the dictionary 
-    masterDict.set<testType>("nevents_like",nevents_like);
+  //  masterDict.set<testType>("nevents_like",nevents_like);
     // Now pull it back  
-    testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
+  //  testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
     // and show off
-    std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
+  //  std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
     // You can send it in as a different type, and it will be converted -- but you must read it out with that type agan
     //masterDict.set<float>("nevents_like",nevents_like);
     // Try pulling it out as the wrong type (raises exception; uncomment to see)
@@ -185,73 +160,68 @@ int main( int argc, const char* argv[] )
     // Try pulling something out that is not in the dictionary (raises exception; uncomment to see)
     //int nevents_fail = masterDict.get<int>("nevents");
     // You can also clear a dictionary like this:
-    masterDict.purge();    
+  //  masterDict.purge();    
   }
   
 
-  std::cout << "Core says: report on n_events_postcuts!" << std::endl;
-  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report("nevents_postcuts");
-  if (ExampleBit_A_obj.provides("nevents_postcuts")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents_postcuts>() << std::endl ;
-  }
-  std::cout << "Core says: report on n_events!" << std::endl;
-  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report("nevents");
-  if (ExampleBit_A_obj.provides("nevents")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>() << std::endl ;
-  }
-  std::cout << "Core says: report on n_events again!" << std::endl;
-  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report("nevents");
-  if (ExampleBit_A_obj.provides("nevents")) {
-    std::cout << "OK, so what is it now, then?" << std::endl;
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << ExampleBit_A_obj.result<Tags::nevents>() << std::endl ;
-  }
-  std::cout << "Core says: report on the dog!" << std::endl;
-  std::cout << "  " << ExampleBit_A_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_A_obj.report("authors_dogs_name");
-  if (ExampleBit_A_obj.provides("authors_dogs_name")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    typedef obs_or_like_traits<Tags::authors_dogs_name,ExampleBit_A_cls>::type testType; //in this case the underlying type is std::string
-    testType authors_dogs_name = ExampleBit_A_obj.result<Tags::authors_dogs_name>();
-    std::cout << "  " << ExampleBit_A_obj.name() << " says: " << authors_dogs_name << std::endl ;
-    //So have a go at sending it to the dictionary 
-    masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
-    //Now pull it back  
-    testType authors_dogs_name_pulled = masterDict.get<testType>("authors_dogs_name");
-    // and show off
-    std::cout << "  This is what I put into and retrieved from the master dictionary: " << authors_dogs_name_pulled << std::endl ;
-  }
+  //std::cout << "Core says: report on n_events_postcuts!" << std::endl;
+  //std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: ";
+  //std::cout << "  "; GAMBIT::ExampleBit_A::report("nevents_postcuts");
+  //if (GAMBIT::ExampleBit_A::provides("nevents_postcuts")) {
+  //  std::cout << "OK, so what is it then?" << std::endl;
+  //  std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: " << GAMBIT::ExampleBit_A::result<Tags::nevents_postcuts>() << std::endl ;
+  //}
+  //std::cout << "Core says: report on n_events!" << std::endl;
+ // std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: ";
+ // std::cout << "  "; GAMBIT::ExampleBit_A::report("nevents");
+ // if (GAMBIT::ExampleBit_A::provides("nevents")) {
+ //   std::cout << "OK, so what is it then?" << std::endl;
+ //   std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: " << GAMBIT::ExampleBit_A::result<Tags::nevents>() << std::endl ;
+ // }
+ // std::cout << "Core says: report on n_events again!" << std::endl;
+ // std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: ";
+ // std::cout << "  "; GAMBIT::ExampleBit_A::report("nevents");
+ // if (GAMBIT::ExampleBit_A::provides("nevents")) {
+ //   std::cout << "OK, so what is it now, then?" << std::endl;
+ //   std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: " << GAMBIT::ExampleBit_A::result<Tags::nevents>() << std::endl ;
+ // }
+ // std::cout << "Core says: report on the dog!" << std::endl;
+ // std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: ";
+ // std::cout << "  "; GAMBIT::ExampleBit_A::report("authors_dogs_name");
+ // if (GAMBIT::ExampleBit_A::provides("authors_dogs_name")) {
+ //   std::cout << "OK, so what is it then?" << std::endl;
+ //   typedef obs_or_like_traits<Tags::authors_dogs_name,GAMBIT::ExampleBit_A_cls>::type testType; //in this case the underlying type is std::string
+ //   testType authors_dogs_name = GAMBIT::ExampleBit_A::result<Tags::authors_dogs_name>();
+ //   std::cout << "  " << GAMBIT::ExampleBit_A::name() << " says: " << authors_dogs_name << std::endl ;
+ //   //So have a go at sending it to the dictionary 
+ //   masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
+ //   //Now pull it back  
+ //   testType authors_dogs_name_pulled = masterDict.get<testType>("authors_dogs_name");
+ //   // and show off
+ //   std::cout << "  This is what I put into and retrieved from the master dictionary: " << authors_dogs_name_pulled << std::endl ;
+ // }
 
+
+  //std::cout <<  std::endl;
+  //std::cout << "My name is " << ExampleBit_B::name() << std::endl;
+  //std::cout << " I can calculate: " << std::endl << ExampleBit_B::iCanDo << std::endl;
+  //std::cout << " ...but I may need: " << std::endl << ExampleBit_B::iMayNeed << std::endl;
+  //std::cout << std::endl;
+  //std::cout << "I can do nevents " << ExampleBit_B::provides("nevents") << std::endl;
+  //std::cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << std::endl;
+  //std::cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << std::endl;
+  //std::cout << "I can do xsection " << ExampleBit_B::provides("xsection") << std::endl;
+  //std::cout << "I can do dogsname " << ExampleBit_B::provides("authors_dogs_name") << std::endl;
+  //std::cout << "Core says: report on n_events!" << std::endl;
+  //std::cout << ExampleBit_B::name() << " says: ";
+  //std::cout << "  "; ExampleBit_B::report("nevents");
+  //if (ExampleBit_B::provides("nevents")) {
+  //  std::cout << "OK, so what is it then?" << std::endl;
+  //  std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << std::endl ;
+  // }
 
   std::cout <<  std::endl;
-  std::cout << "My name is " << ExampleBit_B_obj.name() << std::endl;
-  std::cout << " I can calculate: " << std::endl << ExampleBit_B_obj.iCanDo << std::endl;
-  std::cout << " ...but I may need: " << std::endl << ExampleBit_B_obj.iMayNeed << std::endl;
-  std::cout << std::endl;
-  std::cout << "I can do nevents " << ExampleBit_B_obj.provides("nevents") << std::endl;
-  std::cout << "I can do nevents_like " << ExampleBit_B_obj.provides("nevents_like") << std::endl;
-  std::cout << "I can do nevents_postcuts " << ExampleBit_B_obj.provides("nevents_postcuts") << std::endl;
-  std::cout << "I can do xsection " << ExampleBit_B_obj.provides("xsection") << std::endl;
-  std::cout << "I can do dogsname " << ExampleBit_B_obj.provides("authors_dogs_name") << std::endl;
-  std::cout << "Core says: report on n_events!" << std::endl;
-  std::cout << ExampleBit_B_obj.name() << " says: ";
-  std::cout << "  "; ExampleBit_B_obj.report("nevents");
-  if (ExampleBit_B_obj.provides("nevents")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_B_obj.name() << " says: " << ExampleBit_B_obj.result<Tags::nevents>() << std::endl ;
-  }
-
-  std::cout <<  std::endl;
-
-  //std::cout << ts_map["nevents"] << std::endl;
-  //std::cout << ts_map["charge"] << std::endl;
-  //std::cout << ts_map.size() << std::endl;
-  //std::cout << ts_map << std::endl;
-
+ 
   // Instantiate the ScannerBit module
 
 
@@ -332,7 +302,7 @@ int main( int argc, const char* argv[] )
         GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
         GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
     */
-  }catch( ::gambit::exceptions::gambit_exception_base & e){
+  }catch( gambit::exceptions::gambit_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
 

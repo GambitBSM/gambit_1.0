@@ -23,24 +23,28 @@
 //
 //  *********************************************
 
-#define __in_module__
-#include "module_rollcall.hpp"
+#include <string>
+#include <iostream>
 
-namespace ExampleBit_A {
+namespace GAMBIT {
 
-double count = 3.5;
+  namespace ExampleBit_A {
 
-// Initialization routine
-void initialize () {
-  std::cout << std::endl;
-  std::cout << "********************************************" << std::endl;
-  std::cout << "***       Initializing ExampleBit_A      ***" << std::endl;
-  std::cout << "********************************************" << std::endl;
-}
+    double count = 3.5;
 
-// Module functions
-double nevents () { return count++; } ;
-double nevents_like () { return 1.5; } ;
-std::string authors_dogs_name () { return "Millie"; } ;
+    // Initialization routine
+    void initialize () {
+      std::cout << std::endl;
+      std::cout << "********************************************" << std::endl;
+      std::cout << "***       Initializing ExampleBit_A      ***" << std::endl;
+      std::cout << "********************************************" << std::endl;
+    }
+
+    // Module functions
+    double nevents () { return count++; } ;
+    double nevents_like () { return 1.5; } ;
+    std::string authors_dogs_name () { return "Millie"; } ;
+
+  }
 
 }

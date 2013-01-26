@@ -32,32 +32,157 @@
 #define __DUMMY_FUNC__(...)
 #define PASTE(X,Y) PASTE_HIDDEN(X,Y)
 #define PASTE_HIDDEN(X,Y) X##Y
+#define STRINGIFY(X) STRINGIFY2(X)
+#define STRINGIFY2(X) #X
 
-// A way to fetch a trait of an observable or likelihood
-// (like its type), based on its tag and the module to which it belongs.
-template <typename Tag, typename Module>
-struct obs_or_like_traits {
+namespace GAMBIT {
+
+  // A way to fetch a trait of an observable or likelihood
+  // (like its type), based on its tag and the module to which it belongs.
+  template <typename Tag>
+  struct obs_or_like_traits {
     typedef double type;  // Scalar numerical value by default.
-};
+  };
 
-// Methods and functions associated with an observable 
-// or likelihood, identified by its tag and the module to which it belongs.
-template <typename Tag, typename Module>
-struct obs_or_like_policies {
-    static typename obs_or_like_traits<Tag,Module>::type (*value)();
-};
+  // Methods and functions associated with an observable 
+  // or likelihood, identified by its tag and the module to which it belongs.
+  template <typename Tag>
+  struct obs_or_like_policies {
+    static typename obs_or_like_traits<Tag>::type (*value)();
+  };
 
-// Equivalent classes for dependencies, where both a dependent and 
-// independent tag need to be specified
-template <typename indepTag, typename depTag, typename Module>
-struct dep_traits {
+  // Equivalent classes for dependencies, where both a dependent and 
+  // independent tag need to be specified
+  template <typename indepTag, typename depTag>
+  struct dep_traits {
     typedef double type;  // Scalar numerical value by default.
-};
+  };
 
-template <typename indepTag, typename depTag, typename Module>
-struct dep_policies {
-    static typename dep_traits<indepTag,depTag,Module>::type (*value)();
-};
+  template <typename indepTag, typename depTag>
+  struct dep_policies {
+    static typename dep_traits<indepTag,depTag>::type (*value)();
+  };
+
+}
+
+#define START_MODULE                                                           \
+                                                                               \
+  namespace GAMBIT {                                                           \
+                                                                               \
+    namespace MODULE {                                                         \
+                                                                               \
+      /* module name */                                                        \
+      std::string name() { return STRINGIFY(MODULE); }                         \
+                                                                               \
+      /* maps from tag strings to tag-specialisted functions */                \
+      std::map<std::string, bool(*)()> map_bools;                              \
+      std::map<std::string, void(*)()> map_voids;                              \
+      GAMBIT::dict moduleDict;                                                 \
+                                                                               \
+      /* module provides observable/likelihood NAME? */                        \
+      template <typename TAG> bool provides() { return false; }                \
+                                                                               \
+      /* overloaded, non-templated version */                                  \
+      bool provides(std::string s) {                                           \
+        if (map_bools.find(s) == map_bools.end()) { return false; }            \
+        return (*map_bools[s])();                                               \
+      }                                                                        \
+                                                                               \
+      /* module requires observable/likelihood DEP_TAG to compute TAG */       \
+      template <typename DEP_TAG, typename TAG>                                \
+        bool requires() { return false; }                                      \
+                                                                               \
+      /* overloaded, non-templated version */                                  \
+      bool requires(std::string dep, std::string obs) {                        \
+        if (map_bools.find(dep+obs) == map_bools.end()) { return false; }      \
+        return (*map_bools[dep+obs])();                                        \
+      }                                                                        \
+                                                                               \
+      /* report on observable/likelihood TAG */                                \
+      template <typename TAG> void report() {                                  \
+        std::cout<<"I do not support this tag."<<std::endl; }                  \
+                                                                               \
+      /* overloaded, non-templated version */                                  \
+      void report(std::string s) {                                             \
+        if (map_voids.find(s) == map_voids.end()) {                            \
+          std::cout<<"I do not support this tag."<<std::endl; }                \
+        else {                                                                 \
+          (*map_voids[s])(); }                                 		       \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+
+
+#define RETURN_TYPE(TYPE)                                                      \
+                                                                               \
+    /* Add FUNCTION to the global set of tags of recognised functions */       \
+    namespace Tags { struct FUNCTION; }                                        \
+                                                                               \
+    /* Register its return TYPE */                                             \
+    template<> struct obs_or_like_traits<Tags::FUNCTION> {                     \
+      typedef TYPE type;                                                       \
+    };                                                                         \
+                                                                               \
+    namespace MODULE {                                                         \
+                                                                               \
+      /* Register (prototype) the function          */                         \
+      TYPE FUNCTION ();                                                        \
+                                                                               \
+      /* Add it to the local set of tags of recognised functions */            \
+      namespace Tags { struct FUNCTION; }                                      \
+                                                                               \
+      /* Indicate that this module can provide function FUNCTION */            \
+      template <> bool provides<GAMBIT::Tags::FUNCTION>() {                    \
+        return true;                                                           \
+      }                                                                        \
+      template <> bool provides<Tags::FUNCTION>() {                            \
+        return true;                                                           \
+      }                                                                        \
+                                                                               \
+      /* Set up an auxilary method to report stuff to the core about the       \
+      function.  Not actually sure what this would                             \
+      be used for at this stage. */                                            \
+      template <>                                                              \
+      void report<GAMBIT::Tags::FUNCTION>() {                                  \
+        std::cout<<"Dear Core, I provide the function with tag: "<<            \
+        STRINGIFY(FUNCTION)<<std::endl;                                        \
+      }                                                                        \
+      template <>                                                              \
+      void report<Tags::FUNCTION>() {                                          \
+        std::cout<<"Dear Core, I provide the function with tag: "<<            \
+        STRINGIFY(FUNCTION)<<std::endl;                                        \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               
+
+#define DEPENDENCY(DEP, TYPE)                                                  \
+                                                                               \
+    /* Add DEP to the global set of tags of recognised functions */            \
+    namespace Tags { struct DEP; }                                             \
+                                                                               \
+    /* Register the required TYPE of the required observable or likelihood     \
+    function DEP */                                                            \
+    template<> struct dep_traits<Tags::DEP,MODULE::Tags::FUNCTION> {           \
+      typedef TYPE type;                                                       \
+    };                                                                         \
+                                                                               \
+    namespace MODULE {                                                         \
+                                                                               \
+      /* Indicate that the implementation of FUNCTION in MODULE                \
+      requires the observable or likelihood function DEP to                    \
+      have been computed previously in order to run correctly. */              \
+      template <>                                                              \
+      bool requires<GAMBIT::Tags::DEP, Tags::FUNCTION>() {                     \
+        return true;                                                           \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+
+                                                                             
+#define END_MODULE                                                             \
+  }
 
 // Completion macro for registration of observables and likelihoods
 #define COMPLETE(MODULE) \
@@ -69,57 +194,15 @@ struct dep_policies {
   SUMMARISE_DEP(MODULE,CONTENTS_##MODULE(MODULE,__DUMMY_FUNC__, DEP_SUMMARY)) \
   /* Make the module constructor */                                           \
   MAKE_CONSTRUCTOR(MODULE)                                                    \
-  /* Instantiate the bastard at last (action?! for reals?) */                 \
-  MAKE_INSTANCE(MODULE)                                                       \
-
-// Work out which versions of the macros to call, depending on
-// whether this file is being included in a main or a linked
-// object file.
-#ifdef __in_module__
-  #define CREATE_OBS_OR_LIKE      CREATE_OBS_OR_LIKE_IN_MODULE
-  #define SET_DEPENDENCY          __DUMMY_FUNC__
-  #define SUMMARISE_OBS           __DUMMY_FUNC__
-  #define SUMMARISE_DEP           __DUMMY_FUNC__
-  #define MAKE_INSTANCE           __DUMMY_FUNC__
-  #define MAKE_CONSTRUCTOR        __DUMMY_FUNC__
-#else
-  #define CREATE_OBS_OR_LIKE      CREATE_OBS_OR_LIKE_IN_DRIVER
-  #define SET_DEPENDENCY          SET_DEPENDENCY_IN_DRIVER
-  #define SUMMARISE_OBS           SUMMARISE_OBS_IN_DRIVER
-  #define SUMMARISE_DEP           SUMMARISE_DEP_IN_DRIVER  
-  #define MAKE_INSTANCE           MAKE_INSTANCE_IN_DRIVER
-  #define MAKE_CONSTRUCTOR        MAKE_CONSTRUCTOR_IN_DRIVER
-#endif
+                                                   \
 
 
-/* Just register (prototype) the function TAG in namespace for
-   MODULE. */ \
-#define CREATE_OBS_OR_LIKE_IN_MODULE(MODULE, TAG, TYPE)                      \
-namespace MODULE { TYPE TAG (); }                                            \
 
 
 // Create an observable or likelihood object identified by TAG,  
 // with a given return type TYPE, and associate it with MODULE
 #define CREATE_OBS_OR_LIKE_IN_DRIVER(MODULE, TAG, TYPE)                      \
                                                                              \
-  /* Add the observable or likelihood to the global list of calculable       \
-     observables */                                                          \
-  namespace Tags { struct TAG; }                                             \
-                                                                             \
-  /* Register (prototype) the function TAG in namespace for MODULE */        \
-  namespace MODULE { TYPE TAG (); }                                          \
-                                                                             \
-  /* Indicate that MODULE can provide the observable or likelihood           \
-     function TAG */                                                         \
-  template <> bool PASTE(MODULE,_cls)::provides<Tags::TAG>() {               \
-    return true; }                                                           \
-                                                                             \
-  /* Register the return TYPE of the observable or likelihood                \
-     function TAG in MODULE */                                               \
-  template<>                                                                 \
-  struct obs_or_like_traits<Tags::TAG,PASTE(MODULE,_cls)> {                  \
-    typedef TYPE type;                                                       \
-  };                                                                         \
                                                                              \
   /* Set up a function pointer to function TAG in MODULE */                  \
   template<>                                                                 \
@@ -135,37 +218,8 @@ namespace MODULE { TYPE TAG (); }                                            \
        return obs_or_like_policies<Tags::TAG,PASTE(MODULE,_cls)>::value();   \
      }                                                                       \
                                                                              \
-  /* Set up an auxilary method to report stuff to the core about the         \
-     observable or likelihood TAG.  Not actually sure what this would        \
-     be used for at this stage. */                                           \
-  template <>                                                                \
-  void PASTE(MODULE,_cls)::report<Tags::TAG>() {                             \
-    std::cout<<"Dear Core, I provide the function with tag: "<<              \
-     #TAG<<std::endl;                                                        \
-  }
 
 
-// Set function OBSLIKE_TAG in module MODULE to depend on function 
-// DEP_TAG, which must have type TYPE 
-#define SET_DEPENDENCY_IN_DRIVER(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE)         \
-  /* Add the dependency to the global list of (presumably)                   \
-     calculable observables; if nothing actually reports that                \
-     it can calculate this, the core shall throw an error. */                \
-  namespace Tags { struct DEP_TAG; }                                         \
-                                                                             \
-  /* Indicate that the implementation of OBSLIKE_TAG in MODULE               \
-     requires the observable or likelihood function DEP_TAG to               \
-     have been computed previously in order to run correctly. */             \
-  template <>                                                                \
-  bool PASTE(MODULE,_cls)::requires<Tags::DEP_TAG, Tags::OBSLIKE_TAG>() {    \
-    return true; }                                                           \
-                                                                             \
-  /* Register the required TYPE of the required observable or likelihood     \
-     function DEP_TAG in MODULE */                                           \
-  template<>                                                                 \
-  struct dep_traits<Tags::DEP_TAG,Tags::OBSLIKE_TAG,PASTE(MODULE,_cls)> {    \
-    typedef TYPE type;                                                       \
-  };                                                                         \
 
 
 // Set up a map with all the function names and their type names
@@ -204,8 +258,6 @@ namespace MODULE { TYPE TAG (); }                                            \
    &PASTE(MODULE,_cls)::requires<Tags::OBSLIKE_TAG, Tags::DEP_TAG>;          \
 
 
-// Instantiate a module daughter class, naming the new object MODULE_obj 
-#define MAKE_INSTANCE_IN_DRIVER(MODULE) MODULE##_cls MODULE##_obj;
 
 
 #endif // defined(__observable_hpp__) 

@@ -23,24 +23,28 @@
 //
 //  *********************************************
 
-#define __in_module__
-#include "module_rollcall.hpp"
+#include <string>
+#include <iostream>
 
-namespace ExampleBit_B {
+namespace GAMBIT {
 
-// Initialization routine
-void initialize () {
-  std::cout << std::endl;
-  std::cout << "********************************************" << std::endl;
-  std::cout << "***       Initializing ExampleBit_B      ***" << std::endl;
-  std::cout << "********************************************" << std::endl;
-}
+  namespace ExampleBit_B {
 
-// Module functions
-double xsection () { return 5.e10; }
-int nevents_postcuts () { return 1; }
-std::string authors_dogs_name () { return "ImaginaryPuppy"; }
-int nevents () { return 2; }
+    // Initialization routine
+    void initialize () {
+      std::cout << std::endl;
+      std::cout << "********************************************" << std::endl;
+      std::cout << "***       Initializing ExampleBit_B      ***" << std::endl;
+      std::cout << "********************************************" << std::endl;
+    }
+
+    // Module functions
+    double xsection () { return 5.e10; }
+    int nevents_postcuts () { return 1; }
+    std::string authors_dogs_name () { return "ImaginaryPuppy"; }
+    int nevents () { return 2; }
+
+  }
 
 }
 
