@@ -30,17 +30,20 @@
 START_MODULE
 
   #define FUNCTION nevents                 // Observable: Number of events in some hypothetical process
-   RETURN_TYPE(double)                     // Function returns a double precision variable (must always start with return type)
+   START_FUNCTION
+   RETURN_TYPE(double)                     // Function returns a double precision variable
    DEPENDENCY(xsection, double)            // Dependencies: Number of events depends on cross-section
    DEPENDENCY(charge, double)              // and charge. 
   #undef FUNCTION
 
   #define FUNCTION nevents_like            // Likelihood: Likelihood of seeing number of events 
+   START_FUNCTION
    RETURN_TYPE(double)                     // Function returns a double precision variable                  
    DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events       
   #undef FUNCTION
  
   #define FUNCTION authors_dogs_name       // Observable: name of the author of ExampleBitA's dog    
+   START_FUNCTION
    RETURN_TYPE(std::string)            
   #undef FUNCTION
 

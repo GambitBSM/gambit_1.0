@@ -114,23 +114,15 @@ namespace GAMBIT {
                                                                                \
 
 
-#define RETURN_TYPE(TYPE)                                                      \
+#define START_FUNCTION                                                         \
                                                                                \
     /* Add FUNCTION to the global set of tags of recognised functions */       \
-    namespace Tags { struct FUNCTION; }                                        \
-                                                                               \
-    /* Register its return TYPE */                                             \
-    template<> struct obs_or_like_traits<Tags::FUNCTION> {                     \
-      typedef TYPE type;                                                       \
-    };                                                                         \
+    ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                     \
                                                                                \
     namespace MODULE {                                                         \
                                                                                \
-      /* Register (prototype) the function          */                         \
-      TYPE FUNCTION ();                                                        \
-                                                                               \
-      /* Add it to the local set of tags of recognised functions */            \
-      namespace Tags { struct FUNCTION; }                                      \
+      /* Add FUNCTION to the local set of tags of recognised functions */      \
+      ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                   \
                                                                                \
       /* Indicate that this module can provide function FUNCTION */            \
       template <> bool provides<GAMBIT::Tags::FUNCTION>() {                    \
@@ -157,10 +149,25 @@ namespace GAMBIT {
     }                                                                          \
                                                                                
 
+#define RETURN_TYPE(TYPE)                                                      \
+                                                                               \
+    /* Register the FUNCTION's return TYPE */                                  \
+    template<> struct obs_or_like_traits<Tags::FUNCTION> {                     \
+      typedef TYPE type;                                                       \
+    };                                                                         \
+                                                                               \
+    namespace MODULE {                                                         \
+                                                                               \
+      /* Register (prototype) the function          */                         \
+      TYPE FUNCTION ();                                                        \
+                                                                               \
+    }                                                                          \
+
+
 #define DEPENDENCY(DEP, TYPE)                                                  \
                                                                                \
     /* Add DEP to the global set of tags of recognised functions */            \
-    namespace Tags { struct DEP; }                                             \
+    ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
                                                                                \
     /* Register the required TYPE of the required observable or likelihood     \
     function DEP */                                                            \
@@ -180,6 +187,8 @@ namespace GAMBIT {
                                                                                \
     }                                                                          \
 
+
+#define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
                                                                              
 #define END_MODULE                                                             \
   }
