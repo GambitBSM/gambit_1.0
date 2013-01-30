@@ -19,10 +19,8 @@
 //  use as a standalone code, instead of
 //  including this file just put the following
 //  at the top of your driver program:
-//  #include <module.hpp>
-//  CREATE_MODULE(XBit)
+//  #include <observable.hpp>
 //  #include <XBit_rollcall.hpp>
-//  #include <module_rollcall_finish.hpp>
 //
 //  *********************************************
 //
@@ -39,24 +37,12 @@
 #ifndef __module_rollcall_hpp__
 #define __module_rollcall_hpp__
 
-#include <module.hpp>
-
-// Define all the modules
-//#define MODULE_ROSTER(DEF_MODULE) \
-  DEF_MODULE(ExampleBit_A) \
-  DEF_MODULE(ExampleBit_B) \
-  DEF_MODULE(TinyDarkBit) \
+#include <observable.hpp>
 
 // Create all the modules
-//MODULE_ROSTER(CREATE_MODULE) 
-
-// Add the module functions
 #include <ExampleBit_A_rollcall.hpp>
-//#include <ExampleBit_B_rollcall.hpp>
-//#include <TinyDarkBit_rollcall.hpp>
-
-// Finish registering module functions (presently redundant)
-//#include <module_rollcall_finish.hpp>
+#include <ExampleBit_B_rollcall.hpp>
+#include <TinyDarkBit_rollcall.hpp>
 
 #endif /* defined(__module_rollcall__) */
 

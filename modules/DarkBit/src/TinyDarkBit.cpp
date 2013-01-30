@@ -19,36 +19,48 @@
 //
 //  *********************************************
 
-#define __in_module__
-#include "module_rollcall.hpp"
-
 #include <dlfcn.h>
 #include <iostream>
 
-extern gambit::dict masterDict;
+//PS This will go in some header file eventually
+#include <dictionary.hpp>
+namespace GAMBIT { extern dict masterDict; }
 
-double TinyDarkBit::omega_DM ()
-{
-  double m1 = masterDict.get<double>("m1");
-  double m2 = masterDict.get<double>("m2");
-  double m3 = masterDict.get<double>("m3");
-  double mu = masterDict.get<double>("mu");
-  double ma = masterDict.get<double>("ma");
-  double tanbe = masterDict.get<double>("tanbe");
-  TinyDarkBit::myDarkSUSY.model(m1, m2, m3, mu, ma, tanbe);
-  return TinyDarkBit::myDarkSUSY.rdomega();
-}
+//PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
+#include "backend-darksusy.hpp"
+namespace GAMBIT { namespace TinyDarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
 
-void TinyDarkBit::initialize() 
-{
-  std::cout << std::endl;
-  std::cout << "********************************************" << std::endl;
-  std::cout << "***       Initializing TinyDarkBit       ***" << std::endl;
-  std::cout << "********************************************" << std::endl;
 
-  //TinyDarkBit::myDarkSUSY.initialize();
+namespace GAMBIT {
 
-  std::cout << "**********************************************" << std::endl;
-  std::cout << "*** Initialization of TinyDarkBit complete ***" << std::endl;
-  std::cout << "**********************************************" << std::endl << std::endl;
+  namespace TinyDarkBit {
+
+    double omega_DM ()
+    {
+      double m1 = masterDict.get<double>("m1");
+      double m2 = masterDict.get<double>("m2");
+      double m3 = masterDict.get<double>("m3");
+      double mu = masterDict.get<double>("mu");
+      double ma = masterDict.get<double>("ma");
+      double tanbe = masterDict.get<double>("tanbe");
+      myDarkSUSY.model(m1, m2, m3, mu, ma, tanbe);
+      return myDarkSUSY.rdomega();
+    }
+
+    void initialize() 
+    {
+      std::cout << std::endl;
+      std::cout << "********************************************" << std::endl;
+      std::cout << "***       Initializing TinyDarkBit       ***" << std::endl;
+      std::cout << "********************************************" << std::endl;
+
+      //TinyDarkBit::myDarkSUSY.initialize();
+
+      std::cout << "**********************************************" << std::endl;
+      std::cout << "*** Initialization of TinyDarkBit complete ***" << std::endl;
+      std::cout << "**********************************************" << std::endl << std::endl;
+    }
+
+  } 
+
 }

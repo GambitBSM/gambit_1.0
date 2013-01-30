@@ -14,7 +14,7 @@
 //  Pat Scott
 //  Nov 15++ 2012 (initially inspired by Abram  
 //                 Krislock's Objects.hpp)
-//  Jan 18 2013
+//  Jan 18,29 2013
 //
 //  *********************************************
 
@@ -25,11 +25,7 @@
 #include <string>
 #include <iostream>
 #include <dictionary.hpp>
-#include <boost/assign.hpp>
-#include <boost/preprocessor/stringize.hpp>
 
-#define __DUMMY__
-#define __DUMMY_FUNC__(...)
 #define PASTE(X,Y) PASTE_HIDDEN(X,Y)
 #define PASTE_HIDDEN(X,Y) X##Y
 #define STRINGIFY(X) STRINGIFY2(X)
@@ -58,11 +54,6 @@ namespace GAMBIT {
     typedef double type;  // Scalar numerical value by default.
   };
 
-  template <typename indepTag, typename depTag>
-  struct dep_policies {
-    static typename dep_traits<indepTag,depTag>::type (*value)();
-  };
-
 }
 
 #define START_MODULE                                                           \
@@ -85,7 +76,7 @@ namespace GAMBIT {
       /* overloaded, non-templated version */                                  \
       bool provides(std::string s) {                                           \
         if (map_bools.find(s) == map_bools.end()) { return false; }            \
-        return (*map_bools[s])();                                               \
+        return (*map_bools[s])();                                              \
       }                                                                        \
                                                                                \
       /* module requires observable/likelihood DEP_TAG to compute TAG */       \
@@ -100,15 +91,45 @@ namespace GAMBIT {
                                                                                \
       /* report on observable/likelihood TAG */                                \
       template <typename TAG> void report() {                                  \
-        std::cout<<"I do not support this tag."<<std::endl; }                  \
+        std::cout<<"I do not support this tag."<<std::endl;                    \
+      }                                                                        \
                                                                                \
       /* overloaded, non-templated version */                                  \
       void report(std::string s) {                                             \
         if (map_voids.find(s) == map_voids.end()) {                            \
           std::cout<<"I do not support this tag."<<std::endl; }                \
-        else {                                                                 \
-          (*map_voids[s])(); }                                 		       \
+        else { (*map_voids[s])(); }                                            \
       }                                                                        \
+                                                                               \
+      /* all module observables/likelihoods, their dependencies and            \
+      their types, as strings */                                               \
+      static const std::map<std::string,std::string> iCanDo;                   \
+      static const std::map<std::string,std::string> iMayNeed;                 \
+                                                                               \
+      /* alias for observable/likelihood function TAG */                       \
+      template <typename TAG> typename obs_or_like_traits<TAG>::type result() {\
+        std::cout<<"I do not support this tag. \n";                            \
+        return 0;                                                              \
+      }                                                                        \
+                                                                               \
+      /* overloaded, 'stringy' version */                                      \
+      /* A templated function that uses an input string s to pull a pointer to \
+      the zero-parameter alias fuction above out of the module's private       \
+      dictionary.  It then dereferences that pointer, calls the function and   \
+      returns the result. */                                                   \
+      template <typename TYPE> TYPE result(std::string s) {                    \
+        return ( *moduleDict.get<TYPE(MODULE::*)()>(s) )();                    \
+      }                                                                        \
+                                                                               \
+      /* First draft of an observable/likelihood function wrapper class */     \
+      template <typename TYPE> struct functor {                                \
+        functor (std::string function_name, bool (*provides)(),                \
+                 void (*report)(), TYPE result) {                              \
+          map_bools[function_name] = provides();                               \
+          map_voids[function_name] = report();                                 \
+          moduleDict.set<TYPE>(function_name, result());                       \
+        }                                                                      \
+      };                                                                       \
                                                                                \
     }                                                                          \
                                                                                \
@@ -151,18 +172,34 @@ namespace GAMBIT {
 
 #define RETURN_TYPE(TYPE)                                                      \
                                                                                \
+    /* Register (prototype) the function          */                           \
+    namespace MODULE { TYPE FUNCTION (); }                                     \
+                                                                               \
     /* Register the FUNCTION's return TYPE */                                  \
-    template<> struct obs_or_like_traits<Tags::FUNCTION> {                     \
+    template<> struct obs_or_like_traits<MODULE::Tags::FUNCTION> {             \
       typedef TYPE type;                                                       \
     };                                                                         \
                                                                                \
-    namespace MODULE {                                                         \
+    /* Set up a function pointer to FUNCTION */                                \
+    template<> obs_or_like_traits<MODULE::Tags::FUNCTION>::type                \
+     (*obs_or_like_policies<MODULE::Tags::FUNCTION>::value)() =                \
+     MODULE::FUNCTION;                                                         \
                                                                                \
-      /* Register (prototype) the function          */                         \
-      TYPE FUNCTION ();                                                        \
+    /* Set up an alias function to call the function using the pointer */      \
+    template <> obs_or_like_traits<MODULE::Tags::FUNCTION>::type               \
+     MODULE::result<MODULE::Tags::FUNCTION>() {                                \
+       return obs_or_like_policies<MODULE::Tags::FUNCTION>::value();           \
+     }                                                                         \
                                                                                \
-    }                                                                          \
-
+//    This doesn't work yet - the functor class needs work
+//     namespace MODULE {                                                      \
+      functor<TYPE(MODULE::*)()> PASTE(FUNCTION,_functor)(                     \
+       STRINGIZE(FUNCTION),                                                    \
+       &provides<Tags::FUNCTION>,                                              \
+       &report<Tags::FUNCTION>,                                                \
+       &result<Tags::FUNCTION>)                                                \
+     }                                                                         \
+                                                                          
 
 #define DEPENDENCY(DEP, TYPE)                                                  \
                                                                                \
@@ -193,78 +230,42 @@ namespace GAMBIT {
 #define END_MODULE                                                             \
   }
 
-// Completion macro for registration of observables and likelihoods
-#define COMPLETE(MODULE) \
-  /* Create the module functions */                                           \
-  CONTENTS_##MODULE(MODULE,CREATE_OBS_OR_LIKE,SET_DEPENDENCY)                 \
-  /* Make string map of names+types of all functions */                       \
-  SUMMARISE_OBS(MODULE,CONTENTS_##MODULE(MODULE,OBS_SUMMARY, __DUMMY_FUNC__)) \
-  /* Make string map of names+types of all dependencies */                    \
-  SUMMARISE_DEP(MODULE,CONTENTS_##MODULE(MODULE,__DUMMY_FUNC__, DEP_SUMMARY)) \
-  /* Make the module constructor */                                           \
-  MAKE_CONSTRUCTOR(MODULE)                                                    \
-                                                   \
 
 
 
 
-// Create an observable or likelihood object identified by TAG,  
-// with a given return type TYPE, and associate it with MODULE
-#define CREATE_OBS_OR_LIKE_IN_DRIVER(MODULE, TAG, TYPE)                      \
-                                                                             \
-                                                                             \
-  /* Set up a function pointer to function TAG in MODULE */                  \
-  template<>                                                                 \
-    obs_or_like_traits<Tags::TAG,PASTE(MODULE,_cls)>::type                   \
-     (*obs_or_like_policies<Tags::TAG,PASTE(MODULE,_cls)>::value)()          \
-      = MODULE::TAG;                                                         \
-                                                                             \
-  /* Set up an alias function to call the function pointed to by             \
-     the one above */                                                        \
-  template <>                                                                \
-    obs_or_like_traits<Tags::TAG,PASTE(MODULE,_cls)>::type                   \
-     PASTE(MODULE,_cls)::result<Tags::TAG>() {                               \
-       return obs_or_like_policies<Tags::TAG,PASTE(MODULE,_cls)>::value();   \
-     }                                                                       \
-                                                                             \
+
+
+
+
+
+
 
 
 
 
 // Set up a map with all the function names and their type names
-#define OBS_SUMMARY(MODULE, TAG, TYPE) (#TAG, #TYPE)
-#define SUMMARISE_OBS_IN_DRIVER(MODULE, DETAILS)                             \
+//#define SUMMARISE_OBS_IN_DRIVER(MODULE, DETAILS)                             \
   const std::map<std::string,std::string>                                    \
    PASTE(MODULE,_cls)::iCanDo = boost::assign::map_list_of DETAILS;
 
 
 // Set up a map with all the dependency names and their type names
-#define DEP_SUMMARY(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE) (#DEP_TAG, #TYPE)    
-#define SUMMARISE_DEP_IN_DRIVER(MODULE, DETAILS)                             \
+//#define SUMMARISE_DEP_IN_DRIVER(MODULE, DETAILS)                             \
   const std::map<std::string,std::string>                                    \
    PASTE(MODULE,_cls)::iMayNeed = boost::assign::map_list_of DETAILS;
 
 
-// Set up the module's constructor
-#define MAKE_CONSTRUCTOR_IN_DRIVER(MODULE)                                   \
-  /* Deferred constructor (function info registration) */                    \
-  void PASTE(MODULE,_cls)::deferred_constructor () {                         \
-    CONTENTS_##MODULE(MODULE,CONSTRUCT_PROVIDES,CONSTRUCT_REQUIRES)          \
-  }                                                                          \
-
-
 // Make the map entries in the constructor for observables / likes
-#define CONSTRUCT_PROVIDES(MODULE, TAG, TYPE)                                \
-  map_bools[#TAG] = &PASTE(MODULE,_cls)::provides<Tags::TAG>;                \
-  map_voids[#TAG] = &PASTE(MODULE,_cls)::report<Tags::TAG>;                  \
-  moduleDict.set<TYPE(PASTE(MODULE,_cls)::*)()>                              \
-   (#TAG, &PASTE(MODULE,_cls)::result<Tags::TAG>);                           \
+//  map_bools[STRINGIZE(FUNCTION)] = &provides<Tags::FUNCTION>;                \
+  map_voids[STRINGIZE(FUNCTION)] = &report<Tags::FUNCTION>;                  \
+  moduleDict.set<TYPE(MODULE::*)()>                                          \
+   (STRINGIZE(FUNCTION), &result<Tags::FUNCTION>);                           \
 
 
 // Make the map entries in the constructor for depedencies
-#define CONSTRUCT_REQUIRES(MODULE, OBSLIKE_TAG, DEP_TAG, TYPE)               \
-  map_bools[BOOST_PP_STRINGIZE(DEP_TAG##OBSLIKE_TAG)] =                      \
-   &PASTE(MODULE,_cls)::requires<Tags::OBSLIKE_TAG, Tags::DEP_TAG>;          \
+//  map_bools[BOOST_PP_STRINGIZE(DEP_TAG##OBSLIKE_TAG)] =                      \
+//   &PASTE(MODULE,_cls)::requires<Tags::OBSLIKE_TAG, Tags::DEP_TAG>;          \
 
 
 

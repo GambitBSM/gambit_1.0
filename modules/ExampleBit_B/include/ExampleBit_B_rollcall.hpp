@@ -26,20 +26,36 @@
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
 
-//#define CONTENTS_ExampleBit_B(DEF, OBS_OR_LIKE, DEPENDENCY)                           /* Give the module contents to be registered.   */ \
-  /* OBS_OR_LIKE(DEF,like_or_obs_name, return_type)                          /* To add more functions to this module, add    */ \
-  /* DEPENDENCY(DEF,like_or_obs_name, dependency_name, dependency_type)      /*  new commands to this macro, in this form.   */ \
-  OBS_OR_LIKE(DEF, xsection, double)                          /* Observable: cross-section for some hypothetical process */ \
-  OBS_OR_LIKE(DEF, nevents_postcuts, int)                     /* Observable: number of events for process after cuts     */ \
-   DEPENDENCY(DEF, nevents_postcuts, nevents, double)         /* Dependency: post-cut events needs pre-cut events        */ \
-  OBS_OR_LIKE(DEF, authors_dogs_name, std::string)            /* Observable: name of the author of ExampleBit_B's dog    */ \
-  OBS_OR_LIKE(DEF, nevents, int)               /* Observable: num. events, defined as integer just to annoy ExampleBit_A */ \
 
-//COMPLETE(ExampleBit_B)
+#define MODULE ExampleBit_B
+START_MODULE
+
+  #define FUNCTION xsection                // Observable: cross-section for some hypothetical process
+   START_FUNCTION
+   RETURN_TYPE(double)                     // Function returns a double precision variable
+  #undef FUNCTION
+
+  #define FUNCTION nevents_postcuts        // Observable: number of events for process after cuts 
+   START_FUNCTION
+   RETURN_TYPE(int)                        // Function returns an integer variable                  
+   DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events        
+  #undef FUNCTION
+ 
+  #define FUNCTION authors_dogs_name       // Observable: name of the author of ExampleBitA's dog    
+   START_FUNCTION
+   RETURN_TYPE(std::string)                
+  #undef FUNCTION
+
+  #define FUNCTION nevents                 // Observable: num. events, defined as integer just to annoy ExampleBit_A
+   START_FUNCTION
+   RETURN_TYPE(int)                        // Function returns an integer variable
+   //LATEX_LABEL($n_{\rm events}$)         // Might want to later allow specification of LaTeX labels, etc like this
+   //VIABLE_MODEL(CMSSM)	           // 
+  #undef FUNCTION
+
+END_MODULE
+#undef MODULE
+
 
 #endif /* defined(__ExampleBit_B_rollcall_hpp__) */
-
-// Might want to later allow specification of LaTeX labels for observables like this:
-// OBS_OR_LIKE(like_or_obs_name, LaTeX_label, return_type)
-
 

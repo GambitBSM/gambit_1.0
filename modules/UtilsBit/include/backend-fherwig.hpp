@@ -13,44 +13,44 @@
 static const int NMXHEP = 5000;
 
 // List of functions and variables that can be called from libraries
-SUBROUTINE(HWIGIN, hwigin, 0)
-SUBROUTINE(INIMAS, inimas, 0)
-SUBROUTINE(HWUINC, hwuinc, 0)
-SUBROUTINE(HWABEG, hwabeg, 0)
-SUBROUTINE(HWEINI, hweini, 0)
-SUBROUTINE(HWUINE, hwuine, 0)
-SUBROUTINE(HWEFIN, hwefin, 0)
-SUBROUTINE(HWEPRO, hwepro, 0)
-SUBROUTINE(HWBGEN, hwbgen, 0)
-SUBROUTINE(HWDHOB, hwdhob, 0)
-SUBROUTINE(HWCFOR, hwcfor, 0)
-SUBROUTINE(HWCDEC, hwcdec, 0)
-SUBROUTINE(HWDHAD, hwdhad, 0)
-SUBROUTINE(HWDHVY, hwdhvy, 0)
-SUBROUTINE(HWMEVT, hwmevt, 0)
-SUBROUTINE(HWUFNE, hwufne, 0)
+BE_F_SUBROUTINE(HWIGIN, hwigin, 0)
+BE_F_SUBROUTINE(INIMAS, inimas, 0)
+BE_F_SUBROUTINE(HWUINC, hwuinc, 0)
+BE_F_SUBROUTINE(HWABEG, hwabeg, 0)
+BE_F_SUBROUTINE(HWEINI, hweini, 0)
+BE_F_SUBROUTINE(HWUINE, hwuine, 0)
+BE_F_SUBROUTINE(HWEFIN, hwefin, 0)
+BE_F_SUBROUTINE(HWEPRO, hwepro, 0)
+BE_F_SUBROUTINE(HWBGEN, hwbgen, 0)
+BE_F_SUBROUTINE(HWDHOB, hwdhob, 0)
+BE_F_SUBROUTINE(HWCFOR, hwcfor, 0)
+BE_F_SUBROUTINE(HWCDEC, hwcdec, 0)
+BE_F_SUBROUTINE(HWDHAD, hwdhad, 0)
+BE_F_SUBROUTINE(HWDHVY, hwdhvy, 0)
+BE_F_SUBROUTINE(HWMEVT, hwmevt, 0)
+BE_F_SUBROUTINE(HWUFNE, hwufne, 0)
 
 struct hwproc_type{
 	double ebeam1, ebeam2, pbeam1, pbeam2;
 	int iproc, maxev;
 };
-VARIABLE(HWPROC, hwproc, , hwproc_type)
+BE_F_VARIABLE(HWPROC, hwproc, , hwproc_type)
 struct hwbmch_type{
 	char part1[8], part2[8];
 };
-VARIABLE(HWBMCH, hwbmch, , hwbmch_type)
+BE_F_VARIABLE(HWBMCH, hwbmch, , hwbmch_type)
 // Struct for event common block
 struct hepevt_type{
 	int nevhep, nhep, isthep[NMXHEP], idhep[NMXHEP], jmohep[NMXHEP][2], jdahep[NMXHEP][2];
 	double phep[NMXHEP][5], vhep[NMXHEP][4];
 };
-VARIABLE(HEPEVT, hepevt, , hepevt_type)
+BE_F_VARIABLE(HEPEVT, hepevt, , hepevt_type)
 // Struct for generator information 
 struct hwevnt_type{
 	double avwgt, evwgt, gamwt, tlout, wbigst, wgtmax, wgtsum, wsqsum;
 	int idhw[NMXHEP], ierror, istat, lwevt, maxer, maxpr, nowgt, nrn[2], numer, numeru, nwgts, gensof;
 };
-VARIABLE(HWEVNT, hwevnt, , hwevnt_type)
+BE_F_VARIABLE(HWEVNT, hwevnt, , hwevnt_type)
 
 
 namespace GAMBIT {

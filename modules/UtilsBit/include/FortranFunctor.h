@@ -36,7 +36,7 @@ struct VarName;
 
 /*********************************************************************************/
 /// Macro to enable access to a FORTRAN variable
-#define VARIABLE(TAG, NAME, MODULE, TYPE)	\
+#define BE_F_VARIABLE(TAG, NAME, MODULE, TYPE)	\
 namespace tags {				\
 struct TAG;					\
 }						\
@@ -75,7 +75,7 @@ struct FunctionReturnTypeTraits{
 /*********************************************************************************/
 /// Macro to define interface for subroutines
 
-#define SUBROUTINE(TAG, NAME, NUMPAR)		\
+#define BE_F_SUBROUTINE(TAG, NAME, NUMPAR)		\
 namespace tags{				\
 struct TAG;					\
 }						\
@@ -93,7 +93,7 @@ static int const NumPars = NUMPAR;		\
 /*********************************************************************************/
 /// Macro to define interface for functions
 
-#define FUNCTION(TAG, NAME, RETURNTYPE, NUMPAR)		\
+#define BE_F_FUNCTION(TAG, NAME, RETURNTYPE, NUMPAR)		\
 namespace tags{				\
 struct TAG;					\
 }						\

@@ -1,6 +1,25 @@
+// some specifics -- probably in time these will be replaced
+#include "mssmX.hpp"
+
 // some standard gambit classes
 #include "module_rollcall.hpp"
+#include "map_extensions.hpp"
 #include "exceptions.hpp"
+
+// model classes - probably to be replaced too
+#include "ModelParametersSusy.hpp"
+
+//! brief helper for gambit_example
+using namespace gambit;
+ModelBasePtr make_a_model(bool do_cmssm){
+  if (do_cmssm){
+    ModelParametersPtr tmp(new ModelParameters_CMSSM5);
+    return ModelBasePtr(new mssmX(tmp));
+  }else{
+    ModelParametersPtr tmp(new ModelParameters_pMSSM7);
+    return ModelBasePtr(new mssmX(tmp));
+  }
+}
 
 /*!
 //  \brief Example of gambit core framework use
@@ -12,44 +31,6 @@
 //
 */
 
-// Spacing utility for stream overload below
-std::string spacing(int len, int maxlen) {
-  int offset = 0;
-  if (len < maxlen) {offset=maxlen-len;}
-  return std::string(offset+5,' ');
-}   
-
-// Define overloadings of the stream operator for string-to-X maps 
-// (needs to go into a header somewhere, and should really be templated
-typedef std::basic_ostream<char, std::char_traits<char> > stream;
-// string-to-string
-stream& operator<<(stream& os, const std::map<std::string,std::string>& map){
-  unsigned int maxlen = 0;
-  std::map<std::string,std::string>::const_iterator it;
-
-  for (it = map.begin(); it != map.end(); it++) {
-    if ((*it).first.length() > maxlen) maxlen = (*it).first.length(); }
-    
-  for (it = map.begin(); it != map.end(); it++) {
-    if (it != map.begin()) {os << std::endl;}
-    os << " " << (*it).first << spacing((*it).first.length(), maxlen) << "(" << (*it).second << ")";}
-
-  return os;
-}
-// string-to-int
-stream& operator<<(stream& os, const std::map<std::string,int>& map){
-  unsigned int maxlen = 0;
-  std::map<std::string,int>::const_iterator it;
-
-  for (it = map.begin(); it != map.end(); it++) {
-    if ((*it).first.length() > maxlen) maxlen = (*it).first.length(); }
-    
-  for (it = map.begin(); it != map.end(); it++) {
-    if (it != map.begin()) {os << std::endl;}
-    os << " " << (*it).first << spacing((*it).first.length(), maxlen) << "(" << (*it).second << ")";}
-
-  return os;
-}
 
 GAMBIT::dict masterDict;
 
