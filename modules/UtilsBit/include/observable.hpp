@@ -54,6 +54,11 @@ namespace GAMBIT {
     typedef double type;  // Scalar numerical value by default.
   };
 
+  /* Observable/likelihood function wrapper class */
+  struct function_wrapper {
+    function_wrapper(void (*unroll)()) { (*unroll)(); }
+  };
+
 }
 
 #define START_MODULE                                                           \
@@ -70,7 +75,7 @@ namespace GAMBIT {
       std::map<std::string, void(*)()> map_voids;                              \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
-      /* module provides observable/likelihood NAME? */                        \
+      /* module provides observable/likelihood TAG? */                         \
       template <typename TAG> bool provides() { return false; }                \
                                                                                \
       /* overloaded, non-templated version */                                  \
@@ -91,13 +96,16 @@ namespace GAMBIT {
                                                                                \
       /* report on observable/likelihood TAG */                                \
       template <typename TAG> void report() {                                  \
-        std::cout<<"I do not support this tag."<<std::endl;                    \
+        std::cout<<"This tag is not supported by ";                            \
+        std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
       }                                                                        \
                                                                                \
       /* overloaded, non-templated version */                                  \
       void report(std::string s) {                                             \
         if (map_voids.find(s) == map_voids.end()) {                            \
-          std::cout<<"I do not support this tag."<<std::endl; }                \
+          std::cout<<"This tag is not supported by ";                          \
+          std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                        \
+        }                                                                      \
         else { (*map_voids[s])(); }                                            \
       }                                                                        \
                                                                                \
@@ -108,7 +116,8 @@ namespace GAMBIT {
                                                                                \
       /* alias for observable/likelihood function TAG */                       \
       template <typename TAG> typename obs_or_like_traits<TAG>::type result() {\
-        std::cout<<"I do not support this tag. \n";                            \
+        std::cout<<"This tag is not supported by ";                            \
+        std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
         return 0;                                                              \
       }                                                                        \
                                                                                \
@@ -118,18 +127,14 @@ namespace GAMBIT {
       dictionary.  It then dereferences that pointer, calls the function and   \
       returns the result. */                                                   \
       template <typename TYPE> TYPE result(std::string s) {                    \
-        return ( *moduleDict.get<TYPE(MODULE::*)()>(s) )();                    \
+        return ( *moduleDict.get<TYPE(*)()>(s) )();                            \
       }                                                                        \
                                                                                \
-      /* First draft of an observable/likelihood function wrapper class */     \
-      template <typename TYPE> struct functor {                                \
-        functor (std::string function_name, bool (*provides)(),                \
-                 void (*report)(), TYPE result) {                              \
-          map_bools[function_name] = provides();                               \
-          map_voids[function_name] = report();                                 \
-          moduleDict.set<TYPE>(function_name, result());                       \
-        }                                                                      \
-      };                                                                       \
+      /* runtime registration function for observable/likelihood function TAG*/\
+      template <typename TAG> void rt_register_function () {                   \
+        std::cout<<"This tag is not supported by ";                            \
+        std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
+      }                                                                        \
                                                                                \
     }                                                                          \
                                                                                \
@@ -189,16 +194,23 @@ namespace GAMBIT {
     template <> obs_or_like_traits<MODULE::Tags::FUNCTION>::type               \
      MODULE::result<MODULE::Tags::FUNCTION>() {                                \
        return obs_or_like_policies<MODULE::Tags::FUNCTION>::value();           \
-     }                                                                         \
+    }                                                                          \
                                                                                \
-//    This doesn't work yet - the functor class needs work
-//     namespace MODULE {                                                      \
-      functor<TYPE(MODULE::*)()> PASTE(FUNCTION,_functor)(                     \
-       STRINGIZE(FUNCTION),                                                    \
-       &provides<Tags::FUNCTION>,                                              \
-       &report<Tags::FUNCTION>,                                                \
-       &result<Tags::FUNCTION>)                                                \
-     }                                                                         \
+    namespace MODULE {                                                         \
+                                                                               \
+      /* Set up the commands to be called at runtime to register the function*/\
+      template <> void rt_register_function<Tags::FUNCTION> () {               \
+        map_bools[STRINGIFY(FUNCTION)] = &provides<Tags::FUNCTION>;            \
+        map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
+        moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
+      }                                                                        \
+                                                                               \
+      /* Create the function wrapper object */                                 \
+      namespace Function_Wrappers {                                            \
+        function_wrapper FUNCTION(&rt_register_function<Tags::FUNCTION>);      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
                                                                           
 
 #define DEPENDENCY(DEP, TYPE)                                                  \
@@ -224,13 +236,12 @@ namespace GAMBIT {
                                                                                \
     }                                                                          \
 
-
-#define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
                                                                              
 #define END_MODULE                                                             \
   }
 
 
+#define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
 
 
 
@@ -255,12 +266,6 @@ namespace GAMBIT {
   const std::map<std::string,std::string>                                    \
    PASTE(MODULE,_cls)::iMayNeed = boost::assign::map_list_of DETAILS;
 
-
-// Make the map entries in the constructor for observables / likes
-//  map_bools[STRINGIZE(FUNCTION)] = &provides<Tags::FUNCTION>;                \
-  map_voids[STRINGIZE(FUNCTION)] = &report<Tags::FUNCTION>;                  \
-  moduleDict.set<TYPE(MODULE::*)()>                                          \
-   (STRINGIZE(FUNCTION), &result<Tags::FUNCTION>);                           \
 
 
 // Make the map entries in the constructor for depedencies

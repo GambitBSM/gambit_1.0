@@ -79,7 +79,7 @@ int main( int argc, const char* argv[] )
   std::cout << "My name is " << ExampleBit_A::name() << std::endl;
   //std::cout << " I can calculate: " << std::endl << ExampleBit_A::iCanDo << std::endl;
   //std::cout << " ...but I may need: " << std::endl << ExampleBit_A::iMayNeed << std::endl;
-  //std::cout << std::endl;
+  std::cout << std::endl;
 
   std::cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << std::endl;
   std::cout << "I can do nevents (string-style) " << ExampleBit_A::provides("nevents") << std::endl;
@@ -90,7 +90,7 @@ int main( int argc, const char* argv[] )
   if (ExampleBit_A::requires("nevents","nevents_like")) { 
     std::cout << "I require nevents to do this though." << std::endl;
   }
-  //std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << std::endl;
+  std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << std::endl;
   std::cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A::provides("nevents_postcuts") << std::endl;
   std::cout << "I can do xsection " << ExampleBit_A::provides("xsection") << std::endl;
   std::cout << "I can do dogsname " << ExampleBit_A::provides("authors_dogs_name") << std::endl;
@@ -98,24 +98,21 @@ int main( int argc, const char* argv[] )
   std::cout << "Core says: report on n_events_like!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
   std::cout << "  "; ExampleBit_A::report("nevents_like");
-  std::cout << "  " << ExampleBit_A::name() << " says: Well, actually...";
-  std::cout << "  "; ExampleBit_A::report<Tags::nevents_like>();
-  std::cout << "  "; ExampleBit_A::report<ExampleBit_A::Tags::nevents_like>();
- if (ExampleBit_A::provides("nevents_like")) {
+  if (ExampleBit_A::provides("nevents_like")) {
     std::cout << "OK, so what is it then?" << std::endl;
     typedef obs_or_like_traits<ExampleBit_A::Tags::nevents_like>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
-    //testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
-  //  std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
-  //  // Call the module function by its string name (could use TestType here too insead of double) 
-  //  double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
-  //  std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
+    testType nevents_like = ExampleBit_A::result<ExampleBit_A::Tags::nevents_like>() ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
     // So have a go at sending it to the dictionary 
-  //  masterDict.set<testType>("nevents_like",nevents_like);
+    masterDict.set<testType>("nevents_like",nevents_like);
     // Now pull it back  
-  //  testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
+    testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
     // and show off
-  //  std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
+    std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
     // You can send it in as a different type, and it will be converted -- but you must read it out with that type agan
     //masterDict.set<float>("nevents_like",nevents_like);
     // Try pulling it out as the wrong type (raises exception; uncomment to see)
@@ -123,46 +120,46 @@ int main( int argc, const char* argv[] )
     // Try pulling something out that is not in the dictionary (raises exception; uncomment to see)
     //int nevents_fail = masterDict.get<int>("nevents");
     // You can also clear a dictionary like this:
-  //  masterDict.purge();    
+    masterDict.purge();    
   }
   
 
-  //std::cout << "Core says: report on n_events_postcuts!" << std::endl;
-  //std::cout << "  " << ExampleBit_A::name() << " says: ";
-  //std::cout << "  "; ExampleBit_A::report("nevents_postcuts");
-  //if (ExampleBit_A::provides("nevents_postcuts")) {
-  //  std::cout << "OK, so what is it then?" << std::endl;
-  //  std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << std::endl ;
-  //}
-  //std::cout << "Core says: report on n_events!" << std::endl;
- // std::cout << "  " << ExampleBit_A::name() << " says: ";
- // std::cout << "  "; ExampleBit_A::report("nevents");
- // if (ExampleBit_A::provides("nevents")) {
- //   std::cout << "OK, so what is it then?" << std::endl;
- //   std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents>() << std::endl ;
- // }
- // std::cout << "Core says: report on n_events again!" << std::endl;
- // std::cout << "  " << ExampleBit_A::name() << " says: ";
- // std::cout << "  "; ExampleBit_A::report("nevents");
- // if (ExampleBit_A::provides("nevents")) {
- //   std::cout << "OK, so what is it now, then?" << std::endl;
- //   std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents>() << std::endl ;
- // }
- // std::cout << "Core says: report on the dog!" << std::endl;
- // std::cout << "  " << ExampleBit_A::name() << " says: ";
- // std::cout << "  "; ExampleBit_A::report("authors_dogs_name");
- // if (ExampleBit_A::provides("authors_dogs_name")) {
- //   std::cout << "OK, so what is it then?" << std::endl;
- //   typedef obs_or_like_traits<Tags::authors_dogs_name,ExampleBit_A_cls>::type testType; //in this case the underlying type is std::string
- //   testType authors_dogs_name = ExampleBit_A::result<Tags::authors_dogs_name>();
- //   std::cout << "  " << ExampleBit_A::name() << " says: " << authors_dogs_name << std::endl ;
- //   //So have a go at sending it to the dictionary 
- //   masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
- //   //Now pull it back  
- //   testType authors_dogs_name_pulled = masterDict.get<testType>("authors_dogs_name");
- //   // and show off
- //   std::cout << "  This is what I put into and retrieved from the master dictionary: " << authors_dogs_name_pulled << std::endl ;
- // }
+  std::cout << "Core says: report on n_events_postcuts!" << std::endl;
+  std::cout << "  " << ExampleBit_A::name() << " says: ";
+  std::cout << "  "; ExampleBit_A::report("nevents_postcuts");
+  if (ExampleBit_A::provides("nevents_postcuts")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    //std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<ExampleBit_A::Tags::nevents_postcuts>() << std::endl ;
+  }
+  std::cout << "Core says: report on n_events!" << std::endl;
+  std::cout << "  " << ExampleBit_A::name() << " says: ";
+  std::cout << "  "; ExampleBit_A::report("nevents");
+  if (ExampleBit_A::provides("nevents")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<ExampleBit_A::Tags::nevents>() << std::endl ;
+  }
+  std::cout << "Core says: report on n_events again!" << std::endl;
+  std::cout << "  " << ExampleBit_A::name() << " says: ";
+  std::cout << "  "; ExampleBit_A::report("nevents");
+  if (ExampleBit_A::provides("nevents")) {
+    std::cout << "OK, so what is it now, then?" << std::endl;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<ExampleBit_A::Tags::nevents>() << std::endl ;
+  }
+  std::cout << "Core says: report on the dog!" << std::endl;
+  std::cout << "  " << ExampleBit_A::name() << " says: ";
+  std::cout << "  "; ExampleBit_A::report("authors_dogs_name");
+  if (ExampleBit_A::provides("authors_dogs_name")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    typedef obs_or_like_traits<ExampleBit_A::Tags::authors_dogs_name>::type testType; //in this case the underlying type is std::string
+    testType authors_dogs_name = ExampleBit_A::result<ExampleBit_A::Tags::authors_dogs_name>();
+    std::cout << "  " << ExampleBit_A::name() << " says: " << authors_dogs_name << std::endl ;
+    //So have a go at sending it to the dictionary 
+    masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
+    //Now pull it back  
+    testType authors_dogs_name_pulled = masterDict.get<testType>("authors_dogs_name");
+    // and show off
+    std::cout << "  This is what I put into and retrieved from the master dictionary: " << authors_dogs_name_pulled << std::endl ;
+  }
 
 
   std::cout <<  std::endl;
@@ -180,7 +177,7 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_B::report("nevents");
   if (ExampleBit_B::provides("nevents")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    //std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << std::endl ;
+    std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<ExampleBit_B::Tags::nevents>() << std::endl ;
   }
 
   std::cout <<  std::endl;
