@@ -18,6 +18,8 @@
 //  2012  Nov 15++  
 //  2013  Jan 18, 29, 30
 //
+//  Abram Krislock
+//  2013 Jan 31
 //  *********************************************
 
 #ifndef __observable_hpp__
@@ -48,21 +50,21 @@ namespace GAMBIT {
                                                                                \
       /* A way to fetch a trait of an observable or likelihood                 \
       (like its type), based on its tag.*/                                     \
-      template <typename Tag>                                                  \
+      template <typename TAG>                                                  \
       struct function_traits {                                                 \
         typedef double type;  /* Scalar numerical value by default. */         \
       };                                                                       \
                                                                                \
       /* Methods and functions associated with an observable or likelihood,    \
       identified by its tag and the module to which it belongs. */             \
-      template <typename Tag>                                                  \
+      template <typename TAG>                                                  \
       struct function_policies {                                               \
-        static typename function_traits<Tag>::type (*value)();                 \
+        static typename function_traits<TAG>::type (*value)();                 \
       };                                                                       \
                                                                                \
-      /* Equivalent class for dependencies, where both a dependent and         \
-      independent tag need to be specified */                                  \
-      template <typename indepTag, typename depTag>                            \
+      /* Equivalent class for dependencies, where TAG is dependent upon        \
+      DEP_TAG */                                                               \
+      template <typename DEP_TAG, typename TAG>                                \
       struct dep_traits {                                                      \
         typedef double type;  /* Scalar numerical value by default. */         \
       };                                                                       \
@@ -84,9 +86,9 @@ namespace GAMBIT {
       template <typename TAG> bool provides() { return false; }                \
                                                                                \
       /* overloaded, non-templated version */                                  \
-      bool provides(std::string s) {                                           \
-        if (map_bools.find(s) == map_bools.end()) { return false; }            \
-        return (*map_bools[s])();                                              \
+      bool provides(std::string obs) {                                         \
+        if (map_bools.find(obs) == map_bools.end()) { return false; }          \
+        return (*map_bools[obs])();                                            \
       }                                                                        \
                                                                                \
       /* module requires observable/likelihood DEP_TAG to compute TAG */       \
@@ -106,12 +108,12 @@ namespace GAMBIT {
       }                                                                        \
                                                                                \
       /* overloaded, non-templated version */                                  \
-      void report(std::string s) {                                             \
-        if (map_voids.find(s) == map_voids.end()) {                            \
+      void report(std::string obs) {                                           \
+        if (map_voids.find(obs) == map_voids.end()) {                          \
           std::cout<<"This tag is not supported by ";                          \
           std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                        \
         }                                                                      \
-        else { (*map_voids[s])(); }                                            \
+        else { (*map_voids[obs])(); }                                          \
       }                                                                        \
                                                                                \
       /* alias for observable/likelihood function TAG */                       \
@@ -122,12 +124,12 @@ namespace GAMBIT {
       }                                                                        \
                                                                                \
       /* overloaded, 'stringy' version */                                      \
-      /* A templated function that uses an input string s to pull a pointer to \
-      the zero-parameter alias fuction above out of the module's private       \
+      /* A templated function that uses an input string obs to pull a pointer  \
+      to the zero-parameter alias fuction above out of the module's private    \
       dictionary.  It then dereferences that pointer, calls the function and   \
       returns the result. */                                                   \
-      template <typename TYPE> TYPE result(std::string s) {                    \
-        return ( *moduleDict.get<TYPE(*)()>(s) )();                            \
+      template <typename TYPE> TYPE result(std::string obs) {                  \
+        return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
       }                                                                        \
                                                                                \
       /* runtime registration function for observable/likelihood function TAG*/\

@@ -26,9 +26,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 //
 */
 
-#include "gambit_core.hpp"
+#include "logcore.hpp"
 #include "module_rollcall.hpp"
-#include "map_extensions.hpp"
 #include "exceptions.hpp"
 // To go in a header somewhere
 namespace GAMBIT { dict masterDict; }
