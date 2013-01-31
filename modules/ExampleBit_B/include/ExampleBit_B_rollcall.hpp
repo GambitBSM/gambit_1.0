@@ -53,7 +53,6 @@ START_MODULE
    //VIABLE_MODEL(CMSSM)	           // 
   #undef FUNCTION
 
-END_MODULE
 #undef MODULE
 
 

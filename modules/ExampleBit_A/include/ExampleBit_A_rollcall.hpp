@@ -48,7 +48,6 @@ START_MODULE
    RETURN_TYPE(std::string)                // Function returns a string variable 
   #undef FUNCTION
 
-END_MODULE
 #undef MODULE
 
 

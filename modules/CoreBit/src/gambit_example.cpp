@@ -70,14 +70,14 @@ int main( int argc, const char* argv[] )
   masterDict.set<double>("tanbe", 10);
   std::cout << "*** Start Dark ***" << std::endl;
   std::cout << "My name is " << TinyDarkBit::name() << std::endl;
-  //std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
+  std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
   //std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
   //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl << std::endl;
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   std::cout << "My name is " << ExampleBit_A::name() << std::endl;
-  //std::cout << " I can calculate: " << std::endl << ExampleBit_A::iCanDo << std::endl;
+  std::cout << " I can calculate: " << std::endl << ExampleBit_A::iCanDo << std::endl;
   //std::cout << " ...but I may need: " << std::endl << ExampleBit_A::iMayNeed << std::endl;
   std::cout << std::endl;
 
@@ -100,9 +100,9 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_A::report("nevents_like");
   if (ExampleBit_A::provides("nevents_like")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    typedef obs_or_like_traits<ExampleBit_A::Tags::nevents_like>::type testType; //in this case the underlying type is double
+    typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
-    testType nevents_like = ExampleBit_A::result<ExampleBit_A::Tags::nevents_like>() ;
+    testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
     std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
     // Call the module function by its string name (could use TestType here too insead of double) 
     double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
@@ -129,29 +129,29 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_A::report("nevents_postcuts");
   if (ExampleBit_A::provides("nevents_postcuts")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    //std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<ExampleBit_A::Tags::nevents_postcuts>() << std::endl ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << std::endl ;
   }
   std::cout << "Core says: report on n_events!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
   std::cout << "  "; ExampleBit_A::report("nevents");
   if (ExampleBit_A::provides("nevents")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<ExampleBit_A::Tags::nevents>() << std::endl ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents>() << std::endl ;
   }
   std::cout << "Core says: report on n_events again!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
   std::cout << "  "; ExampleBit_A::report("nevents");
   if (ExampleBit_A::provides("nevents")) {
     std::cout << "OK, so what is it now, then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<ExampleBit_A::Tags::nevents>() << std::endl ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents>() << std::endl ;
   }
   std::cout << "Core says: report on the dog!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
   std::cout << "  "; ExampleBit_A::report("authors_dogs_name");
   if (ExampleBit_A::provides("authors_dogs_name")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    typedef obs_or_like_traits<ExampleBit_A::Tags::authors_dogs_name>::type testType; //in this case the underlying type is std::string
-    testType authors_dogs_name = ExampleBit_A::result<ExampleBit_A::Tags::authors_dogs_name>();
+    typedef ExampleBit_A::function_traits<Tags::authors_dogs_name>::type testType; //in this case the underlying type is std::string
+    testType authors_dogs_name = ExampleBit_A::result<Tags::authors_dogs_name>();
     std::cout << "  " << ExampleBit_A::name() << " says: " << authors_dogs_name << std::endl ;
     //So have a go at sending it to the dictionary 
     masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
@@ -164,7 +164,7 @@ int main( int argc, const char* argv[] )
 
   std::cout <<  std::endl;
   std::cout << "My name is " << ExampleBit_B::name() << std::endl;
-  //std::cout << " I can calculate: " << std::endl << ExampleBit_B::iCanDo << std::endl;
+  std::cout << " I can calculate: " << std::endl << ExampleBit_B::iCanDo << std::endl;
   //std::cout << " ...but I may need: " << std::endl << ExampleBit_B::iMayNeed << std::endl;
   std::cout << std::endl;
   std::cout << "I can do nevents " << ExampleBit_B::provides("nevents") << std::endl;
@@ -177,7 +177,7 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_B::report("nevents");
   if (ExampleBit_B::provides("nevents")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<ExampleBit_B::Tags::nevents>() << std::endl ;
+    std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << std::endl ;
   }
 
   std::cout <<  std::endl;

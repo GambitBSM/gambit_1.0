@@ -42,7 +42,6 @@ START_MODULE
    DEPENDENCY(par5, double) 
   #undef FUNCTION
 
-END_MODULE
 #undef MODULE
 
 #endif /* defined(__TinyDarkBit_rollcall_hpp__) */
