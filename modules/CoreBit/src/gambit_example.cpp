@@ -29,6 +29,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include "logcore.hpp"
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
+#include "map_extensions.hpp"
 // To go in a header somewhere
 namespace GAMBIT { dict masterDict; }
 
@@ -70,14 +71,14 @@ int main( int argc, const char* argv[] )
   std::cout << "*** Start Dark ***" << std::endl;
   std::cout << "My name is " << TinyDarkBit::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
-  //std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
+  std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
   //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl << std::endl;
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   std::cout << "My name is " << ExampleBit_A::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << ExampleBit_A::iCanDo << std::endl;
-  //std::cout << " ...but I may need: " << std::endl << ExampleBit_A::iMayNeed << std::endl;
+  std::cout << " ...but I may need: " << std::endl << ExampleBit_A::iMayNeed << std::endl;
   std::cout << std::endl;
 
   std::cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << std::endl;
@@ -164,7 +165,7 @@ int main( int argc, const char* argv[] )
   std::cout <<  std::endl;
   std::cout << "My name is " << ExampleBit_B::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << ExampleBit_B::iCanDo << std::endl;
-  //std::cout << " ...but I may need: " << std::endl << ExampleBit_B::iMayNeed << std::endl;
+  std::cout << " ...but I may need: " << std::endl << ExampleBit_B::iMayNeed << std::endl;
   std::cout << std::endl;
   std::cout << "I can do nevents " << ExampleBit_B::provides("nevents") << std::endl;
   std::cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << std::endl;
