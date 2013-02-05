@@ -19,7 +19,7 @@
 //  2013  Jan 18, 29-31, Feb 04
 //
 //  Abram Krislock
-//  2013 Jan 31
+//  2013 Jan 31, Feb 05
 //  *********************************************
 
 #ifndef __observable_hpp__
@@ -110,7 +110,7 @@ namespace GAMBIT {
       /* maps from tag strings to tag-specialisted functions */                \
       std::map<std::string, bool(*)()> map_bools;                              \
       std::map<std::string, void(*)()> map_voids;                              \
-      GAMBIT::dict moduleDict;                                                 \
+//      GAMBIT::dict moduleDict;                                                 \
                                                                                \
       /* all module observables/likelihoods, their dependencies and            \
       their types, as strings */                                               \
@@ -159,12 +159,19 @@ namespace GAMBIT {
       }                                                                        \
                                                                                \
       /* overloaded, 'stringy' version */                                      \
+      template <typename TYPE> TYPE result(std::string obs) {                  \
+        std::cout<<"No tag exists of typeid:"<<std::endl;                      \
+        std::cout<<"  "<<typeid(TYPE).name()<<std::endl;                       \
+        std::cout<<"For the provided obs:"<<std::endl;                         \
+        std::cout<<"  "<<obs<<std::endl;                                       \
+        return 0;                                                              \
+      /* TODO: once we are happy without the dictionary, remove the old        \
+      version below. Also, remove its supporting comment. */                   \
       /* A templated function that uses an input string obs to pull a pointer  \
       to the zero-parameter alias fuction above out of the module's private    \
       dictionary.  It then dereferences that pointer, calls the function and   \
       returns the result. */                                                   \
-      template <typename TYPE> TYPE result(std::string obs) {                  \
-        return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
+//        return ( *moduleDict.get<TYPE(*)()>(obs) )();                         \
       }                                                                        \
                                                                                \
       /* runtime registration function for observable/likelihood function TAG*/\
@@ -220,7 +227,7 @@ namespace GAMBIT {
     namespace MODULE {                                                         \
                                                                                \
       /* Register (prototype) the function */                                  \
-      void FUNCTION (TYPE &);                                                    \
+      void FUNCTION (TYPE &);                                                  \
                                                                                \
       /* Register the FUNCTION's result TYPE */                                \
       template<> struct function_traits<Tags::FUNCTION> {                      \
@@ -244,7 +251,7 @@ namespace GAMBIT {
         map_bools[STRINGIFY(FUNCTION)] = &provides<Tags::FUNCTION>;            \
         map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
         iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \
-        moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
+//        moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
       }                                                                        \
                                                                                \
       /* Create the function initialisation object */                          \
@@ -268,9 +275,15 @@ namespace GAMBIT {
                                                                                \
       /* Register the required TYPE of the required observable or likelihood   \
       function DEP */                                                          \
-      template<> struct dep_traits<Tags::DEP,Tags::FUNCTION> { \
+      template<> struct dep_traits<Tags::DEP, Tags::FUNCTION> {                \
         typedef TYPE type;                                                     \
       };                                                                       \
+                                                                               \
+      /* Create a pointer to the dependency functor. To be filled by the       \
+      dependency resolver during runtime. */                                   \
+      namespace Functown { /* Can you take me to... functor town? */           \
+        functor<TYPE> *local_##DEP;                                            \
+      }                                                                        \
                                                                                \
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
       template <> bool requires<Tags::DEP, Tags::FUNCTION>() {                 \
@@ -286,7 +299,7 @@ namespace GAMBIT {
                                                                                \
       /* Create the dependency initialisation object */                        \
       namespace Ini {                                                          \
-        ini_code DEP##FUNCTION                                                 \
+        ini_code DEP##_for_##FUNCTION                                          \
          (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \
