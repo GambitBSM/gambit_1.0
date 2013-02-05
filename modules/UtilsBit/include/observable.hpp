@@ -16,7 +16,7 @@
 //
 //  Pat Scott
 //  2012  Nov 15++  
-//  2013  Jan 18, 29-31
+//  2013  Jan 18, 29-31, Feb 04
 //
 //  Abram Krislock
 //  2013 Jan 31
@@ -37,12 +37,52 @@
 
 namespace GAMBIT {
 
-  /* Observable/likelihood/dependency wrapper class */
-  struct wrapper {
-    wrapper(void (*unroll)()) { (*unroll)(); }
+  // Observable/likelihood/dependency function wrapper (functor) class,
+  // with result type TYPE
+  template <typename TYPE>
+  class functor {
+
+    public:
+
+      // Constructor
+      functor(void (*inputFunction)(TYPE &)) {
+        myFunction = inputFunction;
+        needs_recalculating = true;
+      }
+
+      // Operation (return value) 
+      TYPE operator()() { return myValue; }
+
+      // It may be safer to have the following two things made accessible 
+      // only to the likelihood wrapper class, i.e. so they cannot be used 
+      // from within module functions
+
+      // Calculate method
+      void calculate() { if(needs_recalculating) { myFunction(myValue); } }
+
+      // Needs recalculating or not?  (Externally modifiable)
+      bool needs_recalculating;
+
+    private:
+
+      // Internal storage of function value
+      TYPE myValue;
+
+      // Internal storage of function pointer
+      void (*myFunction)(TYPE &);
+
+  };
+
+
+  // A container for a function that needs to be constructed at compile
+  // and executed as initialisation code at startup.
+  struct ini_code {
+    ini_code(void (*unroll)()) { (*unroll)(); }
   };
 
 }
+
+
 
 #define START_MODULE                                                           \
                                                                                \
@@ -55,13 +95,6 @@ namespace GAMBIT {
       template <typename TAG>                                                  \
       struct function_traits {                                                 \
         typedef double type;  /* Scalar numerical value by default. */         \
-      };                                                                       \
-                                                                               \
-      /* Methods and functions associated with an observable or likelihood,    \
-      identified by its tag and the module to which it belongs. */             \
-      template <typename TAG>                                                  \
-      struct function_policies {                                               \
-        static typename function_traits<TAG>::type (*value)();                 \
       };                                                                       \
                                                                                \
       /* Equivalent class for dependencies, where TAG is dependent upon        \
@@ -180,28 +213,30 @@ namespace GAMBIT {
   }                                                                            \
 
 
-#define RETURN_TYPE(TYPE)                                                      \
+#define RESULT_TYPE(TYPE)                                                      \
                                                                                \
   namespace GAMBIT {                                                           \
                                                                                \
     namespace MODULE {                                                         \
                                                                                \
       /* Register (prototype) the function */                                  \
-      TYPE FUNCTION ();                                                        \
+      void FUNCTION (TYPE &);                                                    \
                                                                                \
-      /* Register the FUNCTION's return TYPE */                                \
+      /* Register the FUNCTION's result TYPE */                                \
       template<> struct function_traits<Tags::FUNCTION> {                      \
         typedef TYPE type;                                                     \
       };                                                                       \
                                                                                \
-      /* Set up a function pointer to FUNCTION */                              \
-      template<> function_traits<Tags::FUNCTION>::type                         \
-       (*function_policies<Tags::FUNCTION>::value)() = FUNCTION;               \
+      /* Create the function wrapper object (functor) */                       \
+      namespace Functown {                                                     \
+        functor<TYPE> FUNCTION (&MODULE::FUNCTION);                            \
+      }                                                                        \
                                                                                \
-      /* Set up an alias function to call the function using the pointer */    \
+      /* Set up an alias function to call the function */                      \
       template <> function_traits<Tags::FUNCTION>::type                        \
        result<Tags::FUNCTION>() {                                              \
-         return function_policies<Tags::FUNCTION>::value();                    \
+         Functown::FUNCTION.calculate();                                       \
+         return Functown::FUNCTION();                                          \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register the function*/\
@@ -212,9 +247,9 @@ namespace GAMBIT {
         moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
       }                                                                        \
                                                                                \
-      /* Create the function wrapper object */                                 \
-      namespace Wrappers {                                                     \
-        wrapper FUNCTION(&rt_register_function<Tags::FUNCTION>);               \
+      /* Create the function initialisation object */                          \
+      namespace Ini {                                                          \
+        ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -249,9 +284,9 @@ namespace GAMBIT {
         iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
       }                                                                        \
                                                                                \
-      /* Create the dependency wrapper object */                               \
-      namespace Wrappers {                                                     \
-        wrapper DEP##FUNCTION                                                  \
+      /* Create the dependency initialisation object */                        \
+      namespace Ini {                                                          \
+        ini_code DEP##FUNCTION                                                 \
          (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \

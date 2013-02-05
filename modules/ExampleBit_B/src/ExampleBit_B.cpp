@@ -15,8 +15,8 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 15 2012
-//  Jan 18 2013
+//  2012 Nov 15 
+//  2013 Jan 18, Feb 04
 //
 //  Christoph Weniger
 //  Jan 17 2013
@@ -39,10 +39,10 @@ namespace GAMBIT {
     }
 
     // Module functions
-    double xsection () { return 5.e10; }
-    int nevents_postcuts () { return 1; }
-    std::string authors_dogs_name () { return "ImaginaryPuppy"; }
-    int nevents () { return 2; }
+    void xsection (double &result)               { result = 5.e10; }
+    void nevents_postcuts (int &result)          { result = 1; }
+    void authors_dogs_name (std::string &result) { result = "ImaginaryPuppy"; }
+    void nevents (int &result)                   { result = 2; }
 
   }
 

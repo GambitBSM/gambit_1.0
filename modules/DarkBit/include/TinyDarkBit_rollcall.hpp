@@ -1,7 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  Rollcall header for module ExampleBit_A
+//  Rollcall header for module TinyDarkBit
 //
 //  Compile-time registration of available obser-
 //  vables and likelihoods, as well as their
@@ -18,8 +18,10 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 15++ 2012
+//  2013 Jan, Feb 04
 //
+//  Christoph Weniger
+//  2013 Jan
 //  *********************************************
 
 #ifndef __TinyDarkBit_rollcall_hpp__
@@ -34,7 +36,7 @@ START_MODULE
 
   #define FUNCTION omega_DM               
    START_FUNCTION
-   RETURN_TYPE(double)                     
+   RESULT_TYPE(double)                     
    DEPENDENCY(par1, double) 
    DEPENDENCY(par2, double) 
    DEPENDENCY(par3, double) 

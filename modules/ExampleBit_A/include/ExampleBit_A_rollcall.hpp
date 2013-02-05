@@ -18,8 +18,8 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 15++ 2012
-//  Jan 18 2013
+//  2012 Nov 15++ 
+//  2013 Jan 18, Feb 04
 //
 //  *********************************************
 
@@ -34,18 +34,18 @@ START_MODULE
    START_FUNCTION
    DEPENDENCY(xsection, double)            // Dependencies: Number of events depends on cross-section
    DEPENDENCY(charge, double)              // and charge. 
-   RETURN_TYPE(double)                     // Function returns a double precision variable
+   RESULT_TYPE(double)                     // Function calculates a double precision variable
   #undef FUNCTION
 
   #define FUNCTION nevents_like            // Likelihood: Likelihood of seeing number of events 
    START_FUNCTION
-   RETURN_TYPE(double)                     // Function returns a double precision variable                  
+   RESULT_TYPE(double)                     // Function calculates a double precision variable                  
    DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events       
   #undef FUNCTION
  
   #define FUNCTION authors_dogs_name       // Observable: name of the author of ExampleBitA's dog    
    START_FUNCTION
-   RETURN_TYPE(std::string)                // Function returns a string variable 
+   RESULT_TYPE(std::string)                // Function calculates a string variable 
   #undef FUNCTION
 
 #undef MODULE

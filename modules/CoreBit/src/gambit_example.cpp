@@ -107,6 +107,9 @@ int main( int argc, const char* argv[] )
     // Call the module function by its string name (could use TestType here too insead of double) 
     double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
     std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
+    // Call the module function by its functor 
+    ExampleBit_A::Functown::nevents_like.calculate();
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<std::endl ;
     // So have a go at sending it to the dictionary 
     masterDict.set<testType>("nevents_like",nevents_like);
     // Now pull it back  

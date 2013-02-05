@@ -17,6 +17,10 @@
 //  Christoph Weniger
 //  Jan 17++ 2013
 //
+//  Pat Scott
+//  2013 Jan 18, Feb 04
+//
+//
 //  *********************************************
 
 #include <dlfcn.h>
@@ -35,7 +39,7 @@ namespace GAMBIT {
 
   namespace TinyDarkBit {
 
-    double omega_DM ()
+    void omega_DM (double &result)
     {
       double m1 = masterDict.get<double>("m1");
       double m2 = masterDict.get<double>("m2");
@@ -44,7 +48,7 @@ namespace GAMBIT {
       double ma = masterDict.get<double>("ma");
       double tanbe = masterDict.get<double>("tanbe");
       myDarkSUSY.model(m1, m2, m3, mu, ma, tanbe);
-      return myDarkSUSY.rdomega();
+      result = myDarkSUSY.rdomega();
     }
 
     void initialize() 
