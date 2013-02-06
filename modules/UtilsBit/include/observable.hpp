@@ -92,16 +92,16 @@ namespace GAMBIT {
 #define STRINGIFY2(X) #X
 #define CAT(X,Y) CAT2(X,Y)
 #define CAT2(X,Y) X##Y
-#define DUMMY0
-#define DUMMY1(X)
+#define DUMMY
+#define DUMMYARG(...)
 
 #ifdef IN_CORE
   #define START_MODULE    CORE_START_MODULE
   #define START_FUNCTION  CORE_START_FUNCTION
   #define DEPENDENCY      CORE_DEPENDENCY
 #else
-  #define START_MODULE    DUMMY0
-  #define START_FUNCTION  DUMMY1
+  #define START_MODULE    DUMMY
+  #define START_FUNCTION  DUMMYARG
   #define DEPENDENCY      MODULE_DEPENDENCY
 #endif
 

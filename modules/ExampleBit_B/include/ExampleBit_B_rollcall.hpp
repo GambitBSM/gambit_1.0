@@ -26,6 +26,7 @@
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
 
+#include <observable.hpp>
 
 #define MODULE ExampleBit_B
 START_MODULE

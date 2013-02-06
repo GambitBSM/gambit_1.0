@@ -37,8 +37,6 @@
 #ifndef __module_rollcall_hpp__
 #define __module_rollcall_hpp__
 
-#include <observable.hpp>
-
 // Create all the modules
 #include <ExampleBit_A_rollcall.hpp>
 #include <ExampleBit_B_rollcall.hpp>
