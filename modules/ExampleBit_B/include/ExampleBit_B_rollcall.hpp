@@ -31,24 +31,20 @@
 START_MODULE
 
   #define FUNCTION xsection                // Observable: cross-section for some hypothetical process
-   START_FUNCTION
-   RESULT_TYPE(double)                     // Function calculates a double precision variable
+   START_FUNCTION(double)                  // Function calculates a double precision variable
   #undef FUNCTION
 
   #define FUNCTION nevents_postcuts        // Observable: number of events for process after cuts 
-   START_FUNCTION
-   RESULT_TYPE(int)                        // Function calculates an integer variable                  
+   START_FUNCTION(int)                     // Function calculates an integer variable                  
    DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events        
   #undef FUNCTION
  
-  #define FUNCTION authors_dogs_name       // Observable: name of the author of ExampleBitA's dog    
-   START_FUNCTION
-   RESULT_TYPE(std::string)                
+  #define FUNCTION authors_dogs_name       // Observable: name of the author of ExampleBitB's dog    
+   START_FUNCTION(std::string)                
   #undef FUNCTION
 
   #define FUNCTION nevents                 // Observable: num. events, defined as integer just to annoy ExampleBit_A
-   START_FUNCTION
-   RESULT_TYPE(int)                        // Function calculates an integer variable
+   START_FUNCTION(int)                     // Function calculates an integer variable
    //LATEX_LABEL($n_{\rm events}$)         // Might want to later allow specification of LaTeX labels, etc like this
    //VIABLE_MODEL(CMSSM)	           // 
   #undef FUNCTION

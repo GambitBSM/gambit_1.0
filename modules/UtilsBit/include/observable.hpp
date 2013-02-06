@@ -26,14 +26,11 @@
 #define __observable_hpp__
 
 #include <map>
+#include <list>
 #include <string>
 #include <iostream>
+#include <boost/any.hpp>
 #include <dictionary.hpp>
-
-#define STRINGIFY(X) STRINGIFY2(X)
-#define STRINGIFY2(X) #X
-#define CAT(X,Y) CAT2(X,Y)
-#define CAT2(X,Y) X##Y
 
 namespace GAMBIT {
 
@@ -53,8 +50,14 @@ namespace GAMBIT {
       // Operation (return value) 
       TYPE operator()() { return myValue; }
 
-      // It may be safer to have the following two things made accessible 
-      // only to the likelihood wrapper class, i.e. so they cannot be used 
+      // Add pointer to pointer to dependent functor
+      template <typename DEP>
+      void addToDepList(functor<DEP>* &dep_functor) { 
+        dependency_list.push_back (&dep_functor);
+      }
+
+      // It may be safer to have the following three things made accessible 
+      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
 
       // Calculate method
@@ -62,6 +65,9 @@ namespace GAMBIT {
 
       // Needs recalculating or not?  (Externally modifiable)
       bool needs_recalculating;
+
+      // Internal list of pointers to pointers to dependent functors
+      std::list<boost::any> dependency_list;
 
     private:
 
@@ -82,9 +88,25 @@ namespace GAMBIT {
 
 }
 
+#define STRINGIFY(X) STRINGIFY2(X)
+#define STRINGIFY2(X) #X
+#define CAT(X,Y) CAT2(X,Y)
+#define CAT2(X,Y) X##Y
+#define DUMMY0
+#define DUMMY1(X)
+
+#ifdef IN_CORE
+  #define START_MODULE    CORE_START_MODULE
+  #define START_FUNCTION  CORE_START_FUNCTION
+  #define DEPENDENCY      CORE_DEPENDENCY
+#else
+  #define START_MODULE    DUMMY0
+  #define START_FUNCTION  DUMMY1
+  #define DEPENDENCY      MODULE_DEPENDENCY
+#endif
 
 
-#define START_MODULE                                                           \
+#define CORE_START_MODULE                                                      \
                                                                                \
   namespace GAMBIT {                                                           \
                                                                                \
@@ -110,7 +132,7 @@ namespace GAMBIT {
       /* maps from tag strings to tag-specialisted functions */                \
       std::map<std::string, bool(*)()> map_bools;                              \
       std::map<std::string, void(*)()> map_voids;                              \
-//      GAMBIT::dict moduleDict;                                                 \
+      GAMBIT::dict moduleDict;                                                 \
                                                                                \
       /* all module observables/likelihoods, their dependencies and            \
       their types, as strings */                                               \
@@ -159,19 +181,12 @@ namespace GAMBIT {
       }                                                                        \
                                                                                \
       /* overloaded, 'stringy' version */                                      \
-      template <typename TYPE> TYPE result(std::string obs) {                  \
-        std::cout<<"No tag exists of typeid:"<<std::endl;                      \
-        std::cout<<"  "<<typeid(TYPE).name()<<std::endl;                       \
-        std::cout<<"For the provided obs:"<<std::endl;                         \
-        std::cout<<"  "<<obs<<std::endl;                                       \
-        return 0;                                                              \
-      /* TODO: once we are happy without the dictionary, remove the old        \
-      version below. Also, remove its supporting comment. */                   \
       /* A templated function that uses an input string obs to pull a pointer  \
       to the zero-parameter alias fuction above out of the module's private    \
       dictionary.  It then dereferences that pointer, calls the function and   \
       returns the result. */                                                   \
-//        return ( *moduleDict.get<TYPE(*)()>(obs) )();                         \
+      template <typename TYPE> TYPE result(std::string obs) {                  \
+        return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
       }                                                                        \
                                                                                \
       /* runtime registration function for observable/likelihood function TAG*/\
@@ -192,7 +207,7 @@ namespace GAMBIT {
   }                                                                            \
                                                                                
 
-#define START_FUNCTION                                                         \
+#define CORE_START_FUNCTION(TYPE)                                              \
                                                                                \
   namespace GAMBIT {                                                           \
                                                                                \
@@ -214,17 +229,6 @@ namespace GAMBIT {
         std::cout<<"Dear Core, I provide the function with tag: "<<            \
         STRINGIFY(FUNCTION)<<std::endl;                                        \
       }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-
-
-#define RESULT_TYPE(TYPE)                                                      \
-                                                                               \
-  namespace GAMBIT {                                                           \
-                                                                               \
-    namespace MODULE {                                                         \
                                                                                \
       /* Register (prototype) the function */                                  \
       void FUNCTION (TYPE &);                                                  \
@@ -251,7 +255,7 @@ namespace GAMBIT {
         map_bools[STRINGIFY(FUNCTION)] = &provides<Tags::FUNCTION>;            \
         map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
         iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \
-//        moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
+        moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
       }                                                                        \
                                                                                \
       /* Create the function initialisation object */                          \
@@ -264,7 +268,7 @@ namespace GAMBIT {
   }                                                                            \
                                                                           
 
-#define DEPENDENCY(DEP, TYPE)                                                  \
+#define CORE_DEPENDENCY(DEP, TYPE)                                             \
                                                                                \
   namespace GAMBIT {                                                           \
                                                                                \
@@ -281,8 +285,10 @@ namespace GAMBIT {
                                                                                \
       /* Create a pointer to the dependency functor. To be filled by the       \
       dependency resolver during runtime. */                                   \
-      namespace Functown { /* Can you take me to... functor town? */           \
-        functor<TYPE> *local_##DEP;                                            \
+      namespace Dependencies {                                                 \
+        namespace FUNCTION {                                                   \
+          functor<TYPE> *DEP;                                                  \
+        }                                                                      \
       }                                                                        \
                                                                                \
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
@@ -295,12 +301,32 @@ namespace GAMBIT {
         map_bools[STRINGIFY(CAT(DEP,FUNCTION))] =                              \
          &requires<Tags::DEP, Tags::FUNCTION>;                                 \
         iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
+        Functown::FUNCTION.addToDepList<TYPE>(Dependencies::FUNCTION::DEP);    \
       }                                                                        \
                                                                                \
       /* Create the dependency initialisation object */                        \
       namespace Ini {                                                          \
         ini_code DEP##_for_##FUNCTION                                          \
          (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
+      }                                                                        \
+                                                                               \
+   }                                                                           \
+                                                                               \
+  }                                                                            \
+
+
+#define MODULE_DEPENDENCY(DEP, TYPE)                                           \
+                                                                               \
+  namespace GAMBIT {                                                           \
+                                                                               \
+    namespace MODULE {                                                         \
+                                                                               \
+      /* Create a pointer to the dependency functor. To be filled by the       \
+      dependency resolver during runtime. */                                   \
+      namespace Dependencies {                                                 \
+        namespace FUNCTION {                                                   \
+          extern functor<TYPE> *DEP;                                           \
+        }                                                                      \
       }                                                                        \
                                                                                \
    }                                                                           \

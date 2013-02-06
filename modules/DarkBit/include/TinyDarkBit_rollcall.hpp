@@ -35,8 +35,7 @@ namespace GAMBIT { namespace TinyDarkBit { GAMBIT::Backend::DarkSUSY myDarkSUSY;
 START_MODULE
 
   #define FUNCTION omega_DM               
-   START_FUNCTION
-   RESULT_TYPE(double)                     
+   START_FUNCTION(double)                     
    DEPENDENCY(par1, double) 
    DEPENDENCY(par2, double) 
    DEPENDENCY(par3, double) 

@@ -26,6 +26,7 @@
 
 #include <string>
 #include <iostream>
+#include <ExampleBit_A_rollcall.hpp>
 
 namespace GAMBIT {
 

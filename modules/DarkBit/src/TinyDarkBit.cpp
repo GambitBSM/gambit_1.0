@@ -25,6 +25,7 @@
 
 #include <dlfcn.h>
 #include <iostream>
+#include <TinyDarkBit_rollcall.hpp>
 
 //PS This will go in some header file eventually
 #include <dictionary.hpp>

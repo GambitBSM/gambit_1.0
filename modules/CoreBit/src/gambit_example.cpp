@@ -26,6 +26,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 //
 */
 
+#define  IN_CORE
 #include "logcore.hpp"
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
@@ -60,6 +61,9 @@ int main( int argc, const char* argv[] )
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
+
+  // Do some mock dependency resolution
+  ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents;
 
    // Some basic TinyDarkBit functionality
   masterDict.set<double>("m1", 500);
@@ -181,6 +185,14 @@ int main( int argc, const char* argv[] )
   if (ExampleBit_B::provides("nevents")) {
     std::cout << "OK, so what is it then?" << std::endl;
     std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << std::endl ;
+  }
+  std::cout << "Core says: report on n_events_postcuts!" << std::endl;
+  std::cout << ExampleBit_B::name() << " says: ";
+  std::cout << "  "; ExampleBit_B::report("nevents_postcuts");
+  if (ExampleBit_B::provides("nevents_postcuts")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    ExampleBit_B::Functown::nevents_postcuts.calculate();
+    std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<std::endl ;
   }
 
   std::cout <<  std::endl;
