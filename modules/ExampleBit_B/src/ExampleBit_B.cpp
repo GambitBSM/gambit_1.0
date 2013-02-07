@@ -15,32 +15,45 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 15 2012
-//  Jan 18 2013
+//  2012 Nov 15 
+//  2013 Jan 18, Feb 04
 //
 //  Christoph Weniger
 //  Jan 17 2013
 //
 //  *********************************************
 
-#define __in_module__
-#include "module_rollcall.hpp"
+#include <string>
+#include <iostream>
+#include <ExampleBit_B_rollcall.hpp>
 
-namespace ExampleBit_B {
+namespace GAMBIT {
 
-// Initialization routine
-void initialize () {
-  std::cout << std::endl;
-  std::cout << "********************************************" << std::endl;
-  std::cout << "***       Initializing ExampleBit_B      ***" << std::endl;
-  std::cout << "********************************************" << std::endl;
-}
+  namespace ExampleBit_B {
 
-// Module functions
-double xsection () { return 5.e10; }
-int nevents_postcuts () { return 1; }
-std::string authors_dogs_name () { return "ImaginaryPuppy"; }
-int nevents () { return 2; }
+    // Initialization routine
+    void initialize () {
+      std::cout << std::endl;
+      std::cout << "********************************************" << std::endl;
+      std::cout << "***       Initializing ExampleBit_B      ***" << std::endl;
+      std::cout << "********************************************" << std::endl;
+    }
+
+    // Module functions
+    void xsection (double &result)               { result = 5.e10; }
+    void authors_dogs_name (std::string &result) { result = "ImaginaryPuppy"; }
+    void nevents (int &result)                   { result = 2; }
+    void nevents_postcuts (int &result)          {
+      std::cout << "Yo! I am nevents_postcuts in ExampleBit_B, and I have ordered" << std::endl;
+      std::cout << "that somebody, somewhere compute nevents *before* I get my own " << std::endl;
+      std::cout << "groove on.  So let's see what it is then: " ;
+      double nevents = (*Dependencies::nevents_postcuts::nevents)();
+      std::cout << nevents << std::endl;
+      result = (int) (nevents);
+    }
+    
+
+  }
 
 }
 

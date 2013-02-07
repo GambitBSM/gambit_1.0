@@ -16,20 +16,20 @@
 
 // List of functions and variables that can be called from libraries
 
-FUNCTION(DSINIT, dsinit, void, 0)
-FUNCTION(DSSUSY, dssusy, void, 2)
-FUNCTION(DSRDOMEGA, dsrdomega, double, 6)
+BE_F_FUNCTION(DSINIT, dsinit, void, 0)
+BE_F_FUNCTION(DSSUSY, dssusy, void, 2)
+BE_F_FUNCTION(DSRDOMEGA, dsrdomega, double, 6)
 
 struct mssmpar_type{
 				double tanbe, mu, m2, m1, m3, ma;
 				double mass2u[3], mass2q[3], mass2d[3], mass2l[3], mass2e[3];
 				double asoftu[3], asoftd[3], asofte[3];
 			};
-VARIABLE(MSSMPAR, mssmpar, , mssmpar_type)
+BE_F_VARIABLE(MSSMPAR, mssmpar, , mssmpar_type)
 struct dsio_type{
 	int prtlevel, lulog, luerr, luout;
 };
-VARIABLE(DSIO, dsio, , dsio_type)
+BE_F_VARIABLE(DSIO, dsio, , dsio_type)
 
 namespace GAMBIT {
 

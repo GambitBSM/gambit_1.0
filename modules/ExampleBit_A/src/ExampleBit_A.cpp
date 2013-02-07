@@ -15,32 +15,38 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  Nov 15 2012
-//  Jan 18 2013
+//  2012 Nov 15 
+//  2013 Jan 18, Feb 04
+
 //
 //  Christoph Weniger
 //  Jan 17 2013
 //
 //  *********************************************
 
-#define __in_module__
-#include "module_rollcall.hpp"
+#include <string>
+#include <iostream>
+#include <ExampleBit_A_rollcall.hpp>
 
-namespace ExampleBit_A {
+namespace GAMBIT {
 
-double count = 3.5;
+  namespace ExampleBit_A {
 
-// Initialization routine
-void initialize () {
-  std::cout << std::endl;
-  std::cout << "********************************************" << std::endl;
-  std::cout << "***       Initializing ExampleBit_A      ***" << std::endl;
-  std::cout << "********************************************" << std::endl;
-}
+    double count = 3.5;
 
-// Module functions
-double nevents () { return count++; } ;
-double nevents_like () { return 1.5; } ;
-std::string authors_dogs_name () { return "Millie"; } ;
+    // Initialization routine
+    void initialize () {
+      std::cout << std::endl;
+      std::cout << "********************************************" << std::endl;
+      std::cout << "***       Initializing ExampleBit_A      ***" << std::endl;
+      std::cout << "********************************************" << std::endl;
+    }
+
+    // Module functions
+    void nevents (double &result)                { result = count++; }
+    void nevents_like (double &result)           { result = 1.5; }
+    void authors_dogs_name (std::string &result) { result = "Millie"; }
+
+  }
 
 }
