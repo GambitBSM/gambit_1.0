@@ -30,7 +30,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include "logcore.hpp"
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
-#include "stream_overload.hpp"
+#include "map_extensions.hpp"
 // To go in a header somewhere
 
 namespace GAMBIT { dict masterDict; }
