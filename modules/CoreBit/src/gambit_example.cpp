@@ -33,7 +33,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include "stream_overload.hpp"
 // To go in a header somewhere
 
-amespace GAMBIT { dict masterDict; }
+namespace GAMBIT { dict masterDict; }
 
 
 using namespace GAMBIT;

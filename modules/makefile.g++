@@ -177,16 +177,16 @@ headertest:
 	if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
 ht: headertest
 
-ifneq ($(MAKECMDGOALS),clean) 
-ifneq ($(MAKECMDGOALS),distclean) 
-ifneq ($(MAKECMDGOALS),doxygen) 
-ifneq ($(MAKECMDGOALS),mh)
-$(COREDIR)/build/%.d: $(COREDIR)/src/%.cpp $(COREDIR)/build/.minihelp
-	@echo ___________Dependency calc $< 
-	@echo "$(COREDIR)/build/`$(CC) $(CFLAGS) -MM $<`" > $@
--include $(CORELIBS:.o=.d)
-endif
-endif
-endif
-endif
+#ifneq ($(MAKECMDGOALS),clean) 
+#ifneq ($(MAKECMDGOALS),distclean) 
+#ifneq ($(MAKECMDGOALS),doxygen) 
+#ifneq ($(MAKECMDGOALS),mh)
+#$(COREDIR)/build/%.d: $(COREDIR)/src/%.cpp $(COREDIR)/build/.minihelp
+#	@echo ___________Dependency calc $< 
+#	@echo "$(COREDIR)/build/`$(CC) $(CFLAGS) -MM $<`" > $@
+#-include $(CORELIBS:.o=.d)
+#endif
+#endif
+#endif
+#endif
 
