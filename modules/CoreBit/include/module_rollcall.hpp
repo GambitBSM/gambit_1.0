@@ -4,23 +4,14 @@
 //  Compile-time registration of available modules 
 //  Add to this if you want to add a new module.
 //
-//  To add a new module, just add another two 
-//  lines as follows:
-//      DEF_MODULE(your_module_name)
-//      #include "your_module_name_rollcall.hpp"
+//  To add a new module, just add another line:
+//   #include "your_module_name_rollcall.hpp"
 //
-//  The first creates the module and must be part
-//  of the MODULE_ROSTER macro. The second
-//  registers the observable and likelihood 
-//  functions that the new module can provide, 
-//  and must be a standalone command.
-//
-//  If you have a module XBit that you want to 
+//  If you have a module that you want to 
 //  use as a standalone code, instead of
-//  including this file just put the following
-//  at the top of your driver program:
-//  #include <observable.hpp>
-//  #include <XBit_rollcall.hpp>
+//  including this file, just include 
+//  your_module_name_rollcall.hpp in your 
+//  driver program.
 //
 //  *********************************************
 //

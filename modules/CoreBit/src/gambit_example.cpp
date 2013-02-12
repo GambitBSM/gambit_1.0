@@ -32,6 +32,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include "exceptions.hpp"
 #include "map_extensions.hpp"
 // To go in a header somewhere
+
 namespace GAMBIT { dict masterDict; }
 
 
