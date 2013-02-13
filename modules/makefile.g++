@@ -57,6 +57,7 @@ clean:
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -rf $(DOCDIR)/html 
+	@rm -rf _*.txt *.out
 .PHONY: clean
 
 # also removes ~ files
