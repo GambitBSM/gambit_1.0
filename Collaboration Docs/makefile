@@ -12,5 +12,4 @@ gambit_docs:
 	pdflatex $(COLABPOLTEX)
 	pdflatex $(WGTEX)
 	pdflatex $(MEMTEX)
-	rm *.aux *.log *.bbl *.out
-
+	rm -f *.aux *.log *.bbl *.out
