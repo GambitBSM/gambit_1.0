@@ -3,12 +3,15 @@
 #include <cmath>
 
 
+/// @todo Add GAMBIT namespace
+
+
 template <typename N>
 inline N sqr(const N& x) { return x*x; }
 
 
 inline double deltaPhi(double a, double b) {
-  double rtn = a.phi() - b.phi();
+  double rtn = a - b;
   rtn = fmod(rtn, 2*M_PI);
   if (rtn == 0) return 0;
   assert(rtn >= -2*M_PI && rtn <= 2*M_PI);
