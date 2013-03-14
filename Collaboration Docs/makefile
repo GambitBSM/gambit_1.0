@@ -9,6 +9,8 @@ all: gambit_docs
 gambit_docs:
 	pdflatex $(PLANTEX)
 	pdflatex $(CODEPOLTEX)
+	pdflatex $(CODEPOLTEX)
+	pdflatex $(CODEPOLTEX)
 	pdflatex $(COLABPOLTEX)
 	pdflatex $(WGTEX)
 	pdflatex $(MEMTEX)
