@@ -66,19 +66,49 @@ int main( int argc, const char* argv[] )
   // Do some mock dependency resolution
   ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents;
 
-   // Some basic TinyDarkBit functionality
-  masterDict.set<double>("m1", 500);
-  masterDict.set<double>("m2", 1000);
-  masterDict.set<double>("m3", 3500);
-  masterDict.set<double>("mu", 400);
-  masterDict.set<double>("ma", 1000);
-  masterDict.set<double>("tanbe", 10);
+
+  // ****************
+  // TinyDarkBit code START
+  // ****************
+
+  // Some basic TinyDarkBit functionality
+  // CW: masterDict should be obsolete, right?
+  // masterDict.set<double>("m1", 500);  
+  // masterDict.set<double>("m2", 1000);
+  // masterDict.set<double>("m3", 3500);
+  // masterDict.set<double>("mu", 400);
+  // masterDict.set<double>("ma", 1000);
+  // masterDict.set<double>("tanbe", 10);
   std::cout << "*** Start Dark ***" << std::endl;
   std::cout << "My name is " << TinyDarkBit::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
   std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
-  //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
+  // std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl << std::endl;
+
+  // Dependency resolution by hand
+  TinyDarkBit::Dependencies::SLHA::CMSSM_definition = &TinyDarkBit::Functown::CMSSM_definition;
+  TinyDarkBit::Dependencies::Wstruct::SLHA = &TinyDarkBit::Functown::SLHA;
+  TinyDarkBit::Dependencies::Weff::SLHA = &TinyDarkBit::Functown::SLHA;
+  TinyDarkBit::Dependencies::omega_DM::Wstruct = &TinyDarkBit::Functown::Wstruct;
+  TinyDarkBit::Dependencies::omega_DM::Weff = &TinyDarkBit::Functown::Weff;
+
+  // Run calculate() in correct order by hand and print results
+  TinyDarkBit::Functown::CMSSM_definition.calculate();
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
+  TinyDarkBit::Functown::SLHA.calculate();
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << std::endl ;
+  TinyDarkBit::Functown::Weff.calculate();
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
+  TinyDarkBit::Functown::Wstruct.calculate();
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct() << std::endl ;
+  TinyDarkBit::Functown::omega_DM.calculate();
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
+
+  // ****************
+  // TinyDarkBit code END
+  // ****************
+
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   std::cout << "My name is " << ExampleBit_A::name() << std::endl;

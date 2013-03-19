@@ -40,15 +40,32 @@
 #define MODULE TinyDarkBit
 START_MODULE
 
-  #define FUNCTION omega_DM               
-   START_FUNCTION(double)                     
-   DEPENDENCY(par1, double) 
-   DEPENDENCY(par2, double) 
-   DEPENDENCY(par3, double) 
-   DEPENDENCY(par4, double) 
-   DEPENDENCY(par5, double) 
+  #define FUNCTION CMSSM_definition 
+   START_FUNCTION(double)                  
+  #undef FUNCTION
+
+  #define FUNCTION SLHA
+   START_FUNCTION(double)                  
+   DEPENDENCY(CMSSM_definition, double) 
+  #undef FUNCTION
+
+  #define FUNCTION Wstruct
+   START_FUNCTION(double)                  
+   DEPENDENCY(SLHA, double) 
+  #undef FUNCTION
+
+  #define FUNCTION Weff
+   START_FUNCTION(double)                  
+   DEPENDENCY(SLHA, double) 
+  #undef FUNCTION
+
+  #define FUNCTION omega_DM
+   START_FUNCTION(double)                  
+   DEPENDENCY(Weff, double)
+   DEPENDENCY(Wstruct, double)
   #undef FUNCTION
 
 #undef MODULE
 
 #endif /* defined(__TinyDarkBit_rollcall_hpp__) */
+
