@@ -306,7 +306,7 @@ namespace GAMBIT {
                                                                                \
       /* Create the dependency initialisation object */                        \
       namespace Ini {                                                          \
-        ini_code DEP##_for_##FUNCTION                                          \
+        ini_code CAT(DEP##_for_,FUNCTION)                                      \
          (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \
