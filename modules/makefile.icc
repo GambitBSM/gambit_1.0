@@ -46,23 +46,25 @@ CFLAGS= -O0 $(COMPOPTS) \
 
 COMMONLIBS = -lm 
 
-TARGETS = gambit_example 
+# beb_tester from makefile.test_backend
+TARGETS = gambit_example beb_tester 
 
 default: mh gambit_example 
 .PHONY: default
 
-all: mh doxygen gambit_example 
+all: mh doxygen gambit_example beb_tester 
 .PHONY: all
 
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
+	@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html 
 .PHONY: clean
 
-# also removes ~ files
+# also removes ~ files and other weirdly generated files
 distclean: clean
-	rm -vrf $(COREDIR)/src/*~ $(COREDIR)/include/*~  
+	rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
 .PHONY: distclean
 
 $(COREDIR)/build/.minihelp:
@@ -89,14 +91,20 @@ CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
 CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(CORESRC)))))
 
 # PS - temporary hacks - these can be combined into much more streamlined statements later (this whole thing needs to be replaced with config+automake anyway)
+# Last line below from makefile.test_backend
 OTHERINC = $(UTILSDIR)/include/exceptions.hpp $(UTILSDIR)/include/module.hpp \
 $(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp \
 $(UTILSDIR)/include/dictionary.hpp \
-DarkBit/include/TinyDarkBit_rollcall.hpp DarkBit/include/backend-common.hpp DarkBit/include/backend-darksusy.hpp
+DarkBit/include/TinyDarkBit_rollcall.hpp DarkBit/include/backend-common.hpp DarkBit/include/backend-darksusy.hpp \
+$(UTILSDIR)/include/backend-fherwig.hpp
+
+# Last line below from makefile.test_backend
 OTHERSRC = $(UTILSDIR)/src/exceptions.cpp ExampleBit_A/src/ExampleBit_A.cpp ExampleBit_B/src/ExampleBit_B.cpp   \
-DarkBit/src/TinyDarkBit.cpp
+DarkBit/src/TinyDarkBit.cpp \
+$(UTILSDIR)/src/backend-fherwig.cpp  
+
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
-DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o
+DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
@@ -158,9 +166,14 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(COREDIR)/build/gambit_example.o 
+gambit_example: $(CORELIBS) $(OTHERLIBS) $(COREDIR)/build/gambit_example.o 
 	@echo ___________Linking $@:
-	$(LN) $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/rngs.o $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(CORELIBS) $(OTHERLIBS) $(CFLAGS) -o $@ $(LNFLAGS)
+
+# beb_tester from makefile.test_backend
+beb_tester: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
+	@echo ___________Linking $@:
+	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logcore.o $(OTHERLIBS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
 
 # PS - dependencies on non-core source files need to be added here
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(COREINC) $(CORESRC)
