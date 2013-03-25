@@ -28,6 +28,7 @@
 #define __TinyDarkBit_rollcall_hpp__
 
 #include <observable.hpp>
+#include <types_DarkBit.hpp>
 
 //PS This will go into the rollcall system eventually, when we work out how to specify backends
 #include "backend-darksusy.hpp"
@@ -40,29 +41,33 @@
 #define MODULE TinyDarkBit
 START_MODULE
 
+  #define FUNCTION initDS
+   START_FUNCTION(int)
+  #undef FUNCTION
+
   #define FUNCTION CMSSM_definition 
-   START_FUNCTION(double)                  
+   START_FUNCTION(double)
   #undef FUNCTION
 
   #define FUNCTION SLHA
-   START_FUNCTION(double)                  
-   DEPENDENCY(CMSSM_definition, double) 
+   START_FUNCTION(double)
+   DEPENDENCY(CMSSM_definition, double)
   #undef FUNCTION
 
   #define FUNCTION Wstruct
-   START_FUNCTION(double)                  
+   START_FUNCTION(GAMBIT::types::Wstruct)
    DEPENDENCY(SLHA, double) 
   #undef FUNCTION
 
   #define FUNCTION Weff
-   START_FUNCTION(double)                  
+   START_FUNCTION(double)
    DEPENDENCY(SLHA, double) 
   #undef FUNCTION
 
   #define FUNCTION omega_DM
-   START_FUNCTION(double)                  
+   START_FUNCTION(double)
    DEPENDENCY(Weff, double)
-   DEPENDENCY(Wstruct, double)
+   DEPENDENCY(Wstruct, GAMBIT::types::Wstruct)
   #undef FUNCTION
 
 #undef MODULE

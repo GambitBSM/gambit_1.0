@@ -93,6 +93,9 @@ int main( int argc, const char* argv[] )
   TinyDarkBit::Dependencies::omega_DM::Wstruct = &TinyDarkBit::Functown::Wstruct;
   TinyDarkBit::Dependencies::omega_DM::Weff = &TinyDarkBit::Functown::Weff;
 
+  // DarkSUSY initialization
+  // TinyDarkBit::Functown::initDS.calculate();
+
   // Run calculate() in correct order by hand and print results
   TinyDarkBit::Functown::CMSSM_definition.calculate();
   std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
@@ -101,7 +104,8 @@ int main( int argc, const char* argv[] )
   TinyDarkBit::Functown::Weff.calculate();
   std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
   TinyDarkBit::Functown::Wstruct.calculate();
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct() << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << std::endl ;
   TinyDarkBit::Functown::omega_DM.calculate();
   std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
 

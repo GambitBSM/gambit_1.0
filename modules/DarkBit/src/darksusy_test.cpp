@@ -19,7 +19,7 @@ int main(int argc, char * argv[])
 
 	A.initialize();
 
-  A.model();
+  A.model(500, 1000, 3500, 400, 1000, 10);
 
   cout << A.rdomega() << endl;
 
