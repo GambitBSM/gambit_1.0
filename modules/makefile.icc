@@ -33,8 +33,11 @@ HECOLLIDERDIR = HEColliderBit
 DOCDIR = ../doc
 
 # Boost is required. Read README for details
+ifdef BOOST
 BOOSTINC=$(BOOST)
-CCEXTRA= -pipe -pg -std=c++0x 
+else
+BOOSTINC=./
+endifCCEXTRA= -pipe -pg -std=c++0x 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS= -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \

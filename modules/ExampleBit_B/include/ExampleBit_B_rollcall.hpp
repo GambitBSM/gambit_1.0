@@ -31,24 +31,36 @@
 #define MODULE ExampleBit_B
 START_MODULE
 
-  #define FUNCTION xsection                // Observable: cross-section for some hypothetical process
-   START_FUNCTION(double)                  // Function calculates a double precision variable
-  #undef FUNCTION
+  #define CAPABILITY xsection
+  START_CAPABILITY
+    #define FUNCTION xsection               // Observable: cross-section for some hypothetical process
+    START_FUNCTION(double)                  // Function calculates a double precision variable
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define FUNCTION nevents_postcuts        // Observable: number of events for process after cuts 
-   START_FUNCTION(int)                     // Function calculates an integer variable                  
-   DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events        
-  #undef FUNCTION
+  #define CAPABILITY nevents_postcuts
+  START_CAPABILITY
+    #define FUNCTION nevents_postcuts       // Observable: number of events for process after cuts 
+    START_FUNCTION(int)                     // Function calculates an integer variable                  
+    DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events        
+    #undef FUNCTION
+  #undef CAPABILITY
  
-  #define FUNCTION authors_dogs_name       // Observable: name of the author of ExampleBitB's dog    
-   START_FUNCTION(std::string)                
-  #undef FUNCTION
+  #define CAPABILITY authors_dogs_name
+  START_CAPABILITY
+    #define FUNCTION authors_dogs_name      // Observable: name of the author of ExampleBitB's dog    
+    START_FUNCTION(std::string)                
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define FUNCTION nevents                 // Observable: num. events, defined as integer just to annoy ExampleBit_A
-   START_FUNCTION(int)                     // Function calculates an integer variable
-   //LATEX_LABEL($n_{\rm events}$)         // Might want to later allow specification of LaTeX labels, etc like this
-   //VIABLE_MODEL(CMSSM)	           // 
-  #undef FUNCTION
+  #define CAPABILITY nevents
+  START_CAPABILITY
+    #define FUNCTION nevents                // Observable: num. events, defined as integer to confuse the dep resolver
+    START_FUNCTION(int)                     // Function calculates an integer variable
+    //LATEX_LABEL($n_{\rm events}$)         // Might want to later allow specification of LaTeX labels, etc like this
+    //VIABLE_MODEL(CMSSM)	            // 
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

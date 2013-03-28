@@ -1,7 +1,11 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  Poor-man (C++) version of a Python dictionary 
+//  Poor-man (C++) version of a Python dictionary
+//  Use it like:
+//   myDict.set<float>("foo",myvar);
+//   float myvar2 = myDict.get<float>("foo")
+//   myDict.purge()
 //
 //  *********************************************
 //
@@ -121,10 +125,6 @@ class GAMBIT::dict {
       }
 
     }
-
-    //TODO: will need to add 
-    //  a dump method that spits the contents out to a file (so the scanner can use this to dump a point)
-    //  a fill method that fills it from a file (to allow post-processing)
 
 };
 

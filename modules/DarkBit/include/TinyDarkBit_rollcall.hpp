@@ -41,34 +41,52 @@
 #define MODULE TinyDarkBit
 START_MODULE
 
-  #define FUNCTION initDS
-   START_FUNCTION(int)
-  #undef FUNCTION
+  #define CAPABILITY initialise
+  START_CAPABILITY
+    #define FUNCTION initDS
+    START_FUNCTION(int)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define FUNCTION CMSSM_definition 
-   START_FUNCTION(double)
-  #undef FUNCTION
+  #define CAPABILITY CMSSM_definition
+  START_CAPABILITY 
+    #define FUNCTION CMSSM_definition 
+    START_FUNCTION(double)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  #define CAPABILITY SLHA
+  START_CAPABILITY 
+    #define FUNCTION SLHA
+    START_FUNCTION(double)
+    DEPENDENCY(CMSSM_definition, double)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define FUNCTION SLHA
-   START_FUNCTION(double)
-   DEPENDENCY(CMSSM_definition, double)
-  #undef FUNCTION
+  #define CAPABILITY Wstruct
+  START_CAPABILITY 
+    #define FUNCTION Wstruct
+    START_FUNCTION(GAMBIT::types::Wstruct)
+    DEPENDENCY(SLHA, double) 
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define FUNCTION Wstruct
-   START_FUNCTION(GAMBIT::types::Wstruct)
-   DEPENDENCY(SLHA, double) 
-  #undef FUNCTION
+  #define CAPABILITY Weff
+  START_CAPABILITY 
+    #define FUNCTION Weff
+    START_FUNCTION(double)
+    DEPENDENCY(SLHA, double) 
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define FUNCTION Weff
-   START_FUNCTION(double)
-   DEPENDENCY(SLHA, double) 
-  #undef FUNCTION
-
-  #define FUNCTION omega_DM
-   START_FUNCTION(double)
-   DEPENDENCY(Weff, double)
-   DEPENDENCY(Wstruct, GAMBIT::types::Wstruct)
-  #undef FUNCTION
+  #define CAPABILITY omega_DM
+  START_CAPABILITY 
+    #define FUNCTION omega_DM
+    START_FUNCTION(double)
+    DEPENDENCY(Weff, double)
+    DEPENDENCY(Wstruct, GAMBIT::types::Wstruct)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

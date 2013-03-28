@@ -31,10 +31,6 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
 #include "map_extensions.hpp"
-// To go in a header somewhere
-
-namespace GAMBIT { dict masterDict; }
-
 
 using namespace GAMBIT;
 
@@ -64,7 +60,8 @@ int main( int argc, const char* argv[] )
   GAMBIT_MSG_INFO("starting example");
 
   // Do some mock dependency resolution
-  ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents;
+  ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents_dbl;
+  ExampleBit_A::Dependencies::nevents_int::nevents = &ExampleBit_A::Functown::nevents_dbl;
 
 
   // ****************
@@ -72,18 +69,11 @@ int main( int argc, const char* argv[] )
   // ****************
 
   // Some basic TinyDarkBit functionality
-  // CW: masterDict should be obsolete, right?
-  // masterDict.set<double>("m1", 500);  
-  // masterDict.set<double>("m2", 1000);
-  // masterDict.set<double>("m3", 3500);
-  // masterDict.set<double>("mu", 400);
-  // masterDict.set<double>("ma", 1000);
-  // masterDict.set<double>("tanbe", 10);
   std::cout << "*** Start Dark ***" << std::endl;
   std::cout << "My name is " << TinyDarkBit::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
   std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
-  // std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
+  std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl << std::endl;
 
   // Dependency resolution by hand
@@ -94,7 +84,7 @@ int main( int argc, const char* argv[] )
   TinyDarkBit::Dependencies::omega_DM::Weff = &TinyDarkBit::Functown::Weff;
 
   // DarkSUSY initialization
-  // TinyDarkBit::Functown::initDS.calculate();
+  TinyDarkBit::Functown::initDS.calculate();
 
   // Run calculate() in correct order by hand and print results
   TinyDarkBit::Functown::CMSSM_definition.calculate();
@@ -129,7 +119,7 @@ int main( int argc, const char* argv[] )
   if (ExampleBit_A::requires("nevents","nevents_like")) { 
     std::cout << "I require nevents to do this though." << std::endl;
   }
-  std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << std::endl;
+  //std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << std::endl;
   std::cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A::provides("nevents_postcuts") << std::endl;
   std::cout << "I can do xsection " << ExampleBit_A::provides("xsection") << std::endl;
   std::cout << "I can do dogsname " << ExampleBit_A::provides("authors_dogs_name") << std::endl;
@@ -148,21 +138,7 @@ int main( int argc, const char* argv[] )
     std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
     // Call the module function by its functor 
     ExampleBit_A::Functown::nevents_like.calculate();
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<std::endl ;
-    // So have a go at sending it to the dictionary 
-    masterDict.set<testType>("nevents_like",nevents_like);
-    // Now pull it back  
-    testType nevents_like_pulled = masterDict.get<testType>("nevents_like");
-    // and show off
-    std::cout << "  This is what I put into and retrieved from the master dictionary: " << nevents_like_pulled << std::endl ;
-    // You can send it in as a different type, and it will be converted -- but you must read it out with that type agan
-    //masterDict.set<float>("nevents_like",nevents_like);
-    // Try pulling it out as the wrong type (raises exception; uncomment to see)
-    //int nevents_like_fail = masterDict.get<int>("nevents_like");
-    // Try pulling something out that is not in the dictionary (raises exception; uncomment to see)
-    //int nevents_fail = masterDict.get<int>("nevents");
-    // You can also clear a dictionary like this:
-    masterDict.purge();    
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<std::endl ; 
   }
   
 
@@ -171,36 +147,36 @@ int main( int argc, const char* argv[] )
   std::cout << "  "; ExampleBit_A::report("nevents_postcuts");
   if (ExampleBit_A::provides("nevents_postcuts")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << std::endl ;
+    //std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << std::endl ;
   }
   std::cout << "Core says: report on n_events!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents");
+  std::cout << "  "; ExampleBit_A::report("nevents_dbl");
   if (ExampleBit_A::provides("nevents")) {
     std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents>() << std::endl ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << std::endl ;
   }
   std::cout << "Core says: report on n_events again!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents");
+  std::cout << "  "; ExampleBit_A::report("nevents_dbl");
   if (ExampleBit_A::provides("nevents")) {
     std::cout << "OK, so what is it now, then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents>() << std::endl ;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << std::endl ;
   }
+  std::cout << "  " << ExampleBit_A::name() << " also says: ";
+  std::cout << "  "; ExampleBit_A::report("nevents_int");
+  if (ExampleBit_A::provides("nevents")) {
+    std::cout << "OK, so what is it then?" << std::endl;
+    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_int>() << std::endl ;
+  }  
   std::cout << "Core says: report on the dog!" << std::endl;
   std::cout << "  " << ExampleBit_A::name() << " says: ";
   std::cout << "  "; ExampleBit_A::report("authors_dogs_name");
-  if (ExampleBit_A::provides("authors_dogs_name")) {
+  if (ExampleBit_A::provides("dog")) {
     std::cout << "OK, so what is it then?" << std::endl;
     typedef ExampleBit_A::function_traits<Tags::authors_dogs_name>::type testType; //in this case the underlying type is std::string
     testType authors_dogs_name = ExampleBit_A::result<Tags::authors_dogs_name>();
     std::cout << "  " << ExampleBit_A::name() << " says: " << authors_dogs_name << std::endl ;
-    //So have a go at sending it to the dictionary 
-    masterDict.set<testType>("authors_dogs_name",authors_dogs_name);
-    //Now pull it back  
-    testType authors_dogs_name_pulled = masterDict.get<testType>("authors_dogs_name");
-    // and show off
-    std::cout << "  This is what I put into and retrieved from the master dictionary: " << authors_dogs_name_pulled << std::endl ;
   }
 
 

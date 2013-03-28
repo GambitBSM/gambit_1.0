@@ -47,7 +47,7 @@ namespace GAMBIT {
       std::cout << "Yo! I am nevents_postcuts in ExampleBit_B, and I have ordered" << std::endl;
       std::cout << "that somebody, somewhere compute nevents *before* I get my own " << std::endl;
       std::cout << "groove on.  So let's see what it is then: " ;
-      double nevents = (*Dependencies::nevents_postcuts::nevents)();
+      double nevents = GET_DEP(nevents_postcuts,nevents);
       std::cout << nevents << std::endl;
       result = (int) (nevents);
     }
