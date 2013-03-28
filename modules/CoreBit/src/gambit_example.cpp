@@ -73,7 +73,7 @@ int main( int argc, const char* argv[] )
   std::cout << "My name is " << TinyDarkBit::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
   std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
-  std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
+  //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl << std::endl;
 
   // Dependency resolution by hand
@@ -84,20 +84,20 @@ int main( int argc, const char* argv[] )
   TinyDarkBit::Dependencies::omega_DM::Weff = &TinyDarkBit::Functown::Weff;
 
   // DarkSUSY initialization
-  TinyDarkBit::Functown::initDS.calculate();
+  //TinyDarkBit::Functown::initDS.calculate();
 
   // Run calculate() in correct order by hand and print results
-  TinyDarkBit::Functown::CMSSM_definition.calculate();
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
-  TinyDarkBit::Functown::SLHA.calculate();
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << std::endl ;
-  TinyDarkBit::Functown::Weff.calculate();
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
-  TinyDarkBit::Functown::Wstruct.calculate();
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << std::endl ;
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << std::endl ;
-  TinyDarkBit::Functown::omega_DM.calculate();
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
+  //TinyDarkBit::Functown::CMSSM_definition.calculate();
+  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
+  //TinyDarkBit::Functown::SLHA.calculate();
+  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << std::endl ;
+  //TinyDarkBit::Functown::Weff.calculate();
+  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
+  //TinyDarkBit::Functown::Wstruct.calculate();
+  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << std::endl ;
+  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << std::endl ;
+  //TinyDarkBit::Functown::omega_DM.calculate();
+  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
 
   // ****************
   // TinyDarkBit code END
