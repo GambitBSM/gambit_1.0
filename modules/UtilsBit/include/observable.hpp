@@ -65,12 +65,6 @@ namespace GAMBIT {
         dependency_list.push_back (&dep_functor);
       }
 
-      // Add pointer to pointer to backend functor
-      template <typename BE_REQ>
-      void addToBEList(backend_functor<BE_REQ>* &be_functor) { 
-        backend_requirement_list.push_back (&be_functor);
-      }
-
       // It may be safer to have the following four things made accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
@@ -86,9 +80,6 @@ namespace GAMBIT {
 
       // Internal list of pointers to pointers to dependent functors
       std::list<boost::any> dependency_list;
-
-      // Internal list of pointers to pointers to backend functors
-      std::list<boost::any> backend_requirement_list;
 
     private:
 
@@ -122,23 +113,20 @@ namespace GAMBIT {
 
 //Some useful one-liners
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
-#define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
 #define GET_DEP(DEP) (*Dependencies::DEP)()
 
 //Redirect rollcall macros depending in whether this file is included from 
 //the core or a module.
 #ifdef IN_CORE
-  #define START_MODULE               CORE_START_MODULE
-  #define START_CAPABILITY           CORE_START_CAPABILITY
-  #define START_FUNCTION             CORE_START_FUNCTION
-  #define DEPENDENCY                 CORE_DEPENDENCY
-  #define START_BACKEND_REQUIREMENT  CORE_START_BACKEND_REQUIREMENT
+  #define START_MODULE     CORE_START_MODULE
+  #define START_CAPABILITY CORE_START_CAPABILITY
+  #define START_FUNCTION   CORE_START_FUNCTION
+  #define DEPENDENCY       CORE_DEPENDENCY
 #else
-  #define START_MODULE               DUMMY
-  #define START_CAPABILITY           DUMMY
-  #define START_FUNCTION             DUMMYARG
-  #define DEPENDENCY                 MODULE_DEPENDENCY
-  #define START_BACKEND_REQUIREMENT  MODULE_START_BACKEND_REQUIREMENT
+  #define START_MODULE     DUMMY
+  #define START_CAPABILITY DUMMY
+  #define START_FUNCTION   DUMMYARG
+  #define DEPENDENCY       MODULE_DEPENDENCY
 #endif
 
 
@@ -172,11 +160,10 @@ namespace GAMBIT {
       std::map<std::string, void(*)()> map_voids;                              \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
-      /* all module observables/likelihoods, their dependencies, required      \
-      quantities from backends, and their types, as strings */                 \
+      /* all module observables/likelihoods, their dependencies and            \
+      their types, as strings */                                               \
       static std::map<std::string,std::string> iCanDo;                         \
       static std::map<std::string,std::string> iMayNeed;                       \
-      static std::map<std::string,std::string> iMayNeedFromBackends;           \
                                                                                \
       /* module provides observable/likelihood TAG? */                         \
       template <typename TAG> bool provides() { return false; }                \
@@ -195,16 +182,6 @@ namespace GAMBIT {
       bool requires(std::string dep, std::string obs) {                        \
         if (map_bools.find(dep+obs) == map_bools.end()) { return false; }      \
         return (*map_bools[dep+obs])();                                        \
-      }                                                                        \
-                                                                               \
-      /* module requires quantity BE_TAG from a backend to compute TAG */      \
-      template <typename BE_TAG, typename TAG>                                 \
-        bool needs_from_backend() { return false; }                            \
-                                                                               \
-      /* overloaded, non-templated version */                                  \
-      bool needs_from_backend(std::string quant, std::string obs) {            \
-        if (map_bools.find('BE_'+quant+obs) == map_bools.end()) {return false;}\
-        return (*map_bools['BE_'+quant+obs])();                                   \
       }                                                                        \
                                                                                \
       /* report on observable/likelihood TAG */                                \
@@ -279,7 +256,7 @@ namespace GAMBIT {
                                                                                \
   namespace GAMBIT {                                                           \
                                                                                \
-    /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
+    /* Add FUNCTION to the global set of tags of stuff that can be calculated*/\
     ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                     \
                                                                                \
     namespace MODULE {                                                         \
@@ -335,7 +312,7 @@ namespace GAMBIT {
                                                                                \
   namespace GAMBIT {                                                           \
                                                                                \
-    /* Add DEP to global set of tags of recognised module capabilities/deps */ \
+    /* Add DEP to the global set of tags of recognised functions */            \
     ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
                                                                                \
     namespace MODULE {                                                         \
@@ -373,7 +350,7 @@ namespace GAMBIT {
          (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \
-    }                                                                          \
+   }                                                                           \
                                                                                \
   }                                                                            \
 
@@ -392,76 +369,11 @@ namespace GAMBIT {
         }                                                                      \
       }                                                                        \
                                                                                \
-    }                                                                          \
+   }                                                                           \
                                                                                \
   }                                                                            \
 
 
-#define CORE_START_BACKEND_REQUIREMENT(TYPE)                                   \
-                                                                               \
-  namespace GAMBIT {                                                           \
-                                                                               \
-    /* Add BACKEND_REQUIREMENT to global set of recognised backend func tags */\
-    ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQUIREMENT)                        \
-                                                                               \
-    namespace MODULE {                                                         \
-                                                                               \
-      /* Register the required return TYPE of the backend function */          \
-      template<>                                                               \
-      struct dep_traits<BETags::BACKEND_REQUIREMENT, Tags::FUNCTION> {         \
-        typedef TYPE type;                                                     \
-      };                                                                       \
-                                                                               \
-      /* Create a pointer to the backend functor.  To be filled by             \
-      the dependency resolver at runtime. */                                   \
-      namespace BackendedFunctions {                                           \
-        backend_functor<TYPE> *BACKEND_REQUIREMENT                             \
-      }                                                                        \
-                                                                               \
-      /* Indicate that FUNCTION has a BACKEND_REQUIREMENT */                   \
-      template <>                                                              \
-      bool needs_from_backend<BETags::BACKEND_REQUIREMENT, Tags::FUNCTION>() { \
-        return true;                                                           \
-      }                                                                        \
-                                                                               \
-      /* Set up the commands to be called at runtime to register requirement*/ \
-      template <>                                                              \
-      void rt_register_requirement<BETags::BACKEND_REQUIREMENT,                \
-       Tags::FUNCTION> () {                                                    \
-        map_bools[STRINGIFY(CAT(BE_##BACKEND_REQUIREMENT,FUNCTION))] =         \
-         &needs_from_backend<BETags::BACKEND_REQUIREMENT, Tags::FUNCTION>;     \
-        iMayNeedFromBackends[STRINGIFY(BACKEND_REQUIREMENT)] = STRINGIFY(TYPE);\
-        Functown::FUNCTION.addToBEList<TYPE>                                   \
-         (BackendedFunctions::BACKEND_REQUIREMENT);                            \
-      }                                                                        \
-                                                                               \
-      /* Create the dependency initialisation object */                        \
-      namespace Ini {                                                          \
-        ini_code CAT(BACKEND_REQUIREMENT##_backend_for_,FUNCTION)              \
-         (&rt_register_requirement<BETags::BACKEND_REQUIREMENT,                \
-         Tags::FUNCTION>);                                                     \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-
-
-#define MODULE_START_BACKEND_REQUIREMENT(TYPE)                                 \
-                                                                               \
-  namespace GAMBIT {                                                           \
-                                                                               \
-    namespace MODULE {                                                         \
-                                                                               \
-      /* Create a pointer to the backend function functor.  To be filled by    \
-      the dependency resolver at runtime. */                                   \
-      namespace BackendedFunctions {                                           \
-        extern backend_functor<TYPE> *BACKEND_REQUIREMENT                      \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
 
 #endif // defined(__observable_hpp__) 
 
