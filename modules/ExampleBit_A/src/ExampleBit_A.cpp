@@ -44,7 +44,7 @@ namespace GAMBIT {
 
     // Module functions
     void nevents_dbl (double &result)            { result = count++; }
-    void nevents_int (int &result)               { result = (int) (GET_DEP(nevents_int,nevents)); }
+    void nevents_int (int &result)               { result = (int) (GET_DEP(nevents_int::nevents)); }
     void nevents_like (double &result)           { result = 1.5; }
     void authors_dogs_name (std::string &result) { result = "Millie"; }
 

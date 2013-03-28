@@ -113,7 +113,7 @@ namespace GAMBIT {
 
 //Some useful one-liners
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
-#define GET_DEP(FUNC,DEP) (*Dependencies::FUNC::DEP)()
+#define GET_DEP(DEP) (*Dependencies::DEP)()
 
 //Redirect rollcall macros depending in whether this file is included from 
 //the core or a module.
