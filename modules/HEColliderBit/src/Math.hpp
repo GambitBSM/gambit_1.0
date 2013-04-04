@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <cmath>
 
 
@@ -10,7 +11,7 @@ template <typename N>
 inline N sqr(const N& x) { return x*x; }
 
 
-inline double deltaPhi(double a, double b) {
+inline double deltaphi(double a, double b) {
   double rtn = a - b;
   rtn = fmod(rtn, 2*M_PI);
   if (rtn == 0) return 0;
@@ -30,17 +31,22 @@ inline double deltaPhi(double a, double b) {
 class P4 {
 public:
 
+  double _x;
+  double _y;
+  double _z;
+  double _m;
+
   P4()
     : _x(0), _y(0), _z(0), _m(0) {  }
 
   P4(double px, double py, double pz, double E) {
-    setXYZE(px, py, pz, E);
+    setPE(px, py, pz, E);
   }
 
   P4(const P4& v)
     : _x(v._x), _y(v._y), _z(v._z), _m(v._m) {  }
 
-  operator = (const P4& v) {
+  P4& operator = (const P4& v) {
     _x = v._x;
     _y = v._y;
     _z = v._z;
@@ -54,7 +60,7 @@ public:
     return P4(px, py, pz, E);
   }
 
-  static P4 mkXYZM(double px, double py, double pz, double M) {
+  static P4 mkXYZM(double px, double py, double pz, double m) {
     P4 rtn;
     rtn.setPM(px, py, pz, m);
     return rtn;
@@ -135,13 +141,13 @@ public:
 
   double dot(const P4& v) const { return E()*v.E() - px()*v.px() - py()*v.py() - pz()*v.pz(); }
   double angleTo(const P4& v) const { acos(px()*v.px() + py()*v.py() + pz()*v.pz()) / ( p()*v.p() ); }
-  double deltaPhi(const P4& v) const { return deltaPhi(phi(), v.phi()); }
-  double deltaEta(const P4& v) const { return fabs(a.eta() - b.eta()); }
-  double deltaRap(const P4& v) const { return fabs(a.rap() - b.rap()); }
+  double deltaPhi(const P4& v) const { return deltaphi(phi(), v.phi()); }
+  double deltaEta(const P4& v) const { return fabs(eta() - v.eta()); }
+  double deltaRap(const P4& v) const { return fabs(rap() - v.rap()); }
   double deltaR2_eta(const P4& v) const { return sqr(deltaEta(v)) + sqr(deltaPhi(v)); }
-  double deltaR_eta(const P4& v) const { return sqrt(deltaR2_eta); }
+  double deltaR_eta(const P4& v) const { return sqrt(deltaR2_eta(v)); }
   double deltaR2_rap(const P4& v) const { return sqr(deltaRap(v)) + sqr(deltaPhi(v)); }
-  double deltaR_rap(const P4& v) const { return sqrt(deltaR2_rap); }
+  double deltaR_rap(const P4& v) const { return sqrt(deltaR2_rap(v)); }
 
   P4& operator - () { _x = -_x; _y = -_y; _z = -_z; return *this; }
   P4& operator += (const P4& v) { double e = E() + v.E(); _x += v.px(); _y += v.py(); _z += v.pz(); _m = sqrt( sqr(e) - p2() ); return *this; }

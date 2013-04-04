@@ -10,12 +10,12 @@ public:
     : _pdgId(0) {  }
 
   Particle(double px, double py, double pz, double E, int pdgid)
-    : _p4(px, py, pz, E), _pdgId(p.pid()) {  }
+    : _p4(px, py, pz, E), _pdgId(pdgid) {  }
 
   Particle(const Particle& p)
     : _p4(p.mom()), _pdgId(p.pid()) {  }
 
-  operator=(const Particle& p) {
+  Particle& operator=(const Particle& p) {
     _p4 = p.mom();
     _pdgId = p.pid();
   }
@@ -26,7 +26,6 @@ public:
 
   const P4& mom() const { return _p4; }
   void setMom(const P4& p4) { _p4 = p4; }
-
 
 private:
 
