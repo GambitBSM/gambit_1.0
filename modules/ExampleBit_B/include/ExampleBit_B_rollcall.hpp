@@ -49,19 +49,19 @@ START_MODULE
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
 
-      #define BACKEND_REQUIREMENT betest
-      START_BACKEND_REQUIREMENT(double)
+      #define BACKEND_REQ betest
+      START_BACKEND_REQ(double)
        
         #define VIABLE_BACKEND LibFirst
-        START_VIABLE_BACKEND
+        //START_VIABLE_BACKEND
         //BE_CONDITIONAL_DEP(dog, std::string)
         #undef VIABLE_BACKEND 
 
         #define VIABLE_BACKEND LibFirstCopy
-        START_VIABLE_BACKEND
+        //START_VIABLE_BACKEND
         #undef VIABLE_BACKEND 
 
-      #undef BACKEND_REQUIREMENT
+      #undef BACKEND_REQ
 
     #undef FUNCTION
 
