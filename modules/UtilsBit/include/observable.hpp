@@ -39,6 +39,7 @@
 #include <iostream>
 #include <boost/any.hpp>
 #include <dictionary.hpp>
+#include <graphs.hpp>
 
 namespace GAMBIT {
 

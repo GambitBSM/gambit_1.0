@@ -28,6 +28,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 
 #define  IN_CORE
 #include "logcore.hpp"
+#include "graphs.hpp"
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
 #include "map_extensions.hpp"
@@ -73,7 +74,7 @@ int main( int argc, const char* argv[] )
   std::cout << "My name is " << TinyDarkBit::name() << std::endl;
   std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
   std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
-  std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
+  // std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
   std::cout << "*** End Dark ***" << std::endl << std::endl;
 
   // Dependency resolution by hand
@@ -99,9 +100,9 @@ int main( int argc, const char* argv[] )
   TinyDarkBit::Functown::omega_DM.calculate();
   std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
 
-  // ****************
+  // ********************
   // TinyDarkBit code END
-  // ****************
+  // ********************
 
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
