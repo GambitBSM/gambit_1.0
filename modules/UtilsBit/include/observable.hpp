@@ -293,8 +293,8 @@ namespace GAMBIT {
       /* Set up the commands to be called at runtime to register the function*/\
       template <> void rt_register_function<Tags::FUNCTION> () {               \
         Graphs::VertexID current_vertex;                                       \
-        current_vertex = boost::add_vertex(Functown::FUNCTION, Graphs::masterGraph);            \
-        Graphs::masterGraph[current_vertex].functorBaseName = STRINGIFY(FUNCTION); \
+        current_vertex = boost::add_vertex(Functown::FUNCTION, Graphs::masterGraph);\
+        Graphs::masterGraph[current_vertex].functorBaseName = STRINGIFY(FUNCTION);  \
         map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;        \
         map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
         iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \
@@ -310,6 +310,12 @@ namespace GAMBIT {
                                                                                \
   }                                                                            \
                                                                           
+// Wishlist
+// - minimal
+//   - output variable (capability)
+//     string + type
+//   - input variables (dependencies)
+//     list of (string + type)
 
 #define CORE_DEPENDENCY(DEP, TYPE)                                             \
                                                                                \

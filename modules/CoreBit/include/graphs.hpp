@@ -30,6 +30,10 @@
 #include <fstream>
 #include <boost/graph/graphviz.hpp>
 
+using namespace boost::assign;
+using namespace boost;
+using namespace std;
+
 // Define functorBase here to get dependencies right (will be moved into
 // functor.hpp at some point)
 namespace GAMBIT {
@@ -39,9 +43,12 @@ namespace GAMBIT {
     functorBase()
     {
       std::cout << "FunctorBase initialization" << std::endl;
-      // boost::add_vertex(*this, Graphs::masterGraph);
     };
-    std::string functorBaseName;
+    string functorBaseName;
+    string out_name;
+    string out_type;
+    vector<string> in_names;
+    vector<string> in_types;
   };
 };
 
@@ -56,10 +63,6 @@ namespace GAMBIT {
   masterGraph[current_vertex].in += __VA_ARGS__;
 #define ADD_OUTPUT(...) \
   masterGraph[current_vertex].out += __VA_ARGS__;
-
-using namespace boost::assign;
-using namespace boost;
-using namespace std;
 
 namespace GAMBIT
 {
