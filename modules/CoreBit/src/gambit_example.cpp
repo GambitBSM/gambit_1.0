@@ -28,6 +28,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 
 #define  IN_CORE
 #include "logcore.hpp"
+#include "graphs.hpp"
 #include "module_rollcall.hpp"
 #include "exceptions.hpp"
 #include "map_extensions.hpp"
@@ -36,7 +37,6 @@ using namespace GAMBIT;
 
 int main( int argc, const char* argv[] )
 {
-
   std::cout<<std::endl;
   std::cout<< "This is a skeleton example for gambit."<<std::endl;
   std::cout<< "At the moment it does the following:"<<std::endl;
@@ -99,9 +99,9 @@ int main( int argc, const char* argv[] )
   //TinyDarkBit::Functown::omega_DM.calculate();
   //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
 
-  // ****************
+  // ********************
   // TinyDarkBit code END
-  // ****************
+  // ********************
 
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities

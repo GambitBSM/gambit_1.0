@@ -46,46 +46,51 @@ namespace GAMBIT
       // Method for setting the value of a pointer to a dependency
       void setDependency (std::string dep_name, functor& dep_functor) {}
 
-      // Calculate method (pure virtual => functor is an abstract base class)
-      virtual void calculate() = 0;
-
       // Identification methods
+      std::string name()     { return myName;     }
       std::string quantity() { return myQuantity; }
       std::string type()     { return myType;     }
+      std::string module()   { return myModule;   }
 
       // Needs recalculating or not?  (Externally modifiable)
       bool needs_recalculating;
 
-      // Internal list of pointers to pointers to dependent functors
+      // Internal list of pointers to pointers to dependent functors !FIXME to be modified
       std::list<boost::any> dependency_list;
 
-      // Internal list of pointers to pointers to backend functors
+      // Internal list of pointers to pointers to backend functors !FIXME to be modified
       std::list<boost::any> backend_req_list;
 
     protected:
-
-      // Internal storage of exactly what it is that this function calculates
-      std::string myQuantity;
-
-      // Internal storage of the type of exactly what this function calculates
-      std::string myType;
+                              //Internal storage of
+      std::string myName;     //the function name,
+      std::string myQuantity; //exactly what it calculates,
+      std::string myType;     //the type of what it calculates, and
+      std::string myModule;   //the name of the module to which it belongs.
 
   };
 
 
   // Functor derived class for module functions with result type TYPE
   template <typename TYPE>
-  class module_functor : functor
+  class module_functor : public functor
   {
 
     public:
 
       // Constructor 
-      module_functor(void (*inputFunction)(TYPE &), std::string capability, std::string result_type)
+      module_functor(void (*inputFunction)(TYPE &), 
+                           std::string func_name,
+                           std::string capability, 
+                           std::string result_type,
+                           std::string module_name)
       {
-        myFunction = inputFunction;
-        myQuantity = capability;
-        myType = result_type;
+        std::cout << "functor initialization: " << func_name << std::endl;
+        myFunction      = inputFunction;
+        myName          = func_name;
+        myQuantity      = capability;
+        myType          = result_type;
+        myModule        = module_name;
         needs_recalculating = true;
       }
 
@@ -122,12 +127,12 @@ namespace GAMBIT
 
   // Functor derived class for backend functions with result type TYPE
   template <typename TYPE>
-  class backend_functor : module_functor<TYPE>
+  class backend_functor : public module_functor<TYPE>
   {
 
     public:
 
-      // Method for passing input parameters to backend functions
+      // Method for passing input parameters to backend functions !FIXME not finished
       void give_input() { }
 
     protected:

@@ -38,6 +38,7 @@
 #include <iostream>
 #include <dictionary.hpp>
 #include <functors.hpp>
+#include <graphs.hpp>
 
 //Some redirection macros
 #define STRINGIFY(X) STRINGIFY2(X)
@@ -266,7 +267,8 @@
       namespace Functown                                                       \
       {                                                                        \
         module_functor<TYPE> FUNCTION                                          \
-         (&MODULE::FUNCTION, STRINGIFY(CAPABILITY), STRINGIFY(TYPE));          \
+         (&MODULE::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),       \
+         STRINGIFY(TYPE), STRINGIFY(MODULE));                                  \
       }                                                                        \
                                                                                \
       /* Set up an alias function to call the function */                      \
@@ -281,6 +283,7 @@
       template <>                                                              \
       void rt_register_function<Tags::FUNCTION> ()                             \
       {                                                                        \
+        boost::add_vertex(Functown::FUNCTION, Graphs::masterGraph);            \
         map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;        \
         map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
         iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \
@@ -297,6 +300,12 @@
                                                                                \
   }                                                                            \
                                                                           
+// Wishlist
+// - minimal
+//   - output variable (capability)
+//     string + type
+//   - input variables (dependencies)
+//     list of (string + type)
 
 #define CORE_DEPENDENCY(DEP, TYPE)                                             \
                                                                                \
