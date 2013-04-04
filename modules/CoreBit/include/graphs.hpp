@@ -29,7 +29,21 @@
 #include <queue>
 #include <fstream>
 #include <boost/graph/graphviz.hpp>
-#include <observable.hpp>
+
+// Define functorBase here to get dependencies right (will be moved into
+// functor.hpp at some point)
+namespace GAMBIT {
+  class functorBase
+  {
+    public:
+    functorBase()
+    {
+      std::cout << "FunctorBase initialization" << std::endl;
+      // boost::add_vertex(*this, Graphs::masterGraph);
+    };
+    std::string functorBaseName;
+  };
+};
 
 #define NEW_NODE(MODULE, FUNCTION) \
   current_vertex = add_vertex(masterGraph); \
@@ -67,21 +81,13 @@ namespace GAMBIT
       string variable; // name of associated variable
     };
 
-    typedef adjacency_list<vecS, vecS, directedS, Vertex, Edge> MasterGraphType;
+    typedef adjacency_list<vecS, vecS, directedS, functorBase, Edge> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
 
 #ifdef IN_CORE
     MasterGraphType masterGraph;
-    VertexID current_vertex;
-
-    // current_vertex = add_vertex(masterGraph);
-
-    // masterGraph[current_vertex].module = "module_name";
-    // masterGraph[current_vertex].function = "function_name";
-    // masterGraph[current_vertex].status = 1;
 #endif
   }
 }
-
 #endif /* defined(__graphs_hpp__) */

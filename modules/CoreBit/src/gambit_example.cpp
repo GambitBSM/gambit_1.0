@@ -37,6 +37,11 @@ using namespace GAMBIT;
 
 int main( int argc, const char* argv[] )
 {
+  std::cout << GAMBIT::Graphs::masterGraph[0].functorBaseName << std::endl;
+  std::cout << GAMBIT::Graphs::masterGraph[1].functorBaseName << std::endl;
+  std::cout << GAMBIT::Graphs::masterGraph[2].functorBaseName << std::endl;
+  std::cout << GAMBIT::Graphs::masterGraph[3].functorBaseName << std::endl;
+  std::cout << GAMBIT::Graphs::masterGraph[4].functorBaseName << std::endl;
 
   std::cout<<std::endl;
   std::cout<< "This is a skeleton example for gambit."<<std::endl;
