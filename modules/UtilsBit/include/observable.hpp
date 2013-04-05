@@ -182,6 +182,14 @@
         return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
       }                                                                        \
                                                                                \
+      /* resolve dependency DEP in FUNCTION */                                 \
+      template <typename DEP_TAG, typename TAG>                                \
+      void resolve_dependency(functor* dep_functor)                            \
+      {                                                                        \
+        std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
+        std::cout<<"have this dependency.";                                    \
+      }                                                                        \
+                                                                               \
       /* runtime registration function for observable/likelihood function TAG*/\
       template <typename TAG>                                                  \
       void rt_register_function ()                                             \
@@ -302,8 +310,6 @@
                                                                           
 // Wishlist
 // - minimal
-//   - output variable (capability)
-//     string + type
 //   - input variables (dependencies)
 //     list of (string + type)
 
@@ -343,6 +349,13 @@
         return true;                                                           \
       }                                                                        \
                                                                                \
+      /* Resolve dependency DEP in FUNCTION */                                 \
+      template <>                                                              \
+      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
+      {                                                                        \
+        Dependencies::FUNCTION::DEP = (module_functor<TYPE>*) dep_functor;     \
+      }                                                                        \
+                                                                               \
       /* Set up the commands to be called at runtime to register dependency*/  \
       template <>                                                              \
       void rt_register_dependency<Tags::DEP, Tags::FUNCTION> ()                \
@@ -350,7 +363,8 @@
         map_bools[STRINGIFY(CAT(DEP,FUNCTION))] =                              \
          &requires<Tags::DEP, Tags::FUNCTION>;                                 \
         iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
-        Functown::FUNCTION.addToDepList<TYPE>(Dependencies::FUNCTION::DEP);    \
+        Functown::FUNCTION.setDependency(STRINGIFY(DEP),STRINGIFY(TYPE),       \
+         &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
       }                                                                        \
                                                                                \
       /* Create the dependency initialisation object */                        \
@@ -430,8 +444,8 @@
         map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
          &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
         iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] = STRINGIFY(TYPE);        \
-        /*Functown::FUNCTION.addToBEList<TYPE>                                 \
-         (Backend_Reqs::FUNCTION::BACKEND_REQ);*/                              \
+        Functown::FUNCTION.setBackendReq(STRINGIFY(DEP),STRINGIFY(TYPE));      \
+        /* (Backend_Reqs::FUNCTION::BACKEND_REQ);*/                              \
       }                                                                        \
                                                                                \
       /* Create the dependency initialisation object */                        \

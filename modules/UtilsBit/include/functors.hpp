@@ -19,6 +19,8 @@
 
 #include <list>
 #include <string>
+#include <vector>
+#include <utility>
 #include <boost/any.hpp>
 
 
@@ -39,34 +41,65 @@ namespace GAMBIT
 
     public:
 
+      typedef std::pair<std::string, std::string> sspair;
+
       // It may be safer to have the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
 
-      // Method for setting the value of a pointer to a dependency
-      void setDependency (std::string dep_name, functor& dep_functor) {}
-
       // Identification methods
-      std::string name()     { return myName;     }
-      std::string quantity() { return myQuantity; }
-      std::string type()     { return myType;     }
-      std::string module()   { return myModule;   }
+      std::string name()       { return myName;       }
+      std::string capability() { return myCapability; }
+      std::string type()       { return myType;       }
+      std::string module()     { return myModule;     }
+      sspair quantity()        { return std::make_pair(myCapability, myType); }
 
       // Needs recalculating or not?  (Externally modifiable)
       bool needs_recalculating;
 
-      // Internal list of pointers to pointers to dependent functors !FIXME to be modified
-      std::list<boost::any> dependency_list;
+      // Vector of dependency-type pairs as strings 
+      std::vector<sspair> dependencies;
+      
+      // Vector of backend requirement-type pairs as strings 
+      std::vector<sspair> backendreqs;
 
-      // Internal list of pointers to pointers to backend functors !FIXME to be modified
-      std::list<boost::any> backend_req_list;
+      // Method for setting the value of a pointer to a dependency -- does nothing until overidden
+      virtual void resolveDependency (std::string dep, std::string type, functor &dep_functor) {}
+
+      // Add a dependency
+      void setDependency(std::string dep, std::string type, void(*resolver)())
+      { 
+        sspair key (dep, type);
+        dependencies.push_back(key);
+        dependency_map[key] = &resolver;
+      }
+
+      // Add a backend requirement
+      void setBackendReq(std::string req, std::string type)
+      { 
+        backendreqs.push_back(std::make_pair(req, type));
+      }
+
+      void resolveDependency (std::string dep, std::string type, functor* dep_functor)
+      {
+        sspair key (dep, type);
+        if (dependency_map.find(key) == dependency_map.end())                            
+        {                                                                      
+          std::cout<<"This dependency does not exist in the functor of "<<this.name();
+        }
+        else { (*dependency_map[key])(dep_functor); }
+      }
 
     protected:
-                              //Internal storage of
-      std::string myName;     //the function name,
-      std::string myQuantity; //exactly what it calculates,
-      std::string myType;     //the type of what it calculates, and
-      std::string myModule;   //the name of the module to which it belongs.
+                                //Internal storage of
+      std::string myName;       //the function name,
+      std::string myCapability; //exactly what it calculates,
+      std::string myType;       //the type of what it calculates, and
+      std::string myModule;     //the name of the module to which it belongs.
+
+      // Map from (dependency-type pairs) to (pointers to templated void functions 
+      // that set dependency functor pointers)
+      std::map<sspair, void(*)(functor*)> dependency_map;
 
   };
 
@@ -81,14 +114,14 @@ namespace GAMBIT
       // Constructor 
       module_functor(void (*inputFunction)(TYPE &), 
                            std::string func_name,
-                           std::string capability, 
+                           std::string func_capability, 
                            std::string result_type,
                            std::string module_name)
       {
         std::cout << "functor initialization: " << func_name << std::endl;
         myFunction      = inputFunction;
         myName          = func_name;
-        myQuantity      = capability;
+        myCapability    = func_capability;
         myType          = result_type;
         myModule        = module_name;
         needs_recalculating = true;
@@ -99,20 +132,6 @@ namespace GAMBIT
 
       // Operation (return value) 
       TYPE operator()() { return myValue; }
-
-      // Add pointer to pointer to dependent functor
-      template <typename DEP>
-      void addToDepList(module_functor<DEP>* &dep_functor)
-      { 
-        dependency_list.push_back (&dep_functor);
-      }
-
-      // Add pointer to pointer to backend functor
-      template <typename BE_REQ>
-      void addToBEList(module_functor<BE_REQ>* &be_functor)
-      { 
-        backend_req_list.push_back (&be_functor);
-      }
 
     protected:
 

@@ -27,11 +27,11 @@ ModelBasePtr make_a_model(bool do_cmssm){
 */
 
 #define  IN_CORE
-#include "logcore.hpp"
-#include "graphs.hpp"
-#include "module_rollcall.hpp"
-#include "exceptions.hpp"
-#include "map_extensions.hpp"
+#include <logcore.hpp>
+#include <graphs.hpp>
+#include <module_rollcall.hpp>
+#include <exceptions.hpp>
+#include <map_extensions.hpp>
 
 using namespace GAMBIT;
 
@@ -62,7 +62,7 @@ int main( int argc, const char* argv[] )
   // Do some mock dependency resolution
   ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents_dbl;
   ExampleBit_A::Dependencies::nevents_int::nevents = &ExampleBit_A::Functown::nevents_dbl;
-
+  
 
   // ****************
   // TinyDarkBit code START
