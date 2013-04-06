@@ -65,6 +65,8 @@ int main( int argc, const char* argv[] )
   // New-style
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  // Example of what happens if you try to do some bad dependency resolution (uncomment to see)
+  //ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::authors_dogs_name);
   
 
   // ****************

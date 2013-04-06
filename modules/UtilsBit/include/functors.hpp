@@ -86,9 +86,9 @@ namespace GAMBIT
         sspair key (dep_functor->quantity());
         if (dependency_map.find(key) == dependency_map.end())                            
         {                                                                      
-          std::cout << "Error whilst attempting to resolve dependency." << std::endl;
-          std::cout << "A dependency matching the passed functor pointer " << std::endl;
-          std::cout << "does not exist in the functor of " << myName << std::endl;
+          std::cout << "Error whilst attempting to resolve dependency:" << std::endl;
+          std::cout << "Function "<< myName << " in " << myModule << " does not depend on " << std::endl;
+          std::cout << "capability " << key.first << " with type " << key.second << "." << std::endl;
           //FIXME throw a real error here
         }
         else { (*dependency_map[key])(dep_functor); }
