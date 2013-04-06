@@ -353,7 +353,17 @@
       template <>                                                              \
       void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
       {                                                                        \
-        Dependencies::FUNCTION::DEP = (module_functor<TYPE>*) dep_functor;     \
+        Dependencies::FUNCTION::DEP =                                          \
+         dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
+        if (Dependencies::FUNCTION::DEP == 0)                                  \
+        {                                                                      \
+          std::cout<<"Error: Null returned from dynamic cast in "<< std::endl; \
+          std::cout<<"MODULE::resolve_dependency, for dependency"<< std::endl; \
+          std::cout<<"DEP of function FUNCTION.  Attempt was to "<< std::endl; \
+          std::cout<<"resolve to "<<dep_functor->name()<<" in   "<< std::endl; \
+          std::cout<<dep_functor->module()<<"."<<std::endl;                    \
+          /* FIXME throw real error here */                                    \
+        }                                                                      \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register dependency*/  \

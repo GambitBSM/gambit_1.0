@@ -59,9 +59,12 @@ int main( int argc, const char* argv[] )
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
 
-  // Do some mock dependency resolution
-  ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents_dbl;
-  ExampleBit_A::Dependencies::nevents_int::nevents = &ExampleBit_A::Functown::nevents_dbl;
+  // Old-style dependency resolution
+  // ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents_dbl;
+  // ExampleBit_A::Dependencies::nevents_int::nevents = &ExampleBit_A::Functown::nevents_dbl;
+  // New-style
+  ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   
 
   // ****************

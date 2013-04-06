@@ -43,6 +43,9 @@ namespace GAMBIT
 
       typedef std::pair<std::string, std::string> sspair;
 
+      // Empty virtual destructor to make polymorphic
+      virtual ~functor() {}
+
       // It may be safer to have the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
@@ -63,15 +66,12 @@ namespace GAMBIT
       // Vector of backend requirement-type pairs as strings 
       std::vector<sspair> backendreqs;
 
-      // Method for setting the value of a pointer to a dependency -- does nothing until overidden
-      virtual void resolveDependency (std::string dep, std::string type, functor &dep_functor) {}
-
       // Add a dependency
-      void setDependency(std::string dep, std::string type, void(*resolver)())
+      void setDependency(std::string dep, std::string type, void(*resolver)(functor*))
       { 
         sspair key (dep, type);
         dependencies.push_back(key);
-        dependency_map[key] = &resolver;
+        dependency_map[key] = resolver;
       }
 
       // Add a backend requirement
@@ -80,12 +80,16 @@ namespace GAMBIT
         backendreqs.push_back(std::make_pair(req, type));
       }
 
-      void resolveDependency (std::string dep, std::string type, functor* dep_functor)
+      // Resolve a dependency using a pointer to another functor object
+      void resolveDependency (functor* dep_functor)
       {
-        sspair key (dep, type);
+        sspair key (dep_functor->quantity());
         if (dependency_map.find(key) == dependency_map.end())                            
         {                                                                      
-          std::cout<<"This dependency does not exist in the functor of "<<this.name();
+          std::cout << "Error whilst attempting to resolve dependency." << std::endl;
+          std::cout << "A dependency matching the passed functor pointer " << std::endl;
+          std::cout << "does not exist in the functor of " << myName << std::endl;
+          //FIXME throw a real error here
         }
         else { (*dependency_map[key])(dep_functor); }
       }
