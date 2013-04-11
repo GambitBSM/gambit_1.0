@@ -52,17 +52,17 @@ START_MODULE
 
       #define BACKEND_REQ cut_param         // A quantity cut_param that must be obtained from an external (backend) code,
       START_BACKEND_REQ(double)             // with type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-
       //BACKEND_OPTION(LibFirst, 1.2)       // Specify that backend LibFirst v1.2 is permitted to provide the cut_param
       BACKEND_OPTION(LibFirst)              // Omit version info to specify that any version of LibFirst can provide the cut_param.
-
-      BACKEND_CONDITIONAL_DEP(LibFirst, 1.2, dog, std::string) // Add an additional dependency only if cut_param comes from LibFirst v1.2    
-      //BACKEND_CONDITIONAL_DEP(LibFirst, dog, std::string)    // Add an additional dependency if cut_param comes from any LibFirst
-      //BACKEND_CONDITIONAL_DEP(LibSecond, dog, std::string)     // Add an additional dependency if cut_param comes from any LibSecond
-
-      BACKEND_OPTION(LibThird)              // Specify that any version of LibThird is also a viable provider of cut_param
-                                            // If you omit BACKEND_OPTION statements entirely, all backends are considered viable.
-      #undef BACKEND_REQ
+      BACKEND_OPTION(LibSecond)             // Specify that any version of LibSecond is also a viable provider of cut_param
+      #undef BACKEND_REQ                    // If no BACKEND_OPTION statements exist, all backends are considered viable.
+      
+      #define CONDITIONAL_DEPENDENCY dog    // A dependency that only counts under certain conditions (must come after BACKEND_REQs)
+      START_CONDITIONAL_DEPENDENCY(std::string)            // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
+      ACTIVATE_FOR_BACKEND(cut_param, LibFirst, 1.2, 1.3)  // Dependency counts when LibFirst v1.2 or v1.3 is used for cut_params
+      ACTIVATE_FOR_BACKEND(cut_param, LibThird)            // Dependency counts when any version of LibThird is used for cut_params
+      ACTIVATE_FOR_MODEL(MSSM)                             // Dependency counts when scanning the MSSM or one of its sub-models
+      #undef CONDITIONAL_DEPENDENCY
 
     #undef FUNCTION
 
