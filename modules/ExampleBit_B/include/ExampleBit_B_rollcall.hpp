@@ -19,7 +19,7 @@
 //
 //  Pat Scott
 //  2012 Nov 15++ 
-//  2013 Jan 18, Feb 04
+//  2013 Jan 18, Feb 04, April
 //
 //  *********************************************
 
@@ -31,36 +31,37 @@
 #define MODULE ExampleBit_B
 START_MODULE
 
-  #define CAPABILITY xsection
+
+  #define CAPABILITY xsection               // Observable: cross-section for some hypothetical process
   START_CAPABILITY
 
-    #define FUNCTION xsection               // Observable: cross-section for some hypothetical process
+    #define FUNCTION xsection               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
     #undef FUNCTION
 
   #undef CAPABILITY
 
 
-  #define CAPABILITY nevents_postcuts
+  #define CAPABILITY nevents_postcuts       // Observable: number of events for process after cuts 
   START_CAPABILITY
   //LATEX_LABEL($n_{\rm events, cut}$)      // Specify the LaTeX label of this quantity
 
-    #define FUNCTION nevents_postcuts       // Observable: number of events for process after cuts 
+    #define FUNCTION nevents_postcuts       // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
 
-      #define BACKEND_REQ betest
-      START_BACKEND_REQ(double)
-       
-        #define VIABLE_BACKEND LibFirst
-        //START_VIABLE_BACKEND
-        //BE_CONDITIONAL_DEP(dog, std::string)
-        #undef VIABLE_BACKEND 
+      #define BACKEND_REQ cut_param         // A quantity cut_param that must be obtained from an external (backend) code,
+      START_BACKEND_REQ(double)             // with type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
 
-        #define VIABLE_BACKEND LibFirstCopy
-        //START_VIABLE_BACKEND
-        #undef VIABLE_BACKEND 
+      //BACKEND_OPTION(LibFirst, 1.2)       // Specify that backend LibFirst v1.2 is permitted to provide the cut_param
+      BACKEND_OPTION(LibFirst)              // Omit version info to specify that any version of LibFirst can provide the cut_param.
 
+      BACKEND_CONDITIONAL_DEP(LibFirst, 1.2, dog, std::string) // Add an additional dependency only if cut_param comes from LibFirst v1.2    
+      //BACKEND_CONDITIONAL_DEP(LibFirst, dog, std::string)    // Add an additional dependency if cut_param comes from any LibFirst
+      //BACKEND_CONDITIONAL_DEP(LibSecond, dog, std::string)     // Add an additional dependency if cut_param comes from any LibSecond
+
+      BACKEND_OPTION(LibThird)              // Specify that any version of LibThird is also a viable provider of cut_param
+                                            // If you omit BACKEND_OPTION statements entirely, all backends are considered viable.
       #undef BACKEND_REQ
 
     #undef FUNCTION
@@ -68,7 +69,7 @@ START_MODULE
   #undef CAPABILITY
 
 
-  #define CAPABILITY authors_dogs_name
+  #define CAPABILITY dog
   START_CAPABILITY
 
     #define FUNCTION authors_dogs_name      // Observable: name of the author of ExampleBitB's dog    

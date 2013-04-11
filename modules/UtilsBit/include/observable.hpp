@@ -24,7 +24,7 @@
 //
 //  Pat Scott
 //  2012  Nov 15++  
-//  2013  Jan 18, 29-31, Feb 04, Mar 28, Apr 3
+//  2013  Jan 18, 29-31, Feb 04, Mar 28, Apr 3-9
 //
 //  Abram Krislock
 //  2013 Jan 31, Feb 05
@@ -45,13 +45,28 @@
 #define STRINGIFY2(X) #X
 #define CAT(X,Y) CAT2(X,Y)
 #define CAT2(X,Y) X##Y
+#define CAT_2 CAT
+#define CAT_3(X,Y,Z) CAT(X,CAT(Y,Z))
+#define CAT_4(A,X,Y,Z) CAT(A,CAT_3(X,Y,Z))
+#define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
+#define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
+#define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
 #define DUMMY
 #define DUMMYARG(...)
+
+//Generic variadic macro expanders for 0 to 5 arguments
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 4, 3, 2, 1, 0)
+#define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
+#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
+#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
 //Some useful one-liners
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
 #define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
 #define GET_DEP(DEP) (*Dependencies::DEP)()
+#define GIVE_BE_INPUT(BE_REQ,PARAM,VALUE) Backend_Reqs::BE_REQ->PARAM(VALUE)
+#define GET_BE_RESULT(BE_REQ) (*Backend_Reqs::BE_REQ)()
 
 //Redirect rollcall macros depending in whether this file is included from 
 //the core or a module.
@@ -61,17 +76,31 @@
   #define START_FUNCTION     CORE_START_FUNCTION
   #define DEPENDENCY         CORE_DEPENDENCY
   #define START_BACKEND_REQ  CORE_START_BACKEND_REQ
+  #define BE_OPTION          CORE_BACKEND_OPTION
+  #define BE_CON_DEP         CORE_BACKEND_CONDITIONAL_DEP
 #else
   #define START_MODULE       DUMMY
   #define START_CAPABILITY   DUMMY
   #define START_FUNCTION     DUMMYARG
   #define DEPENDENCY         MODULE_DEPENDENCY
   #define START_BACKEND_REQ  MODULE_START_BACKEND_REQ
+  #define BE_OPTION          DUMMYARG
+  #define BE_CON_DEP         DUMMYARG
 #endif
 
+//Redirect the BACKEND_OPTION macro according to whether it has been called
+//with one or two arguments (make the version number 'any' if it is omitted).
+#define BACKEND_OPTION_2(_1, _2) BE_OPTION(_1, _2)
+#define BACKEND_OPTION_1(_1)     BE_OPTION(_1, any)
+#define BACKEND_OPTION(...)      VARARG(BACKEND_OPTION, __VA_ARGS__)
 
-//Start true rollcall macros
+//Redirect the BACKEND_CONDITIONAL_DEP macro according to whether it has been called
+//with three or four arguments (make the version number 'any' if it is omitted).
+#define BACKEND_CONDITIONAL_DEP_4(_1, _2, _3, _4) BE_CON_DEP(_1, _2, _3, _4)
+#define BACKEND_CONDITIONAL_DEP_3(_1, _2, _3)     BE_CON_DEP(_1, any, _2, _3)
+#define BACKEND_CONDITIONAL_DEP(...)              VARARG(BACKEND_CONDITIONAL_DEP, __VA_ARGS__)
 
+//True rollcall macros
 #define CORE_START_MODULE                                                      \
                                                                                \
   namespace GAMBIT                                                             \
@@ -96,54 +125,92 @@
         typedef double type;  /* Scalar numerical value by default. */         \
       };                                                                       \
                                                                                \
-      /* module name */                                                        \
+      /* Module name */                                                        \
       std::string name() { return STRINGIFY(MODULE); }                         \
                                                                                \
-      /* maps from tag strings to tag-specialisted functions */                \
-      std::map<std::string, bool(*)()> map_bools;                              \
+      /* Maps from tag strings to tag-specialisted functions */                \
       std::map<std::string, void(*)()> map_voids;                              \
+      std::map<std::string, bool(*)()> map_bools;                              \
+      std::map<std::string, bool(*)(std::string, std::string)> condit_bools;   \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
-      /* all module observables/likelihoods, their dependencies, required      \
+      /* All module observables/likelihoods, their dependencies, required      \
       quantities from backends, and their types, as strings */                 \
       static std::map<std::string,std::string> iCanDo;                         \
       static std::map<std::string,std::string> iMayNeed;                       \
       static std::map<std::string,std::string> iMayNeedFromBackends;           \
                                                                                \
-      /* module provides observable/likelihood TAG? */                         \
+      /* Module provides observable/likelihood TAG? */                         \
       template <typename TAG>                                                  \
       bool provides() { return false; }                                        \
                                                                                \
-      /* overloaded, non-templated version */                                  \
+      /* Overloaded, non-templated version */                                  \
       bool provides(std::string obs)                                           \
       {                                                                        \
         if (map_bools.find(obs) == map_bools.end()) { return false; }          \
         return (*map_bools[obs])();                                            \
       }                                                                        \
                                                                                \
-      /* module requires observable/likelihood DEP_TAG to compute TAG */       \
+      /* Module requires observable/likelihood DEP_TAG to compute TAG */       \
       template <typename DEP_TAG, typename TAG>                                \
       bool requires() { return false; }                                        \
                                                                                \
-      /* overloaded, non-templated version */                                  \
+      /* Overloaded, non-templated version */                                  \
       bool requires(std::string dep, std::string obs)                          \
       {                                                                        \
         if (map_bools.find(dep+obs) == map_bools.end()) { return false; }      \
         return (*map_bools[dep+obs])();                                        \
       }                                                                        \
                                                                                \
-      /* module requires quantity BE_TAG from a backend to compute TAG */      \
+      /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
+      depending on the backend and version used to meet requirment REQ_TAG. */ \
+      template <typename DEP_TAG, typename TAG, typename REQ_TAG>              \
+      bool requires_conditional_on_backend                                     \
+       (std::string be, std::string ver) {return false; }                      \
+                                                                               \
+      /* Overloaded version of templated function */                           \
+      template <typename DEP_TAG, typename TAG, typename REQ_TAG>              \
+      bool requires_conditional_on_backend(std::string be)                     \
+      {                                                                        \
+        return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG>(be, "any");\
+      }                                                                        \
+                                                                               \
+      /* Additional overloaded, non-templated versions */                      \
+      bool requires(std::string dep, std::string obs, std::string req,         \
+       std::string be, std::string ver)                                        \
+      {                                                                        \
+        if (requires(dep, obs)) {return true; }                                \
+        if (condit_bools.find(dep+obs+req) == condit_bools.end())              \
+        {                                                                      \
+          return false;                                                        \
+        }                                                                      \
+        if ((*condit_bools[dep+obs+req])(be, "any"))                           \
+        {                                                                      \
+          return true;                                                         \
+        }                                                                      \
+        else                                                                   \
+        {                                                                      \
+          return (*condit_bools[dep+obs+req])(be, ver);                        \
+        }                                                                      \
+      }                                                                        \
+      bool requires(std::string dep, std::string obs, std::string req,         \
+       std::string be)                                                         \
+      {                                                                        \
+        return requires(dep, obs, req, be, "any");                             \
+      }                                                                        \
+                                                                               \
+      /* Module requires quantity BE_TAG from a backend to compute TAG */      \
       template <typename BE_TAG, typename TAG>                                 \
       bool needs_from_backend() { return false; }                              \
                                                                                \
-      /* overloaded, non-templated version */                                  \
+      /* Overloaded, non-templated version */                                  \
       bool needs_from_backend(std::string quant, std::string obs)              \
       {                                                                        \
         if (map_bools.find("BE_"+quant+obs) == map_bools.end()) {return false;}\
         return (*map_bools["BE_"+quant+obs])();                                \
       }                                                                        \
                                                                                \
-      /* report on observable/likelihood TAG */                                \
+      /* Report on observable/likelihood TAG */                                \
       template <typename TAG>                                                  \
       void report()                                                            \
       {                                                                        \
@@ -151,7 +218,7 @@
         std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
       }                                                                        \
                                                                                \
-      /* overloaded, non-templated version */                                  \
+      /* Overloaded, non-templated version */                                  \
       void report(std::string obs)                                             \
       {                                                                        \
         if (map_voids.find(obs) == map_voids.end())                            \
@@ -162,7 +229,7 @@
         else { (*map_voids[obs])(); }                                          \
       }                                                                        \
                                                                                \
-      /* alias for observable/likelihood function TAG */                       \
+      /* Alias for observable/likelihood function TAG */                       \
       template <typename TAG>                                                  \
       typename function_traits<TAG>::type result()                             \
       {                                                                        \
@@ -171,7 +238,7 @@
         return 0;                                                              \
       }                                                                        \
                                                                                \
-      /* overloaded, 'stringy' version */                                      \
+      /* Overloaded, 'stringy' version */                                      \
       /* A templated function that uses an input string obs to pull a pointer  \
       to the zero-parameter alias fuction above out of the module's private    \
       dictionary.  It then dereferences that pointer, calls the function and   \
@@ -182,15 +249,23 @@
         return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
       }                                                                        \
                                                                                \
-      /* resolve dependency DEP in FUNCTION */                                 \
+      /* Resolve dependency DEP_TAG in function TAG */                         \
       template <typename DEP_TAG, typename TAG>                                \
       void resolve_dependency(functor* dep_functor)                            \
       {                                                                        \
         std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this dependency.";                                    \
+        std::cout<<"have this dependency for this function.";                  \
       }                                                                        \
                                                                                \
-      /* runtime registration function for observable/likelihood function TAG*/\
+      /* Resolve backend requirement BE_REQ in function TAG */                 \
+      template <typename BE_REQ, typename TAG>                                 \
+      void resolve_backendreq(functor* be_functor)                             \
+      {                                                                        \
+        std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
+        std::cout<<"have this backend req. for this function.";                \
+      }                                                                        \
+                                                                               \
+      /* Runtime registration function for observable/likelihood function TAG*/\
       template <typename TAG>                                                  \
       void rt_register_function ()                                             \
       {                                                                        \
@@ -198,21 +273,21 @@
         std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
       }                                                                        \
                                                                                \
-      /* runtime registration function for dependency DEP_TAG of function TAG*/\
+      /* Runtime registration function for dependency DEP_TAG of function TAG*/\
       template <typename DEP_TAG, typename TAG>                                \
       void rt_register_dependency ()                                           \
       {                                                                        \
         std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this dependency.";                                    \
+        std::cout<<"have this dependency for this function.";                  \
       }                                                                        \
                                                                                \
-      /* runtime registration function for backend req BE_REQ of               \
+      /* Runtime registration function for backend req BE_REQ of               \
       function TAG*/                                                           \
       template <typename BE_REQ, typename TAG>                                 \
       void rt_register_req ()                                                  \
       {                                                                        \
         std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this backend req.";                                   \
+        std::cout<<"have this backend req. for this function.";                \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -308,12 +383,8 @@
                                                                                \
   }                                                                            \
                                                                           
-// Wishlist
-// - minimal
-//   - input variables (dependencies)
-//     list of (string + type)
 
-#define CORE_DEPENDENCY(DEP, TYPE)                                             \
+#define DEPENDENCY_COMMON_1(DEP, TYPE)                                         \
                                                                                \
   namespace GAMBIT                                                             \
   {                                                                            \
@@ -342,13 +413,6 @@
         }                                                                      \
       }                                                                        \
                                                                                \
-      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
-      template <>                                                              \
-      bool requires<Tags::DEP, Tags::FUNCTION>()                               \
-      {                                                                        \
-        return true;                                                           \
-      }                                                                        \
-                                                                               \
       /* Resolve dependency DEP in FUNCTION */                                 \
       template <>                                                              \
       void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
@@ -361,9 +425,35 @@
           std::cout<<"MODULE::resolve_dependency, for dependency"<< std::endl; \
           std::cout<<"DEP of function FUNCTION.  Attempt was to "<< std::endl; \
           std::cout<<"resolve to "<<dep_functor->name()<<" in   "<< std::endl; \
-          std::cout<<dep_functor->module()<<"."<<std::endl;                    \
+          std::cout<<dep_functor->origin()<<"."<<std::endl;                    \
           /* FIXME throw real error here */                                    \
         }                                                                      \
+      }                                                                        \
+
+
+#define DEPENDENCY_COMMON_2(DEP,TYPE)                                          \
+                                                                               \
+      /* Create the dependency initialisation object */                        \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT(DEP##_for_,FUNCTION)                                      \
+         (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+#define CORE_DEPENDENCY(DEP, TYPE)                                             \
+                                                                               \
+  DEPENDENCY_COMMON_1(DEP, TYPE)                                               \
+                                                                               \
+      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
+      template <>                                                              \
+      bool requires<Tags::DEP, Tags::FUNCTION>()                               \
+      {                                                                        \
+        return true;                                                           \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register dependency*/  \
@@ -377,16 +467,7 @@
          &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
       }                                                                        \
                                                                                \
-      /* Create the dependency initialisation object */                        \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code CAT(DEP##_for_,FUNCTION)                                      \
-         (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
+  DEPENDENCY_COMMON_2(DEP, TYPE)                                               \
 
 
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \
@@ -447,6 +528,24 @@
         return true;                                                           \
       }                                                                        \
                                                                                \
+      /* Resolve backend requirement BACKEND_REQ in FUNCTION */                \
+      template <>                                                              \
+      void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
+       (functor* be_functor)                                                   \
+      {                                                                        \
+        Backend_Reqs::FUNCTION::BACKEND_REQ =                                  \
+         dynamic_cast<backend_functor<TYPE>*>(be_functor);                     \
+        if (Backend_Reqs::FUNCTION::BACKEND_REQ == 0)                          \
+        {                                                                      \
+          std::cout<<"Error: Null returned from dynamic cast in "<< std::endl; \
+          std::cout<<"MODULE::resolve_backendreq, for requirement"<< std::endl;\
+          std::cout<<"BACKEND_REQ of function FUNCTION.  Attempt"<< std::endl; \
+          std::cout<<" was to resolve to "<<be_functor->name()<< std::endl;    \
+          std::cout<<" in "<<be_functor->origin()<<"."<<std::endl;            \
+          /* FIXME throw real error here */                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
       /* Set up the commands to be called at runtime to register req*/         \
       template <>                                                              \
       void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
@@ -454,8 +553,9 @@
         map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
          &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
         iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] = STRINGIFY(TYPE);        \
-        Functown::FUNCTION.setBackendReq(STRINGIFY(DEP),STRINGIFY(TYPE));      \
-        /* (Backend_Reqs::FUNCTION::BACKEND_REQ);*/                              \
+        Functown::FUNCTION.setBackendReq(                                      \
+         STRINGIFY(BACKEND_REQ),STRINGIFY(TYPE),                               \
+         &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \
       /* Create the dependency initialisation object */                        \
@@ -492,6 +592,64 @@
     }                                                                          \
                                                                                \
   }                                                                            \
+
+
+#define CORE_BACKEND_OPTION(BACKEND,VERSION)                                   \
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the command to be called at runtime to register the option */  \
+      void CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION)()   \
+      {                                                                        \
+        Functown::FUNCTION.setPermittedBackend(STRINGIFY(BACKEND_REQ),         \
+         STRINGIFY(BACKEND), STRINGIFY(VERSION));                              \
+      }                                                                        \
+                                                                               \
+      /* Create the option registration initialisation object */               \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_5(BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION)                \
+         (& CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION));  \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+#define CORE_BACKEND_CONDITIONAL_DEP(BACKEND,VERSION,DEP,TYPE)                 \
+                                                                               \
+  DEPENDENCY_COMMON_1(DEP, TYPE)                                               \
+                                                                               \
+      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
+      template <>                                                              \
+      bool requires_conditional_on_backend<Tags::DEP, Tags::FUNCTION,          \
+       BETags::BACKEND_REQ> (std::string be, std::string ver)                  \
+      {                                                                        \
+        return (be == STRINGIFY(BACKEND) && ver == STRINGIFY(VERSION))         \
+         ? true : false;                                                       \
+      }                                                                        \
+                                                                               \
+      /* Set up the commands to be called at runtime to register dependency*/  \
+      template <>                                                              \
+      void rt_register_dependency<Tags::DEP, Tags::FUNCTION> ()                \
+      {                                                                        \
+        condit_bools[STRINGIFY(CAT_3(DEP,FUNCTION,BACKEND_REQ))] =             \
+         &requires_conditional_on_backend<Tags::DEP, Tags::FUNCTION,           \
+         BETags::BACKEND_REQ>;                                                 \
+        iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
+        Functown::FUNCTION.setBackendConditionalDependency                     \
+         (STRINGIFY(BACKEND_REQ), STRINGIFY(BACKEND), STRINGIFY(VERSION),      \
+         STRINGIFY(DEP), STRINGIFY(TYPE),                                      \
+         &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
+      }                                                                        \
+                                                                               \
+  DEPENDENCY_COMMON_2(DEP, TYPE)                                               \
+                                                                               
 
 #endif // defined(__observable_hpp__) 
 

@@ -37,7 +37,8 @@ ifdef BOOST
 BOOSTINC=$(BOOST)
 else
 BOOSTINC=./
-endifCCEXTRA= -pipe -pg -std=c++0x 
+endif
+CCEXTRA= -pipe -pg -std=c++0x 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS= -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
@@ -61,7 +62,8 @@ all: mh doxygen gambit_example beb_tester
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-	@rm -f _*.txt
+    #PS: this line is dangerous
+	#@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html 
 .PHONY: clean
 
