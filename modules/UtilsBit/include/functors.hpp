@@ -11,7 +11,9 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  2013  Apr 4++
+//  2013  Apr 4++, 16
+//  Anders Kvellestad 
+//  2013  Apr 14  --> Added backend functor class
 //  *********************************************
 
 #ifndef __functors_hpp__
@@ -31,7 +33,9 @@ namespace GAMBIT
   };
 
 
+  // =====================================
   // Function wrapper (functor) base class
+
   class functor
   {
 
@@ -219,23 +223,25 @@ namespace GAMBIT
   };
 
 
-  // Functor derived class for functions with result type TYPE
+  // ================================================================
+  // Functor derived class for module functions with result type TYPE 
+
   template <typename TYPE>
-  class typed_functor : public functor
+  class module_functor : public functor
   {
 
     public:
 
       typedef functor::str str;
+      typedef functor::sspair sspair;
 
       // Constructor 
-      typed_functor(void (*inputFunction)(TYPE &), 
-                           str func_name,
-                           str func_capability, 
-                           str result_type,
-                           str origin_name)
+      module_functor(void (*inputFunction)(TYPE &), 
+                            str func_name,
+                            str func_capability, 
+                            str result_type,
+                            str origin_name) 
       {
-        std::cout << "functor initialization: " << func_name << std::endl;
         myFunction      = inputFunction;
         myName          = func_name;
         myCapability    = func_capability;
@@ -249,35 +255,6 @@ namespace GAMBIT
 
       // Operation (return value) 
       TYPE operator()() { return myValue; }
-
-    protected:
-
-      // Internal storage of function value
-      TYPE myValue;
-
-      // Internal storage of function pointer
-      void (*myFunction)(TYPE &);
-
-  };
-
-
-  // Functor derived class for module functions with result type TYPE
-  template <typename TYPE>
-  class module_functor : public typed_functor<TYPE>
-  {
-
-    public:
-
-      typedef functor::str str;
-      typedef functor::sspair sspair;
-
-      // Constructor: call typed_functor constructor
-      module_functor(void (*inputFunction)(TYPE &), 
-                            str func_name,
-                            str func_capability, 
-                            str result_type,
-                            str origin_name) 
-      : typed_functor<TYPE>(inputFunction, func_name, func_capability, result_type, origin_name) {}
 
       // Add a dependency (a beer for anyone who can explain why this-> is required here)
       void setDependency(str dep, str type, void(*resolver)(functor*))
@@ -361,43 +338,81 @@ namespace GAMBIT
           std::vector<sspair> newvec;
           this->permitted_map[key] = newvec;
         }
-        this->permitted_map[key].push_back(vector_entry);
-        std::vector<sspair> temp2;	
-        temp2 = this->permitted_map[key];
-        std::cout<<"in setpermittedbe: "<<temp2[0].first<<"  "<<temp2[0].second<<std::endl;
-        
+        this->permitted_map[key].push_back(vector_entry);       
       }
 
     protected:
 
+      // Internal storage of function value
+      TYPE myValue;
+
+      // Internal storage of function pointer
+      void (*myFunction)(TYPE &);
+
   };
 
 
-  // Functor derived class for backend functions with result type TYPE
-  template <typename TYPE>
-  class backend_functor : public typed_functor<TYPE>
+  // ===============================================================================
+  // Backend functor class for functions with result type TYPE and argumentlist ARGS 
+
+  template <typename TYPE, typename... ARGS>
+  class backend_functor : public functor
   {
 
     public:
 
       typedef functor::str str;
 
-      // Constructor: call typed_functor constructor
-      backend_functor(void (*inputFunction)(TYPE &), 
-                             str func_name,
-                             str func_capability, 
-                             str result_type,
-                             str origin_name,
-                             str origin_version) 
-      : typed_functor<TYPE>(inputFunction, func_name, func_capability, result_type, origin_name) 
+      // Constructor 
+      backend_functor (TYPE (*inputFunction)(ARGS...), 
+                           str func_name,
+                           str func_capability, 
+                           str result_type,
+                           str origin_name,
+                           str origin_version)
       {
-        this->setVersion(origin_version);
+        myFunction      = inputFunction;
+        myName          = func_name;
+        myCapability    = func_capability;
+        myType          = result_type;
+        myOrigin        = origin_name;
+        myVersion       = origin_version;
+        needs_recalculating = true;
       }
 
-      // Method for passing input parameters to backend functions !FIXME not finished
-      void give_input() { }
+      /* Which is the better user interface?
+       * 
+       * 1) Force the use of 'someFunctor.calculate(args...)'
+       *    to run a calculation and then obtain result via 'someFunctor()'.
+       * 
+       * 2) Use 'someFunctor(args...)' to perform calculation and return result.
+       *    The function 'someFunctor.calculate(args...)' could still be used
+       *    to force a re-calculation (regardless of 'needs_recalculating' flag).
+       *    (Could also throw in a 'getResult()' function.) */
+       
+      // 1) Calculate method
+      //void calculate(ARGS... args) { if(needs_recalculating) { myValue = myFunction(args...); } }
+
+      // 1) Operation (return value) 
+      //TYPE operator()() { return myValue; }
+
+      // 2) Calculate method 
+      void calculate(ARGS... args) { myValue = myFunction(args...); }
+
+      // 2) Operation (execute function and return value) 
+      TYPE operator()(ARGS... args) 
+      { 
+        if(needs_recalculating) { myValue = myFunction(args...); }
+        return myValue;
+      }
 
     protected:
+
+      // Internal storage of function value
+      TYPE myValue;
+
+      // Internal storage of function pointer
+      TYPE (*myFunction)(ARGS...);
 
   };
 
