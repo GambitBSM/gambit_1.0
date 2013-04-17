@@ -395,6 +395,18 @@ namespace GAMBIT
 
     public:
 
+      // Constructor 
+      backend_functor (TYPE (*inputFunction)(ARGS...), 
+                         std::string func_name,
+                         std::string func_capability, 
+                         std::string result_type,
+                         std::string origin_name,
+                         std::string origin_version) 
+                         : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
+                                                                    func_capability, result_type,
+                                                                    origin_name, origin_version) {}
+
+
       /* Which is the better user interface?
        * 
        * 1) Force the use of 'someFunctor.calculate(args...)'
@@ -427,13 +439,25 @@ namespace GAMBIT
       TYPE myValue;
   };
 
+
   // Template specialisation of backend functor type for TYPE=void
   template <typename... ARGS>
-  class backend_functor<void, ARGS...> 
+  class backend_functor<void, ARGS...> : public backend_functor_common<void, ARGS...>
   {
 
     public:
 
+      // Constructor 
+      backend_functor (void (*inputFunction)(ARGS...), 
+                         std::string func_name,
+                         std::string func_capability, 
+                         std::string result_type,
+                         std::string origin_name,
+                         std::string origin_version) 
+                         : backend_functor_common<void, ARGS...>(inputFunction, func_name,
+                                                                    func_capability, result_type,
+                                                                    origin_name, origin_version) {}
+    
       // 1) Calculate method
       //void calculate(ARGS... args) { if(this->needs_recalculating) { myFunction(args...); } }
 
@@ -450,6 +474,24 @@ namespace GAMBIT
       }
 
   };
+
+
+
+  // Function for creating backend functor objects
+  //
+  // This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
+  // in backend_general.hpp works at the moment...
+  template<typename OUTTYPE, typename... ARGS>
+  backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*f_in)(ARGS...), 
+                                                          std::string func_name, 
+                                                          std::string func_capab, 
+                                                          std::string ret_type, 
+                                                          std::string origin_name,
+                                                          std::string origin_ver) 
+  { 
+    return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
+  }
+
 
 }
 
