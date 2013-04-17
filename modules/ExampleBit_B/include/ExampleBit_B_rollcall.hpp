@@ -144,17 +144,16 @@ namespace GAMBIT
           derived<void, double> myderived(2.2);
           derived<void, int, int> myderived2(4.7);
           base* baseptr;
+
+        void set_ptr( base &inobj )
+        {
+          baseptr = &inobj; 
+        }
+
         #else
           extern derived<void, double> myderived;
           extern derived<void, int, int> myderived2;
           extern base* baseptr;
-        #endif
-
-        template<typename... ARGS>
-        void set_ptr( derived<void, ARGS...> &inobj )
-        {
-          baseptr = &inobj; 
-        }
 
         template<typename... ARGS>
         void give_result(ARGS ...args)
@@ -174,6 +173,7 @@ namespace GAMBIT
           (*myptr)(args...);
         }  
 
+        #endif
              
       }
     }
