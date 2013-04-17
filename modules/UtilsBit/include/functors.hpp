@@ -356,7 +356,7 @@ namespace GAMBIT
   // Backend functor class for functions with result type TYPE and argumentlist ARGS 
 
   template <typename TYPE, typename... ARGS>
-  class backend_functor : public functor
+  class backend_functor_common : public functor
   {
 
     public:
@@ -364,12 +364,12 @@ namespace GAMBIT
       typedef functor::str str;
 
       // Constructor 
-      backend_functor (TYPE (*inputFunction)(ARGS...), 
-                           str func_name,
-                           str func_capability, 
-                           str result_type,
-                           str origin_name,
-                           str origin_version)
+      backend_functor_common (TYPE (*inputFunction)(ARGS...), 
+                               str func_name,
+                               str func_capability, 
+                               str result_type,
+                               str origin_name,
+                               str origin_version)
       {
         myFunction      = inputFunction;
         myName          = func_name;
@@ -379,6 +379,21 @@ namespace GAMBIT
         myVersion       = origin_version;
         needs_recalculating = true;
       }
+
+    protected:
+
+      // Internal storage of function pointer
+      TYPE (*myFunction)(ARGS...);
+
+  };
+
+
+  // Actual backend functor type for all but TYPE=void
+  template <typename TYPE, typename... ARGS>
+  class backend_functor : public backend_functor_common<TYPE, ARGS...>
+  {
+
+    public:
 
       /* Which is the better user interface?
        * 
@@ -391,7 +406,7 @@ namespace GAMBIT
        *    (Could also throw in a 'getResult()' function.) */
        
       // 1) Calculate method
-      //void calculate(ARGS... args) { if(needs_recalculating) { myValue = myFunction(args...); } }
+      //void calculate(ARGS... args) { if(this->needs_recalculating) { myValue = myFunction(args...); } }
 
       // 1) Operation (return value) 
       //TYPE operator()() { return myValue; }
@@ -402,7 +417,7 @@ namespace GAMBIT
       // 2) Operation (execute function and return value) 
       TYPE operator()(ARGS... args) 
       { 
-        if(needs_recalculating) { myValue = myFunction(args...); }
+        if(this->needs_recalculating) { myValue = myFunction(args...); }
         return myValue;
       }
 
@@ -410,12 +425,31 @@ namespace GAMBIT
 
       // Internal storage of function value
       TYPE myValue;
-
-      // Internal storage of function pointer
-      TYPE (*myFunction)(ARGS...);
-
   };
 
+  // Template specialisation of backend functor type for TYPE=void
+  template <typename... ARGS>
+  class backend_functor<void, ARGS...> 
+  {
+
+    public:
+
+      // 1) Calculate method
+      //void calculate(ARGS... args) { if(this->needs_recalculating) { myFunction(args...); } }
+
+      // 1) Operation (return value) 
+      //TYPE operator()() { myFunction(args...); }
+
+      // 2) Calculate method 
+      void calculate(ARGS... args) { myFunction(args...); }
+
+      // 2) Operation (execute function and return value) 
+      void operator()(ARGS... args) 
+      { 
+        if(this->needs_recalculating) { myFunction(args...); }
+      }
+
+  };
 
 }
 
