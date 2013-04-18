@@ -113,7 +113,6 @@ $(UTILSDIR)/src/backend-fherwig.cpp
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o
 
-BACKENDLIBS = $(BACKENDDIR)/lib/libfirst.so
 
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
@@ -178,7 +177,7 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f
 
 gambit_example: $(CORELIBS) $(OTHERLIBS) $(COREDIR)/build/gambit_example.o 
 	@echo ___________Linking $@:
-	$(LN) $(CORELIBS) $(OTHERLIBS) $(CFLAGS) -o $@ $(LNFLAGS) $(BACKENDLIBS)
+	$(LN) $(CORELIBS) $(OTHERLIBS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 # beb_tester from makefile.test_backend
 beb_tester: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
