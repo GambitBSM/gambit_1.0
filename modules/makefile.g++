@@ -25,9 +25,9 @@ FC = gfortran
 COMPOPTS= -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
 
 # Location of gambit sub-directories
-COREDIR = CoreBit
+COREDIR = Core
 MODELDIR = ModelBit
-UTILSDIR = UtilsBit
+UTILSDIR = Utils
 SCANDIR = ScannerBit
 HECOLLIDERDIR = HEColliderBit
 BACKENDDIR = Backends
