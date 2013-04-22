@@ -30,6 +30,7 @@ MODELDIR = ModelBit
 UTILSDIR = Utils
 SCANDIR = ScannerBit
 HECOLLIDERDIR = HEColliderBit
+BACKENDDIR = Backends
 DOCDIR = ../doc
 
 # Boost is required. Read README for details
@@ -46,6 +47,7 @@ CFLAGS= -O0 $(COMPOPTS) \
 	-I$(MODELDIR)/include \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
+	-I$(BACKENDDIR)/include \
 	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include -IDarkBit/include
 
 COMMONLIBS = -lm 
@@ -62,8 +64,7 @@ all: mh doxygen gambit_example beb_tester
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-    #PS: this line is dangerous
-	#@rm -f _*.txt
+	@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html 
 .PHONY: clean
 

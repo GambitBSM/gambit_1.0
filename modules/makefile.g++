@@ -47,7 +47,7 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(MODELDIR)/include \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
-        -I$(BACKENDDIR)/include \
+	-I$(BACKENDDIR)/include \
 	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include -IDarkBit/include
 
 COMMONLIBS = -lm 
@@ -64,8 +64,7 @@ all: mh doxygen gambit_example beb_tester
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-    #PS: this line is dangerous
-	#@rm -f _*.txt
+	@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html 
 .PHONY: clean
 
@@ -112,8 +111,6 @@ $(UTILSDIR)/src/backend-fherwig.cpp
 
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o
-
-
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
