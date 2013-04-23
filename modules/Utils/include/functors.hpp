@@ -19,7 +19,6 @@
 #ifndef __functors_hpp__
 #define __functors_hpp__
 
-#include <string>
 #include <vector>
 #include <util_classes.hpp>
 
@@ -71,9 +70,7 @@ namespace GAMBIT
       // Getter for backend-specific conditional dependencies (4-string version)
       std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
       { 
-        std::vector<sspair> generic_deps;
-        std::vector<sspair> specific_deps;
-        std::vector<sspair> total_deps;
+        std::vector<sspair> generic_deps, specific_deps, total_deps;
         std::vector<str> quad;
         quad.push_back(req);
         quad.push_back(type);
@@ -132,9 +129,9 @@ namespace GAMBIT
         sspair key (dep_functor->quantity());
         if (dependency_map.find(key) == dependency_map.end())                            
         {                                                                      
-          std::cout << "Error whilst attempting to resolve dependency:" << std::endl;
-          std::cout << "Function "<< myName << " in " << myOrigin << " does not depend on " << std::endl;
-          std::cout << "capability " << key.first << " with type " << key.second << "." << std::endl;
+          cout << "Error whilst attempting to resolve dependency:" << endl;
+          cout << "Function "<< myName << " in " << myOrigin << " does not depend on " << endl;
+          cout << "capability " << key.first << " with type " << key.second << "." << endl;
           //FIXME throw a real error here
         }
         else { (*dependency_map[key])(dep_functor); }
@@ -163,18 +160,18 @@ namespace GAMBIT
           }
           else          
           { 
-            std::cout << "Error whilst attempting to resolve backend requirement:" << std::endl;
-            std::cout << "Backend capability " << key.first << " with type " << key.second << "." << std::endl;
-            std::cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << std::endl;
-            std::cout << "to use "<< proposal.first << ", version " << proposal.second << "." << std::endl;
+            cout << "Error whilst attempting to resolve backend requirement:" << endl;
+            cout << "Backend capability " << key.first << " with type " << key.second << "." << endl;
+            cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << endl;
+            cout << "to use "<< proposal.first << ", version " << proposal.second << "." << endl;
             //FIXME throw a real error here
           } 
         }
         else
         {                                                                      
-          std::cout << "Error whilst attempting to resolve backend requirement:" << std::endl;
-          std::cout << "Function "<< myName << " in " << myOrigin << " does not require " << std::endl;
-          std::cout << "backend capability " << key.first << " with type " << key.second << "." << std::endl;
+          cout << "Error whilst attempting to resolve backend requirement:" << endl;
+          cout << "Function "<< myName << " in " << myOrigin << " does not require " << endl;
+          cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
           //FIXME throw a real error here
         }        
       }
@@ -266,10 +263,10 @@ namespace GAMBIT
         }
         else
         {
-          std::cout << "Error whilst attempting to set backend-conditional dependency:" << std::endl;
-          std::cout << "The type of the backend requirement " << req << "on which the " << std::endl; 
-          std::cout << "dependency "<< dep << " is conditional has not been set.  This" << std::endl;
-          std::cout << "is " << this->name() << " in " << this->origin() << "." << std::endl;
+          cout << "Error whilst attempting to set backend-conditional dependency:" << endl;
+          cout << "The type of the backend requirement " << req << "on which the " << endl; 
+          cout << "dependency "<< dep << " is conditional has not been set.  This" << endl;
+          cout << "is " << this->name() << " in " << this->origin() << "." << endl;
           //FIXME throw a real error here
         }
         if (this->myBackendConditionalDependencies.find(quad) == this->myBackendConditionalDependencies.end())
@@ -314,9 +311,9 @@ namespace GAMBIT
         }
         else
         {
-          std::cout << "Error whilst attempting to set permitted backend:" << std::endl;
-          std::cout << "The return type of the backend requirement " << req << "is not set." << std::endl; 
-          std::cout << "This is " << this->name() << " in " << this->origin() << "." << std::endl;
+          cout << "Error whilst attempting to set permitted backend:" << endl;
+          cout << "The return type of the backend requirement " << req << "is not set." << endl; 
+          cout << "This is " << this->name() << " in " << this->origin() << "." << endl;
           //FIXME throw a real error here
         }
         sspair vector_entry (be,  ver);
@@ -465,11 +462,11 @@ namespace GAMBIT
   // in backend_general.hpp works at the moment...
   template<typename OUTTYPE, typename... ARGS>
   backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*f_in)(ARGS...), 
-                                                          std::string func_name, 
-                                                          std::string func_capab, 
-                                                          std::string ret_type, 
-                                                          std::string origin_name,
-                                                          std::string origin_ver) 
+                                                          str func_name, 
+                                                          str func_capab, 
+                                                          str ret_type, 
+                                                          str origin_name,
+                                                          str origin_ver) 
   { 
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }

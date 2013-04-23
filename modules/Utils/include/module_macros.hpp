@@ -114,26 +114,24 @@
       };                                                                       \
                                                                                \
       /* Module name */                                                        \
-      std::string name() { return STRINGIFY(MODULE); }                         \
+      str name() { return STRINGIFY(MODULE); }                                 \
                                                                                \
       /* Maps from tag strings to tag-specialisted functions */                \
-      std::map<std::string, void(*)()> map_voids;                              \
-      std::map<std::string, bool(*)()> map_bools;                              \
-      std::map<std::string, bool(*)(std::string, std::string)> condit_bools;   \
+      std::map<str, void(*)()> map_voids;                                      \
+      std::map<str, bool(*)()> map_bools;                                      \
+      std::map<str, bool(*)(str, str)> condit_bools;                           \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
       /* All module observables/likelihoods, their dependencies, required      \
       quantities from backends, and their types, as strings */                 \
-      static std::map<std::string,std::string> iCanDo;                         \
-      static std::map<std::string,std::string> iMayNeed;                       \
-      static std::map<std::string,std::string> iMayNeedFromBackends;           \
+      static std::map<str,str> iCanDo, iMayNeed, iMayNeedFromBackends;         \
                                                                                \
       /* Module provides observable/likelihood TAG? */                         \
       template <typename TAG>                                                  \
       bool provides() { return false; }                                        \
                                                                                \
       /* Overloaded, non-templated version */                                  \
-      bool provides(std::string obs)                                           \
+      bool provides(str obs)                                                   \
       {                                                                        \
         if (map_bools.find(obs) == map_bools.end()) { return false; }          \
         return (*map_bools[obs])();                                            \
@@ -144,7 +142,7 @@
       bool requires() { return false; }                                        \
                                                                                \
       /* Overloaded, non-templated version */                                  \
-      bool requires(std::string dep, std::string obs)                          \
+      bool requires(str dep, str obs)                                          \
       {                                                                        \
         if (map_bools.find(dep+obs) == map_bools.end()) { return false; }      \
         return (*map_bools[dep+obs])();                                        \
@@ -153,19 +151,17 @@
       /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
       depending on the backend and version used to meet requirment REQ_TAG. */ \
       template <typename DEP_TAG, typename TAG, typename REQ_TAG>              \
-      bool requires_conditional_on_backend                                     \
-       (std::string be, std::string ver) {return false; }                      \
+      bool requires_conditional_on_backend(str be, str ver) {return false; }   \
                                                                                \
       /* Overloaded version of templated function */                           \
       template <typename DEP_TAG, typename TAG, typename REQ_TAG>              \
-      bool requires_conditional_on_backend(std::string be)                     \
+      bool requires_conditional_on_backend(str be)                             \
       {                                                                        \
         return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG>(be, "any");\
       }                                                                        \
                                                                                \
       /* Additional overloaded, non-templated versions */                      \
-      bool requires(std::string dep, std::string obs, std::string req,         \
-       std::string be, std::string ver)                                        \
+      bool requires(str dep, str obs, str req, str be, str ver)                \
       {                                                                        \
         if (requires(dep, obs)) {return true; }                                \
         if (condit_bools.find(dep+obs+req) == condit_bools.end())              \
@@ -181,8 +177,7 @@
           return (*condit_bools[dep+obs+req])(be, ver);                        \
         }                                                                      \
       }                                                                        \
-      bool requires(std::string dep, std::string obs, std::string req,         \
-       std::string be)                                                         \
+      bool requires(str dep, str obs, str req, str be)                         \
       {                                                                        \
         return requires(dep, obs, req, be, "any");                             \
       }                                                                        \
@@ -192,7 +187,7 @@
       bool needs_from_backend() { return false; }                              \
                                                                                \
       /* Overloaded, non-templated version */                                  \
-      bool needs_from_backend(std::string quant, std::string obs)              \
+      bool needs_from_backend(str quant, str obs)                              \
       {                                                                        \
         if (map_bools.find("BE_"+quant+obs) == map_bools.end()) {return false;}\
         return (*map_bools["BE_"+quant+obs])();                                \
@@ -202,17 +197,15 @@
       template <typename TAG>                                                  \
       void report()                                                            \
       {                                                                        \
-        std::cout<<"This tag is not supported by ";                            \
-        std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
                                                                                \
       /* Overloaded, non-templated version */                                  \
-      void report(std::string obs)                                             \
+      void report(str obs)                                                     \
       {                                                                        \
         if (map_voids.find(obs) == map_voids.end())                            \
         {                                                                      \
-          std::cout<<"This tag is not supported by ";                          \
-          std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                        \
+          cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl; \
         }                                                                      \
         else { (*map_voids[obs])(); }                                          \
       }                                                                        \
@@ -221,8 +214,7 @@
       template <typename TAG>                                                  \
       typename function_traits<TAG>::type result()                             \
       {                                                                        \
-        std::cout<<"This tag is not supported by ";                            \
-        std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
         return 0;                                                              \
       }                                                                        \
                                                                                \
@@ -232,7 +224,7 @@
       dictionary.  It then dereferences that pointer, calls the function and   \
       returns the result. */                                                   \
       template <typename TYPE>                                                 \
-      TYPE result(std::string obs)                                             \
+      TYPE result(str obs)                                                     \
       {                                                                        \
         return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
       }                                                                        \
@@ -241,32 +233,31 @@
       template <typename DEP_TAG, typename TAG>                                \
       void resolve_dependency(functor* dep_functor)                            \
       {                                                                        \
-        std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this dependency for this function.";                  \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have this dependency for this function.";                       \
       }                                                                        \
                                                                                \
       /* Resolve backend requirement BE_REQ in function TAG */                 \
       template <typename BE_REQ, typename TAG>                                 \
       void resolve_backendreq(functor* be_functor)                             \
       {                                                                        \
-        std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this backend req. for this function.";                \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have this backend requirement for this function.";              \
       }                                                                        \
                                                                                \
       /* Runtime registration function for observable/likelihood function TAG*/\
       template <typename TAG>                                                  \
       void rt_register_function ()                                             \
       {                                                                        \
-        std::cout<<"This tag is not supported by ";                            \
-        std::cout<<STRINGIFY(MODULE)<<"."<<std::endl;                          \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
                                                                                \
       /* Runtime registration function for dependency DEP_TAG of function TAG*/\
       template <typename DEP_TAG, typename TAG>                                \
       void rt_register_dependency ()                                           \
       {                                                                        \
-        std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this dependency for this function.";                  \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have this dependency for this function.";                       \
       }                                                                        \
                                                                                \
       /* Runtime registration function for backend req BE_REQ of               \
@@ -274,8 +265,8 @@
       template <typename BE_REQ, typename TAG>                                 \
       void rt_register_req ()                                                  \
       {                                                                        \
-        std::cout<<STRINGIFY(MODULE)<<" does not"<<std::endl;                  \
-        std::cout<<"have this backend req. for this function.";                \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have this backend requirement for this function.";              \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -320,8 +311,8 @@
       template <>                                                              \
       void report<Tags::FUNCTION>()                                            \
       {                                                                        \
-        std::cout<<"Dear Core, I provide the function with tag: "<<            \
-        STRINGIFY(FUNCTION)<<std::endl;                                        \
+        cout<<"Dear Core, I provide the function with tag: "<<                 \
+        STRINGIFY(FUNCTION)<<endl;                                             \
       }                                                                        \
                                                                                \
       /* Register (prototype) the function */                                  \
@@ -409,11 +400,11 @@
          dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
         if (Dependencies::FUNCTION::DEP == 0)                                  \
         {                                                                      \
-          std::cout<<"Error: Null returned from dynamic cast in "<< std::endl; \
-          std::cout<<"MODULE::resolve_dependency, for dependency"<< std::endl; \
-          std::cout<<"DEP of function FUNCTION.  Attempt was to "<< std::endl; \
-          std::cout<<"resolve to "<<dep_functor->name()<<" in   "<< std::endl; \
-          std::cout<<dep_functor->origin()<<"."<<std::endl;                    \
+          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
+          cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
+          cout<<"DEP of function FUNCTION.  Attempt was to "<< endl;           \
+          cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
+          cout<<dep_functor->origin()<<"."<<endl;                              \
           /* FIXME throw real error here */                                    \
         }                                                                      \
       }                                                                        \
@@ -570,9 +561,9 @@
           template<typename GENERIC_TYPE, typename... ARGS>                    \
           GENERIC_TYPE BACKEND_REQ(ARGS ...args)                               \
           {                                                                    \
-            std::cout<<"Incorrect return type implied for backend"<<std::endl; \
-            std::cout<<"requirement BACKEND_REQ (function"<<std::endl;         \
-            std::cout<<"FUNCTION, module MODULE). Exiting..."<<std::endl;      \
+            cout<<"Incorrect return type implied for backend"<<endl;           \
+            cout<<"requirement BACKEND_REQ (function"<<endl;                   \
+            cout<<"FUNCTION, module MODULE). Exiting..."<<endl;                \
             /* FIXME Throw a real error here. */                               \
           }                                                                    \
                                                                                \
@@ -589,13 +580,12 @@
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \
               {                                                                \
-                std::cout<<std::endl<<"Error: Null returned from dynamic ";    \
-                std::cout<<"cast in attempting to retrieve"<<std::endl;        \
-                std::cout<<"backend requirement "<<STRINGIFY(BACKEND_REQ);     \
-                std::cout<<" (function "<<STRINGIFY(FUNCTION)<<", module ";    \
-                std::cout<<STRINGIFY(MODULE)<<")."<<std::endl;                 \
-                std::cout<<"Probably you have passed arguments of the wrong "; \
-                std::cout<<"type(s) when calling this function."<<std::endl;   \
+                cout<<endl<<"Error: Null returned from dynamic cast in ";      \
+                cout<<"attempting to retrieve backend requirement"<<endl;      \
+                cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
+                cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
+                cout<<"). Probably you have passed arguments of the wrong ";   \
+                cout<<"type(s) when calling this function."<<endl;             \
                 /* FIXME throw real error here */                              \
               }                                                                \
             }                                                                  \
@@ -649,7 +639,7 @@
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
       template <>                                                              \
       bool requires_conditional_on_backend<Tags::DEP, Tags::FUNCTION,          \
-       BETags::BACKEND_REQ> (std::string be, std::string ver)                  \
+       BETags::BACKEND_REQ> (str be, str ver)                  \
       {                                                                        \
         return (be == STRINGIFY(BACKEND) && ver == STRINGIFY(VERSION))         \
          ? true : false;                                                       \

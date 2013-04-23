@@ -1,7 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  General small utility classes.
+//  General small utility classes, typedefs, etc.
 //
 //  *********************************************
 //
