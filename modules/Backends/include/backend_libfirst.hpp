@@ -6,10 +6,10 @@
  * \date 2013-03-26  
  * 
  * Modified: 2013-04-05
+ * Pat Scott 2013-04-22
  */
 
-#include "backend_general.hpp"
-
+#include <backend_macros.hpp>
 
 /* Specify the path to the shared library along with a backend name. */
 
@@ -42,16 +42,16 @@ BE_VARIABLE(SomeDouble, double, "someDouble", pSomeDouble)
 
 /* We have now set up the pointers
  *
- * GAMBIT::Backend::BACKENDNAME::pSomeInt     (int *)
- * GAMBIT::Backend::BACKENDNAME::pSomeDouble  (double *)
+ * GAMBIT::Backends::BACKENDNAME::pSomeInt     (int *)
+ * GAMBIT::Backends::BACKENDNAME::pSomeDouble  (double *)
  * 
  * and the corresponding get/set functions
  * 
- * int  GAMBIT::Backend::BACKENDNAME::getSomeInt()
- * void GAMBIT::Backend::BACKENDNAME::setSomeInt(int)
+ * int  GAMBIT::Backends::BACKENDNAME::getSomeInt()
+ * void GAMBIT::Backends::BACKENDNAME::setSomeInt(int)
  *
- * double GAMBIT::Backend::BACKENDNAME::getSomeDouble()
- * void   GAMBIT::Backend::BACKENDNAME::setSomeDouble(double)  */
+ * double GAMBIT::Backends::BACKENDNAME::getSomeDouble()
+ * void   GAMBIT::Backends::BACKENDNAME::setSomeDouble(double)  */
   
 
 /* Syntax for BE_FUNCTION:
@@ -63,14 +63,14 @@ BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 
 /* We have now created the following function pointers:
  *
- * GAMBIT::Backend::BACKENDNAME::initialize       (* void)(int)
- * GAMBIT::Backend::BACKENDNAME::someFunction     (* void)()
- * GAMBIT::Backend::BACKENDNAME::returnResult     (* double)()
+ * GAMBIT::Backends::BACKENDNAME::initialize       (* void)(int)
+ * GAMBIT::Backends::BACKENDNAME::someFunction     (* void)()
+ * GAMBIT::Backends::BACKENDNAME::returnResult     (* double)()
  *
  * Calling the function of a function pointer is 
  * exactly like calling the function itself, e.g.
  *
- * GAMBIT::Backend::BACKENDNAME::initialize(10)
+ * GAMBIT::Backends::BACKENDNAME::initialize(10)
  */ 
 
 
@@ -84,7 +84,7 @@ BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 
 namespace GAMBIT
 {
-  namespace Backend
+  namespace Backends
   {
     namespace BACKENDNAME
     {
@@ -99,7 +99,7 @@ namespace GAMBIT
       }
 
     } /* end namespace BACKENDNAME */                                          
-  } /* end namespace Backend */                                                
+  } /* end namespace Backends */                                                
 } /* end namespace GAMBIT */                                                   
 
 

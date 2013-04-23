@@ -53,8 +53,10 @@ namespace GAMBIT
       std::cout << "groove on.  So let's see what it is then: " ;
       double nevents = GET_DEP(nevents_postcuts::nevents);
       std::cout << nevents << std::endl;
-      result = (int) (nevents);
-      Backend_Reqs::nevents_postcuts::give_result(2,2);
+      std::cout << "I also ordered some backend doAll_capabilty.  So?" << std::endl;
+      double doall_local = GET_BE_RESULT(nevents_postcuts::doAll_capability, 2);
+      std::cout << doall_local << std::endl;
+      result = (int) (nevents + doall_local);
     }
 
   }

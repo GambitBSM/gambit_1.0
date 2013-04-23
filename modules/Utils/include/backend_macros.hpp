@@ -15,32 +15,10 @@
 #include <iostream>
 #include <string>
 #include <functors.hpp>
+#include <util_macros.hpp>
+#include <util_classes.hpp>
+
 #include "dlfcn.h"
-
-
-// A container struct for code that needs to be executed as 
-// initialization code at startup. When an instance of the 'ini_code'
-// struct is created, the constructor will execute the void function 
-// pointed to by the constructor argument.
-/* (Already defined in backendfunctors.hpp)
-namespace GAMBIT
-{
-  struct ini_code 
-  {
-    ini_code(void (*unroll)()) { (*unroll)(); } 
-  };
-} // end namespace GAMBIT
-*/
-
-
-//
-// Handy macros
-//
-#ifndef CAT
-  #define CAT(X,Y) X##Y
-#endif
-#define STRINGIFY(X) STRINGIFY2(X)
-#define STRINGIFY2(X) #X
 
 
 //
@@ -49,7 +27,7 @@ namespace GAMBIT
 #define LOAD_LIBRARY                                                        \
 namespace GAMBIT                                                          \
 {                                                                           \
-  namespace Backend                                                        \
+  namespace Backends                                                        \
   {                                                                         \
     namespace BACKENDNAME                                                  \
     {                                                                       \
@@ -71,7 +49,7 @@ namespace GAMBIT                                                          \
       }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
-  } /* end namespace Backend */                                             \
+  } /* end namespace Backends */                                             \
 } /* end namespace GAMBIT */                                                \
 
 
@@ -84,7 +62,7 @@ namespace GAMBIT                                                          \
 #define BE_VARIABLE(NAME, TYPE, SYMBOLNAME, POINTERNAME)                     \
 namespace GAMBIT                                                           \
 {                                                                            \
-  namespace Backend                                                         \
+  namespace Backends                                                         \
   {                                                                          \
     namespace BACKENDNAME                                                   \
     {                                                                        \
@@ -116,14 +94,14 @@ namespace GAMBIT                                                           \
          FIXME : the way 'capability' is specified is rather pointless atm */ \
       namespace Functown                                                     \
       {                                                                       \
-        auto get##NAME = makeBackendFunctor<TYPE>( GAMBIT::Backend::BACKENDNAME::get##NAME,   \
+        auto get##NAME = makeBackendFunctor<TYPE>( GAMBIT::Backends::BACKENDNAME::get##NAME,   \
                                                         STRINGIFY(NAME),                     \
                                                         STRINGIFY( CAT(NAME, _capability) ), \
                                                         STRINGIFY(TYPE),                     \
                                                         STRINGIFY(BACKENDNAME),             \
                                                         STRINGIFY(VERSION) );                \
                                                                                              \
-        auto set##NAME = makeBackendFunctor<void>( GAMBIT::Backend::BACKENDNAME::set##NAME,  \
+        auto set##NAME = makeBackendFunctor<void>( GAMBIT::Backends::BACKENDNAME::set##NAME,  \
                                                         STRINGIFY(NAME),                      \
                                                         STRINGIFY( CAT(NAME, _capability) ),  \
                                                         STRINGIFY(TYPE),                      \
@@ -133,7 +111,7 @@ namespace GAMBIT                                                           \
       } /* end namespace Functown */                                         \
                                                                              \
     } /* end namespace BACKENDNAME */                                        \
-  } /* end namespace Backend */                                              \
+  } /* end namespace Backends */                                              \
 } /* end namespace GAMBIT */                                                 \
 
 
@@ -145,7 +123,7 @@ namespace GAMBIT                                                           \
 #define BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME)                         \
 namespace GAMBIT                                                            \
 {                                                                             \
-  namespace Backend                                                         \
+  namespace Backends                                                         \
   {                                                                           \
     namespace BACKENDNAME                                                  \
     {                                                                         \
@@ -176,7 +154,7 @@ namespace GAMBIT                                                            \
          FIXME : the way 'capability' is specified is rather pointless atm */ \
       namespace Functown                                                     \
       {                                                                       \
-        auto NAME = makeBackendFunctor<TYPE>( GAMBIT::Backend::BACKENDNAME::NAME, \
+        auto NAME = makeBackendFunctor<TYPE>( GAMBIT::Backends::BACKENDNAME::NAME, \
                                                STRINGIFY(NAME),                \
                                                STRINGIFY( CAT(NAME, _capability) ),  \
                                                STRINGIFY(TYPE),                \
@@ -185,7 +163,7 @@ namespace GAMBIT                                                            \
       } /* end namespace Functown */                                          \
                                                                               \
     } /* end namespace BACKENDNAME */                                         \
-  } /* end namespace Backend */                                               \
+  } /* end namespace Backends */                                               \
 } /* end namespace GAMBIT */                                                  \
 
 
@@ -196,7 +174,7 @@ namespace GAMBIT                                                            \
 #define BE_CONV_FUNCTION(NAME, TYPE)                                          \
 namespace GAMBIT                                                            \
 {                                                                             \
-  namespace Backend                                                         \
+  namespace Backends                                                         \
   {                                                                           \
     namespace BACKENDNAME                                                  \
     {                                                                         \
@@ -205,7 +183,7 @@ namespace GAMBIT                                                            \
          FIXME : the way 'capability' is specified is rather pointless atm */ \
       namespace Functown                                                     \
       {                                                                       \
-        auto NAME = makeBackendFunctor<TYPE>( GAMBIT::Backend::BACKENDNAME::NAME, \
+        auto NAME = makeBackendFunctor<TYPE>( GAMBIT::Backends::BACKENDNAME::NAME, \
                                                STRINGIFY(NAME),                \
                                                STRINGIFY( CAT(NAME, _capability) ),   \
                                                STRINGIFY(TYPE),                \
@@ -214,7 +192,7 @@ namespace GAMBIT                                                            \
       } /* end namespace Functown */                                          \
                                                                               \
     } /* end namespace BACKENDNAME */                                         \
-  } /* end namespace Backend */                                               \
+  } /* end namespace Backends */                                               \
 } /* end namespace GAMBIT */                                                  \
 
 

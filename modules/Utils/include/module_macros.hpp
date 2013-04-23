@@ -1,8 +1,8 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  Generic observable and likelihood object 
-//  definitions.
+//  Generic observable and likelihood function 
+//  macro definitions.
 //
 //  Initially inspired by Abram  
 //  Krislock's Objects.hpp.
@@ -30,43 +30,26 @@
 //  2013 Jan 31, Feb 05
 //  *********************************************
 
-#ifndef __observable_hpp__
-#define __observable_hpp__
+#ifndef __module_macros_hpp__
+#define __module_macros_hpp__
 
 #include <map>
 #include <string>
 #include <iostream>
+#include <graphs.hpp>
 #include <dictionary.hpp>
 #include <functors.hpp>
-#include <graphs.hpp>
+#include <util_macros.hpp>
+#include <util_classes.hpp>
+#include <globals.hpp> // FIXME this to be removed once the core object is better defined
 
-//Some redirection macros
-#define STRINGIFY(X) STRINGIFY2(X)
-#define STRINGIFY2(X) #X
-#define CAT(X,Y) CAT2(X,Y)
-#define CAT2(X,Y) X##Y
-#define CAT_2 CAT
-#define CAT_3(X,Y,Z) CAT(X,CAT(Y,Z))
-#define CAT_4(A,X,Y,Z) CAT(A,CAT_3(X,Y,Z))
-#define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
-#define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
-#define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
-#define DUMMY
-#define DUMMYARG(...)
-
-//Generic variadic macro expanders for 0 to 5 arguments
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 4, 3, 2, 1, 0)
-#define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
-#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
-#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
-
-//Some useful one-liners
+//Tag registration one-liners
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
 #define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
+
+//Dependency/backend retrieval one-liners
 #define GET_DEP(DEP) (*Dependencies::DEP)()
-#define GIVE_BE_INPUT(BE_REQ,PARAM,VALUE) Backend_Reqs::BE_REQ->PARAM(VALUE)
-#define GET_BE_RESULT(BE_REQ) (*Backend_Reqs::BE_REQ)()
+#define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
 
 //Redirect rollcall macros depending in whether this file is included from 
 //the core or a module.
@@ -511,13 +494,13 @@
         typedef TYPE type;                                                     \
       };                                                                       \
                                                                                \
-      /* Create a pointer to the backend functor.  To be filled by             \
+      /* Create a (base) pointer to the backend functor.  To be filled by      \
       the dependency resolver at runtime. */                                   \
       namespace Backend_Reqs                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          backend_functor<TYPE> *BACKEND_REQ;                                  \
+          functor *CAT(BACKEND_REQ,_baseptr);                                  \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -533,17 +516,7 @@
       void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
        (functor* be_functor)                                                   \
       {                                                                        \
-        Backend_Reqs::FUNCTION::BACKEND_REQ =                                  \
-         dynamic_cast<backend_functor<TYPE>*>(be_functor);                     \
-        if (Backend_Reqs::FUNCTION::BACKEND_REQ == 0)                          \
-        {                                                                      \
-          std::cout<<"Error: Null returned from dynamic cast in "<< std::endl; \
-          std::cout<<"MODULE::resolve_backendreq, for requirement"<< std::endl;\
-          std::cout<<"BACKEND_REQ of function FUNCTION.  Attempt"<< std::endl; \
-          std::cout<<" was to resolve to "<<be_functor->name()<< std::endl;    \
-          std::cout<<" in "<<be_functor->origin()<<"."<<std::endl;            \
-          /* FIXME throw real error here */                                    \
-        }                                                                      \
+        Backend_Reqs::FUNCTION::CAT(BACKEND_REQ,_baseptr) = be_functor;        \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register req*/         \
@@ -562,8 +535,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT(BACKEND_REQ##_backend_for_,FUNCTION)                      \
-         (&rt_register_req<BETags::BACKEND_REQ,                                \
-         Tags::FUNCTION>);                                                     \
+         (&rt_register_req<BETags::BACKEND_REQ,Tags::FUNCTION>);               \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -579,14 +551,58 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Create a pointer to the backend function functor.  To be filled by    \
-      the dependency resolver at runtime. */                                   \
       namespace Backend_Reqs                                                   \
       {                                                                        \
+                                                                               \
         namespace FUNCTION                                                     \
         {                                                                      \
-          extern backend_functor<TYPE> *BACKEND_REQ;                           \
+                                                                               \
+          /* Declare a (base) pointer to the backend function functor.  To be  \
+          filled by the dependency resolver at runtime. */                     \
+          extern functor *CAT(BACKEND_REQ,_baseptr);                           \
+                                                                               \
+          /* Set up an empty alias for the backend requirement */              \
+          template<typename GENERIC_TYPE, typename... ARGS>                    \
+          GENERIC_TYPE BACKEND_REQ(ARGS ...args)                               \
+          {                                                                    \
+            std::cout<<"Incorrect return type implied for backend"<<std::endl; \
+            std::cout<<"requirement BACKEND_REQ (function"<<std::endl;         \
+            std::cout<<"FUNCTION, module MODULE). Exiting..."<<std::endl;      \
+            /* FIXME Throw a real error here. */                               \
+          }                                                                    \
+                                                                               \
+          /* Set up a working alias that casts the (base) pointer to the       \
+          backend functor to the appropriate backend_functor type, and then    \
+          dereferences it to call the actual backend function. */              \
+          template<typename... ARGS>                                           \
+          TYPE BACKEND_REQ(ARGS ...args)                                       \
+          {                                                                    \
+            typedef backend_functor<TYPE, ARGS...> be_functor;                 \
+            be_functor *myptr;                                                 \
+            if (GAMBIT::safe_mode)                                             \
+            {                                                                  \
+              myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
+              if (myptr == 0)                                                  \
+              {                                                                \
+                std::cout<<std::endl<<"Error: Null returned from dynamic ";    \
+                std::cout<<"cast in attempting to retrieve"<<std::endl;        \
+                std::cout<<"backend requirement "<<STRINGIFY(BACKEND_REQ);     \
+                std::cout<<" (function "<<STRINGIFY(FUNCTION)<<", module ";    \
+                std::cout<<STRINGIFY(MODULE)<<")."<<std::endl;                 \
+                std::cout<<"Probably you have passed arguments of the wrong "; \
+                std::cout<<"type(s) when calling this function."<<std::endl;   \
+                /* FIXME throw real error here */                              \
+              }                                                                \
+            }                                                                  \
+            else                                                               \
+            {                                                                  \
+              myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
+            }                                                                  \
+            BOOST_PP_IF(IS_TYPE(void,TYPE),,return) (*myptr)(args...);         \
+          }                                                                    \
+                                                                               \
         }                                                                      \
+                                                                               \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -651,5 +667,5 @@
   DEPENDENCY_COMMON_2(DEP, TYPE)                                               \
                                                                                
 
-#endif // defined(__observable_hpp__) 
+#endif // defined(__module_macros_hpp__) 
 

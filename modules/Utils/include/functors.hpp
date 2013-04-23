@@ -25,14 +25,6 @@
 namespace GAMBIT
 {
 
-  // A container for a function that needs to be constructed at compile
-  // and executed as initialisation code at startup.
-  struct ini_code
-  {
-    ini_code(void (*unroll)()) { (*unroll)(); }
-  };
-
-
   // =====================================
   // Function wrapper (functor) base class
 

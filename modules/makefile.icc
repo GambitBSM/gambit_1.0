@@ -41,7 +41,7 @@ BOOSTINC=./
 endif
 CCEXTRA= -pipe -pg -std=c++0x 
 GCC++EXTRA=-Woverloaded-virtual
-CFLAGS= -O0 $(COMPOPTS) \
+CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
 	-I$(COREDIR)/include \
 	-I$(MODELDIR)/include \

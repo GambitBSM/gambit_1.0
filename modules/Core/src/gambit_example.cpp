@@ -34,6 +34,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #define  IN_CORE
 #include <logcore.hpp>
 #include <graphs.hpp>
+#include <backend_rollcall.hpp>
 #include <module_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
@@ -74,7 +75,11 @@ int main( int argc, const char* argv[] )
   //ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::authors_dogs_name);
 
   // Some mock backend dependency resolution
-  ExampleBit_B::Backend_Reqs::nevents_postcuts::set_ptr(ExampleBit_B::Backend_Reqs::nevents_postcuts::myderived2);
+  // Good (allowed backend):
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::doAll);
+  // Bad (disallowed backend):
+  //ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibSecond::Functown::doAll);
+
 
   // ****************
   // TinyDarkBit code START
@@ -219,13 +224,13 @@ int main( int argc, const char* argv[] )
   }
   std::cout << "Do you have a conditional dependency on a dog string when LibFirst v1.2 is used to provide cut_param?"<<std::endl ;
   std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "cut_param", "LibFirst", "1.2") << std::endl;
+  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst", "1.2") << std::endl;
   std::cout << "What about version 1.3?"<<std::endl;
   std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "cut_param", "LibFirst", "1.3") << std::endl;
+  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst", "1.3") << std::endl;
   std::cout << "What about some other version?"<<std::endl;
   std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "cut_param", "LibFirst") << std::endl;
+  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst") << std::endl;
   std::cout << "Tell me some stuff about nevents_postcuts."<<std::endl;
   std::vector<std::pair<std::string, std::string> > deps;
   std::vector<std::pair<std::string, std::string> > deps2;
@@ -236,13 +241,13 @@ int main( int argc, const char* argv[] )
   std::cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<std::endl;
   reqs =  ExampleBit_B::Functown::nevents_postcuts.backendreqs();
   std::cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<std::endl;
-  permitted =  ExampleBit_B::Functown::nevents_postcuts.backendspermitted(std::make_pair("cut_param","double"))	;
-  std::cout << "Options for cut_params: "<<permitted[0].first<<", "<<permitted[0].second<<std::endl;
-  std::cout << "Options for cut_params: "<<permitted[1].first<<", "<<permitted[1].second<<std::endl;
+  permitted =  ExampleBit_B::Functown::nevents_postcuts.backendspermitted(std::make_pair("doAll_capability","double"))	;
+  std::cout << "Options for doAll_capability: "<<permitted[0].first<<", "<<permitted[0].second<<std::endl;
+  std::cout << "Options for doAll_capability: "<<permitted[1].first<<", "<<permitted[1].second<<std::endl;
   std::string lib ("LibFirst");
-  deps2 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("cut_param", "double", lib);
-  deps3 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("cut_param", "double", lib, "1.2");
-  std::cout << "Backend-conditional dependencies when using any version of " << lib << " for cut_param: ";
+  deps2 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("doAll_capability", "double", lib);
+  deps3 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("doAll_capability", "double", lib, "1.2");
+  std::cout << "Backend-conditional dependencies when using any version of " << lib << " for doAll_capability: ";
   if (!deps2.empty())
   {
     std::cout<<deps2[0].first<<", "<<deps2[0].second<<std::endl;
@@ -251,7 +256,7 @@ int main( int argc, const char* argv[] )
   {
     std::cout<<"none."<<std::endl;
   }
-  std::cout << "Backend-conditional dependencies when using version 1.2 of " << lib << " for cut_param: ";
+  std::cout << "Backend-conditional dependencies when using version 1.2 of " << lib << " for doAll_capability: ";
   if (!deps3.empty())
   {
     std::cout<<deps3[0].first<<", "<<deps3[0].second<<std::endl;
