@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <util_classes.hpp>
 
 namespace GAMBIT
 {
@@ -32,9 +33,6 @@ namespace GAMBIT
   {
 
     public:
-
-      typedef std::string str;
-      typedef std::pair<str, str> sspair;
 
       // Empty virtual destructor to make polymorphic
       virtual ~functor() {}
@@ -224,9 +222,6 @@ namespace GAMBIT
 
     public:
 
-      typedef functor::str str;
-      typedef functor::sspair sspair;
-
       // Constructor 
       module_functor(void (*inputFunction)(TYPE &), 
                             str func_name,
@@ -353,15 +348,13 @@ namespace GAMBIT
 
     public:
 
-      typedef functor::str str;
-
       // Constructor 
       backend_functor_common (TYPE (*inputFunction)(ARGS...), 
-                               str func_name,
-                               str func_capability, 
-                               str result_type,
-                               str origin_name,
-                               str origin_version)
+                              str func_name,
+                              str func_capability, 
+                              str result_type,
+                              str origin_name,
+                              str origin_version)
       {
         myFunction      = inputFunction;
         myName          = func_name;
@@ -389,15 +382,13 @@ namespace GAMBIT
 
       // Constructor 
       backend_functor (TYPE (*inputFunction)(ARGS...), 
-                         std::string func_name,
-                         std::string func_capability, 
-                         std::string result_type,
-                         std::string origin_name,
-                         std::string origin_version) 
-                         : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
-                                                                    func_capability, result_type,
-                                                                    origin_name, origin_version) {}
-
+                       str func_name,
+                       str func_capability, 
+                       str result_type,
+                       str origin_name,
+                       str origin_version) 
+      : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
+        func_capability, result_type, origin_name, origin_version) {}
 
       /* Which is the better user interface?
        * 
@@ -441,14 +432,13 @@ namespace GAMBIT
 
       // Constructor 
       backend_functor (void (*inputFunction)(ARGS...), 
-                         std::string func_name,
-                         std::string func_capability, 
-                         std::string result_type,
-                         std::string origin_name,
-                         std::string origin_version) 
-                         : backend_functor_common<void, ARGS...>(inputFunction, func_name,
-                                                                    func_capability, result_type,
-                                                                    origin_name, origin_version) {}
+                       str func_name,
+                       str func_capability, 
+                       str result_type,
+                       str origin_name,
+                       str origin_version) 
+      : backend_functor_common<void, ARGS...>(inputFunction, func_name,
+        func_capability, result_type, origin_name, origin_version) {}
     
       // 1) Calculate method
       //void calculate(ARGS... args) { if(this->needs_recalculating) { myFunction(args...); } }

@@ -23,8 +23,6 @@
 //
 //  *********************************************
 
-#include <string>
-#include <iostream>
 #include <ExampleBit_B_rollcall.hpp>
 
 namespace GAMBIT
@@ -36,26 +34,31 @@ namespace GAMBIT
     // Initialization routine
     void initialize () 
     {
-      std::cout << std::endl;
-      std::cout << "********************************************" << std::endl;
-      std::cout << "***       Initializing ExampleBit_B      ***" << std::endl;
-      std::cout << "********************************************" << std::endl;
+      cout << endl;
+      cout << "********************************************" << endl;
+      cout << "***       Initializing ExampleBit_B      ***" << endl;
+      cout << "********************************************" << endl;
     }
 
     // Module functions
     void xsection (double &result)               { result = 5.e10; }
-    void authors_dogs_name (std::string &result) { result = "ImaginaryPuppy"; }
+    void authors_dogs_name (str &result) { result = "ImaginaryPuppy"; }
     void nevents (int &result)                   { result = 2; }
     void nevents_postcuts (int &result)          
     {
-      std::cout << "Yo! I am nevents_postcuts in ExampleBit_B, and I have ordered" << std::endl;
-      std::cout << "that somebody, somewhere compute nevents *before* I get my own " << std::endl;
-      std::cout << "groove on.  So let's see what it is then: " ;
+      cout << endl << "My dependency on nevents has been filled by " << 
+       GET_DEP_FUNCNAME(nevents_postcuts::nevents) << " from " <<
+       GET_DEP_MODULE(nevents_postcuts::nevents) << "." << endl;
+      cout << "Its value is: ";
       double nevents = GET_DEP(nevents_postcuts::nevents);
-      std::cout << nevents << std::endl;
-      std::cout << "I also ordered some backend doAll_capabilty.  So?" << std::endl;
+      cout << nevents << endl << endl;
+      cout << "My backend requirement of doAll_capability has been filled by " << 
+       GET_BE_FUNCNAME(nevents_postcuts::doAll_capability) << " from " <<
+       GET_BE_PACKAGE(nevents_postcuts::doAll_capability) << ", v" << 
+       GET_BE_VERSION(nevents_postcuts::doAll_capability) << "." << endl;
+      cout << "Its value is: ";
       double doall_local = GET_BE_RESULT(nevents_postcuts::doAll_capability, 2);
-      std::cout << doall_local << std::endl;
+      cout << doall_local << endl << endl;
       result = (int) (nevents + doall_local);
     }
 

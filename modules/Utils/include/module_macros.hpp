@@ -47,9 +47,14 @@
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
 #define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
 
-//Dependency/backend retrieval one-liners
-#define GET_DEP(DEP) (*Dependencies::DEP)()
+//Dependency/backend retrieval and info one-liners
+#define GET_DEP(DEP)               (*Dependencies::DEP)()
+#define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
+#define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
 #define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
+#define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
+#define GET_BE_FUNCNAME(BE_REQ)    Backend_Reqs::CAT(BE_REQ,_baseptr)->name()
+#define GET_BE_VERSION(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->version()
 
 //Redirect rollcall macros depending in whether this file is included from 
 //the core or a module.

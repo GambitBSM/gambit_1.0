@@ -222,7 +222,7 @@ int main( int argc, const char* argv[] )
     ExampleBit_B::Functown::nevents_postcuts.calculate();
     std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<std::endl ;
   }
-  std::cout << "Do you have a conditional dependency on a dog string when LibFirst v1.2 is used to provide cut_param?"<<std::endl ;
+  std::cout << "Do you have a conditional dependency on a dog string when LibFirst v1.2 is used to provide doAll_capability?"<<std::endl ;
   std::cout << ExampleBit_B::name() << " says: ";
   std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst", "1.2") << std::endl;
   std::cout << "What about version 1.3?"<<std::endl;
@@ -232,11 +232,7 @@ int main( int argc, const char* argv[] )
   std::cout << ExampleBit_B::name() << " says: ";
   std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst") << std::endl;
   std::cout << "Tell me some stuff about nevents_postcuts."<<std::endl;
-  std::vector<std::pair<std::string, std::string> > deps;
-  std::vector<std::pair<std::string, std::string> > deps2;
-  std::vector<std::pair<std::string, std::string> > deps3;
-  std::vector<std::pair<std::string, std::string> > reqs;
-  std::vector<std::pair<std::string, std::string> > permitted;
+  std::vector<sspair> deps, deps2, deps3, reqs, permitted;
   deps =  ExampleBit_B::Functown::nevents_postcuts.dependencies();
   std::cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<std::endl;
   reqs =  ExampleBit_B::Functown::nevents_postcuts.backendreqs();

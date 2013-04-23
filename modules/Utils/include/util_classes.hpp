@@ -18,8 +18,19 @@
 #ifndef __util_classes_hpp__
 #define __util_classes_hpp__
 
+#include <string>
+#include <iostream>
+
 namespace GAMBIT
 {
+
+  // Useful typedefs
+  typedef std::string str;
+  typedef std::pair<str, str> sspair;
+
+  // Useful unqualified functions
+  using std::cout;
+  using std::endl;
 
   // A container for a function that needs to be constructed at compile
   // and executed as initialisation code at startup.
