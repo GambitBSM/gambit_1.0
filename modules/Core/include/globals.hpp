@@ -18,6 +18,8 @@
 //
 //  *********************************************
 
+#ifndef __globals_hpp__
+#define __globals_hpp__
 
 namespace GAMBIT 
 {
@@ -29,3 +31,5 @@ namespace GAMBIT
   #endif
 
 }
+
+#endif // defined __globals_hpp__
