@@ -16,8 +16,8 @@ Random:seed = 12345
 ! PartonLevel:FSR = off
 ! HadronLevel:all = off
 
-HardQCD:all = on
-PhaseSpace:pTHatMin = 20.
+! HardQCD:all = on
+! PhaseSpace:pTHatMin = 20.
 
 ! HardQCD:gg2bbbar = on
 
@@ -29,4 +29,5 @@ PhaseSpace:pTHatMin = 20.
 
 SUSY:qg2squarkgluino = on
 SUSY:all = on
+SLHA:file = sps1a.spc
 ! SLHA:file = sps1aWithDecays.spc
