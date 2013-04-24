@@ -1,0 +1,32 @@
+Beams:eCM = 8000.
+Main:numberOfEvents = 1000
+Main:timesAllowErrors = 1000
+Init:showProcesses = off
+Init:showMultipartonInteractions = off
+Init:showChangedSettings = off
+Init:showChangedParticleData = off
+Next:numberShowEvent = 0
+Next:numberShowInfo = 0
+Next:numberShowProcess = 0
+Random:setSeed = on
+Random:seed = 12345
+
+! PartonLevel:MPI = off
+! PartonLevel:ISR = off
+! PartonLevel:FSR = off
+! HadronLevel:all = off
+
+HardQCD:all = on
+PhaseSpace:pTHatMin = 20.
+
+! HardQCD:gg2bbbar = on
+
+! WeakSingleBoson:ffbar2gmZ = on
+! 23:onMode = off
+! 23:onIfAny = 11
+! PhaseSpace:mHatMin = 50.
+! PhaseSpace:mHatMax = 120.
+
+SUSY:qg2squarkgluino = on
+SUSY:all = on
+! SLHA:file = sps1aWithDecays.spc

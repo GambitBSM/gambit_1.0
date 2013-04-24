@@ -2,9 +2,12 @@
 
 #include <cassert>
 #include <cmath>
+#include <vector>
 
 
 namespace GAMBIT {
+
+  using namespace std;
 
 
   /// @name Numerical helpers
