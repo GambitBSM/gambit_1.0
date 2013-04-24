@@ -1,6 +1,10 @@
 #include "Particle.hpp"
 #include "TRandom.h"
 
+/// @todo Actually this whole file should be *in* namespace GAMBIT
+using namespace GAMBIT;
+
+
 // the base class of the Detector Response
 class DetectorResponse
 {
@@ -38,9 +42,9 @@ class ATLAS_Simple_Response: public DetectorResponse
 /*
 double RESHAD(double e, double eta, double Caloth){
 
-  if(SMEAR ==1){    
+  if(SMEAR ==1){
   double distr = rndm.Gaus(0,1);
-  
+
   double res = -999.99;
 
   //Check which region of the detector.
@@ -49,7 +53,7 @@ double RESHAD(double e, double eta, double Caloth){
   }else if(eta > Caloth){
     res = 1.0;
   }
-  
+
   double sig = distr * res *1/sqrt(e);
 
   return sig;

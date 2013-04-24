@@ -3,7 +3,7 @@
 // PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// This is a simple test program. 
+// This is a simple test program.
 // It illustrates (a) how to collect the analysis code in a separate class
 // and (b) how to provide the .cmnd filename on the command line
 
@@ -23,13 +23,12 @@
 #include "Particle.hpp"
 #include "fastsim.hpp"
 
-
-
-using namespace Pythia8; 
+using namespace GAMBIT;
+using namespace Pythia8;
 
 //==========================================================================
 
-// Put all your own analysis code in the myAnalysis class. 
+// Put all your own analysis code in the myAnalysis class.
 
 class MyAnalysis {
 
@@ -42,7 +41,7 @@ public:
 
   // Initialization actions.
   void init();
- 
+
   // Analysis of each new event.
   void analyze(Event& event);
 
@@ -51,7 +50,7 @@ public:
 
   TFile *m_ROOToutFile;
 
-
+  void SelectParticles(Pythia8::Event& event);
 
 private:
 
@@ -59,22 +58,22 @@ private:
   int  nEvt;
 
   // the list of particles that are input to the detector response
-  vector<Particle*> _electrons;
-  vector<Particle*> _muons;
-  vector<Particle*> _photons;
-  vector<Particle*> _bjets;
-  vector<Particle*> _tauhads;
-  vector<Particle*> _chargedhads;
-  vector<Particle*> _weakly_interacting; // stdm neutrinos, susy neutralinos
+  vector<GAMBIT::Particle*> _electrons;
+  vector<GAMBIT::Particle*> _muons;
+  vector<GAMBIT::Particle*> _photons;
+  vector<GAMBIT::Particle*> _bjets;
+  vector<GAMBIT::Particle*> _tauhads;
+  vector<GAMBIT::Particle*> _chargedhads;
+  vector<GAMBIT::Particle*> _weakly_interactings; // stdm neutrinos, susy neutralinos
 
-  TH1F *m_hBosonPt, *m_hBosoneta, *m_hBosonphi; 
-  TH1F *m_hElectronPt, *m_hElectroneta, *m_hElectronphi; 
+  TH1F *m_hBosonPt, *m_hBosoneta, *m_hBosonphi;
+  TH1F *m_hElectronPt, *m_hElectroneta, *m_hElectronphi;
 
 };
 
 //--------------------------------------------------------------------------
 
-// The initialization code. 
+// The initialization code.
 
 MyAnalysis::~MyAnalysis() {
 
@@ -109,9 +108,9 @@ MyAnalysis::~MyAnalysis() {
     _chargedhads.erase(_chargedhads.begin());
   }
 
-  for (int i=0;i< _weakly_interacting.size();i++) {
-    delete(_weakly_interacting[i]);
-    _weakly_interacting.erase(_weakly_interacting.begin());
+  for (int i=0;i< _weakly_interactings.size();i++) {
+    delete(_weakly_interactings[i]);
+    _weakly_interactings.erase(_weakly_interactings.begin());
   }
 
 }
@@ -134,14 +133,14 @@ void MyAnalysis::init() {
   m_hElectroneta = new TH1F("Electroneta"," Electron Generated eta;",100, -5., 5.);
   m_hElectronphi = new TH1F( "ElectronPhi","Electron Generated Phi;",100, -6.0, 6.0);
 
-} 
+}
 
 //--------------------------------------------------------------------------
 
-void MyAnalysis:SelectParticles(Event& event) {
-  // this method selects and categorizes the particles into the respective vectors  
-  // 
-  Particle *chosen;
+void MyAnalysis::SelectParticles(Pythia8::Event& event) {
+  // this method selects and categorizes the particles into the respective vectors
+  //
+  GAMBIT::Particle* chosen;
 
   // iterate through each of the particles, select and sort them into the different vectors
   for (int i = 0; i < event.size(); ++i) {
@@ -149,36 +148,32 @@ void MyAnalysis:SelectParticles(Event& event) {
     if (event[i].isFinal()) {
 
       if (event[i].isCharged()) {
-        switch (fabs(event[i].id())) {
-         
-          // this needs to change, it should be only prompt leptons.. not just any lepton
-          case 11: // electron 
-            chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+        switch (int(fabs(event[i].id()))) {
+          /// @todo This needs to change, it should be only prompt leptons.. not just any lepton
+          case 11: // electron
+            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _electrons.push_back(chosen);
             break;
           case 13: // muon
-            chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _muons.push_back(chosen);
             break;
           default: // every other hadronic charged particle - for the jets
-            
-            chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _chargedhads.push_back(chosen);
-            
-//            printf("charged final particle missed %d\n",event[i].id());
+            // printf("charged final particle missed %d\n",event[i].id());
         }
       }
       else {
-        switch (fabs(event[i].id())) {
-
-          case 22: // photon 
-            chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+        switch (int(fabs(event[i].id()))) {
+          case 22: // photon
+            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _photons.push_back(chosen);
             break;
           case 12: // electron neutrinos
           case 14: // muon neutrinos
           case 16: // tau neutrinos
-            chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _weakly_interactings.push_back(chosen);
             break;
           default: printf("neutral final particle missed %d\n",event[i].id());
@@ -188,7 +183,7 @@ void MyAnalysis:SelectParticles(Event& event) {
 
     if ((event[i].isQuark()) && (fabs(event[i].id()) == 6)) {
 
-      chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+      chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
       _bjets.push_back(chosen);
     }
 
@@ -204,7 +199,7 @@ void MyAnalysis:SelectParticles(Event& event) {
       }
 
       // we need to remove the leptonically decaying taus - perhaps do an overlap removal with electrons
-      chosen = new Particle(event[i].px(),event[i].py(),event[i].pz(),event[i].e(),event[i].id());
+      chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
       _tauhads.push_back(chosen);
     }
 
@@ -212,7 +207,7 @@ void MyAnalysis:SelectParticles(Event& event) {
   }
 }
 
-// The event analysis code. 
+// The event analysis code.
 
 void MyAnalysis::analyze(Event& event) {
 
@@ -227,7 +222,7 @@ void MyAnalysis::analyze(Event& event) {
 
   A.InitSimulation(ACERDET);
 
-  A.SetParticles(_electrons,_muons,_photons,_chargedhads,_bjets,_tauhads,_weakly_interacting);
+  A.SetParticles(_electrons,_muons,_photons,_chargedhads,_bjets,_tauhads,_weakly_interactings);
 
 
 
@@ -240,7 +235,7 @@ void MyAnalysis::analyze(Event& event) {
   ++nEvt;
 
 
-  for (int i = 0; i < (int)event.size(); ++i) {    
+  for (int i = 0; i < (int)event.size(); ++i) {
     if((event[i].isFinal())&&((abs(event[i].id())==12)||(abs(event[i].id())==14)||(abs(event[i].id())==16))){
 
       pxxnues += event[i].px();
@@ -250,10 +245,10 @@ void MyAnalysis::analyze(Event& event) {
 
   // Plot pseudorapidity distribution. Sum up charged multiplicity.
   for (int i = 0; i < event.size(); ++i) {
-    
+
     switch (event[i].id()) {
-    
-      case 23: // z boson 
+
+      case 23: // z boson
 
         m_hBosonPt->Fill(event[i].pT());
         m_hBosoneta->Fill(event[i].eta());
@@ -283,7 +278,7 @@ void MyAnalysis::analyze(Event& event) {
 
 //--------------------------------------------------------------------------
 
-// The finishing code. 
+// The finishing code.
 
 void MyAnalysis::finish() {
 
@@ -298,11 +293,11 @@ void MyAnalysis::finish() {
   m_ROOToutFile->Write();
 
 
-} 
+}
 
 //==========================================================================
 
-// You should not need to touch the main program: its actions are 
+// You should not need to touch the main program: its actions are
 // determined by the .cmnd file and the rest belongs in MyAnalysis.
 
 int main(int argc, char* argv[]) {
@@ -316,7 +311,7 @@ int main(int argc, char* argv[]) {
   }
 
   // Check that the provided file name corresponds to an existing file.
-  ifstream is(argv[1]);  
+  ifstream is(argv[1]);
   if (!is) {
     cerr << " Command-line file " << argv[1] << " was not found. \n"
          << " Program stopped! " << endl;
@@ -332,21 +327,21 @@ int main(int argc, char* argv[]) {
   // Declare generator. Read in commands from external file.
   Pythia pythia;
   pythia.readFile(argv[1]);
- 
+
 
   // Initialization.
   pythia.init();
 
   // Declare user analysis class. Do initialization part of it.
   MyAnalysis myAnalysis;
-  myAnalysis.init(); 
+  myAnalysis.init();
 
   // Read in number of event and maximal number of aborts.
   int nEvent = pythia.mode("Main:numberOfEvents");
   int nAbort = pythia.mode("Main:timesAllowErrors");
 
   // Begin event loop.
-  int iAbort = 0; 
+  int iAbort = 0;
   for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
 
     printf("Event %d\n",iEvent);
@@ -354,7 +349,7 @@ int main(int argc, char* argv[]) {
     // Generate events. Quit if too many failures.
     if (!pythia.next()) {
       if (++iAbort < nAbort) continue;
-      cout << " Event generation aborted prematurely, owing to error!\n"; 
+      cout << " Event generation aborted prematurely, owing to error!\n";
       break;
     }
 

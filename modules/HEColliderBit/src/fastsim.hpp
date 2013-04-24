@@ -4,6 +4,10 @@
 #include "DetectorResponse.hpp"
 #include <vector>
 
+/// @todo Actually this whole file should be *in* namespace GAMBIT
+using namespace GAMBIT;
+
+
 enum SimType { NOMINAL,ACERDET,FASTATLAS, FASTCMS, ATLAS2011, CMS2011};
 // NOMINAL the energy response is smeared and the calorimeter parameters are the same as the ACERDET
 // ACERDET the energy of the different particles is smeared by the respective functions as used in the ACERDET paper and the calorimeter parameters are
@@ -39,7 +43,7 @@ public:
  void SetWeaklyInteracting(vector<Particle*> particles);
 
 
- void Clustering(); 
+ void Clustering();
 
  void ElectronResponse();
  void MuonResponse();
@@ -74,7 +78,7 @@ private:
  double _calo_deta; // the delta eta of the calorimeter in the barrel region
  double _calo_transition;  // the eta position of the transition region
  double _calo_etthresh; // the energy threshold of a calorimeter cell
- double _calo_bfield_ptmin; // the minimum pt that the b field 
+ double _calo_bfield_ptmin; // the minimum pt that the b field
  double _calo_etamax; // the total coverage of the calorimeter
  int    _calo_neta; // number of eta channels in the calorimeter
  int    _calo_nphi; // number of phi channels in the calorimeter
@@ -94,7 +98,7 @@ private:
  double _min_dr;
 
 
- // the particles 
+ // the particles
  vector<Particle*> _chargedhads;
  vector<Particle*> _stable_interacting_particles;
  vector<Particle*> _stable_electrons;
