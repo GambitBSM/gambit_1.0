@@ -20,9 +20,9 @@ namespace GAMBIT {
   template<>         unsigned int digit<1>(unsigned int val) { return val % 10; }
 
   inline bool hasQuark(unsigned int qid, int pid) {
-    const unsigned int apid = abs(pid);
+    const unsigned int apid = std::abs(pid);
     if (apid == qid) return true;
-    if (apid < 100 || abs(pid) > 10000) return false;
+    if (apid < 100 || std::abs(pid) > 10000) return false;
     return digit<2>(apid) == qid || digit<3>(apid) == qid || digit<4>(apid) == qid;
   }
 

@@ -2,6 +2,7 @@
 
 #include "FastJetUtils.hpp"
 #include "Vectors.hpp"
+#include "Event.hpp"
 #include "Pythia.h"
 
 

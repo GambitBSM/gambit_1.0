@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 namespace GAMBIT {
