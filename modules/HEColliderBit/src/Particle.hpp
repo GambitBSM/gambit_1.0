@@ -43,10 +43,8 @@ namespace GAMBIT {
     //@}
 
 
-    /// Get PDG ID code
-    int pid() const { return _pdgId; }
-    /// Set PDG ID code
-    void setPid(int pid) { _pdgId = pid; }
+    /// @name Momentum
+    //@{
 
     /// Get the 4 vector
     const P4& mom() const { return _p4; }
@@ -63,12 +61,39 @@ namespace GAMBIT {
     double pT() const { return mom().pT(); }
     //@}
 
+    //@}
+
+
+    /// @name Promptness
+    //@{
+
+    /// Is this particle connected to the hard process or from a hadron/tau decay?
+    bool isPrompt() const { return _prompt; }
+    /// Set promptness
+    void setPrompt(bool isprompt=true) { _prompt = isprompt; }
+
+    //@}
+
+
+    /// @name Particle ID
+    //@{
+
+    /// Get PDG ID code
+    int pid() const { return _pdgId; }
+    /// Set PDG ID code
+    void setPid(int pid) { _pdgId = pid; }
+
+    //@}
+
+
   private:
 
     /// Momentum vector
     P4 _p4;
     /// PDG ID code
     int _pdgId;
+    /// Promptness flag
+    int _prompt;
 
   };
 

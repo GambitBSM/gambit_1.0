@@ -5,9 +5,19 @@
 
 #include "Pythia.h"
 #include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 
 
 namespace GAMBIT {
+
+
+  /// Construct pT-sorted jets using the @a alg measure with jet @a R parameter, and min pT @a ptmin (in MeV)
+  inline std::vector<fastjet::PseudoJet> get_jets(const std::vector<fastjet::PseudoJet>& particles, double R, double ptmin, fastjet::JetAlgorithm alg=fastjet::antikt_algorithm) {
+    const fastjet::JetDefinition jet_def(alg, R);
+    /// @todo Add area definition?
+    fastjet::ClusterSequence cseq(particles, jet_def); //< @todo Need new + auto_ptr?
+    return fastjet::sorted_by_pt(cseq.inclusive_jets(ptmin));
+  }
 
 
   inline fastjet::PseudoJet vec4_to_pseudojet(const Pythia8::Vec4& p) {
