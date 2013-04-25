@@ -5,7 +5,7 @@
 int main () {
 
   FastSim sim;
-  a.InitSimulation(ACERDET);
+  sim.InitSimulation(ACERDET);
 
   /// @todo This new'ing is silly... can we rework FastSim to use references?
   GAMBIT::Particle* p = new GAMBIT::Particle(10.0, 10.0, 10.0, 17.320826, 13);

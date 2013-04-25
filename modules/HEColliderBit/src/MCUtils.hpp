@@ -90,7 +90,10 @@ namespace GAMBIT {
     const Pythia8::Particle& p = evt[n];
     //assert(!p.isParton());
     if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
-    for (int m : evt.daughterList(n)) {
+    // for (int m : evt.daughterList(n)) {
+    vector<int> daughters = evt.daughterList(n);
+    for (size_t i = 0; i < daughters.size(); ++i) {
+      int m = daughters[i];
       if (evt[m].isFinal()) {
         rtn.push_back(m);
       } else {
@@ -104,7 +107,10 @@ namespace GAMBIT {
     // *This* particle must be a b or b-hadron
     if (!hasBottom(evt[n].id())) return false;
     // Daughters must *not* include a b or b-hadron
-    for (int m : evt.daughterList(n)) {
+    // for (int m : evt.daughterList(n)) {
+    vector<int> daughters = evt.daughterList(n);
+    for (size_t i = 0; i < daughters.size(); ++i) {
+      int m = daughters[i];
       if (hasBottom(evt[m].id())) return false;
     }
     return true;
@@ -115,7 +121,10 @@ namespace GAMBIT {
     // *This* particle must be a b or b-hadron
     if (abs(evt[n].id()) != 15) return false;
     // Daughters must *not* include a tau
-    for (int m : evt.daughterList(n)) {
+    // for (int m : evt.daughterList(n)) {
+    vector<int> daughters = evt.daughterList(n);
+    for (size_t i = 0; i < daughters.size(); ++i) {
+      int m = daughters[i];
       if (abs(evt[m].id()) == 15) return false;
     }
     return true;
@@ -131,7 +140,8 @@ namespace GAMBIT {
     }
     // Identify the final state particles from those decays
     vector<int> rmparticles;
-    for (int n : unstables) finalDescendants(n, evt, rmparticles);
+    // for (int n : unstables) finalDescendants(n, evt, rmparticles);
+    for (size_t i = 0; i < unstables.size(); ++i) finalDescendants(unstables[i], evt, rmparticles);
     // Identify all final state particles, except those from b and tau decays where the parents are used
     vector<int> rtn = unstables;
     for (int n = 0; n < evt.size(); ++n) {
