@@ -1,4 +1,5 @@
 PY8DIR := $(HOME)/local
+DELPHESDIR := $(HOME)/local
 CXX := g++
 CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long #-std=c++11
 
@@ -11,10 +12,12 @@ HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)
 PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -L$(PY8DIR)/lib/archive -lpythia8 -llhapdfdummy #-lz -lboost_iostreams-mt
 FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
 ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
+BOOSTFLAGS :=
+DELPHESFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external -L$(DELPHESDIR) -lDelphes
 
 .PHONY = all clean
 
-all: example-fastsim example-fastsim-py8 example-py8-bsm
+all: example-fastsim example-fastsim-py8 example-py8-bsm example-ana-0lep example-delphes-py8
 	@true
 
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
@@ -29,5 +32,8 @@ example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 example-ana-0lep: gambit_er_0lep.cpp
 	$(CXX) gambit_er_0lep.cpp $(CXXFLAGS) $(PY8FLAGS) $(FJFLAGS) -o example-ana-0lep
 
+example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp
+	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp -fopenmp $(BOOSTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG -o example-delphes-py8
+
 clean:
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-ana-0lep example-delphes-py8
