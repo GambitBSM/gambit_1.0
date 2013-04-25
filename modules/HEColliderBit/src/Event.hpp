@@ -150,8 +150,13 @@ namespace GAMBIT {
     /// @name Internal particle / vector containers
     //@{
 
-    /// @todo Separate the particles internally *and* keep overall list?
+    /// @name Separate particle collections
+    //@{
+    /// @todo Do we really need to store invisibles, since they aren't
+    /// experimentally resolveable, and are covered by the explicitly-set
+    /// missing-mom?
     vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
+    //@}
 
     /// Jets collection (calculated on the fly, hence mutable to allow laziness)
     mutable vector<Jet*> _jets;
