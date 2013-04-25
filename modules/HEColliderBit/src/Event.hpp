@@ -76,37 +76,62 @@ namespace GAMBIT {
 
 
     /// Get all final state particles
-    const vector<Particle*>& particles() const {
-      /// @todo Add together all the vectors of the different particle types
+    /// @todo Note the return by value: it's not efficient yet!
+    vector<Particle*> particles() const {
+      // Add together all the vectors of the different particle types
+      vector<Particle*> rtn;
+      rtn.reserve(_photons.size() + _electrons.size() + _muons.size() + _taus.size() + _invisibles.size());
+      #define APPEND_VEC(vec) rtn.insert(rtn.end(), vec.begin(), vec.end() )
+      APPEND_VEC(visible_particles());
+      APPEND_VEC(_invisibles);
+      #undef APPEND_VEC
+      return rtn;
       /// @todo Or use Boost range join to iterate over separate containers transparently... I like this
       /// @todo Cache, or otherwise think about efficiency since this gets called by the destructor
     }
 
+
     /// Get visible state particles
-    const vector<Particle*>& visible_particles() const {
+    /// @todo Note the return by value: it's not efficient yet!
+    const vector<Particle*> visible_particles() const {
+      // Add together all the vectors of the different particle types
+      vector<Particle*> rtn;
+      rtn.reserve(_photons.size() + _electrons.size() + _muons.size() + _taus.size());
+      #define APPEND_VEC(vec) rtn.insert(rtn.end(), vec.begin(), vec.end() )
+      APPEND_VEC(_photons);
+      APPEND_VEC(_electrons);
+      APPEND_VEC(_muons);
+      APPEND_VEC(_taus);
+      #undef APPEND_VEC
+      return rtn;
       /// @todo Add together all the vectors of the different particle types
       /// @todo Or use Boost range join to iterate over separate containers transparently... I like this
     }
+
 
     /// Get invisible final state particles
     const vector<Particle*>& invisible_particles() const {
       return _invisibles;
     }
 
+
     /// Get prompt electrons
     const vector<Particle*>& electrons() const {
       return _electrons;
     }
+
 
     /// Get prompt muons
     const vector<Particle*>& muons() const {
       return _muons;
     }
 
+
     /// Get prompt taus
     const vector<Particle*>& taus() const {
       return _taus;
     }
+
 
     /// Get prompt photons
     const vector<Particle*>& photons() const {
@@ -114,13 +139,19 @@ namespace GAMBIT {
     }
 
 
-    /// Get anti-kT 0.4 jets, with leptons and photons excluded
-    /// @todo Take a lazy + caching approach
+    /// @brief Get anti-kT 0.4 jets, with leptons and photons excluded
+    ///
+    /// If the jets vector is empty, it will be calculated on demand (and auto-cached)
     const vector<Jet*>& jets() const;
 
     /// Explicitly set the jets collection (will override on-the-fly calculation)
     void setJets(const vector<Jet*>& jets) {
       _jets = jets;
+    }
+
+    /// Explicitly add a jet to the jets collection (will override on-the-fly calculation)
+    void addJet(const Jet* j) {
+      _jets.push_back(j);
     }
 
 

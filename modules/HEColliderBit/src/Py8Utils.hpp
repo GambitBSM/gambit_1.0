@@ -1,15 +1,22 @@
 #pragma once
 
 #include "FastJetUtils.hpp"
+#include "Vectors.hpp"
 #include "Pythia.h"
 
 namespace GAMBIT {
 
 
+  /// @name Converters to/from Pythia8's native 4-vector
+  //@{
+
   inline fastjet::PseudoJet vec4_to_pseudojet(const Pythia8::Vec4& p) {
     return fastjet::PseudoJet(p.px(), p.py(), p.pz(), p.e());
   }
 
+  inline P4 vec4_to_p4(const Pythia8::Vec4& p) {
+    return P4(p.px(), p.py(), p.pz(), p.e());
+  }
 
   inline Pythia8::Vec4 pseudojet_to_vec4(const fastjet::PseudoJet& p) {
     Pythia8::Vec4 rtn;
@@ -17,11 +24,15 @@ namespace GAMBIT {
     return rtn;
   }
 
+  //@}
+
+
+  /// @name Convenience functions on Py8 objects
+  //@{
 
   inline double deltaPhi(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
     return deltaPhi(a.phi(), b.phi());
   }
-
 
   inline double deltaR(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
     const double deta = fabs(eta(a) - eta(b));
@@ -29,17 +40,11 @@ namespace GAMBIT {
     return deta*deta + dphi*dphi;
   }
 
+  //@}
 
 
-  void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
-    for (int i = 0; i < pevt.size(); ++i) {
-      if (!evt[i].isFinal()) continue;
-      Particle* p = new Particle(vec4_to_p4(evt[i].mom(), evt[i].id()));
-      /// @todo b-tagging and taus
-      e.addParticle(p);
-    }
-  }
-
+  /// @name Detailed Pythia8 event record walking/mangling functions
+  //@{
 
   // bool fromBottom(int n, const Pythia8::Event& evt) {
   //   const Pythia8::Particle& p = evt[n];
@@ -134,6 +139,19 @@ namespace GAMBIT {
     }
     sort(rtn.begin(), rtn.end());
     return rtn;
+  }
+
+  //@}
+
+
+  /// Fill a GAMBIT::Event from a Pythia8 event
+  inline void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
+    for (int i = 0; i < pevt.size(); ++i) {
+      if (!evt[i].isFinal()) continue;
+      Particle* p = new Particle(vec4_to_p4(evt[i].mom(), evt[i].id()));
+      /// @todo b-tagging and taus
+      e.addParticle(p);
+    }
   }
 
 
