@@ -116,19 +116,19 @@ int main() {
       vector<Particle> baselineMuons;
       vector<PseudoJet> baselineJets;
 
-      for(int iEl=0;iEl<electrons.size();iEl++){
+      for (size_t iEl=0;iEl<electrons.size();iEl++) {
         Particle electron=electrons.at(iEl);
-        if(electron.pT()>20.&&fabs(electron.eta())<2.47)baselineElectrons.push_back(electron);
+        if (electron.pT()>20.&&fabs(electron.eta())<2.47)baselineElectrons.push_back(electron);
       }
 
-      for(int iMu=0;iMu<muons.size();iMu++){
+      for (size_t iMu=0;iMu<muons.size();iMu++) {
         Particle muon=muons.at(iMu);
-        if(muon.pT()>10.&&fabs(muon.eta())<2.4)baselineMuons.push_back(muon);
+        if (muon.pT()>10.&&fabs(muon.eta())<2.4)baselineMuons.push_back(muon);
       }
 
-      for(int iJet=0;iJet<jets.size();iJet++){
+      for (size_t iJet=0;iJet<jets.size();iJet++) {
         PseudoJet jet=jets.at(iJet);
-        if(jet.pt()>20.&&fabs(jet.eta())<2.8)baselineJets.push_back(jet);
+        if (jet.pt()>20.&&fabs(jet.eta())<2.8)baselineJets.push_back(jet);
       }
 
       //Overlap removal
@@ -137,36 +137,36 @@ int main() {
       vector<PseudoJet> signalJets;
 
       //Remove any jet within dR=0.2 of an electrons
-      for(int iJet=0;iJet<baselineJets.size();iJet++){
+      for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
         bool overlap=false;
         Vec4 jetVec=pseudojet_to_vec4(baselineJets.at(iJet));
-        for(int iEl=0;iEl<baselineElectrons.size();iEl++){
+        for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
           Vec4 elVec=baselineElectrons.at(iEl).p();
-          if(deltaR(elVec,jetVec)<0.2)overlap=true;
+          if (deltaR(elVec,jetVec)<0.2)overlap=true;
         }
-        if(!overlap)signalJets.push_back(baselineJets.at(iJet));
+        if (!overlap)signalJets.push_back(baselineJets.at(iJet));
       }
 
       //Remove electrons with dR=0.4 or surviving jets
-      for(int iEl=0;iEl<baselineElectrons.size();iEl++){
+      for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
         bool overlap=false;
         Vec4 elVec=baselineElectrons.at(iEl).p();
-        for(int iJet=0;iJet<signalJets.size();iJet++){
+        for (size_t iJet=0;iJet<signalJets.size();iJet++) {
           Vec4 jetVec=pseudojet_to_vec4(signalJets.at(iJet));
-          if(deltaR(elVec,jetVec)<0.4)overlap=true;
+          if (deltaR(elVec,jetVec)<0.4)overlap=true;
         }
-        if(!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
+        if (!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
       }
 
       //Remove muons with dR=0.4 or surviving jets
-      for(int iMu=0;iMu<baselineMuons.size();iMu++){
+      for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
         bool overlap=false;
         Vec4 muVec=baselineMuons.at(iMu).p();
-        for(int iJet=0;iJet<signalJets.size();iJet++){
+        for (size_t iJet=0;iJet<signalJets.size();iJet++) {
           Vec4 jetVec=pseudojet_to_vec4(signalJets.at(iJet));
-          if(deltaR(muVec,jetVec)<0.4)overlap=true;
+          if (deltaR(muVec,jetVec)<0.4)overlap=true;
         }
-        if(!overlap)signalMuons.push_back(baselineMuons.at(iMu));
+        if (!overlap)signalMuons.push_back(baselineMuons.at(iMu));
       }
 
       //We now have the signal electrons, muons and jets
@@ -177,14 +177,14 @@ int main() {
       int nMuons=signalMuons.size();
       int nJets=signalJets.size();
       bool leptonCut=false;
-      if(nElectrons==0 && nMuons==0)leptonCut=true;
+      if (nElectrons==0 && nMuons==0)leptonCut=true;
 
       bool metCut=false;
-      if(met>160.)metCut=true;
+      if (met>160.)metCut=true;
 
       float meff_incl=0;
-      for(int iJet=0;iJet<signalJets.size();iJet++){
-        if(signalJets.at(iJet).pt()>40.)meff_incl+=signalJets.at(iJet).pt();
+      for (size_t iJet=0;iJet<signalJets.size();iJet++) {
+        if (signalJets.at(iJet).pt()>40.)meff_incl+=signalJets.at(iJet).pt();
       }
 
       meff_incl+=met;
@@ -192,171 +192,171 @@ int main() {
 
       // Do 2 jet regions
 
-      if(nJets>1){
-        if(signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60.){
+      if (nJets>1) {
+        if (signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60.) {
 
           float dPhiMin=9999;
           int numJets=0;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
-            if(numJets>1)break;
+            if (jet.pt()<40.) continue;
+            if (numJets>1)break;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin){
+            if (dphi<dPhiMin) {
               dPhiMin=dphi;
               numJets+=1;
             }
           }
 
           float meff2j=met + signalJets.at(0).pt() + signalJets.at(1).pt();
-          if(leptonCut && metCut && dPhiMin>0.4){
-            if((met/meff2j)>0.3 && meff_incl>1900.)numAT++;
-            if((met/meff2j)>0.4 && meff_incl>1300.)numAM++;
-            if((met/meff2j)>0.4 && meff_incl>1000.)numAL++;
+          if (leptonCut && metCut && dPhiMin>0.4) {
+            if ((met/meff2j)>0.3 && meff_incl>1900.)numAT++;
+            if ((met/meff2j)>0.4 && meff_incl>1300.)numAM++;
+            if ((met/meff2j)>0.4 && meff_incl>1000.)numAL++;
           }
         }
 
       }
 
       //Do the 3 jet regions
-      if(nJets>2){
-        if(signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60.){
+      if (nJets>2) {
+        if (signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60.) {
           float dPhiMin=9999;
           int numJets=0;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
-            if(numJets>2)break;
+            if (jet.pt()<40.) continue;
+            if (numJets>2)break;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin){
+            if (dphi<dPhiMin) {
               dPhiMin=dphi;
               numJets+=1;
             }
           }
 
           float meff3j=met + signalJets.at(0).pt() + signalJets.at(1).pt() + signalJets.at(2).pt();
-          if(leptonCut && metCut && dPhiMin>0.4){
-            if((met/meff3j)>0.25 && meff_incl>1900.)numBT++;
-            if((met/meff3j)>0.3 && meff_incl>1300.)numBM++;
+          if (leptonCut && metCut && dPhiMin>0.4) {
+            if ((met/meff3j)>0.25 && meff_incl>1900.)numBT++;
+            if ((met/meff3j)>0.3 && meff_incl>1300.)numBM++;
           }
 
         }
       }
 
       //Do the 4 jet regions
-      if(nJets>3){
-        if(signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60. && signalJets.at(3).pt()>60.){
+      if (nJets>3) {
+        if (signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60. && signalJets.at(3).pt()>60.) {
           float dPhiMin4=9999;
           int numJets=0;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
-            if(numJets>3)break;
+            if (jet.pt()<40.) continue;
+            if (numJets>3)break;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin4){
+            if (dphi<dPhiMin4) {
               dPhiMin4=dphi;
               numJets+=1;
             }
           }
 
           float dPhiMin2=9999;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
+            if (jet.pt()<40.) continue;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin2){
+            if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
           }
 
           float meff4j=met + signalJets.at(0).pt() + signalJets.at(1).pt() + signalJets.at(2).pt() + signalJets.at(3).pt();
 
-          if(leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2){
-            if((met/meff4j)>0.25 && meff_incl>1900.)numCT++;
-            if((met/meff4j)>0.3 && meff_incl>1300.)numCM++;
-            if((met/meff4j)>0.3 && meff_incl>1000.)numCL++;
+          if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
+            if ((met/meff4j)>0.25 && meff_incl>1900.)numCT++;
+            if ((met/meff4j)>0.3 && meff_incl>1300.)numCM++;
+            if ((met/meff4j)>0.3 && meff_incl>1000.)numCL++;
           }
         }
       }
 
       //Do 5 jet region
-      if(nJets>4){
-        if(signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60. && signalJets.at(3).pt()>60. && signalJets.at(4).pt()>60.){
+      if (nJets>4) {
+        if (signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60. && signalJets.at(3).pt()>60. && signalJets.at(4).pt()>60.) {
 
 
           float dPhiMin4=9999;
           int numJets=0;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
-            if(numJets>3)break;
+            if (jet.pt()<40.) continue;
+            if (numJets>3)break;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin4){
+            if (dphi<dPhiMin4) {
               dPhiMin4=dphi;
               numJets+=1;
             }
           }
 
           float dPhiMin2=9999;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
+            if (jet.pt()<40.) continue;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin2){
+            if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
           }
 
           float meff5j=met + signalJets.at(0).pt() + signalJets.at(1).pt() + signalJets.at(2).pt() + signalJets.at(3).pt() + signalJets.at(4).pt();
 
-          if(leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2){
-            if((met/meff5j)>0.15 && meff_incl>1700.)numD++;
+          if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
+            if ((met/meff5j)>0.15 && meff_incl>1700.)numD++;
           }
         }
       }
 
       //Do the 6 jet regions
-      if(nJets>5){
-        if(signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60. && signalJets.at(3).pt()>60. && signalJets.at(4).pt()>60. && signalJets.at(5).pt()>60.){
+      if (nJets>5) {
+        if (signalJets.at(0).pt()>130. && signalJets.at(1).pt()>60. && signalJets.at(2).pt()>60. && signalJets.at(3).pt()>60. && signalJets.at(4).pt()>60. && signalJets.at(5).pt()>60.) {
 
 
           float dPhiMin4=9999;
           int numJets=0;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
-            if(numJets>3)break;
+            if (jet.pt()<40.) continue;
+            if (numJets>3)break;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin4){
+            if (dphi<dPhiMin4) {
               dPhiMin4=dphi;
               numJets+=1;
             }
           }
 
           float dPhiMin2=9999;
-          for(int iJet=0;iJet<nJets;iJet++){
+          for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
-            if(jet.pt()<40.)continue;
+            if (jet.pt()<40.) continue;
             float dphi=deltaPhi(ptot,jetVec);
-            if(dphi<dPhiMin2){
+            if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
           }
 
           float meff6j=met + signalJets.at(0).pt() + signalJets.at(1).pt() + signalJets.at(2).pt() + signalJets.at(3).pt() + signalJets.at(4).pt() + signalJets.at(5).pt();
 
-          if(leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2){
-            if((met/meff6j)>0.15 && meff_incl>1400.)numET++;
-            if((met/meff6j)>0.25 && meff_incl>1300.)numEM++;
-            if((met/meff6j)>0.30 && meff_incl>1000.)numEL++;
+          if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
+            if ((met/meff6j)>0.15 && meff_incl>1400.)numET++;
+            if ((met/meff6j)>0.25 && meff_incl>1300.)numEM++;
+            if ((met/meff6j)>0.30 && meff_incl>1000.)numEL++;
           }
         }
       }
