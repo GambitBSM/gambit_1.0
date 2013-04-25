@@ -1,8 +1,17 @@
 #pragma once
 
 #include "Particle.hpp"
+#include "Jet.hpp"
 
 namespace GAMBIT {
+
+
+  void fillGambitEvent(const Pythia8::Event& pyevt, GAMBIT::Event& gevt) {
+    for (DelphesParticle dp : delphes) {
+      e.addParticle( new Particle() );
+    }
+  }
+
 
 
   /// Simple event class, separating into various classes of particle
@@ -21,20 +30,36 @@ namespace GAMBIT {
     //@{
 
     /// Default constructor
-    Event() {  }
+    Event() { clear(); }
 
     /// Constructor from a list of Particles
     Event(const vector<Particle*>& ps) {
+      clear();
       addParticles(ps);
     }
 
     /// Destructor (cleans up all passed Particles and calculated Jets)
     ~Event() {
-      foreach (Particle* p, particles()) delete p;
-      if (!_jets.empty()) foreach (Jet* j, jets()) delete j;
+      clear();
     }
 
     //@}
+
+    /// Empty the event's particle, jet and MET collections
+    void clear() {
+      foreach (Particle* p, particles()) delete p;
+      _photons.clear();
+      _electrons.clear();
+      _muons.clear();
+      _taus.clear();
+      _invisibles.clear();
+
+      if (!_jets.empty()) foreach (Jet* j, jets()) delete j;
+      _jets.clear();
+
+      _pmiss = P4();
+    }
+
 
     /// Add a final state particle to the event
     /// @todo Clarify ownership/lifetimes -- owned by outside code, or *to be cleaned up by the event on deletion*? THE LATTER
@@ -50,11 +75,13 @@ namespace GAMBIT {
       }
     }
 
+
     /// Add a collection of final state particles to the event
     /// @todo Should be vector<const Particle*>?
     void addParticles(const vector<Particle*>& ps) {
       for (size_t i = 0; i < ps.size(); ++i) addParticle(ps[i]);
     }
+
 
     /// Get all final state particles
     const vector<Particle*>& particles() const {
@@ -94,26 +121,28 @@ namespace GAMBIT {
       return _photons;
     }
 
-    /// @brief Get the missing energy vector
-    ///
-    /// i.e. sum over momenta of final state invisibles
-    const P4& missingMom() const {
-      if (_pmissing.E2() == 0) {
-        for (size_t i = 0; i < _invisibles.size(); ++i) _pmissing += _invisibles[i]->mom();
-      }
-      return _pmissing;
-    }
-
-    /// Get the missing ET in GeV
-    double met() const { return missingMom().pT(); }
-
-    /// Get the sum(ET) in GeV
-    /// @todo Take a lazy + caching approach
-    // double set() const;
 
     /// Get anti-kT 0.4 jets, with leptons and photons excluded
     /// @todo Take a lazy + caching approach
     const vector<Jet*>& jets() const;
+
+
+    /// @brief Get the missing energy vector
+    ///
+    /// Not _necessarily_ the sum over momenta of final state invisibles
+    const P4& missingMom() const {
+      return _pmiss;
+    }
+
+    /// @brief Set the missing energy vector
+    ///
+    /// Not _necessarily_ the sum over momenta of final state invisibles
+    void missingMom(const P4& pmiss) {
+      _pmiss = pmiss;
+    }
+
+    /// Get the missing ET in GeV
+    double met() const { return missingMom().pT(); }
 
 
   private:
@@ -124,9 +153,12 @@ namespace GAMBIT {
     /// @todo Separate the particles internally *and* keep overall list?
     vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
 
-    /// Missing momentum vector
-    mutable P4 _pmissing;
+    /// Jets collection (calculated on the fly, hence mutable to allow laziness)
     mutable vector<Jet*> _jets;
+
+    /// Missing momentum vector
+    P4 _pmiss;
+
     //@}
 
   };
