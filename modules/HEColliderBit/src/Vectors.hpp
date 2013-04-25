@@ -4,9 +4,6 @@
 #include <sstream>
 #include <iostream>
 
-#include "fastjet/PseudoJet.hh"
-
-
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
