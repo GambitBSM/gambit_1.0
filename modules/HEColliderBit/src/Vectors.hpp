@@ -224,6 +224,10 @@ namespace GAMBIT {
     double rho2() const { return sqr(px()) + sqr(py()); }
     /// Get the spatial 3-vector sqrt|px^2 + py^2|
     double rho() const { return sqrt(rho2()); }
+    /// Get the transverse momentum squared (same as rho2)
+    double pT2() const { return rho2(); }
+    /// Get the transverse momentum (same as rho)
+    double pT() const { return rho(); }
 
     /// Get the spatial phi
     double phi() const { return atan(py()/px()); }

@@ -8,6 +8,7 @@ Code conventions
 * lowCamelCase() or snake_style() function names
 * indent with spaces... how many? 2? 4?
 * everything in GAMBIT namespace
+* units: always GeV and mm
 
 QUESTIONS:
 * what is the header include path? (#include "GAMBIT/HEColliderBit/Foo.hpp" would be nice) How?
