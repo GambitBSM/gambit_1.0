@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Math.hpp"
+#include "MathUtils.hpp"
 #include "Vectors.hpp"
 
 #include "Pythia.h"
@@ -57,8 +57,8 @@ namespace GAMBIT {
 
   ////////////////////////////////////////////////////////////
 
-  // bool fromBottom(int n, const Event& evt) {
-  //   const Particle& p = evt[n];
+  // bool fromBottom(int n, const Pythia8::Event& evt) {
+  //   const Pythia8::Particle& p = evt[n];
   //   if (abs(p.id()) == 5 || hasBottom(p.id())) return true;
   //   /// @todo What about partonic decays?
   //   if (p.isParton()) return false; // stop the walking at hadron level
@@ -69,8 +69,8 @@ namespace GAMBIT {
   // }
 
 
-  // bool fromTau(int n, const Event& evt) {
-  //   const Particle& p = evt[n];
+  // bool fromTau(int n, const Pythia8::Event& evt) {
+  //   const Pythia8::Particle& p = evt[n];
   //   if (abs(p.id()) == 15) return true;
   //   if (p.isParton()) return false; // stop the walking at hadron level
   //   for (int m : evt.motherList(n)) {
@@ -80,14 +80,14 @@ namespace GAMBIT {
   // }
 
 
-  bool isReplica(int n, const Event& evt) {
-    const Particle& p = evt[n];
+  bool isReplica(int n, const Pythia8::Event& evt) {
+    const Pythia8::Particle& p = evt[n];
     return p.daughter1() != 0 && p.daughter1() == p.daughter2();
   }
 
 
-  void finalDescendants(int n, const Event& evt, vector<int>& rtn) {
-    const Particle& p = evt[n];
+  void finalDescendants(int n, const Pythia8::Event& evt, vector<int>& rtn) {
+    const Pythia8::Particle& p = evt[n];
     //assert(!p.isParton());
     if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
     for (int m : evt.daughterList(n)) {
@@ -100,7 +100,7 @@ namespace GAMBIT {
   }
 
 
-  bool isFinalB(int n, const Event& evt) {
+  bool isFinalB(int n, const Pythia8::Event& evt) {
     // *This* particle must be a b or b-hadron
     if (!hasBottom(evt[n].id())) return false;
     // Daughters must *not* include a b or b-hadron
@@ -111,7 +111,7 @@ namespace GAMBIT {
   }
 
 
-  bool isFinalTau(int n, const Event& evt) {
+  bool isFinalTau(int n, const Pythia8::Event& evt) {
     // *This* particle must be a b or b-hadron
     if (abs(evt[n].id()) != 15) return false;
     // Daughters must *not* include a tau
@@ -122,7 +122,7 @@ namespace GAMBIT {
   }
 
 
-  vector<int> get_anaparticles(const Event& evt) {
+  vector<int> get_anaparticles(const Pythia8::Event& evt) {
     // Get the most physical b hadron and tau IDs
     vector<int> unstables;
     for (int n = 0; n < evt.size(); ++n) {

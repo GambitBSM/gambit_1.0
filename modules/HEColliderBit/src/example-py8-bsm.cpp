@@ -9,11 +9,8 @@
 #include "TH1F.h"
 #include "TCanvas.h"
 
-
-/// @todo Add GAMBIT namespace
-
-
 using namespace Pythia8;
+using namespace GAMBIT;
 using namespace fastjet;
 using namespace std;
 
@@ -182,8 +179,6 @@ int main() {
       bool leptonCut=false;
       if(nElectrons==0 && nMuons==0)leptonCut=true;
 
-      float met=ptot0.pT();
-
       bool metCut=false;
       if(met>160.)metCut=true;
 
@@ -207,7 +202,7 @@ int main() {
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
             if(numJets>1)break;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin){
               dPhiMin=dphi;
               numJets+=1;
@@ -234,7 +229,7 @@ int main() {
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
             if(numJets>2)break;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin){
               dPhiMin=dphi;
               numJets+=1;
@@ -260,7 +255,7 @@ int main() {
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
             if(numJets>3)break;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin4){
               dPhiMin4=dphi;
               numJets+=1;
@@ -272,7 +267,7 @@ int main() {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin2){
               dPhiMin2=dphi;
             }
@@ -300,7 +295,7 @@ int main() {
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
             if(numJets>3)break;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin4){
               dPhiMin4=dphi;
               numJets+=1;
@@ -312,7 +307,7 @@ int main() {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin2){
               dPhiMin2=dphi;
             }
@@ -338,7 +333,7 @@ int main() {
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
             if(numJets>3)break;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin4){
               dPhiMin4=dphi;
               numJets+=1;
@@ -350,7 +345,7 @@ int main() {
             PseudoJet jet=signalJets.at(iJet);
             Vec4 jetVec=pseudojet_to_vec4(jet);
             if(jet.pt()<40.)continue;
-            float dphi=deltaPhi(ptot0,jetVec);
+            float dphi=deltaPhi(ptot,jetVec);
             if(dphi<dPhiMin2){
               dPhiMin2=dphi;
             }

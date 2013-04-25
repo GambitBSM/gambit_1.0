@@ -19,15 +19,15 @@ using FastJet and ROOT for a mini final-state particle analysis in the event loo
 obviously needs to be worked on to make it suitable for inclusion in the Gambit framework
 but being so simple makes it obvious what is going on. Build as follows:
 
-g++ py8-bsm.cc -O3 -pedantic -Wall -Wshadow -Wno-long-long -fopenmp \
+g++ example-py8-bsm.cpp -O3 -pedantic -Wall -Wno-long-long -fopenmp \
   `fastjet-config --cxxflags --libs --plugins` `root-config --cflags --libs --ldflags` \
   -I../include -L../lib/archive -lpythia8 -llhapdfdummy \
-  -o bin/py8-bsm
+  -o example-py8-bsm
 
-g++ pythia8_example.cpp fastsim.cpp DetectorResponse.cpp -O3 -pedantic -Wall
+g++ example-py8.cpp fastsim.cpp DetectorResponse.cpp -O3 -pedantic -Wall
   -Wno-long-long -fopenmp `fastjet-config --cxxflags --libs --plugins`
   `root-config --cflags --libs --ldflags` -I$PYTHIA8DIR/include -L$PYTHIA8DIR/lib/archive
-  -lpythia8 -llhapdfdummy -o py8-example -Wno-sign-compare
+  -lpythia8 -llhapdfdummy -o example-py8
 
 The paths on the third line will need to be adapted to point at the Pythia8 installation,
 until Pythia8 supplies its own pythia8-config (I'm working on it!)
