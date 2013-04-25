@@ -7,10 +7,11 @@
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
+
 namespace GAMBIT {
 
-  /// Use fastjet implicitly
-  using fastjet::PseudoJet;
+  // /// Use fastjet implicitly
+  // using fastjet::PseudoJet;
 
 
   // /// @name HepMC vector utils
@@ -100,6 +101,14 @@ namespace GAMBIT {
       _z = v._z;
       _m = v._m;
       return *this;
+    }
+
+    /// Set the components to zero
+    void clear() {
+      _x = 0;
+      _y = 0;
+      _z = 0;
+      _m = 0;
     }
 
     //@}
@@ -227,9 +236,9 @@ namespace GAMBIT {
     double pT() const { return rho(); }
 
     /// Get the spatial phi
-    double phi() const { return atan(py()/px()); }
+    double phi() const { if (rho2() == 0) return 0; else return atan(py()/px()); }
     /// Get the spatial theta
-    double theta() const { return atan(rho()/pz()); }
+    double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return M_PI; else return atan(rho()/pz()); }
     /// Get the spatial vector pseudorapidity
     double eta() const { return -log(tan( 0.5 * theta() )); } //< Optimise with a trig reln on tan(x/2) to avoid tan(atan(..)/2)?
     /// Get the 4-momentum rapidity

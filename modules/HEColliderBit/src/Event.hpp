@@ -25,7 +25,7 @@ namespace GAMBIT {
     Event() { clear(); }
 
     /// Constructor from a list of Particles
-    Event(const vector<Particle*>& ps) {
+    Event(const std::vector<Particle*>& ps) {
       clear();
       addParticles(ps);
     }
@@ -39,17 +39,23 @@ namespace GAMBIT {
 
     /// Empty the event's particle, jet and MET collections
     void clear() {
-      foreach (Particle* p, particles()) delete p;
+      /// @todo Prefer this form when we can use C++11's range-for
+      // for (Particle* p : particles()) delete p;
+      std::vector<Particle*> ps = particles();
+      for (size_t i = 0; i < particles().size(); ++i) { delete ps[i]; }
+      ps.clear();
       _photons.clear();
       _electrons.clear();
       _muons.clear();
       _taus.clear();
       _invisibles.clear();
 
-      if (!_jets.empty()) foreach (Jet* j, jets()) delete j;
+      /// @todo Prefer this form when we can use C++11's range-for
+      // if (!_jets.empty()) for (Jet* j : jets()) delete j;
+      if (!_jets.empty()) for (size_t i = 0; i < jets().size(); ++i) delete jets()[i];
       _jets.clear();
 
-      _pmiss = P4();
+      _pmiss.clear();
     }
 
 
@@ -57,29 +63,29 @@ namespace GAMBIT {
     /// @todo Clarify ownership/lifetimes -- owned by outside code, or *to be cleaned up by the event on deletion*? THE LATTER
     /// @todo What about taus and Bs?
     /// @todo "Lock" at some point so that jet finding etc. only get done once
-    void addParticle(const Particle* p) {
-      if (p.isPrompt()) {
-        if (p.pid() == 22) _photons.push_back(p);
-        if (abs(p.pid()) == 11) _electrons.push_back(p);
-        if (abs(p.pid()) == 13) _muons.push_back(p);
-        if (abs(p.pid()) == 15) _taus.push_back(p);
-        if (abs(p.pid()) == 12 || abs(p.pid()) == 14 || abs(p.pid()) == 16 || abs(p.pid()) == 1000022) _invisibles.push_back(p);
+    void addParticle(Particle* p) {
+      if (p->isPrompt()) {
+        if (p->pid() == 22) _photons.push_back(p);
+        if (abs(p->pid()) == 11) _electrons.push_back(p);
+        if (abs(p->pid()) == 13) _muons.push_back(p);
+        if (abs(p->pid()) == 15) _taus.push_back(p);
+        if (abs(p->pid()) == 12 || abs(p->pid()) == 14 || abs(p->pid()) == 16 || abs(p->pid()) == 1000022) _invisibles.push_back(p);
       }
     }
 
 
     /// Add a collection of final state particles to the event
     /// @todo Should be vector<const Particle*>?
-    void addParticles(const vector<Particle*>& ps) {
+    void addParticles(const std::vector<Particle*>& ps) {
       for (size_t i = 0; i < ps.size(); ++i) addParticle(ps[i]);
     }
 
 
     /// Get all final state particles
     /// @todo Note the return by value: it's not efficient yet!
-    vector<Particle*> particles() const {
+    std::vector<Particle*> particles() const {
       // Add together all the vectors of the different particle types
-      vector<Particle*> rtn;
+      std::vector<Particle*> rtn;
       rtn.reserve(_photons.size() + _electrons.size() + _muons.size() + _taus.size() + _invisibles.size());
       #define APPEND_VEC(vec) rtn.insert(rtn.end(), vec.begin(), vec.end() )
       APPEND_VEC(visible_particles());
@@ -93,9 +99,9 @@ namespace GAMBIT {
 
     /// Get visible state particles
     /// @todo Note the return by value: it's not efficient yet!
-    const vector<Particle*> visible_particles() const {
+    std::vector<Particle*> visible_particles() const {
       // Add together all the vectors of the different particle types
-      vector<Particle*> rtn;
+      std::vector<Particle*> rtn;
       rtn.reserve(_photons.size() + _electrons.size() + _muons.size() + _taus.size());
       #define APPEND_VEC(vec) rtn.insert(rtn.end(), vec.begin(), vec.end() )
       APPEND_VEC(_photons);
@@ -110,31 +116,31 @@ namespace GAMBIT {
 
 
     /// Get invisible final state particles
-    const vector<Particle*>& invisible_particles() const {
+    const std::vector<Particle*>& invisible_particles() const {
       return _invisibles;
     }
 
 
     /// Get prompt electrons
-    const vector<Particle*>& electrons() const {
+    const std::vector<Particle*>& electrons() const {
       return _electrons;
     }
 
 
     /// Get prompt muons
-    const vector<Particle*>& muons() const {
+    const std::vector<Particle*>& muons() const {
       return _muons;
     }
 
 
-    /// Get prompt taus
-    const vector<Particle*>& taus() const {
+    /// Get prompt (hadronic) taus
+    const std::vector<Particle*>& taus() const {
       return _taus;
     }
 
 
     /// Get prompt photons
-    const vector<Particle*>& photons() const {
+    const std::vector<Particle*>& photons() const {
       return _photons;
     }
 
@@ -142,28 +148,33 @@ namespace GAMBIT {
     /// @todo Don't do the on the fly calculation, actually: it's up to the filling routine to do that
 
 
-    /// @brief Get anti-kT 0.4 jets, (not including leptons and photons)
-    ///
-    /// If the jets vector is empty, it will be calculated on demand (and
-    /// auto-cached) based on the hadrons collection.
-    const vector<Jet*>& jets() const {
-      if (_jets.empty()) {
-        /// @todo Calculate the jets from hadrons/daughters with FastJet on the fly if needed
-        /// @todo Do isolation?
-      }
+    /// @name Jets
+    //@{
+
+    /// @brief Get anti-kT 0.4 jets (not including leptons, photons, or taus)
+    const std::vector<Jet*>& jets() const {
       return _jets;
     }
 
-    /// Explicitly set the jets collection (will override on-the-fly calculation)
-    void setJets(const vector<Jet*>& jets) {
+    /// @brief Set the jets collection
+    ///
+    /// The Jets should be new'd; Event will take ownership.
+    void setJets(const std::vector<Jet*>& jets) {
       _jets = jets;
     }
 
-    /// Explicitly add a jet to the jets collection (will override on-the-fly calculation)
-    void addJet(const Jet* j) {
+    /// @brief Add a jet to the jets collection
+    ///
+    /// The Jet should be new'd; Event will take ownership.
+    void addJet(Jet* j) {
       _jets.push_back(j);
     }
 
+    //@}
+
+
+    /// @name Missing energy
+    //@{
 
     /// @brief Get the missing energy vector
     ///
@@ -175,12 +186,16 @@ namespace GAMBIT {
     /// @brief Set the missing energy vector
     ///
     /// Not _necessarily_ the sum over momenta of final state invisibles
-    void missingMom(const P4& pmiss) {
+    void setMissingMom(const P4& pmiss) {
       _pmiss = pmiss;
     }
 
     /// Get the missing ET in GeV
-    double met() const { return missingMom().pT(); }
+    double met() const {
+      return missingMom().pT();
+    }
+
+    //@}
 
 
   private:
@@ -193,11 +208,11 @@ namespace GAMBIT {
     /// @todo Do we really need to store invisibles, since they aren't
     /// experimentally resolveable, and are covered by the explicitly-set
     /// missing-mom?
-    vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
+    std::vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
     //@}
 
-    /// Jets collection (calculated on the fly, hence mutable to allow laziness)
-    mutable vector<Jet*> _jets;
+    /// Jets collection
+    std::vector<Jet*> _jets;
 
     /// Missing momentum vector
     P4 _pmiss;

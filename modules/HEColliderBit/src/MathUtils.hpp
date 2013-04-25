@@ -7,8 +7,6 @@
 
 namespace GAMBIT {
 
-  using namespace std;
-
 
   /// @name Numerical helpers
   //@{

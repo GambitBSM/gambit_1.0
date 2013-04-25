@@ -152,10 +152,11 @@ namespace GAMBIT {
       if (!evt[i].isFinal()) continue;
       Particle* p = new Particle(vec4_to_p4(evt[i].mom(), evt[i].id()));
       /// @todo Promptness
-      /// @todo Jets
       /// @todo b-tagging and taus
       e.addParticle(p);
     }
+    /// @todo Jets
+    /// @todo MET
   }
 
 
