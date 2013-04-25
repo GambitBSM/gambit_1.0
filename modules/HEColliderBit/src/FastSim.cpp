@@ -1,14 +1,12 @@
-#include "fastsim.hpp"
-
+#include "FastSim.hpp"
 #include<iostream>
 
 using namespace std;
 
-FastSim::FastSim() {
 
+FastSim::FastSim() {
   _metx = -1.0;
   _mety = -1.0;
-
 }
 
 FastSim::~FastSim() {
@@ -82,12 +80,12 @@ void FastSim::InitSimulation(SimType which) {
 
       _calo_neta = int(2*_calo_etamax/_calo_deta);
       _calo_nphi = int(2*3.2/_calo_dphi);
-     
+
       _et_seedmin = 1.5;// GeV
       _cluster_rcone = 0.4;
       _cluster_etmin = 5.0;
 
- 
+
 
       break;
     default: ;
@@ -124,9 +122,9 @@ void FastSim::SetElectrons(vector<Particle*> particles) {
       _stable_electrons.push_back(chosen);
       _stable_interacting_particles.push_back(chosen);
     }
-    else if (fabs(chosen->pid()) != 11) 
+    else if (fabs(chosen->pid()) != 11)
       cout << "Warning " << chosen->pid() << " Found in the electron particle list " << endl;
-    
+
   }
 }
 
@@ -145,7 +143,7 @@ void FastSim::SetMuons(vector<Particle*> particles) {
       _stable_muons.push_back(chosen);
       _stable_interacting_particles.push_back(chosen);
     }
-    else if (fabs(chosen->pid()) != 13) 
+    else if (fabs(chosen->pid()) != 13)
       cout << "Warning " << chosen->pid() << " Found in the muon particle list " << endl;
 
   }
@@ -166,9 +164,9 @@ void FastSim::SetPhotons(vector<Particle*> particles) {
       _stable_photons.push_back(chosen);
       _stable_interacting_particles.push_back(chosen);
     }
-    else if (chosen->pid() != 22) 
+    else if (chosen->pid() != 22)
       cout << "Warning " << chosen->pid() << " Found in the muon particle list " << endl;
-    
+
   }
 }
 
@@ -185,9 +183,9 @@ void FastSim::SetBQuarks(vector<Particle*> particles) {
 
     if ((chosen->pid() == 5) && (chosen->mom().rho() > _min_bjet_pt))
       _bquarks.push_back(chosen);
-    else if (chosen->pid() != 5) 
+    else if (chosen->pid() != 5)
       cout << "Warning " << chosen->pid() << " Found in the b-quark particle list " << endl;
-    
+
   }
 }
 
@@ -203,9 +201,9 @@ void FastSim::SetTauHads(vector<Particle*> particles) {
 
     if (fabs((chosen->pid()) == 15) && (chosen->mom().rho() > _min_tauhad_pt))
       _tauhads.push_back(chosen);
-    else if (fabs(chosen->pid()) != 15) 
+    else if (fabs(chosen->pid()) != 15)
       cout << "Warning " << chosen->pid() << " Found in the tauhad particle list " << endl;
-    
+
   }
 }
 
@@ -226,7 +224,7 @@ void FastSim::SetChargedHadrons(vector<Particle*> particles) {
       _chargedhads.push_back(chosen);
       _stable_interacting_particles.push_back(chosen);
     }
-    
+
   }
 }
 
@@ -270,7 +268,7 @@ void FastSim::CalculateMET() {
 
 double FastSim::MET() {
   // MET returns the MET associated with the event
-  
+
 
   if (_metx < 0) // the MET has not been calculated for the event
     CalculateMET();
@@ -280,7 +278,7 @@ double FastSim::MET() {
 
 double FastSim::METx() {
   // MET returns the MET associated with the event
-  
+
 
   if (_metx < 0) // the MET has not been calculated for the event
     CalculateMET();
@@ -291,7 +289,7 @@ double FastSim::METx() {
 
 double FastSim::METy() {
   // MET returns the MET associated with the event
-  
+
 
   if (_metx < 0) // the MET has not been calculated for the event
     CalculateMET();
@@ -301,7 +299,7 @@ double FastSim::METy() {
 
 double FastSim::METphi() {
   // MET returns the MET associated with the event
-  
+
 
   if (_metx < 0) // the MET has not been calculated for the event
     CalculateMET();
@@ -344,7 +342,7 @@ void FastSim::DetermineDetectorResponse() {
   // this function runs the fast simulation for the particles list provided
   //
 
-  // determine which cells which have been traversed by the interacting particles 
+  // determine which cells which have been traversed by the interacting particles
   FindCells();
 
   // for the individual particles determine the response of detector on their momentum
@@ -352,7 +350,7 @@ void FastSim::DetermineDetectorResponse() {
   PhotonResponse();
   MuonResponse();
 
-  // add all the neutrinos and determine the maginute of the 
+  // add all the neutrinos and determine the maginute of the
   // missing momentum and phi
   CalculateMET();
 
@@ -518,7 +516,7 @@ void FastSim::FindCells(){
 
 bool FastSim::CheckOverlap(Particle *p1, Particle *p2) {
   // determine if the particles overlap
-  
+
     double dr = p1->mom().deltaR_eta(p2->mom());
 
     if (dr < _min_dr)
@@ -531,7 +529,7 @@ bool FastSim::CheckOverlap(Particle *p1, Particle *p2) {
 void FastSim::AppliedIsolation() {
   // this function will determine which are muons, electron and photons are isolated
   // this function should be called last once jets, and cells are populated
-  // At the moment it should check how energy is in the cells surrounding 
+  // At the moment it should check how energy is in the cells surrounding
   // the particles.
   // What is below should be changed
 
@@ -549,7 +547,7 @@ void FastSim::AppliedIsolation() {
         continue;
       }
     }
-    if (isolated) 
+    if (isolated)
       _iso_electrons.push_back(_stable_electrons[ee]);
   }
 
@@ -565,7 +563,7 @@ void FastSim::AppliedIsolation() {
         continue;
       }
     }
-    if (isolated) 
+    if (isolated)
       _iso_muons.push_back(_stable_muons[mu]);
   }
 
@@ -581,7 +579,7 @@ void FastSim::AppliedIsolation() {
         continue;
       }
     }
-    if (isolated) 
+    if (isolated)
       _iso_photons.push_back(_stable_photons[ph]);
   }
   */
@@ -599,7 +597,7 @@ void FastSim::fillcellvector(double pt, double eta, double phi){
 
   int ieta, iphi;
 
-  // calculate the corresponding cell index of the particle using its eta and phi 
+  // calculate the corresponding cell index of the particle using its eta and phi
   if(abs(eta) < _calo_transition){
     ieta = int((eta + _calo_etamax) /(2 * _calo_etamax) * _calo_neta) + 1;
     iphi = int((phi + M_PI)/(2 * M_PI) * _calo_nphi) + 1;
@@ -618,7 +616,7 @@ void FastSim::fillcellvector(double pt, double eta, double phi){
     if(_cellietph[i] == ietph){  // it exists add the momentum and increment the hit on the cell
       _cellmom[i] += pt;
       _cellhits[i] += 1;
-      exists = true;	
+      exists = true;
     }
   }
 
@@ -638,7 +636,7 @@ void FastSim::fillcellvector(double pt, double eta, double phi){
 
   // first time cell has been hit
   if(exists == 0){
-    _cellietph.push_back(ietph); // the cell id 
+    _cellietph.push_back(ietph); // the cell id
     _cellmom.push_back(pt);      // transverse momentum
     _cellhits.push_back(1);      // number of hits
     _celleta.push_back(eta);     // digitized eta
@@ -647,7 +645,7 @@ void FastSim::fillcellvector(double pt, double eta, double phi){
   }
 }
 
-void FastSim::Clustering(){ 
+void FastSim::Clustering(){
   // this function takes the cells, creates clusters from seed cells
 
   int ndum, ncell, imax;
@@ -721,7 +719,7 @@ void FastSim::Clustering(){
             etad = etac-temp_cluseta;
             phid = deltaphi(phic,temp_clusphi);
 
-            dr = sqrt(pow(etad,2)+ pow(phid,2));  
+            dr = sqrt(pow(etad,2)+ pow(phid,2));
 
             if(dr < _cluster_rcone){
               _cellswitch[i]   = -_cellswitch[i];
@@ -737,7 +735,7 @@ void FastSim::Clustering(){
                 temp_cluswphin  += (phic+10.0) * _cellmom[i];
                 temp_clusmomn   += _cellmom[i];
                 }
-              
+
               /*
               //added for checking
               cells_mom.push_back(_cellmom[i]);
@@ -775,7 +773,7 @@ void FastSim::Clustering(){
           }
 
 
-          _clusmom.push_back(temp_clusmomp+temp_clusmomn);    
+          _clusmom.push_back(temp_clusmomp+temp_clusmomn);
 
           /*
           //added for checking
@@ -873,7 +871,7 @@ void FastSim::Clustering(){
 
     double etruth = sqrt(pow(sumcellx,2) + pow(sumcelly,2));
     double erecon = sqrt(pow(px,2) + pow(py,2));
-    
+
     printf("Eclus(recon)/Ecell(truth): %f \n", erecon/etruth);
   }
 
@@ -888,10 +886,10 @@ void FastSim::Clustering(){
 
 
 
-  printf("At cluster Cell status{:\n"); 
+  printf("At cluster Cell status{:\n");
   for(int i = 0; i<ncell; i++){
     if (cellswitch[i] != 0){
-      
+
       sumx += cellmom[i]*cos(cellphi[i]);
       sumy += cellmom[i]*sin(cellphi[i]);
 
@@ -906,7 +904,7 @@ void FastSim::Clustering(){
   sumy = 0;
   for(int i = 0; i<ncell; i++){
     if (cellswitch[i] == 0){
-      
+
       sumx += cellmom[i]*cos(cellphi[i]);
       sumy += cellmom[i]*sin(cellphi[i]);
 
@@ -918,7 +916,7 @@ void FastSim::Clustering(){
   sumx = 0;
   sumy = 0;
   for(int i = 0; i<ncell; i++){
-      
+
       sumx += cellmom[i]*cos(cellphi[i]);
       sumy += cellmom[i]*sin(cellphi[i]);
 

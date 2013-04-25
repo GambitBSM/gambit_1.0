@@ -1,3 +1,15 @@
+Code conventions
+================
+
+* .hpp and .cpp file suffixes
+* lower case variable names
+* CamelCase class names
+* lowCamelCase() or snake_style() function names
+* indent with spaces... how many? 2? 4?
+* everything in GAMBIT namespace
+* what is the header include path? (#include "GAMBIT/HEColliderBit/Foo.hpp" would be nice)
+
+
 Pythia8 OpenMP SUSY generation and analysis demo
 ================================================
 
@@ -26,5 +38,3 @@ PYTHIA8DATA=../xmldoc bin/py8-bsm
 or as follows for timing tests with explicit control over the number of threads:
 
 time OMP_NUM_THREADS=1 PYTHIA8DATA=../xmldoc bin/py8-bsm
-
-Andy

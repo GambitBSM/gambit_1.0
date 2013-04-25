@@ -1,34 +1,20 @@
-// main16.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2012 Torbjorn Sjostrand.
-// PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
-// Please respect the MCnet Guidelines, see GUIDELINES for details.
-
-// This is a simple test program.
-// It illustrates (a) how to collect the analysis code in a separate class
-// and (b) how to provide the .cmnd filename on the command line
-
-// Once you have linked the main program you can run it with a command line
-// ./main16.exe main16.cmnd > out16
-
+// Pythia8
 #include "Pythia.h"
 
-// for histogramming with ROOT
+// ROOT
 #include "TH1.h"
-
 #include "TVirtualPad.h"
 #include "TApplication.h"
-
 #include "TFile.h"
 
+// GAMBIT
 #include "Particle.hpp"
-#include "fastsim.hpp"
-
+#include "FastSim.hpp"
 using namespace GAMBIT;
-using namespace Pythia8;
 
-//==========================================================================
 
-// Put all your own analysis code in the myAnalysis class.
+//////////////////////////////////////////////////
+
 
 class MyAnalysis {
 
@@ -58,13 +44,13 @@ private:
   int  nEvt;
 
   // the list of particles that are input to the detector response
-  vector<GAMBIT::Particle*> _electrons;
-  vector<GAMBIT::Particle*> _muons;
-  vector<GAMBIT::Particle*> _photons;
-  vector<GAMBIT::Particle*> _bjets;
-  vector<GAMBIT::Particle*> _tauhads;
-  vector<GAMBIT::Particle*> _chargedhads;
-  vector<GAMBIT::Particle*> _weakly_interactings; // stdm neutrinos, susy neutralinos
+  vector<Particle*> _electrons;
+  vector<Particle*> _muons;
+  vector<Particle*> _photons;
+  vector<Particle*> _bjets;
+  vector<Particle*> _tauhads;
+  vector<Particle*> _chargedhads;
+  vector<Particle*> _weakly_interactings; // stdm neutrinos, susy neutralinos
 
   TH1F *m_hBosonPt, *m_hBosoneta, *m_hBosonphi;
   TH1F *m_hElectronPt, *m_hElectroneta, *m_hElectronphi;
@@ -140,7 +126,7 @@ void MyAnalysis::init() {
 void MyAnalysis::SelectParticles(Pythia8::Event& event) {
   // this method selects and categorizes the particles into the respective vectors
   //
-  GAMBIT::Particle* chosen;
+  Particle* chosen;
 
   // iterate through each of the particles, select and sort them into the different vectors
   for (int i = 0; i < event.size(); ++i) {
@@ -151,15 +137,15 @@ void MyAnalysis::SelectParticles(Pythia8::Event& event) {
         switch (int(fabs(event[i].id()))) {
           /// @todo This needs to change, it should be only prompt leptons.. not just any lepton
           case 11: // electron
-            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+            chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _electrons.push_back(chosen);
             break;
           case 13: // muon
-            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+            chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _muons.push_back(chosen);
             break;
           default: // every other hadronic charged particle - for the jets
-            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+            chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _chargedhads.push_back(chosen);
             // printf("charged final particle missed %d\n",event[i].id());
         }
@@ -167,13 +153,13 @@ void MyAnalysis::SelectParticles(Pythia8::Event& event) {
       else {
         switch (int(fabs(event[i].id()))) {
           case 22: // photon
-            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+            chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _photons.push_back(chosen);
             break;
           case 12: // electron neutrinos
           case 14: // muon neutrinos
           case 16: // tau neutrinos
-            chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+            chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
             _weakly_interactings.push_back(chosen);
             break;
           default: printf("neutral final particle missed %d\n",event[i].id());
@@ -183,7 +169,7 @@ void MyAnalysis::SelectParticles(Pythia8::Event& event) {
 
     if ((event[i].isQuark()) && (fabs(event[i].id()) == 6)) {
 
-      chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+      chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
       _bjets.push_back(chosen);
     }
 
@@ -199,7 +185,7 @@ void MyAnalysis::SelectParticles(Pythia8::Event& event) {
       }
 
       // we need to remove the leptonically decaying taus - perhaps do an overlap removal with electrons
-      chosen = new GAMBIT::Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
+      chosen = new Particle(event[i].px(), event[i].py(), event[i].pz(), event[i].e(), event[i].id());
       _tauhads.push_back(chosen);
     }
 
