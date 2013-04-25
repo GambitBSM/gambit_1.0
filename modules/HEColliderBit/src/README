@@ -2,6 +2,7 @@ Code conventions
 ================
 
 * .hpp and .cpp file suffixes
+* CamelCase filenames for framework files, lowercase for examples/executables-to-be
 * lower case variable names
 * CamelCase class names
 * lowCamelCase() or snake_style() function names
