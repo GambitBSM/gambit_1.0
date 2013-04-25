@@ -6,6 +6,7 @@
 namespace GAMBIT {
 
 
+  /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
   class Particle {
   public:
 
