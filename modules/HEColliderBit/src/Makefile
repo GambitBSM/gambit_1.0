@@ -7,14 +7,19 @@ PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -lpythia8 -llhapdfdummy #-lz -lb
 FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
 ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 
+.PHONY = all clean
+
 all: example-fastsim example-py8 example-py8-bsm
 	@true
 
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
 	$(CXX) example-fastsim.cpp FastSim.cpp DetectorResponse.cpp $(CXXFLAGS) $(FJFLAGS) $(ROOTFLAGS) -lm -o example-fastsim
 
-example-py8: example-py8.cpp DetectorResponse.cpp FastSim.cpp $(HEADERS)
-	$(CXX) example-py8.cpp DetectorResponse.cpp FastSim.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8
+example-fastsim-py8: example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(HEADERS)
+	$(CXX) example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-fastsim-py8
 
 example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 	$(CXX) example-py8-bsm.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
+
+clean:
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm
