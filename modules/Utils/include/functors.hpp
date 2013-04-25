@@ -11,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  2013  Apr 4++, 16
+//  2013  Apr 4++, 16, 22-24
 //  Anders Kvellestad 
 //  2013  Apr 14  --> Added backend functor class
 //  *********************************************
@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <util_classes.hpp>
+#include <util_functions.hpp>
 
 namespace GAMBIT
 {
@@ -248,10 +249,23 @@ namespace GAMBIT
         this->dependency_map[key] = resolver;
       }
 
-      // Add a backend conditional dependency
+      // Add a backend conditional dependency for multiple backend versions
       void setBackendConditionalDependency
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
       { 
+        // Split the version string and send each version to be registered
+        std::vector<str> versions = delimiterSplit(ver, ",");
+        for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
+        {
+          setBackendConditionalDependencySingular(req, be, *it, dep, dep_type, resolver);
+        }
+      }
+
+      // Add a backend conditional dependency for a single backend version
+      void setBackendConditionalDependencySingular
+       (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
+      { 
+        cout << "My version is " << ver << endl;
         sspair key (dep, dep_type);
         std::vector<str> quad;
         if (this->backendreq_types.find(req) != this->backendreq_types.end())
@@ -301,8 +315,19 @@ namespace GAMBIT
         this->backendreq_map[key] = resolver;
       }
 
-      // Add a permitted backend
+      // Add multiple versions of a permitted backend 
       void setPermittedBackend(str req, str be, str ver)
+      {
+        // Split the version string and send each version to be registered
+        std::vector<str> versions = delimiterSplit(ver, ",");
+        for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
+        {
+          setPermittedBackendSingular(req, be, *it);
+        }
+      }
+
+      // Add a single permitted backend version
+      void setPermittedBackendSingular(str req, str be, str ver)
       { 
         sspair key;
         if (this->backendreq_types.find(req) != this->backendreq_types.end())

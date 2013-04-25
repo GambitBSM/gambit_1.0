@@ -22,6 +22,7 @@
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
+#include <boost_fallbacks.hpp>
  
 //Some redirection macros
 #define STRINGIFY(X) STRINGIFY2(X)
@@ -37,13 +38,6 @@
 #define DUMMY
 #define DUMMYARG(...)
 
-//Generic variadic macro expanders for 0 to 5 arguments
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 4, 3, 2, 1, 0)
-#define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
-#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
-#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
-
 //Macro to evaluate whether two intrinsic types are identical or not
 #define void_void     1)(1
 #define int_int       1)(1
@@ -52,5 +46,17 @@
 #define bool_bool     1)(1
 #define char_char     1)(1
 #define IS_TYPE(COMPTYPE,TYPE) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT3(COMPTYPE,_,TYPE))),2)
+
+//Generic variadic macro expanders for 0 to 5 arguments
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 4, 3, 2, 1, 0)
+#define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
+#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
+#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
+//Example use: redirect EXAMPLE according to whether it is called with 2, 3 or 4 arguments.
+//#define EXAMPLE_4(_1, _2, _3, _4) DOSTUFF(_1,  _2,  _3,  _4)
+//#define EXAMPLE_3(_1, _2, _3)     DOSTUFF(_1,  _2,  _3, foo)
+//#define EXAMPLE_2(_1, _2)         DOSTUFF(_1,  _2, foo, bar)
+//#define EXAMPLE(...)              VARARG(EXAMPLE, __VA_ARGS__)
 
 #endif //defined __util_macros_hpp__

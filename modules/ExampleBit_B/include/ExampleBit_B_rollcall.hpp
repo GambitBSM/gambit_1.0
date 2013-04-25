@@ -19,7 +19,7 @@
 //
 //  Pat Scott
 //  2012 Nov 15++ 
-//  2013 Jan 18, Feb 04, April 22
+//  2013 Jan 18, Feb 04, April 22-24
 //
 //  *********************************************
 
@@ -49,20 +49,21 @@ START_MODULE
     #define FUNCTION nevents_postcuts       // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
+    //TYPICAL_EXECUTION_SECS(1e-05)         // Typical time required for obtaining a result from this function
 
       #define BACKEND_REQ doAll_capability  // A quantity doAll_capability that must be obtained from an external (backend) code,
       START_BACKEND_REQ(double)             // with type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-
-      //BACKEND_OPTION(LibFirst, 1.2)       // Specify that backend LibFirst v1.2 is permitted to provide the doAll_capability
-      BACKEND_OPTION(LibFirst)              // Omit version info to specify that any version of LibFirst can provide the doAll_capability.
-
-      BACKEND_CONDITIONAL_DEP(LibFirst, 1.2, dog, std::string) // Add an additional dependency only if doAll_capability comes from LibFirst v1.2    
-      //BACKEND_CONDITIONAL_DEP(LibFirst, dog, std::string)    // Add an additional dependency if doAll_capability comes from any LibFirst
-      //BACKEND_CONDITIONAL_DEP(LibSecond, dog, std::string)     // Add an additional dependency if doAll_capability comes from any LibSecond
-
-      BACKEND_OPTION(LibThird)              // Specify that any version of LibThird is also a viable provider of doAll_capability
-                                            // If you omit BACKEND_OPTION statements entirely, all backends are considered viable.
-      #undef BACKEND_REQ
+      BACKEND_OPTION(LibFirst, 1.0)         // Specify that backend LibFirst v1.0 is permitted to provide the doAll_capability
+      BACKEND_OPTION(LibSecond)             // Omit version info to specify that any version of LibSecond can provide the doAll_capability.
+      BACKEND_OPTION(LibThird,1.2,1.3 , 1.5)// Specify that v1.2/1.3/1.5 of LibThird are also a viable providers of doAll_capability
+      #undef BACKEND_REQ                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
+       
+      #define CONDITIONAL_DEPENDENCY dog    // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
+      START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
+      ACTIVATE_FOR_BACKEND(doAll_capability, LibFirst, 1.2)  // Dependency counts if doAll_capability comes from LibFirst v1.2 
+      ACTIVATE_FOR_BACKEND(doAll_capability, LibThird)       // Dependency counts when any version of LibThird is used for doAll_capability
+      //ACTIVATE_FOR_MODEL(MSSM)                             // Dependency counts when scanning the MSSM or one of its sub-models
+      #undef CONDITIONAL_DEPENDENCY
 
     #undef FUNCTION
 

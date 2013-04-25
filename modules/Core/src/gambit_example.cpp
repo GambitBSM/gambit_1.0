@@ -238,8 +238,10 @@ int main( int argc, const char* argv[] )
   reqs =  ExampleBit_B::Functown::nevents_postcuts.backendreqs();
   std::cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<std::endl;
   permitted =  ExampleBit_B::Functown::nevents_postcuts.backendspermitted(std::make_pair("doAll_capability","double"))	;
-  std::cout << "Options for doAll_capability: "<<permitted[0].first<<", "<<permitted[0].second<<std::endl;
-  std::cout << "Options for doAll_capability: "<<permitted[1].first<<", "<<permitted[1].second<<std::endl;
+  for (std::vector<sspair>::iterator it = permitted.begin() ; it != permitted.end(); ++it)
+  {
+    std::cout << "Options for doAll_capability: "<<it->first<<", "<<it->second<<std::endl;
+  }
   std::string lib ("LibFirst");
   deps2 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("doAll_capability", "double", lib);
   deps3 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("doAll_capability", "double", lib, "1.2");

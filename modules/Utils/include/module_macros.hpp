@@ -25,6 +25,7 @@
 //  Pat Scott
 //  2012  Nov 15++  
 //  2013  Jan 18, 29-31, Feb 04, Mar 28, Apr 3-9
+//  2013-2078 Foreverrrrr
 //
 //  Abram Krislock
 //  2013 Jan 31, Feb 05
@@ -34,23 +35,25 @@
 #define __module_macros_hpp__
 
 #include <map>
-#include <string>
-#include <iostream>
 #include <graphs.hpp>
 #include <dictionary.hpp>
 #include <functors.hpp>
 #include <util_macros.hpp>
 #include <util_classes.hpp>
+#include <util_functions.hpp>
 #include <globals.hpp> // FIXME this to be removed once the core object is better defined
+#include <boost/preprocessor/comparison/greater.hpp>
 
 //Tag registration one-liners
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
 #define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
 
-//Dependency/backend retrieval and info one-liners
+//Dependency retrieval and info one-liners
 #define GET_DEP(DEP)               (*Dependencies::DEP)()
 #define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
 #define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
+
+//Backend retrieval and info one-liners
 #define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
 #define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
 #define GET_BE_FUNCNAME(BE_REQ)    Backend_Reqs::CAT(BE_REQ,_baseptr)->name()
@@ -59,34 +62,39 @@
 //Redirect rollcall macros depending in whether this file is included from 
 //the core or a module.
 #ifdef IN_CORE
-  #define START_MODULE       CORE_START_MODULE
-  #define START_CAPABILITY   CORE_START_CAPABILITY
-  #define START_FUNCTION     CORE_START_FUNCTION
-  #define DEPENDENCY         CORE_DEPENDENCY
-  #define START_BACKEND_REQ  CORE_START_BACKEND_REQ
-  #define BE_OPTION          CORE_BACKEND_OPTION
-  #define BE_CON_DEP         CORE_BACKEND_CONDITIONAL_DEP
+  #define START_MODULE                  CORE_START_MODULE
+  #define START_CAPABILITY              CORE_START_CAPABILITY
+  #define START_FUNCTION                CORE_START_FUNCTION
+  #define DEPENDENCY                    CORE_DEPENDENCY
+  #define START_BACKEND_REQ             CORE_START_BACKEND_REQ
+  #define BE_OPTION                     CORE_BACKEND_OPTION
+  #define START_CONDITIONAL_DEPENDENCY  CORE_START_CONDITIONAL_DEPENDENCY
+  #define ACTIVATE_DEP_BE               CORE_ACTIVATE_DEP_BE
 #else
-  #define START_MODULE       DUMMY
-  #define START_CAPABILITY   DUMMY
-  #define START_FUNCTION     DUMMYARG
-  #define DEPENDENCY         MODULE_DEPENDENCY
-  #define START_BACKEND_REQ  MODULE_START_BACKEND_REQ
-  #define BE_OPTION          DUMMYARG
-  #define BE_CON_DEP         DUMMYARG
+  #define START_MODULE                  DUMMY
+  #define START_CAPABILITY              DUMMY
+  #define START_FUNCTION                DUMMYARG
+  #define DEPENDENCY                    MODULE_DEPENDENCY
+  #define START_BACKEND_REQ             MODULE_START_BACKEND_REQ
+  #define BE_OPTION                     DUMMYARG
+  #define START_CONDITIONAL_DEPENDENCY  DUMMYARG
+  #define ACTIVATE_DEP_BE               DUMMYARG
 #endif
 
 //Redirect the BACKEND_OPTION macro according to whether it has been called
-//with one or two arguments (make the version number 'any' if it is omitted).
-#define BACKEND_OPTION_2(_1, _2) BE_OPTION(_1, _2)
-#define BACKEND_OPTION_1(_1)     BE_OPTION(_1, any)
-#define BACKEND_OPTION(...)      VARARG(BACKEND_OPTION, __VA_ARGS__)
+//with version numbers or not (make the version number 'any' if it is omitted).
+#define BE_OPTION_0(_1)      BE_OPTION(_1, "any")
+#define BE_OPTION_1(_1, ...) BE_OPTION(_1, #__VA_ARGS__)
+#define BACKEND_OPTION(...)  CAT(BE_OPTION_, BOOST_PP_GREATER \
+                             (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
 
-//Redirect the BACKEND_CONDITIONAL_DEP macro according to whether it has been called
-//with three or four arguments (make the version number 'any' if it is omitted).
-#define BACKEND_CONDITIONAL_DEP_4(_1, _2, _3, _4) BE_CON_DEP(_1, _2, _3, _4)
-#define BACKEND_CONDITIONAL_DEP_3(_1, _2, _3)     BE_CON_DEP(_1, any, _2, _3)
-#define BACKEND_CONDITIONAL_DEP(...)              VARARG(BACKEND_CONDITIONAL_DEP, __VA_ARGS__)
+//Redirect the ACTIVATE_FOR_BACKEND macro according to whether it has been called
+//with version numbers or not (make the version number 'any' if it is omitted).
+#define ACTIVATE_DEP_BE_0(_1, _2)      ACTIVATE_DEP_BE(_1, _2, "any")
+#define ACTIVATE_DEP_BE_1(_1, _2, ...) ACTIVATE_DEP_BE(_1, _2, #__VA_ARGS__)
+#define ACTIVATE_FOR_BACKEND(...)      CAT(ACTIVATE_DEP_BE_, BOOST_PP_GREATER \
+                                       (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 2)) \
+                                       (__VA_ARGS__)
 
 //True rollcall macros
 #define CORE_START_MODULE                                                      \
@@ -119,7 +127,7 @@
       /* Maps from tag strings to tag-specialisted functions */                \
       std::map<str, void(*)()> map_voids;                                      \
       std::map<str, bool(*)()> map_bools;                                      \
-      std::map<str, bool(*)(str, str)> condit_bools;                           \
+      std::map<str, bool(*)(str)> condit_bools;                                \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
       /* All module observables/likelihoods, their dependencies, required      \
@@ -150,31 +158,31 @@
                                                                                \
       /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
       depending on the backend and version used to meet requirment REQ_TAG. */ \
-      template <typename DEP_TAG, typename TAG, typename REQ_TAG>              \
-      bool requires_conditional_on_backend(str be, str ver) {return false; }   \
+      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
+      bool requires_conditional_on_backend(str ver) {return false; }           \
                                                                                \
       /* Overloaded version of templated function */                           \
-      template <typename DEP_TAG, typename TAG, typename REQ_TAG>              \
-      bool requires_conditional_on_backend(str be)                             \
+      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
+      bool requires_conditional_on_backend()                                   \
       {                                                                        \
-        return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG>(be, "any");\
+        return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG,BE>("any"); \
       }                                                                        \
                                                                                \
       /* Additional overloaded, non-templated versions */                      \
       bool requires(str dep, str obs, str req, str be, str ver)                \
       {                                                                        \
         if (requires(dep, obs)) {return true; }                                \
-        if (condit_bools.find(dep+obs+req) == condit_bools.end())              \
+        if (condit_bools.find(dep+obs+req+be) == condit_bools.end())           \
         {                                                                      \
           return false;                                                        \
         }                                                                      \
-        if ((*condit_bools[dep+obs+req])(be, "any"))                           \
+        if ((*condit_bools[dep+obs+req+be])("any"))                            \
         {                                                                      \
           return true;                                                         \
         }                                                                      \
         else                                                                   \
         {                                                                      \
-          return (*condit_bools[dep+obs+req])(be, ver);                        \
+          return (*condit_bools[dep+obs+req+be])(ver);                         \
         }                                                                      \
       }                                                                        \
       bool requires(str dep, str obs, str req, str be)                         \
@@ -258,6 +266,16 @@
       {                                                                        \
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this dependency for this function.";                       \
+      }                                                                        \
+                                                                               \
+      /* Runtime registration of conditional dependency DEP_TAG of function    \
+      TAG, where dependency exists if TAG requires backend function BE_REQ,    \
+      and BE_REQ is provided by backend BE.*/                                  \
+      template <typename DEP_TAG, typename TAG, typename BE_REQ, typename BE>  \
+      void rt_register_conditional_dependency ()                               \
+      {                                                                        \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have any matching conditional dependency.";                     \
       }                                                                        \
                                                                                \
       /* Runtime registration function for backend req BE_REQ of               \
@@ -415,7 +433,7 @@
       /* Create the dependency initialisation object */                        \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT(DEP##_for_,FUNCTION)                                      \
+        ini_code CAT_3(DEP,_for_,FUNCTION)                                     \
          (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \
@@ -530,7 +548,7 @@
       /* Create the dependency initialisation object */                        \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT(BACKEND_REQ##_backend_for_,FUNCTION)                      \
+        ini_code CAT_3(BACKEND_REQ,_backend_for_,FUNCTION)                     \
          (&rt_register_req<BETags::BACKEND_REQ,Tags::FUNCTION>);               \
       }                                                                        \
                                                                                \
@@ -605,10 +623,13 @@
   }                                                                            \
 
 
-#define CORE_BACKEND_OPTION(BACKEND,VERSION)                                   \
+#define CORE_BACKEND_OPTION(BACKEND,VERSTRING)                                 \
                                                                                \
   namespace GAMBIT                                                             \
   {                                                                            \
+                                                                               \
+    /* Add BACKEND to global set of recognised backend tags */                 \
+    ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND)                                    \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
@@ -617,7 +638,7 @@
       void CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION)()   \
       {                                                                        \
         Functown::FUNCTION.setPermittedBackend(STRINGIFY(BACKEND_REQ),         \
-         STRINGIFY(BACKEND), STRINGIFY(VERSION));                              \
+         STRINGIFY(BACKEND), VERSTRING);                                       \
       }                                                                        \
                                                                                \
       /* Create the option registration initialisation object */               \
@@ -632,35 +653,80 @@
   }                                                                            \
 
 
-#define CORE_BACKEND_CONDITIONAL_DEP(BACKEND,VERSION,DEP,TYPE)                 \
+#define CORE_START_CONDITIONAL_DEPENDENCY(TYPE)                                \
                                                                                \
-  DEPENDENCY_COMMON_1(DEP, TYPE)                                               \
+  DEPENDENCY_COMMON_1(CONDITIONAL_DEPENDENCY, TYPE)                            \
                                                                                \
-      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
+      /* Set up the first set of commands to be called at runtime to register  \
+      the conditional dependency. */                                           \
       template <>                                                              \
-      bool requires_conditional_on_backend<Tags::DEP, Tags::FUNCTION,          \
-       BETags::BACKEND_REQ> (str be, str ver)                  \
+      void rt_register_dependency                                              \
+       <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION> ()                       \
       {                                                                        \
-        return (be == STRINGIFY(BACKEND) && ver == STRINGIFY(VERSION))         \
-         ? true : false;                                                       \
+        iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)] = STRINGIFY(TYPE);         \
       }                                                                        \
                                                                                \
-      /* Set up the commands to be called at runtime to register dependency*/  \
-      template <>                                                              \
-      void rt_register_dependency<Tags::DEP, Tags::FUNCTION> ()                \
-      {                                                                        \
-        condit_bools[STRINGIFY(CAT_3(DEP,FUNCTION,BACKEND_REQ))] =             \
-         &requires_conditional_on_backend<Tags::DEP, Tags::FUNCTION,           \
-         BETags::BACKEND_REQ>;                                                 \
-        iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
-        Functown::FUNCTION.setBackendConditionalDependency                     \
-         (STRINGIFY(BACKEND_REQ), STRINGIFY(BACKEND), STRINGIFY(VERSION),      \
-         STRINGIFY(DEP), STRINGIFY(TYPE),                                      \
-         &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
-      }                                                                        \
-                                                                               \
-  DEPENDENCY_COMMON_2(DEP, TYPE)                                               \
+  /* Create the first conditional dependency initialisation object */          \
+  DEPENDENCY_COMMON_2(CONDITIONAL_DEPENDENCY, TYPE)                            \
+
                                                                                
+#define CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)                  \
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    /* Add BACKEND to global set of recognised backend tags */                 \
+    ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND)                                    \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have        \
+      been computed previously if BACKEND is in use for BACKEND_REQ.*/         \
+      template <>                                                              \
+      bool requires_conditional_on_backend<Tags::CONDITIONAL_DEPENDENCY,       \
+       Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND> (str ver)         \
+      {                                                                        \
+        typedef std::vector<str> vec;                                          \
+        vec versions = delimiterSplit(VERSTRING, ",");                         \
+        for (vec::iterator it = versions.begin() ; it != versions.end(); ++it) \
+        {                                                                      \
+          if (*it == ver) return true;                                         \
+        }                                                                      \
+        return false;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Set up the second set of commands to be called at runtime to register \
+      the conditional dependency. */                                           \
+      template <>                                                              \
+      void rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
+       Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND> ()                \
+      {                                                                        \
+        condit_bools[STRINGIFY(CAT_4(CONDITIONAL_DEPENDENCY,FUNCTION,          \
+         BACKEND_REQ,BACKEND))] = &requires_conditional_on_backend             \
+         <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,   \
+         BETags::BACKEND>;                                                     \
+        Functown::FUNCTION.setBackendConditionalDependency                     \
+         (STRINGIFY(BACKEND_REQ), STRINGIFY(BACKEND), VERSTRING,               \
+         STRINGIFY(CONDITIONAL_DEPENDENCY),                                    \
+         iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],                          \
+         &resolve_dependency<Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);   \
+      }                                                                        \
+                                                                               \
+      /* Create the second conditional dependency initialisation object */     \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_7(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_,           \
+         BACKEND_REQ,_provided_by_,BACKEND)                                    \
+         (&rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
+         Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND>);               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
 
 #endif // defined(__module_macros_hpp__) 
 
