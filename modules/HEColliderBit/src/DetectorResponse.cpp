@@ -21,9 +21,9 @@ ATLAS_Simple_Response::ATLAS_Simple_Response(){
 
 
 void ATLAS_Simple_Response::MuonResponse(Particle& muon){
-  // smears the momemtum of a muon 
-  
-  double newpx,newpy,newpz,newe,newpt;
+  // smears the momemtum of a muon
+
+  double newpx,newpy,newpz,newe; //,newpt;
 
   double distr = _rndm.Gaus(0,1);
   double sigma = distr*_muon_resolution*muon.mom().rho();
@@ -45,9 +45,9 @@ void ATLAS_Simple_Response::MuonResponse(Particle& muon){
 }
 
 void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
-  // smears the momemtum of a photon 
-  
-  double newpx,newpy,newpz,newe,newpt;
+  // smears the momemtum of a photon
+
+  double newpx,newpy,newpz,newe; //,newpt;
 
   if (photon.mom().E() <= 0)
     return ;
@@ -69,9 +69,9 @@ void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
 }
 
 void ATLAS_Simple_Response::ElectronResponse(Particle& electron){
-  // smears the momemtum of a electron 
-  
-  double newpx,newpy,newpz,newe,newpt;
+  // smears the momemtum of a electron
+
+  double newpx,newpy,newpz,newe; //,newpt;
 
   if (electron.mom().E() <= 0)
     return;
@@ -118,9 +118,9 @@ double RESELE(double e){
 
 double RESHAD(double e, double eta, double Caloth){
 
-  if(SMEAR ==1){    
+  if(SMEAR ==1){
   double distr = rndm.Gaus(0,1);
-  
+
   double res = -999.99;
 
   //Check which region of the detector.
@@ -129,7 +129,7 @@ double RESHAD(double e, double eta, double Caloth){
   }else if(eta > Caloth){
     res = 1.0;
   }
-  
+
   double sig = distr * res *1/sqrt(e);
 
   return sig;
