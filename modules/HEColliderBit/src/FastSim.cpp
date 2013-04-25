@@ -10,7 +10,6 @@ FastSim::FastSim() {
 
 
 FastSim::~FastSim() {
-  // Clear the heap memory used by the object
   // for (size_t i = 0; i < _stable_electrons.size();i++) delete _stable_electrons[i];
   // _stable_electrons.clear();
   #define DELETE_PTRVEC(vec) for (size_t i = 0; i < _stable_electrons.size();i++) delete _stable_electrons[i]; _stable_electrons.clear()
@@ -27,14 +26,14 @@ FastSim::~FastSim() {
 }
 
 
-/// @todo Rename to init()
+/// @todo Rename to e.g. init()
 void FastSim::InitSimulation(SimType which) {
   _simtype = which;
   switch(which) {
   case ACERDET:
   case NOMINAL:
     // initialise the cuts and calorimeter limits and granularity for  the NOMINAL and ACERDET
-    printf("Acerdet sim\n");
+    cout << "AcerDET sim" << endl;
 
     _min_muon_pt = 6.0;  // GeV
     _min_ele_pt  = 5.0;  // GeV
@@ -52,8 +51,8 @@ void FastSim::InitSimulation(SimType which) {
     _et_seedmin = 1.5;// GeV
     _cluster_rcone = 0.4;
     _cluster_etmin = 5.0;
-
     break;
+
   default:
     /// @todo Throw exception here?
     ;
@@ -79,146 +78,103 @@ void FastSim::SetParticles(vector<Particle*> electrons, vector<Particle*> muons,
 
 /// @todo Rename to setElectrons()
 void FastSim::SetElectrons(vector<Particle*> particles) {
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
+  for (size_t i = 0; i < particles.size(); ++i) {
+    if (abs(particles[i]->pid()) != 11) {
+      cerr << "Warning: PID " << particles[i]->pid() << " found in the electron particle list" << endl;
       continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
-    if ((fabs(chosen->pid()) == 11) && (chosen->mom().rho() > _min_ele_pt)) {
-      _stable_electrons.push_back(chosen);
-      _stable_interacting_particles.push_back(chosen);
     }
-    else if (fabs(chosen->pid()) != 11)
-      cout << "Warning " << chosen->pid() << " Found in the electron particle list " << endl;
-
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
+    if (particles[i]->pT() > _min_ele_pt) continue;
+    Particle* chosen = new Particle(particles[i]);
+    _stable_electrons.push_back(chosen);
+    _stable_interacting_particles.push_back(chosen);
   }
 }
 
 
 /// @todo Rename to setMuons()
 void FastSim::SetMuons(vector<Particle*> particles) {
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
+  for (size_t i = 0; i < particles.size(); ++i) {
+    if (abs(particles[i]->pid()) != 13) {
+      cerr << "Warning: PID " << particles[i]->pid() << " found in the muon particle list" << endl;
       continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
-    if ((fabs(chosen->pid()) == 13) && (chosen->mom().rho() > _min_muon_pt)) {
-      _stable_muons.push_back(chosen);
-      _stable_interacting_particles.push_back(chosen);
     }
-    else if (fabs(chosen->pid()) != 13)
-      cout << "Warning " << chosen->pid() << " Found in the muon particle list " << endl;
-
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue; //< @todo Should be muon etamax?
+    if (particles[i]->pT() > _min_muon_pt) continue;
+    Particle* chosen = new Particle(particles[i]);
+    _stable_muons.push_back(chosen);
+    _stable_interacting_particles.push_back(chosen);
   }
 }
 
 
 /// @todo Rename to setPhotons()
 void FastSim::SetPhotons(vector<Particle*> particles) {
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
+  for (size_t i = 0; i < particles.size(); ++i) {
+    if (abs(particles[i]->pid()) != 22) {
+      cerr << "Warning: PID " << particles[i]->pid() << " found in the photon particle list" << endl;
       continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
-    if ((chosen->pid() == 22) && (chosen->mom().rho() > _min_photon_pt)) {
-      _stable_photons.push_back(chosen);
-      _stable_interacting_particles.push_back(chosen);
     }
-    else if (chosen->pid() != 22)
-      cout << "Warning " << chosen->pid() << " Found in the muon particle list " << endl;
-
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
+    if (particles[i]->pT() > _min_photon_pt) continue;
+    Particle* chosen = new Particle(particles[i]);
+    _stable_photons.push_back(chosen);
+    _stable_interacting_particles.push_back(chosen); //< @todo Build later?
   }
 }
 
 
 /// @todo Rename to setBQuarks()
 void FastSim::SetBQuarks(vector<Particle*> particles) {
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
+  for (size_t i = 0; i < particles.size(); ++i) {
+    if (abs(particles[i]->pid()) != 5) {
+      cerr << "Warning: PID " << particles[i]->pid() << " found in the b-quark particle list" << endl;
       continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
-    if ((chosen->pid() == 5) && (chosen->mom().rho() > _min_bjet_pt))
-      _bquarks.push_back(chosen);
-    else if (chosen->pid() != 5)
-      cout << "Warning " << chosen->pid() << " Found in the b-quark particle list " << endl;
-
-  }
-}
-
-
-/// @todo Rename to setTaus(). Or is there something special about these being *hadronic* taus or the decay hadrons?
-void FastSim::SetTauHads(vector<Particle*> particles) {
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
-      continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
-    if (fabs((chosen->pid()) == 15) && (chosen->mom().rho() > _min_tauhad_pt))
-      _tauhads.push_back(chosen);
-    else if (fabs(chosen->pid()) != 15)
-      cout << "Warning " << chosen->pid() << " Found in the tauhad particle list " << endl;
-
-  }
-}
-
-
-/// @todo Rename to setChargedHadrons()
-void FastSim::SetChargedHadrons(vector<Particle*> particles) {
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
-      continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
-    if (fabs((chosen->pid()) == 11 ) ||  (fabs((chosen->pid()) == 13 )))
-      cout << "Warning " << chosen->pid() << " Found in the charged hadron particle list " << endl;
-    else {
-      _chargedhads.push_back(chosen);
-      _stable_interacting_particles.push_back(chosen);
     }
-
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue; //< @todo Or ~ tracker eta for tagging?
+    if (particles[i]->pT() > _min_bjet_pt) continue;
+    Particle* chosen = new Particle(particles[i]);
+    _bquarks.push_back(chosen);
   }
 }
 
+
+/// @todo Rename to setTaus(). Or is there something special about these being *hadronic* taus?
+void FastSim::SetTauHads(vector<Particle*> particles) {
+  for (size_t i = 0; i < particles.size(); ++i) {
+    if (abs(particles[i]->pid()) != 15) {
+      cerr << "Warning: PID " << particles[i]->pid() << " found in the tau particle list" << endl;
+      continue;
+    }
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
+    if (particles[i]->pT() > _min_tauhad_pt) continue;
+    Particle* chosen = new Particle(particles[i]);
+    _tauhads.push_back(chosen);
+  }
+}
+
+
+/// @todo Rename to setChargedHadrons(). What about neutral hadrons?
+void FastSim::SetChargedHadrons(vector<Particle*> particles) {
+  for (size_t i = 0; i < particles.size(); ++i) {
+    if (abs(particles[i]->pid()) == 11 || abs(particles[i]->pid()) == 13) {
+      cerr << "Warning: PID " << particles[i]->pid() << " found in the charged hadron particle list" << endl;
+      continue;
+    }
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
+    Particle* chosen = new Particle(particles[i]);
+    _chargedhads.push_back(chosen);
+    _stable_interacting_particles.push_back(chosen);
+  }
+}
 
 
 /// @todo Rename to setWeaklyInteracting()
 void FastSim::SetWeaklyInteracting(vector<Particle*> particles) {
-  // not check for the weakly interacting since we are not sure what particle
-  // codes the SUSY weakly interacting particles will have
-
-  Particle *chosen;
-  for (size_t i = 0; i <particles.size();i++) {
-    if  (fabs(particles[i]->mom().eta()) > _calo_etamax)
-      continue;
-
-    chosen = new Particle(particles[i]->mom().px(),particles[i]->mom().py(),particles[i]->mom().pz(),
-                          particles[i]->mom().E(),particles[i]->pid());
-
+  for (size_t i = 0; i < particles.size(); ++i) {
+    /// @todo Use HepPID to check for weak interactions
+    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
+    Particle* chosen = new Particle(particles[i]);
     _weakly_interacting.push_back(chosen);
   }
 }
