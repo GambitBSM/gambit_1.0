@@ -245,7 +245,7 @@ namespace GAMBIT {
     /// Spatial angle to another P4 vector
     double angleTo(const P4& v) const { return acos(px()*v.px() + py()*v.py() + pz()*v.pz()) / ( p()*v.p() ); }
     /// Difference in phi between two vectors
-    double deltaPhi(const P4& v) const { return deltaphi(phi(), v.phi()); }
+    double deltaPhi(const P4& v) const { return GAMBIT::deltaPhi(phi(), v.phi()); }
     /// Difference in pseudorapidity between two vectors
     double deltaEta(const P4& v) const { return fabs(eta() - v.eta()); }
     /// Difference in rapidity between two vectors

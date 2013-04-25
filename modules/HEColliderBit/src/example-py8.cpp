@@ -29,7 +29,7 @@ public:
   void init();
 
   // Analysis of each new event.
-  void analyze(Event& event);
+  void analyze(Pythia8::Event& event);
 
   // Show final results.
   void finish();
@@ -64,37 +64,37 @@ private:
 MyAnalysis::~MyAnalysis() {
 
   // release the allocated memory
-  for (int i=0;i< _electrons.size();i++) {
+  for (size_t i = 0; i < _electrons.size();i++) {
     delete(_electrons[i]);
     _electrons.erase(_electrons.begin());
   }
 
-  for (int i=0;i< _muons.size();i++) {
+  for (size_t i = 0; i < _muons.size();i++) {
     delete(_muons[i]);
     _muons.erase(_muons.begin());
   }
 
-  for (int i=0;i< _photons.size();i++) {
+  for (size_t i = 0; i < _photons.size();i++) {
     delete(_photons[i]);
     _photons.erase(_photons.begin());
   }
 
-  for (int i=0;i< _bjets.size();i++) {
+  for (size_t i = 0; i < _bjets.size();i++) {
     delete(_bjets[i]);
     _bjets.erase(_bjets.begin());
   }
 
-  for (int i=0;i< _tauhads.size();i++) {
+  for (size_t i = 0; i < _tauhads.size();i++) {
     delete(_tauhads[i]);
     _tauhads.erase(_tauhads.begin());
   }
 
-  for (int i=0;i< _chargedhads.size();i++) {
+  for (size_t i = 0; i < _chargedhads.size();i++) {
     delete(_chargedhads[i]);
     _chargedhads.erase(_chargedhads.begin());
   }
 
-  for (int i=0;i< _weakly_interactings.size();i++) {
+  for (size_t i = 0; i < _weakly_interactings.size();i++) {
     delete(_weakly_interactings[i]);
     _weakly_interactings.erase(_weakly_interactings.begin());
   }
@@ -181,7 +181,8 @@ void MyAnalysis::SelectParticles(Pythia8::Event& event) {
       int daughter2 = event[i].daughter2();
 
       for (int j=daughter1; j<=daughter2;j++) {
-        printf("tau daughters (%d) are %d pdgId %d pt %.2f\n",j,event[j].id(),event[j].pT());
+        // printf("tau daughters (%d) are %d pdgId %d pt %.2f\n",j,event[j].id(),event[j].pT());
+        cout << "tau daughters (" << j << ") are pdgId = " << event[j].id() << ", pt = " << event[j].pT() << " GeV" << endl;
       }
 
       // we need to remove the leptonically decaying taus - perhaps do an overlap removal with electrons
@@ -193,29 +194,19 @@ void MyAnalysis::SelectParticles(Pythia8::Event& event) {
   }
 }
 
+
 // The event analysis code.
+void MyAnalysis::analyze(Pythia8::Event& event) {
 
-void MyAnalysis::analyze(Event& event) {
-
-  // select the different particles for the fastsimulator
-  // electrons
-  // muons
-  // photons
-  //
-  //
-  FastSim  A;
+  // select the different particles for the fast simulator
   SelectParticles(event);
 
-  A.InitSimulation(ACERDET);
-
-  A.SetParticles(_electrons,_muons,_photons,_chargedhads,_bjets,_tauhads,_weakly_interactings);
-
-
-
-// set the particles in the fast simulator
-
+  FastSim sim;
+  sim.InitSimulation(ACERDET);
+  sim.SetParticles(_electrons, _muons, _photons, _chargedhads, _bjets, _tauhads, _weakly_interactings);
 
 }
+
 /*
   // Increase counter.
   ++nEvt;
@@ -311,7 +302,7 @@ int main(int argc, char* argv[]) {
   cout << " PYTHIA settings will be read from file " << argv[1] << endl;
 
   // Declare generator. Read in commands from external file.
-  Pythia pythia;
+  Pythia8::Pythia pythia;
   pythia.readFile(argv[1]);
 
 

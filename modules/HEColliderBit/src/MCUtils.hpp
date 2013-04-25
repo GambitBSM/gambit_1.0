@@ -20,10 +20,12 @@ namespace GAMBIT {
     return rtn;
   }
 
+
   /// @todo Available as a Py::Vec4 member from 8.175 onwards? REMOVE
   inline double eta(const Pythia8::Vec4& p) {
     return -log(tan( 0.5 * p.theta() ));
   }
+
 
   inline double deltaPhi(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
     return deltaPhi(a.phi(), b.phi());
@@ -32,6 +34,19 @@ namespace GAMBIT {
 
   inline double deltaR(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
     const double deta = fabs(eta(a) - eta(b));
+    const double dphi = deltaPhi(a, b);
+    return deta*deta + dphi*dphi;
+  }
+
+
+
+  inline double deltaPhi(const fastjet::PseudoJet& a, const fastjet::PseudoJet& b) {
+    return deltaPhi(a.phi(), b.phi());
+  }
+
+
+  inline double deltaR(const fastjet::PseudoJet& a, const fastjet::PseudoJet& b) {
+    const double deta = fabs(a.eta() - b.eta());
     const double dphi = deltaPhi(a, b);
     return deta*deta + dphi*dphi;
   }

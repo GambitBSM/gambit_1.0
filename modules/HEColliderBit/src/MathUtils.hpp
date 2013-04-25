@@ -103,7 +103,7 @@ namespace GAMBIT {
   /// @name Physics maths utils
   //@{
 
-  inline double deltaphi(double a, double b) {
+  inline double deltaPhi(double a, double b) {
     double rtn = a - b;
     rtn = fmod(rtn, 2*M_PI);
     if (rtn == 0) return 0;

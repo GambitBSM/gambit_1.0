@@ -717,7 +717,7 @@ void FastSim::Clustering(){
             phic  = _cellphi[i];
             etac  = _celleta[i];
             etad = etac-temp_cluseta;
-            phid = deltaphi(phic,temp_clusphi);
+            phid = deltaPhi(phic, temp_clusphi);
 
             dr = sqrt(pow(etad,2)+ pow(phid,2));
 
