@@ -4,7 +4,6 @@
 #include <cmath>
 #include <vector>
 
-
 namespace GAMBIT {
 
   using namespace std;

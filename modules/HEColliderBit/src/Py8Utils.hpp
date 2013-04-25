@@ -4,6 +4,7 @@
 #include "Vectors.hpp"
 #include "Pythia.h"
 
+
 namespace GAMBIT {
 
 
@@ -149,6 +150,8 @@ namespace GAMBIT {
     for (int i = 0; i < pevt.size(); ++i) {
       if (!evt[i].isFinal()) continue;
       Particle* p = new Particle(vec4_to_p4(evt[i].mom(), evt[i].id()));
+      /// @todo Promptness
+      /// @todo Jets
       /// @todo b-tagging and taus
       e.addParticle(p);
     }

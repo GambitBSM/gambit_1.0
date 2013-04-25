@@ -139,10 +139,20 @@ namespace GAMBIT {
     }
 
 
-    /// @brief Get anti-kT 0.4 jets, with leptons and photons excluded
+    /// @todo Don't do the on the fly calculation, actually: it's up to the filling routine to do that
+
+
+    /// @brief Get anti-kT 0.4 jets, (not including leptons and photons)
     ///
-    /// If the jets vector is empty, it will be calculated on demand (and auto-cached)
-    const vector<Jet*>& jets() const;
+    /// If the jets vector is empty, it will be calculated on demand (and
+    /// auto-cached) based on the hadrons collection.
+    const vector<Jet*>& jets() const {
+      if (_jets.empty()) {
+        /// @todo Calculate the jets from hadrons/daughters with FastJet on the fly if needed
+        /// @todo Do isolation?
+      }
+      return _jets;
+    }
 
     /// Explicitly set the jets collection (will override on-the-fly calculation)
     void setJets(const vector<Jet*>& jets) {

@@ -1,14 +1,20 @@
 #pragma once
 
+// Just convenience includes
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
+#include "Event.hpp"
+#include "Particle.hpp"
+#include "FastJetUtils.hpp"
+#include "Py8Utils.hpp"
+
 
 namespace GAMBIT {
 
 
-  // PID stuff
+  /// @name PID stuff
   /// @todo Move to PIDUtils
-
+  //@{
 
   template<size_t D> unsigned int digit(unsigned int val)    { return digit<D-1>(val/10); }
   template<>         unsigned int digit<1>(unsigned int val) { return val % 10; }
@@ -22,6 +28,8 @@ namespace GAMBIT {
 
   inline bool hasCharm(int pid) { return hasQuark(4, pid); }
   inline bool hasBottom(int pid) { return hasQuark(5, pid); }
+
+  //@}
 
 
 }
