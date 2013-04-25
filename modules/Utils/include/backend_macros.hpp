@@ -9,8 +9,8 @@
  * Modified: 2013-04-05
  */
 
-#ifndef __BACKEND_GENERAL_HPP__
-#define __BACKEND_GENERAL_HPP__
+#ifndef __BACKEND_MACROS_HPP__
+#define __BACKEND_MACROS_HPP__
 
 #include <iostream>
 #include <string>
@@ -59,7 +59,7 @@ namespace GAMBIT                                                          \
 // defining simple 'get/set' functions and
 // wrapping these functions in backend functors.
 //
-#define BE_VARIABLE(NAME, TYPE, SYMBOLNAME, POINTERNAME)                     \
+#define BE_VARIABLE(NAME, TYPE, SYMBOLNAME)                      \
 namespace GAMBIT                                                           \
 {                                                                            \
   namespace Backends                                                         \
@@ -67,12 +67,12 @@ namespace GAMBIT                                                           \
     namespace BACKENDNAME                                                   \
     {                                                                        \
                                                                              \
-      TYPE * POINTERNAME;                                                    \
+      TYPE * NAME;                                                           \
                                                                              \
       void CAT(constructVarPointer_,NAME)()                                 \
       {                                                                      \
         pSym = dlsym(pHandle, SYMBOLNAME);                                   \
-        POINTERNAME = reinterpret_cast<TYPE*>(pSym);                       \
+        NAME = reinterpret_cast<TYPE*>(pSym);                              \
       }                                                                      \
                                                                              \
       /* The code within the void function 'constructVarPointer_NAME'        \
@@ -84,26 +84,25 @@ namespace GAMBIT                                                           \
       }                                                                      \
                                                                              \
       /* Construct 'get' function */                                         \
-      TYPE get##NAME() { return *POINTERNAME; }                             \
+      TYPE get##NAME() { return *NAME; }                             \
                                                                              \
       /* Construct 'set' function */                                         \
-      void set##NAME(TYPE a) { *POINTERNAME = a; }                          \
+      void set##NAME(TYPE a) { *NAME = a; }                          \
                                                                              \
                                                                              \
-      /* Create functor objects                                               \
-         FIXME : the way 'capability' is specified is rather pointless atm */ \
+      /* Create functor objects */                                              \
       namespace Functown                                                     \
       {                                                                       \
         auto get##NAME = makeBackendFunctor<TYPE>( GAMBIT::Backends::BACKENDNAME::get##NAME,   \
                                                         STRINGIFY(NAME),                     \
-                                                        STRINGIFY( CAT(NAME, _capability) ), \
+                                                        STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ), \
                                                         STRINGIFY(TYPE),                     \
                                                         STRINGIFY(BACKENDNAME),             \
                                                         STRINGIFY(VERSION) );                \
                                                                                              \
         auto set##NAME = makeBackendFunctor<void>( GAMBIT::Backends::BACKENDNAME::set##NAME,  \
                                                         STRINGIFY(NAME),                      \
-                                                        STRINGIFY( CAT(NAME, _capability) ),  \
+                                                        STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ),  \
                                                         STRINGIFY(TYPE),                      \
                                                         STRINGIFY(BACKENDNAME),              \
                                                         STRINGIFY(VERSION) );                 \
@@ -120,7 +119,18 @@ namespace GAMBIT                                                           \
 // Macro for constructing pointers to library functions
 // and wrapping function pointers in backend functors.
 //
-#define BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME)                         \
+// The fifth argument (CAPABILITY) is made to be optional.
+// If left out, CAPABILITY defaults to "[backend name]_[function name]_capability"
+
+#define BE_FUNCTION_4(NAME, TYPE, ARGSLIST, SYMBOLNAME)                                           \
+  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, STRINGIFY(CAT(BACKENDNAME,_##NAME##_##capability)))    \
+
+#define BE_FUNCTION_5(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)                          \
+  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)                                  \
+
+#define BE_FUNCTION(...) VARARG(BE_FUNCTION, __VA_ARGS__)
+
+#define BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)         \
 namespace GAMBIT                                                            \
 {                                                                             \
   namespace Backends                                                         \
@@ -150,13 +160,12 @@ namespace GAMBIT                                                            \
         ini_code NAME(&CAT(constructFuncPointer_,NAME));                     \
       }                                                                       \
                                                                               \
-      /* Create functor object                                                \
-         FIXME : the way 'capability' is specified is rather pointless atm */ \
+      /* Create functor object */                                             \
       namespace Functown                                                     \
       {                                                                       \
         auto NAME = makeBackendFunctor<TYPE>( GAMBIT::Backends::BACKENDNAME::NAME, \
                                                STRINGIFY(NAME),                \
-                                               STRINGIFY( CAT(NAME, _capability) ),  \
+                                               CAPABILITY,                     \
                                                STRINGIFY(TYPE),                \
                                                STRINGIFY(BACKENDNAME),        \
                                                STRINGIFY(VERSION) );            \
@@ -171,7 +180,18 @@ namespace GAMBIT                                                            \
 //
 // Macro for wrapping convenience functions in backend functors.
 //
-#define BE_CONV_FUNCTION(NAME, TYPE)                                          \
+// The fifth argument (CAPABILITY) is made to be optional.
+// If left out, CAPABILITY defaults to "[backend name]_[function name]_capability"
+
+#define BE_CONV_FUNCTION_2(NAME, TYPE)                                              \
+  BE_CONV_FUNCTION_IMPL(NAME, TYPE, STRINGIFY(CAT(BACKENDNAME,_##NAME##_##capability))) \
+
+#define BE_CONV_FUNCTION_3(NAME, TYPE, CAPABILITY)                  \
+  BE_CONV_FUNCTION_IMPL(NAME, TYPE, CAPABILITY)                           \
+
+#define BE_CONV_FUNCTION(...) VARARG(BE_CONV_FUNCTION, __VA_ARGS__)
+
+#define BE_CONV_FUNCTION_IMPL(NAME, TYPE, CAPABILITY)                         \
 namespace GAMBIT                                                            \
 {                                                                             \
   namespace Backends                                                         \
@@ -179,13 +199,12 @@ namespace GAMBIT                                                            \
     namespace BACKENDNAME                                                  \
     {                                                                         \
                                                                               \
-      /* Create functor object                                                \
-         FIXME : the way 'capability' is specified is rather pointless atm */ \
+      /* Create functor object */                                             \
       namespace Functown                                                     \
       {                                                                       \
         auto NAME = makeBackendFunctor<TYPE>( GAMBIT::Backends::BACKENDNAME::NAME, \
                                                STRINGIFY(NAME),                \
-                                               STRINGIFY( CAT(NAME, _capability) ),   \
+                                               CAPABILITY,                     \
                                                STRINGIFY(TYPE),                \
                                                STRINGIFY(BACKENDNAME),       \
                                                STRINGIFY(VERSION) );          \

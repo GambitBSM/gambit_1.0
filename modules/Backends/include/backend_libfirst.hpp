@@ -1,5 +1,5 @@
 /* 
- * Example of how to use the macros in 'backend_general.hpp' 
+ * Example of how to use the macros in 'backend_macros.hpp' 
  * to set up a backend for a specific library.
  * 
  * \author Anders Kvellestad
@@ -7,6 +7,7 @@
  * 
  * Modified: 2013-04-05
  * Pat Scott 2013-04-22
+ * Anders Kvellestad 2013-04-25
  */
 
 #include <backend_macros.hpp>
@@ -30,56 +31,66 @@ LOAD_LIBRARY
 /* Next we use macros BE_VARIABLE and BE_FUNCTION to load pointers 
  * (using dlsym) to the variables and functions within the library.
  *  
- * These macros also set up a minimal interface providing 'get/set'
+ * The macros also set up a minimal interface providing 'get/set'
  * functions for the library variables and function pointers 
  * for the library functions.
  *  
- * Syntax for BE_VARIABLE:
- * BE_VARIABLE([choose variable name], [type], "[exact symbol name]", [choose pointer name])  */
-
-BE_VARIABLE(SomeInt, int, "someInt", pSomeInt)
-BE_VARIABLE(SomeDouble, double, "someDouble", pSomeDouble)
-
-/* We have now set up the pointers
- *
- * GAMBIT::Backends::BACKENDNAME::pSomeInt     (int *)
- * GAMBIT::Backends::BACKENDNAME::pSomeDouble  (double *)
- * 
- * and the corresponding get/set functions
- * 
- * int  GAMBIT::Backends::BACKENDNAME::getSomeInt()
- * void GAMBIT::Backends::BACKENDNAME::setSomeInt(int)
- *
- * double GAMBIT::Backends::BACKENDNAME::getSomeDouble()
- * void   GAMBIT::Backends::BACKENDNAME::setSomeDouble(double)  */
-  
-
+ * These functions are then wrapped in functors that the core can connect 
+ * to the modules via the rollcall system */
+ 
 /* Syntax for BE_FUNCTION:
- * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]")  */
+ * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
+ * 
+ * The last argument (capability name) is optional. 
+ * If left out (as done below) it will default to "[backend name]_[function name]_capability"
+ * (e.g. "LibFirst_initialize_capability")  */
 
 BE_FUNCTION(initialize, void, (int), "_Z10initializei")
 BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv")
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 
-/* We have now created the following function pointers:
+//BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
+//BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
+//BE_FUNCTION(returnResult, double, (), "_Z12returnResultv", "LibFirst_returnResult_capability")
+
+/* We have now created the following:
  *
- * GAMBIT::Backends::BACKENDNAME::initialize       (* void)(int)
- * GAMBIT::Backends::BACKENDNAME::someFunction     (* void)()
- * GAMBIT::Backends::BACKENDNAME::returnResult     (* double)()
+ * - Function pointers
+ * GAMBIT::Backends::LibFirst::initialize       type: void (*)(int)
+ * GAMBIT::Backends::LibFirst::someFunction     type: void (*)()
+ * GAMBIT::Backends::LibFirst::returnResult     type: double (*)()
  *
- * Calling the function of a function pointer is 
- * exactly like calling the function itself, e.g.
+ * - Functors
+ * GAMBIT::Backends::LibFirst::Functown::initialize       type: GAMBIT::backend_functor<void,int>
+ * GAMBIT::Backends::LibFirst::Functown::someFunction     type: GAMBIT::backend_functor<void>
+ * GAMBIT::Backends::LibFirst::Functown::returnResult     type: GAMBIT::backend_functor<double>  */
+
+
+/* Syntax for BE_VARIABLE:
+ * BE_VARIABLE([choose variable name], [type], "[exact symbol name]")  */
+
+BE_VARIABLE(SomeInt, int, "someInt")
+BE_VARIABLE(SomeDouble, double, "someDouble")
+
+/* We have now created the following:
  *
- * GAMBIT::Backends::BACKENDNAME::initialize(10)
- */ 
+ * - Pointers
+ * GAMBIT::Backends::LibFirst::SomeInt      type: int*
+ * GAMBIT::Backends::LibFirst::SomeDouble   type: double*
+ *
+ * - Functions
+ * GAMBIT::Backends::LibFirst::getSomeInt   type: int ()    
+ * GAMBIT::Backends::LibFirst::setSomeInt   type: void (int)
+ *
+ * - Functors
+ * GAMBIT::Backends::LibFirst::Functown::getSomeInt   type: GAMBIT::backend_functor<int>
+ * GAMBIT::Backends::LibFirst::Functown::setSomeInt   type: GAMBIT::backend_functor<void,int>  */
 
 
 /* At this point we have a minimal interface to the loaded library.
  * Any additional convenince functions could be constructed below 
- * using the available pointers. All convenience functions must be
- * registred/wrapped via the macro 
- * BE_CONV_FUNCTION([function name], [function type])
- * (see below). */
+ * using the available pointers/functions. All convenience functions must be
+ * registred/wrapped via the macro BE_CONV_FUNCTION (see below). */
 
 
 namespace GAMBIT
@@ -103,10 +114,14 @@ namespace GAMBIT
 } /* end namespace GAMBIT */                                                   
 
 
-/* Wrap convenience functions in functors */
-BE_CONV_FUNCTION(doAll, double)
+/* Now register any convenience functions and wrap them in functors. 
+ *
+ * Syntax for BE_CONV_FUNCTION:
+ * BE_CONV_FUNCTION([function name], type, "[choose capability name]")
+ * 
+ * As with BE_FUNCTION, the last argument is optional. */
 
-
+BE_CONV_FUNCTION(doAll, double, "doAll_capability")
 
 
 // Undefine macros to avoid conflict with other backends
