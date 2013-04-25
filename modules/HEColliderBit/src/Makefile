@@ -13,8 +13,8 @@ all: example-fastsim example-py8 example-py8-bsm
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
 	$(CXX) example-fastsim.cpp FastSim.cpp DetectorResponse.cpp $(CXXFLAGS) $(FJFLAGS) $(ROOTFLAGS) -lm -o example-fastsim
 
-example-py8: example-py8.cpp $(HEADERS)
-	$(CXX) example-py8.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8
+example-py8: example-py8.cpp DetectorResponse.cpp FastSim.cpp $(HEADERS)
+	$(CXX) example-py8.cpp DetectorResponse.cpp FastSim.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8
 
 example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 	$(CXX) example-py8-bsm.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
