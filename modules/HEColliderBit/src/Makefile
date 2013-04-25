@@ -9,7 +9,7 @@ ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 
 .PHONY = all clean
 
-all: example-fastsim example-py8 example-py8-bsm
+all: example-fastsim example-fastsim-py8 example-py8-bsm
 	@true
 
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
