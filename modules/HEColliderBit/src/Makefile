@@ -3,7 +3,7 @@ CXX := g++
 CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long #-std=c++11
 HEADERS := MathUtils.hpp  MCUtils.hpp  Particle.hpp  Vectors.hpp
 
-PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -lpythia8 -llhapdfdummy #-lz -lboost_iostreams-mt
+PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -L$(PY8DIR)/lib/archive -lpythia8 -llhapdfdummy #-lz -lboost_iostreams-mt
 FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
 ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 
