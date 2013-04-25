@@ -30,6 +30,17 @@ namespace GAMBIT {
   }
 
 
+
+  void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
+    for (int i = 0; i < pevt.size(); ++i) {
+      if (!evt[i].isFinal()) continue;
+      Particle* p = new Particle(vec4_to_p4(evt[i].mom(), evt[i].id()));
+      /// @todo b-tagging and taus
+      e.addParticle(p);
+    }
+  }
+
+
   // bool fromBottom(int n, const Pythia8::Event& evt) {
   //   const Pythia8::Particle& p = evt[n];
   //   if (abs(p.id()) == 5 || hasBottom(p.id())) return true;

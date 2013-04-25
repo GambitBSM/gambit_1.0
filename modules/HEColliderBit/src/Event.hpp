@@ -6,14 +6,6 @@
 namespace GAMBIT {
 
 
-  void fillGambitEvent(const Pythia8::Event& pyevt, GAMBIT::Event& gevt) {
-    for (DelphesParticle dp : delphes) {
-      e.addParticle( new Particle() );
-    }
-  }
-
-
-
   /// Simple event class, separating into various classes of particle
   class Event {
   public:
@@ -125,6 +117,11 @@ namespace GAMBIT {
     /// Get anti-kT 0.4 jets, with leptons and photons excluded
     /// @todo Take a lazy + caching approach
     const vector<Jet*>& jets() const;
+
+    /// Explicitly set the jets collection (will override on-the-fly calculation)
+    void setJets(const vector<Jet*>& jets) {
+      _jets = jets;
+    }
 
 
     /// @brief Get the missing energy vector
