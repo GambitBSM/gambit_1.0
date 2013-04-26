@@ -1,28 +1,27 @@
-//  GAMBIT: Global and Modular BSM Inference Tool   
+#pragma once
+
+//  GAMBIT: Global and Modular BSM Inference Tool
 //  //  ********************************************
-//  //                                              
-//  //  Header for eventual rollcall for the 
+//  //
+//  //  Header for eventual rollcall for the
 //  //  HEColliderBit Delphes3Backend
-//  //  
+//  //
 //  //  Also contains some useful Utility functions
 //  //  which are used by Delphes3Backend
-//  //                                              
+//  //
 //  //  ********************************************
-//  //                                              
-//  //  Authors                                     
-//  //  =======                                     
-//  //                                              
-//  //  (add name and date if you modify)           
-//  //                                              
+//  //
+//  //  Authors
+//  //  =======
+//  //
+//  //  (add name and date if you modify)
+//  //
 //  //  Abram Krislock
 //  //  2013 Apr 19, Apr 23
-//  //                                              
+//  //
 //  //  ********************************************
-//                                                  
-//                                                  
-
-#ifndef __Delphes3Backend_hpp__
-#define __Delphes3Backend_hpp__
+//
+//
 
 #include <string>
 #include <vector>
@@ -71,7 +70,7 @@ namespace GAMBIT
       void initialize(string configFileName);
       void finalize();
 
-      void analyzeEvent(Pythia8::Event &eventIn, Event &eventOut);
+      void processEvent(Pythia8::Event &eventIn, Event &eventOut);
       void convertInput(Pythia8::Event &event);
       void convertOutput(Event &event);
       // TODO: rollcall!!
