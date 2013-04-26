@@ -29,8 +29,8 @@ example-fastsim-py8: example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(
 example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 	$(CXX) example-py8-bsm.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
 
-example-ana-0lep: gambit_er_0lep.cpp
-	$(CXX) gambit_er_0lep.cpp $(CXXFLAGS) $(PY8FLAGS) $(FJFLAGS) -o example-ana-0lep
+#example-ana-0lep: Analysis_ATLAS0LEP.hpp
+#	$(CXX) Analysis_ATLAS0LEP.hpp $(CXXFLAGS) $(PY8FLAGS) $(FJFLAGS) -o example-ana-0lep
 
 example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp
 	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp -fopenmp $(BOOSTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG -o example-delphes-py8
