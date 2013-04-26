@@ -1,39 +1,41 @@
-//  GAMBIT: Global and Modular BSM Inference Tool   
+//  GAMBIT: Global and Modular BSM Inference Tool
 //  //  ********************************************
-//  //                                              
+//  //
 //  //  For now, this is a main script for testing
 //  //  the Pythia8Backend and Delphes3Backend codes.
 //  //
 //  //  Later on, it should be converted to a module
 //  //  with a proper rollcall.
-//  //                                              
+//  //
 //  //  ********************************************
-//  //                                              
-//  //  Authors                                     
-//  //  =======                                     
-//  //                                              
-//  //  (add name and date if you modify)           
-//  //                                              
+//  //
+//  //  Authors
+//  //  =======
+//  //
+//  //  (add name and date if you modify)
+//  //
 //  //  Abram Krislock
 //  //  2013 Apr 23
-//  //                                              
+//  //
 //  //  ********************************************
-//                                                  
-//                                                  
+//
+//
+#include "Pythia8Backend.hpp"
+#include "Delphes3Backend.hpp"
+#include "Analysis.hpp"
+
 #include <string>
 #include <iostream>
 #include <fstream>
 #include "boost/lexical_cast.hpp"
 
-#include "Pythia8Backend.hpp"
-#include "Delphes3Backend.hpp"
-#include "Pythia.h"
 
 // External
 #include "omp.h"
 #define NEVENTS 1000
 #define MAIN_SHARED counter,slhaFileName,delphesConfigFile
 #define MAIN_PRIVATE genEvent,recoEvent,outFile,temp
+
 
 using namespace std;
 
@@ -54,7 +56,8 @@ int main()
 
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
-  Analysis* ana0lep = Analysis_ATLAS0LEP();
+  /// @todo Generalise to a vector of analyses, populated by names
+  Analysis* ana = mkAnalysis("ATLAS0LEP");
   ana0lep->init();
 
 /*  #pragma omp parallel shared(MAIN_SHARED) \
@@ -74,15 +77,17 @@ int main()
       genEvent.clear();
       recoEvent.clear();
       GAMBIT::HEColliderBit::Pythia8Backend::nextEvent(genEvent);
-      GAMBIT::HEColliderBit::Delphes3Backend::analyzeEvent(genEvent, recoEvent);
-      ana0lep->analyze(recoEvent);
+      GAMBIT::HEColliderBit::Delphes3Backend::processEvent(genEvent, recoEvent);
+      ana->analyze(recoEvent);
       counter++;
     }
   } // end omp parallel block
 
-  ana0lep->finalize();
-  //cout << ana0lep->likelihood() << endl;
+  ana->finalize();
+  //cout << "LIKELIHOOD = " << ana->likelihood() << endl;
+  delete ana;
 
-  cout<<"\n\n Parallelized HECollider Simulation finished. Generated ";
+  cout<<"\n\n Parallelized HECollider Simulation + Analysis finished. Generated ";
   cout<<counter<<" events.\n\n";
+  return 0;
 }
