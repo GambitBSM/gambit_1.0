@@ -1,21 +1,21 @@
-//  GAMBIT: Global and Modular BSM Inference Tool   
+//  GAMBIT: Global and Modular BSM Inference Tool
 //  //  ********************************************
-//  //                                              
+//  //
 //  //  Functions for Delphes3Backend
-//  //                                              
+//  //
 //  //  ********************************************
-//  //                                              
-//  //  Authors                                     
-//  //  =======                                     
-//  //                                              
-//  //  (add name and date if you modify)           
-//  //                                              
+//  //
+//  //  Authors
+//  //  =======
+//  //
+//  //  (add name and date if you modify)
+//  //
 //  //  Abram Krislock
 //  //  2013 Apr 19, Apr 23
-//  //                                              
+//  //
 //  //  ********************************************
-//                                                  
-//                                                  
+//
+//
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -101,7 +101,7 @@ namespace GAMBIT
       }
 
 
-      void analyzeEvent(Pythia8::Event &eventIn, Event &eventOut)
+      void processEvent(Pythia8::Event &eventIn, Event &eventOut)
       {
         try
         {
@@ -175,7 +175,7 @@ namespace GAMBIT
         while((candidate = static_cast<Candidate*>(iteratorPhotons.Next())))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), PID::PHOTON);
           event.addParticle(recoParticle);
         }
@@ -189,10 +189,10 @@ namespace GAMBIT
         {
           const TLorentzVector &momentum = candidate->Momentum;
           if(candidate->Charge < 0)
-            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                         momentum.E(), PID::ELECTRON);
           else
-            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                         momentum.E(), PID::POSITRON);
           event.addParticle(recoParticle);
         }
@@ -206,10 +206,10 @@ namespace GAMBIT
         {
           const TLorentzVector &momentum = candidate->Momentum;
           if(candidate->Charge < 0)
-            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                         momentum.E(), PID::MUON);
           else
-            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                         momentum.E(), PID::ANTIMUON);
           event.addParticle(recoParticle);
         }
@@ -225,19 +225,19 @@ namespace GAMBIT
           if (candidate->TauTag)
           {
             if(candidate->Charge < 0)
-              recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+              recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                           momentum.E(), PID::TAU);
             else
-              recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+              recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                           momentum.E(), PID::ANTITAU);
             event.addParticle(recoParticle);
             continue;
           }
           if(candidate->BTag)
-            recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(),
                               momentum.E(), true);
           else
-            recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(),
                               momentum.E(), false);
           event.addJet(recoJet);
         }

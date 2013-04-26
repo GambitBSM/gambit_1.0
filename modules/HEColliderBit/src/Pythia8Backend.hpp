@@ -1,25 +1,24 @@
-//  GAMBIT: Global and Modular BSM Inference Tool   
+#pragma once
+
+//  GAMBIT: Global and Modular BSM Inference Tool
 //  //  ********************************************
-//  //                                              
-//  //  Header for eventual rollcall for the 
+//  //
+//  //  Header for eventual rollcall for the
 //  //  HEColliderBit Pythia8Backend
-//  //  
+//  //
 //  //  ********************************************
-//  //                                              
-//  //  Authors                                     
-//  //  =======                                     
-//  //                                              
-//  //  (add name and date if you modify)           
-//  //                                              
+//  //
+//  //  Authors
+//  //  =======
+//  //
+//  //  (add name and date if you modify)
+//  //
 //  //  Abram Krislock
 //  //  2013 Apr 22, Apr 23
-//  //                                              
+//  //
 //  //  ********************************************
-//                                                  
-//                                                  
-
-#ifndef __Pythia8Backend_hpp__
-#define __Pythia8Backend_hpp__
+//
+//
 
 #include "Pythia.h"
 
@@ -51,4 +50,3 @@ namespace GAMBIT
   }
 }
 
-#endif /* defined(__Pythia8Backend_hpp__) */
