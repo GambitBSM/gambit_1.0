@@ -28,6 +28,8 @@
 #include "Pythia8Backend.hpp"
 #include "Delphes3Backend.hpp"
 #include "Pythia.h"
+#include "Event.hpp"
+#include "Analysis.hpp"
 
 // External
 #include "omp.h"
@@ -50,11 +52,11 @@ int main()
 
   // For event storage
   Pythia8::Event genEvent;
-  GAMBIT::HEColliderBit::ReconstructedEvent recoEvent;
+  GAMBIT::Event recoEvent;
 
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
-  Analysis* ana0lep = Analysis_ATLAS0LEP();
+  GAMBIT::Analysis* ana0lep = Analysis_ATLAS0LEP();
   ana0lep->init();
 
 /*  #pragma omp parallel shared(MAIN_SHARED) \

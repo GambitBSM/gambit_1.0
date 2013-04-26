@@ -164,7 +164,7 @@ namespace GAMBIT
         if((candidate = static_cast<Candidate*>(arrayMissingET->At(0))))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          Event.setMissingMom(P4::mkXYZM(momentum.Px(), momentum.Py(), 0., 0.));
+          event.setMissingMom(P4::mkXYZM(momentum.Px(), momentum.Py(), 0., 0.));
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -177,7 +177,7 @@ namespace GAMBIT
           const TLorentzVector &momentum = candidate->Momentum;
           recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                       momentum.E(), PID::PHOTON);
-          Event.addParticle(recoParticle);
+          event.addParticle(recoParticle);
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -194,7 +194,7 @@ namespace GAMBIT
           else
             recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                         momentum.E(), PID::POSITRON);
-          Event.addParticle(recoParticle);
+          event.addParticle(recoParticle);
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -211,7 +211,7 @@ namespace GAMBIT
           else
             recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                         momentum.E(), PID::ANTIMUON);
-          Event.addParticle(recoParticle);
+          event.addParticle(recoParticle);
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -230,7 +230,7 @@ namespace GAMBIT
             else
               recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                           momentum.E(), PID::ANTITAU);
-            Event.addParticle(recoParticle);
+            event.addParticle(recoParticle);
             continue;
           }
           if(candidate->BTag)
@@ -239,7 +239,7 @@ namespace GAMBIT
           else
             recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
                               momentum.E(), false);
-          Event.addJet(recoJet);
+          event.addJet(recoJet);
         }
       }
     }
