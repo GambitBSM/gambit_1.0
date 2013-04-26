@@ -29,7 +29,6 @@
 #include <fstream>
 #include "boost/lexical_cast.hpp"
 
-
 // External
 #include "omp.h"
 #define NEVENTS 1000
@@ -52,13 +51,14 @@ int main()
 
   // For event storage
   Pythia8::Event genEvent;
-  GAMBIT::HEColliderBit::ReconstructedEvent recoEvent;
+  GAMBIT::Event recoEvent;
 
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
   /// @todo Generalise to a vector of analyses, populated by names
-  Analysis* ana = mkAnalysis("ATLAS0LEP");
-  ana0lep->init();
+  GAMBIT::Analysis* ana = mkAnalysis("ATLAS0LEP");
+
+  ana->init();
 
 /*  #pragma omp parallel shared(MAIN_SHARED) \
   private(MAIN_PRIVATE,DELPHES3BACKEND_PRIVATE,PYTHIA8BACKEND_PRIVATE) */
