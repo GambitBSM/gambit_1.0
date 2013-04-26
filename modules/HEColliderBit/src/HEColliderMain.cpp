@@ -54,6 +54,9 @@ int main()
 
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
+  Analysis* ana0lep = Analysis_ATLAS0LEP();
+  ana0lep->init();
+
 /*  #pragma omp parallel shared(MAIN_SHARED) \
   private(MAIN_PRIVATE,DELPHES3BACKEND_PRIVATE,PYTHIA8BACKEND_PRIVATE) */
   {
@@ -72,9 +75,13 @@ int main()
       recoEvent.clear();
       GAMBIT::HEColliderBit::Pythia8Backend::nextEvent(genEvent);
       GAMBIT::HEColliderBit::Delphes3Backend::analyzeEvent(genEvent, recoEvent);
+      ana0lep->analyze(recoEvent);
       counter++;
     }
   } // end omp parallel block
+
+  ana0lep->finalize();
+  //cout << ana0lep->likelihood() << endl;
 
   cout<<"\n\n Parallelized HECollider Simulation finished. Generated ";
   cout<<counter<<" events.\n\n";
