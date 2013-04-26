@@ -86,9 +86,14 @@ namespace GAMBIT {
     std::vector<Particle*> particles() const {
       // Add together all the vectors of the different particle types
       std::vector<Particle*> rtn;
+      // rtn.reserve(visible_particles().size() + _invisibles.size());
       rtn.reserve(_photons.size() + _electrons.size() + _muons.size() + _taus.size() + _invisibles.size());
-      #define APPEND_VEC(vec) rtn.insert(rtn.end(), vec.begin(), vec.end() )
-      APPEND_VEC(visible_particles());
+      #define APPEND_VEC(vec) rtn.insert(rtn.end(), vec.begin(), vec.end())
+      // APPEND_VEC(visible_particles());
+      APPEND_VEC(_photons);
+      APPEND_VEC(_electrons);
+      APPEND_VEC(_muons);
+      APPEND_VEC(_taus);
       APPEND_VEC(_invisibles);
       #undef APPEND_VEC
       return rtn;

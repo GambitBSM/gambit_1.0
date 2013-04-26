@@ -54,7 +54,7 @@ int main() {
 
   py.init();
 
-  GAMBIT::Analysis* ana = mkAnalysis("ATLAS_0LEP");
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
   ana->init();
 
   for (size_t i = 0; i < 1000; ++i) {
