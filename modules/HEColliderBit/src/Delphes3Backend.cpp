@@ -21,6 +21,9 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "PIDCodes.hpp"
+#include "Particle.hpp"
+#include "Jet.hpp"
 #include "Delphes3Backend.hpp"
 
 using namespace std;
@@ -98,7 +101,7 @@ namespace GAMBIT
       }
 
 
-      void analyzeEvent(Pythia8::Event &eventIn, ReconstructedEvent &eventOut)
+      void analyzeEvent(Pythia8::Event &eventIn, Event &eventOut)
       {
         try
         {
@@ -151,18 +154,17 @@ namespace GAMBIT
 
       // ReconstructedEvent is a boring class in the HEColliderBit namespace
       //    See the DelphesGambit.hpp file for details
-      void convertOutput(ReconstructedEvent &event)
+      void convertOutput(Event &event)
       {
-        event.missingET = -1.;
-        event.missingEPhi = -1.;
+        Particle *recoParticle;
+        Jet *recoJet;
         // Delphes particle arrays: Post-Detector Sim
         //    MISSING ET:
         const TObjArray *arrayMissingET = modularDelphes->ImportArray("MissingET/momentum");
         if((candidate = static_cast<Candidate*>(arrayMissingET->At(0))))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          event.missingET = momentum.Pt();
-          event.missingEPhi = momentum.Phi();
+          Event.setMissingMom(P4::mkXYZM(momentum.Px(), momentum.Py(), 0., 0.));
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -173,9 +175,9 @@ namespace GAMBIT
         while((candidate = static_cast<Candidate*>(iteratorPhotons.Next())))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          Pythia8::Vec4 photon;
-          photon.p(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E());
-          event.photons.push_back(photon);
+          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                      momentum.E(), PID::PHOTON);
+          Event.addParticle(recoParticle);
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -186,9 +188,13 @@ namespace GAMBIT
         while((candidate = static_cast<Candidate*>(iteratorElectrons.Next())))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          Pythia8::Vec4 electron;
-          electron.p(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E());
-          event.electrons.push_back(electron);
+          if(candidate->Charge < 0)
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                        momentum.E(), PID::ELECTRON);
+          else
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                        momentum.E(), PID::POSITRON);
+          Event.addParticle(recoParticle);
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -199,29 +205,41 @@ namespace GAMBIT
         while((candidate = static_cast<Candidate*>(iteratorMuons.Next())))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          Pythia8::Vec4 muon;
-          muon.p(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E());
-          event.muons.push_back(muon);
+          if(candidate->Charge < 0)
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                        momentum.E(), PID::MUON);
+          else
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                        momentum.E(), PID::ANTIMUON);
+          Event.addParticle(recoParticle);
         }
 
         // Delphes particle arrays: Post-Detector Sim
-        //    JETS:
+        //    JETS and TAUS:
         const TObjArray *arrayJets = modularDelphes->ImportArray("UniqueObjectFinder/jets");
         TIter iteratorJets(arrayJets);
         iteratorJets.Reset();
         while((candidate = static_cast<Candidate*>(iteratorJets.Next())))
         {
           const TLorentzVector &momentum = candidate->Momentum;
-          Pythia8::Vec4 jet;
-          jet.p(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E());
-          // TODO: Is it possible for a jet to be BOTH b and tau tagged??
-          //       If so, we need to handle that case somehow.
-          if(candidate->BTag == 1)
-            event.bjets.push_back(jet);
-          else if(candidate->TauTag == 1)
-            event.taus.push_back(jet);
+          if (candidate->TauTag)
+          {
+            if(candidate->Charge < 0)
+              recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                          momentum.E(), PID::TAU);
+            else
+              recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                                          momentum.E(), PID::ANTITAU);
+            Event.addParticle(recoParticle);
+            continue;
+          }
+          if(candidate->BTag)
+            recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                              momentum.E(), true);
           else
-            event.jets.push_back(jet);
+            recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+                              momentum.E(), false);
+          Event.addJet(recoJet);
         }
       }
     }

@@ -37,62 +37,6 @@
 
 using namespace std;
 
-namespace GAMBIT
-{
-  namespace HEColliderBit
-  {
-    namespace AnalysisBackend
-    {
-      void someKindOfAnalysis(GAMBIT::HEColliderBit::ReconstructedEvent &recoEvent,
-                              Pythia8::Event &genEvent,
-                              ofstream &outFile, int &counter)
-      {
-        outFile<<"\n Event Received "<<counter<<":\n";
-        for (int ip = 0; ip < genEvent.size(); ++ip)
-        {
-          const Pythia8::Particle& p = genEvent[ip];
-          if (!p.isFinal()) continue;
-          outFile << ip << " " << p.name() << endl;
-        }
-        outFile<<"\n\n ... which has the following reco info:";
-        outFile<<"\n    missingET, phi = "<<recoEvent.missingET<<", "<<recoEvent.missingEPhi;
-        outFile<<endl;
-        for (size_t ir = 0; ir < recoEvent.photons.size(); ++ir)
-        {
-          const Pythia8::Vec4& photon = recoEvent.photons[ir];
-          outFile << " Photon, pT = " << photon.pT() << endl;
-        }
-        for (size_t ir = 0; ir < recoEvent.electrons.size(); ++ir)
-        {
-          const Pythia8::Vec4& electron = recoEvent.electrons[ir];
-          outFile << " Electron, pT = " << electron.pT() << endl;
-        }
-        for (size_t ir = 0; ir < recoEvent.muons.size(); ++ir)
-        {
-          const Pythia8::Vec4& muon = recoEvent.muons[ir];
-          outFile << " Muon, pT = " << muon.pT() << endl;
-        }
-        for (size_t ir = 0; ir < recoEvent.taus.size(); ++ir)
-        {
-          const Pythia8::Vec4& tau = recoEvent.taus[ir];
-          outFile << " Tau, pT = " << tau.pT() << endl;
-        }
-        for (size_t ir = 0; ir < recoEvent.jets.size(); ++ir)
-        {
-          const Pythia8::Vec4& jet = recoEvent.jets[ir];
-          outFile << " Jet, pT = " << jet.pT() << endl;
-        }
-        for (size_t ir = 0; ir < recoEvent.bjets.size(); ++ir)
-        {
-          const Pythia8::Vec4& bjet = recoEvent.bjets[ir];
-          outFile << " bJet, pT = " << bjet.pT() << endl;
-        }
-        counter++;
-      }
-    }
-  }
-}
-
 int main()
 {
   // simulation setup...
@@ -128,7 +72,7 @@ int main()
       recoEvent.clear();
       GAMBIT::HEColliderBit::Pythia8Backend::nextEvent(genEvent);
       GAMBIT::HEColliderBit::Delphes3Backend::analyzeEvent(genEvent, recoEvent);
-      GAMBIT::HEColliderBit::AnalysisBackend::someKindOfAnalysis(recoEvent, genEvent, outFile, counter);
+      counter++;
     }
   } // end omp parallel block
 

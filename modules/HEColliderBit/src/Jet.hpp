@@ -17,6 +17,9 @@ namespace GAMBIT {
     Jet(const P4& mom)
       : _p4(mom), _isB(false) {  }
 
+    /// "Cartesian" constructor
+    Jet(double px, double py, double pz, double E, bool isB=false)
+      : _p4(px, py, pz, E), _isB(isB) {  }
     //@}
 
 
