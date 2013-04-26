@@ -18,39 +18,39 @@ using namespace std;
 
 int main() {
 
-  Pythia py;
-  py.readString("Beams:eCM = 8000.");
-  py.readString("Main:numberOfEvents = 1000");
-  py.readString("Main:timesAllowErrors = 1000");
-  py.readString("Init:showProcesses = off");
-  py.readString("Init:showMultipartonInteractions = off");
-  py.readString("Init:showChangedSettings = off");
-  py.readString("Init:showChangedParticleData = off");
-  py.readString("Next:numberShowEvent = 0");
-  py.readString("Next:numberShowInfo = 0");
-  py.readString("Next:numberShowProcess = 0");
-  py.readString("Random:setSeed = on");
-  py.readString("Random:seed = 12345");
+  Pythia8::Pythia py;
+  py.settings.parm("Beams:eCM", 8000);
+  py.settings.mode("Main:numberOfEvents", 1000);
+  py.settings.mode("Main:timesAllowErrors", 1000);
+  py.settings.flag("Init:showProcesses", false);
+  py.settings.flag("Init:showMultipartonInteractions", false);
+  py.settings.flag("Init:showChangedSettings", false);
+  py.settings.flag("Init:showChangedParticleData", false);
+  py.settings.mode("Next:numberShowEvent", 0);
+  py.settings.mode("Next:numberShowInfo", 0);
+  py.settings.mode("Next:numberShowProcess", 0);
+  py.settings.flag("Random:setSeed", true);
+  py.settings.mode("Random:seed", 12345);
 
-  py.readString("PartonLevel:MPI = off");
-  // py.readString("PartonLevel:ISR = off");
-  py.readString("PartonLevel:FSR = off");
-  py.readString("HadronLevel:all = off");
+  py.settings.flag("PartonLevel:MPI", false);
+  // py.settings.flag("PartonLevel:ISR", false);
+  py.settings.flag("PartonLevel:FSR", false);
+  py.settings.flag("HadronLevel:all", false);
 
-  // py.readString("HardQCD:all = on");
-  // py.readString("PhaseSpace:pTHatMin = 20.");
+  // py.settings.flag("HardQCD:all", true);
+  // py.settings.parm("PhaseSpace:pTHatMin", 20);
 
-  // py.readString("HardQCD:gg2bbbar = on");
+  // py.settings.flag("HardQCD:gg2bbbar", true);
 
-  // py.readString("SUSY:qg2squarkgluino = on");
-  py.readString("SUSY:all = on");
-  py.readString("SLHA:file = sps1aWithDecays.spc");
+  // py.settings.flag("SUSY:qg2squarkgluino", true);
+  py.settings.flag("SUSY:all", true);
+  py.settings.word("SLHA:file", "sps1aWithDecays.spc");
 
-  //py.readString("WeakSingleBoson:ffbar2gmZ = on");
-  //py.readString("23:onMode = off");
-  //py.readString("23:onIfAny = 11");
-  //py.readString("PhaseSpace:mHatMin = 50.");
-  //py.readString("PhaseSpace:mHatMax = 120.");
+  // py.settings.flag("WeakSingleBoson:ffbar2gmZ", true);
+  // py.settings.flag("23:onMode", false);
+  // py.settings.mode("23:onIfAny", 11);
+  // py.settings.parm("PhaseSpace:mHatMin", 50.);
+  // py.settings.parm("PhaseSpace:mHatMax", 120.);
 
   py.init();
 
