@@ -77,6 +77,3 @@ namespace GAMBIT
     }
   }
 }
-
-#endif /* defined(__Delphes3Backend_hpp__) */
-

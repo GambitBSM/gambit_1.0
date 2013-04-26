@@ -29,3 +29,6 @@ namespace GAMBIT {
     const double dphi = deltaPhi(a, b);
     return deta*deta + dphi*dphi;
   }
+
+
+}

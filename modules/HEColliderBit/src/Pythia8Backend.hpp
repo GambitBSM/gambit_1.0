@@ -49,5 +49,3 @@ namespace GAMBIT
     }
   }
 }
-
-#endif /* defined(__Pythia8Backend_hpp__) */

@@ -1,5 +1,6 @@
-PY8DIR := $(HOME)/local
-DELPHESDIR := $(HOME)/local
+PY8DIR := $(HOME)/heplocal
+FJDIR := $(HOME)/heplocal
+DELPHESDIR := $(HOME)/heplocal
 CXX := g++
 CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long #-std=c++11
 
@@ -17,7 +18,7 @@ DELPHESFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external -L$(DELPHESDIR) -lDelph
 
 .PHONY = all clean
 
-all: example-fastsim example-fastsim-py8 example-py8-bsm example-ana-0lep example-delphes-py8
+all: example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8
 	@true
 
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
@@ -27,13 +28,13 @@ example-fastsim-py8: example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(
 	$(CXX) example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-fastsim-py8
 
 example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
-	$(CXX) example-py8-bsm.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
+	$(CXX) example-py8-bsm.cpp Analysis.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
 
-#example-ana-0lep: Analysis_ATLAS0LEP.hpp
-#	$(CXX) Analysis_ATLAS0LEP.hpp $(CXXFLAGS) $(PY8FLAGS) $(FJFLAGS) -o example-ana-0lep
+example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
+	$(CXX) example-py8-0lep.cpp Analysis.cpp $(CXXFLAGS) $(PY8FLAGS) $(FJFLAGS) -o example-py8-0lep
 
-example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp
-	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp -fopenmp $(BOOSTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG -o example-delphes-py8
+example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp
+	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp -fopenmp $(BOOSTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG -o example-delphes-py8
 
 clean:
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-ana-0lep example-delphes-py8
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8

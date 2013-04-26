@@ -5,8 +5,11 @@
 namespace GAMBIT {
 
 
+  using namespace std;
+
+
   class Analysis_ATLAS0LEP : public Analysis {
-    using namespace std;
+  private:
 
     int _numAT, _numAM, _numAL, _numBT, _numBM,
       _numCT, _numCM, _numCL, _numD, _numET, _numEM, _numEL;
@@ -282,7 +285,14 @@ namespace GAMBIT {
 
 
     void finalize() {
-      cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " " << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " " << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
+      cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " "
+           << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " "
+           << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
+    }
+
+
+    double logLikelihood() {
+      return -1.0;
     }
 
 

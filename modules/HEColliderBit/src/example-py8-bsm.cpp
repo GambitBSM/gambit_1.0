@@ -75,15 +75,15 @@ int main() {
       if (!py.next()) continue;
       // cout << py.event.size() << endl;
 
-      vector<int> anaparticles = get_anaparticles(py.event);
+      // vector<int> anaparticles = get_anaparticles(py.event);
       // for (auto n : anaparticles) cout << n << "=" << py.event[n].id() << " "; cout << endl << endl;
 
       Vec4 ptot;
       vector<PseudoJet> jetparticles;
-      vector<Particle> electrons, muons;
+      vector<Pythia8::Particle> electrons, muons;
 
       for (int ip = 0; ip < py.event.size(); ++ip) {
-        const Particle& p = py.event[ip];
+        const Pythia8::Particle& p = py.event[ip];
         if (!p.isFinal()) continue;
         // cout << p.name() << endl;
         if (p.id() == 12 || p.id() == 14 || p.id() == 16) continue; // exclude neutrinos
@@ -112,17 +112,17 @@ int main() {
 
 
       // Now define vectors of baseline objects
-      vector<Particle> baselineElectrons;
-      vector<Particle> baselineMuons;
+      vector<Pythia8::Particle> baselineElectrons;
+      vector<Pythia8::Particle> baselineMuons;
       vector<PseudoJet> baselineJets;
 
       for (size_t iEl=0;iEl<electrons.size();iEl++) {
-        Particle electron=electrons.at(iEl);
+        Pythia8::Particle electron=electrons.at(iEl);
         if (electron.pT()>20.&&fabs(electron.eta())<2.47)baselineElectrons.push_back(electron);
       }
 
       for (size_t iMu=0;iMu<muons.size();iMu++) {
-        Particle muon=muons.at(iMu);
+        Pythia8::Particle muon=muons.at(iMu);
         if (muon.pT()>10.&&fabs(muon.eta())<2.4)baselineMuons.push_back(muon);
       }
 
@@ -132,8 +132,8 @@ int main() {
       }
 
       //Overlap removal
-      vector<Particle> signalElectrons;
-      vector<Particle> signalMuons;
+      vector<Pythia8::Particle> signalElectrons;
+      vector<Pythia8::Particle> signalMuons;
       vector<PseudoJet> signalJets;
 
       //Remove any jet within dR=0.2 of an electrons

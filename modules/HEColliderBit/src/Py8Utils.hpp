@@ -3,6 +3,7 @@
 #include "FastJetUtils.hpp"
 #include "Vectors.hpp"
 #include "Event.hpp"
+
 #include "Pythia.h"
 
 
@@ -37,7 +38,7 @@ namespace GAMBIT {
   }
 
   inline double deltaR(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
-    const double deta = fabs(eta(a) - eta(b));
+    const double deta = fabs(a.eta() - b.eta());
     const double dphi = deltaPhi(a, b);
     return deta*deta + dphi*dphi;
   }
@@ -94,54 +95,54 @@ namespace GAMBIT {
   }
 
 
-  bool isFinalB(int n, const Pythia8::Event& evt) {
-    // *This* particle must be a b or b-hadron
-    if (!hasBottom(evt[n].id())) return false;
-    // Daughters must *not* include a b or b-hadron
-    // for (int m : evt.daughterList(n)) {
-    vector<int> daughters = evt.daughterList(n);
-    for (size_t i = 0; i < daughters.size(); ++i) {
-      int m = daughters[i];
-      if (hasBottom(evt[m].id())) return false;
-    }
-    return true;
-  }
+  // bool isFinalB(int n, const Pythia8::Event& evt) {
+  //   // *This* particle must be a b or b-hadron
+  //   if (!hasBottom(evt[n].id())) return false;
+  //   // Daughters must *not* include a b or b-hadron
+  //   // for (int m : evt.daughterList(n)) {
+  //   vector<int> daughters = evt.daughterList(n);
+  //   for (size_t i = 0; i < daughters.size(); ++i) {
+  //     int m = daughters[i];
+  //     if (hasBottom(evt[m].id())) return false;
+  //   }
+  //   return true;
+  // }
 
 
-  bool isFinalTau(int n, const Pythia8::Event& evt) {
-    // *This* particle must be a b or b-hadron
-    if (abs(evt[n].id()) != 15) return false;
-    // Daughters must *not* include a tau
-    // for (int m : evt.daughterList(n)) {
-    vector<int> daughters = evt.daughterList(n);
-    for (size_t i = 0; i < daughters.size(); ++i) {
-      int m = daughters[i];
-      if (abs(evt[m].id()) == 15) return false;
-    }
-    return true;
-  }
+  // bool isFinalTau(int n, const Pythia8::Event& evt) {
+  //   // *This* particle must be a b or b-hadron
+  //   if (abs(evt[n].id()) != 15) return false;
+  //   // Daughters must *not* include a tau
+  //   // for (int m : evt.daughterList(n)) {
+  //   vector<int> daughters = evt.daughterList(n);
+  //   for (size_t i = 0; i < daughters.size(); ++i) {
+  //     int m = daughters[i];
+  //     if (abs(evt[m].id()) == 15) return false;
+  //   }
+  //   return true;
+  // }
 
 
-  vector<int> get_anaparticles(const Pythia8::Event& evt) {
-    // Get the most physical b hadron and tau IDs
-    vector<int> unstables;
-    for (int n = 0; n < evt.size(); ++n) {
-      if (isFinalB(n, evt)) unstables.push_back(n);
-      if (isFinalTau(n, evt)) unstables.push_back(n);
-    }
-    // Identify the final state particles from those decays
-    vector<int> rmparticles;
-    // for (int n : unstables) finalDescendants(n, evt, rmparticles);
-    for (size_t i = 0; i < unstables.size(); ++i) finalDescendants(unstables[i], evt, rmparticles);
-    // Identify all final state particles, except those from b and tau decays where the parents are used
-    vector<int> rtn = unstables;
-    for (int n = 0; n < evt.size(); ++n) {
-      if (!evt[n].isFinal()) continue;
-      if (find(rmparticles.begin(), rmparticles.end(), n) == rmparticles.end()) rtn.push_back(n);
-    }
-    sort(rtn.begin(), rtn.end());
-    return rtn;
-  }
+  // vector<int> get_anaparticles(const Pythia8::Event& evt) {
+  //   // Get the most physical b hadron and tau IDs
+  //   vector<int> unstables;
+  //   for (int n = 0; n < evt.size(); ++n) {
+  //     if (isFinalB(n, evt)) unstables.push_back(n);
+  //     if (isFinalTau(n, evt)) unstables.push_back(n);
+  //   }
+  //   // Identify the final state particles from those decays
+  //   vector<int> rmparticles;
+  //   // for (int n : unstables) finalDescendants(n, evt, rmparticles);
+  //   for (size_t i = 0; i < unstables.size(); ++i) finalDescendants(unstables[i], evt, rmparticles);
+  //   // Identify all final state particles, except those from b and tau decays where the parents are used
+  //   vector<int> rtn = unstables;
+  //   for (int n = 0; n < evt.size(); ++n) {
+  //     if (!evt[n].isFinal()) continue;
+  //     if (find(rmparticles.begin(), rmparticles.end(), n) == rmparticles.end()) rtn.push_back(n);
+  //   }
+  //   sort(rtn.begin(), rtn.end());
+  //   return rtn;
+  // }
 
   //@}
 
@@ -149,15 +150,40 @@ namespace GAMBIT {
   /// Fill a GAMBIT::Event from a Pythia8 event
   inline void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
     for (int i = 0; i < pevt.size(); ++i) {
-      if (!evt[i].isFinal()) continue;
-      Particle* p = new Particle(vec4_to_p4(evt[i].mom(), evt[i].id()));
+      if (!pevt[i].isFinal()) continue;
+      Particle* p = new Particle(vec4_to_p4(pevt[i].p()), pevt[i].id());
       /// @todo Promptness
       /// @todo b-tagging and taus
-      e.addParticle(p);
+      gevt.addParticle(p);
     }
     /// @todo Jets
     /// @todo MET
   }
+
+  // for (int ip = 0; ip < py.event.size(); ++ip) {
+  //   const Particle& p = py.event[ip];
+  //   if (!p.isFinal()) continue;
+  //   // cout << p.name() << endl;
+  //   if (p.id() == 12 || p.id() == 14 || p.id() == 16) continue; // exclude neutrinos
+  //   if (p.id() == 1000022) continue; // exclude LSP
+
+  //   // Update total visible momentum
+  //   ptot += p.p();
+
+  //   // Choose jet constituents (should include neutrinos for ATLAS?)
+  //   jetparticles.push_back( vec4_to_pseudojet(p.p()) );
+
+  //   // Identify final state electrons and muons
+  //   /// @todo Need to determine if these are prompt: e/mu from hadron decays are not of interest
+  //   if (abs(p.id()) == 11) electrons.push_back(p);
+  //   if (abs(p.id()) == 13) muons.push_back(p);
+  // }
+
+  // ClusterSequence cseq(jetparticles, jet_def);
+  // vector<PseudoJet> jets = sorted_by_pt(cseq.inclusive_jets(60));
+  // /// @todo Need to do e/gamma jet overlap removal... and remove prompt taus and muons
+  // h_njet.Fill(jets.size());
+  // if (jets.size() > 1) cout << deltaPhi(pseudojet_to_vec4(jets[0]), pseudojet_to_vec4(jets[1])) << endl;
 
 
 }
