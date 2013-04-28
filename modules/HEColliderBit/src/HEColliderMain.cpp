@@ -23,6 +23,7 @@
 #include "Pythia8Backend.hpp"
 #include "Delphes3Backend.hpp"
 #include "Analysis.hpp"
+#include "Event.hpp"
 
 #include <string>
 #include <iostream>
@@ -31,6 +32,7 @@
 
 // External
 #include "omp.h"
+#define CHUNKSIZE 50
 #define NEVENTS 1000
 #define MAIN_SHARED counter,slhaFileName,delphesConfigFile
 #define MAIN_PRIVATE genEvent,recoEvent,outFile,temp
@@ -41,46 +43,51 @@ using namespace std;
 int main()
 {
   // simulation setup...
-  string slhaFileName = "mhmodBenchmark.slha";
+  //string slhaFileName = "mhmodBenchmark.slha";
+  string slhaFileName = "sps1aWithDecays.spc";
   string delphesConfigFile = "delphes_card_ATLAS.tcl";
 
   // variables used during parallelization
   string temp;
   ofstream outFile;
-  int counter = 0;
+  int counter, chunk;
 
   // For event storage
   Pythia8::Event genEvent;
   GAMBIT::Event recoEvent;
 
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
+  chunk = CHUNKSIZE;
 
   /// @todo Generalise to a vector of analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS0LEP");
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
 
   ana->init();
 
-/*  #pragma omp parallel shared(MAIN_SHARED) \
-  private(MAIN_PRIVATE,DELPHES3BACKEND_PRIVATE,PYTHIA8BACKEND_PRIVATE) */
+//  #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
-      // Initialize the backends
-      GAMBIT::HEColliderBit::Pythia8Backend::initialize(12345 + 17 * omp_get_thread_num(), slhaFileName);
-      GAMBIT::HEColliderBit::Delphes3Backend::initialize(delphesConfigFile);
+    // Initialize the backends
+    GAMBIT::HEColliderBit::Pythia8Backend myPythia(12345 + 17 * omp_get_thread_num(), slhaFileName);
+    GAMBIT::HEColliderBit::Delphes3Backend myDelphes(delphesConfigFile);
 
     // For a reasonable output
 //    temp = "tester_thread.dat";
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";
     outFile.open(temp.c_str());
 
-    for (int i=0; i<NEVENTS/omp_get_num_threads(); i++)
+//     #pragma omp for schedule(dynamic,chunk)
+    for (counter=0; counter<NEVENTS; counter++)
     {
       genEvent.clear();
       recoEvent.clear();
-      GAMBIT::HEColliderBit::Pythia8Backend::nextEvent(genEvent);
-      GAMBIT::HEColliderBit::Delphes3Backend::processEvent(genEvent, recoEvent);
+      myPythia.nextEvent(genEvent);
+      myDelphes.processEvent(genEvent, recoEvent);
       ana->analyze(recoEvent);
-      counter++;
+      outFile<<"\n Event "<<counter<<" Generated, with event size = "<<genEvent.size(); 
+      outFile<<"\n Event "<<counter<<" Processed, with missingET = "<<recoEvent.met();
     }
+    cout<<"\n\n";
+    outFile.close();
   } // end omp parallel block
 
   ana->finalize();

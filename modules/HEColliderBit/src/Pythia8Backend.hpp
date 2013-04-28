@@ -22,14 +22,20 @@
 
 #include "Pythia.h"
 
-#define PYTHIA8BACKEND_PRIVATE GAMBIT::HEColliderBit::Pythia8Backend::pythiaInstance,GAMBIT::HEColliderBit::Pythia8Backend::eventFailureError
+// #define PYTHIA8BACKEND_PRIVATE GAMBIT::HEColliderBit::Pythia8Backend::pythiaInstance,GAMBIT::HEColliderBit::Pythia8Backend::eventFailureError
 
 namespace GAMBIT
 {
   namespace HEColliderBit
   {
-    namespace Pythia8Backend
+    class Pythia8Backend
     {
+    public:
+      Pythia8Backend(int seed, string slhaFileName);
+      ~Pythia8Backend();
+      void nextEvent(Pythia8::Event &event);
+
+    private:
       // TODO: should this be/use a standard GAMBIT exception?
       class EventFailureError: public exception
       {
@@ -37,15 +43,10 @@ namespace GAMBIT
         {
           return "For whatever reason, Pythia could not make the next event.";
         }
-      };
+      } eventFailureError;
+      Pythia8::Pythia *pythiaInstance;
 
-      extern EventFailureError eventFailureError;
-      extern Pythia8::Pythia *pythiaInstance;
-
-      void initialize(int seed, string slhaFileName);
-      void nextEvent(Pythia8::Event &event);
-
-      // TODO: rollcall!!
-    }
+      // TODO: rollcall?
+    };
   }
 }

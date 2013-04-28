@@ -25,12 +25,12 @@ namespace GAMBIT {
       _numET = 0; _numEM = 0; _numEL = 0;
     }
 
-
     void analyze(const Event* event) {
       P4 ptot = event->missingMom();
       double met= event->met();
-      vector<Jet *> jets;
-      vector<Particle *> electrons, muons;
+      vector<Jet *> jets=event->jets();
+      vector<Particle *> electrons=event->electrons();
+      vector<Particle *> muons=event->muons();      
 
       // Now define vectors of baseline objects
       vector<Particle *> baselineElectrons;
@@ -92,17 +92,24 @@ namespace GAMBIT {
 
       //We now have the signal electrons, muons and jets
       //Let's move on to the 0 lepton 2012 analysis
+      
+
 
       //Calculate common variables and cuts first
       int nElectrons=signalElectrons.size();
       int nMuons=signalMuons.size();
       int nJets=signalJets.size();
+
+      //DEBUG info
+      cout << "Number of electrons " <<  nElectrons << " Number of muons " << nMuons << " Number of jets " << nJets << endl;
+
       bool leptonCut=false;
       if (nElectrons==0 && nMuons==0)leptonCut=true;
 
       bool metCut=false;
+      //cout << "MET " << met << endl;
       if (met>160.)metCut=true;
-
+      if(metCut)cout << "Passes met cut" << endl;
       float meff_incl=0;
       for (size_t iJet=0;iJet<signalJets.size();iJet++) {
         if (signalJets.at(iJet)->pT()>40.)meff_incl+=signalJets.at(iJet)->pT();
