@@ -64,18 +64,17 @@ int main()
 
   ana->init();
 
-//  #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
+  #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Initialize the backends
     GAMBIT::HEColliderBit::Pythia8Backend myPythia(12345 + 17 * omp_get_thread_num(), slhaFileName);
     GAMBIT::HEColliderBit::Delphes3Backend myDelphes(delphesConfigFile);
 
     // For a reasonable output
-//    temp = "tester_thread.dat";
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";
     outFile.open(temp.c_str());
 
-//     #pragma omp for schedule(dynamic,chunk)
+    #pragma omp for schedule(dynamic,chunk)
     for (counter=0; counter<NEVENTS; counter++)
     {
       genEvent.clear();
