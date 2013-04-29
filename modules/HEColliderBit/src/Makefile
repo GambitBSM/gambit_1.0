@@ -28,7 +28,7 @@ example-fastsim-py8: example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(
 	$(CXX) example-fastsim-py8.cpp DetectorResponse.cpp FastSim.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-fastsim-py8
 
 example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
-	$(CXX) example-py8-bsm.cpp Analysis.cpp $(CXXFLAGS) -fopenmp $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
+	$(CXX) example-py8-bsm.cpp Analysis.cpp $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
 
 example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 	$(CXX) example-py8-0lep.cpp Analysis.cpp $(CXXFLAGS) $(PY8FLAGS) $(FJFLAGS) -o example-py8-0lep
