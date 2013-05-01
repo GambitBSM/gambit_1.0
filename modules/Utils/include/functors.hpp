@@ -236,7 +236,7 @@ namespace GAMBIT
       }
 
       // Calculate method
-      void calculate() { if(needs_recalculating) { myFunction(myValue); } }
+      void calculate() { if(needs_recalculating) { this->myFunction(myValue); } }
 
       // Operation (return value) 
       TYPE operator()() { return myValue; }
@@ -423,18 +423,18 @@ namespace GAMBIT
        *    (Could also throw in a 'getResult()' function.) */
        
       // 1) Calculate method
-      //void calculate(ARGS... args) { if(this->needs_recalculating) { myValue = myFunction(args...); } }
+      //void calculate(ARGS... args) { if(this->needs_recalculating) { myValue = this->myFunction(args...); } }
 
       // 1) Operation (return value) 
-      //TYPE operator()() { return myValue; }
+      //TYPE operator()() { return this->myValue; }
 
       // 2) Calculate method 
-      void calculate(ARGS... args) { myValue = myFunction(args...); }
+      void calculate(ARGS... args) { myValue = this->myFunction(args...); }
 
       // 2) Operation (execute function and return value) 
       TYPE operator()(ARGS... args) 
       { 
-        if(this->needs_recalculating) { myValue = myFunction(args...); }
+        if(this->needs_recalculating) { myValue = this->myFunction(args...); }
         return myValue;
       }
 
@@ -463,18 +463,18 @@ namespace GAMBIT
         func_capability, result_type, origin_name, origin_version) {}
     
       // 1) Calculate method
-      //void calculate(ARGS... args) { if(this->needs_recalculating) { myFunction(args...); } }
+      //void calculate(ARGS... args) { if(this->needs_recalculating) { this->myFunction(args...); } }
 
       // 1) Operation (return value) 
-      //TYPE operator()() { myFunction(args...); }
+      //TYPE operator()() { this->myFunction(args...); }
 
       // 2) Calculate method 
-      void calculate(ARGS... args) { myFunction(args...); }
+      void calculate(ARGS... args) { this->myFunction(args...); }
 
       // 2) Operation (execute function and return value) 
       void operator()(ARGS... args) 
       { 
-        if(this->needs_recalculating) { myFunction(args...); }
+        if(this->needs_recalculating) { this->myFunction(args...); }
       }
 
   };
