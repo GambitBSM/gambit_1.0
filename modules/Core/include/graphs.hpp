@@ -53,10 +53,10 @@ namespace GAMBIT
   {
 
     struct Edge {
-      string variable; // name of associated variable
+      sspair variable; // name of associated variable
     };
 
-    typedef adjacency_list<vecS, vecS, directedS, functor, Edge> MasterGraphType;
+    typedef adjacency_list<vecS, vecS, directedS, functor*, Edge> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
 

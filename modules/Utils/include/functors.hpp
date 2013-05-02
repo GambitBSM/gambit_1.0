@@ -49,6 +49,10 @@ namespace GAMBIT
       str version()     { return myVersion;    }
       sspair quantity() { return std::make_pair(myCapability, myType); }
 
+      // Status: 0 disabled, 1 available (default), 2 active
+      // (required for dependency resolution)
+      int status = 1;
+
       // Set method for version
       void setVersion(str ver) { myVersion = ver; }
 
