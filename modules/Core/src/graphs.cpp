@@ -92,6 +92,7 @@ namespace GAMBIT
         cout << (*Graphs::masterGraph[fromVertex]).name() << " --> ";
         cout << (*Graphs::masterGraph[toVertex]).name() << endl;
         tie(current_edge, ok) = add_edge(fromVertex, toVertex, Graphs::masterGraph);
+        (*Graphs::masterGraph[toVertex]).resolveDependency(Graphs::masterGraph[fromVertex]);
         Graphs::masterGraph[current_edge].variable = var;
         parQueue.pop();
       }
@@ -115,10 +116,13 @@ namespace GAMBIT
           ++i)
       {
         cout << "  " << (*Graphs::masterGraph[*i]).name() ;
-        if ( (*Graphs::masterGraph[*i]).status == 0 ) cout << " (disabled)";
-        if ( (*Graphs::masterGraph[*i]).status == 1 ) cout << " (available)";
-        if ( (*Graphs::masterGraph[*i]).status == 2 ) cout << " (ACTIVE)";
-        cout << endl;
+        if ( (*Graphs::masterGraph[*i]).status == 0 ) cout << " (disabled)" << endl;
+        if ( (*Graphs::masterGraph[*i]).status == 1 ) cout << " (available)" << endl;
+        if ( (*Graphs::masterGraph[*i]).status == 2 )
+        {
+          cout << " (ACTIVE)" << endl;
+          (*Graphs::masterGraph[*i]).calculate();
+        }
       }
     }
 

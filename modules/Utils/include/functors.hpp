@@ -37,6 +37,9 @@ namespace GAMBIT
       // Empty virtual destructor to make polymorphic
       virtual ~functor() {}
 
+      // Empty virtual calculate()
+      virtual void calculate() {}
+
       // It may be safer to have the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions

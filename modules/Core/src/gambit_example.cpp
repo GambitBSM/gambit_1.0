@@ -43,7 +43,16 @@ using namespace GAMBIT;
 
 int main( int argc, const char* argv[] )
 {
+  // Run dependency resolution
   Graphs::dependency_resolution();
+
+  // This is the outcome
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << std::endl ;
+  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
 
   std::cout<<std::endl;
   std::cout<< "This is a skeleton example for gambit."<<std::endl;
