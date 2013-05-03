@@ -18,7 +18,7 @@
 //  Mar 19 2013
 //
 //  Pat Scott
-//  2013 Jan 18, Feb 04
+//  2013 Jan, Feb, May
 //
 //
 //  *********************************************
@@ -81,24 +81,24 @@ namespace GAMBIT {
     }
     void SLHA(double &result)
     {
-      double CMSSM_definition = (*Dependencies::SLHA::CMSSM_definition)();
+      double CMSSM_definition = GET_DEP(SLHA::CMSSM_definition);
       result = CMSSM_definition * 0.5;
     }
     void Wstruct (GAMBIT::types::Wstruct &result)
     {
-      double SLHA = (*Dependencies::Wstruct::SLHA)();
+      double SLHA = GET_DEP(Wstruct::SLHA);
       result.valA = SLHA * 0.5;
       result.valB = SLHA * 1.5;
     }
     void Weff (double &result)
     {
-      double SLHA = (*Dependencies::Weff::SLHA)();
+      double SLHA = GET_DEP(Weff::SLHA);
       result = SLHA * 2.0;
     }
     void omega_DM (double &result)
     {
-      GAMBIT::types::Wstruct Wstruct = (*Dependencies::omega_DM::Wstruct)();
-      double Weff = (*Dependencies::omega_DM::Weff)();
+      GAMBIT::types::Wstruct Wstruct = GET_DEP(omega_DM::Wstruct);
+      double Weff = GET_DEP(omega_DM::Weff);
       result = Wstruct.valA + Wstruct.valB + Weff;
     }
   }

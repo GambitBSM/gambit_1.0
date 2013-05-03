@@ -12,6 +12,8 @@
 //
 //  Christoph Weniger
 //  May 03 2013
+//  Pat Scott 
+//  May 03 2013
 //
 //  *********************************************
 //
@@ -26,10 +28,14 @@ namespace GAMBIT
 {
   namespace Graphs
   {
+
+    // Saved calling order for functions
+    list<int> function_order;
+
     // pushes dependencies of vertex into parameter queue
     void fill_parQueue(queue<pair<sspair, Graphs::VertexID> > *parQueue,
         Graphs::VertexID vertex) {
-      (*Graphs::masterGraph[vertex]).status = 2;
+      (*Graphs::masterGraph[vertex]).setStatus(2);
       cout << "Adding " << (*Graphs::masterGraph[vertex]).name() 
         << " to parameter queue, with dependencies" << endl;
       vector<sspair> vec = (*Graphs::masterGraph[vertex]).dependencies();
@@ -85,7 +91,7 @@ namespace GAMBIT
         }
         fromVertex = (*capMap.find(var)).second;
         cout << "resolved." << endl;
-        if ( (*Graphs::masterGraph[fromVertex]).status != 2 ) {
+        if ( (*Graphs::masterGraph[fromVertex]).status() != 2 ) {
           fill_parQueue(&parQueue, fromVertex);
         }
         cout << "Adding edge: ";
@@ -106,25 +112,36 @@ namespace GAMBIT
       return topo_order;
     }
 
-    // Executes active vertices in correct order
-    // TODO:
-    // - actually execute the *.calculate() member functions
-    void execute_functions(list<int> topo_order) {
-      cout << "Core says, I will run the module functions in this order (and only the active ones):" << endl;
+    // Lists all vertices in correct order
+    void list_functions(list<int> topo_order) {
+      cout << "Dependency resolver says:  I will run the module functions in this order (and only the active ones):" << endl;
       for(list<int>::const_iterator i = topo_order.begin();
           i != topo_order.end();
           ++i)
       {
         cout << "  " << (*Graphs::masterGraph[*i]).name() ;
-        if ( (*Graphs::masterGraph[*i]).status == 0 ) cout << " (disabled)" << endl;
-        if ( (*Graphs::masterGraph[*i]).status == 1 ) cout << " (available)" << endl;
-        if ( (*Graphs::masterGraph[*i]).status == 2 )
+        if ( (*Graphs::masterGraph[*i]).status() == 0 ) cout << " (disabled)" << endl;
+        if ( (*Graphs::masterGraph[*i]).status() == 1 ) cout << " (available)" << endl;
+        if ( (*Graphs::masterGraph[*i]).status() == 2 ) cout << " (ACTIVE)" << endl;
+      }
+    }
+
+    // Executes active vertices in correct order
+    void execute_functions(list<int> topo_order) {
+      cout << "Dependency resolver says: now I will actually run them." << endl;
+      for(list<int>::const_iterator i = topo_order.begin();
+          i != topo_order.end();
+          ++i)
+      {
+        if ( (*Graphs::masterGraph[*i]).status() == 2 )
         {
-          cout << " (ACTIVE)" << endl;
           (*Graphs::masterGraph[*i]).calculate();
         }
       }
     }
+
+    // Overload for calling without arguments
+    void execute_functions() { execute_functions(function_order); }
 
     // Convenience function
     void list_graphs_content() 
@@ -141,17 +158,21 @@ namespace GAMBIT
     };
 
     // Main dependency resolution
-    void dependency_resolution()
+    void dependency_resolution(std::vector<int> &pars)
     {
       list_graphs_content();
       queue<pair<sspair, Graphs::VertexID> > parQueue;
       multimap<sspair, Graphs::VertexID> capMap;
-      list<int> topo_order;
       capMap = initialize_capMap();
-      fill_parQueue(&parQueue, vertex(13, Graphs::masterGraph));
+
+      for (std::vector<int>::iterator it = pars.begin() ; it != pars.end(); ++it)
+      {
+        fill_parQueue(&parQueue, vertex(*it, Graphs::masterGraph));
+      }
+
       initialize_edges(parQueue, capMap);
-      topo_order = run_topological_sort();
-      execute_functions(topo_order);
+      function_order = run_topological_sort();
+      list_functions(function_order);
     };
   };
 }

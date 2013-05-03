@@ -16,15 +16,10 @@ ModelBasePtr make_a_model(bool do_cmssm){
   }
 }
 
-
-
-
-
-
 /*!
 //  \brief Example of gambit core framework use
 //
-//   A program to demo what can be done with the current code.
+//   A program to demo what can be done with the current development version of the code.
 //
 //   \author GAMBIT Collab
 //   \date Oct 2012 -> ??
@@ -43,28 +38,41 @@ using namespace GAMBIT;
 
 int main( int argc, const char* argv[] )
 {
-  // Run dependency resolution
-  Graphs::dependency_resolution();
+  cout<<endl;
+  cout<< "This is a skeleton example for gambit."<<endl;
+  cout<< "At the moment it does the following:"<<endl;
+  cout<< "  * hooks up to the pieces of SUFit that have been retained"<<endl;
+  cout<< "  * creates and registers modules"<<endl;
+  cout<< "  * creates and registers module functions and their dependencies"<<endl;
+  cout<< "  * creates and registers backends and backend functions"<<endl;
+  cout<< "  * hooks module functions up to their dependencies"<<endl;
+  cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
+  cout<<endl;
 
-  // This is the outcome
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << std::endl ;
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << std::endl ;
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << std::endl ;
-  std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
+  // Do some mock parsing of the ini file and pick which things to compute
+  vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
+  requested_observables.push_back(1);  // nevents_int
+  requested_observables.push_back(14); // rdomega
+  requested_observables.push_back(6);  // nevents_postcuts
 
-  std::cout<<std::endl;
-  std::cout<< "This is a skeleton example for gambit."<<std::endl;
-  std::cout<< "At the moment it does the following:"<<std::endl;
-  std::cout<< "  * hooks up to the pieces of SUFit that have been retained"<<std::endl;
-  std::cout<< "  * creates and registers modules"<<std::endl;
-  std::cout<< "  * creates and registers module functions and their dependencies"<<std::endl;
-  std::cout<<std::endl;
+  // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
 
-  int steps=100;
-  if(argc>1) steps=atoi(argv[1]);
-  std::cout<< "Running with steps="<<steps<<std::endl;
+  // Run dependency resolution proper
+  Graphs::dependency_resolution(requested_observables);
+
+  // Call the functions in their sorted order
+  Graphs::execute_functions();
+
+
+  // Test it
+  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
 
   // Setup logs
   logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
@@ -76,56 +84,33 @@ int main( int argc, const char* argv[] )
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
 
-  // Old-style dependency resolution
-  // ExampleBit_B::Dependencies::nevents_postcuts::nevents = &ExampleBit_A::Functown::nevents_dbl;
-  // ExampleBit_A::Dependencies::nevents_int::nevents = &ExampleBit_A::Functown::nevents_dbl;
-  // New-style
-  ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
-  ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
-  // Example of what happens if you try to do some bad dependency resolution (uncomment to see)
-  //ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::authors_dogs_name);
-
-  // Some mock backend dependency resolution
-  // Good (allowed backend):
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::doAll);
-  // Bad (disallowed backend):
-  //ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibSecond::Functown::doAll);
-
-
   // ****************
   // TinyDarkBit code START
   // ****************
 
   // Some basic TinyDarkBit functionality
-  std::cout << "*** Start Dark ***" << std::endl;
-  std::cout << "My name is " << TinyDarkBit::name() << std::endl;
-  std::cout << " I can calculate: " << std::endl << TinyDarkBit::iCanDo << std::endl;
-  std::cout << " ...but I may need: " << std::endl << TinyDarkBit::iMayNeed << std::endl;
-  //std::cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << std::endl;
-  std::cout << "*** End Dark ***" << std::endl << std::endl;
-
-  // Dependency resolution by hand
-  TinyDarkBit::Dependencies::SLHA::CMSSM_definition = &TinyDarkBit::Functown::CMSSM_definition;
-  TinyDarkBit::Dependencies::Wstruct::SLHA = &TinyDarkBit::Functown::SLHA;
-  TinyDarkBit::Dependencies::Weff::SLHA = &TinyDarkBit::Functown::SLHA;
-  TinyDarkBit::Dependencies::omega_DM::Wstruct = &TinyDarkBit::Functown::Wstruct;
-  TinyDarkBit::Dependencies::omega_DM::Weff = &TinyDarkBit::Functown::Weff;
+  cout << "*** Start Dark ***" << endl;
+  cout << "My name is " << TinyDarkBit::name() << endl;
+  cout << " I can calculate: " << endl << TinyDarkBit::iCanDo << endl;
+  cout << " ...but I may need: " << endl << TinyDarkBit::iMayNeed << endl;
+  //cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << endl;
+  cout << "*** End Dark ***" << endl << endl;
 
   // DarkSUSY initialization
   //TinyDarkBit::Functown::initDS.calculate();
 
   // Run calculate() in correct order by hand and print results
   //TinyDarkBit::Functown::CMSSM_definition.calculate();
-  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << std::endl ;
+  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
   //TinyDarkBit::Functown::SLHA.calculate();
-  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << std::endl ;
+  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
   //TinyDarkBit::Functown::Weff.calculate();
-  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << std::endl ;
+  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
   //TinyDarkBit::Functown::Wstruct.calculate();
-  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << std::endl ;
-  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << std::endl ;
+  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
+  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
   //TinyDarkBit::Functown::omega_DM.calculate();
-  //std::cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << std::endl ;
+  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
 
   // ********************
   // TinyDarkBit code END
@@ -133,150 +118,151 @@ int main( int argc, const char* argv[] )
 
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
-  std::cout << "My name is " << ExampleBit_A::name() << std::endl;
-  std::cout << " I can calculate: " << std::endl << ExampleBit_A::iCanDo << std::endl;
-  std::cout << " ...but I may need: " << std::endl << ExampleBit_A::iMayNeed << std::endl;
-  std::cout << std::endl;
+  cout << "My name is " << ExampleBit_A::name() << endl;
+  cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
+  cout << " ...but I may need: " << endl << ExampleBit_A::iMayNeed << endl;
+  cout << endl;
 
-  std::cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << std::endl;
-  std::cout << "I can do nevents (string-style) " << ExampleBit_A::provides("nevents") << std::endl;
+  cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << endl;
+  cout << "I can do nevents (string-style) " << ExampleBit_A::provides("nevents") << endl;
   if (ExampleBit_A::requires("nevents_like","nevents")) { 
-    std::cout << "I require nevents_like to do this though." << std::endl;
+    cout << "I require nevents_like to do this though." << endl;
   }
-  std::cout << "I can do nevents_like " << ExampleBit_A::provides("nevents_like") << std::endl;
+  cout << "I can do nevents_like " << ExampleBit_A::provides("nevents_like") << endl;
   if (ExampleBit_A::requires("nevents","nevents_like")) { 
-    std::cout << "I require nevents to do this though." << std::endl;
+    cout << "I require nevents to do this though." << endl;
   }
-  //std::cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << std::endl;
-  std::cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A::provides("nevents_postcuts") << std::endl;
-  std::cout << "I can do xsection " << ExampleBit_A::provides("xsection") << std::endl;
-  std::cout << "I can do dogsname " << ExampleBit_A::provides("authors_dogs_name") << std::endl;
+  //cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << endl;
+  cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A::provides("nevents_postcuts") << endl;
+  cout << "I can do xsection " << ExampleBit_A::provides("xsection") << endl;
+  cout << "I can do id " << ExampleBit_A::provides("id") << endl;
 
-  std::cout << "Core says: report on n_events_like!" << std::endl;
-  std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents_like");
+  cout << "Core says: report on n_events_like!" << endl;
+  cout << "  " << ExampleBit_A::name() << " says: ";
+  cout << "  "; ExampleBit_A::report("nevents_like");
   if (ExampleBit_A::provides("nevents_like")) {
-    std::cout << "OK, so what is it then?" << std::endl;
+    cout << "OK, so what is it then?" << endl;
     typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
     testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<std::endl ;
+    cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<endl ;
     // Call the module function by its string name (could use TestType here too insead of double) 
     double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<std::endl ;
+    cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<endl ;
     // Call the module function by its functor 
     ExampleBit_A::Functown::nevents_like.calculate();
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<std::endl ; 
+    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<endl ; 
   }
   
 
-  std::cout << "Core says: report on n_events_postcuts!" << std::endl;
-  std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents_postcuts");
+  cout << "Core says: report on n_events_postcuts!" << endl;
+  cout << "  " << ExampleBit_A::name() << " says: ";
+  cout << "  "; ExampleBit_A::report("nevents_postcuts");
   if (ExampleBit_A::provides("nevents_postcuts")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    //std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << std::endl ;
+    cout << "OK, so what is it then?" << endl;
+    //cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << endl ;
   }
-  std::cout << "Core says: report on n_events!" << std::endl;
-  std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents_dbl");
+  cout << "Core says: report on n_events!" << endl;
+  cout << "  " << ExampleBit_A::name() << " says: ";
+  cout << "  "; ExampleBit_A::report("nevents_dbl");
   if (ExampleBit_A::provides("nevents")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << std::endl ;
+    cout << "OK, so what is it then?" << endl;
+    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << endl ;
   }
-  std::cout << "Core says: report on n_events again!" << std::endl;
-  std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents_dbl");
+  cout << "Core says: report on n_events again!" << endl;
+  cout << "  " << ExampleBit_A::name() << " says: ";
+  cout << "  "; ExampleBit_A::report("nevents_dbl");
   if (ExampleBit_A::provides("nevents")) {
-    std::cout << "OK, so what is it now, then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << std::endl ;
+    cout << "OK, so what is it now, then?" << endl;
+    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << endl ;
   }
-  std::cout << "  " << ExampleBit_A::name() << " also says: ";
-  std::cout << "  "; ExampleBit_A::report("nevents_int");
+  cout << "  " << ExampleBit_A::name() << " also says: ";
+  cout << "  "; ExampleBit_A::report("nevents_int");
   if (ExampleBit_A::provides("nevents")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_int>() << std::endl ;
+    cout << "OK, so what is it then?" << endl;
+    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_int>() << endl ;
   }  
-  std::cout << "Core says: report on the dog!" << std::endl;
-  std::cout << "  " << ExampleBit_A::name() << " says: ";
-  std::cout << "  "; ExampleBit_A::report("authors_dogs_name");
-  if (ExampleBit_A::provides("dog")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    typedef ExampleBit_A::function_traits<Tags::authors_dogs_name>::type testType; //in this case the underlying type is std::string
-    testType authors_dogs_name = ExampleBit_A::result<Tags::authors_dogs_name>();
-    std::cout << "  " << ExampleBit_A::name() << " says: " << authors_dogs_name << std::endl ;
+  cout << "Core says: report on the particle ID!" << endl;
+  cout << "  " << ExampleBit_A::name() << " says: ";
+  cout << "  "; ExampleBit_A::report("identity");
+  if (ExampleBit_A::provides("id")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef ExampleBit_A::function_traits<Tags::identity>::type testType; //in this case the underlying type is std::string
+    testType identity = ExampleBit_A::result<Tags::identity>();
+    cout << "  " << ExampleBit_A::name() << " says: " << identity << endl ;
   }
 
 
-  std::cout <<  std::endl;
-  std::cout << "My name is " << ExampleBit_B::name() << std::endl;
-  std::cout << " I can calculate: " << std::endl << ExampleBit_B::iCanDo << std::endl;
-  std::cout << " ...but I may need: " << std::endl << ExampleBit_B::iMayNeed << std::endl;
-  std::cout << std::endl;
-  std::cout << "I can do nevents " << ExampleBit_B::provides("nevents") << std::endl;
-  std::cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << std::endl;
-  std::cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << std::endl;
-  std::cout << "I can do xsection " << ExampleBit_B::provides("xsection") << std::endl;
-  std::cout << "I can do dogsname " << ExampleBit_B::provides("authors_dogs_name") << std::endl;
-  std::cout << "Core says: report on n_events!" << std::endl;
-  std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << "  "; ExampleBit_B::report("nevents");
+  cout <<  endl;
+  cout << "My name is " << ExampleBit_B::name() << endl;
+  cout << " I can calculate: " << endl << ExampleBit_B::iCanDo << endl;
+  cout << " ...but I may need: " << endl << ExampleBit_B::iMayNeed << endl;
+  cout << endl;
+  cout << "I can do nevents " << ExampleBit_B::provides("nevents") << endl;
+  cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << endl;
+  cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << endl;
+  cout << "I can do xsection " << ExampleBit_B::provides("xsection") << endl;
+  cout << "I can do id " << ExampleBit_B::provides("id") << endl;
+  cout << "Core says: report on n_events!" << endl;
+  cout << ExampleBit_B::name() << " says: ";
+  cout << "  "; ExampleBit_B::report("nevents");
   if (ExampleBit_B::provides("nevents")) {
-    std::cout << "OK, so what is it then?" << std::endl;
-    std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << std::endl ;
+    cout << "OK, so what is it then?" << endl;
+    cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << endl ;
   }
-  std::cout << "Core says: report on n_events_postcuts!" << std::endl;
-  std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << "  "; ExampleBit_B::report("nevents_postcuts");
+  cout << "Core says: report on n_events_postcuts!" << endl;
+  cout << ExampleBit_B::name() << " says: ";
+  cout << "  "; ExampleBit_B::report("nevents_postcuts");
   if (ExampleBit_B::provides("nevents_postcuts")) {
-    std::cout << "OK, so what is it then?" << std::endl;
+    cout << "OK, so what is it then?" << endl;
     ExampleBit_B::Functown::nevents_postcuts.calculate();
-    std::cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<std::endl ;
+    cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<endl ;
   }
-  std::cout << "Do you have a conditional dependency on a dog string when LibFirst v1.2 is used to provide doAll_capability?"<<std::endl ;
-  std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst", "1.2") << std::endl;
-  std::cout << "What about version 1.3?"<<std::endl;
-  std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst", "1.3") << std::endl;
-  std::cout << "What about some other version?"<<std::endl;
-  std::cout << ExampleBit_B::name() << " says: ";
-  std::cout << ExampleBit_B::requires("dog", "nevents_postcuts", "doAll_capability", "LibFirst") << std::endl;
-  std::cout << "Tell me some stuff about nevents_postcuts."<<std::endl;
+  cout << "Do you have a conditional dependency on an ID string when LibFirst v1.2 is used to provide awesomeness?"<<endl ;
+  cout << ExampleBit_B::name() << " says: ";
+  cout << ExampleBit_B::requires("id", "nevents_postcuts", "awesomeness", "LibFirst", "1.2") << endl;
+  cout << "What about version 1.3?"<<endl;
+  cout << ExampleBit_B::name() << " says: ";
+  cout << ExampleBit_B::requires("id", "nevents_postcuts", "awesomeness", "LibFirst", "1.3") << endl;
+  cout << "What about some other version?"<<endl;
+  cout << ExampleBit_B::name() << " says: ";
+  cout << ExampleBit_B::requires("id", "nevents_postcuts", "awesomeness", "LibFirst") << endl;
+  cout << "Tell me some stuff about nevents_postcuts."<<endl;
   std::vector<sspair> deps, deps2, deps3, reqs, permitted;
   deps =  ExampleBit_B::Functown::nevents_postcuts.dependencies();
-  std::cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<std::endl;
+  cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
   reqs =  ExampleBit_B::Functown::nevents_postcuts.backendreqs();
-  std::cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<std::endl;
-  permitted =  ExampleBit_B::Functown::nevents_postcuts.backendspermitted(std::make_pair("doAll_capability","double"))	;
+  cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl;
+  permitted =  ExampleBit_B::Functown::nevents_postcuts.backendspermitted(std::make_pair("awesomeness","double"))	;
   for (std::vector<sspair>::iterator it = permitted.begin() ; it != permitted.end(); ++it)
   {
-    std::cout << "Options for doAll_capability: "<<it->first<<", "<<it->second<<std::endl;
+    cout << "Options for awesomeness: "<<it->first<<", "<<it->second<<endl;
   }
   std::string lib ("LibFirst");
-  deps2 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("doAll_capability", "double", lib);
-  deps3 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("doAll_capability", "double", lib, "1.2");
-  std::cout << "Backend-conditional dependencies when using any version of " << lib << " for doAll_capability: ";
+  deps2 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("awesomeness", "double", lib);
+  deps3 = ExampleBit_B::Functown::nevents_postcuts.backend_conditional_dependencies("awesomeness", "double", lib, "1.2");
+  cout << "Backend-conditional dependencies when using any version of " << lib << " for awesomeness: ";
   if (!deps2.empty())
   {
-    std::cout<<deps2[0].first<<", "<<deps2[0].second<<std::endl;
+    cout<<deps2[0].first<<", "<<deps2[0].second<<endl;
   }
   else
   {
-    std::cout<<"none."<<std::endl;
+    cout<<"none."<<endl;
   }
-  std::cout << "Backend-conditional dependencies when using version 1.2 of " << lib << " for doAll_capability: ";
+  cout << "Backend-conditional dependencies when using version 1.2 of " << lib << " for awesomeness: ";
   if (!deps3.empty())
   {
-    std::cout<<deps3[0].first<<", "<<deps3[0].second<<std::endl;
+    cout<<deps3[0].first<<", "<<deps3[0].second<<endl;
   }
   else
   {
-    std::cout<<"none."<<std::endl;
+    cout<<"none."<<endl;
   }
 
-  std::cout <<  std::endl;
+  cout <<  endl;
  
+
   // Instantiate the ScannerBit module
 
 
@@ -387,14 +373,14 @@ int main( int argc, const char* argv[] )
 
 
 
-  //GAMBIT_MSG_LOG(std::endl<<"  ------------- running scanner ");
+  //GAMBIT_MSG_LOG(endl<<"  ------------- running scanner ");
   //RandomScanner myScanner(myLLHsummer,aModel);
   // first one manual step:
-  //GAMBIT_MSG_LOG(std::endl<<"------------- first just one step ");
+  //GAMBIT_MSG_LOG(endl<<"------------- first just one step ");
   //myScanner.doScanStep();
-  //GAMBIT_MSG_LOG(std::endl<<"------------- more steps ");
+  //GAMBIT_MSG_LOG(endl<<"------------- more steps ");
   //myScanner.runStepping(steps);
-  //GAMBIT_MSG_LOG(std::endl<<"---------------- MAIN ENDS HERE ");
+  //GAMBIT_MSG_LOG(endl<<"---------------- MAIN ENDS HERE ");
 
   return 1;
 

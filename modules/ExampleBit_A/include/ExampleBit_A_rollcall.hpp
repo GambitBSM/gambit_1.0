@@ -37,7 +37,7 @@ START_MODULE
     #define FUNCTION nevents_dbl            // Name of an observable function: floating-point number of events in some hypothetical process
     START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
     DEPENDENCY(xsection, double)            // Dependencies: Number of events depends on cross-section
-    DEPENDENCY(charge, double)              // and charge. 
+    DEPENDENCY(charge, int)                 // and charge. 
     #undef FUNCTION
 
     #define FUNCTION nevents_int            // Name of an observable function: integral number of events in some hypothetical process
@@ -59,11 +59,11 @@ START_MODULE
   #undef CAPABILITY
 
 
-  #define CAPABILITY dog                    // A physical observable or likelihood that this module can calculate
+  #define CAPABILITY id                     // A physical observable or likelihood that this module can calculate
   START_CAPABILITY
 
-    #define FUNCTION authors_dogs_name      // Observable: name of the author of ExampleBitA's dog    
-    START_FUNCTION(std::string)             // Function calculates the dog observable as a string 
+    #define FUNCTION identity               // Observable: particle id    
+    START_FUNCTION(std::string)             // Function returns the identity of the particle as a string 
     #undef FUNCTION
 
   #undef CAPABILITY

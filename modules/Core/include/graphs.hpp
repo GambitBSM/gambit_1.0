@@ -13,6 +13,8 @@
 //  Christoph Weniger
 //  Apr 02++ 2013
 //  May 03 2013
+//  Pat Scott
+//  May 03 2013
 //
 //  *********************************************
 
@@ -49,7 +51,8 @@ namespace GAMBIT
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
 
-    void dependency_resolution();
+    void dependency_resolution(std::vector<int>&); // Dependency resolution function
+    void execute_functions();                      // Execute resolved function list
 
 #ifndef IN_CORE
     extern

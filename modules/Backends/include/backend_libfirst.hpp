@@ -102,7 +102,7 @@ namespace GAMBIT
 
       /* Convenience functions go here */
 
-      double doAll(int a)
+      double awesomenessByAnders(int a)
       {
         initialize(a);
         someFunction();
@@ -121,7 +121,7 @@ namespace GAMBIT
  * 
  * As with BE_FUNCTION, the last argument is optional. */
 
-BE_CONV_FUNCTION(doAll, double, "doAll_capability")
+BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
 
 
 // Undefine macros to avoid conflict with other backends

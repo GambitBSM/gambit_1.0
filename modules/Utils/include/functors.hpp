@@ -11,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Pat Scott
-//  2013  Apr 4++, 16, 22-24
+//  2013  Apr 4++, 16, 22-24, May 03
 //  Anders Kvellestad 
 //  2013  Apr 14  --> Added backend functor class
 //  *********************************************
@@ -50,14 +50,14 @@ namespace GAMBIT
       str type()        { return myType;       }
       str origin()      { return myOrigin;     }
       str version()     { return myVersion;    }
+      int status()      { return myStatus;     }
       sspair quantity() { return std::make_pair(myCapability, myType); }
-
-      // Status: 0 disabled, 1 available (default), 2 active
-      // (required for dependency resolution)
-      int status = 1;
 
       // Set method for version
       void setVersion(str ver) { myVersion = ver; }
+
+      // Set method for status
+      void setStatus(int stat) { myStatus = stat; }
 
       // Getters for unconditional dependencies, backend requirements and permitted backends
       std::vector<sspair> dependencies()                  { return myDependencies; }
@@ -195,6 +195,9 @@ namespace GAMBIT
       std::vector<sspair> myDependencies;        // Vector of dependency-type pairs as strings 
       std::vector<sspair> myBackendReqs;         // Vector of backend requirement-type pairs as strings
 
+      // Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
+      int myStatus;
+
       // Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
       std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;
 
@@ -239,6 +242,7 @@ namespace GAMBIT
         myCapability    = func_capability;
         myType          = result_type;
         myOrigin        = origin_name;
+        myStatus        = 1;
         needs_recalculating = true;
       }
 
@@ -272,7 +276,6 @@ namespace GAMBIT
       void setBackendConditionalDependencySingular
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
       { 
-        cout << "My version is " << ver << endl;
         sspair key (dep, dep_type);
         std::vector<str> quad;
         if (this->backendreq_types.find(req) != this->backendreq_types.end())
@@ -391,6 +394,7 @@ namespace GAMBIT
         myType          = result_type;
         myOrigin        = origin_name;
         myVersion       = origin_version;
+        myStatus        = 1;
         needs_recalculating = true;
       }
 
