@@ -14,8 +14,8 @@ namespace GAMBIT {
     //@{
 
     /// Constructor for a light jet without explicit constituents
-    Jet(const P4& mom)
-      : _p4(mom), _isB(false) {  }
+    Jet(const P4& mom, bool isB=false)
+      : _p4(mom), _isB(isB) {  }
 
     /// "Cartesian" constructor
     Jet(double px, double py, double pz, double E, bool isB=false)
@@ -63,6 +63,12 @@ namespace GAMBIT {
     bool _isB;
 
   };
+
+
+  /// Function/functor for container<const Jet*> sorting (cf. std::less)
+  inline bool _cmpPtDesc(const Jet* a, const Jet* b) {
+    return a->pT2() >= b->pT2();
+  }
 
 
 }

@@ -3,17 +3,12 @@
 /// @file Utility functions for querying PDG ID codes, including HepPID wrapping
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-#include "PIDCodes.h"
-#include "MathUtils.h"
-
-#include "HepPID/ParticleIDMethods.hh"
+#include "PIDCodes.hpp"
+#include "MathUtils.hpp"
+#include "HepPID_ParticleIDMethods.hpp"
 
 namespace GAMBIT {
   namespace PID {
-
-
-    /// "Import" the HepPID functions for uniformity of access
-    using namespace HepPID;
 
 
     /// @name General PID-based classifier functions
