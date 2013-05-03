@@ -22,57 +22,73 @@
 
 typedef std::string str;
 
-// Base class for building new models (root of model inheritance tree)
 namespace gambit{
+  namespace models{
 
-class model_base : public ModelParameters
-  {
-  public:
-    virtual std::vector<str>& lineage() const 
-    { 
-      static std::vector<str> lin;
-      lin.assign(1,"model");
-      return lin;
-    }
-    virtual void defineParameters()
-    {
-      std::cout<<"No parameters defined!"<<std::endl;
-    };
-  };
+    // Base class for building new models (root of model inheritance tree)
+    class model_base : public ModelParameters
+      {
+      public:
+        model_base(const str name = "BASECLASS") {}
+        virtual ~model_base() {}
+        
+        virtual const str& name(void)
+        {
+          static str name = "BASECLASS";
+          return name;
+        };  
+        
+        
+        virtual std::vector<str>& lineage() const 
+        { 
+          static std::vector<str> lin;
+          lin.assign(1,"model");
+          return lin;
+        }
+        virtual void defineParameters()
+        {
+          std::cout<<"No parameters defined!"<<std::endl;
+        };
+      };
 
-// Macro to build new child models, which inherit a vector recording the 
-// inherirance pattern
-
-#define STR_VALUE(ARG)  #ARG
-#define NEW_CHILD_MODEL(NAME,PARENT)                                           \
-class NAME : public PARENT                                                     \
-  {                                                                            \
-  public:                                                                      \
-    static const str& name(void)                                               \
-    {                                                                          \
-      static const str selfname = STR_VALUE(NAME);                             \
-      return selfname;                                                         \
-    };                                                                         \
+    // Macro to build new child models, which inherit a vector recording the 
+    // inherirance pattern.
+    // ALL THE FUNCTIONS DECLARED IN THIS MACRO MUST RECEIVE A NEW DEFINITON
+    // SOMEWHERE! The definitions will not be inherited from the parent because
+    // the macro declares them (which is claim that we are going to provide
+    // a new definition). Inheritance is thus a little tricky with this
+    // structure.
+    #define STR_VALUE(ARG)  #ARG
+    #define NEW_CHILD_MODEL(NAME,PARENT)                                       \
+    class NAME : public PARENT                                                 \
+      {                                                                        \
+      public:                                                                  \
+        virtual const str& name(void)                                          \
+        {                                                                      \
+          static const str selfname = STR_VALUE(NAME);                         \
+          return selfname;                                                     \
+        };                                                                     \
                                                                                \
-    void defineParameters();                                                   \
+        virtual void defineParameters();                                       \
                                                                                \
-    /*Need to override constructors since we are going to use them to define   \
-    the parameters*/                                                           \
-    NAME(){                                                                    \
-      defineParameters();                                                      \
-    };                                                                         \
-    /*~NAME(){};*/                                                             \
+        /*Need to override constructors since we are going to use them to      \
+        define the parameters*/                                                \
+        NAME(){                                                                \
+          defineParameters();                                                  \
+        };                                                                     \
+        virtual ~NAME(){}                                                      \
                                                                                \
-    /*typedef PARENT base;*/                                                   \
-    virtual std::vector<str>& lineage() const {                                \
-      static std::vector<str> lin;                                             \
-      lin = PARENT::lineage();                                                 \
-      lin.push_back(STR_VALUE(NAME));                                          \
-      return lin;                                                              \
-    };                                                                         \
-  };                                                                           \
+        /*typedef PARENT base;*/                                               \
+        virtual std::vector<str>& lineage() const {                            \
+          static std::vector<str> lin;                                         \
+          lin = this->PARENT::lineage();                                       \
+          lin.push_back(STR_VALUE(NAME));                                      \
+          return lin;                                                          \
+        };                                                                     \
+      };                                                                       \
 
-}
+  } //end namespace models
+} //end namespace gambit
 
 /*
 // Model wrapper class. It's main purpose is to 

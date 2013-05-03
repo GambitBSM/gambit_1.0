@@ -39,26 +39,44 @@ typedef std::string str;
 // different parameterisations (or is this too specialised?)
 
 
-namespace models{
-  
-  NEW_CHILD_MODEL(MSSM,gambit::model_base)
-  // Need to create constructors and destructors (the NEW_CHILD_MODEL macro
-  // declares that we are going to write our own ones, so now we have to!)
-  NEW_CHILD_MODEL(CMSSM_base,MSSM)
-  
-  namespace CMSSM {
-    // Need to go inside CMSSM namespace to create parameterisations. These are
-    // all "CMSSM" though as far as the hierarchy is concerned...
-    NEW_CHILD_MODEL(P1,CMSSM_base)
-    void P1::defineParameters() {
-      _defineValue("M0",1000,0,1e5);
-      _defineValue("M12",1000,0,1e5);
-      _defineValue("A0",1000,0,1e5);
-      _defineValue("tanb",1,-1000,1000);
-      _defineValue("sgnmu",1,-1e5,1e5);
+namespace gambit{
+  namespace models{
+    
+    // In include/modelmacros.hpp we have defined the virtual bass class
+    // "model_base". The NEW_CHILD_MODEL macro builds a new class with the 
+    // specified name, which inherits from either model_base or a child of
+    // model_base and automatically builds a function "lineage()" which will spit 
+    // out a vector of strings containing the names of all its parents (and 
+    // itself)
+    NEW_CHILD_MODEL(MSSM,model_base)
+    void MSSM::defineParameters() {}
+    // We MUST provide a definition for the "defineParameters()" function or 
+    // else a compiler error occurs. defineParameters() is called by the 
+    // constructor.
+    
+    // Next iteration...
+    NEW_CHILD_MODEL(CMSSM_base,MSSM)
+    void CMSSM_base::defineParameters() {}
+    
+    namespace CMSSM {
+      // Need to go inside CMSSM namespace to create parameterisations (just
+      // so they have unique names). These are all "CMSSM" though as far as 
+      // the hierarchy is concerned...
+      NEW_CHILD_MODEL(P1,CMSSM_base);
+      // This time we provide a definition for "defineParameters()" which
+      // actually does something.
+      void P1::defineParameters() {
+        this->CMSSM_base::defineParameters();
+        _defineValue("M0",1000,0,1e5);
+        _defineValue("M12",1000,0,1e5);
+        _defineValue("A0",1000,0,1e5);
+        _defineValue("tanb",1,-1000,1000);
+        _defineValue("sgnmu",1,-1e5,1e5);
+      }
     }
-  }
-}
+    
+  } //end namespace models
+} //end namespace gambit
 
 #endif /* defined(__MSSM_hpp__) */
 
