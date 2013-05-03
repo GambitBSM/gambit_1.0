@@ -25,11 +25,12 @@ FC = ifort
 COMPOPTS= -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
 
 # Location of gambit sub-directories
-COREDIR = CoreBit
+COREDIR = Core
 MODELDIR = ModelBit
-UTILSDIR = UtilsBit
+UTILSDIR = Utils
 SCANDIR = ScannerBit
 HECOLLIDERDIR = HEColliderBit
+BACKENDDIR = Backends
 DOCDIR = ../doc
 
 # Boost is required. Read README for details
@@ -37,14 +38,16 @@ ifdef BOOST
 BOOSTINC=$(BOOST)
 else
 BOOSTINC=./
-endifCCEXTRA= -pipe -pg -std=c++0x 
+endif
+CCEXTRA= -pipe -pg -std=c++0x 
 GCC++EXTRA=-Woverloaded-virtual
-CFLAGS= -O0 $(COMPOPTS) \
+CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
 	-I$(COREDIR)/include \
 	-I$(MODELDIR)/include \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
+	-I$(BACKENDDIR)/include \
 	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include -IDarkBit/include
 
 COMMONLIBS = -lm 
@@ -97,17 +100,18 @@ CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst
 # Last line below from makefile.test_backend
 OTHERINC = $(UTILSDIR)/include/exceptions.hpp $(UTILSDIR)/include/module.hpp \
 $(UTILSDIR)/include/observable.hpp ExampleBit_A/include/ExampleBit_A_rollcall.hpp ExampleBit_B/include/ExampleBit_B_rollcall.hpp \
-$(UTILSDIR)/include/dictionary.hpp \
+$(UTILSDIR)/include/dictionary.hpp $(UTILSDIR)/include/util_functions.hpp\
 DarkBit/include/TinyDarkBit_rollcall.hpp DarkBit/include/backend-common.hpp DarkBit/include/backend-darksusy.hpp \
 $(UTILSDIR)/include/backend-fherwig.hpp
 
 # Last line below from makefile.test_backend
 OTHERSRC = $(UTILSDIR)/src/exceptions.cpp ExampleBit_A/src/ExampleBit_A.cpp ExampleBit_B/src/ExampleBit_B.cpp   \
-DarkBit/src/TinyDarkBit.cpp \
-$(UTILSDIR)/src/backend-fherwig.cpp  
+DarkBit/src/TinyDarkBit.cpp $(UTILSDIR)/src/util_functions.cpp \
+$(UTILSDIR)/src/backend-fherwig.cpp
 
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
-DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o
+DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o \
+$(UTILSDIR)/build/util_functions.o
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
