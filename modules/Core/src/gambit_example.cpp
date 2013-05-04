@@ -1,11 +1,15 @@
 // some specifics -- probably in time these will be replaced
-#include "mssmX.hpp"
-#include "RandomScanner.hpp"
+//#include "mssmX.hpp"
+//#include "RandomScanner.hpp"
 // model class - probably to be replaced too
-#include "ModelParametersSusy.hpp"
+//#include "ModelParametersSusy.hpp"
 
 //! brief helper for gambit_example
-using namespace gambit;
+//using namespace gambit;
+
+/* Ben: I have commented out all model-related stuff in the example (not much)
+since I am screwing with the related code at the moment. I will add something
+back in here that uses the new system shortly
 ModelBasePtr make_a_model(bool do_cmssm){
   if (do_cmssm){
     ModelParametersPtr tmp(new ModelParameters_CMSSM5);
@@ -15,6 +19,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
     return ModelBasePtr(new mssmX(tmp));
   }
 }
+*/
 
 /*!
 //  \brief Example of gambit core framework use
@@ -34,7 +39,10 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
 
+// Ben: It seems we currently are using both these namespaces! Should we pick
+//      one?
 using namespace GAMBIT;
+using namespace gambit;
 
 int main( int argc, const char* argv[] )
 {
@@ -303,6 +311,7 @@ int main( int argc, const char* argv[] )
   // be something which can be setup with a custom Lagrangian, or it can be almost
   // empty (as in case om mssmX).
   //
+  /*
   bool do_cmssm=true;
   ModelBasePtr aModel=make_a_model(do_cmssm);
   ModelParametersPtr pars=aModel->getModelParameters();
@@ -321,6 +330,7 @@ int main( int argc, const char* argv[] )
     pars->redefineValue("at/m",   1    ,0.9   , 10);
     pars->redefineValue("ab/m",   0.15 ,-0.1  , 10);
   }
+  */
 
   //typedef shared_ptr<Handler<double> > shared_dbl;
 

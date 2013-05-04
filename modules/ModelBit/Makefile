@@ -17,8 +17,8 @@ CCEXTRA=-Wextra -pipe -g -pg
 
 INCLUDES= -Imodels \
           -Iinclude \
-          -I$(GAMBITPATH)/UtilsBit/include \
-          -I$(GAMBITPATH)/CoreBit/include \
+          -I$(GAMBITPATH)/Utils/include \
+          -I$(GAMBITPATH)/Core/include \
           -I$(BOOSTINC) #-I/usr/include 
 
 CFLAGS= $(CCEXTRA) $(INCLUDES)
@@ -26,8 +26,8 @@ CFLAGS= $(CCEXTRA) $(INCLUDES)
 # Need these libs! Main gambit code must already be compiled! Kind of annoying
 # that this is necessary. Happens because ModelParametersBase makes use of the
 # core logging functions.
-GAMBITLIBS= $(GAMBITPATH)/CoreBit/build/gambit_core.o \
-            $(GAMBITPATH)/CoreBit/build/logcore.o \
+GAMBITLIBS= $(GAMBITPATH)/Core/build/gambit_core.o \
+            $(GAMBITPATH)/Core/build/logcore.o \
             
 MODELBITLIBS= models/MSSM.o
 
