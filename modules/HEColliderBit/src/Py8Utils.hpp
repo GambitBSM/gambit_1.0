@@ -1,10 +1,16 @@
 #pragma once
 
+#include "PIDUtils.hpp"
 #include "FastJetUtils.hpp"
 #include "Vectors.hpp"
 #include "Event.hpp"
 
 #include "Pythia.h"
+
+#include "boost/foreach.hpp"
+#ifndef foreach
+#define foreach BOOST_FOREACH
+#endif
 
 
 namespace GAMBIT {
@@ -49,27 +55,27 @@ namespace GAMBIT {
   /// @name Detailed Pythia8 event record walking/mangling functions
   //@{
 
-  // bool fromBottom(int n, const Pythia8::Event& evt) {
-  //   const Pythia8::Particle& p = evt[n];
-  //   if (abs(p.id()) == 5 || hasBottom(p.id())) return true;
-  //   /// @todo What about partonic decays?
-  //   if (p.isParton()) return false; // stop the walking at hadron level
-  //   for (int m : evt.motherList(n)) {
-  //     if (fromBottom(m, evt)) return true;
-  //   }
-  //   return false;
-  // }
+  bool fromBottom(int n, const Pythia8::Event& evt) {
+    const Pythia8::Particle& p = evt[n];
+    if (abs(p.id()) == 5 || PID::hasBottom(p.id())) return true;
+    /// @todo What about partonic decays?
+    if (p.isParton()) return false; // stop the walking at hadron level
+    foreach (int m, evt.motherList(n)) {
+      if (fromBottom(m, evt)) return true;
+    }
+    return false;
+  }
 
 
-  // bool fromTau(int n, const Pythia8::Event& evt) {
-  //   const Pythia8::Particle& p = evt[n];
-  //   if (abs(p.id()) == 15) return true;
-  //   if (p.isParton()) return false; // stop the walking at hadron level
-  //   for (int m : evt.motherList(n)) {
-  //     if (fromBottom(m, evt)) return true;
-  //   }
-  //   return false;
-  // }
+  bool fromTau(int n, const Pythia8::Event& evt) {
+    const Pythia8::Particle& p = evt[n];
+    if (abs(p.id()) == 15) return true;
+    if (p.isParton()) return false; // stop the walking at hadron level
+    foreach (int m, evt.motherList(n)) {
+      if (fromTau(m, evt)) return true;
+    }
+    return false;
+  }
 
 
   bool isReplica(int n, const Pythia8::Event& evt) {
@@ -82,10 +88,7 @@ namespace GAMBIT {
     const Pythia8::Particle& p = evt[n];
     //assert(!p.isParton());
     if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
-    // for (int m : evt.daughterList(n)) {
-    vector<int> daughters = evt.daughterList(n);
-    for (size_t i = 0; i < daughters.size(); ++i) {
-      int m = daughters[i];
+    foreach (int m, evt.daughterList(n)) {
       if (evt[m].isFinal()) {
         rtn.push_back(m);
       } else {
@@ -95,32 +98,26 @@ namespace GAMBIT {
   }
 
 
-  // bool isFinalB(int n, const Pythia8::Event& evt) {
-  //   // *This* particle must be a b or b-hadron
-  //   if (!hasBottom(evt[n].id())) return false;
-  //   // Daughters must *not* include a b or b-hadron
-  //   // for (int m : evt.daughterList(n)) {
-  //   vector<int> daughters = evt.daughterList(n);
-  //   for (size_t i = 0; i < daughters.size(); ++i) {
-  //     int m = daughters[i];
-  //     if (hasBottom(evt[m].id())) return false;
-  //   }
-  //   return true;
-  // }
+  bool isFinalB(int n, const Pythia8::Event& evt) {
+    // *This* particle must be a b or b-hadron
+    if (!PID::hasBottom(evt[n].id())) return false;
+    // Daughters must *not* include a b or b-hadron
+    foreach (int m, evt.daughterList(n)) {
+      if (PID::hasBottom(evt[m].id())) return false;
+    }
+    return true;
+  }
 
 
-  // bool isFinalTau(int n, const Pythia8::Event& evt) {
-  //   // *This* particle must be a b or b-hadron
-  //   if (abs(evt[n].id()) != 15) return false;
-  //   // Daughters must *not* include a tau
-  //   // for (int m : evt.daughterList(n)) {
-  //   vector<int> daughters = evt.daughterList(n);
-  //   for (size_t i = 0; i < daughters.size(); ++i) {
-  //     int m = daughters[i];
-  //     if (abs(evt[m].id()) == 15) return false;
-  //   }
-  //   return true;
-  // }
+  bool isFinalTau(int n, const Pythia8::Event& evt) {
+    // *This* particle must be a b or b-hadron
+    if (abs(evt[n].id()) != 15) return false;
+    // Daughters must *not* include a tau
+    foreach (int m, evt.daughterList(n)) {
+      if (abs(evt[m].id()) == 15) return false;
+    }
+    return true;
+  }
 
 
   // vector<int> get_anaparticles(const Pythia8::Event& evt) {
@@ -147,43 +144,47 @@ namespace GAMBIT {
   //@}
 
 
+
+
+
+
   /// Fill a GAMBIT::Event from a Pythia8 event
   inline void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
+    Pythia8::Vec4 ptot;
+    std::vector<fastjet::PseudoJet> jetparticles;
+
     for (int i = 0; i < pevt.size(); ++i) {
       if (!pevt[i].isFinal()) continue;
-      Particle* p = new Particle(vec4_to_p4(pevt[i].p()), pevt[i].id());
-      /// @todo Promptness
-      /// @todo b-tagging and taus
-      gevt.addParticle(p);
+      if (pevt[i].eta() > 5.0) continue;
+      const Pythia8::Particle& p = pevt[i];
+
+      /// @todo Promptness: need an isPrompt function that walks back up the tree
+      bool prompt = false;
+      if (prompt) {
+        /// @todo taus... and include hadronically decaying ones only?
+        Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
+        gevt.addParticle(gp); // will be automatically categorised, including invisibles
+      } else {
+        // Choose jet constituents (should include neutrinos?)
+        /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
+        jetparticles.push_back(vec4_to_pseudojet(p.p()));
+      }
+
+      // Add to total momentum
+      ptot += p.p();
     }
-    /// @todo Jets
-    /// @todo MET
+    // Jets
+    const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
+    fastjet::ClusterSequence cseq(jetparticles, jet_def);
+    vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+    foreach (const fastjet::PseudoJet& pj, pjets) {
+      /// @todo b-tagging
+      bool isB = false;
+      gevt.addJet(new Jet(pseudojet_to_p4(pj), isB));
+    }
+    // MET
+    gevt.setMissingMom(-vec4_to_p4(ptot));
   }
-
-  // for (int ip = 0; ip < py.event.size(); ++ip) {
-  //   const Particle& p = py.event[ip];
-  //   if (!p.isFinal()) continue;
-  //   // cout << p.name() << endl;
-  //   if (p.id() == 12 || p.id() == 14 || p.id() == 16) continue; // exclude neutrinos
-  //   if (p.id() == 1000022) continue; // exclude LSP
-
-  //   // Update total visible momentum
-  //   ptot += p.p();
-
-  //   // Choose jet constituents (should include neutrinos for ATLAS?)
-  //   jetparticles.push_back( vec4_to_pseudojet(p.p()) );
-
-  //   // Identify final state electrons and muons
-  //   /// @todo Need to determine if these are prompt: e/mu from hadron decays are not of interest
-  //   if (abs(p.id()) == 11) electrons.push_back(p);
-  //   if (abs(p.id()) == 13) muons.push_back(p);
-  // }
-
-  // ClusterSequence cseq(jetparticles, jet_def);
-  // vector<PseudoJet> jets = sorted_by_pt(cseq.inclusive_jets(60));
-  // /// @todo Need to do e/gamma jet overlap removal... and remove prompt taus and muons
-  // h_njet.Fill(jets.size());
-  // if (jets.size() > 1) cout << deltaPhi(pseudojet_to_vec4(jets[0]), pseudojet_to_vec4(jets[1])) << endl;
 
 
 }

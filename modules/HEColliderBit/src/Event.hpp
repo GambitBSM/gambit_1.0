@@ -2,8 +2,10 @@
 
 #include "Particle.hpp"
 #include "Jet.hpp"
+#include <algorithm>
 
 namespace GAMBIT {
+
 
 
   /// Simple event class, separating into various classes of particle
@@ -48,6 +50,7 @@ namespace GAMBIT {
       _electrons.clear();
       _muons.clear();
       _taus.clear();
+      /// @todo Really need to store invisibles when we have a dedicated MET variable?
       _invisibles.clear();
 
       /// @todo Prefer this form when we can use C++11's range-for
@@ -154,10 +157,12 @@ namespace GAMBIT {
 
 
     /// @name Jets
+    /// @todo Why the new'ing? Can we use references more?
     //@{
 
-    /// @brief Get anti-kT 0.4 jets (not including leptons, photons, or taus)
+    /// @brief Get anti-kT 0.4 jets (not including charged leptons or photons)
     const std::vector<Jet*>& jets() const {
+      std::sort(_jets.begin(), _jets.end(), _cmpPtDesc);
       return _jets;
     }
 
@@ -216,8 +221,8 @@ namespace GAMBIT {
     std::vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
     //@}
 
-    /// Jets collection
-    std::vector<Jet*> _jets;
+    /// Jets collection (mutable to allow sorting)
+    mutable std::vector<Jet*> _jets;
 
     /// Missing momentum vector
     P4 _pmiss;

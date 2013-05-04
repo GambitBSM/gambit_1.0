@@ -10,7 +10,11 @@ ALDODETHEADERS := DetectorResponse.hpp FastSim.hpp
 PY8HEADERS := Py8Utils.hpp  Pythia8Backend.hpp
 HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)
 
-PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -L$(PY8DIR)/lib/archive -lpythia8 -llhapdfdummy #-lz -lboost_iostreams-mt
+# TODO: pythia8-config isn't standard yet, so also allow a fallback
+PY8FLAGS := $(shell pythia8-config --cxxflags --libs 2> /dev/null)
+ifndef PY8FLAGS
+PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -L$(PY8DIR)/lib/archive -lpythia8 -llhapdfdummy
+endif
 FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
 ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 BOOSTFLAGS := -I$(BOOST)
