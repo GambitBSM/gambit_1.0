@@ -1,27 +1,3 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Virtual base class for models. Defines the
-//  basic containers and get/set functions for
-//  the model parameters. Adapted from SUfit
-//  version.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Johan Lundberg (SUfit version)
-//  July - August 2011
-//
-//  Ben Farmer
-//  2013 May 01
-//
-//  *********************************************
-
-
 #ifndef gambit_modelparameters_hpp_
 #define gambit_modelparameters_hpp_ 1
 
@@ -55,7 +31,7 @@ namespace gambit {
       }
     }
   public:
-    ModelParameters(): ModelParametersBase(),_values(){
+    ModelParameters(): ModelParametersBase(),_values(),_rangelow(),_rangehigh(){
     }
     virtual ~ModelParameters() {}
 
@@ -67,12 +43,23 @@ namespace gambit {
       assert_contains(inkey);
       return _values.at(inkey);
     }
+    virtual void getRange(std::string const & inkey, double &rangeLow, double &rangeHigh) const {
+      assert_contains(inkey);
+      rangeLow=_rangelow.at(inkey);
+      rangeHigh=_rangehigh.at(inkey);
+    }
     virtual void setValue(std::string const &inkey,double const&value) {
       assert_contains(inkey);
       this->updateVersion();
       _values[inkey]=value;
     }
-    
+
+    // Change value and range
+    virtual void redefineValue(std::string const &name,double const&v,double const&low, double const&high){
+      assert_contains(name);
+      _defineValue(name,v,low,high);
+    }
+
     // get keys (the names) for external iteration
     virtual std::vector<std::string> getKeys() const {
       std::vector<std::string> tmp;
@@ -85,7 +72,9 @@ namespace gambit {
     virtual void print() const {
       std::cout << "ModelParameters: Printing: "<<std::endl;
       for (std::map<std::string,double>::const_iterator it=_values.begin();it!=_values.end();it++){
-        std::cout << "parameter: " << it->first << "; value: "<<it->second<<std::endl ;
+        std::cout << "parameter: " << it->first << " value: "<<it->second ;
+        std::cout << " range: [" << _rangelow.at(it->first) << ",";
+        std::cout << _rangehigh.at(it->first) << "]"<<std::endl;
       }
     }
 
@@ -93,36 +82,24 @@ namespace gambit {
       strm << "ModelParameters: Printing: "<<std::endl;
       for (std::map<std::string,double>::const_iterator it=me._values.begin();it!=me._values.end();it++){
         strm << "parameter: " << it->first << " value: "<<it->second ;
+        strm << " range: [" << me._rangelow.at(it->first) << ",";
+        strm << me._rangehigh.at(it->first) << "]"<<std::endl;
       }
       return strm;
     }
   private:
     std::map<std::string,double> _values;
+    std::map<std::string,double> _rangelow;
+    std::map<std::string,double> _rangehigh;
 
   protected:
-    // define a parameter with name, value. Value is initialised to zero
-    virtual void _definePar(const std::string &newkey) {
+
+    // define a parameter with name, value, rangelow, rangehigh )
+    virtual void _defineValue(std::string const &newkey, double const&value,double const& rangelow=-1e99,double const& rangehigh=1e99) {
       this->updateVersion();
-      _values[newkey]=0.;
-    }
-    // Overload _definePar to deal with a std::vector input 
-    // (iterates through each element and runs the ordinary _definePar on each 
-    // of them)
-    virtual void _definePar(std::vector<std::string> const &v) {
-      for(std::vector<std::string>::const_iterator
-            it = v.begin(); it != v.end(); ++it) {
-        _definePar(*it);
-      }
-    }
-    // Second overload of _definePar, this time to deal with a char array input.
-    // (iterates through each element and runs the ordinary _definePar on each 
-    // of them)
-    virtual void _definePar(const char** array) {
-      int i = 0;
-      while (array[i] != 0){
-        _definePar(array[i]);
-        i++;
-      }
+      _values[newkey]=value;
+      _rangelow[newkey]=rangelow;
+      _rangehigh[newkey]=rangehigh;
     }
 
   };
@@ -136,8 +113,8 @@ namespace gambit {
      public:
      ModelParametersGeneric(){}
      //! open up protected method for use:
-     virtual void defineValue(std::string const &name,double const &v){
-     _defineValue(name,v);
+     virtual void defineValue(std::string const &name,double const &v,double const &low, double const &high){
+     _defineValue(name,v,low,high);
      }
      };
   */

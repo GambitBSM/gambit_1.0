@@ -20,7 +20,7 @@
 
 #include <string>
 //#include "ModelParameters.hpp"
-#include "modelmacros.hpp"
+#include "ModelMacros.hpp"
 //#include <dictionary.hpp>  //need this for the 'dict' type.
 
 // Local shorthand for different types
@@ -48,32 +48,85 @@ namespace gambit{
     // model_base and automatically builds a function "lineage()" which will spit 
     // out a vector of strings containing the names of all its parents (and 
     // itself)
+    // Usage: NEW_CHILD_MODEL(<new model>,<parent model>)
     NEW_CHILD_MODEL(MSSM,model_base)
     void MSSM::defineParameters() {}
     // We MUST provide a definition for the "defineParameters()" function or 
     // else a compiler error occurs. defineParameters() is called by the 
     // constructor.
     
+    // Test create second model from base
+    NEW_CHILD_MODEL(test_model,model_base)
+    void test_model::defineParameters() {}
+    NEW_CHILD_MODEL(test_model2,test_model)
+    void test_model2::defineParameters() {}
+    
     // Next iteration...
+    // This time we provide a definition for "defineParameters()" which
+    // actually does something.
     NEW_CHILD_MODEL(CMSSM_base,MSSM)
-    void CMSSM_base::defineParameters() {}
+    void CMSSM_base::defineParameters() {
+      _definePar("M0");
+      _definePar("M12");
+      _definePar("A0");
+    }
     
     namespace CMSSM {
       // Need to go inside CMSSM namespace to create parameterisations (just
       // so they have unique names). These are all "CMSSM" though as far as 
       // the hierarchy is concerned...
+      // The P1 defineParameters function first runs the CMSSM_base 
+      // defineParameters function If any parameters were defined there they 
+      // are now defined here too. This is the current way of inheriting 
+      // parameters from parents (It is not automatic!).
       NEW_CHILD_MODEL(P1,CMSSM_base);
-      // This time we provide a definition for "defineParameters()" which
-      // actually does something.
       void P1::defineParameters() {
         this->CMSSM_base::defineParameters();
-        _defineValue("M0",1000,0,1e5);
-        _defineValue("M12",1000,0,1e5);
-        _defineValue("A0",1000,0,1e5);
-        _defineValue("tanb",1,-1000,1000);
-        _defineValue("sgnmu",1,-1e5,1e5);
+        _definePar("tanb");
+        _definePar("sgnmu");
       }
     }
+    
+    // Now let's make a second 'branch' of the model tree:
+    NEW_CHILD_MODEL(DMHalo_base,model_base)
+    void DMHalo_base::defineParameters() {}
+    
+    // We define lots of parameters at once if we use a vector, or a char array
+    // (so long as the array is terminated by a 0):
+    NEW_CHILD_MODEL(Gaussian_Halo,DMHalo_base)
+    void Gaussian_Halo::defineParameters() {
+      const char* pararray1[] = {"v_earth", "par2", "par3", "par4"};
+      const char* pararray2[] = {"par5","par6","par7",0};
+      std::vector<std::string> parvector(pararray1, pararray1 + 4);
+      _definePar(parvector);
+      _definePar(pararray2);
+      // We cannot pass an initialiser-list-style char array directly to the
+      // function likes this:
+      // _definePar({"par8","par9","par10",0});
+      // However I wrote a variadic macro to achieve the same kind of 
+      // "one-liner" behaviour:
+      DEFINEPARS("par8","par9","par10")
+      // I think in theory we could similarly extend _definePar to deal with a 
+      // variable number of arguments, which would achieve the same thing, but 
+      // it might get messier.
+    }
+    
+    // Now create a "supermodel" which is an explicit union of two models
+    // *Note that this is not the generic way which totally orthogonal models
+    // will be combined. This is a fancy mixed up model which just happens
+    // to predict halos and MSSM masses simultaneously. Not sure if this is
+    // a useful thing to be able to do or not...
+    // Calls a different macro, so that the new class inherits from both
+    // branches of the hierachy. Currently just combines lineages into a big
+    // list, i.e. there is no tree information.
+    // Usage: NEW_SUPER_MODEL(<new model>,<parent model 1>,<parent model 2>)
+    NEW_SUPER_MODEL(CMSSMandGHALO,CMSSM::P1,Gaussian_Halo)
+    void CMSSMandGHALO::defineParameters() {
+      this->Gaussian_Halo::defineParameters();
+      this->CMSSM::P1::defineParameters();
+      DEFINEPARS("extpar1","extpar2","extpar3")
+    }
+    
     
   } //end namespace models
 } //end namespace gambit
