@@ -4,37 +4,76 @@
 ///
 ///  Generic observable and likelihood function 
 ///  macro definitions.
-//
-//  Initially inspired by Abram  
-//  Krislock's Objects.hpp.
-//
-//  Note here that FUNCTION is the actual function name, whereas both CAPABILITY
-//  and DEP refer to the abstract physical quantities that functions may provide
-//  or require.  Thus, the provides() methods expect a quantity input, the 
-//  requires() methods expect a quantity input for the dependency and a function
-//  name input for the actual dependent function, and all other things operate
-//  on the basis of the function name, not the quantity that is calculated.
-//
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2012  Nov 15++  
-//  2013  Jan 18, 29-31, Feb 04, Mar 28, Apr 3-9
-//  2013-2078 Foreverrrrr
-//
-//  Abram Krislock
-//  2013 Jan 31, Feb 05
-//  *********************************************
+///
+///
+///  Note here that \link FUNCTION() FUNCTION 
+///  \endlink is the actual module function name,
+///  whereas both \link CAPABILITY() CAPABILITY 
+///  \endlink and all \em DEPs refer to the 
+///  abstract physical quantities that functions 
+///  may provide or require.  Thus, the provides()
+///  methods expect a quantity input (i.e. 
+///  corresponding to a \link CAPABILITY() 
+///  CAPABILITY\endlink), the requires() methods  
+///  expect a quantity input for the dependency but a 
+///  function name input (i.e. corresponding to a 
+///  \link FUNCTION() FUNCTION\endlink) for 
+///  the actual dependent function, and all other 
+///  things operate on the basis of the function 
+///  name, not the quantity that is calculated.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott
+///  \date 2012 Nov  
+///  \date 2013 Jan, Feb, Mar, Apr, May
+///  \date 2013-Foreverrrrr
+///
+///  \author Abram Krislock
+///  \date 2013 Jan, Feb
+///  *********************************************
 
+/// \def START_MODULE
+/// Registers the current \link MODULE() MODULE \endlink.
 ///
 /// \def START_CAPABILITY
-/// Registers the current CAPABILITY of the current MODULE.
+/// Registers the current \link CAPABILITY() CAPABILITY \endlink of the current 
+/// \link MODULE() MODULE \endlink.
+///
+/// \def START_FUNCTION(TYPE)
+/// Registers the current \link FUNCTION() FUNCTION \endlink of the current 
+/// \link MODULE() MODULE \endlink as a provider
+/// of the current \link CAPABILITY() CAPABILITY \endlink, returning a result of 
+/// type \em TYPE.
+///
+/// \def DEPENDENCY(DEP, TYPE)
+/// Indicate that the current \link FUNCTION() FUNCTION \endlink depends on the 
+/// presence of another module function that can supply capability \em DEP, with
+/// return type \em TYPE.
+///
+/// \def START_BACKEND_REQ(TYPE)
+/// Indicate that the current \link FUNCTION() FUNCTION \endlink requires a
+/// a backend function to be available with capability \link BACKEND_REQ() 
+/// BACKEND_REQ \endlink and return type \em TYPE.
+///
+/// \def BE_OPTION(BACKEND, VERSTRING)
+/// Register that the current \link BACKEND_REQ() BACKEND_REQ \endlink may
+/// be provided by backend \em BACKEND.  Permitted versions are passed in
+/// \em VERSTRING.
+///
+/// \def START_CONDITIONAL_DEPENDENCY(TYPE)
+/// Indicate that the current \link FUNCTION() FUNCTION \endlink may depend on the 
+/// presence of another module function that can supply capability 
+/// \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY \endlink, with return type
+/// \em TYPE.
+///
+/// \def ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
+/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY \endlink
+/// should be activated if the backend requirement \em BACKEND_REQ of the current 
+/// \link FUNCTION() FUNCTION \endlink is filled by a backend function from \em BACKEND.
+/// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
 
 #ifndef __module_macros_hpp__
 #define __module_macros_hpp__
@@ -46,62 +85,90 @@
 #include <util_macros.hpp>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
-#include <globals.hpp> // FIXME this to be removed once the core object is better defined
+#include <globals.hpp> // FIXME \todo this to be removed once the core objects are better defined
 #include <boost/preprocessor/comparison/greater.hpp>
 
-//Tag registration one-liners
+/// Add a regular tag to the current namespace
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
+/// Add a backend tag to the current namespace
 #define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
 
-//Dependency retrieval and info one-liners
+/// Retrive dependency \em DEP of the current function
 #define GET_DEP(DEP)               (*Dependencies::DEP)()
-#define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
+/// Retrive the name of the function that fills \em DEP for the current function
 #define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
+/// Retrive the name of the module that provides the function that fills \em DEP for the current function
+#define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
 
-//Backend retrieval and info one-liners
+/// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
 #define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
-#define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
+/// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
 #define GET_BE_FUNCNAME(BE_REQ)    Backend_Reqs::CAT(BE_REQ,_baseptr)->name()
+/// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
+#define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
+/// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
 #define GET_BE_VERSION(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->version()
 
 //Redirect rollcall macros depending in whether this file is included from 
-//the core or a module.
+//the core or a module. 
 #ifdef IN_CORE
-  #define START_MODULE                  CORE_START_MODULE
-  #define START_CAPABILITY              CORE_START_CAPABILITY
-  #define START_FUNCTION                CORE_START_FUNCTION
-  #define DEPENDENCY                    CORE_DEPENDENCY
-  #define START_BACKEND_REQ             CORE_START_BACKEND_REQ
-  #define BE_OPTION                     CORE_BACKEND_OPTION
-  #define START_CONDITIONAL_DEPENDENCY  CORE_START_CONDITIONAL_DEPENDENCY
-  #define ACTIVATE_DEP_BE               CORE_ACTIVATE_DEP_BE
+  #define START_MODULE                                      CORE_START_MODULE
+  #define START_CAPABILITY                                  CORE_START_CAPABILITY
+  #define START_FUNCTION(TYPE)                              CORE_START_FUNCTION(TYPE)
+  #define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE)
+  #define START_BACKEND_REQ(TYPE)                           CORE_START_BACKEND_REQ(TYPE)
+  #define BE_OPTION(BACKEND,VERSTRING)                      CORE_BACKEND_OPTION(BACKEND,VERSTRING)
+  #define START_CONDITIONAL_DEPENDENCY(TYPE)                CORE_START_CONDITIONAL_DEPENDENCY(TYPE)
+  #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 #else
-  #define START_MODULE                  DUMMY
-  #define START_CAPABILITY              DUMMY
-  #define START_FUNCTION                DUMMYARG
-  #define DEPENDENCY                    MODULE_DEPENDENCY
-  #define START_BACKEND_REQ             MODULE_START_BACKEND_REQ
-  #define BE_OPTION                     DUMMYARG
-  #define START_CONDITIONAL_DEPENDENCY  DUMMYARG
-  #define ACTIVATE_DEP_BE               DUMMYARG
+  #define START_MODULE                                      DUMMY
+  #define START_CAPABILITY                                  DUMMY
+  #define START_FUNCTION(TYPE)                              DUMMYARG(TYPE)
+  #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
+  #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
+  #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
+  #define START_CONDITIONAL_DEPENDENCY(TYPE)                DUMMYARG(TYPE)
+  #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #endif
 
-//Redirect the BACKEND_OPTION macro according to whether it has been called
-//with version numbers or not (make the version number 'any' if it is omitted).
+/// BACKEND_OPTION() called with no versions; allow any backend version
 #define BE_OPTION_0(_1)      BE_OPTION(_1, "any")
+/// BACKEND_OPTION() called with more than one argument; allow specified backend versions
 #define BE_OPTION_1(_1, ...) BE_OPTION(_1, #__VA_ARGS__)
+/// Register that the current \link BACKEND_REQ() BACKEND_REQ \endlink may
+/// be provided by backend \em BACKEND, versions \em [VERSIONS].  Permitted
+/// versions are passed as optional additional arguments; if no version 
+/// information is passed, all versions of \em BACKEND are considered valid.
+//  Redirects the BACKEND_OPTION(BACKEND, [VERSIONS]) macro to the 
+//  BE_OPTION(BACKEND, VERSTRING) macro according to whether it has been called with 
+//  version numbers or not (making the version number 'any' if it is omitted).
 #define BACKEND_OPTION(...)  CAT(BE_OPTION_, BOOST_PP_GREATER \
                              (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
 
-//Redirect the ACTIVATE_FOR_BACKEND macro according to whether it has been called
-//with version numbers or not (make the version number 'any' if it is omitted).
+/// ACTIVATE_FOR_BACKEND() called with no versions; allow any backend version
 #define ACTIVATE_DEP_BE_0(_1, _2)      ACTIVATE_DEP_BE(_1, _2, "any")
+/// ACTIVATE_FOR_BACKEND() called with two arguments; allow specified backend versions
 #define ACTIVATE_DEP_BE_1(_1, _2, ...) ACTIVATE_DEP_BE(_1, _2, #__VA_ARGS__)
-#define ACTIVATE_FOR_BACKEND(...)      CAT(ACTIVATE_DEP_BE_, BOOST_PP_GREATER \
-                                       (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 2)) \
+/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY \endlink
+/// should be activated if the backend requirement \em BACKEND_REQ of the current 
+/// \link FUNCTION() FUNCTION \endlink is filled by a backend function from \em BACKEND.
+/// The specific versions that this applies to are passed as optional additional arguments;
+/// if no version information is passed, all versions of \em BACKEND are considered to
+/// cause the \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY \endlink to become
+/// active. 
+//  Redirects the ACTIVATE_FOR_BACKEND(BACKEND_REQ, BACKEND, [VERSIONS]) macro to 
+//  the ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING) macro according to whether
+//  it has been called with version numbers or not (making the version number 'any' 
+//  if it is omitted).
+#define ACTIVATE_FOR_BACKEND(...)      CAT(ACTIVATE_DEP_BE_, BOOST_PP_GREATER   \
+                                       (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 2))\
                                        (__VA_ARGS__)
 
+//*******************************************************************************
 //True rollcall macros
+
+/// Redirection of \link START_MODULE() START_MODULE \endlink when invoked from 
+/// within the core.
 #define CORE_START_MODULE                                                      \
                                                                                \
   namespace GAMBIT                                                             \
@@ -296,7 +363,8 @@
                                                                                \
   }                                                                            \
                                                                                
-
+/// Redirection of \link START_CAPABILITY() START_CAPABILITY \endlink when  
+/// invoked from within the core.
 #define CORE_START_CAPABILITY                                                  \
                                                                                \
   namespace GAMBIT                                                             \
@@ -317,6 +385,7 @@
   }                                                                            \
 
 
+/// Redirection of START_FUNCTION(TYPE) when invoked from within the core.
 #define CORE_START_FUNCTION(TYPE)                                              \
                                                                                \
   namespace GAMBIT                                                             \
@@ -386,6 +455,8 @@
   }                                                                            \
                                                                           
 
+/// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
+/// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_1(DEP, TYPE)                                         \
                                                                                \
   namespace GAMBIT                                                             \
@@ -428,11 +499,13 @@
           cout<<"DEP of function FUNCTION.  Attempt was to "<< endl;           \
           cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
           cout<<dep_functor->origin()<<"."<<endl;                              \
-          /* FIXME throw real error here */                                    \
+          /** FIXME \todo throw real error here */                             \
         }                                                                      \
       }                                                                        \
 
 
+/// Second common component of CORE_DEPENDENCY(DEP, TYPE) and 
+/// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_2(DEP,TYPE)                                          \
                                                                                \
       /* Create the dependency initialisation object */                        \
@@ -447,6 +520,7 @@
   }                                                                            \
 
 
+/// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE)                                             \
                                                                                \
   DEPENDENCY_COMMON_1(DEP, TYPE)                                               \
@@ -472,6 +546,7 @@
   DEPENDENCY_COMMON_2(DEP, TYPE)                                               \
 
 
+/// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \
                                                                                \
   namespace GAMBIT                                                             \
@@ -495,6 +570,7 @@
   }                                                                            \
 
 
+/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.
 #define CORE_START_BACKEND_REQ(TYPE)                                           \
                                                                                \
   namespace GAMBIT                                                             \
@@ -562,6 +638,7 @@
   }                                                                            \
 
 
+/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within a module.
 #define MODULE_START_BACKEND_REQ(TYPE)                                         \
                                                                                \
   namespace GAMBIT                                                             \
@@ -587,7 +664,7 @@
             cout<<"Incorrect return type implied for backend"<<endl;           \
             cout<<"requirement BACKEND_REQ (function"<<endl;                   \
             cout<<"FUNCTION, module MODULE). Exiting..."<<endl;                \
-            /* FIXME Throw a real error here. */                               \
+            /** FIXME \todo Throw a real error here. */                        \
           }                                                                    \
                                                                                \
           /* Set up a working alias that casts the (base) pointer to the       \
@@ -609,7 +686,7 @@
                 cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
                 cout<<"). Probably you have passed arguments of the wrong ";   \
                 cout<<"type(s) when calling this function."<<endl;             \
-                /* FIXME throw real error here */                              \
+                /** FIXME \todo throw real error here */                       \
               }                                                                \
             }                                                                  \
             else                                                               \
@@ -628,6 +705,8 @@
   }                                                                            \
 
 
+/// Redirection of BE_OPTION(BACKEND, VERSTRING) when invoked from within the 
+/// core.
 #define CORE_BACKEND_OPTION(BACKEND,VERSTRING)                                 \
                                                                                \
   namespace GAMBIT                                                             \
@@ -658,6 +737,8 @@
   }                                                                            \
 
 
+/// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
+/// the core.
 #define CORE_START_CONDITIONAL_DEPENDENCY(TYPE)                                \
                                                                                \
   DEPENDENCY_COMMON_1(CONDITIONAL_DEPENDENCY, TYPE)                            \
@@ -675,6 +756,8 @@
   DEPENDENCY_COMMON_2(CONDITIONAL_DEPENDENCY, TYPE)                            \
 
                                                                                
+/// Redirection of ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING) when 
+/// invoked from within the core.
 #define CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)                  \
                                                                                \
   namespace GAMBIT                                                             \

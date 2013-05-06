@@ -1,19 +1,17 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  General small utility macros.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2013  Apr 22
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  General small utility macros.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott  
+///  \date 2013 Apr
+///
+///  *********************************************
 
 #ifndef __util_macros_hpp__
 #define __util_macros_hpp__
@@ -35,7 +33,9 @@
 #define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
 #define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
 #define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
+///Dummy macro that expands to nothing.
 #define DUMMY
+///Dummy macro with an arbitary number of arguments that expands to nothing.
 #define DUMMYARG(...)
 
 //Macro to evaluate whether two intrinsic types are identical or not
