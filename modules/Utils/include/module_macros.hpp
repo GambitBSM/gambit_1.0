@@ -1,8 +1,9 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
-//
-//  Generic observable and likelihood function 
-//  macro definitions.
+///  \file
+///
+///  Generic observable and likelihood function 
+///  macro definitions.
 //
 //  Initially inspired by Abram  
 //  Krislock's Objects.hpp.
@@ -30,6 +31,10 @@
 //  Abram Krislock
 //  2013 Jan 31, Feb 05
 //  *********************************************
+
+///
+/// \def START_CAPABILITY
+/// Registers the current CAPABILITY of the current MODULE.
 
 #ifndef __module_macros_hpp__
 #define __module_macros_hpp__

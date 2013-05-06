@@ -1,27 +1,56 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Rollcall header for module ExampleBit_B
-//
-//  Compile-time registration of available obser-
-//  vables and likelihoods, as well as their
-//  dependencies.
-//
-//  Add to this if you want to add an observable
-//  or likelihood to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2012 Nov 15++ 
-//  2013 Jan 18, Feb 04, April 22-24
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Rollcall header for module ExampleBit_B.
+///
+///  Compile-time registration of available
+///  observables and likelihoods, as well as their
+///  dependencies.
+///
+///  Add to this if you want to add an observable
+///  or likelihood to this module.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott
+///  \date 2012 Nov  
+///  \date 2013 Jan, Feb, April, May
+///
+///  *********************************************
+///
+/// \def MODULE
+/// Specifies that this is the module named MODULE.
+///
+/// \def CAPABILITY
+/// Specifies that this MODULE is capable of 
+/// providing the service CAPABILITY (usually that
+/// means that it can compute some physical or 
+/// statistical quantity referred to by CAPABILITY).    
+///
+/// \def FUNCTION
+/// Specifies that this MODULE contains a function
+/// named FUNCTION that can execute the commands
+/// required to provided the current CAPABILITY.
+///
+/// \def BACKEND_REQ
+/// Specifies that the current FUNCTION in 
+/// this MODULE requires BACKEND_REQ from a backend
+/// code.  The requirement BACKEND_REQ corresponds
+/// to a capability that a valid backend function 
+/// is expected to report in its corresponding 
+/// registration header file.
+///
+/// \def CONDITIONAL_DEPENDENCY
+/// Specifies that the current FUNCTION in 
+/// this MODULE has a CONDITIONAL_DEPENDENCY
+/// that is only active under certain conditions.
+/// These conditions may include:
+///  - a specific backend is in use in order to fill
+///    a certain BACKEND_REQ
+///  - a certain model is under analysis 
 
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
@@ -102,6 +131,6 @@ START_MODULE
 
 #undef MODULE
 
+#endif // defined(__ExampleBit_B_rollcall_hpp__)
 
-#endif /* defined(__ExampleBit_B_rollcall_hpp__) */
 
