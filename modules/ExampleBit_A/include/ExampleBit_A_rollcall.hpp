@@ -4,8 +4,8 @@
 ///
 ///  Rollcall header for module ExampleBit_A.
 ///
-///  Compile-time registration of available obser-
-///  vables and likelihoods, as well as their
+///  Compile-time registration of available 
+///  observables and likelihoods, as well as their
 ///  dependencies.
 ///
 ///  Add to this if you want to add an observable

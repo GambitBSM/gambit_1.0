@@ -41,35 +41,39 @@ namespace GAMBIT
 
     public:
 
-      /// Empty virtual destructor to make polymorphic
-      virtual ~functor() {}
-
-      /// Empty virtual calculate()
+      /// Empty virtual calculate().  Makes class polymorphic.
       virtual void calculate() {}
 
       // It may be safer to have the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
 
-      ///@{ Identification methods
+      /// Getter for the wrapped function's name
       str name()        { return myName;       }
+      /// Getter for the wrapped function's reported capability
       str capability()  { return myCapability; }
+      /// Getter for the wrapped function's reported return type
       str type()        { return myType;       }
+      /// Getter for the wrapped function's origin (module or backend name)
       str origin()      { return myOrigin;     }
+      /// Getter for the  version of the wrapped function's origin (module or backend)
       str version()     { return myVersion;    }
+      /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
       int status()      { return myStatus;     }
+      /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { return std::make_pair(myCapability, myType); }
-      ///@}
 
       /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
 
-      /// Set method for status
+      /// Set method for status (0 = disabled, 1 = available (default), 2 = active)
       void setStatus(int stat) { myStatus = stat; }
 
-      ///@{ Getters for unconditional dependencies, backend requirements and permitted backends
+      /// Getter for listing unconditional dependencies
       std::vector<sspair> dependencies()                  { return myDependencies; }
+      /// Getter for listing backend requirements
       std::vector<sspair> backendreqs()                   { return myBackendReqs; }
+      /// Getter for listing permitted backends
       std::vector<sspair> backendspermitted(sspair quant) 
       { 
         if (permitted_map.find(quant) != permitted_map.end())
@@ -81,9 +85,9 @@ namespace GAMBIT
           std::vector<sspair> empty;
           return empty;
         }
-      }///@}
+      }
 
-      /// Getter for backend-specific conditional dependencies (4-string version)
+      /// Getter for listing backend-specific conditional dependencies (4-string version)
       std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
       { 
         std::vector<sspair> generic_deps, specific_deps, total_deps;
@@ -122,7 +126,7 @@ namespace GAMBIT
          be_functor->origin(), be_functor->version());
       }
 
-      /// Getter for model-specific conditional dependencies
+      /// Getter for listing model-specific conditional dependencies
       std::vector<sspair> model_conditional_dependencies (str model)
       { 
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
@@ -148,7 +152,7 @@ namespace GAMBIT
           cout << "Error whilst attempting to resolve dependency:" << endl;
           cout << "Function "<< myName << " in " << myOrigin << " does not depend on " << endl;
           cout << "capability " << key.first << " with type " << key.second << "." << endl;
-          ///FIXME \todo throw a real error here
+          ///\todo FIXME throw a real error here
         }
         else { (*dependency_map[key])(dep_functor); }
       }
@@ -180,7 +184,7 @@ namespace GAMBIT
             cout << "Backend capability " << key.first << " with type " << key.second << "." << endl;
             cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << endl;
             cout << "to use "<< proposal.first << ", version " << proposal.second << "." << endl;
-            ///FIXME \todo throw a real error here
+            ///\todo FIXME throw a real error here
           } 
         }
         else
@@ -188,20 +192,27 @@ namespace GAMBIT
           cout << "Error whilst attempting to resolve backend requirement:" << endl;
           cout << "Function "<< myName << " in " << myOrigin << " does not require " << endl;
           cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
-          ///FIXME \todo throw a real error here
+          ///\todo FIXME throw a real error here
         }        
       }
 
     protected:
-                        //Internal storage of
-      str myName;       //the function name,
-      str myCapability; //exactly what it calculates,
-      str myType;       //the type of what it calculates,
-      str myOrigin;     //the name of the module or backend to which it belongs,
-      str myVersion;    //and the module/backend version number or string.
 
-      std::vector<sspair> myDependencies;        // Vector of dependency-type pairs as strings 
-      std::vector<sspair> myBackendReqs;         // Vector of backend requirement-type pairs as strings
+      /// Internal storage of the function name.
+      str myName;       
+      /// Internal storage of exactly what the function calculates.
+      str myCapability; 
+      /// Internal storage of the type of what the function calculates.
+      str myType;       
+      /// Internal storage of the name of the module or backend to which the function belongs.
+      str myOrigin;     
+      /// Internal storage of the version of the module or backend to which the function belongs.
+      str myVersion;    
+
+      /// Vector of dependency-type string pairs 
+      std::vector<sspair> myDependencies;
+      // Vector of backend requirement-type string pairs        
+      std::vector<sspair> myBackendReqs;
 
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
@@ -299,7 +310,7 @@ namespace GAMBIT
           cout << "The type of the backend requirement " << req << "on which the " << endl; 
           cout << "dependency "<< dep << " is conditional has not been set.  This" << endl;
           cout << "is " << this->name() << " in " << this->origin() << "." << endl;
-          ///FIXME \todo throw a real error here
+          ///\todo FIXME throw a real error here
         }
         if (this->myBackendConditionalDependencies.find(quad) == this->myBackendConditionalDependencies.end())
         {
@@ -357,7 +368,7 @@ namespace GAMBIT
           cout << "Error whilst attempting to set permitted backend:" << endl;
           cout << "The return type of the backend requirement " << req << "is not set." << endl; 
           cout << "This is " << this->name() << " in " << this->origin() << "." << endl;
-          ///FIXME \todo throw a real error here
+          ///\todo FIXME throw a real error here
         }
         sspair vector_entry (be,  ver);
         if (this->permitted_map.find(key) == this->permitted_map.end())
