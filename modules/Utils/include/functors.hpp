@@ -1,20 +1,27 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Functor class definitions.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2013  Apr 4++, 16, 22-24, May 03
-//  Anders Kvellestad 
-//  2013  Apr 14  --> Added backend functor class
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Functor class definitions.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Apr, May
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no) 
+///   \date 2013 Apr --> Added backend functor class
+///
+///  \author Christoph Weniger
+///          (thechristophweniger@130gev.omg)
+///  \date 2013 May 
+///
+///  *********************************************
+
 
 #ifndef __functors_hpp__
 #define __functors_hpp__
@@ -27,24 +34,24 @@ namespace GAMBIT
 {
 
   // =====================================
-  // Function wrapper (functor) base class
+  /// Function wrapper (functor) base class
 
   class functor
   {
 
     public:
 
-      // Empty virtual destructor to make polymorphic
+      /// Empty virtual destructor to make polymorphic
       virtual ~functor() {}
 
-      // Empty virtual calculate()
+      /// Empty virtual calculate()
       virtual void calculate() {}
 
       // It may be safer to have the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
 
-      // Identification methods
+      ///@{ Identification methods
       str name()        { return myName;       }
       str capability()  { return myCapability; }
       str type()        { return myType;       }
@@ -52,14 +59,15 @@ namespace GAMBIT
       str version()     { return myVersion;    }
       int status()      { return myStatus;     }
       sspair quantity() { return std::make_pair(myCapability, myType); }
+      ///@}
 
-      // Set method for version
+      /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
 
-      // Set method for status
+      /// Set method for status
       void setStatus(int stat) { myStatus = stat; }
 
-      // Getters for unconditional dependencies, backend requirements and permitted backends
+      ///@{ Getters for unconditional dependencies, backend requirements and permitted backends
       std::vector<sspair> dependencies()                  { return myDependencies; }
       std::vector<sspair> backendreqs()                   { return myBackendReqs; }
       std::vector<sspair> backendspermitted(sspair quant) 
@@ -73,9 +81,9 @@ namespace GAMBIT
           std::vector<sspair> empty;
           return empty;
         }
-      }
+      }///@}
 
-      // Getter for backend-specific conditional dependencies (4-string version)
+      /// Getter for backend-specific conditional dependencies (4-string version)
       std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
       { 
         std::vector<sspair> generic_deps, specific_deps, total_deps;
@@ -101,20 +109,20 @@ namespace GAMBIT
         return total_deps;
       }
       
-      // Getter for backend-specific conditional dependencies (3-string version)
+      /// Getter for backend-specific conditional dependencies (3-string version)
       std::vector<sspair> backend_conditional_dependencies (str req, str type, str be)  
       { 
         return backend_conditional_dependencies(req, type, be, "any");
       }
       
-      // Getter for backend-specific conditional dependencies (backend functor pointer version)
+      /// Getter for backend-specific conditional dependencies (backend functor pointer version)
       std::vector<sspair> backend_conditional_dependencies (functor* be_functor)  
       { 
         return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
          be_functor->origin(), be_functor->version());
       }
 
-      // Getter for model-specific conditional dependencies
+      /// Getter for model-specific conditional dependencies
       std::vector<sspair> model_conditional_dependencies (str model)
       { 
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
@@ -128,10 +136,10 @@ namespace GAMBIT
         }
       }
 
-      // Needs recalculating or not?  (Externally modifiable)
+      /// Needs recalculating or not?  (Externally modifiable)
       bool needs_recalculating;
 
-      // Resolve a dependency using a pointer to another functor object
+      /// Resolve a dependency using a pointer to another functor object
       void resolveDependency (functor* dep_functor)
       {
         sspair key (dep_functor->quantity());
@@ -140,12 +148,12 @@ namespace GAMBIT
           cout << "Error whilst attempting to resolve dependency:" << endl;
           cout << "Function "<< myName << " in " << myOrigin << " does not depend on " << endl;
           cout << "capability " << key.first << " with type " << key.second << "." << endl;
-          //FIXME throw a real error here
+          ///FIXME \todo throw a real error here
         }
         else { (*dependency_map[key])(dep_functor); }
       }
 
-      // Resolve a backend requirement using a pointer to another functor object
+      /// Resolve a backend requirement using a pointer to another functor object
       void resolveBackendReq (functor* be_functor)
       {
         sspair key (be_functor->quantity());
@@ -172,7 +180,7 @@ namespace GAMBIT
             cout << "Backend capability " << key.first << " with type " << key.second << "." << endl;
             cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << endl;
             cout << "to use "<< proposal.first << ", version " << proposal.second << "." << endl;
-            //FIXME throw a real error here
+            ///FIXME \todo throw a real error here
           } 
         }
         else
@@ -180,7 +188,7 @@ namespace GAMBIT
           cout << "Error whilst attempting to resolve backend requirement:" << endl;
           cout << "Function "<< myName << " in " << myOrigin << " does not require " << endl;
           cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
-          //FIXME throw a real error here
+          ///FIXME \todo throw a real error here
         }        
       }
 
@@ -195,34 +203,34 @@ namespace GAMBIT
       std::vector<sspair> myDependencies;        // Vector of dependency-type pairs as strings 
       std::vector<sspair> myBackendReqs;         // Vector of backend requirement-type pairs as strings
 
-      // Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
+      /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
 
-      // Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
+      /// Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
       std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;
 
-      // Map from models to (vector of {conditional dependency-type} pairs)
+      /// Map from models to (vector of {conditional dependency-type} pairs)
       std::map< str, std::vector<sspair> > myModelConditionalDependencies;
 
-      // Map from backend requirements to their required types
+      /// Map from backend requirements to their required types
       std::map<str, str> backendreq_types;
 
-      // Map from (dependency-type pairs) to (pointers to templated void functions 
-      // that set dependency functor pointers)
+      /// Map from (dependency-type pairs) to (pointers to templated void functions 
+      /// that set dependency functor pointers)
       std::map<sspair, void(*)(functor*)> dependency_map;
 
-      // Map from (backend requirement-type pairs) to (pointers to templated void functions 
-      // that set backend requirement functor pointers)
+      /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
+      /// that set backend requirement functor pointers)
       std::map<sspair, void(*)(functor*)> backendreq_map;
 
-      // Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
+      /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
       std::map< sspair, std::vector<sspair> > permitted_map;
 
   };
 
 
   // ================================================================
-  // Functor derived class for module functions with result type TYPE 
+  /// Functor derived class for module functions with result type TYPE 
 
   template <typename TYPE>
   class module_functor : public functor
@@ -230,7 +238,7 @@ namespace GAMBIT
 
     public:
 
-      // Constructor 
+      /// Constructor 
       module_functor(void (*inputFunction)(TYPE &), 
                             str func_name,
                             str func_capability, 
@@ -246,13 +254,13 @@ namespace GAMBIT
         needs_recalculating = true;
       }
 
-      // Calculate method
+      /// Calculate method
       void calculate() { if(needs_recalculating) { this->myFunction(myValue); } }
 
-      // Operation (return value) 
+      /// Operation (return value) 
       TYPE operator()() { return myValue; }
 
-      // Add a dependency (a beer for anyone who can explain why this-> is required here)
+      /// Add a dependency (a beer for anyone who can explain why this-> is required here)
       void setDependency(str dep, str type, void(*resolver)(functor*))
       { 
         sspair key (dep, type);
@@ -260,7 +268,7 @@ namespace GAMBIT
         this->dependency_map[key] = resolver;
       }
 
-      // Add a backend conditional dependency for multiple backend versions
+      /// Add a backend conditional dependency for multiple backend versions
       void setBackendConditionalDependency
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
       { 
@@ -272,7 +280,7 @@ namespace GAMBIT
         }
       }
 
-      // Add a backend conditional dependency for a single backend version
+      /// Add a backend conditional dependency for a single backend version
       void setBackendConditionalDependencySingular
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
       { 
@@ -291,7 +299,7 @@ namespace GAMBIT
           cout << "The type of the backend requirement " << req << "on which the " << endl; 
           cout << "dependency "<< dep << " is conditional has not been set.  This" << endl;
           cout << "is " << this->name() << " in " << this->origin() << "." << endl;
-          //FIXME throw a real error here
+          ///FIXME \todo throw a real error here
         }
         if (this->myBackendConditionalDependencies.find(quad) == this->myBackendConditionalDependencies.end())
         {
@@ -302,7 +310,7 @@ namespace GAMBIT
         this->dependency_map[key] = resolver;
       }
 
-      // Add a model conditional dependency
+      /// Add a model conditional dependency
       void setModelConditionalDependency
        (str model, str dep, str dep_type, void(*resolver)(functor*))
       { 
@@ -316,7 +324,7 @@ namespace GAMBIT
         this->dependency_map[key] = resolver;
       }
 
-      // Add a backend requirement
+      /// Add a backend requirement
       void setBackendReq(str req, str type, void(*resolver)(functor*))
       { 
         sspair key (req, type);
@@ -325,7 +333,7 @@ namespace GAMBIT
         this->backendreq_map[key] = resolver;
       }
 
-      // Add multiple versions of a permitted backend 
+      /// Add multiple versions of a permitted backend 
       void setPermittedBackend(str req, str be, str ver)
       {
         // Split the version string and send each version to be registered
@@ -336,7 +344,7 @@ namespace GAMBIT
         }
       }
 
-      // Add a single permitted backend version
+      /// Add a single permitted backend version
       void setPermittedBackendSingular(str req, str be, str ver)
       { 
         sspair key;
@@ -349,7 +357,7 @@ namespace GAMBIT
           cout << "Error whilst attempting to set permitted backend:" << endl;
           cout << "The return type of the backend requirement " << req << "is not set." << endl; 
           cout << "This is " << this->name() << " in " << this->origin() << "." << endl;
-          //FIXME throw a real error here
+          ///FIXME \todo throw a real error here
         }
         sspair vector_entry (be,  ver);
         if (this->permitted_map.find(key) == this->permitted_map.end())
@@ -362,17 +370,17 @@ namespace GAMBIT
 
     protected:
 
-      // Internal storage of function value
+      /// Internal storage of function value
       TYPE myValue;
 
-      // Internal storage of function pointer
+      /// Internal storage of function pointer
       void (*myFunction)(TYPE &);
 
   };
 
 
   // ===============================================================================
-  // Backend functor class for functions with result type TYPE and argumentlist ARGS 
+  /// Backend functor class for functions with result type TYPE and argumentlist ARGS 
 
   template <typename TYPE, typename... ARGS>
   class backend_functor_common : public functor
@@ -380,7 +388,7 @@ namespace GAMBIT
 
     public:
 
-      // Constructor 
+      /// Constructor 
       backend_functor_common (TYPE (*inputFunction)(ARGS...), 
                               str func_name,
                               str func_capability, 
@@ -400,20 +408,20 @@ namespace GAMBIT
 
     protected:
 
-      // Internal storage of function pointer
+      /// Internal storage of function pointer
       TYPE (*myFunction)(ARGS...);
 
   };
 
 
-  // Actual backend functor type for all but TYPE=void
+  /// Actual backend functor type for all but TYPE=void
   template <typename TYPE, typename... ARGS>
   class backend_functor : public backend_functor_common<TYPE, ARGS...>
   {
 
     public:
 
-      // Constructor 
+      /// Constructor 
       backend_functor (TYPE (*inputFunction)(ARGS...), 
                        str func_name,
                        str func_capability, 
@@ -439,10 +447,10 @@ namespace GAMBIT
       // 1) Operation (return value) 
       //TYPE operator()() { return this->myValue; }
 
-      // 2) Calculate method 
+      /// 2) Calculate method 
       void calculate(ARGS... args) { myValue = this->myFunction(args...); }
 
-      // 2) Operation (execute function and return value) 
+      /// 2) Operation (execute function and return value) 
       TYPE operator()(ARGS... args) 
       { 
         if(this->needs_recalculating) { myValue = this->myFunction(args...); }
@@ -451,19 +459,19 @@ namespace GAMBIT
 
     protected:
 
-      // Internal storage of function value
+      /// Internal storage of function value
       TYPE myValue;
   };
 
 
-  // Template specialisation of backend functor type for TYPE=void
+  /// Template specialisation of backend functor type for TYPE=void
   template <typename... ARGS>
   class backend_functor<void, ARGS...> : public backend_functor_common<void, ARGS...>
   {
 
     public:
 
-      // Constructor 
+      /// Constructor 
       backend_functor (void (*inputFunction)(ARGS...), 
                        str func_name,
                        str func_capability, 
@@ -479,10 +487,10 @@ namespace GAMBIT
       // 1) Operation (return value) 
       //TYPE operator()() { this->myFunction(args...); }
 
-      // 2) Calculate method 
+      /// 2) Calculate method 
       void calculate(ARGS... args) { this->myFunction(args...); }
 
-      // 2) Operation (execute function and return value) 
+      /// 2) Operation (execute function and return value) 
       void operator()(ARGS... args) 
       { 
         if(this->needs_recalculating) { this->myFunction(args...); }
@@ -492,10 +500,10 @@ namespace GAMBIT
 
 
 
-  // Function for creating backend functor objects
-  //
-  // This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
-  // in backend_general.hpp works at the moment...
+  /// Function for creating backend functor objects.
+  ///
+  /// This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
+  /// in backend_general.hpp works at the moment...
   template<typename OUTTYPE, typename... ARGS>
   backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*f_in)(ARGS...), 
                                                           str func_name, 

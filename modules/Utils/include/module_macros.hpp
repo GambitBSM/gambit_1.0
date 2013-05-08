@@ -27,11 +27,13 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
 ///  \date 2012 Nov  
 ///  \date 2013 Jan, Feb, Mar, Apr, May
 ///  \date 2013-Foreverrrrr
 ///
 ///  \author Abram Krislock
+///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Jan, Feb
 ///  *********************************************
 

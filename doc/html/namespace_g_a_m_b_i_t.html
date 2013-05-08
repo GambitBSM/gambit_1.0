@@ -84,10 +84,15 @@ Namespaces</h2></td></tr>
 Classes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1dict.html">dict</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Function wrapper (functor) base class.  <a href="class_g_a_m_b_i_t_1_1functor.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html">module_functor</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Functor derived class for module functions with result type TYPE.  <a href="class_g_a_m_b_i_t_1_1module__functor.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor__common.html">backend_functor_common</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="namespace_g_a_m_b_i_t_1_1_backend.html">Backend</a> functor class for functions with result type TYPE and argumentlist ARGS.  <a href="class_g_a_m_b_i_t_1_1backend__functor__common.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor.html">backend_functor</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Actual backend functor type for all but TYPE=void.  <a href="class_g_a_m_b_i_t_1_1backend__functor.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor_3_01void_00_01_a_r_g_s_8_8_8_4.html">backend_functor&lt; void, ARGS...&gt;</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialisation of backend functor type for TYPE=void.  <a href="class_g_a_m_b_i_t_1_1backend__functor_3_01void_00_01_a_r_g_s_8_8_8_4.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_g_a_m_b_i_t_1_1ini__code.html">ini_code</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1_analysis.html">Analysis</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1_analysis___a_t_l_a_s0_l_e_p.html">Analysis_ATLAS0LEP</a></td></tr>
@@ -110,6 +115,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#a986e5ae8f7726e15959a31f3fb3edc43">delimiterSplit</a> (std::string s, std::string delim)</td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename OUTTYPE , typename... ARGS&gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor.html">backend_functor</a>&lt; OUTTYPE, ARGS...&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#ab7b341158e2b6a0c202a6ef1af957b82">makeBackendFunctor</a> (OUTTYPE(*f_in)(ARGS...), <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> func_name, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> func_capab, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ret_type, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> origin_name, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> origin_ver)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for creating backend functor objects.  <a href="#ab7b341158e2b6a0c202a6ef1af957b82"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#aeab27abf6392b03d68ca421765e19bb7">spacing</a> (int len, int maxlen)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a35329f0bd1a752b5459857c039046026">stream</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#a64158acc314dee275cc23168def68159">operator&lt;&lt;</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a35329f0bd1a752b5459857c039046026">stream</a> &amp;os, const std::map&lt; std::string, std::string &gt; &amp;map)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a35329f0bd1a752b5459857c039046026">stream</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#a5b7c8ff627bb0c78821a9f7127bd5d9e">operator&lt;&lt;</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a35329f0bd1a752b5459857c039046026">stream</a> &amp;os, const std::map&lt; std::string, int &gt; &amp;map)</td></tr>
@@ -149,7 +155,7 @@ src <a class="el" href="class_g_a_m_b_i_t_1_1_analysis.html">Analysis</a> cpp <a
 <tr><td colspan="2"><div class="groupHeader">Physics maths utils</div></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#ac4f3634398b68c94bff6b5231e9dcb8c">deltaPhi</a> (double a, double b)</td></tr>
 <tr><td colspan="2"><div class="groupHeader">PID stuff</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000061">Todo:</a></b></dt><dd>Move to PIDUtils </dd></dl>
+<tr><td colspan="2"><div class="groupText"><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000066">Todo:</a></b></dt><dd>Move to PIDUtils </dd></dl>
 </div></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;size_t D&gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#a4108b04ed649a11adc4c0e475ecbcc26">digit</a> (unsigned int val)</td></tr>
@@ -317,7 +323,7 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>Convenience function for adding two numbers in quadrature. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000057">Todo:</a></b></dt><dd>Template and SFINAE on numerical types? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000062">Todo:</a></b></dt><dd>Template and SFINAE on numerical types? </dd></dl>
 
 <p>Definition at line <a class="el" href="_math_utils_8hpp_source.html#l00024">24</a> of file <a class="el" href="_math_utils_8hpp_source.html">MathUtils.hpp</a>.</p>
 <div class="fragment"><pre class="fragment">                                             {
@@ -358,7 +364,7 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>Convenience function for adding three numbers in quadrature. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000058">Todo:</a></b></dt><dd>Template and SFINAE on numerical types? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000063">Todo:</a></b></dt><dd>Template and SFINAE on numerical types? </dd></dl>
 
 <p>Definition at line <a class="el" href="_math_utils_8hpp_source.html#l00031">31</a> of file <a class="el" href="_math_utils_8hpp_source.html">MathUtils.hpp</a>.</p>
 <div class="fragment"><pre class="fragment">                                                       {
@@ -430,7 +436,7 @@ Variables</h2></td></tr>
 
 <p>Definition at line <a class="el" href="util__functions_8cpp_source.html#l00025">25</a> of file <a class="el" href="util__functions_8cpp_source.html">util_functions.cpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00265">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependency()</a>, and <a class="el" href="functors_8hpp_source.html#l00329">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackend()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00273">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependency()</a>, and <a class="el" href="functors_8hpp_source.html#l00337">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackend()</a>.</p>
 <div class="fragment"><pre class="fragment">  {
     std::vector&lt;std::string&gt; vec;
     <span class="comment">// Get rid of any whitespace around the delimiters</span>
@@ -1005,10 +1011,10 @@ template&lt;&gt; </div>
 
 <p>Fill a <a class="el" href="class_g_a_m_b_i_t_1_1_event.html" title="Simple event class, separating into various classes of particle.">GAMBIT::Event</a> from a Pythia8 event. </p>
 
-<p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000067">Todo:</a></b></dt><dd>Promptness: need an isPrompt function that walks back up the tree </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000068">Todo:</a></b></dt><dd>taus... and include hadronically decaying ones only? </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000069">Todo:</a></b></dt><dd>Don't exclude tau decay products, apparently: ATLAS treats them as jets </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000070">Todo:</a></b></dt><dd>b-tagging </dd></dl>
+<p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000072">Todo:</a></b></dt><dd>Promptness: need an isPrompt function that walks back up the tree </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000073">Todo:</a></b></dt><dd>taus... and include hadronically decaying ones only? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000074">Todo:</a></b></dt><dd>Don't exclude tau decay products, apparently: ATLAS treats them as jets </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000075">Todo:</a></b></dt><dd>b-tagging </dd></dl>
 </p>
 
 <p>Definition at line <a class="el" href="_py8_utils_8hpp_source.html#l00152">152</a> of file <a class="el" href="_py8_utils_8hpp_source.html">Py8Utils.hpp</a>.</p>
@@ -1125,7 +1131,7 @@ template&lt;&gt; </div>
 </div>
 <div class="memdoc">
 
-<p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000066">Todo:</a></b></dt><dd>What about partonic decays? </dd></dl>
+<p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000071">Todo:</a></b></dt><dd>What about partonic decays? </dd></dl>
 </p>
 
 <p>Definition at line <a class="el" href="_py8_utils_8hpp_source.html#l00058">58</a> of file <a class="el" href="_py8_utils_8hpp_source.html">Py8Utils.hpp</a>.</p>
@@ -1347,7 +1353,7 @@ template&lt;&gt; </div>
 
 <p>Boolean function to determine if <em>value</em> is within the given integer range. </p>
 <p>NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000060">Todo:</a></b></dt><dd><p class="startdd">Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion... </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000065">Todo:</a></b></dt><dd><p class="startdd">Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion... </p>
 <p class="enddd">SFINAE and template for integer types </p>
 </dd></dl>
 
@@ -1391,7 +1397,7 @@ template&lt;&gt; </div>
 
 <p>Boolean function to determine if <em>value</em> is within the given floating point range. </p>
 <p>NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000059">Todo:</a></b></dt><dd><p class="startdd">Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion... </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000064">Todo:</a></b></dt><dd><p class="startdd">Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion... </p>
 <p class="enddd">SFINAE and template for FP types </p>
 </dd></dl>
 
@@ -1685,7 +1691,10 @@ template&lt;typename OUTTYPE , typename... ARGS&gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00500">500</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Function for creating backend functor objects. </p>
+<p>This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros in backend_general.hpp works at the moment... </p>
+
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00508">508</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 <div class="fragment"><pre class="fragment">  { 
     <span class="keywordflow">return</span> backend_functor&lt;OUTTYPE,ARGS...&gt;(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
@@ -2133,7 +2142,7 @@ template&lt;typename OUTTYPE , typename... ARGS&gt; </div>
 <div class="memdoc">
 
 <p>Convenience function for squaring (better than repeating long expressions) </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000056">Todo:</a></b></dt><dd>Template and SFINAE on numerical types? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000061">Todo:</a></b></dt><dd>Template and SFINAE on numerical types? </dd></dl>
 
 <p>Definition at line <a class="el" href="_math_utils_8hpp_source.html#l00017">17</a> of file <a class="el" href="_math_utils_8hpp_source.html">MathUtils.hpp</a>.</p>
 
@@ -2253,7 +2262,7 @@ template&lt;typename OUTTYPE , typename... ARGS&gt; </div>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 22:34:25 for GAMBIT by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 23:50:08 for GAMBIT by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

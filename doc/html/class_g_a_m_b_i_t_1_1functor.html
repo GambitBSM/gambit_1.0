@@ -76,6 +76,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <!-- doxytag: class="GAMBIT::functor" -->
+<p>Function wrapper (functor) base class.  
+<a href="#_details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="functors_8hpp_source.html">functors.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for GAMBIT::functor:</div>
@@ -97,28 +100,43 @@ Inheritance diagram for GAMBIT::functor:</div>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#af074323ff1bdbbd6cb568e6cd8fd7db2">~functor</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty virtual destructor to make polymorphic.  <a href="#af074323ff1bdbbd6cb568e6cd8fd7db2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aed43b7b3bcdd3136044d99b81b332a39">calculate</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty virtual <a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aed43b7b3bcdd3136044d99b81b332a39" title="Empty virtual calculate()">calculate()</a>  <a href="#aed43b7b3bcdd3136044d99b81b332a39"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a5a57704d3b94862b1494a9671ad1e10b">setVersion</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set method for version.  <a href="#a5a57704d3b94862b1494a9671ad1e10b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a71ada24bb4301c87bab904dbc1883b6f">setStatus</a> (int stat)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set method for status.  <a href="#a71ada24bb4301c87bab904dbc1883b6f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c">backend_conditional_dependencies</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> type, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for backend-specific conditional dependencies (4-string version)  <a href="#a8e5ffc4cd981acbb62f550fa33972f6c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a7cf014ed7d6a0cb9278b89e0f4e25eea">backend_conditional_dependencies</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> type, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for backend-specific conditional dependencies (3-string version)  <a href="#a7cf014ed7d6a0cb9278b89e0f4e25eea"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aa23b9c7c58e0c0e66659aa6a8fa3465f">backend_conditional_dependencies</a> (<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *be_functor)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for backend-specific conditional dependencies (backend functor pointer version)  <a href="#aa23b9c7c58e0c0e66659aa6a8fa3465f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a32193755a43b8ef85e75f3b89af79c6a">model_conditional_dependencies</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> model)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for model-specific conditional dependencies.  <a href="#a32193755a43b8ef85e75f3b89af79c6a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a959f843a41c5096f9eb9db2e5b187997">resolveDependency</a> (<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *dep_functor)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a dependency using a pointer to another functor object.  <a href="#a959f843a41c5096f9eb9db2e5b187997"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a27bd38a7d1b267b2039f4f0cf73c687d">resolveBackendReq</a> (<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *be_functor)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a backend requirement using a pointer to another functor object.  <a href="#a27bd38a7d1b267b2039f4f0cf73c687d"></a><br/></td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#af189f790b1eab1cd438053ba4711b6a9">name</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Identification methods.  <a href="#af189f790b1eab1cd438053ba4711b6a9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a6db591639305f2456288ea989df04a31">capability</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a170bdd37813d06267408967132bb1298">origin</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#adc1d6c7ba264927fba282167a6a7b105">version</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#abfe67354ac155cbd27ba59a5540cad4a">status</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a7d59b2f26daeacbdf103c380968bdb7e">quantity</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a5a57704d3b94862b1494a9671ad1e10b">setVersion</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a71ada24bb4301c87bab904dbc1883b6f">setStatus</a> (int stat)</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a9c0d2f23608cbff43619ffbade41bec0">dependencies</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Getters for unconditional dependencies, backend requirements and permitted backends.  <a href="#a9c0d2f23608cbff43619ffbade41bec0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a88fa0d933d53ff614a5b9ea0a804843e">backendreqs</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aae499adc571e2121339fe1e3ab7f608f">backendspermitted</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> quant)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c">backend_conditional_dependencies</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> type, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a7cf014ed7d6a0cb9278b89e0f4e25eea">backend_conditional_dependencies</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> type, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aa23b9c7c58e0c0e66659aa6a8fa3465f">backend_conditional_dependencies</a> (<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *be_functor)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a32193755a43b8ef85e75f3b89af79c6a">model_conditional_dependencies</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> model)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a959f843a41c5096f9eb9db2e5b187997">resolveDependency</a> (<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *dep_functor)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a27bd38a7d1b267b2039f4f0cf73c687d">resolveBackendReq</a> (<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *be_functor)</td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a97086e7221cde47bf66c842b3a9df78e">needs_recalculating</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Needs recalculating or not? (Externally modifiable)  <a href="#a97086e7221cde47bf66c842b3a9df78e"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aa519dfafb59116aa63616281db28f13c">myName</a></td></tr>
@@ -129,19 +147,27 @@ Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a9f3bab9516cacc5168e517896fac4fec">myDependencies</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a24af9bb10b48fb6d100a8b273c641b65">myBackendReqs</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98">myStatus</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)  <a href="#a828b29208b3f4aa133fdbb7ee9d81a98"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> &gt;<br class="typebreak"/>
 , std::vector&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)  <a href="#a50940a92376d46e3f75b94885634d8db"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>, std::vector<br class="typebreak"/>
 &lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from models to (vector of {conditional dependency-type} pairs)  <a href="#a28b73606cf5c97bb0c10d355e6208f3a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a>, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from backend requirements to their required types.  <a href="#a4135dfa7d4ba91e2fee8dc64022459f2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a>, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor pointers)  <a href="#ac5ba9d67c8403060531622cc6efb6dec"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a>, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f">backendreq_map</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from (backend requirement-type pairs) to (pointers to templated void functions that set backend requirement functor pointers)  <a href="#a90a3100df56637b91fcaff5e912ea63f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a>, std::vector<br class="typebreak"/>
 &lt; <a class="el" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)  <a href="#aa00a820074b70869f4f9a0739da1cac7"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00032">32</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<div class="textblock"><p>Function wrapper (functor) base class. </p>
+
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00039">39</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="af074323ff1bdbbd6cb568e6cd8fd7db2"></a><!-- doxytag: member="GAMBIT::functor::~functor" ref="af074323ff1bdbbd6cb568e6cd8fd7db2" args="()" -->
 <div class="memitem">
@@ -157,7 +183,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00038">38</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Empty virtual destructor to make polymorphic. </p>
+
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00045">45</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 <div class="fragment"><pre class="fragment">{}
 </pre></div>
 </div>
@@ -200,11 +228,13 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00079">79</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Getter for backend-specific conditional dependencies (4-string version) </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00202">myBackendConditionalDependencies</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00087">87</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00105">backend_conditional_dependencies()</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00210">myBackendConditionalDependencies</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00113">backend_conditional_dependencies()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         std::vector&lt;sspair&gt; generic_deps, specific_deps, total_deps;
         std::vector&lt;str&gt; quad;
@@ -215,12 +245,12 @@ Protected Attributes</h2></td></tr>
         <span class="comment">//Check first what conditional dependencies exist for all versions of this backend</span>
         <span class="keywordflow">if</span> (ver != <span class="stringliteral">&quot;any&quot;</span>)
         {
-          generic_deps = <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c">backend_conditional_dependencies</a>(req, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>, be, <span class="stringliteral">&quot;any&quot;</span>);
+          generic_deps = <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c" title="Getter for backend-specific conditional dependencies (4-string version)">backend_conditional_dependencies</a>(req, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>, be, <span class="stringliteral">&quot;any&quot;</span>);
         }
         <span class="comment">//Now see if there are any for this specific version</span>
-        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>.find(quad) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>.end())
+        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>.find(quad) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>.end())
         {
-          specific_deps = <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>[quad];
+          specific_deps = <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>[quad];
         }
         <span class="comment">//Now put them together</span>
         total_deps.reserve(generic_deps.size() + specific_deps.size());
@@ -246,11 +276,13 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00111">111</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Getter for backend-specific conditional dependencies (backend functor pointer version) </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00079">backend_conditional_dependencies()</a>, <a class="el" href="functors_8hpp_source.html#l00049">capability()</a>, <a class="el" href="functors_8hpp_source.html#l00051">origin()</a>, <a class="el" href="functors_8hpp_source.html#l00050">type()</a>, and <a class="el" href="functors_8hpp_source.html#l00052">version()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00119">119</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00087">backend_conditional_dependencies()</a>, <a class="el" href="functors_8hpp_source.html#l00056">capability()</a>, <a class="el" href="functors_8hpp_source.html#l00058">origin()</a>, <a class="el" href="functors_8hpp_source.html#l00057">type()</a>, and <a class="el" href="functors_8hpp_source.html#l00059">version()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
-        <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c">backend_conditional_dependencies</a> (be_functor-&gt;capability(), be_functor-&gt;type(),
+        <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c" title="Getter for backend-specific conditional dependencies (4-string version)">backend_conditional_dependencies</a> (be_functor-&gt;capability(), be_functor-&gt;type(),
          be_functor-&gt;origin(), be_functor-&gt;version());
       }
 </pre></div>
@@ -287,11 +319,13 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00105">105</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Getter for backend-specific conditional dependencies (3-string version) </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00079">backend_conditional_dependencies()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00113">113</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00087">backend_conditional_dependencies()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
-        <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c">backend_conditional_dependencies</a>(req, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>, be, <span class="stringliteral">&quot;any&quot;</span>);
+        <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a8e5ffc4cd981acbb62f550fa33972f6c" title="Getter for backend-specific conditional dependencies (4-string version)">backend_conditional_dependencies</a>(req, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>, be, <span class="stringliteral">&quot;any&quot;</span>);
       }
 </pre></div>
 </div>
@@ -310,9 +344,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00064">64</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00072">72</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00196">myBackendReqs</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00204">myBackendReqs</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a24af9bb10b48fb6d100a8b273c641b65">myBackendReqs</a>; }
 </pre></div>
 </div>
@@ -332,13 +366,13 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00065">65</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00073">73</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00219">permitted_map</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00227">permitted_map</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
-        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>.find(quant) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>.end())
+        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>.find(quant) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>.end())
         {
-          <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[quant]; 
+          <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[quant]; 
         }
         <span class="keywordflow">else</span>
         {
@@ -363,9 +397,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Empty virtual <a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aed43b7b3bcdd3136044d99b81b332a39" title="Empty virtual calculate()">calculate()</a> </p>
+
 <p>Reimplemented in <a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#ae3975640c8fa5a661067e134f0d16c87">GAMBIT::module_functor&lt; TYPE &gt;</a>.</p>
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00041">41</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00048">48</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 <div class="fragment"><pre class="fragment">{}
 </pre></div>
 </div>
@@ -384,11 +420,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00049">49</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00056">56</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00190">myCapability</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00198">myCapability</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00111">backend_conditional_dependencies()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00119">backend_conditional_dependencies()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a25819ce9d3149570d4e2d5f7c4bd6d7d">myCapability</a>; }
 </pre></div>
 </div>
@@ -407,9 +443,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00063">63</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Getters for unconditional dependencies, backend requirements and permitted backends. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00195">myDependencies</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00071">71</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00203">myDependencies</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a9f3bab9516cacc5168e517896fac4fec">myDependencies</a>; }
 </pre></div>
 </div>
@@ -429,13 +467,15 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00118">118</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Getter for model-specific conditional dependencies. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00205">myModelConditionalDependencies</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00126">126</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00213">myModelConditionalDependencies</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
-        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>.find(model) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>.end())
+        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>.find(model) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>.end())
         {
-          <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>[model];
+          <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>[model];
         }
         <span class="keywordflow">else</span>
         {
@@ -460,11 +500,13 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00048">48</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Identification methods. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00189">myName</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00055">55</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00277">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, and <a class="el" href="functors_8hpp_source.html#l00340">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00197">myName</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00285">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, and <a class="el" href="functors_8hpp_source.html#l00348">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa519dfafb59116aa63616281db28f13c">myName</a>;       }
 </pre></div>
 </div>
@@ -483,11 +525,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00051">51</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00058">58</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00192">myOrigin</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00200">myOrigin</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00111">backend_conditional_dependencies()</a>, <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>, <a class="el" href="functors_8hpp_source.html#l00277">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, and <a class="el" href="functors_8hpp_source.html#l00340">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00119">backend_conditional_dependencies()</a>, <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>, <a class="el" href="functors_8hpp_source.html#l00285">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, and <a class="el" href="functors_8hpp_source.html#l00348">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af022a02ec14b42e75ee50dc678aa5c4b">myOrigin</a>;     }
 </pre></div>
 </div>
@@ -506,11 +548,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00054">54</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00061">61</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00190">myCapability</a>, and <a class="el" href="functors_8hpp_source.html#l00191">myType</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00198">myCapability</a>, and <a class="el" href="functors_8hpp_source.html#l00199">myType</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00135">resolveDependency()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00143">resolveDependency()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> std::make_pair(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a25819ce9d3149570d4e2d5f7c4bd6d7d">myCapability</a>, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a52dbf7db79de1928f40b4657cac84249">myType</a>); }
 </pre></div>
 </div>
@@ -530,27 +572,35 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00149">149</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Resolve a backend requirement using a pointer to another functor object. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00216">backendreq_map</a>, <a class="el" href="functors_8hpp_source.html#l00189">myName</a>, <a class="el" href="functors_8hpp_source.html#l00192">myOrigin</a>, <a class="el" href="functors_8hpp_source.html#l00051">origin()</a>, <a class="el" href="functors_8hpp_source.html#l00219">permitted_map</a>, <a class="el" href="functors_8hpp_source.html#l00054">quantity()</a>, and <a class="el" href="functors_8hpp_source.html#l00052">version()</a>.</p>
+<p><p>FIXME</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>throw a real error here </dd></dl>
+<p>FIXME</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>throw a real error here </dd></dl>
+</p>
+
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00157">157</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00224">backendreq_map</a>, <a class="el" href="functors_8hpp_source.html#l00197">myName</a>, <a class="el" href="functors_8hpp_source.html#l00200">myOrigin</a>, <a class="el" href="functors_8hpp_source.html#l00058">origin()</a>, <a class="el" href="functors_8hpp_source.html#l00227">permitted_map</a>, <a class="el" href="functors_8hpp_source.html#l00061">quantity()</a>, and <a class="el" href="functors_8hpp_source.html#l00059">version()</a>.</p>
 <div class="fragment"><pre class="fragment">      {
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key (be_functor-&gt;quantity());
         <span class="comment">//First make sure that the proposed backend function fulfills a known requirement of the module function.</span>
-        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f">backendreq_map</a>.find(key) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f">backendreq_map</a>.end())                            
+        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f" title="Map from (backend requirement-type pairs) to (pointers to templated void functions that set backend r...">backendreq_map</a>.find(key) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f" title="Map from (backend requirement-type pairs) to (pointers to templated void functions that set backend r...">backendreq_map</a>.end())                            
         { 
           <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> proposal (be_functor-&gt;origin(), be_functor-&gt;version());  <span class="comment">//Proposed backend-version pair</span>
           <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> generic_proposal (be_functor-&gt;origin(), <span class="stringliteral">&quot;any&quot;</span>);          <span class="comment">//Proposed backend, any version </span>
           <span class="keywordflow">if</span> ( <span class="comment">//Check for a condition under which the proposed backend function is an acceptable fit for this requirement.</span>
            <span class="comment">//Check whether there are have been any permitted backends stated for this requirement (if not, anything goes).</span>
-           (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>.find(key) == <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>.end()) || 
+           (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>.find(key) == <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>.end()) || 
            <span class="comment">//Iterate over the vector of backend-version pairs for this requirement to see if all versions of the </span>
            <span class="comment">//proposed backend have been explicitly permitted.</span>
-           (std::find(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].begin(), <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].end(), generic_proposal) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].end()) ||
+           (std::find(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].begin(), <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].end(), generic_proposal) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].end()) ||
            <span class="comment">//Iterate over the vector of backend-version pairs again to see if the specific backend version </span>
            <span class="comment">//proposed had been explicitly permitted.</span>
-           (std::find(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].begin(), <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].end(), proposal) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].end()) )         
+           (std::find(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].begin(), <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].end(), proposal) != <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].end()) )         
           {
-            (*<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f">backendreq_map</a>[key])(be_functor);   <span class="comment">//One of the conditions was met, so do the resolution</span>
+            (*<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f" title="Map from (backend requirement-type pairs) to (pointers to templated void functions that set backend r...">backendreq_map</a>[key])(be_functor);   <span class="comment">//One of the conditions was met, so do the resolution</span>
           }
           <span class="keywordflow">else</span>          
           { 
@@ -558,7 +608,6 @@ Protected Attributes</h2></td></tr>
             cout &lt;&lt; <span class="stringliteral">&quot;Backend capability &quot;</span> &lt;&lt; key.first &lt;&lt; <span class="stringliteral">&quot; with type &quot;</span> &lt;&lt; key.second &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
             cout &lt;&lt; <span class="stringliteral">&quot;required by function &quot;</span>&lt;&lt; <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa519dfafb59116aa63616281db28f13c">myName</a> &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af022a02ec14b42e75ee50dc678aa5c4b">myOrigin</a> &lt;&lt; <span class="stringliteral">&quot; is not permitted &quot;</span> &lt;&lt; endl;
             cout &lt;&lt; <span class="stringliteral">&quot;to use &quot;</span>&lt;&lt; proposal.first &lt;&lt; <span class="stringliteral">&quot;, version &quot;</span> &lt;&lt; proposal.second &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
-            <span class="comment">//FIXME throw a real error here</span>
           } 
         }
         <span class="keywordflow">else</span>
@@ -566,7 +615,6 @@ Protected Attributes</h2></td></tr>
           cout &lt;&lt; <span class="stringliteral">&quot;Error whilst attempting to resolve backend requirement:&quot;</span> &lt;&lt; endl;
           cout &lt;&lt; <span class="stringliteral">&quot;Function &quot;</span>&lt;&lt; <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa519dfafb59116aa63616281db28f13c">myName</a> &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af022a02ec14b42e75ee50dc678aa5c4b">myOrigin</a> &lt;&lt; <span class="stringliteral">&quot; does not require &quot;</span> &lt;&lt; endl;
           cout &lt;&lt; <span class="stringliteral">&quot;backend capability &quot;</span> &lt;&lt; key.first &lt;&lt; <span class="stringliteral">&quot; with type &quot;</span> &lt;&lt; key.second &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
-          <span class="comment">//FIXME throw a real error here</span>
         }        
       }
 </pre></div>
@@ -587,19 +635,24 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00135">135</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Resolve a dependency using a pointer to another functor object. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00212">dependency_map</a>, <a class="el" href="functors_8hpp_source.html#l00189">myName</a>, <a class="el" href="functors_8hpp_source.html#l00192">myOrigin</a>, and <a class="el" href="functors_8hpp_source.html#l00054">quantity()</a>.</p>
+<p><p>FIXME</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>throw a real error here </dd></dl>
+</p>
+
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00143">143</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00220">dependency_map</a>, <a class="el" href="functors_8hpp_source.html#l00197">myName</a>, <a class="el" href="functors_8hpp_source.html#l00200">myOrigin</a>, and <a class="el" href="functors_8hpp_source.html#l00061">quantity()</a>.</p>
 <div class="fragment"><pre class="fragment">      {
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key (dep_functor-&gt;quantity());
-        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a>.find(key) == <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a>.end())                            
+        <span class="keywordflow">if</span> (<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec" title="Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor...">dependency_map</a>.find(key) == <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec" title="Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor...">dependency_map</a>.end())                            
         {                                                                      
           cout &lt;&lt; <span class="stringliteral">&quot;Error whilst attempting to resolve dependency:&quot;</span> &lt;&lt; endl;
           cout &lt;&lt; <span class="stringliteral">&quot;Function &quot;</span>&lt;&lt; <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa519dfafb59116aa63616281db28f13c">myName</a> &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af022a02ec14b42e75ee50dc678aa5c4b">myOrigin</a> &lt;&lt; <span class="stringliteral">&quot; does not depend on &quot;</span> &lt;&lt; endl;
           cout &lt;&lt; <span class="stringliteral">&quot;capability &quot;</span> &lt;&lt; key.first &lt;&lt; <span class="stringliteral">&quot; with type &quot;</span> &lt;&lt; key.second &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
-          <span class="comment">//FIXME throw a real error here</span>
         }
-        <span class="keywordflow">else</span> { (*<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a>[key])(dep_functor); }
+        <span class="keywordflow">else</span> { (*<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec" title="Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor...">dependency_map</a>[key])(dep_functor); }
       }
 </pre></div>
 </div>
@@ -619,10 +672,12 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00060">60</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Set method for status. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00199">myStatus</a>.</p>
-<div class="fragment"><pre class="fragment">{ <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98">myStatus</a> = stat; }
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00068">68</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00207">myStatus</a>.</p>
+<div class="fragment"><pre class="fragment">{ <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98" title="Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)">myStatus</a> = stat; }
 </pre></div>
 </div>
 </div>
@@ -641,9 +696,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00057">57</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Set method for version. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00193">myVersion</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00065">65</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00201">myVersion</a>.</p>
 <div class="fragment"><pre class="fragment">{ <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a2fc51aed83bf26383d87ce9e580c0a0a">myVersion</a> = ver; }
 </pre></div>
 </div>
@@ -662,10 +719,10 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00053">53</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00060">60</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00199">myStatus</a>.</p>
-<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98">myStatus</a>;     }
+<p>References <a class="el" href="functors_8hpp_source.html#l00207">myStatus</a>.</p>
+<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98" title="Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)">myStatus</a>;     }
 </pre></div>
 </div>
 </div>
@@ -683,11 +740,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00050">50</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00057">57</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00191">myType</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00199">myType</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00111">backend_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00320">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00119">backend_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00328">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a52dbf7db79de1928f40b4657cac84249">myType</a>;       }
 </pre></div>
 </div>
@@ -706,11 +763,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00052">52</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00059">59</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00193">myVersion</a>.</p>
+<p>References <a class="el" href="functors_8hpp_source.html#l00201">myVersion</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00111">backend_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00119">backend_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a2fc51aed83bf26383d87ce9e580c0a0a">myVersion</a>;    }
 </pre></div>
 </div>
@@ -727,9 +784,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00216">216</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Map from (backend requirement-type pairs) to (pointers to templated void functions that set backend requirement functor pointers) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00320">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00224">224</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00328">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>.</p>
 
 </div>
 </div>
@@ -744,9 +803,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00208">208</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Map from backend requirements to their required types. </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00277">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, <a class="el" href="functors_8hpp_source.html#l00320">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00340">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00216">216</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00285">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, <a class="el" href="functors_8hpp_source.html#l00328">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00348">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
 
 </div>
 </div>
@@ -761,9 +822,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00212">212</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor pointers) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00135">resolveDependency()</a>, <a class="el" href="functors_8hpp_source.html#l00277">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, <a class="el" href="functors_8hpp_source.html#l00256">GAMBIT::module_functor&lt; TYPE &gt;::setDependency()</a>, and <a class="el" href="functors_8hpp_source.html#l00307">GAMBIT::module_functor&lt; TYPE &gt;::setModelConditionalDependency()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00220">220</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00143">resolveDependency()</a>, <a class="el" href="functors_8hpp_source.html#l00285">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>, <a class="el" href="functors_8hpp_source.html#l00264">GAMBIT::module_functor&lt; TYPE &gt;::setDependency()</a>, and <a class="el" href="functors_8hpp_source.html#l00315">GAMBIT::module_functor&lt; TYPE &gt;::setModelConditionalDependency()</a>.</p>
 
 </div>
 </div>
@@ -778,9 +841,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00202">202</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00079">backend_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00277">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00210">210</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00087">backend_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00285">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>.</p>
 
 </div>
 </div>
@@ -795,9 +860,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00196">196</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00204">204</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00064">backendreqs()</a>, and <a class="el" href="functors_8hpp_source.html#l00320">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00072">backendreqs()</a>, and <a class="el" href="functors_8hpp_source.html#l00328">GAMBIT::module_functor&lt; TYPE &gt;::setBackendReq()</a>.</p>
 
 </div>
 </div>
@@ -812,9 +877,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00190">190</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00198">198</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00049">capability()</a>, <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, and <a class="el" href="functors_8hpp_source.html#l00054">quantity()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00056">capability()</a>, <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, and <a class="el" href="functors_8hpp_source.html#l00061">quantity()</a>.</p>
 
 </div>
 </div>
@@ -829,9 +894,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00195">195</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00203">203</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00063">dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00256">GAMBIT::module_functor&lt; TYPE &gt;::setDependency()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00071">dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00264">GAMBIT::module_functor&lt; TYPE &gt;::setDependency()</a>.</p>
 
 </div>
 </div>
@@ -846,9 +911,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00205">205</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Map from models to (vector of {conditional dependency-type} pairs) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00118">model_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00307">GAMBIT::module_functor&lt; TYPE &gt;::setModelConditionalDependency()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00213">213</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00126">model_conditional_dependencies()</a>, and <a class="el" href="functors_8hpp_source.html#l00315">GAMBIT::module_functor&lt; TYPE &gt;::setModelConditionalDependency()</a>.</p>
 
 </div>
 </div>
@@ -863,9 +930,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00189">189</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00197">197</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00048">name()</a>, <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00135">resolveDependency()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00055">name()</a>, <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00143">resolveDependency()</a>.</p>
 
 </div>
 </div>
@@ -880,9 +947,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00192">192</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00200">200</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00051">origin()</a>, <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00135">resolveDependency()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00058">origin()</a>, <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00143">resolveDependency()</a>.</p>
 
 </div>
 </div>
@@ -897,9 +964,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00199">199</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00060">setStatus()</a>, and <a class="el" href="functors_8hpp_source.html#l00053">status()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00207">207</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00068">setStatus()</a>, and <a class="el" href="functors_8hpp_source.html#l00060">status()</a>.</p>
 
 </div>
 </div>
@@ -914,9 +983,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00191">191</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00199">199</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00054">quantity()</a>, and <a class="el" href="functors_8hpp_source.html#l00050">type()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00061">quantity()</a>, and <a class="el" href="functors_8hpp_source.html#l00057">type()</a>.</p>
 
 </div>
 </div>
@@ -931,9 +1000,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00193">193</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00201">201</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00057">setVersion()</a>, and <a class="el" href="functors_8hpp_source.html#l00052">version()</a>.</p>
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00065">setVersion()</a>, and <a class="el" href="functors_8hpp_source.html#l00059">version()</a>.</p>
 
 </div>
 </div>
@@ -948,9 +1017,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00132">132</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Needs recalculating or not? (Externally modifiable) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00384">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00250">GAMBIT::module_functor&lt; TYPE &gt;::calculate()</a>, <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00486">GAMBIT::backend_functor&lt; void, ARGS...&gt;::operator()()</a>, and <a class="el" href="functors_8hpp_source.html#l00446">GAMBIT::backend_functor&lt; TYPE, ARGS &gt;::operator()()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00140">140</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00392">GAMBIT::backend_functor_common&lt; void, ARGS...&gt;::backend_functor_common()</a>, <a class="el" href="functors_8hpp_source.html#l00258">GAMBIT::module_functor&lt; TYPE &gt;::calculate()</a>, <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>, <a class="el" href="functors_8hpp_source.html#l00494">GAMBIT::backend_functor&lt; void, ARGS...&gt;::operator()()</a>, and <a class="el" href="functors_8hpp_source.html#l00454">GAMBIT::backend_functor&lt; TYPE, ARGS &gt;::operator()()</a>.</p>
 
 </div>
 </div>
@@ -965,9 +1036,11 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00219">219</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs) </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00065">backendspermitted()</a>, <a class="el" href="functors_8hpp_source.html#l00149">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00340">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00227">227</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00073">backendspermitted()</a>, <a class="el" href="functors_8hpp_source.html#l00157">resolveBackendReq()</a>, and <a class="el" href="functors_8hpp_source.html#l00348">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
 
 </div>
 </div>
@@ -989,7 +1062,7 @@ Protected Attributes</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 22:34:25 for GAMBIT by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 23:50:08 for GAMBIT by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

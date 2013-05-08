@@ -73,6 +73,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h1>functors.hpp File Reference</h1>  </div>
 </div>
 <div class="contents">
+
+<p>Functor class definitions.  
+<a href="#_details">More...</a></p>
 <div class="textblock"><code>#include &lt;vector&gt;</code><br/>
 <code>#include &lt;<a class="el" href="util__classes_8hpp_source.html">util_classes.hpp</a>&gt;</code><br/>
 <code>#include &lt;<a class="el" href="util__functions_8hpp_source.html">util_functions.hpp</a>&gt;</code><br/>
@@ -82,10 +85,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1functor.html">GAMBIT::functor</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Function wrapper (functor) base class.  <a href="class_g_a_m_b_i_t_1_1functor.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html">GAMBIT::module_functor&lt; TYPE &gt;</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Functor derived class for module functions with result type TYPE.  <a href="class_g_a_m_b_i_t_1_1module__functor.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor__common.html">GAMBIT::backend_functor_common&lt; TYPE, ARGS &gt;</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="namespace_g_a_m_b_i_t_1_1_backend.html">Backend</a> functor class for functions with result type TYPE and argumentlist ARGS.  <a href="class_g_a_m_b_i_t_1_1backend__functor__common.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor.html">GAMBIT::backend_functor&lt; TYPE, ARGS &gt;</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Actual backend functor type for all but TYPE=void.  <a href="class_g_a_m_b_i_t_1_1backend__functor.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1backend__functor_3_01void_00_01_a_r_g_s_8_8_8_4.html">GAMBIT::backend_functor&lt; void, ARGS...&gt;</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialisation of backend functor type for TYPE=void.  <a href="class_g_a_m_b_i_t_1_1backend__functor_3_01void_00_01_a_r_g_s_8_8_8_4.html#_details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html">GAMBIT</a></td></tr>
@@ -93,8 +101,20 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename OUTTYPE , typename... ARGS&gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">backend_functor&lt; OUTTYPE, ARGS...&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_g_a_m_b_i_t.html#ab7b341158e2b6a0c202a6ef1af957b82">GAMBIT::makeBackendFunctor</a> (OUTTYPE(*f_in)(ARGS...), <a class="el" href="_model_macros_8hpp.html#a8be94bb2c91eeb8bba8970efa1a18fd0">str</a> func_name, <a class="el" href="_model_macros_8hpp.html#a8be94bb2c91eeb8bba8970efa1a18fd0">str</a> func_capab, <a class="el" href="_model_macros_8hpp.html#a8be94bb2c91eeb8bba8970efa1a18fd0">str</a> ret_type, <a class="el" href="_model_macros_8hpp.html#a8be94bb2c91eeb8bba8970efa1a18fd0">str</a> origin_name, <a class="el" href="_model_macros_8hpp.html#a8be94bb2c91eeb8bba8970efa1a18fd0">str</a> origin_ver)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for creating backend functor objects.  <a href="#ab7b341158e2b6a0c202a6ef1af957b82"></a><br/></td></tr>
 </table>
-</div>
+<hr/><a name="_details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Functor class definitions. </p>
+<p>Authors (add name and date if you modify):</p>
+<dl class="author"><dt><b>Author:</b></dt><dd>Pat Scott (<a href="mailto:patscott@physics.mcgill.ca">patscott@physics.mcgill.ca</a>) </dd></dl>
+<dl class="date"><dt><b>Date:</b></dt><dd>2013 Apr, May</dd></dl>
+<dl class="author"><dt><b>Author:</b></dt><dd>Anders Kvellestad (<a href="mailto:anders.kvellestad@fys.uio.no">anders.kvellestad@fys.uio.no</a>) </dd></dl>
+<dl class="date"><dt><b>Date:</b></dt><dd>2013 Apr --&gt; Added backend functor class</dd></dl>
+<dl class="author"><dt><b>Author:</b></dt><dd>Christoph Weniger (<a href="mailto:thechristophweniger@130gev.omg">thechristophweniger@130gev.omg</a>) </dd></dl>
+<dl class="date"><dt><b>Date:</b></dt><dd>2013 May </dd></dl>
+
+<p>Definition in file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+</div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -109,7 +129,7 @@ Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 22:34:25 for GAMBIT by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 23:50:08 for GAMBIT by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

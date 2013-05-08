@@ -75,6 +75,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <!-- doxytag: class="GAMBIT::module_functor" --><!-- doxytag: inherits="GAMBIT::functor" -->
+<p>Functor derived class for module functions with result type TYPE.  
+<a href="#_details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="functors_8hpp_source.html">functors.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for GAMBIT::module_functor&lt; TYPE &gt;:</div>
@@ -91,26 +94,39 @@ Inheritance diagram for GAMBIT::module_functor&lt; TYPE &gt;:</div>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a08cc21c2fb0ff11a07c62d0adae3cf6b">module_functor</a> (<a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*inputFunction)(TYPE &amp;), <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> func_name, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> func_capability, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> result_type, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> origin_name)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a08cc21c2fb0ff11a07c62d0adae3cf6b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#ae3975640c8fa5a661067e134f0d16c87">calculate</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate method.  <a href="#ae3975640c8fa5a661067e134f0d16c87"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">TYPE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a2f9a237f0c40f4c0b1b9bad90dd5db41">operator()</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Operation (return value)  <a href="#a2f9a237f0c40f4c0b1b9bad90dd5db41"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a0a958f63af0cc7fd724855b286f39a3b">setDependency</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> type, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*resolver)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a dependency (a beer for anyone who can explain why this-&gt; is required here)  <a href="#a0a958f63af0cc7fd724855b286f39a3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a09f5d729fe5eb40e22a54df94b4cbfa7">setBackendConditionalDependency</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep_type, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*resolver)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a backend conditional dependency for multiple backend versions.  <a href="#a09f5d729fe5eb40e22a54df94b4cbfa7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a1348c23b2abce5dbc1b7b31911b4396b">setBackendConditionalDependencySingular</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep_type, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*resolver)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a backend conditional dependency for a single backend version.  <a href="#a1348c23b2abce5dbc1b7b31911b4396b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#aa84a9ac04934497ce2ab5ea7dbf46403">setModelConditionalDependency</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> model, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> dep_type, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*resolver)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a model conditional dependency.  <a href="#aa84a9ac04934497ce2ab5ea7dbf46403"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#aef510da48957c11634649c020264d9b8">setBackendReq</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> type, <a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*resolver)(<a class="el" href="class_g_a_m_b_i_t_1_1functor.html">functor</a> *))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a backend requirement.  <a href="#aef510da48957c11634649c020264d9b8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a96f91c20a72786b7ef27be78c55af3a0">setPermittedBackend</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add multiple versions of a permitted backend.  <a href="#a96f91c20a72786b7ef27be78c55af3a0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#ac08cb600a16cd049dd3e960d3b92ffe4">setPermittedBackendSingular</a> (<a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> req, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> be, <a class="el" href="namespace_g_a_m_b_i_t.html#a159af00a5be8efabf6d3abf169d8bf2f">str</a> ver)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a single permitted backend version.  <a href="#ac08cb600a16cd049dd3e960d3b92ffe4"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">TYPE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#a4ae3e120335c62b932f0067d4e51eb37">myValue</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal storage of function value.  <a href="#a4ae3e120335c62b932f0067d4e51eb37"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="backend-darksusy_8hpp.html#ac9c84fa68bbad002983e35ce3663c686">void</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_g_a_m_b_i_t_1_1module__functor.html#ad460ba204e4f924deb5a77d1a162f8cf">myFunction</a> )(TYPE &amp;)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal storage of function pointer.  <a href="#ad460ba204e4f924deb5a77d1a162f8cf"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename TYPE&gt;<br/>
  class GAMBIT::module_functor&lt; TYPE &gt;</h3>
 
+<p>Functor derived class for module functions with result type TYPE. </p>
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00228">228</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00236">236</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a08cc21c2fb0ff11a07c62d0adae3cf6b"></a><!-- doxytag: member="GAMBIT::module_functor::module_functor" ref="a08cc21c2fb0ff11a07c62d0adae3cf6b" args="(void(*inputFunction)(TYPE &amp;), str func_name, str func_capability, str result_type, str origin_name)" -->
 <div class="memitem">
@@ -157,17 +173,19 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00234">234</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Constructor. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00190">GAMBIT::functor::myCapability</a>, <a class="el" href="functors_8hpp_source.html#l00369">GAMBIT::module_functor&lt; TYPE &gt;::myFunction</a>, <a class="el" href="functors_8hpp_source.html#l00189">GAMBIT::functor::myName</a>, <a class="el" href="functors_8hpp_source.html#l00192">GAMBIT::functor::myOrigin</a>, <a class="el" href="functors_8hpp_source.html#l00199">GAMBIT::functor::myStatus</a>, <a class="el" href="functors_8hpp_source.html#l00191">GAMBIT::functor::myType</a>, and <a class="el" href="functors_8hpp_source.html#l00132">GAMBIT::functor::needs_recalculating</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00242">242</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00198">GAMBIT::functor::myCapability</a>, <a class="el" href="functors_8hpp_source.html#l00377">GAMBIT::module_functor&lt; TYPE &gt;::myFunction</a>, <a class="el" href="functors_8hpp_source.html#l00197">GAMBIT::functor::myName</a>, <a class="el" href="functors_8hpp_source.html#l00200">GAMBIT::functor::myOrigin</a>, <a class="el" href="functors_8hpp_source.html#l00207">GAMBIT::functor::myStatus</a>, <a class="el" href="functors_8hpp_source.html#l00199">GAMBIT::functor::myType</a>, and <a class="el" href="functors_8hpp_source.html#l00140">GAMBIT::functor::needs_recalculating</a>.</p>
 <div class="fragment"><pre class="fragment">      {
-        <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#ad460ba204e4f924deb5a77d1a162f8cf">myFunction</a>      = inputFunction;
+        <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#ad460ba204e4f924deb5a77d1a162f8cf" title="Internal storage of function pointer.">myFunction</a>      = inputFunction;
         <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa519dfafb59116aa63616281db28f13c">myName</a>          = func_name;
         <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a25819ce9d3149570d4e2d5f7c4bd6d7d">myCapability</a>    = func_capability;
         <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a52dbf7db79de1928f40b4657cac84249">myType</a>          = result_type;
         <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af022a02ec14b42e75ee50dc678aa5c4b">myOrigin</a>        = origin_name;
-        <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98">myStatus</a>        = 1;
-        <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a97086e7221cde47bf66c842b3a9df78e">needs_recalculating</a> = <span class="keyword">true</span>;
+        <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a828b29208b3f4aa133fdbb7ee9d81a98" title="Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)">myStatus</a>        = 1;
+        <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a97086e7221cde47bf66c842b3a9df78e" title="Needs recalculating or not? (Externally modifiable)">needs_recalculating</a> = <span class="keyword">true</span>;
       }
 </pre></div>
 </div>
@@ -189,12 +207,14 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
+<p>Calculate method. </p>
+
 <p>Reimplemented from <a class="el" href="class_g_a_m_b_i_t_1_1functor.html#aed43b7b3bcdd3136044d99b81b332a39">GAMBIT::functor</a>.</p>
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00250">250</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00258">258</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00369">GAMBIT::module_functor&lt; TYPE &gt;::myFunction</a>, <a class="el" href="functors_8hpp_source.html#l00366">GAMBIT::module_functor&lt; TYPE &gt;::myValue</a>, and <a class="el" href="functors_8hpp_source.html#l00132">GAMBIT::functor::needs_recalculating</a>.</p>
-<div class="fragment"><pre class="fragment">{ <span class="keywordflow">if</span>(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a97086e7221cde47bf66c842b3a9df78e">needs_recalculating</a>) { this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#ad460ba204e4f924deb5a77d1a162f8cf">myFunction</a>(<a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#a4ae3e120335c62b932f0067d4e51eb37">myValue</a>); } }
+<p>References <a class="el" href="functors_8hpp_source.html#l00377">GAMBIT::module_functor&lt; TYPE &gt;::myFunction</a>, <a class="el" href="functors_8hpp_source.html#l00374">GAMBIT::module_functor&lt; TYPE &gt;::myValue</a>, and <a class="el" href="functors_8hpp_source.html#l00140">GAMBIT::functor::needs_recalculating</a>.</p>
+<div class="fragment"><pre class="fragment">{ <span class="keywordflow">if</span>(<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a97086e7221cde47bf66c842b3a9df78e" title="Needs recalculating or not? (Externally modifiable)">needs_recalculating</a>) { this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#ad460ba204e4f924deb5a77d1a162f8cf" title="Internal storage of function pointer.">myFunction</a>(<a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#a4ae3e120335c62b932f0067d4e51eb37" title="Internal storage of function value.">myValue</a>); } }
 </pre></div>
 </div>
 </div>
@@ -214,10 +234,12 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00253">253</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Operation (return value) </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00366">GAMBIT::module_functor&lt; TYPE &gt;::myValue</a>.</p>
-<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#a4ae3e120335c62b932f0067d4e51eb37">myValue</a>; }
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00261">261</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00374">GAMBIT::module_functor&lt; TYPE &gt;::myValue</a>.</p>
+<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#a4ae3e120335c62b932f0067d4e51eb37" title="Internal storage of function value.">myValue</a>; }
 </pre></div>
 </div>
 </div>
@@ -272,15 +294,17 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00265">265</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add a backend conditional dependency for multiple backend versions. </p>
 
-<p>References <a class="el" href="util__functions_8cpp_source.html#l00025">GAMBIT::delimiterSplit()</a>, and <a class="el" href="functors_8hpp_source.html#l00277">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00273">273</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="util__functions_8cpp_source.html#l00025">GAMBIT::delimiterSplit()</a>, and <a class="el" href="functors_8hpp_source.html#l00285">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependencySingular()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         <span class="comment">// Split the version string and send each version to be registered</span>
         std::vector&lt;str&gt; versions = <a class="code" href="namespace_g_a_m_b_i_t.html#a986e5ae8f7726e15959a31f3fb3edc43">delimiterSplit</a>(ver, <span class="stringliteral">&quot;,&quot;</span>);
         <span class="keywordflow">for</span> (std::vector&lt;str&gt;::iterator it = versions.begin() ; it != versions.end(); ++it)
         {
-          <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#a1348c23b2abce5dbc1b7b31911b4396b">setBackendConditionalDependencySingular</a>(req, be, *it, dep, dep_type, resolver);
+          <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#a1348c23b2abce5dbc1b7b31911b4396b" title="Add a backend conditional dependency for a single backend version.">setBackendConditionalDependencySingular</a>(req, be, *it, dep, dep_type, resolver);
         }
       }
 </pre></div>
@@ -337,18 +361,24 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00277">277</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add a backend conditional dependency for a single backend version. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00208">GAMBIT::functor::backendreq_types</a>, <a class="el" href="functors_8hpp_source.html#l00212">GAMBIT::functor::dependency_map</a>, <a class="el" href="functors_8hpp_source.html#l00202">GAMBIT::functor::myBackendConditionalDependencies</a>, <a class="el" href="functors_8hpp_source.html#l00048">GAMBIT::functor::name()</a>, and <a class="el" href="functors_8hpp_source.html#l00051">GAMBIT::functor::origin()</a>.</p>
+<p><p>FIXME</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>throw a real error here </dd></dl>
+</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00265">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependency()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00285">285</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00216">GAMBIT::functor::backendreq_types</a>, <a class="el" href="functors_8hpp_source.html#l00220">GAMBIT::functor::dependency_map</a>, <a class="el" href="functors_8hpp_source.html#l00210">GAMBIT::functor::myBackendConditionalDependencies</a>, <a class="el" href="functors_8hpp_source.html#l00055">GAMBIT::functor::name()</a>, and <a class="el" href="functors_8hpp_source.html#l00058">GAMBIT::functor::origin()</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00273">GAMBIT::module_functor&lt; TYPE &gt;::setBackendConditionalDependency()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key (dep, dep_type);
         std::vector&lt;str&gt; quad;
-        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>.find(req) != this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>.end())
+        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>.find(req) != this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>.end())
         {
           quad.push_back(req);
-          quad.push_back(this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>[req]);
+          quad.push_back(this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>[req]);
           quad.push_back(be);
           quad.push_back(ver);
         }
@@ -357,16 +387,15 @@ template&lt;typename TYPE &gt; </div>
           cout &lt;&lt; <span class="stringliteral">&quot;Error whilst attempting to set backend-conditional dependency:&quot;</span> &lt;&lt; endl;
           cout &lt;&lt; <span class="stringliteral">&quot;The type of the backend requirement &quot;</span> &lt;&lt; req &lt;&lt; <span class="stringliteral">&quot;on which the &quot;</span> &lt;&lt; endl; 
           cout &lt;&lt; <span class="stringliteral">&quot;dependency &quot;</span>&lt;&lt; dep &lt;&lt; <span class="stringliteral">&quot; is conditional has not been set.  This&quot;</span> &lt;&lt; endl;
-          cout &lt;&lt; <span class="stringliteral">&quot;is &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af189f790b1eab1cd438053ba4711b6a9">name</a>() &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a170bdd37813d06267408967132bb1298">origin</a>() &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
-          <span class="comment">//FIXME throw a real error here</span>
+          cout &lt;&lt; <span class="stringliteral">&quot;is &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af189f790b1eab1cd438053ba4711b6a9" title="Identification methods.">name</a>() &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a170bdd37813d06267408967132bb1298">origin</a>() &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
         }
-        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>.find(quad) == this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>.end())
+        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>.find(quad) == this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>.end())
         {
           std::vector&lt;sspair&gt; newvec;
-          this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>[quad] = newvec;
+          this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>[quad] = newvec;
         }
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db">myBackendConditionalDependencies</a>[quad].push_back(key);
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a>[key] = resolver;
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a50940a92376d46e3f75b94885634d8db" title="Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional depe...">myBackendConditionalDependencies</a>[quad].push_back(key);
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec" title="Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor...">dependency_map</a>[key] = resolver;
       }
 </pre></div>
 </div>
@@ -404,14 +433,16 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00320">320</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add a backend requirement. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00216">GAMBIT::functor::backendreq_map</a>, <a class="el" href="functors_8hpp_source.html#l00208">GAMBIT::functor::backendreq_types</a>, <a class="el" href="functors_8hpp_source.html#l00196">GAMBIT::functor::myBackendReqs</a>, and <a class="el" href="functors_8hpp_source.html#l00050">GAMBIT::functor::type()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00328">328</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00224">GAMBIT::functor::backendreq_map</a>, <a class="el" href="functors_8hpp_source.html#l00216">GAMBIT::functor::backendreq_types</a>, <a class="el" href="functors_8hpp_source.html#l00204">GAMBIT::functor::myBackendReqs</a>, and <a class="el" href="functors_8hpp_source.html#l00057">GAMBIT::functor::type()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key (req, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>);
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>[req] = <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>;
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>[req] = <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>;
         this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a24af9bb10b48fb6d100a8b273c641b65">myBackendReqs</a>.push_back(key);
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f">backendreq_map</a>[key] = resolver;
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a90a3100df56637b91fcaff5e912ea63f" title="Map from (backend requirement-type pairs) to (pointers to templated void functions that set backend r...">backendreq_map</a>[key] = resolver;
       }
 </pre></div>
 </div>
@@ -449,13 +480,15 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00256">256</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add a dependency (a beer for anyone who can explain why this-&gt; is required here) </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00212">GAMBIT::functor::dependency_map</a>, and <a class="el" href="functors_8hpp_source.html#l00195">GAMBIT::functor::myDependencies</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00264">264</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00220">GAMBIT::functor::dependency_map</a>, and <a class="el" href="functors_8hpp_source.html#l00203">GAMBIT::functor::myDependencies</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key (dep, <a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa73b362cad7ccdb2f73928dccb115aa2">type</a>);
         this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a9f3bab9516cacc5168e517896fac4fec">myDependencies</a>.push_back(key);
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a>[key] = resolver;
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec" title="Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor...">dependency_map</a>[key] = resolver;
       }
 </pre></div>
 </div>
@@ -499,18 +532,20 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00307">307</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add a model conditional dependency. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00212">GAMBIT::functor::dependency_map</a>, and <a class="el" href="functors_8hpp_source.html#l00205">GAMBIT::functor::myModelConditionalDependencies</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00315">315</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00220">GAMBIT::functor::dependency_map</a>, and <a class="el" href="functors_8hpp_source.html#l00213">GAMBIT::functor::myModelConditionalDependencies</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key (dep, dep_type);
-        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>.find(model) == this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>.end())
+        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>.find(model) == this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>.end())
         {
           std::vector&lt;sspair&gt; newvec;
-          this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>[model] = newvec;
+          this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>[model] = newvec;
         }
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a">myModelConditionalDependencies</a>[model].push_back(key);
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec">dependency_map</a>[key] = resolver;
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a28b73606cf5c97bb0c10d355e6208f3a" title="Map from models to (vector of {conditional dependency-type} pairs)">myModelConditionalDependencies</a>[model].push_back(key);
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#ac5ba9d67c8403060531622cc6efb6dec" title="Map from (dependency-type pairs) to (pointers to templated void functions that set dependency functor...">dependency_map</a>[key] = resolver;
       }
 </pre></div>
 </div>
@@ -548,15 +583,17 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00329">329</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add multiple versions of a permitted backend. </p>
 
-<p>References <a class="el" href="util__functions_8cpp_source.html#l00025">GAMBIT::delimiterSplit()</a>, and <a class="el" href="functors_8hpp_source.html#l00340">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00337">337</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="util__functions_8cpp_source.html#l00025">GAMBIT::delimiterSplit()</a>, and <a class="el" href="functors_8hpp_source.html#l00348">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackendSingular()</a>.</p>
 <div class="fragment"><pre class="fragment">      {
         <span class="comment">// Split the version string and send each version to be registered</span>
         std::vector&lt;str&gt; versions = <a class="code" href="namespace_g_a_m_b_i_t.html#a986e5ae8f7726e15959a31f3fb3edc43">delimiterSplit</a>(ver, <span class="stringliteral">&quot;,&quot;</span>);
         <span class="keywordflow">for</span> (std::vector&lt;str&gt;::iterator it = versions.begin() ; it != versions.end(); ++it)
         {
-          <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#ac08cb600a16cd049dd3e960d3b92ffe4">setPermittedBackendSingular</a>(req, be, *it);
+          <a class="code" href="class_g_a_m_b_i_t_1_1module__functor.html#ac08cb600a16cd049dd3e960d3b92ffe4" title="Add a single permitted backend version.">setPermittedBackendSingular</a>(req, be, *it);
         }
       }
 </pre></div>
@@ -595,31 +632,36 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00340">340</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Add a single permitted backend version. </p>
 
-<p>References <a class="el" href="functors_8hpp_source.html#l00208">GAMBIT::functor::backendreq_types</a>, <a class="el" href="functors_8hpp_source.html#l00048">GAMBIT::functor::name()</a>, <a class="el" href="functors_8hpp_source.html#l00051">GAMBIT::functor::origin()</a>, and <a class="el" href="functors_8hpp_source.html#l00219">GAMBIT::functor::permitted_map</a>.</p>
+<p><p>FIXME</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>throw a real error here </dd></dl>
+</p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00329">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackend()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00348">348</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>References <a class="el" href="functors_8hpp_source.html#l00216">GAMBIT::functor::backendreq_types</a>, <a class="el" href="functors_8hpp_source.html#l00055">GAMBIT::functor::name()</a>, <a class="el" href="functors_8hpp_source.html#l00058">GAMBIT::functor::origin()</a>, and <a class="el" href="functors_8hpp_source.html#l00227">GAMBIT::functor::permitted_map</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00337">GAMBIT::module_functor&lt; TYPE &gt;::setPermittedBackend()</a>.</p>
 <div class="fragment"><pre class="fragment">      { 
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> key;
-        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>.find(req) != this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>.end())
+        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>.find(req) != this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>.end())
         {
-          key = std::make_pair(req, this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2">backendreq_types</a>[req]);
+          key = std::make_pair(req, this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a4135dfa7d4ba91e2fee8dc64022459f2" title="Map from backend requirements to their required types.">backendreq_types</a>[req]);
         }
         <span class="keywordflow">else</span>
         {
           cout &lt;&lt; <span class="stringliteral">&quot;Error whilst attempting to set permitted backend:&quot;</span> &lt;&lt; endl;
           cout &lt;&lt; <span class="stringliteral">&quot;The return type of the backend requirement &quot;</span> &lt;&lt; req &lt;&lt; <span class="stringliteral">&quot;is not set.&quot;</span> &lt;&lt; endl; 
-          cout &lt;&lt; <span class="stringliteral">&quot;This is &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af189f790b1eab1cd438053ba4711b6a9">name</a>() &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a170bdd37813d06267408967132bb1298">origin</a>() &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
-          <span class="comment">//FIXME throw a real error here</span>
+          cout &lt;&lt; <span class="stringliteral">&quot;This is &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#af189f790b1eab1cd438053ba4711b6a9" title="Identification methods.">name</a>() &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#a170bdd37813d06267408967132bb1298">origin</a>() &lt;&lt; <span class="stringliteral">&quot;.&quot;</span> &lt;&lt; endl;
         }
         <a class="code" href="namespace_g_a_m_b_i_t.html#a54280939240c5e3612513ba6ad938e30">sspair</a> vector_entry (be,  ver);
-        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>.find(key) == this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>.end())
+        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>.find(key) == this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>.end())
         {
           std::vector&lt;sspair&gt; newvec;
-          this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key] = newvec;
+          this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key] = newvec;
         }
-        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7">permitted_map</a>[key].push_back(vector_entry);       
+        this-&gt;<a class="code" href="class_g_a_m_b_i_t_1_1functor.html#aa00a820074b70869f4f9a0739da1cac7" title="Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)...">permitted_map</a>[key].push_back(vector_entry);       
       }
 </pre></div>
 </div>
@@ -638,9 +680,11 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00369">369</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Internal storage of function pointer. </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00250">GAMBIT::module_functor&lt; TYPE &gt;::calculate()</a>, and <a class="el" href="functors_8hpp_source.html#l00234">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00377">377</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00258">GAMBIT::module_functor&lt; TYPE &gt;::calculate()</a>, and <a class="el" href="functors_8hpp_source.html#l00242">GAMBIT::module_functor&lt; TYPE &gt;::module_functor()</a>.</p>
 
 </div>
 </div>
@@ -657,9 +701,11 @@ template&lt;typename TYPE &gt; </div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00366">366</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+<p>Internal storage of function value. </p>
 
-<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00250">GAMBIT::module_functor&lt; TYPE &gt;::calculate()</a>, and <a class="el" href="functors_8hpp_source.html#l00253">GAMBIT::module_functor&lt; TYPE &gt;::operator()()</a>.</p>
+<p>Definition at line <a class="el" href="functors_8hpp_source.html#l00374">374</a> of file <a class="el" href="functors_8hpp_source.html">functors.hpp</a>.</p>
+
+<p>Referenced by <a class="el" href="functors_8hpp_source.html#l00258">GAMBIT::module_functor&lt; TYPE &gt;::calculate()</a>, and <a class="el" href="functors_8hpp_source.html#l00261">GAMBIT::module_functor&lt; TYPE &gt;::operator()()</a>.</p>
 
 </div>
 </div>
@@ -681,7 +727,7 @@ template&lt;typename TYPE &gt; </div>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 22:34:25 for GAMBIT by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue May 7 2013 23:50:08 for GAMBIT by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

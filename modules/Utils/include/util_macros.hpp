@@ -9,6 +9,7 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Pat Scott  
+///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr
 ///
 ///  *********************************************
