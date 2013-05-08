@@ -1,0 +1,96 @@
+\documentclass[10pt,oneside,twocolumn,a4paper]{article}
+
+\usepackage{fancyhdr}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[colorlinks=true, linkcolor=BrickRed, citecolor=Blue, urlcolor=Blue, filecolor=Blue]{hyperref}
+\usepackage{multibib}
+\usepackage{natbib_moderncvhacked}
+\input{jdefs}
+
+\newcites{papers}{Articles published or accepted in refereed journals}
+\newcites{sub}{Articles submitted to refereed journals}
+\newcites{proceedings}{Other refereed contributions (proceedings)}
+\newcites{books}{Published Monographs}
+\newcites{talks}{Invited Presentations}
+\def\urltilda{\kern -.15em\lower .7ex\hbox{\~{}}\kern .04em}
+\def\it{\slshape}
+\def\tt{\ttfamily}
+\def\bf{\bfseries}
+
+\addtolength{\topmargin}{-.4in}
+\addtolength{\textheight}{1.in}
+
+\newenvironment{packed_itemize}{
+\begin{itemize}
+  \setlength{\itemsep}{1.5pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{itemize}}
+
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO,RE]{\slshape Pat Scott}
+\fancyhead[C]{Banting PDF CV Supporting Documents -- Leadership Contributions}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+
+\bibpunct{[}{]}{,}{n}{ }{,}
+
+\author{Pat Scott}
+\date{}
+
+\begin{document}
+
+\vspace{-5mm}
+\subsection*{Part 1: Leadership Activities}
+
+\subsubsection*{Participation on Committees}
+\begin{packed_itemize}
+\item Co-founder, McGill Astroparticle Seminar Series (to begin Jan 2012) 
+\item Discussion session leader, \textit{Dark Matter}, Northeast Cosmology Workshop 2011, Montreal
+\item Chair, Organizing Committee for Workshop \textit{Dark Matter From Every Direction}, McGill University, April 1--3 2011, 27 attendees
+\item Associate member of the IceCube Collaboration (since April 2011)
+\item Co-chair, Organizing Committee for \textit{PROSPECTS} Conference, Stockholm University, September 15--17 2010, 42 attendees
+\item Session chair, \textit{Neutrinos}, Dark2009, NZ
+\item Affiliated member of the \textit{Fermi} Large Area Telescope (LAT) collaboration (since 2008)
+\item Member of Stockholm U. Physics Departmental Computing Committee (2009-2010)
+%\item Member and event organizer, HEAC and PhD Student Council Social Committees (2008-2010)
+\end{packed_itemize}
+
+\vspace{-5mm}
+\subsubsection*{Participation as External Reviewer}
+\begin{packed_itemize}
+\item Referee for \textit{JHEP} (3 articles), \textit{JCAP} (2), \textit{ApJ Lett.} (1), \textit{Stat. Analysis \& Data Mining} (1)
+\end{packed_itemize}
+
+\vspace{-5mm}
+\subsubsection*{Participation in Training Activities}
+\begin{packed_itemize}
+\item Assistant Supervision (unofficial) of PhD students Yashar Akrami (Stockholm, 2010), Aaron Vincent, Wei Xue (both McGill, 2012), Natasha Karpenka (Stockholm, 2014), Elinore Roebber (McGill, 2015) and Master's student Hamish Silverwood (Canterbury, 2012). 
+\item Lecturer, Tutor and Course Responsible, \textit{PHYS606: Practical Numerical Methods in Physics}, Winter 2011, McGill University; 13 students, mixed graduate/undergraduate.
+\item Guest Lecture, \textit{Stellar Evolution}, Spring 2011, San Francisco University (Lec: Aparna Venkatesan); $\sim20$ students, undergraduate.
+\item Tutor, \textit{FK7025: Advanced Relativistic Quantum Field Theory}, Fall 2008, Stockholm University; 6 students, Master's level.
+\item Residential Tutor in Physics and Mathematics, Burgmann College, Australian National University, 2003; $\sim20$ students, undergraduate.
+\end{packed_itemize}
+
+\vspace{-5mm}
+\subsubsection*{Participation in Scientific Outreach and Knowledge Mobilization}
+\begin{packed_itemize}
+\item Sole Author of \textsf{DarkStars}: a public computer package for calculating effects of dark matter on the evolution of stars
+\item Sole Author of \textsf{FLATLib}: a public package for fast convolution with \textit{Fermi}-LAT instrumental response functions
+\item Development Author of \textsf{SuperBayeS}: a public package for performing SUSY global fits
+\item Authored \textit{Med m\"ork materia som drivmedel} (English: Fuelled by dark matter) for Swedish magazine \textit{Popul\"ar Astronomi} \textbf{3} (2008) 11 
+\item Interview with \textit{New Scientist} for the article ``Dark matter makes galaxy’s stars live long and prosper'' (2008)
+%\item Volunteer communicator, John Curtin School of Medical Research Open Day (2005), Mount Stromlo Observatory Post-Bushfire Reopening Day (2004), Australian Science Festival (2001, 2004)
+\end{packed_itemize}
+
+\subsection*{Part 2: Details}
+
+\textbf{PROSPECTS} (PROblems in Statistical Parameter Estimation and ConsTraints for Supersymmetry) Conference 2010 -- this conference brought together experts from every major group involved in SUSY global fits for the first time, to discuss methods, results and future plans.  I co-headed the organization together with Are Raklev.  A number of new papers and collaborations arose from the conference, and feedback from participants was overwhelmingly positive. I was personally able to meet and discuss my work and scientific opinions with all the leaders of the field, and firmly establish myself amongst them.
+
+\textbf{PHYS606: Practical Numerical Methods in Physics} -- I suggested, designed, lectured, graded and organized this course from scratch in the Winter Semester of 2011.  The course gave graduate and advanced undergraduate students a solid practical background in the numerical methods required for doing everyday research in many areas of physics.  It focused on understanding how to implement and effectively use the methods; assignments involved developing a personal library of numerical routines that students could use in their future research, as well as a seminar on an advanced topic.  Part of my motivation for teaching the course was to find students interested in working on related projects with me, and endow them with the necessary skills for such collaborations.  I have just begun supervising two of the students in exactly these projects (Wei Xue and Elinore Roebber), with one (Elinore) already having contributed some calculations to a paper that we recently had accepted at ApJ [1].  Teaching evaluations were stellar, and demand is strong for the course to run again.
+
+\textbf{McGill Astroparticle Seminar Series} -- this biweekly series of seminars by invited experts aims to foster an increased level of discussion and sense of shared community between the astro, hep-th and hep-ex groups at McGill, in line with the strategic aims of this fellowship proposal.  This series has basic funding approval and will begin in Jan 2012; some small amount of the Banting funds will go toward funding additional speakers.
+
+\end{document}

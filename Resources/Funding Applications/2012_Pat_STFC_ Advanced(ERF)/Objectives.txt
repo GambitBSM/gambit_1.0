@@ -1,0 +1,28 @@
+Scientific Objectives
+------
+
+1. Identify the correct theory behind dark matter and TeV-scale BSM physics
+
+Two questions hold a fundamental place in modern physics: What is dark matter, and what physics occurs at the TeV scale? Dark matter (DM) is 80% of the matter in the Universe, yet its identity is unknown. Many theories for particle physics beyond the standard model (BSM - beyond the SM), such as supersymmetry, extra dimensions and phenomenological descriptions of weakly-interacting massive particles, involve a fundamental link between DM and the TeV scale. With the spectacular recent success of the Large Hadron Collider (LHC), particularly in uncovering the Higgs boson, and the construction of high-energy astrophysical experiments like Fermi, IceCube and XENON, astroparticle physics is arriving at the TeV scale; the time to put these disparate pieces together into a cohesive and unified understanding of DM and TeV-scale physics is now.
+
+2. Exclude large classes of other viable and popular dark matter and TeV-scale BSM theories
+
+I propose a cutting-edge 'global fit' research program designed to test a broad range of DM and BSM theories against a similarly large range of experimental datasets, with each theory to be simultaneously compared with every available dataset. The goal is to either uncover the identity of DM and carefully characterise it, or rule out and constrain different BSM theories, drawing deeply on the synergies between experiments. This novel program of holistic analysis will produce far more complete and robust comparisons of experimental data and DM/BSM models than performed to date.
+
+I will employ many more experimental observables than past studies, leveraging UK investment in CMS, ATLAS, LHCb (CERN), ZEPLIN/LUX (Boulby/Sanford), CDF and D0 (FNAL) by amplifying their scientific impacts with additional data from Fermi, HESS, IceCube, PAMELA, XENON, CDMS and others. I will consider far more DM and BSM models than have been subjected to global analysis so far: phenomenological and SUSY-breaking versions of the minimal supersymmetric SM, extra-dimensional, Two Higgs Doublet and effective DM models like Isospin-violating, Inelastic and Exciting DM. This will allow me to determine which theories are favoured over others, and for the first time, to what extent.
+
+3. Distinguish between areas of parameter space giving rise to distinct astroparticle phenomena within single BSM theories
+
+By comparing the performance of a global fit in different parts of the same parameter space, I will determine which parameter areas are favoured, and to what extent. This will tell me which physical processes dominate various observables within that theory; e.g. if the DM relic density is set by DM-DM annihilation or DM coannihilation with another particle.
+
+
+Community Objectives
+------
+
+4. Create a public suite of software tools that allows new theories, observables and datasets to be easily analysed in a global statistical fit
+
+A very timely component of this project is the development of a new, highly flexible 'second-generation' BSM global-fitting code, capable of operating at a degree of computational abstraction that would allow for very fast implementation of future models and datasets. Another is the construction of separate, stand-alone 'likelihood modules' for each set of particle/astroparticle observables. With such tools freely available, activity in BSM global will explode.
+
+5. Enhance cross-disciplinary interaction and awareness between high-energy astronomers, particle experimentalists and particle theorists, via collaboration on global fits
+
+I have unique experience in unifying astronomical and particle perspectives, bringing together theoretical, experimental and statistical techniques, and establishing collaborative links between experts in each of these areas. This experience will be essential to the success of my program, and help forge ongoing links between the different communities.

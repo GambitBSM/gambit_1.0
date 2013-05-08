@@ -1,0 +1,42 @@
+Travel:
+---------
+The highly internationalised nature of astroparticle physics, and the extremely
+interdisciplinary nature of the research program I propose will require extensive
+international travel, to present at conferences, attend Collaboration Meetings (both
+experimental and theoretical) and undertake direct visits to my collaborators'
+institutes. I will also need to host similar visits by collaborators to Imperial
+(although these costs are listed under 'Other Expenses').
+
+For years 2-5, I have allocated GBP4500 for my own international travel,
+corresponding to approximately two intercontinental trips and two continental
+European trips. I have also allocated GBP1000 for internal UK travel, which will
+cover two domestic trips per year.
+
+In year 1, I have allocated a further GBP1000 for international travel, to cover a 
+brief return visit to Montreal to provide in-person supervisory and collaboratory 
+support to students that do not accompany me in relocating from McGill.
+
+Equipment:
+----------------
+Year 1: A new high-end laptop and peripherals (screen, keyboard, mouse;
+GBP2500) and corresponding enterprise-level desktop server (GBP3700) for
+developing and managing parallel global fit code.
+Year 2: Laptops for two starting PhD students (GBP3000)
+Year 3: none
+Year 4: Replacement laptop and peripherals (GBP2500)
+Year 5: Replacement server (GBP3700)
+
+Other Expenses:
+-----------------------
+All years: Annual GitHub (or similar) hosting fees for global fit and related code
+repositories (GBP300 p.a.)
+Year 2: Funding for visiting collaborators / students (GBP2200 = 1 intercontinental
++ 2 UK/continental guests)
+Year 3: Funding to host a small meeting/workshop on global fits (GBP4000)
+Funding for visiting collaborators / students (GBP1200 = 1 intercont. or 2
+UK/cont. guests)
+Year 4: Funding for visiting collaborators / students (GBP2700 = 2 intercont. + 1
+UK/cont.)
+Year 5: Funding for visiting collaborators / students (GBP1500 = 1 intercont. + 1
+UK/cont.)
+

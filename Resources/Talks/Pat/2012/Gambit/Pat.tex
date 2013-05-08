@@ -1,0 +1,271 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[absolute, overlay]{textpos}
+\usepackage{tikz}
+\usepackage{multimedia}
+\usepackage{soul}
+\usepackage{cancel}
+\def\urltilda{\kern -.15em\lower .7ex\hbox{\~{}}\kern .04em}
+\def\deg{^{\circ}}
+
+\setlength{\TPHorizModule}{0.01\textwidth}
+\setlength{\TPVertModule}{\TPHorizModule}
+\definecolor{darkyellow}{rgb}{1,0.75,0}
+\definecolor{black}{rgb}{0,0,0}
+\definecolor{skyblue}{rgb}{0.7,0.8,1.0}
+\definecolor{black}{rgb}{0,0,0}
+\definecolor{darkgrey}{rgb}{0.3,0.3,0.3}
+\definecolor{medgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{lightgrey}{rgb}{0.8,0.8,0.8}
+\definecolor{lightMahogany}{rgb}{0.9,0.8,0.8}
+
+\newcommand{\manual}[1]{
+  \begin{tikzpicture}[x=\textwidth, y=0.82\textheight]%, >=angle 90]
+    \useasboundingbox (0, 0) rectangle (1, 1);
+    #1
+  \end{tikzpicture}
+}
+
+%%% Custom nodes.
+
+\newcommand{\basenode}[4]{
+  \node[outer sep=6pt, anchor=#3] (#1) at (#2){#4};
+}
+
+\newcommand{\emptynode}[2]{
+  \basenode{#1}{#2}{base}{}
+
+}
+
+\newcommand{\minipagenode}[5]{
+  \basenode{#1}{#2}{#3}{
+    \begin{minipage}{#4}
+      \vspace*{-12pt}
+      {#5}
+      \vspace*{-8pt}
+  \end{minipage}}
+
+}
+
+\newcommand{\imagenode}[5]{
+  \minipagenode{#1}{#2}{#3}{#4}{%
+    \includegraphics[width=\textwidth]{#5}%
+  }
+}
+
+%%% Connectors.
+
+\newcommand{\connect}[4]{%
+  \draw[<->, color=darkpurple, line width=1pt, out=#3, in=#4] (#1) to (#2);
+}
+\newcommand{\connectcolor}[5]{%
+  \draw[<->, color=#5, line width=1pt, out=#3, in=#4] (#1) to (#2);
+}
+\newcommand{\hconnect}[3]{%
+  \draw[<->, color=darkpurple, line width=1pt]
+  (#1.east) .. controls +(right:#3) and +(left:#3) .. (#2.west);
+}
+\newcommand{\vconnect}[3]{%
+  \draw[<->, color=darkpurple, line width=1pt]
+  (#1.south) .. controls +(down:#3) and +(up:#3) .. (#2.north);
+}
+
+\newenvironment{litemize}
+{\usebeamercolor[fg]{item color}%
+\scriptsize\begin{list}{$\bullet$}{%
+\setlength{\itemindent}{0pt}%
+\setlength{\labelwidth}{10pt}%
+\setlength{\leftmargin}{15pt}%
+}}
+{\end{list}}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  \usecolortheme[named=Mahogany]{structure}	
+  \setbeamercovered{transparent}
+  \setbeamercolor*{section in toc}{bg=white, fg=Mahogany}
+}
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+  \begin{columns}[t]
+	\column{0.8\textwidth}
+	\tableofcontents[sections={1-3}, currentsection, currentsubsection]
+  \end{columns}	
+  \end{frame}
+}
+
+\setbeamertemplate{subsection in head/foot shaded}
+{\textcolor{structure!70!white}{\insertsubsectionhead}}
+\setbeamertemplate{subsection in head/foot}{\textcolor{white}\insertsubsectionhead}
+
+\title[{\textcolor{white}Global Fit Activities}]{\textcolor{white}{Global Fit Activities -- Past, Present \& Future}}
+\author[\textcolor{medgrey}{Pat Scott -- Oct 8 -- Global Fit Activities}]{Pat Scott}
+\institute{\small{Department of Physics, McGill University}}
+\date[Oct 8 2012]{Slides (always) available from \color[rgb]{0.1, 0.2, 0.6} \href{http://www.physics.mcgill.ca/~patscott}{\tt http://www.physics.mcgill.ca/{\urltilda}patscott}}
+\pgfdeclareimage[height=0.7cm]{university-logo}{McGill_crest}
+\logo{\pgfuseimage{university-logo}}
+\subject{Talks}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Actually, who the hell is Pat?}
+
+ANU (Stromlo) $\rightarrow$ Stockholm (Oskar Klein) $\rightarrow$ McGill\vspace{5mm}
+
+Nominally theorist/phenomenologist, in practice sit midway between theory + experiment, and particle + astro\vspace{5mm}
+
+Affiliations:
+\begin{itemize}
+\item \emph{Fermi}-LAT: affiliated scientist
+\item IceCube: associate member\\(different from affiliated? not really)
+\item SuperBayeS: `author'\\($=$ development author since 2011, not original author)
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Global fits -- Past}
+
+
+Mostly CMSSM, using SuperBayeS...\vspace{5mm}
+
+\begin{enumerate}
+\item{\bf Segue 1 \emph{Fermi} gamma-ray data in CMSSM global fit (\emph{Fermi}-LAT `Cat II')}
+\begin{itemize}
+\item{PS, Conrad, Edsj\"o et al, JCAP, arXiv:0909.3300}
+\item{Direct likelihood with flux data + `fast detector simulation'}
+\end{itemize}
+
+\item{\bf Genetic Algorithmic exploration of CMSSM profile likelihood}
+\begin{itemize}
+\item{Akrami, PS, Edsj\"o, Conrad et al, JHEP, arXiv:0910.3950}
+\item{Showed vanilla Bayesian scan techniques not OK for profile likelihood}
+\end{itemize}
+
+\item{\bf HESS gamma-ray fluxes from Galctic Centre + dwarfs + halo into CMSSM fit}
+\begin{itemize}
+\item{Ripken, Conrad, PS, JCAP, arXiv:1012.3939}
+\item{Severe constraint on stau co-annihilation from internal bremsstrahlung, but questionable $J$ factors}
+\end{itemize}
+
+\item{\bf Direct detection -- future prospects and coverage tests}
+\begin{itemize}
+\item{2 $\times$ Akrami, Savage, PS, Conrad, Edsj\"o, JCAP, arXiv:1012.4292/4318}
+\end{itemize}
+
+\end{enumerate}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Global fits -- Present}
+
+
+Slowly moving away from CMSSM, SuperBayeS...\vspace{5mm}
+
+\begin{enumerate}
+\item{\bf Neutrino telescope likelihood module (in DarkSUSY)}
+\begin{itemize}
+\item{PS, Savage, Edsj\"o + the entire IceCube Collab, JCAP, arXiv:1207.0810}
+\item{Event-by-event, unbinned likelihood (IC22 only, CMSSM/MSSM-7)}
+\end{itemize}
+
+\item{\bf Semi-random scan in MSSM-25 with new likelihood module, IC86 predictions}
+\begin{itemize}
+\item{Silverwood, PS, Danninger, Savage, Edsj\"o, et al, arXiv:1210.0844}
+\item{Statistically simplistic, but at least it's MSSM-25}
+\end{itemize}
+
+\item{\bf Pippi -- parse it, plot it}
+\begin{itemize}
+\item{PS, EPJ Plus, arXiv:1206.2245}
+\item{Simple but powerful plotting scripts/package for marginalistation, profiling, post-processing, etc.}
+\end{itemize}
+
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Global fits -- Future}
+
+$\cancel{\mathrm{CMSSM}}$, time for a new code\vspace{5mm}
+
+\begin{enumerate}
+
+\item{\bf IC79 SUSY global fit analysis (with DarkSUSY 5.0.6+)}
+\begin{itemize}
+\item{\footnotesize PS, Danninger, Savage, Edsj\"o + IceCube}
+\end{itemize}
+
+\item{\bf Differential evolution scanner}
+\begin{itemize}
+\item{\footnotesize Putze, Roebber (McGill PhD), PS}
+\end{itemize}
+
+\item{\bf Anti-deuteron likelihood in SUSY global fits}
+\begin{itemize}
+\item{\footnotesize Putze, Savage, PS, Edsj\"o}
+\end{itemize}
+
+\item{\bf Light DM global fits + model comparison with SuperBayeS offshoot DMBayeS}
+\begin{itemize}
+\item{\footnotesize Savage, PS, Weniger, Cline}
+\end{itemize}
+
+\item{\bf Galactic Centre \emph{Fermi} analysis with DMBayeS}
+\begin{itemize}
+\item{\footnotesize Strege (Imperial PhD), PS, Trotta, Johanesson, Dupuis (McGill PhD), et al + \emph{Fermi}-LAT}
+\end{itemize}
+
+\item{\bf MSSM-25 LHC likelihood attempt}
+\begin{itemize}
+\item{\footnotesize Giguere, Duplessis (both McGill Masters) + PS}
+\end{itemize}
+
+\item{\bf\emph{Fermi}-LAT all-dwarf likelihood in SUSY global fits}
+\begin{itemize}
+\item{\footnotesize Llena-Garde (Stockholm PhD), PS, Conrad + \emph{Fermi}-LAT}
+\end{itemize}
+
+\end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Global fits -- new code}
+
+\textbf{SUFit ?$\rightarrow$ new BSM global fit code}\vspace{5mm}
+
+My vision of this code: flexible and modular
+\begin{itemize}
+\item General enough to allow fast definition of new datasets and theoretical models
+\item Not just small modifications to CMSSM (NUHM, VCMSSM, blah, blah), and not just SUSY!
+\item Many statistical options -- Bayesian/frequentist, likelihood definitions, scanning algorithms
+\item Plug and play scanning, physics and likelihood packages
+\item Something smart and fast for LHC likelihoods
+\end{itemize}
+
+\end{frame}
+
+\end{document}
+

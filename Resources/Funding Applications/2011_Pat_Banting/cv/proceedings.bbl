@@ -1,0 +1,54 @@
+\providecommand{\href}[2]{#2}\begingroup\raggedright\begin{thebibliography}{1}
+
+\bibitem{ScottCRF}
+\textbf{P.~{Scott}}, {\it {Dark stars: structure, evolution and impacts upon the
+  high-redshift Universe}},  in {\em Cosmic Radiation Fields: Sources in the
+  early Universe} ({M.~Raue, T.~Kneiske, D.~Horns, D.~Elsaesser, \&
+  P.~Hauschildt}, ed.) (2011) {\em\pos}(\textbf{CRF 2010})021,
+  [\href{http://arxiv.org/abs/arXiv:1101.1029}{{\tt arXiv:1101.1029}}].
+
+\bibitem{Rydberg10}
+C.~E. {Rydberg}, E.~{Zackrisson}, and \textbf{P.~{Scott}}, {\it {Can the James Webb
+  Space Telescope detect isolated population III stars?}},  in {\em Cosmic
+  Radiation Fields: Sources in the early Universe} ({M.~Raue, T.~Kneiske,
+  D.~Horns, D.~Elsaesser, \& P.~Hauschildt}, ed.) (2011) {\em\pos}(\textbf{CRF
+  2010})026, [\href{http://arxiv.org/abs/1103.1377}{{\tt arXiv:1103.1377}}].
+
+\bibitem{GASS2}
+N.~{Grevesse}, M.~{Asplund}, A.~J. {Sauval}, and \textbf{P.~{Scott}}, {\it {The New
+  Solar Composition and the Solar Metallicity}},  in {\em The Sun, the Solar
+  Wind, and the Heliosphere} (M.~P. {Miralles} and J.~{S{\'a}nchez Almeida},
+  eds.), {\em IAGA Special Sopron Book Series} {\bf 4} (2011) 51--60.
+
+\bibitem{GASS3}
+N.~Grevesse, M.~Asplund, A.~Sauval, and \textbf{P.~Scott}, {\it The chemical composition
+  of the sun},  in {\em 10th International Colloquium on Atomic Spectra and
+  Oscillator Strengths for Astrophysical and Laboratory Plasmas}, {\em
+  \canjphys} {\bf 89} (2011) 327--331.
+
+\bibitem{GASS1}
+N.~{Grevesse}, M.~{Asplund}, A.~J. {Sauval}, and \textbf{P.~{Scott}}, {\it {The chemical
+  composition of the Sun}},  in {\em {Synergies between solar and stellar
+  modelling}}, {\em \apss} {\bf 328} (2010) 179--183.
+
+\bibitem{Scott09b}
+\textbf{P.~{Scott}}, J.~{Edsj{\"o}}, and M.~{Fairbairn}, {\it {The DarkStars code: a
+  publicly available dark stellar evolution package}},  in {\em {Dark Matter in
+  Astroparticle and Particle Physics: Dark 2009}} ({H.~V.~Klapdor-Kleingrothaus
+  \& I.~V.~Krivosheina}, ed.), World Scientific, Singapore (2010) 320--327,
+  [\href{http://arxiv.org/abs/arXiv:0904.2395}{{\tt arXiv:0904.2395}}].
+
+\bibitem{Scott08b}
+\textbf{P.~{Scott}}, M.~{Fairbairn}, and J.~{Edsj{\"o}}, {\it {Impacts of WIMP dark
+  matter upon stellar evolution: main-sequence stars}},  in {\em Identification
+  of dark matter 2008} (2008) {\em\pos}(\textbf{idm2008})073,
+  [\href{http://arxiv.org/abs/arXiv:0810.5560}{{\tt arXiv:0810.5560}}].
+
+\bibitem{Scott08a}
+\textbf{P.~{Scott}}, J.~{Edsj{\"o}}, and M.~{Fairbairn}, {\it {Low mass stellar
+  evolution with WIMP capture and annihilation}},  in {\em Dark Matter in
+  Astroparticle and Particle Physics: Dark 2007} (H.~K. {Klapdor-Kleingrothaus}
+  and G.~F. {Lewis}, eds.), World Scientific, Singapore (2008) 387--392,
+  [\href{http://arxiv.org/abs/arXiv:0711.0991}{{\tt arXiv:0711.0991}}].
+
+\end{thebibliography}\endgroup
