@@ -17,7 +17,7 @@
 //  //  (add name and date if you modify)
 //  //
 //  //  Abram Krislock
-//  //  2013 Apr 19, Apr 23
+//  //  2013 Apr 19, Apr 23, May 9
 //  //
 //  //  ********************************************
 //
@@ -29,6 +29,7 @@
 #include <cmath>
 
 #include "TROOT.h"
+#include "TTask.h"
 #include "TApplication.h"
 #include "TObjArray.h"
 #include "TDatabasePDG.h"
@@ -41,8 +42,6 @@
 #include "classes/DelphesClasses.h"
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
-
-// #define DELPHES3BACKEND_PRIVATE GAMBIT::HEColliderBit::Delphes3Backend::confReader,GAMBIT::HEColliderBit::Delphes3Backend::modularDelphes,GAMBIT::HEColliderBit::Delphes3Backend::factory,GAMBIT::HEColliderBit::Delphes3Backend::allParticleOutputArray,GAMBIT::HEColliderBit::Delphes3Backend::stableParticleOutputArray,GAMBIT::HEColliderBit::Delphes3Backend::partonOutputArray,GAMBIT::HEColliderBit::Delphes3Backend::pdg,GAMBIT::HEColliderBit::Delphes3Backend::candidate,GAMBIT::HEColliderBit::Delphes3Backend::pdgParticle,GAMBIT::HEColliderBit::Delphes3Backend::pdgCode
 
 namespace GAMBIT
 {
@@ -59,6 +58,9 @@ namespace GAMBIT
       void convertOutput(Event &event);
 
     private:
+      // Needed for parallelizing my hacked TTask --Abram
+      TTask *trackBreakPoint;
+      TTask *trackBeginTask;
       // To read Delphes Config File
       ExRootConfReader *confReader;
       // Modularity of Delphes is set by said Config File.

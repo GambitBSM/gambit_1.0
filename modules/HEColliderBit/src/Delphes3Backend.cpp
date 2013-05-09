@@ -11,7 +11,7 @@
 //  //  (add name and date if you modify)
 //  //
 //  //  Abram Krislock
-//  //  2013 Apr 19, Apr 23
+//  //  2013 Apr 19, Apr 23, May 9
 //  //
 //  //  ********************************************
 //
@@ -35,6 +35,9 @@ namespace GAMBIT
   {
     Delphes3Backend::Delphes3Backend(string configFileName)
     {
+      // Needed for parallelizing my hacked TTask --Abram
+      trackBreakPoint = 0;
+      trackBeginTask = 0;
       try
       {
         // To read Delphes Config File
@@ -44,6 +47,8 @@ namespace GAMBIT
         // Modularity of Delphes set by Config File
         modularDelphes = new Delphes("Delphes");
         modularDelphes->SetConfReader(confReader);
+        modularDelphes->SetBreakPoint(&trackBreakPoint);
+        modularDelphes->SetBeginTask(&trackBeginTask);
 
         // Factory production of particle "candidates"
         factory = modularDelphes->GetFactory();
