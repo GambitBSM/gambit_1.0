@@ -1,0 +1,14 @@
+Hacking stuff to get Delphes to run in parallel:
+
+Step 1) Copy TTask.h to $ROOTSYS/core/base/inc/
+Step 2) Copy TTask.cxx to $ROOTSYS/core/base/src/
+Step 3) Go to your root directory (cd $ROOTSYS) and 'make'
+        (Don't worry. I made absolutely sure that my hacks did not break ROOT.)
+Step 4) You may need to install Delphes 3.0.7 just to be sure of compatibility.
+Step 5) Copy ExRootTask.cc to $DELPHESDIR/external/ExRootAnalysis/
+Step 6) Go to your Delphes directory (cd $DELPHESDIR) and 'make'
+Step 7) Come back to the gambit/modules/HEColliderBit/src directory.
+Step 8) Use the makefile here to make 'example-delphes-py8'. Which now runs in parallel.
+Step 9) Enjoy.
+
+--Abram
