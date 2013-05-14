@@ -58,9 +58,6 @@ namespace GAMBIT
       void convertOutput(Event &event);
 
     private:
-      // Needed for parallelizing my hacked TTask --Abram
-      TTask *trackBreakPoint;
-      TTask *trackBeginTask;
       // To read Delphes Config File
       ExRootConfReader *confReader;
       // Modularity of Delphes is set by said Config File.
