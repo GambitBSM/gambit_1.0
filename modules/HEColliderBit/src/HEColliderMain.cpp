@@ -32,8 +32,7 @@
 
 // External
 #include "omp.h"
-#define CHUNKSIZE 50
-#define NEVENTS 1000
+#define NEVENTS 100000
 #define MAIN_SHARED counter,slhaFileName,delphesConfigFile,myDelphes
 #define MAIN_PRIVATE genEvent,recoEvent,outFile,temp,myPythia
 
@@ -50,7 +49,7 @@ int main()
   // variables used during parallelization
   string temp;
   ofstream outFile;
-  int counter, chunk;
+  int counter;
 
   // For event generation
   GAMBIT::HEColliderBit::Pythia8Backend *myPythia;
@@ -62,7 +61,6 @@ int main()
   GAMBIT::Event recoEvent;
 
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
-  chunk = CHUNKSIZE;
 
   /// @todo Generalise to a vector of analyses, populated by names
   GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
@@ -78,7 +76,7 @@ int main()
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";
     outFile.open(temp.c_str());
 
-    #pragma omp for schedule(dynamic,chunk)
+    #pragma omp for schedule(guided)
     for (counter=0; counter<NEVENTS; counter++)
     {
       genEvent.clear();
