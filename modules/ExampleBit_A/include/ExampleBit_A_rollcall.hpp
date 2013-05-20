@@ -1,27 +1,27 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Rollcall header for module ExampleBit_A
-//
-//  Compile-time registration of available obser-
-//  vables and likelihoods, as well as their
-//  dependencies.
-//
-//  Add to this if you want to add an observable
-//  or likelihood to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2012 Nov 15++ 
-//  2013 Jan 18, Feb 04
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Rollcall header for module ExampleBit_A.
+///
+///  Compile-time registration of available 
+///  observables and likelihoods, as well as their
+///  dependencies.
+///
+///  Add to this if you want to add an observable
+///  or likelihood to this module.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2012 Nov 
+///  \date 2013 Jan, Feb
+///
+///  *********************************************
+
 
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__

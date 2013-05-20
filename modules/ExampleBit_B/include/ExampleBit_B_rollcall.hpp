@@ -22,35 +22,37 @@
 ///  *********************************************
 ///
 /// \def MODULE
-/// Specifies that this is the module named MODULE.
+/// Specifies that this is the MODULE named ExampleBit_B.
 ///
 /// \def CAPABILITY
-/// Specifies that this MODULE is capable of 
-/// providing the service CAPABILITY (usually that
-/// means that it can compute some physical or 
-/// statistical quantity referred to by CAPABILITY).    
+/// Specifies that ExampleBit_B (this MODULE) is 
+/// capable of providing the service CAPABILITY.  
+/// Usually a CAPABILITY means that the MODULE can 
+/// compute some physical or statistical quantity 
+/// referred to by CAPABILITY.   
 ///
 /// \def FUNCTION
-/// Specifies that this MODULE contains a function
-/// named FUNCTION that can execute the commands
-/// required to provided the current CAPABILITY.
+/// Specifies that ExampleBit_B (this MODULE) contains
+/// a function named FUNCTION that can execute the
+/// commands required to provided the current CAPABILITY.
 ///
 /// \def BACKEND_REQ
 /// Specifies that the current FUNCTION in 
-/// this MODULE requires BACKEND_REQ from a backend
-/// code.  The requirement BACKEND_REQ corresponds
+/// ExampleBit_B (this MODULE) requires BACKEND_REQ from
+/// a backend code.  The requirement BACKEND_REQ corresponds
 /// to a capability that a valid backend function 
 /// is expected to report in its corresponding 
 /// registration header file.
 ///
 /// \def CONDITIONAL_DEPENDENCY
 /// Specifies that the current FUNCTION in 
-/// this MODULE has a CONDITIONAL_DEPENDENCY
+/// ExampleBit_B (this MODULE) has a CONDITIONAL_DEPENDENCY
 /// that is only active under certain conditions.
 /// These conditions may include:
 ///  - a specific backend is in use in order to fill
 ///    a certain BACKEND_REQ
 ///  - a certain model is under analysis 
+
 
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
@@ -59,8 +61,7 @@
 
 #define MODULE ExampleBit_B
 START_MODULE
-
-
+ 
   #define CAPABILITY xsection               // Observable: cross-section for some hypothetical process
   START_CAPABILITY
 
@@ -132,5 +133,4 @@ START_MODULE
 #undef MODULE
 
 #endif // defined(__ExampleBit_B_rollcall_hpp__)
-
 

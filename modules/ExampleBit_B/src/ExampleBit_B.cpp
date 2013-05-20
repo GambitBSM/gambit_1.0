@@ -1,27 +1,27 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Functions of module ExampleBit_B
-//
-//  Put your functions in files like this
-//  if you wish to add observables or likelihoods
-//  to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2012 Nov 15 
-//  2013 Jan 18, Feb 04
-//
-//  Christoph Weniger
-//  Jan 17 2013
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Functions of module ExampleBit_B
+///
+///  Put your functions in files like this
+///  if you wish to add observables or likelihoods
+///  to this module.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2012 Nov 
+///  \date 2013 Jan, Feb
+///
+///  \author Christoph Weniger
+///          (christoph.weniger@gmail.com)
+///  \date 2013 Jan 
+///
+///  *********************************************
 
 #include <ExampleBit_B_rollcall.hpp>
 

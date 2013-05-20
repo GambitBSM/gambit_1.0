@@ -1,27 +1,26 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  General small utility functions.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Pat Scott
-//  2013  Apr 24
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  General small utility functions.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott  
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Apr
+///
+///  *********************************************
 
 #include <util_functions.hpp>
 
 namespace GAMBIT
 {
 
-  // Split a string into a vector of strings using a delimiter,
-  // and remove any whitespace around the delimiters.
+  /// Split a string into a vector of strings using a delimiter,
+  /// and remove any whitespace around the delimiters.
   std::vector<std::string> delimiterSplit(std::string s, std::string delim)
   {
     std::vector<std::string> vec;
