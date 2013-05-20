@@ -53,6 +53,7 @@ namespace GAMBIT
 
     void dependency_resolution(std::vector<int>&); // Dependency resolution function
     void execute_functions();                      // Execute resolved function list
+    vector<functor*> get_functors();          // Returns list of functor pointers
 
 #ifndef IN_CORE
     extern

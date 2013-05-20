@@ -48,6 +48,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <module_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
+#include <master_like.hpp>
+#include <ini_parser.hpp>
 
 // Ben: It seems we currently are using both these namespaces! Should we pick
 //      one?
@@ -68,6 +70,12 @@ int main( int argc, const char* argv[] )
   cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
   cout<<endl;
 
+  // Run ini-file parser
+  ini_parser::IniFileParser my_parser("gambit.ini");
+  my_parser.print();
+
+  // TODOCW Define alpha node (from ini-file)
+
   // Do some mock parsing of the ini file and pick which things to compute
   vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
   requested_observables.push_back(1);  // nevents_int
@@ -80,9 +88,11 @@ int main( int argc, const char* argv[] )
   // Run dependency resolution proper
   Graphs::dependency_resolution(requested_observables);
 
+  // Initialize MasterLike;
+  MasterLike masterLike(Graphs::get_functors());
+
   // Call the functions in their sorted order
   Graphs::execute_functions();
-
 
   // Test it
   cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
