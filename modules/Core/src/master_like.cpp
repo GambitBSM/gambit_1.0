@@ -1,7 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  Dependecy resolution with boost graph library
+//  Master Likelihood Container
 //
 //  *********************************************
 //
@@ -11,9 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Christoph Weniger
-//  May 03 2013
-//  Pat Scott 
-//  May 03 2013
+//  May 20 2013
 //
 //  *********************************************
 //
