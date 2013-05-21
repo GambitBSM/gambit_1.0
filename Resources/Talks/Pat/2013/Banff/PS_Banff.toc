@@ -1,0 +1,10 @@
+\beamer@endinputifotherversion {3.07pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Overview}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{New physics}{7}{0}{1}
+\beamer@subsectionintoc {1}{2}{Global fits}{17}{0}{1}
+\beamer@sectionintoc {2}{Statistical Challenges}{29}{0}{2}
+\beamer@subsectionintoc {2}{1}{Detailed astroparticle likelihoods}{29}{0}{2}
+\beamer@subsectionintoc {2}{2}{Which experiments can we trust?}{44}{0}{2}
+\beamer@subsectionintoc {2}{3}{Compute time, coverage and scanning}{54}{0}{2}
+\beamer@subsectionintoc {2}{4}{Systematisation: Parameter space $\rightarrow $ Theory space}{66}{0}{2}

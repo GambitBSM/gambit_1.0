@@ -1,0 +1,50 @@
+\documentclass[10pt,oneside,twocolumn,a4paper]{article}
+
+\usepackage{graphicx}
+\usepackage[footnotesize,bf]{caption}
+\usepackage{fancyhdr}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[colorlinks=true, linkcolor=BrickRed, citecolor=Blue, urlcolor=Blue, filecolor=Blue]{hyperref}
+\input{jdefs.tex}
+
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.2in}
+
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO,RE]{\slshape Pat Scott}
+\fancyhead[C]{Banting PDF -- Career Aspirations and Choice of Institution}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+
+\bibliographystyle{JHEP_pat}
+\bibpunct{[}{]}{,}{n}{ }{,}
+
+\author{Pat Scott}
+\date{}
+\pagestyle{fancy}
+
+\begin{document}
+My primary career goal has always been to perform cutting-edge research in astroparticle physics and particle phenomenology -- to help discover and characterize new physics and symmetries of nature above the GeV scale, and their impacts upon astronomical observations.
+
+I intend to pursue this goal via a series of nested subgoals.  Ultimately, I wish to build and lead a large, strong and dedicated research group centred around the interface of particle physics and astronomy.  I see this group focusing on the topics of dark matter and physics at or beyond the TeV scale.  To achieve this goal, I must continue to extend my experience in the broad range of physics relevant to such a group, and gain the necessary professional experience to effectively build and lead it.  
+
+The first step in both these aspects is to obtain the scientific and professional experience necessary for me to become a junior faculty member.  McGill offers fantastic opportunities in both these respects.
+
+On the physics side, McGill offers an extremely broad range of experts, in virtually all the areas relevant to my research proposal.  Jim Cline is foremost amongst these; his experience with supersymmetry, electroweak baryogenesis, and indirect and direct detection of dark matter covers large parts of the necessary phenomenology in my proposed global fits program.  His input will be invaluable when I come to implement such models and observables in the fits.  Within the theoretical high energy group, Robert Brandenberger will provide unique expertise in the theoretical cosmological aspects of the program, and Guy Moore will be available for consultation on all aspects of quantum field theory.
+
+Ken Ragan and Dave Hanna, of the gamma-ray air \v{C}erenkov telescope experiment VERITAS, provide a direct interface with the field of gamma-ray astronomy, essential in the indirect search for dark matter.  Working with the VERITAS collaboration will allow me to directly include their gamma-ray data as constraints in the global fits.  Both Ken and Dave have years of experience in experimental physics, so are also invaluable when it comes to advice on other experiments, such as direct searches for dark matter.  Gil Holder is one of the world's foremost experts on the theory of the microwave background and reionization, and Matt Dobbs on their detection.  The McGill ATLAS group plays a very prominent role in one of the two most important LHC accelerator experiments (the other being CMS).  LHC data will have a massive impact on global fits in the near future, so their input will play an important role in my research program.
+
+The proposal requires me to become an expert in every one of the specializations I have just listed, so the unique breadth of the skill base at McGill is an essential aspect.  The collaborations I build at McGill, and the ground-work they enable, will provide a launching point for the rest of my career.  \textit{No other institute in Canada offers such a broad or in-depth combination of expert advice, so relevant to my proposal}.
+
+Professionally, a Banting Fellowship at McGill with Jim Cline essentially offers the opportunity to train as a junior faculty member before obtaining such a position.  A very important part of this is supervising students and teaching.  Working with Jim makes it possible for me to already play a large role in the supervision of his PhD student Aaron Vincent, and in the future, his Master student Grace Dupuis.  Similarly, collaborating with Robert Brandenberger has given me supervisory experience with his PhD student Wei Xue, and working with Gil Holder has allowed me to supervise his student Elinore Roebber.  The two full-time years of research funding afforded by the award of a Banting Fellowship would keep me at McGill long enough to see out the supervision of these four students to the point of their graduation (or close to, in Elinore's case).  This group of 4 students will play a pivotal role in the global fits research program, and effectively give me my first experience in directly managing my own research group.
+
+The department of Physics at McGill also offers virtually unparallelled postdoc teaching opportunities. Postdocs can (but do not have to) propose, create and lecture entire courses at the undergraduate or graduate level, gaining faculty-equivalent experience not offered elsewhere.  This I did for the course \textit{Practical Numerical Methods in Physics} in 2011, which was a very rewarding experience in terms of my professional development and recruitment of research students.  With a Banting Fellowship, I will have the opportunity to teach the course again, providing an opportunity to reflect upon and improve my teaching, communication and research.
+
+McGill and Jim offer all the material resources necessary to support my research: a minimum \$10k p.a.\ travel budget, a dedicated computing cluster, and the CLUMEQ supercomputer.  Computing resources are very important, as global fits can take days or weeks of runtime on a well-resourced cluster.  Jim will also involve me in preparing his NSERC grant applications, providing grant-writing experience that would otherwise be inaccessible.  Finally, Montreal is perfectly situated geographically, giving me equal access to the centres of activity in dark matter and particle phenomenology in Europe, California and the East Coast of the US.
+
+McGill offers the perfect combination of expertise, facilities, professional opportunities and geographical location; I cannot imagine any other institute in Canada providing even a comparable fit for my research.
+
+\end{document}

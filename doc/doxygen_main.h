@@ -16,14 +16,8 @@ namespace gambit {
  *
  * \subsection core_sec The core:
  *
- * The most important classes:
  * 
- *  *dead* EngineBase is the baseclass for anything making a physics calculation
- *
- *  *dead* NamedCache and AssociatedHandler are used for associating user options
- *  with the result calculated in Engines.
- *
- *  *dead* ComparatorBase defines the interface for LLH-calculator. 
+ * \subsection legacy_sec Legacy SUFit code, to be revised/replaced:
  *
  *  ScannerBase defines the interface for scanning over variables and
  *  examining (eg) LLH values.

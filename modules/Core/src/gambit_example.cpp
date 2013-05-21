@@ -1,10 +1,29 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Example of gambit core framework use.
+///
+///  A program to demo what can be done with the 
+///  current development version of the code. 
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author GAMBIT Collaboration
+///  \date 2012 Oct --> ??
+///
+///  *********************************************
+
+
 // some specifics -- probably in time these will be replaced
 //#include "mssmX.hpp"
 //#include "RandomScanner.hpp"
 // model class - probably to be replaced too
 //#include "ModelParametersSusy.hpp"
 
-//! brief helper for gambit_example
+//brief helper for gambit_example
 //using namespace gambit;
 
 /* Ben: I have commented out all model-related stuff in the example (not much)
@@ -21,16 +40,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 }
 */
 
-/*!
-//  \brief Example of gambit core framework use
-//
-//   A program to demo what can be done with the current development version of the code.
-//
-//   \author GAMBIT Collab
-//   \date Oct 2012 -> ??
-//
-*/
-
+/// Indicates to the core macros that this is indeed the core compilation unit.
 #define  IN_CORE
 #include <logcore.hpp>
 #include <graphs.hpp>
@@ -38,9 +48,12 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <module_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
+#include <master_like.hpp>
+#include <ini_parser.hpp>
 
 // Ben: It seems we currently are using both these namespaces! Should we pick
 //      one?
+// Pat: GAMBIT
 using namespace GAMBIT;
 using namespace gambit;
 
@@ -57,6 +70,12 @@ int main( int argc, const char* argv[] )
   cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
   cout<<endl;
 
+  // Run ini-file parser
+  ini_parser::IniFileParser my_parser("gambit.ini");
+  my_parser.print();
+
+  // TODOCW Define alpha node (from ini-file)
+
   // Do some mock parsing of the ini file and pick which things to compute
   vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
   requested_observables.push_back(1);  // nevents_int
@@ -69,9 +88,11 @@ int main( int argc, const char* argv[] )
   // Run dependency resolution proper
   Graphs::dependency_resolution(requested_observables);
 
+  // Initialize MasterLike;
+  MasterLike masterLike(Graphs::get_functors());
+
   // Call the functions in their sorted order
   Graphs::execute_functions();
-
 
   // Test it
   cout << "Testing dependency resolution using TinyDarkBit:" << endl ;

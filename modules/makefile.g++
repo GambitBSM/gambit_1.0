@@ -64,8 +64,8 @@ all: mh doxygen gambit_example beb_tester
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-	@rm -f _*.txt
-	@rm -rf $(DOCDIR)/html 
+	@rm -f _*.txt $(DOCDIR)/Manual.html
+	@rm -rf $(DOCDIR)/html
 .PHONY: clean
 
 # also removes ~ files and other weirdly generated files
@@ -185,6 +185,7 @@ beb_tester: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/backend-fherwig.o $(UTILS
 # PS - dependencies on non-core source files need to be added here
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(COREINC) $(CORESRC)
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
+	@ln -s $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
 	@echo "Documentation found in $@"
 
 doxygen: $(DOCDIR)/html/index.html

@@ -23,6 +23,7 @@
 
 #include <logcore.hpp>
 #include <graphs.hpp>
+#include <ini_parser.hpp>
 
 namespace GAMBIT
 {
@@ -140,6 +141,22 @@ namespace GAMBIT
       }
     }
 
+    // Return active vertices in correct order
+    std::vector<functor*> get_functors() {
+      std::vector<functor*> functor_list;
+      cout << "Dependency resolver says: now I will actually run them." << endl;
+      for(list<int>::const_iterator i = function_order.begin();
+          i != function_order.end();
+          ++i)
+      {
+        if ( (*Graphs::masterGraph[*i]).status() == 2 )
+        {
+          functor_list.push_back(Graphs::masterGraph[*i]);
+        }
+      }
+      return functor_list;
+    }
+
     // Overload for calling without arguments
     void execute_functions() { execute_functions(function_order); }
 
@@ -157,13 +174,18 @@ namespace GAMBIT
       };
     };
 
+    int identify_vertex(ini_parser::ObservableType observable)
+    {
+      multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
+      // TODOCW Check capability + type
+    };
+
     // Main dependency resolution
     void dependency_resolution(std::vector<int> &pars)
     {
       list_graphs_content();
       queue<pair<sspair, Graphs::VertexID> > parQueue;
-      multimap<sspair, Graphs::VertexID> capMap;
-      capMap = initialize_capMap();
+      multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
 
       for (std::vector<int>::iterator it = pars.begin() ; it != pars.end(); ++it)
       {
@@ -175,4 +197,4 @@ namespace GAMBIT
       list_functions(function_order);
     };
   };
-}
+};
