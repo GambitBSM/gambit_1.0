@@ -2,6 +2,13 @@
 // Ben Farmer, May 1 2013
 
 #include "MSSM.hpp"
+#include <string>
+#include <iostream>
+#include <vector>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+
+typedef std::string str;
 
 template < class Type >
 inline std::ostream& operator << (std::ostream& os, const std::vector<Type>& v) 
@@ -50,7 +57,7 @@ int main( int argc, const char* argv[] )
   //Cannot use a pointer of a non-parent model class!
   //(here M1 is not a descendent of DMHalo_base)
   //gambit::models::DMHalo_base* Halo_child_error=&M1; 
-  
+    
   // Can then refer to staticly bound functions if we know the class:
   std::cout<<""<<std::endl;
   std::cout<<"Disclaimer: I may be using the wrong terms for these C++ \
@@ -131,6 +138,22 @@ functions using pointers of base class type..."<<std::endl;
   Halo_child2->setValue("M12",4321);
   Halo_child2->setValue("A0",100);
   Halo_child2->setValue("v_earth",300);
+  Halo_child2->print();
+  
+  // Demonstration of automatic looping over parameters
+  std::cout<<std::endl;
+  std::cout<<"Parameter name retrieval..."<<std::endl;;
+  std::cout<<"Halo_child2->getKeys(): "<<Halo_child2->getKeys()<<std::endl;
+  // Generate some random values and set parameters to these values
+  
+  std::vector<str> keys = Halo_child2->getKeys();
+  
+  srand (time(NULL));    // initialize random seed
+  for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
+    std::cout <<"Setting random "<<*it<<" value..."<<std::endl;
+    Halo_child2->setValue(*it, rand()%1000);
+  }
+  std::cout<<"Dumping new Halo_child2 parameters...";
   Halo_child2->print();
 }
 
