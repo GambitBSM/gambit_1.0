@@ -28,13 +28,14 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "boost/archive/text_oarchive.hpp"
 #include "boost/lexical_cast.hpp"
 
 // External
 #include "omp.h"
-#define NEVENTS 100000
+#define NEVENTS 1000
 #define MAIN_SHARED counter,slhaFileName,delphesConfigFile,myDelphes
-#define MAIN_PRIVATE genEvent,recoEvent,outFile,temp,myPythia
+#define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,temp,myPythia
 
 
 using namespace std;
@@ -49,6 +50,7 @@ int main()
   // variables used during parallelization
   string temp;
   ofstream outFile;
+  boost::archive::text_oarchive *outArchive;
   int counter;
 
   // For event generation
@@ -75,6 +77,7 @@ int main()
     // For a reasonable output
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";
     outFile.open(temp.c_str());
+    outArchive = new boost::archive::text_oarchive(outFile);
 
     #pragma omp for schedule(guided)
     for (counter=0; counter<NEVENTS; counter++)
@@ -87,10 +90,11 @@ int main()
         myDelphes->processEvent(genEvent, recoEvent);
       }
       ana->analyze(recoEvent);
-      outFile<<"\n Event "<<counter<<" Generated, with event size = "<<genEvent.size(); 
-      outFile<<"\n Event "<<counter<<" Processed, with missingET = "<<recoEvent.met();
+      // write recoEvent instance to file
+      (*outArchive) << recoEvent;
     }
     cout<<"\n\n";
+    delete outArchive;
     outFile.close();
     delete myPythia;
   } // end omp parallel block

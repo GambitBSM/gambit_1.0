@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/serialization/access.hpp>
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
 
@@ -8,6 +9,27 @@ namespace GAMBIT {
 
   /// Simple jet class, encapsulating a momentum 4-vector and with some extra b-tag info
   class Jet {
+  private:
+
+    /// @name Serialization
+    //@{
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+      ar & _p4;
+      ar & _isB;
+    }
+    //@}
+
+    /// @name Storage
+    //@{
+    /// Momentum vector
+    P4 _p4;
+    /// B tag
+    bool _isB;
+    //@}
+
   public:
 
     /// @name Constructors
@@ -54,13 +76,6 @@ namespace GAMBIT {
 
     //@}
 
-
-  private:
-
-    /// Momentum vector
-    P4 _p4;
-    /// B tag
-    bool _isB;
 
   };
 

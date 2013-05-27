@@ -2,6 +2,8 @@
 
 #include "Particle.hpp"
 #include "Jet.hpp"
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/vector.hpp>
 #include <algorithm>
 
 namespace GAMBIT {
@@ -10,6 +12,42 @@ namespace GAMBIT {
 
   /// Simple event class, separating into various classes of particle
   class Event {
+  private:
+    /// @name Serialization
+    //@{
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+      ar & _photons;
+      ar & _electrons;
+      ar & _muons;
+      ar & _taus;
+      ar & _invisibles;
+      ar & _jets;
+      ar & _pmiss;
+    }
+    //@}
+
+    /// @name Internal particle / vector containers
+    //@{
+
+    /// @name Separate particle collections
+    //@{
+    /// @todo Do we really need to store invisibles, since they aren't
+    /// experimentally resolveable, and are covered by the explicitly-set
+    /// missing-mom?
+    std::vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
+    //@}
+
+    /// Jets collection (mutable to allow sorting)
+    mutable std::vector<Jet*> _jets;
+
+    /// Missing momentum vector
+    P4 _pmiss;
+
+    //@}
+
   public:
 
     /// @todo Need separate types of event (subclasses?) for what gets passed to
@@ -207,27 +245,6 @@ namespace GAMBIT {
 
     //@}
 
-
-  private:
-
-    /// @name Internal particle / vector containers
-    //@{
-
-    /// @name Separate particle collections
-    //@{
-    /// @todo Do we really need to store invisibles, since they aren't
-    /// experimentally resolveable, and are covered by the explicitly-set
-    /// missing-mom?
-    std::vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
-    //@}
-
-    /// Jets collection (mutable to allow sorting)
-    mutable std::vector<Jet*> _jets;
-
-    /// Missing momentum vector
-    P4 _pmiss;
-
-    //@}
 
   };
 

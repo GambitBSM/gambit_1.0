@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MathUtils.hpp"
+#include <boost/serialization/access.hpp>
 #include <sstream>
 #include <iostream>
 
@@ -76,6 +77,25 @@ namespace GAMBIT {
   /// really a restriction in practice, but please let me know if it is!
   ///
   class P4 {
+  private:
+    /// @name Serialization
+    //@{
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+      ar & _x;
+      ar & _y;
+      ar & _z;
+      ar & _m;
+    }
+    //@}
+
+    /// @name Storage
+    //@{
+    double _x, _y, _z, _m;
+    //@}
+
   public:
 
     /// @name Constructors etc.
@@ -278,13 +298,6 @@ namespace GAMBIT {
     P4& operator -= (const P4& v) { double e = E() - v.E(); _x -= v.px(); _y -= v.py(); _z -= v.pz(); _m = sqrt( sqr(e) - p2() ); return *this; }
     P4& operator *= (double a) { _x *= a; _y *= a; _z *= a; _m *= a; return *this; }
     P4& operator /= (double a) { _x /= a; _y /= a; _z /= a; _m /= a; return *this; }
-    //@}
-
-  private:
-
-    /// @name Storage
-    //@{
-    double _x, _y, _z, _m;
     //@}
 
   };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/serialization/access.hpp>
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
 
@@ -8,6 +9,30 @@ namespace GAMBIT {
 
   /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
   class Particle {
+  private:
+
+    /// @name Serialization
+    //@{
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+      ar & _p4;
+      ar & _pdgId;
+      ar & _prompt;
+    }
+    //@}
+
+    /// @name Storage
+    //@{
+    /// Momentum vector
+    P4 _p4;
+    /// PDG ID code
+    int _pdgId;
+    /// Promptness flag
+    bool _prompt;
+    //@}
+
   public:
 
     /// @name Constructors
@@ -15,28 +40,29 @@ namespace GAMBIT {
 
     /// Default constructor
     Particle()
-      : _pdgId(0) {  }
+      : _pdgId(0), _prompt(false) {  }
 
     /// "Cartesian" constructor
     Particle(double px, double py, double pz, double E, int pdgid)
-      : _p4(px, py, pz, E), _pdgId(pdgid) {  }
+      : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false) {  }
 
     /// 4-mom + PDG ID constructor
     Particle(const P4& mom, int pdgid)
-      : _p4(mom), _pdgId(pdgid) {  }
+      : _p4(mom), _pdgId(pdgid), _prompt(false) {  }
 
     /// Copy constructor
     Particle(const Particle& p)
-      : _p4(p.mom()), _pdgId(p.pid()) {  }
+      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.isPrompt()) {  }
 
     /// Copy constructor from a pointer
     Particle(const Particle* p)
-      : _p4(p->mom()), _pdgId(p->pid()) {  }
+      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->isPrompt()) {  }
 
     /// Copy assignment operator
     Particle& operator=(const Particle& p) {
       _p4 = p.mom();
       _pdgId = p.pid();
+      _prompt = p.isPrompt();
       return *this;
     }
 
@@ -85,15 +111,6 @@ namespace GAMBIT {
 
     //@}
 
-
-  private:
-
-    /// Momentum vector
-    P4 _p4;
-    /// PDG ID code
-    int _pdgId;
-    /// Promptness flag
-    int _prompt;
 
   };
 
