@@ -17,8 +17,8 @@
 ///   \date 2013 Apr --> Added backend functor class
 ///
 ///  \author Christoph Weniger
-///          (thechristophweniger@130gev.omg)
-///  \date 2013 May 
+///          (thechristophweniger@130gev.omg) 
+///  \date 2013 May, June
 ///
 ///  *********************************************
 
@@ -241,7 +241,7 @@ namespace GAMBIT
 
 
   // ================================================================
-  /// Functor derived class for module functions with result type TYPE 
+  /// Functor derived class for module functions with result type TYPE
 
   template <typename TYPE>
   class module_functor : public functor
@@ -249,12 +249,12 @@ namespace GAMBIT
 
     public:
 
-      /// Constructor 
-      module_functor(void (*inputFunction)(TYPE &), 
+      /// Constructor
+      module_functor(void (*inputFunction)(TYPE &),
                             str func_name,
-                            str func_capability, 
+                            str func_capability,
                             str result_type,
-                            str origin_name) 
+                            str origin_name)
       {
         myFunction      = inputFunction;
         myName          = func_name;
@@ -263,17 +263,44 @@ namespace GAMBIT
         myOrigin        = origin_name;
         myStatus        = 1;
         needs_recalculating = true;
+        usePointer = false;
       }
 
-      /// Calculate method
-      void calculate() { if(needs_recalculating) { this->myFunction(myValue); } }
+      /// Overloading Constructor
+      module_functor(TYPE * outputPointer,
+                            str func_name,
+                            str func_capability,
+                            str result_type,
+                            str origin_name)
+      {
+        myPointer       = outputPointer;
+        myName          = func_name;
+        myCapability    = func_capability;
+        myType          = result_type;
+        myOrigin        = origin_name;
+        myStatus        = 1;
+        needs_recalculating = true;
+        usePointer = true;
+      }
 
-      /// Operation (return value) 
+      /// Calculate method (using either function or pointer)
+      void calculate()
+      {
+        if(needs_recalculating)
+        {
+          if(usePointer)
+            myValue = * myPointer;
+          else
+            this->myFunction(myValue);
+        }
+      }
+
+      /// Operation (return value)
       TYPE operator()() { return myValue; }
 
       /// Add a dependency (a beer for anyone who can explain why this-> is required here)
       void setDependency(str dep, str type, void(*resolver)(functor*))
-      { 
+      {
         sspair key (dep, type);
         this->myDependencies.push_back(key);
         this->dependency_map[key] = resolver;
@@ -282,7 +309,7 @@ namespace GAMBIT
       /// Add a backend conditional dependency for multiple backend versions
       void setBackendConditionalDependency
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
-      { 
+      {
         // Split the version string and send each version to be registered
         std::vector<str> versions = delimiterSplit(ver, ",");
         for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
@@ -294,7 +321,7 @@ namespace GAMBIT
       /// Add a backend conditional dependency for a single backend version
       void setBackendConditionalDependencySingular
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
-      { 
+      {
         sspair key (dep, dep_type);
         std::vector<str> quad;
         if (this->backendreq_types.find(req) != this->backendreq_types.end())
@@ -384,8 +411,14 @@ namespace GAMBIT
       /// Internal storage of function value
       TYPE myValue;
 
-      /// Internal storage of function pointer
+      /// Internal storage of function pointer (if usePointer == false)
       void (*myFunction)(TYPE &);
+
+      /// Internal storage of value pointer (if usePointer == true)
+      TYPE * myPointer;
+
+      /// myValue either determined by myFunction (false) or myPointer (true)
+      bool usePointer;
 
   };
 
