@@ -49,7 +49,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
 #include <master_like.hpp>
-#include <ini_parser.hpp>
+#include <yaml_parser.hpp>
 
 // Ben: It seems we currently are using both these namespaces! Should we pick
 //      one?
@@ -57,8 +57,45 @@ ModelBasePtr make_a_model(bool do_cmssm){
 using namespace GAMBIT;
 using namespace gambit;
 
+void beispiel()
+{
+  // Read INI file
+  IniParser::IniFile iniFile;
+  iniFile.readFile("gambit.yaml");
+
+  // Set up dependency resolver
+  Graphs::DependencyResolver dependencyResolver;
+
+  // Add vertices from rollcall
+  dependencyResolver.addFunctors(globalFunctorList);
+
+  // Add input and output legs to the module function vertices
+  dependencyResolver.addLegs(iniFile);
+
+  // Do the dependency resolution
+  dependencyResolver.resolveNow();
+
+  // Initialize MasterLike;
+  MasterLike masterLike(dependencyResolver.getFunctors(),
+      dependencyResolver.inputMap, dependencyResolver.outputList);
+
+  // Set input parameters
+  masterLike["m0"] = 123.0;
+  masterLike["m1"] = 321.0;
+
+  // Call the functions in their sorted order
+  masterLike.calculate();
+
+  // Read output parameters
+  cout << masterLike("Likelihood")[0] << endl;
+  cout << masterLike("Likelihood")[1] << endl;
+}
+
 int main( int argc, const char* argv[] )
 {
+  beispiel();
+  return 0;
+
   cout<<endl;
   cout<< "This is a skeleton example for gambit."<<endl;
   cout<< "At the moment it does the following:"<<endl;
@@ -70,29 +107,29 @@ int main( int argc, const char* argv[] )
   cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
   cout<<endl;
 
-  // Run ini-file parser
-  ini_parser::IniFileParser my_parser("gambit.ini");
-  my_parser.print();
+  // // Run ini-file parser
+  // ini_parser::IniFileParser my_parser("gambit.ini");
+  // my_parser.print();
 
-  // TODOCW Define alpha node (from ini-file)
+  // // TODOCW Define alpha node (from ini-file)
 
-  // Do some mock parsing of the ini file and pick which things to compute
-  vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
-  requested_observables.push_back(1);  // nevents_int
-  requested_observables.push_back(14); // rdomega
-  requested_observables.push_back(6);  // nevents_postcuts
+  // // Do some mock parsing of the ini file and pick which things to compute
+  // vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
+  // requested_observables.push_back(1);  // nevents_int
+  // requested_observables.push_back(14); // rdomega
+  // requested_observables.push_back(6);  // nevents_postcuts
 
-  // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
+  // // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
+  // ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
 
-  // Run dependency resolution proper
-  Graphs::dependency_resolution(requested_observables);
+  // // Run dependency resolution proper
+  // Graphs::dependency_resolution(requested_observables);
 
-  // Initialize MasterLike;
-  MasterLike masterLike(Graphs::get_functors());
+  // // Initialize MasterLike;
+  // MasterLike masterLike(Graphs::get_functors());
 
-  // Call the functions in their sorted order
-  Graphs::execute_functions();
+  // // Call the functions in their sorted order
+  // Graphs::execute_functions();
 
   // Test it
   cout << "Testing dependency resolution using TinyDarkBit:" << endl ;

@@ -22,7 +22,7 @@ namespace GAMBIT
       // Set central nodes
       YAML::Node inputNode = roots[0];
       YAML::Node outputNode = roots[1];
-      flagNode = roots[2];
+      mapNode = roots[2];
 
       // Read observables
       for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)

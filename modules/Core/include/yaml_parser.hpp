@@ -1,7 +1,9 @@
 //////////////////////////////////////////////////////////
-// Simple example for GAMBIT ini-file parser
-// 
-// Christoph Weniger, 6 May 2013
+// GAMBIT
+// INI-file parser based on yaml-cpp
+//
+// Christoph Weniger, 2013-06-03
+//
 //////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -16,7 +18,7 @@ namespace GAMBIT
 {
   namespace IniParser
   {
-    // Define allowed structures in ini-file
+    // Structs corresponding to ini-file
     namespace Types
     {
       struct Dependency
@@ -27,7 +29,7 @@ namespace GAMBIT
 
       struct Observable
       {
-        std::string scannerID;
+        std::string obsType;
         std::string capability;
         std::string backend;
         std::vector<Dependency> dependencies;
@@ -37,20 +39,19 @@ namespace GAMBIT
       {
         std::string name;
         std::pair<double, double> range;
-        std::string prior;
       };
     }
   }
 }
 
-// Rules for ini-file --> Types mapping
+// Rules for ini-file --> Structs mapping
 namespace YAML {
   using namespace GAMBIT::IniParser::Types;
   template<> struct convert<Observable>
   {
     static bool decode(const Node& node, Observable& rhs)
     {
-      rhs.scannerID = node["scannerID"].as<std::string>();
+      rhs.obsType = node["obsType"].as<std::string>();
       rhs.capability = node["capability"].as<std::string>();
       rhs.backend = node["backend"].as<std::string>();
       for(YAML::const_iterator it=node["dependencies"].begin();
@@ -76,7 +77,6 @@ namespace YAML {
     {
       rhs.name =  node["parameter"].as<std::string>();
       rhs.range = node["range"].as<std::pair<double,double> >();
-      rhs.prior = node["prior"].as<std::string>();
       return true;
     }
   };
@@ -92,20 +92,21 @@ namespace GAMBIT
     class IniFile
     {
       public:
-        // Public Structures
+        // Read the file
+        int readFile(std::string filename);
+
+        // Central ini-file structures: observables and scan parameteres 
         ObservablesType observables;
         ParametersType parameters;
 
-        // Public Methods
-        int readFile(std::string filename);
-
-        template<typename TYPE> TYPE getFlag(std::string key)
+        // Templated getter function for arbitrary key-value pairs
+        template<typename TYPE> TYPE getValue(std::string key)
         {
-          return flagNode[key].as<TYPE>();
+          return mapNode[key].as<TYPE>();
         };
 
       private:
-        YAML::Node flagNode;
+        YAML::Node mapNode;
     };
   }
 }

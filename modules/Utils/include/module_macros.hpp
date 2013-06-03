@@ -478,7 +478,7 @@
       template <>                                                              \
       void rt_register_function<Tags::FUNCTION> ()                             \
       {                                                                        \
-        boost::add_vertex(&Functown::FUNCTION, Graphs::masterGraph);           \
+        GAMBIT::globalFunctorList.push_back(&Functown::FUNCTION);              \
         map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;        \
         map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
         iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \

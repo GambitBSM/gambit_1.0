@@ -52,6 +52,8 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION CMSSM_definition 
     START_FUNCTION(double)
+    DEPENDENCY(m0, double)
+    DEPENDENCY(m1, double)
     #undef FUNCTION
   #undef CAPABILITY
   

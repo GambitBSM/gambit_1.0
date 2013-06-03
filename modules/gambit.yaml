@@ -1,37 +1,40 @@
-%YAML 1.2
-#
-# GAMBIT - Initialization file
+# GAMBIT Initialization file (in YAML)
 #                                                         
-# 01-06-2013, Christoph Weniger
+# 03-06-2013, Christoph Weniger
 #
 
-# List of input parameters
+###############################
+--- # Input parameters
+###############################
+#
 - parameter: m0
-  range: [1, 3.5]
-  prior: log
+  range:     [1, 3.5]
+
 - parameter: m1
-  range: [-2.0, 2.0]
-  prior: lin
----
+  range:     [-2.0, 2.0]
 
-# List of observables
-- scannerID:  Likelihood
-  capability: FermiLATDwarfs
-  backend:    DarkSUSY 
-  dependencies:
-  - {capability: whatever, module: this}
-  - {capability: whatever, module: this}
-  - {capability: whatever, module: this}
-- scannerID:  Likelihood
-  capability: CosmologyWMAP7
-  backend: DarkSUSY
-  dependencies:
-  - {capability: whatever, module: this}
-  - {capability: whatever, module: this}
-  - {capability: whatever, module: this}
----
 
-# Flags
-param1: 123.3e-5
-param2: 321.3e-5
-param3: 232.2e-5
+###############################
+--- # Observables of interest
+###############################
+#
+- obsType:      Likelihood
+  capability:   nevents
+  backend:      atlfast
+  dependencies:
+  - {capability: gossip, module: thisone}
+
+- obsType:      Likelihood
+  capability:   omega_DM
+  backend:      DarkSUSY
+  dependencies:
+  - {capability: poetry, module: thatone}
+
+
+###############################
+--- # Name/Value Section
+###############################
+
+age: 1.3e2
+color: green
+path_to_oblivion: /dev/null

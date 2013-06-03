@@ -17,7 +17,7 @@
 ///   \date 2013 Apr --> Added backend functor class
 ///
 ///  \author Christoph Weniger
-///          (thechristophweniger@130gev.omg) 
+///          (c.weniger@uva.nl)
 ///  \date 2013 May, June
 ///
 ///  *********************************************
@@ -26,6 +26,7 @@
 #ifndef __functors_hpp__
 #define __functors_hpp__
 
+#include <map>
 #include <vector>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
@@ -62,6 +63,10 @@ namespace GAMBIT
       int status()      { return myStatus;     }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { return std::make_pair(myCapability, myType); }
+      /// Getter for obsType (relevant for output nodes, aka helper structures for the dep. resolution)
+      str obsType()     { return myObsType;    }
+      /// Setter for obsType (relevant only for next-to-output nodes)
+      void setObsType(str obsType) { this->myObsType = obsType; }
 
       /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
@@ -154,7 +159,12 @@ namespace GAMBIT
           cout << "capability " << key.first << " with type " << key.second << "." << endl;
           ///\todo FIXME throw a real error here
         }
-        else { (*dependency_map[key])(dep_functor); }
+        else
+        {
+          (*dependency_map[key])(dep_functor);
+          // propagate obsType from next to next-to-output nodes
+          dep_functor->setObsType(this->myObsType);
+        }
       }
 
       /// Resolve a backend requirement using a pointer to another functor object
@@ -208,6 +218,8 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
+      /// myObsType(relevant for output and next-to-output nodes)
+      str myObsType;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
@@ -299,11 +311,12 @@ namespace GAMBIT
       TYPE operator()() { return myValue; }
 
       /// Add a dependency (a beer for anyone who can explain why this-> is required here)
-      void setDependency(str dep, str type, void(*resolver)(functor*))
+      void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
       {
         sspair key (dep, type);
         this->myDependencies.push_back(key);
         this->dependency_map[key] = resolver;
+        this->myObsType = obsType; // only relevant for output nodes
       }
 
       /// Add a backend conditional dependency for multiple backend versions
@@ -559,7 +572,10 @@ namespace GAMBIT
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
 
-
+#ifndef IN_CORE
+    extern
+#endif
+  std::vector<functor *> globalFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */
