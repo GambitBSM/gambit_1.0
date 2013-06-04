@@ -20,8 +20,9 @@
 //  Pat Scott
 //  2013 Jan, Feb 04
 //
-//  Christoph Weniger
+//  Christoph Weniger (c.weniger@uva.nl)
 //  2013 Jan
+//  June 03 2013
 //  *********************************************
 
 #ifndef __TinyDarkBit_rollcall_hpp__

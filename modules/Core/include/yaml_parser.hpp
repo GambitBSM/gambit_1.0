@@ -2,7 +2,8 @@
 // GAMBIT
 // INI-file parser based on yaml-cpp
 //
-// Christoph Weniger, 2013-06-03
+// Christoph Weniger (c.weniger@uva.nl)
+// June 03 2013
 //
 //////////////////////////////////////////////////////////
 

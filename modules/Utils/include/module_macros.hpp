@@ -35,6 +35,10 @@
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Jan, Feb
+//
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jan, Feb
 ///  *********************************************
 
 #ifndef __module_macros_hpp__

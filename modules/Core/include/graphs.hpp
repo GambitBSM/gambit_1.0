@@ -10,7 +10,7 @@
 //
 //  (add name and date if you modify)
 //
-//  Christoph Weniger
+//  Christoph Weniger (c.weniger@uva.nl)
 //  Apr 02++ 2013
 //  May 03 2013
 //  June 03 2013

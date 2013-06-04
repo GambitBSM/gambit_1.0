@@ -18,7 +18,7 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June
+///  \date 2013 May, June 03 2013
 ///
 ///  *********************************************
 
