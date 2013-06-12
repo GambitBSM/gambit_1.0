@@ -32,6 +32,8 @@ namespace GAMBIT {
       vector<Particle *> electrons=event->electrons();
       vector<Particle *> muons=event->muons();      
 
+      cout << "INITIAL nEle " << electrons.size() << " nMuo " << muons.size() << endl;
+
       // Now define vectors of baseline objects
       vector<Particle *> baselineElectrons;
       vector<Particle *> baselineMuons;
@@ -138,6 +140,8 @@ namespace GAMBIT {
           }
 
           float meff2j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
+	  cout << "Here a" << endl;
+	  cout << "leptonCut " << leptonCut << " metCut " << metCut << " dPhiMin " << dPhiMin << endl;
           if (leptonCut && metCut && dPhiMin>0.4) {
             if ((met/meff2j)>0.3 && meff_incl>1900.)_numAT++;
             if ((met/meff2j)>0.4 && meff_incl>1300.)_numAM++;

@@ -124,7 +124,7 @@ namespace GAMBIT
           continue;
         if(p.isFinal())
         {
-          stableParticleOutputArray->Add(candidate);
+	  stableParticleOutputArray->Add(candidate);
         }
         else if(pdgCode <= 5 || pdgCode == 21 || pdgCode == 15)
         {
@@ -159,6 +159,7 @@ namespace GAMBIT
         const TLorentzVector &momentum = candidate->Momentum;
         recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                     momentum.E(), PID::PHOTON);
+	recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
 
@@ -169,6 +170,7 @@ namespace GAMBIT
       iteratorElectrons.Reset();
       while((candidate = static_cast<Candidate*>(iteratorElectrons.Next())))
       {
+
         const TLorentzVector &momentum = candidate->Momentum;
         if(candidate->Charge < 0)
           recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
@@ -176,6 +178,7 @@ namespace GAMBIT
         else
           recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                       momentum.E(), PID::POSITRON);
+	recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
 
@@ -193,6 +196,7 @@ namespace GAMBIT
         else
           recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                       momentum.E(), PID::ANTIMUON);
+	recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
 
@@ -212,6 +216,7 @@ namespace GAMBIT
           else
             recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
                                         momentum.E(), PID::ANTITAU);
+	  recoParticle->setPrompt(true);
           event.addParticle(recoParticle);
           continue;
         }
