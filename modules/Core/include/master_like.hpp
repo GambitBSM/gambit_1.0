@@ -10,8 +10,9 @@
 //
 //  (add name and date if you modify)
 //
-//  Christoph Weniger
+//  Christoph Weniger (c.weniger@uva.nl)
 //  May 20 2013
+//  June 03 2013
 //
 //  *********************************************
 
@@ -19,8 +20,8 @@
 #define __master_like_hpp__
 
 #include <vector>
-#include <map>
 #include <functors.hpp>
+#include <graphs.hpp>
 
 namespace GAMBIT
 {
@@ -28,29 +29,23 @@ namespace GAMBIT
   {
     public:
       // Construct MasterLike from Graphs Output and ini-file
-      MasterLike(std::vector<functor*> functors)
-      {
-        this->functor_list = functors;
-      };
+      MasterLike(std::vector<functor*> functors, GAMBIT::Graphs::inputMapType
+          inputMap, GAMBIT::Graphs::outputListType outputList);
 
-      // Calculate everything for input parameters defined in standard map
-      void recalculate(std::map<std::string, double>)
-      {
-      };
+      // Executes active vertices in correct order
+      void calculate();
 
-      // Return ordered parameter list, according to what is in ini-file
-      std::vector<double> request(std::string keyword)
-      {
-      };
+      // Set input
+      double& operator[] (std::string key);
+
+      // Get output
+      std::vector<double> operator() (std::string key);
 
     private:
-      // Storage for ordered functor list
+      // Storage
       std::vector<functor*> functor_list;
-      
-      // Is everything calculated?
-      bool calculated = false;
-
-      // Pointer on ini-file structure
+      Graphs::inputMapType inputMap;
+      Graphs::outputListType outputList;
   };
 };
 #endif /* defined(__master_like_hpp__) */

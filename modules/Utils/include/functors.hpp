@@ -17,8 +17,8 @@
 ///   \date 2013 Apr --> Added backend functor class
 ///
 ///  \author Christoph Weniger
-///          (thechristophweniger@130gev.omg)
-///  \date 2013 May 
+///          (c.weniger@uva.nl)
+///  \date 2013 May, June 03 2013
 ///
 ///  *********************************************
 
@@ -26,6 +26,7 @@
 #ifndef __functors_hpp__
 #define __functors_hpp__
 
+#include <map>
 #include <vector>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
@@ -62,6 +63,10 @@ namespace GAMBIT
       int status()      { return myStatus;     }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { return std::make_pair(myCapability, myType); }
+      /// Getter for obsType (relevant for output nodes, aka helper structures for the dep. resolution)
+      str obsType()     { return myObsType;    }
+      /// Setter for obsType (relevant only for next-to-output nodes)
+      void setObsType(str obsType) { this->myObsType = obsType; }
 
       /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
@@ -154,7 +159,12 @@ namespace GAMBIT
           cout << "capability " << key.first << " with type " << key.second << "." << endl;
           ///\todo FIXME throw a real error here
         }
-        else { (*dependency_map[key])(dep_functor); }
+        else
+        {
+          (*dependency_map[key])(dep_functor);
+          // propagate obsType from next to next-to-output nodes
+          dep_functor->setObsType(this->myObsType);
+        }
       }
 
       /// Resolve a backend requirement using a pointer to another functor object
@@ -208,6 +218,8 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
+      /// myObsType(relevant for output and next-to-output nodes)
+      str myObsType;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
@@ -241,7 +253,7 @@ namespace GAMBIT
 
 
   // ================================================================
-  /// Functor derived class for module functions with result type TYPE 
+  /// Functor derived class for module functions with result type TYPE
 
   template <typename TYPE>
   class module_functor : public functor
@@ -249,12 +261,12 @@ namespace GAMBIT
 
     public:
 
-      /// Constructor 
-      module_functor(void (*inputFunction)(TYPE &), 
+      /// Constructor
+      module_functor(void (*inputFunction)(TYPE &),
                             str func_name,
-                            str func_capability, 
+                            str func_capability,
                             str result_type,
-                            str origin_name) 
+                            str origin_name)
       {
         myFunction      = inputFunction;
         myName          = func_name;
@@ -263,26 +275,54 @@ namespace GAMBIT
         myOrigin        = origin_name;
         myStatus        = 1;
         needs_recalculating = true;
+        usePointer = false;
       }
 
-      /// Calculate method
-      void calculate() { if(needs_recalculating) { this->myFunction(myValue); } }
+      /// Overloading Constructor
+      module_functor(TYPE * outputPointer,
+                            str func_name,
+                            str func_capability,
+                            str result_type,
+                            str origin_name)
+      {
+        myPointer       = outputPointer;
+        myName          = func_name;
+        myCapability    = func_capability;
+        myType          = result_type;
+        myOrigin        = origin_name;
+        myStatus        = 1;
+        needs_recalculating = true;
+        usePointer = true;
+      }
 
-      /// Operation (return value) 
+      /// Calculate method (using either function or pointer)
+      void calculate()
+      {
+        if(needs_recalculating)
+        {
+          if(usePointer)
+            myValue = * myPointer;
+          else
+            this->myFunction(myValue);
+        }
+      }
+
+      /// Operation (return value)
       TYPE operator()() { return myValue; }
 
       /// Add a dependency (a beer for anyone who can explain why this-> is required here)
-      void setDependency(str dep, str type, void(*resolver)(functor*))
-      { 
+      void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
+      {
         sspair key (dep, type);
         this->myDependencies.push_back(key);
         this->dependency_map[key] = resolver;
+        this->myObsType = obsType; // only relevant for output nodes
       }
 
       /// Add a backend conditional dependency for multiple backend versions
       void setBackendConditionalDependency
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
-      { 
+      {
         // Split the version string and send each version to be registered
         std::vector<str> versions = delimiterSplit(ver, ",");
         for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
@@ -294,7 +334,7 @@ namespace GAMBIT
       /// Add a backend conditional dependency for a single backend version
       void setBackendConditionalDependencySingular
        (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
-      { 
+      {
         sspair key (dep, dep_type);
         std::vector<str> quad;
         if (this->backendreq_types.find(req) != this->backendreq_types.end())
@@ -384,8 +424,14 @@ namespace GAMBIT
       /// Internal storage of function value
       TYPE myValue;
 
-      /// Internal storage of function pointer
+      /// Internal storage of function pointer (if usePointer == false)
       void (*myFunction)(TYPE &);
+
+      /// Internal storage of value pointer (if usePointer == true)
+      TYPE * myPointer;
+
+      /// myValue either determined by myFunction (false) or myPointer (true)
+      bool usePointer;
 
   };
 
@@ -526,7 +572,10 @@ namespace GAMBIT
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
 
-
+#ifndef IN_CORE
+    extern
+#endif
+  std::vector<functor *> globalFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */

@@ -61,13 +61,13 @@ int main() {
   for (size_t i = 0; i < 1000; ++i) {
     if (!py.next()) continue;
     cout << py.event.size() << endl;
-
+    
     GAMBIT::Event evt;
     fillGambitEvent(py.event, evt);
-
+    
     ana->analyze(evt);
   }
   ana->finalize();
-
+  
   return 0;
 }
