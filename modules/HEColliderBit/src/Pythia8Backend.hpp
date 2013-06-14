@@ -15,6 +15,8 @@
 //  //
 //  //  Abram Krislock
 //  //  2013 Apr 22, Apr 23
+//  //  Aldo F Saavedra
+//  //  2013 June 14
 //  //
 //  //  ********************************************
 //
@@ -28,12 +30,32 @@ namespace GAMBIT
 {
   namespace HEColliderBit
   {
+    struct slhaFileName {
+      slhaFileName(){}
+      slhaFileName(int seed, string filename ) : _seed(seed), _filename(filename) {}
+      int _seed;
+      string _filename;
+    };
+
+    struct cmndFileName {
+      cmndFileName(){}
+      cmndFileName(int seed, string filename ) : _seed(seed), _filename(filename) {}
+      int _seed;
+      string _filename;
+    };
+
     class Pythia8Backend
     {
     public:
-      Pythia8Backend(int seed, string slhaFileName);
+      Pythia8Backend(slhaFileName & slhaf);
+      Pythia8Backend(cmndFileName & cmndf);
+
+//      Pythia8Backend(int seed, string slhaFileName);
       ~Pythia8Backend();
       void nextEvent(Pythia8::Event &event);
+
+      int nEvents();
+      int nAborts();
 
     private:
       // TODO: should this be/use a standard GAMBIT exception?

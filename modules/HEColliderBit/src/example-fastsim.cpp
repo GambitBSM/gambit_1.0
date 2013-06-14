@@ -5,7 +5,7 @@
 int main () {
 
   FastSim sim;
-  sim.InitSimulation(ACERDET);
+  sim.init(ACERDET);
 
   /// @todo This new'ing is silly... can we rework FastSim to use references?
   GAMBIT::Particle* p = new GAMBIT::Particle(10.0, 10.0, 10.0, 17.320826, 13);
@@ -17,15 +17,15 @@ int main () {
   vector<GAMBIT::Particle*> list;
   list.push_back(p);
   list.push_back(p2);
-  sim.SetMuons(list);
+  sim.setMuons(list);
 
   cout << "Number of muons = " << sim.NMuons() << endl;
-  sim.PrintMuons();
+  sim.printMuons();
 
   sim.MuonResponse();
 
   cout << "Number of muons = " << sim.NMuons() << endl;
-  sim.PrintMuons();
+  sim.printMuons();
 
   // Memory clean-up, thanks to the heap allocation...
   for (size_t i = 0; i < list.size(); ++i) delete list[i];

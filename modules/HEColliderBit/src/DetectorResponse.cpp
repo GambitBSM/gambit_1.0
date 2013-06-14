@@ -60,8 +60,19 @@ void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
   newpz = photon.mom().pz()/(1+sigma);
   newe = photon.mom().E()/(1+sigma);
 
-  P4 newp(newpx,newpy,newpz,newe);
+//  float oldeta = photon.mom().eta();
+//  float oldphi = photon.mom().phi();
+
+//  printf("old Photon px = %f py = %f pz = %f e %f\n",
+//      photon.mom().px(),photon.mom().py(),photon.mom().pz(),photon.mom().E());
+//  printf(" oldeta %.2f old phi %.2f\n",oldeta,oldphi);
+
+  P4 newp=P4::mkXYZM(newpx,newpy,newpz,0);
   photon.setMom(newp);
+
+//  printf("new Photon px = %f  py = %f pz = %f newe %f\n",
+//      photon.mom().px(),photon.mom().py(),photon.mom().pz(),photon.mom().E());
+//  printf("Photons Smeared %.2f %.2f\n",(float)photon.mom().eta(),(float)photon.mom().phi());
 
 //  photon.mom().setPM(newpx,newpy,newpz,0.0);
 //  Particle newphoton(newpx,newpy,newpz,0.0,photon.pid());

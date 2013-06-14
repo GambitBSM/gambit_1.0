@@ -27,7 +27,8 @@ namespace GAMBIT
 {
   namespace HEColliderBit
   {
-    Pythia8Backend::Pythia8Backend(int seed, string slhaFileName)
+    //Pythia8Backend::Pythia8Backend(int seed, string slhaFileName)
+    Pythia8Backend::Pythia8Backend(slhaFileName & slhaf)
     {
       pythiaInstance = new Pythia8::Pythia();
       // some examples of using readString
@@ -42,16 +43,28 @@ namespace GAMBIT
       pythiaInstance->readString("Next:numberShowInfo = 0");
       pythiaInstance->readString("Next:numberShowProcess = 0");
       pythiaInstance->readString("Random:setSeed = on");
-      pythiaInstance->readString("Random:seed = " + boost::lexical_cast<string>(seed));
+      pythiaInstance->readString("Random:seed = " + boost::lexical_cast<string>(slhaf._seed));
 
       pythiaInstance->readString("PartonLevel:MPI = off");
       pythiaInstance->readString("PartonLevel:FSR = off");
       pythiaInstance->readString("HadronLevel:all = off");
 
       pythiaInstance->readString("SUSY:all = on");
-      pythiaInstance->readString("SLHA:file = " + slhaFileName);
+      pythiaInstance->readString("SLHA:file = " + slhaf._filename);
 
       pythiaInstance->init();
+    }
+
+
+    Pythia8Backend::Pythia8Backend(cmndFileName & cmndf)
+    {
+
+      pythiaInstance = new Pythia8::Pythia();
+      pythiaInstance->readFile(cmndf._filename);
+      pythiaInstance->readString("Random:setSeed = on");
+      pythiaInstance->readString("Random:seed = " + boost::lexical_cast<string>(cmndf._seed));
+      pythiaInstance->init();
+
     }
 
 
@@ -60,6 +73,19 @@ namespace GAMBIT
       delete pythiaInstance;
     }
 
+    int Pythia8Backend::nEvents() {
+      // returns the number of events
+
+     int nEvents = pythiaInstance->mode("Main:numberOfEvents");
+     return nEvents;
+    }
+
+    int Pythia8Backend::nAborts() {
+      // returns the number of events
+
+     int nAborts= pythiaInstance->mode("Main:timesAllowErrors");
+     return nAborts;
+    }
 
     void Pythia8Backend::nextEvent(Pythia8::Event &event)
     {

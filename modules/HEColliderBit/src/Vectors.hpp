@@ -8,8 +8,8 @@
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-
 namespace GAMBIT {
+
 
   // /// Use fastjet implicitly
   // using fastjet::PseudoJet;
@@ -256,9 +256,9 @@ namespace GAMBIT {
     double pT() const { return rho(); }
 
     /// Get the spatial phi
-    double phi() const { if (rho2() == 0) return 0; else return atan(py()/px()); }
+    double phi() const { if (rho2() == 0) return 0; else return atan2(py(),px()); }
     /// Get the spatial theta
-    double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return M_PI; else return atan(rho()/pz()); }
+    double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return M_PI; else return atan2(rho(),pz()); }
     /// Get the spatial vector pseudorapidity
     double eta() const { return -log(tan( 0.5 * theta() )); } //< Optimise with a trig reln on tan(x/2) to avoid tan(atan(..)/2)?
     /// Get the 4-momentum rapidity

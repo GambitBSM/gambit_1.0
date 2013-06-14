@@ -1,3 +1,23 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  //  ********************************************
+//  //
+//  //  Functions for FastSim
+//  //
+//  //  ********************************************
+//  //
+//  //  Authors
+//  //  =======
+//  //
+//  //  (add name and date if you modify)
+//  //
+//  //  Aldo Saavedra
+//  //  2013 March
+//  //  2013 June 13
+//  //
+//  //  ********************************************
+//
+//
+
 #include "FastSim.hpp"
 #include <iostream>
 using namespace std;
@@ -22,12 +42,22 @@ FastSim::~FastSim() {
   DELETE_PTRVEC(_tauhads);
   DELETE_PTRVEC(_chargedhads);
   DELETE_PTRVEC(_weakly_interacting);
+
+  DELETE_PTRVEC(_iso_electrons);
+  DELETE_PTRVEC(_iso_muons);
+  DELETE_PTRVEC(_iso_photons);
+
+  DELETE_PTRVEC(_noniso_electrons);
+  DELETE_PTRVEC(_noniso_muons);
+  DELETE_PTRVEC(_noniso_photons);
+
+
+
   #undef DELETE_PTRVEC
 }
 
 
-/// @todo Rename to e.g. init()
-void FastSim::InitSimulation(SimType which) {
+void FastSim::init(DetectorType which) {
   _simtype = which;
   switch(which) {
   case ACERDET:
@@ -39,6 +69,12 @@ void FastSim::InitSimulation(SimType which) {
     _min_ele_pt  = 5.0;  // GeV
     _min_jet_pt  = 10.0;  //GeV
     _min_bjet_pt  = 10.0;  //GeV
+    _min_photon_pt = 0.2; //GeV
+
+    _minEt_isol_muon = 4.0; 
+    _minEt_isol_electron = 4.0; 
+    _minEt_isol_photon = 4.0; // GeV
+
     _calo_etamax = 5.0;  //GeV
     _calo_dphi =  0.01;
     _calo_deta = 0.01;
@@ -59,25 +95,61 @@ void FastSim::InitSimulation(SimType which) {
   }
 }
 
+void FastSim::clear() {
 
-/// @todo Rename to setParticles()
-void FastSim::SetParticles(vector<Particle*> electrons, vector<Particle*> muons,
-                           vector<Particle*> photons,vector<Particle*>charged_hadrons,
-                           vector<Particle*> bquarks, vector<Particle*> tauhads, vector<Particle*> weaklyint ) {
+ _chargedhads.clear();
+ _stable_interacting_particles.clear();
+ _stable_electrons.clear();
+ _stable_muons.clear();
+ _stable_photons.clear();
+ _iso_electrons.clear();
+ _iso_muons.clear();
+ _iso_photons.clear();
+ _noniso_electrons.clear();
+ _noniso_muons.clear();
+ _noniso_photons.clear();
 
-  SetElectrons(electrons);
-  SetMuons(muons);
-  SetPhotons(photons);
-  SetBQuarks(bquarks);
-  SetChargedHadrons(charged_hadrons);
-  SetTauHads(tauhads);
-  SetWeaklyInteracting(weaklyint);
+ _weakly_interacting.clear();
+ _bquarks.clear();
+ _tauhads.clear();
+ _jets.clear();
+ _bjets.clear();
+
+ _cellietph.clear();
+ _cellmom.clear();
+ _cellhits.clear();
+ _celleta.clear();
+ _cellphi.clear();
+ _cellswitch.clear();
+ _clusncell.clear();
+ _clusnhits.clear();
+ _clusswitch.clear();
+ _cluseta.clear();
+ _clusphi.clear();
+ _clusweta.clear();
+ _cluswphi.clear();
+ _clusmom.clear();
 
 }
 
 
-/// @todo Rename to setElectrons()
-void FastSim::SetElectrons(vector<Particle*> particles) {
+
+void FastSim::setParticles(vector<Particle*> electrons, vector<Particle*> muons,
+                           vector<Particle*> photons,vector<Particle*>charged_hadrons,
+                           vector<Particle*> bquarks, vector<Particle*> tauhads, vector<Particle*> weaklyint ) {
+
+  setElectrons(electrons);
+  setMuons(muons);
+  setPhotons(photons);
+  setBQuarks(bquarks);
+  setChargedHadrons(charged_hadrons);
+  setTauHads(tauhads);
+  setWeaklyInteracting(weaklyint);
+
+}
+
+
+void FastSim::setElectrons(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     if (abs(particles[i]->pid()) != 11) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the electron particle list" << endl;
@@ -92,8 +164,7 @@ void FastSim::SetElectrons(vector<Particle*> particles) {
 }
 
 
-/// @todo Rename to setMuons()
-void FastSim::SetMuons(vector<Particle*> particles) {
+void FastSim::setMuons(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     if (abs(particles[i]->pid()) != 13) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the muon particle list" << endl;
@@ -108,24 +179,24 @@ void FastSim::SetMuons(vector<Particle*> particles) {
 }
 
 
-/// @todo Rename to setPhotons()
-void FastSim::SetPhotons(vector<Particle*> particles) {
+void FastSim::setPhotons(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     if (abs(particles[i]->pid()) != 22) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the photon particle list" << endl;
       continue;
     }
     if (fabs(particles[i]->eta()) > _calo_etamax) continue;
-    if (particles[i]->pT() > _min_photon_pt) continue;
+    if (particles[i]->pT() < _min_photon_pt) continue;
     Particle* chosen = new Particle(particles[i]);
     _stable_photons.push_back(chosen);
     _stable_interacting_particles.push_back(chosen); //< @todo Build later?
   }
+
+//  printPhotons();
 }
 
 
-/// @todo Rename to setBQuarks()
-void FastSim::SetBQuarks(vector<Particle*> particles) {
+void FastSim::setBQuarks(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     if (abs(particles[i]->pid()) != 5) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the b-quark particle list" << endl;
@@ -139,8 +210,7 @@ void FastSim::SetBQuarks(vector<Particle*> particles) {
 }
 
 
-/// @todo Rename to setTaus(). Or is there something special about these being *hadronic* taus?
-void FastSim::SetTauHads(vector<Particle*> particles) {
+void FastSim::setTauHads(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     if (abs(particles[i]->pid()) != 15) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the tau particle list" << endl;
@@ -154,8 +224,7 @@ void FastSim::SetTauHads(vector<Particle*> particles) {
 }
 
 
-/// @todo Rename to setChargedHadrons(). What about neutral hadrons?
-void FastSim::SetChargedHadrons(vector<Particle*> particles) {
+void FastSim::setChargedHadrons(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     if (abs(particles[i]->pid()) == 11 || abs(particles[i]->pid()) == 13) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the charged hadron particle list" << endl;
@@ -169,8 +238,7 @@ void FastSim::SetChargedHadrons(vector<Particle*> particles) {
 }
 
 
-/// @todo Rename to setWeaklyInteracting()
-void FastSim::SetWeaklyInteracting(vector<Particle*> particles) {
+void FastSim::setWeaklyInteracting(vector<Particle*> particles) {
   for (size_t i = 0; i < particles.size(); ++i) {
     /// @todo Use HepPID to check for weak interactions
     if (fabs(particles[i]->eta()) > _calo_etamax) continue;
@@ -184,7 +252,7 @@ void FastSim::SetWeaklyInteracting(vector<Particle*> particles) {
 ///
 /// It just adds the x and y components of the weakly interacting particles
 /// @todo Rename to calcMET()
-void FastSim::CalculateMET() {
+void FastSim::calcMET() {
   double totalx = 0.0;
   double totaly = 0.0;
   for (size_t i = 0; i <_weakly_interacting.size();i++) {
@@ -200,7 +268,7 @@ void FastSim::CalculateMET() {
 // Return the missing ET associated with the event
 double FastSim::MET() {
   if (_metx < 0) // the MET has not been calculated for the event
-    CalculateMET();
+    calcMET();
   /// @todo Use add_quad
   return sqrt(_metx*_metx + _mety*_mety);
 }
@@ -209,7 +277,7 @@ double FastSim::MET() {
 // Return the y-component of the event's missing ET
 double FastSim::METx() {
   if (_metx < 0) // the MET has not been calculated for the event
-    CalculateMET();
+    calcMET();
   return _metx;
 }
 
@@ -217,7 +285,7 @@ double FastSim::METx() {
 // Return the x-component of the event's missing ET
 double FastSim::METy() {
   if (_metx < 0) // the MET has not been calculated for the event
-    CalculateMET();
+    calcMET();
   return _mety;
 }
 
@@ -225,7 +293,7 @@ double FastSim::METy() {
 // Return the phi-component of the event's MET vector
 double FastSim::METphi() {
   if (_metx < 0) // the MET has not been calculated for the event
-    CalculateMET();
+    calcMET();
   return atan2(_metx,_mety);
 }
 
@@ -258,13 +326,15 @@ double FastSim::METphi() {
 
 
 /// @todo Rename
-void FastSim::DetermineDetectorResponse() {
+void FastSim::doDetectorResponse() {
   // this function runs the fast simulation for the particles list provided
   //
 
   // determine which cells which have been traversed by the interacting particles
   FindCells();
 
+  
+//  cout << "electron response " << endl;
   // for the individual particles determine the response of detector on their momentum
   ElectronResponse();
   PhotonResponse();
@@ -272,8 +342,9 @@ void FastSim::DetermineDetectorResponse() {
 
   // add all the neutrinos and determine the maginute of the
   // missing momentum and phi
-  CalculateMET();
+  calcMET();
 
+  
   // now for the jets, only clustering for now, fast jet will be incorporated soon
   switch(_simtype)
     {
@@ -284,20 +355,54 @@ void FastSim::DetermineDetectorResponse() {
     default:;
     }
 
-
+  
   JetResponse();
 
   // determine which leptons and photons are isolated
   // so far it only checks whether they overlap which jets
   // need to check consitency, the jets are electrons
+  //
+  //cout << "isolation " << endl;
   AppliedIsolation();
   // find bjets
   FindBJets();
+  
+  // the taus to be implemented
 
-  // find the taus to be implemented
-
+//  printParticles();
+//  printSummary(); 
+  
 }
 
+void FastSim::getRecoEvent(Event &event) {
+  // this function fills the gambit event interface with the reconstructed particles
+
+  // we will copy the prompt particles only - the isolated ones
+
+  for (size_t i=0;i<_iso_electrons.size();i++) 
+    event.addParticle(_iso_electrons[i]);
+
+  for (size_t i=0;i<_iso_muons.size();i++) 
+    event.addParticle(_iso_muons[i]);
+
+  for (size_t i=0;i<_iso_photons.size();i++) 
+    event.addParticle(_iso_photons[i]);
+
+// the MET
+  event.setMissingMom(P4::mkXYZM(METx(), METy(), 0., 0.));
+
+  /* still need to add the jets, bjets and the taus
+  if(candidate->BTag)
+    recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+        momentum.E(), true);
+  else
+    recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+        momentum.E(), false);
+  event.addJet(recoJet);
+  */
+
+
+}
 
 /// @todo Rename
 void FastSim::MuonResponse() {
@@ -450,6 +555,71 @@ void FastSim::AppliedIsolation() {
   // the particles.
   // What is below should be changed
 
+  double ConeEt;
+  bool isolated;
+  // electrons
+  for (size_t ee=0;ee<_stable_electrons.size();ee++) {
+
+    isolated = true;
+//    cout << "Electron eta " << _stable_electrons[ee]->mom().eta() << " phi " <<_stable_electrons[ee]->mom().phi() << endl;
+    ConeEt = calcIsoEt(_stable_electrons[ee]->mom().eta() ,_stable_electrons[ee]->mom().phi());
+//    cout << "E coneEt " << ConeEt << endl;
+    if (ConeEt > _minEt_isol_electron) {
+      _stable_electrons[ee]->setPrompt(false);
+      Particle *temp_p = new Particle(_stable_electrons[ee]);
+      _noniso_electrons.push_back(temp_p);
+      isolated = false;
+    }
+    if (isolated) {
+//       cout << "Isolated Electron eta " << _stable_electrons[ee]->mom().eta() << " phi " <<_stable_electrons[ee]->mom().phi() << endl;
+      _stable_electrons[ee]->setPrompt(true);
+      Particle *temp_p = new Particle(_stable_electrons[ee]);
+      _iso_electrons.push_back(temp_p);
+    }
+  }
+
+  // muon 
+  for (size_t mu=0;mu<_stable_muons.size();mu++) {
+
+    isolated = true;
+//    cout << "Muon eta " << _stable_muons[mu]->mom().eta() << " phi " <<_stable_muons[mu]->mom().phi() << endl;
+    ConeEt = calcIsoEt(_stable_muons[mu]->mom().eta() ,_stable_muons[mu]->mom().phi());
+    if (ConeEt > _minEt_isol_muon) {
+      _stable_muons[mu]->setPrompt(false);
+      Particle *temp_p = new Particle(_stable_muons[mu]);
+      _noniso_muons.push_back(temp_p);
+      isolated = false;
+    }
+    if (isolated) {
+      _stable_muons[mu]->setPrompt(true);
+      Particle *temp_p = new Particle(_stable_muons[mu]);
+      _iso_muons.push_back(temp_p);
+    }
+  }
+
+  // photon
+  for (size_t ph=0;ph<_stable_photons.size();ph++) {
+    isolated = true;
+//    cout << "photon eta " << _stable_photons[ph]->mom().eta() << " phi " <<_stable_photons[ph]->mom().phi() << endl;
+    ConeEt = calcIsoEt(_stable_photons[ph]->mom().eta() ,_stable_photons[ph]->mom().phi());
+//    cout << "photon coneEt " << ConeEt << endl;
+    if (ConeEt > _minEt_isol_photon) {
+
+      _stable_photons[ph]->setPrompt(false);
+      Particle *temp_p = new Particle(_stable_photons[ph]);
+      _noniso_photons.push_back(temp_p);
+      isolated = false;
+    }
+    if (isolated) { 
+
+//       cout << "Isolated photon eta " << _stable_photons[ph]->mom().eta() << " phi " <<_stable_photons[ph]->mom().phi() << endl;
+//
+      _stable_photons[ph]->setPrompt(true);
+      Particle *temp_p = new Particle(_stable_photons[ph]);
+      _iso_photons.push_back(temp_p);
+    }
+  }
+
   // electrons and jets
   /*
     bool isolated;
@@ -506,21 +676,23 @@ void FastSim::AppliedIsolation() {
 
 
 /// @todo Rename
-void FastSim::fillcellvector(double pt, double eta, double phi) {
+void FastSim::fillcellvector(double pt, double parteta, double partphi) {
   // this method digitises the position of the particle within
   // the calorimeter
   // a number of vectors are filled
   //
 
   int ieta, iphi;
+  double eta,phi;
 
+//  cout << " phi " << phi << endl;
   // calculate the corresponding cell index of the particle using its eta and phi
   if (abs(eta) < _calo_transition) {
-    ieta = int((eta + _calo_etamax) /(2 * _calo_etamax) * _calo_neta) + 1;
-    iphi = int((phi + M_PI)/(2 * M_PI) * _calo_nphi) + 1;
+    ieta = int((parteta + _calo_etamax) /(2 * _calo_etamax) * _calo_neta) + 1;
+    iphi = int((partphi + M_PI)/(2 * M_PI) * _calo_nphi) + 1;
   }else{ // in the barrel region the granularity is twice the barrel region granularity
-    ieta = 2*int((eta + _calo_etamax)/(4 * _calo_etamax) * _calo_neta) + 1;
-    iphi = 2*int((phi + M_PI)/(4 * M_PI) * _calo_nphi) + 1;
+    ieta = 2*int((parteta + _calo_etamax)/(4 * _calo_etamax) * _calo_neta) + 1;
+    iphi = 2*int((partphi + M_PI)/(4 * M_PI) * _calo_nphi) + 1;
   }
 
   // calculate the corresponding index of the cell using their eta and phi position and the number phi
@@ -549,7 +721,7 @@ void FastSim::fillcellvector(double pt, double eta, double phi) {
     phi = 2.0 * M_PI * ((iphi)-1.0 + 1.0)/_calo_nphi - M_PI;
   }
 
-  //printf("%6.3f %6.3f \n", eta, phi);
+//  printf("particle %6.3f %6.3f  calo %6.3f %6.2f\n", parteta, partphi,eta,phi);
 
   // first time cell has been hit
   if (exists == 0) {
@@ -586,12 +758,15 @@ void FastSim::Clustering() {
   _clusmom.clear();
 
   int done = 0;
+  ncell = _cellswitch.size();
   while(done == 0) {
 
 
     ndum = 0;
     imax=-1;
     etmax = 0;
+    eta=-999;
+    phi=-999;
     //find unused cell with highest energy
     //seed for the cluster
     for (int i = 0; i < ncell; i++) {
@@ -846,30 +1021,78 @@ void FastSim::Clustering() {
 
 }
 
+double FastSim::calcIsoEt(double or_eta, double or_phi) {
+  /* add the transverse energy on the cells within a deltaR of eta and phi of the particle
+   * and return the value
+   */
+
+  int ncell;
+  double dphi,deta,dR,SumEt,eta,phi;
+  SumEt = 0;
+  ncell = _cellswitch.size();
+  for(int i = 0; i<ncell; i++){
+    eta = _celleta[i];
+    phi = _cellphi[i];
+
+    
+    dphi = deltaPhi(or_phi,phi);
+    deta = fabs(or_eta - eta);
+    dR = sqrt(dphi*dphi + deta*deta);
+
+    if ((dR > 0.05) && (dR < 0.2))
+      SumEt += _cellmom[i];
+  }
+
+  return SumEt;
+}
+
+
+void FastSim::printParticles() {
+
+  printMuons();
+  printElectrons();
+  printPhotons();
+}
 
 
 /// @todo Rename
-void FastSim::PrintMuons() {
+void FastSim::printMuons() {
   cout << "Number of muons is " << _stable_muons.size() << endl;
   for (int j=0;j<(int)_stable_muons.size();j++) {
-    cout << "Muon " << j << " "<< _stable_muons[j]->pid() << " "<< _stable_muons[j]->mom().px() << " " << _stable_muons[j]->mom().py() << " " << _stable_muons[j]->mom().pz() << " " << _stable_muons[j]->mom().E()  << endl;
+    cout << "Muon " << j << " "<< _stable_muons[j]->pid() << " P: "<< _stable_muons[j]->mom().px() << " " << _stable_muons[j]->mom().py() << " " << _stable_muons[j]->mom().pz() << " " << _stable_muons[j]->mom().E() << " Eta: " << 
+      _stable_muons[j]->mom().eta() << " Phi: " << _stable_muons[j]->mom().phi()  << endl;
   }
 }
 
 
 /// @todo Rename
-void FastSim::PrintElectrons() {
+void FastSim::printElectrons() {
   cout << "Number of electrons is " << _stable_electrons.size() << endl;
   for (int j=0;j<(int)_stable_electrons.size();j++) {
-    cout << "Electron " << j << " "<< _stable_electrons[j]->pid() << " "<< _stable_electrons[j]->mom().px() << " " << _stable_electrons[j]->mom().py() << " " << _stable_electrons[j]->mom().pz() << " " << _stable_electrons[j]->mom().E()  << endl;
+    cout << "Electron " << j << " "<< _stable_electrons[j]->pid() << " P: "<< _stable_electrons[j]->mom().px() << " " << _stable_electrons[j]->mom().py() << " " << _stable_electrons[j]->mom().pz() << " " << _stable_electrons[j]->mom().E() 
+     << " Eta: " << _stable_electrons[j]->mom().eta() << " Phi: " << _stable_electrons[j]->mom().phi()  << endl;
   }
 }
 
 
 /// @todo Rename
-void FastSim::PrintPhotons() {
+void FastSim::printPhotons() {
   cout << "Number of photons is " << _stable_photons.size() << endl;
   for (int j=0;j<(int)_stable_photons.size();j++) {
-    cout << "Photon " << j <<" "<< _stable_photons[j]->pid() << " "<< _stable_photons[j]->mom().px() << " " << _stable_photons[j]->mom().py() << " " << _stable_photons[j]->mom().pz() << " " << _stable_photons[j]->mom().E()  << endl;
+    cout << "Photon " << j <<" "<< _stable_photons[j]->pid() << " P: "<< _stable_photons[j]->mom().px() << " " << _stable_photons[j]->mom().py() << " " << _stable_photons[j]->mom().pz() << " " << _stable_photons[j]->mom().E() 
+      << " Eta: " << _stable_photons[j]->mom().eta() << " Phi: " << _stable_photons[j]->mom().phi()  
+      << endl;
   }
 }
+
+void FastSim::printSummary() {
+
+  cout << "Number of electrons         : " << _stable_electrons.size() << endl;
+  cout << "Number of isolated electrons: " << _iso_electrons.size() << endl;
+  cout << "Number of muons             : " << _stable_muons.size() << endl;
+  cout << "Number of isolated muons    : " << _iso_muons.size() << endl;
+  cout << "Number of photons           : " << _stable_photons.size() << endl;
+  cout << "Number of isolated photons  : " << _iso_photons.size() << endl;
+
+}
+  

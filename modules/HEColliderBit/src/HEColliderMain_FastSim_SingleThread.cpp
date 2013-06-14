@@ -2,7 +2,7 @@
 //  //  ********************************************
 //  //
 //  //  For now, this is a main script for testing
-//  //  the Pythia8Backend and Delphes3Backend codes.
+//  //  the Pythia8Backend and FastSimBackend codes.
 //  //
 //  //  Later on, it should be converted to a module
 //  //  with a proper rollcall.
