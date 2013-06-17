@@ -23,6 +23,9 @@
 //  \author Pat Scott
 //  \date   2013-03-27
 //
+//  \author Ben Farmer
+//  \date   2013-05-29
+//
 //  *********************************************
 
 #ifndef __backend_rollcall_hpp__
@@ -32,7 +35,7 @@
 // Just include these backends 'as-is'
 
 #include "backend_libfirst.hpp"
-
+#include "backend_fakeSoftSUSY.hpp"
 
 // Get a bit fancy and include duplicate backends 
 
