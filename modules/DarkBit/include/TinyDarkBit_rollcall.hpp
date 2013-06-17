@@ -78,7 +78,7 @@ START_MODULE
     #define FUNCTION Weff
     START_FUNCTION(double)
     DEPENDENCY(SLHA, double) 
-      #define BACKEND_REQ LibFirst_returnResult
+      #define BACKEND_REQ LibFirst_returnResult_capability
       START_BACKEND_REQ(double)
       BACKEND_OPTION(LibFirst, 1.0)
       #undef BACKEND_REQ

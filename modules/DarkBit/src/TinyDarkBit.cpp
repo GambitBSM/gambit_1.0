@@ -96,12 +96,12 @@ namespace GAMBIT {
       result = SLHA * 2.0;
 
       std::cout << "My backend requirement of returnResult has been filled by " << 
-       GET_BE_FUNCNAME(Weff::LibFirst_returnResult) << " from " <<
-       GET_BE_PACKAGE(Weff::LibFirst_returnResult) << ", v" << 
-       GET_BE_VERSION(Weff::LibFirst_returnResult) << "." << std::endl;
+       GET_BE_FUNCNAME(Weff::LibFirst_returnResult_capability) << " from " <<
+       GET_BE_PACKAGE(Weff::LibFirst_returnResult_capability) << ", v" << 
+       GET_BE_VERSION(Weff::LibFirst_returnResult_capability) << "." << std::endl;
 
       // cout << *(TinyDarkBit::Backend_Reqs::Weff::LibFirst_returnResult) << endl;
-      GET_BE_RESULT(Weff::LibFirst_returnResult);
+      GET_BE_RESULT(Weff::LibFirst_returnResult_capability);
     }
     void omega_DM (double &result)
     {
