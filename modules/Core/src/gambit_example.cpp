@@ -348,6 +348,9 @@ functions using pointers of base class type..."<<std::endl;
   // TinyDarkBit code END
   // ********************
 
+  // Necessary by-hand dependency resolution (to avoid segfaults)
+  ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
@@ -412,7 +415,6 @@ functions using pointers of base class type..."<<std::endl;
   cout << "  "; ExampleBit_A::report("nevents_int");
   if (ExampleBit_A::provides("nevents")) {
     cout << "OK, so what is it then?" << endl;
-    // FIXME: Segfaults:
     cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_int>() << endl ;
   }  
   cout << "Core says: report on the particle ID!" << endl;
@@ -448,8 +450,6 @@ functions using pointers of base class type..."<<std::endl;
   cout << "  "; ExampleBit_B::report("nevents_postcuts");
   if (ExampleBit_B::provides("nevents_postcuts")) {
     cout << "OK, so what is it then?" << endl;
-    // FIXME: Segfaults
-    // ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
     ExampleBit_B::Functown::nevents_postcuts.calculate();
     cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<endl ;
   }
