@@ -22,6 +22,8 @@
 #define __ModelMacros_hpp__
 
 #include "ModelParameters.hpp"
+#include "util_macros.hpp"
+#include "util_functions.hpp"
 
 typedef std::string str;
 
@@ -37,6 +39,7 @@ namespace gambit{
         //std::cout<<"in vecappend:"<<newvec<<std::endl;
         return newvec;
       }
+    
     // Similar to above; joins two vectors and returns the result
     std::vector<str> vecjoin(const std::vector<str>& bv1, 
                              const std::vector<str>& bv2) 
@@ -49,12 +52,26 @@ namespace gambit{
         return newvec;
       }
       
+    // As above but joins three vectors and returns the result.
+    std::vector<str> vecjoin3(const std::vector<str>& bv1, 
+                              const std::vector<str>& bv2,
+                              const std::vector<str>& bv3) 
+      {
+        std::vector<str> newvec;
+        newvec.reserve( bv1.size() + bv2.size() + bv3.size() );
+        newvec.insert( newvec.end(), bv1.begin(), bv1.end() );
+        newvec.insert( newvec.end(), bv2.begin(), bv2.end() );
+        newvec.insert( newvec.end(), bv3.begin(), bv3.end() );
+        //std::cout<<"in vecjoin:"<<newvec<<std::endl;
+        return newvec;
+      }
+    
     // Base class for building new models (root of model inheritance tree)
     // Label ModelParameters base class as virtual to avoid ambiguous references
     // to ModelParameters functions in models that inherit from two children of 
     // model_base simultaneously (this way all children of model_base share
     // "the same" ModelParameters parent object)
-    class model_base : public virtual ModelParameters
+    class model_base
       {
       public:
         //model_base(const str name = "BASECLASS") {}
@@ -68,12 +85,16 @@ namespace gambit{
         // to define the parameters of the model (i.e. by calling the 
         // _definePar method inherited from ModelParameters, or by using the
         // DEFINEPARS macro defined in the "macros" section of this file.
+        /* NO LONGER DOING THIS! Parameter list should instead be supplied to
+           the NEW_CHILD_MODEL macro.
+        
         virtual void defineParameters()
         {
           std::cout<<"This method is part of the base class for GAMBIT models! \
 You should not be calling it!"<<std::endl;
         };
-      
+        */
+        
         // *** Methods which are universal to all models and are not changed
         //     by any of the child models. We do, however, have to redefine them
         //     in the child classes, otherwise they will still retrieve the
@@ -91,6 +112,19 @@ You should not be calling it!"<<std::endl;
           return lineage;
         };
         
+        // Parameter object; model parameter names and values stored in here.
+        // Is initialised by the constructor with correct parameter keys for
+        // this model.
+        ModelParameters parameters;
+        
+        // Returns a pointer to the above "parameters" object. This is useful
+        // if we are accessing all models using base class pointers, since
+        // these pointers cannot access the 'parameters' member object directly.
+        virtual ModelParameters* getparamobjptr()
+        { 
+          return &parameters;
+        };
+        
         // Tests whether a specified model string is in the lineage list
         /*
         bool is_descendant_of(str& testmodel)
@@ -104,11 +138,13 @@ You should not be calling it!"<<std::endl;
         protected:
           static const str name;
           static const std::vector<str> lineage;
+          static const std::vector<str> parameterkeys;
       };
       
-      //Initialise the name and lineage data members
+      //Initialise the name, lineage, and parameterkeys data members
       const str model_base::name = "base_model";
       const std::vector<str> model_base::lineage(1,"base_model");
+      const std::vector<str> model_base::parameterkeys = {};
       //(The internet claims that that above initialisations should be in a 
       //source file, not a header, but surely it is ok if the header has include
       //protection macros so that it only "really" gets included once?)
@@ -126,21 +162,20 @@ You should not be calling it!"<<std::endl;
 // a new definition). Inheritance is thus a little tricky with this
 // structure.
 
-// Small helper macros
-
-// Convert macro argument to string
-#define STR_VALUE(ARG)  #ARG
-
 // One-liner for passing a list of parameter strings directly to the
-// ModelParameters::_definePar function. Uses a variadic macro. Didn't know 
-// such a thing existed!
+// ModelParameters::_definePar function (which is owned by the "parameters"
+// member object). Uses a variadic macro. Didn't know such a thing existed!
+/* REPLACED with version below
 #define DEFINEPARS(...)                                                        \
 do{                                                                            \
     const char* _arr_[] = {__VA_ARGS__};                                       \
     for(int i=0; i<sizeof(_arr_)/sizeof(const char*) ; i++){                   \
-      _definePar(_arr_[i]);                                                    \
+      parameters._definePar(_arr_[i]);                                         \
     }                                                                          \
 }while(0);                                                                     \
+*/
+#define DEFINEPARS(MODEL,...)                                                  \
+const std::vector<str> MODEL::parameterkeys = {__VA_ARGS__};                   \
 
 // Main "child model" class building macros
 
@@ -157,14 +192,11 @@ do{                                                                            \
 // Macro to create repeated stuff in body of child class creation macros
 #define CHILD_BODY(NAME)                                                     \
 public:                                                                      \
-  virtual void defineParameters();                                           \
                                                                              \
   /*Need to override constructors since we are going to use them to          \
-  define the parameters*/                                                    \
-  NAME(){                                                                    \
-    defineParameters();                                                      \
-  };                                                                         \
-  virtual ~NAME(){}                                                          \
+  define the parameters */                                                   \
+  NAME() : parameters(parameterkeys) {};                                     \
+  virtual ~NAME(){};                                                         \
                                                                              \
   /*Need to redefine the get methods, otherwise we will end up with the      \
   inherited versions which retrieve the data members of the parent class!    \
@@ -181,9 +213,22 @@ public:                                                                      \
     return lineage;                                                          \
   };                                                                         \
                                                                              \
+  /* Parameter object; model parameter names and values stored in here.      \
+     Initialised by the constructor. */                                      \
+  ModelParameters parameters;                                                \
+                                                                             \
+  /* Returns a pointer to the above "parameters" object. This is useful      \
+     if we are accessing all models using base class pointers, since         \
+     these pointers cannot access the 'parameters' member object directly. */\
+  virtual ModelParameters* getparamobjptr()                                  \
+  {                                                                          \
+    return &parameters;                                                      \
+  };                                                                         \
+                                                                             \
 protected:                                                                   \
   static const str name;                                                     \
   static const std::vector<str> lineage;                                     \
+  static const std::vector<str> parameterkeys;                               \
 
 // Macro for creating standard child model class from a single parent
 #define NEW_CHILD_MODEL(NAME,PARENT)                                           \
@@ -191,10 +236,10 @@ class NAME : public PARENT                                                     \
   {                                                                            \
   CHILD_BODY(NAME)                                                             \
   };                                                                           \
-/*Now initialise the name and lineage data members*/                           \
-const str NAME::name = STR_VALUE(NAME);                                        \
+/*Now initialise the name, lineage and parameterkeys data members*/            \
+const str NAME::name = STRINGIFY(NAME);                                        \
 const std::vector<str> NAME::lineage =                                         \
-                  vecappend(PARENT::lineage,STR_VALUE(NAME));                  \
+                  vecappend(PARENT::lineage,STRINGIFY(NAME));                  \
 
 // This next macro builds a child model class from two parents. The new lineage 
 // list is simply a merger of the parent lists.
@@ -203,10 +248,10 @@ class NAME : public PARENT1, public PARENT2                                    \
   {                                                                            \
   CHILD_BODY(NAME)                                                             \
   };                                                                           \
-/*Now initialise the name and lineage data members*/                           \
-const str NAME::name = STR_VALUE(NAME);                                        \
+/*Now initialise the name, lineage and parameterkeys data members*/            \
+const str NAME::name = STRINGIFY(NAME);                                        \
 const std::vector<str> NAME::lineage =                                         \
-    vecappend( vecjoin(PARENT1::lineage,PARENT2::lineage), STR_VALUE(NAME) );  \
+    vecappend( vecjoin(PARENT1::lineage,PARENT2::lineage), STRINGIFY(NAME) );  \
 
 #endif /* defined(__ModelMacros_hpp__) */
 

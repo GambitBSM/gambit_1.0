@@ -18,6 +18,7 @@
 //
 //  Ben Farmer
 //  2013 May 01
+//  2013 Jun 17
 //
 //  *********************************************
 
@@ -55,10 +56,17 @@ namespace gambit {
       }
     }
   public:
+    // Default constructor
     ModelParameters(): ModelParametersBase(),_values(){
     }
     virtual ~ModelParameters() {}
-
+    
+    // Constructor which accepts lists or vectors and defines parameters
+    template <class T>
+    ModelParameters(T &paramlist): ModelParametersBase(),_values(){
+      _definePars(paramlist);
+    }
+    
     virtual double getValue(std::string const & inkey) const {
       assert_contains(inkey);
       return _values.at(inkey);
@@ -105,19 +113,19 @@ namespace gambit {
       this->updateVersion();
       _values[newkey]=0.;
     }
-    // Overload _definePar to deal with a std::vector input 
+    // Version of _definePar to deal with a std::vector input 
     // (iterates through each element and runs the ordinary _definePar on each 
     // of them)
-    virtual void _definePar(std::vector<std::string> const &v) {
+    virtual void _definePars(std::vector<std::string> const &v) {
       for(std::vector<std::string>::const_iterator
             it = v.begin(); it != v.end(); ++it) {
         _definePar(*it);
       }
     }
-    // Second overload of _definePar, this time to deal with a char array input.
+    // Overload of _definePar, this time to deal with a char array input.
     // (iterates through each element and runs the ordinary _definePar on each 
     // of them)
-    virtual void _definePar(const char** array) {
+    virtual void _definePars(const char** array) {
       int i = 0;
       while (array[i] != 0){
         _definePar(array[i]);
