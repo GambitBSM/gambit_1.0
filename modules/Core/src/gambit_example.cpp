@@ -59,6 +59,11 @@ using namespace gambit;
 
 void beispiel()
 {
+  cout << "Number of module functors: " <<
+    GAMBIT::globalFunctorList.size() << endl;
+  cout << "Number of backend functors: " <<
+    GAMBIT::globalBackendFunctorList.size() << endl;
+
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile("gambit.yaml");
@@ -74,6 +79,9 @@ void beispiel()
 
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+
+  // Resolve backends
+  dependencyResolver.resolveBackends(globalBackendFunctorList);
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),
@@ -120,7 +128,7 @@ int main( int argc, const char* argv[] )
   // requested_observables.push_back(6);  // nevents_postcuts
 
   // // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
-  // ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
 
   // // Run dependency resolution proper
   // Graphs::dependency_resolution(requested_observables);
@@ -246,6 +254,7 @@ int main( int argc, const char* argv[] )
   cout << "  "; ExampleBit_A::report("nevents_int");
   if (ExampleBit_A::provides("nevents")) {
     cout << "OK, so what is it then?" << endl;
+    // FIXME: Segfaults:
     cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_int>() << endl ;
   }  
   cout << "Core says: report on the particle ID!" << endl;
@@ -281,6 +290,8 @@ int main( int argc, const char* argv[] )
   cout << "  "; ExampleBit_B::report("nevents_postcuts");
   if (ExampleBit_B::provides("nevents_postcuts")) {
     cout << "OK, so what is it then?" << endl;
+    // FIXME: Segfaults
+    // ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
     ExampleBit_B::Functown::nevents_postcuts.calculate();
     cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<endl ;
   }

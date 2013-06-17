@@ -14,6 +14,10 @@
 ///          (anders.kvellestad@fys.uio.no) 
 ///  \date 2013 Mar, Apr
 ///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 June
+///
 ///  *********************************************
 
 #ifndef __BACKEND_MACROS_HPP__
@@ -70,20 +74,6 @@ namespace GAMBIT                                                            \
                                                                             \
       TYPE * NAME;                                                          \
                                                                             \
-      void CAT(constructVarPointer_,NAME)()                                 \
-      {                                                                     \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
-        NAME = reinterpret_cast<TYPE*>(pSym);                               \
-      }                                                                     \
-                                                                            \
-      /* The code within the void function 'constructVarPointer_NAME'       \
-         is executed when we create the following instance of               \
-         the 'ini_code' struct. */                                          \
-      namespace ini                                                         \
-      {                                                                     \
-        ini_code NAME(&CAT(constructVarPointer_,NAME));                     \
-      }                                                                     \
-                                                                            \
       /* Construct 'get' function */                                        \
       TYPE get##NAME() { return *NAME; }                                    \
                                                                             \
@@ -111,6 +101,22 @@ namespace GAMBIT                                                            \
          STRINGIFY(VERSION) );                                              \
                                                                             \
       } /* end namespace Functown */                                        \
+                                                                            \
+      void CAT(constructVarPointer_,NAME)()                                 \
+      {                                                                     \
+        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
+        NAME = reinterpret_cast<TYPE*>(pSym);                               \
+        GAMBIT::globalBackendFunctorList.push_back(&Functown::get##NAME);   \
+        GAMBIT::globalBackendFunctorList.push_back(&Functown::set##NAME);   \
+      }                                                                     \
+                                                                            \
+      /* The code within the void function 'constructVarPointer_NAME'       \
+         is executed when we create the following instance of               \
+         the 'ini_code' struct. */                                          \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code NAME(&CAT(constructVarPointer_,NAME));                     \
+      }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
@@ -148,23 +154,6 @@ namespace GAMBIT                                                            \
       /* Declare a pointer NAME of type NAME_type */                        \
       NAME##_type NAME;                                                     \
                                                                             \
-      void CAT(constructFuncPointer_,NAME)()                                \
-      {                                                                     \
-        /* Obtain a void pointer (pSym) to the library symbol. */           \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
-        /* Convert it to type (NAME_type) and assign                        \
-           it to pointer NAME. */                                           \
-        NAME = reinterpret_cast<NAME##_type>(pSym);                         \
-      }                                                                     \
-                                                                            \
-      /* The code within the void function 'constructVarPointer_NAME'       \
-         is executed when we create the following instance of               \
-         the 'ini_code' struct. */                                          \
-      namespace ini                                                         \
-      {                                                                     \
-        ini_code NAME(&CAT(constructFuncPointer_,NAME));                    \
-      }                                                                     \
-                                                                            \
       /* Create functor object */                                           \
       namespace Functown                                                    \
       {                                                                     \
@@ -176,6 +165,25 @@ namespace GAMBIT                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
       } /* end namespace Functown */                                        \
+                                                                            \
+      void CAT(constructFuncPointer_,NAME)()                                \
+      {                                                                     \
+        /* Obtain a void pointer (pSym) to the library symbol. */           \
+        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
+        /* Convert it to type (NAME_type) and assign                        \
+           it to pointer NAME. */                                           \
+        NAME = reinterpret_cast<NAME##_type>(pSym);                         \
+        Functown::NAME.updatePointer(NAME);                                 \
+        GAMBIT::globalBackendFunctorList.push_back(&Functown::NAME);        \
+      }                                                                     \
+                                                                            \
+      /* The code within the void function 'constructVarPointer_NAME'       \
+         is executed when we create the following instance of               \
+         the 'ini_code' struct. */                                          \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code NAME(&CAT(constructFuncPointer_,NAME));                    \
+      }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
@@ -219,6 +227,16 @@ namespace GAMBIT                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
       } /* end namespace Functown */                                        \
+                                                                            \
+      void CAT(constructFuncPointer_,NAME)()                                \
+      {                                                                     \
+        GAMBIT::globalBackendFunctorList.push_back(&Functown::NAME);        \
+      }                                                                     \
+                                                                            \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code NAME(&CAT(constructFuncPointer_,NAME));                    \
+      }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \

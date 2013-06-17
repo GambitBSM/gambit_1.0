@@ -216,5 +216,54 @@ namespace GAMBIT
         reqObs.push_back(boost::add_vertex(p_modfunc, masterGraph));
       }
     }
+
+    std::vector<functor *> findBackendCandidates(sspair key, std::vector<functor *> functorList)
+    {
+      std::vector<functor *> candidateList;
+      for (unsigned int i=0; i<functorList.size(); ++i)
+      {
+        cout << " BE offer: " << functorList[i]->capability() << " (" <<
+          functorList[i]->type() << ")" << endl;
+        if ( functorList[i]->quantity() == key )
+        {
+          candidateList.push_back(functorList[i]);
+        }
+      }
+      return candidateList;
+    }
+
+    // Rudimentary backend resolution
+    void DependencyResolver::resolveBackends(std::vector<functor *> functorList)
+    {
+      std::vector<sspair> reqs;
+      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      std::vector<functor *> candidateList;
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      {
+        if ( (*masterGraph[*vi]).status() == 2 )
+        {
+          reqs = (*masterGraph[*vi]).backendreqs();
+          if (reqs.size() != 0)
+          {
+            cout << "Resolving Backends for: " << (*masterGraph[*vi]).name() << endl;
+            for (vector<sspair>::iterator it = reqs.begin(); 
+                it != reqs.end(); ++it)
+            {
+              cout << " BE req: " << it->first << " (" << it->second << ")" << endl;
+              candidateList = findBackendCandidates(*it, functorList);
+              if (candidateList.size() == 0)
+              {
+                cout << "Backend resolution failed" << endl;
+                exit(0);
+              }
+              // Take just first best right now
+              cout << "Resolve backend requirement" << endl;
+              (*masterGraph[*vi]).resolveBackendReq(candidateList[0]);
+            }
+          }
+        }
+      }
+    }
+
   }
 }
