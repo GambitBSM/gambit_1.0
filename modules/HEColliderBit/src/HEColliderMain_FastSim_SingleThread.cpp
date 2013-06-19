@@ -57,8 +57,10 @@ int main()
   cout<<"\n\n Now Testing HECollider FastSimulation:\n\n";
 
   /// @todo Generalise to a vector of analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
+//  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("PERF");
 
+  // at the moment the ouptut file for the analysis is hardwired
   ana->init();
 
 
