@@ -28,13 +28,18 @@ set ExecutionPath {
 
   MissingET
 
+  GenJetFinder
   FastJetFinder
+
+  ConstituentFilter
+
   BTagging
   TauTagging
 
   UniqueObjectFinder
 
   ScalarHT
+
 }
 
 #################################
@@ -221,7 +226,7 @@ module Calorimeter Calorimeter {
   for {set i -9} {$i <= 9} {incr i} {
     add PhiBins [expr {$i * $pi/9.0}]
   }
-  foreach eta {-4.9 -4.7 -4.5 -4.3 -4.1 -3.9 -3.7 -3.5 -3.3 -3 -2.8 -2.6 2.8 3 3.2 3.3 3.5 3.7 3.9 4.1 4.3 4.5 4.7 4.9} {
+  foreach eta {-4.9 -4.7 -4.5 -4.3 -4.1 -3.9 -3.7 -3.5 -3.3 -3 -2.8 -2.6 2.8 3 3.2 3.5 3.7 3.9 4.1 4.3 4.5 4.7 4.9} {
     add EtaPhiBins $eta $PhiBins
   }
 
@@ -231,11 +236,16 @@ module Calorimeter Calorimeter {
   add EnergyFraction {11} {1.0 0.0}
   add EnergyFraction {22} {1.0 0.0}
   add EnergyFraction {111} {1.0 0.0}
-  # energy fractions for muon and neutrinos
+  # energy fractions for muon, neutrinos and neutralinos
   add EnergyFraction {12} {0.0 0.0}
   add EnergyFraction {13} {0.0 0.0}
   add EnergyFraction {14} {0.0 0.0}
   add EnergyFraction {16} {0.0 0.0}
+  add EnergyFraction {1000022} {0.0 0.0}
+  add EnergyFraction {1000023} {0.0 0.0}
+  add EnergyFraction {1000025} {0.0 0.0}
+  add EnergyFraction {1000035} {0.0 0.0}
+  add EnergyFraction {1000045} {0.0 0.0}
   # energy fractions for K0short and Lambda
   add EnergyFraction {310} {0.3 0.7}
   add EnergyFraction {3122} {0.3 0.7}
@@ -243,8 +253,9 @@ module Calorimeter Calorimeter {
   # set ECalResolutionFormula {resolution formula as a function of eta and energy}
   # http://arxiv.org/pdf/physics/0608012v1 jinst8_08_s08003
   # http://villaolmo.mib.infn.it/ICATPP9th_2005/Calorimetry/Schram.p.pdf
+  # http://www.physics.utoronto.ca/~krieger/procs/ComoProceedings.pdf
   set ECalResolutionFormula {                  (abs(eta) <= 3.2) * sqrt(energy^2*0.0017^2 + energy*0.101^2) + \
-                             (abs(eta) > 3.2 && abs(eta) <= 4.9) * sqrt(energy^2*0.0350^2 + energy*2.085^2)}
+                             (abs(eta) > 3.2 && abs(eta) <= 4.9) * sqrt(energy^2*0.0350^2 + energy*0.285^2)}
 
   # set HCalResolutionFormula {resolution formula as a function of eta and energy}
   # http://arxiv.org/pdf/hep-ex/0004009v1
@@ -391,21 +402,20 @@ module Merger ScalarHT {
   set EnergyOutputArray energy
 }
 
-############
-# Jet finder
-############
+#####################
+# MC truth jet finder
+#####################
 
-module FastJetFinder FastJetFinder {
-#  set InputArray Calorimeter/towers
-  set InputArray EFlowMerger/eflow
+module FastJetFinder GenJetFinder {
+  set InputArray Delphes/stableParticles
 
   set OutputArray jets
 
   # algorithm: 1 CDFJetClu, 2 MidPoint, 3 SIScone, 4 kt, 5 Cambridge/Aachen, 6 antikt
   set JetAlgorithm 6
-  set ParameterR 0.7
+  set ParameterR 0.4
 
-  set ConeRadius 0.5
+  set ConeRadius 0.4
   set SeedThreshold 1.0
   set ConeAreaFraction 1.0
   set AdjacencyCut 2.0
@@ -418,6 +428,50 @@ module FastJetFinder FastJetFinder {
   set JetPTMin 20.0
 }
 
+############
+# Jet finder
+############
+
+module FastJetFinder FastJetFinder {
+#  set InputArray Calorimeter/towers
+  set InputArray EFlowMerger/eflow
+
+  set OutputArray jets
+
+  # algorithm: 1 CDFJetClu, 2 MidPoint, 3 SIScone, 4 kt, 5 Cambridge/Aachen, 6 antikt
+  set JetAlgorithm 6
+  set ParameterR 0.4
+
+  set ConeRadius 0.4
+  set SeedThreshold 1.0
+  set ConeAreaFraction 1.0
+  set AdjacencyCut 2.0
+  set OverlapThreshold 0.75
+
+  set MaxIterations 100
+  set MaxPairSize 2
+  set Iratch 1
+
+  set JetPTMin 20.0
+}
+
+####################
+# Constituent filter
+####################
+
+module ConstituentFilter ConstituentFilter {
+
+# add JetInputArray InputArray
+  add JetInputArray GenJetFinder/jets
+  add JetInputArray FastJetFinder/jets
+
+# add ConstituentInputArray InputArray OutputArray
+  add ConstituentInputArray Delphes/stableParticles stableParticles
+  add ConstituentInputArray Calorimeter/eflowTracks eflowTracks
+  add ConstituentInputArray Calorimeter/eflowTowers eflowTowers
+  add ConstituentInputArray MuonMomentumSmearing/muons muons
+}
+
 ###########
 # b-tagging
 ###########
@@ -425,6 +479,8 @@ module FastJetFinder FastJetFinder {
 module BTagging BTagging {
   set PartonInputArray Delphes/partons
   set JetInputArray FastJetFinder/jets
+
+  set BitNumber 0
 
   set DeltaR 0.5
 
@@ -473,5 +529,26 @@ module UniqueObjectFinder UniqueObjectFinder {
   add InputArray PhotonIsolation/photons photons
   add InputArray ElectronIsolation/electrons electrons
   add InputArray FastJetFinder/jets jets
+}
+
+##################
+# ROOT tree writer
+##################
+
+module TreeWriter TreeWriter {
+# add Branch InputArray BranchName BranchClass
+  add Branch Delphes/allParticles Particle GenParticle
+  add Branch TrackMerger/tracks Track Track
+  add Branch Calorimeter/towers Tower Tower
+  add Branch ConstituentFilter/eflowTracks EFlowTrack Track
+  add Branch ConstituentFilter/eflowTowers EFlowTower Tower
+  add Branch ConstituentFilter/muons EFlowMuon Muon
+  add Branch GenJetFinder/jets GenJet Jet
+  add Branch UniqueObjectFinder/jets Jet Jet
+  add Branch UniqueObjectFinder/electrons Electron Electron
+  add Branch UniqueObjectFinder/photons Photon Photon
+  add Branch MuonIsolation/muons Muon Muon
+  add Branch MissingET/momentum MissingET MissingET
+  add Branch ScalarHT/energy ScalarHT ScalarHT
 }
 
