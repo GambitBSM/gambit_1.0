@@ -45,6 +45,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <logcore.hpp>
 #include <graphs.hpp>
 #include <backend_rollcall.hpp>
+#include <model_rollcall.hpp>
 #include <module_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
@@ -59,6 +60,11 @@ using namespace gambit;
 
 void beispiel()
 {
+  cout << "Number of module functors: " <<
+    GAMBIT::globalFunctorList.size() << endl;
+  cout << "Number of backend functors: " <<
+    GAMBIT::globalBackendFunctorList.size() << endl;
+
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile("gambit.yaml");
@@ -74,6 +80,9 @@ void beispiel()
 
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+
+  // Resolve backends
+  dependencyResolver.resolveBackends(globalBackendFunctorList);
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),
@@ -94,7 +103,7 @@ void beispiel()
 int main( int argc, const char* argv[] )
 {
   beispiel();
-  return 0;
+  //return 0;
 
   cout<<endl;
   cout<< "This is a skeleton example for gambit."<<endl;
@@ -120,7 +129,7 @@ int main( int argc, const char* argv[] )
   // requested_observables.push_back(6);  // nevents_postcuts
 
   // // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
-  // ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
 
   // // Run dependency resolution proper
   // Graphs::dependency_resolution(requested_observables);
@@ -149,7 +158,164 @@ int main( int argc, const char* argv[] )
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
-
+  
+  // ****************
+  // ModelBit demo code START
+  // ****************
+  cout << endl;
+  cout << "*** Start ModelBit demo ***" << endl;
+  
+  // See ModelBit/models/MSSM.hpp for the definitions of the models referenced
+  // here.
+  
+  // Need to make model objects in order to access names and lineages.
+  models::CMSSM_base M1;
+  models::CMSSM::P1 M2;
+  models::Gaussian_Halo M3;
+  models::CMSSMandGHALO M4;
+  
+  // We can also refer to models by pointers of the base class type, which means
+  // the rest of the code need not know exactly which class a given model is in
+  // order to fiddle with the model objects.
+  models::model_base* p1=&M1;
+  models::model_base* p2=&M2;
+  
+  //Try this way also:
+  models::model_base &r1=M1;
+  models::model_base &r2=M2;
+  
+  // (having a sudden thought that maybe we can make more native use of this
+  // capability - if a module knows about a parent model type can it just
+  // declare the appropriate pointer and use all child models similarly?)
+  models::MSSM* MSSM_child1=&M1;
+  models::MSSM* MSSM_child2=&M2;
+  // This would only be useful if there were functions unique to MSSM that
+  // model_base had not already declared. Not sure that is the spirit we want.
+  
+  // Get a pointer to DMHalo model and supermodel too:
+  models::DMHalo_base* Halo_child1=&M3;
+  models::DMHalo_base* Halo_child2=&M4;
+  
+  //Cannot use a pointer of a non-parent model class!
+  //(here M1 is not a descendent of DMHalo_base)
+  //gambit::models::DMHalo_base* Halo_child_error=&M1; 
+    
+  // Can then refer to staticly bound functions if we know the class:
+  std::cout<<""<<std::endl;
+  std::cout<<"Disclaimer: I may be using the wrong terms for these C++ \
+technicalities! If so I am sorry :(."<<std::endl;
+  std::cout<<"Retrieving model names and lineages by statically bound get functions..."<<std::endl;
+  std::cout<<"M1.getname(): "<<M1.getname()<<std::endl;
+  std::cout<<"M1.getlineage(): "<<M1.getlineage()<<std::endl;
+  std::cout<<"M2.getname(): "<<M2.getname()<<std::endl;
+  std::cout<<"M2.getlineage(): "<<M2.getlineage()<<std::endl;
+  
+  // Or by using references of the base class type if we don't:
+  std::cout<<""<<std::endl;
+  std::cout<<"Retrieving model names and lineages by statically bound get \
+functions using references of base class type..."<<std::endl;
+  std::cout<<"r1.getname(): "<<r1.getname()<<std::endl;
+  std::cout<<"r1.getlineage(): "<<r1.getlineage()<<std::endl;
+  std::cout<<"r2.getname(): "<<r2.getname()<<std::endl;
+  std::cout<<"r2.getlineage(): "<<r2.getlineage()<<std::endl;
+  
+  // or also by dynamic binding (apologies if these are the wrong C++ 
+  // words...)
+  std::cout<<""<<std::endl;
+  std::cout<<"Retrieving model names and lineages by dynamically bound get \
+functions using pointers of base class type..."<<std::endl;
+  std::cout<<"p1->getname(): "<<p1->getname()<<std::endl;
+  std::cout<<"p1->getlineage(): "<<p1->getlineage()<<std::endl;
+  std::cout<<"p2->getname(): "<<p2->getname()<<std::endl;
+  std::cout<<"p2->getlineage(): "<<p2->getlineage()<<std::endl;
+  std::cout<<"Can also use pointers of any other parent type..."<<std::endl;
+  std::cout<<"MSSM_child1->getname(): "<<MSSM_child1->getname()<<std::endl;
+  std::cout<<"MSSM_child1->getlineage(): "<<MSSM_child1->getlineage()<<std::endl;
+  
+  // I think we can also just access the public data members directly with these
+  // methods:
+  // Edit: ok no we can't, just end up with the base class data members. I have
+  // now made the data members 'protected' so that no-one will accidentally try
+  // to access them this way.
+  /*
+  std::cout<<p1->name<<",(p1) "<<p1->lineage<<std::endl;
+  std::cout<<p2->name<<",(p2) "<<p2->lineage<<std::endl;
+  std::cout<<r1.name<<",(r1) "<<r1.lineage<<std::endl;
+  std::cout<<r2.name<<",(r2) "<<r2.lineage<<std::endl;
+  */
+  
+  // Set parameter value by accessing parameter object directly via model object.
+  M2.parameters.setValue("M0",1234);
+  
+  // If using base class pointer we can't do this. Instead we have to ask the
+  // model object for a pointer to the parameter object, and then work with that.
+  p2->getparamobjptr()->setValue("M12",4321);
+  p2->getparamobjptr()->setValue("A0",100);
+  p2->getparamobjptr()->setValue("tanb",10);
+  p2->getparamobjptr()->setValue("sgnmu",1);
+  
+  // To make things less verbose we can rip this pointer out of the model object
+  // good and proper, and even pass it around to other parts of GAMBIT if we
+  // like.
+  ModelParameters* M2params = p2->getparamobjptr();
+  
+  std::cout<<""<<std::endl;
+  std::cout<<"Demonstrating different ways of retrieving parameter values..."<<std::endl;
+  std::cout<<"M2 parameters:"<<std::endl;
+  std::cout<<"M0    = "<<M2params->getValue("M0")<<std::endl;
+  std::cout<<"M12   = "<<M2params->getValue("M12")<<std::endl;
+  // but of course if we have the actual model object we can dig the 
+  // corresponding parameter object straight out of it like before.
+  std::cout<<"A0    = "<<M2.parameters.getValue("A0")<<std::endl;
+  std::cout<<"tanb  = "<<M2.parameters.getValue("tanb")<<std::endl;
+  std::cout<<"sgnmu = "<<M2.parameters.getValue("sgnmu")<<std::endl;
+  
+  // Lets also look at the halo models
+  std::cout<<""<<std::endl;
+  std::cout<<"Halo model names and lineages..."<<std::endl;
+  std::cout<<"Halo_child1->getname(): "<<Halo_child1->getname()<<std::endl;
+  std::cout<<"Halo_child1->getlineage(): "<<Halo_child1->getlineage()<<std::endl;
+  Halo_child1->getparamobjptr()->setValue("v_earth",300);
+  // There is a function to just dump all the parameters to stdout:
+  std::cout<<"Dumping Halo_child1 parameters...";
+  Halo_child1->getparamobjptr()->print();
+  
+  // Now the 'supermodel':
+  ModelParameters* HC2params = Halo_child2->getparamobjptr();
+  std::cout<<""<<std::endl;
+  std::cout<<"\"Super\" model names and lineages..."<<std::endl;
+  std::cout<<"Halo_child2->getname(): "<<Halo_child2->getname()<<std::endl;
+  std::cout<<"Halo_child2->getlineage(): "<<Halo_child2->getlineage()<<std::endl;
+  std::cout<<"Dumping Halo_child2 parameters...";
+  HC2params->setValue("M12",4321);
+  HC2params->setValue("A0",100);
+  HC2params->setValue("v_earth",300);
+  HC2params->print();
+  
+  // Demonstration of automatic looping over parameters
+  std::cout<<std::endl;
+  std::cout<<"Parameter name retrieval..."<<std::endl;
+  std::cout<<"HC2params->getKeys(): "<< \
+                HC2params->getKeys()<<std::endl;
+  // Generate some random values and set parameters to these values
+  
+  std::vector<str> keys = HC2params->getKeys();
+  
+  srand (time(NULL));    // initialize random seed
+  for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
+    std::cout <<"Setting random "<<*it<<" value..."<<std::endl;
+    HC2params->setValue(*it, rand()%1000);
+  }
+  std::cout<<"Dumping new Halo_child2 parameters...";
+  HC2params->print();
+  
+  cout << "*** End ModelBit demo ***" << endl;
+  cout << endl;
+  // ****************
+  // ModelBit demo code END
+  // ****************
+  
+  
   // ****************
   // TinyDarkBit code START
   // ****************
@@ -182,6 +348,9 @@ int main( int argc, const char* argv[] )
   // TinyDarkBit code END
   // ********************
 
+  // Necessary by-hand dependency resolution (to avoid segfaults)
+  ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
@@ -328,6 +497,37 @@ int main( int argc, const char* argv[] )
 
   cout <<  endl;
  
+ 
+  // ****************
+  // Example_SUSYspecBit test code
+  // ****************
+
+
+  cout <<  endl;
+  cout << "My name is " << SUSYspecBit::name() << endl;
+  cout << " I can calculate: " << endl << SUSYspecBit::iCanDo << endl;
+  cout << " ...but I may need: " << endl << SUSYspecBit::iMayNeed << endl;
+  cout << endl;
+  cout << "I can do MSSMspectrum " << SUSYspecBit::provides("MSSMspectrum") << endl;
+  cout << "(the following are temporary capabilities that will be shifted to ModelBit)" <<endl;
+  cout << "I can do SMparameters " << SUSYspecBit::provides("SMparameters") << endl;
+  cout << "I can do CMSSMparameters " << SUSYspecBit::provides("CMSSMparameters") << endl;
+  cout << "I can do MSSMsoftmasses " << SUSYspecBit::provides("MSSMsoftmasses") << endl;
+  
+  cout << "Core says: report on MSSMspectrum!" << endl;
+  cout << SUSYspecBit::name() << " says: ";
+  cout << "  "; SUSYspecBit::report("MSSMspectrum");
+  if (SUSYspecBit::provides("MSSMspectrum")) {
+    cout << "OK, so what is it then?" << endl;
+    //MSSMspecQ spectrum = SUSYspecBit::result<Tags::MSSMspectrum>()
+    cout << "  " << SUSYspecBit::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << endl;
+    /*
+    cout << "  " << SUSYspecBit::name() << " says: " << endl;
+    cout << "    stop1 mass = " << spectrum.MASS.stop1 << endl;
+    cout << "    neut1 mass = " << spectrum.MASS.neut1 << endl;
+    */
+  }
+
 
   // Instantiate the ScannerBit module
 

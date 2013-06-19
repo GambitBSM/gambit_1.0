@@ -21,8 +21,7 @@
 //  2013 Jan, Feb 04
 //
 //  Christoph Weniger (c.weniger@uva.nl)
-//  2013 Jan
-//  June 03 2013
+//  2013 Jan, Jun
 //  *********************************************
 
 #ifndef __TinyDarkBit_rollcall_hpp__
@@ -79,6 +78,10 @@ START_MODULE
     #define FUNCTION Weff
     START_FUNCTION(double)
     DEPENDENCY(SLHA, double) 
+      #define BACKEND_REQ LibFirst_returnResult_capability
+      START_BACKEND_REQ(double)
+      BACKEND_OPTION(LibFirst, 1.0)
+      #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY
 

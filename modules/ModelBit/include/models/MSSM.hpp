@@ -50,66 +50,55 @@ namespace gambit{
     // itself)
     // Usage: NEW_CHILD_MODEL(<new model>,<parent model>)
     NEW_CHILD_MODEL(MSSM,model_base)
-    void MSSM::defineParameters() {}
-    // We MUST provide a definition for the "defineParameters()" function or 
-    // else a compiler error occurs. defineParameters() is called by the 
-    // constructor.
+    // We also need to provide a definition for the "parameterkeys" data member,
+    // which the model class is going to use to construct the parameter object.
+    // We will demonstrate macros that do this shortly.
+    const std::vector<str> MSSM::parameterkeys = {};
+    
     
     // Test create second model from base
     NEW_CHILD_MODEL(test_model,model_base)
-    void test_model::defineParameters() {}
+    const std::vector<str> test_model::parameterkeys = {};
+    
     NEW_CHILD_MODEL(test_model2,test_model)
-    void test_model2::defineParameters() {}
+    const std::vector<str> test_model2::parameterkeys = {};
     
     // Next iteration...
-    // This time we provide a definition for "defineParameters()" which
-    // actually does something.
+    // This time we define some parameters
+    // Note: parameters are stored in the "parameters" member object, which
+    // also is in possession of the needed get/set functions.
     NEW_CHILD_MODEL(CMSSM_base,MSSM)
-    void CMSSM_base::defineParameters() {
-      _definePar("M0");
-      _definePar("M12");
-      _definePar("A0");
-    }
-    
+    const std::vector<str> CMSSM_base::parameterkeys = {"M0", "M12", "A0"};
+
     namespace CMSSM {
       // Need to go inside CMSSM namespace to create parameterisations (just
-      // so they have unique names). These are all "CMSSM" though as far as 
-      // the hierarchy is concerned...
-      // The P1 defineParameters function first runs the CMSSM_base 
-      // defineParameters function If any parameters were defined there they 
-      // are now defined here too. This is the current way of inheriting 
-      // parameters from parents (It is not automatic!).
+      // so they have unique names). This namespace is not known to the 
+      // hierarchy though.
+      // There is no automatic "inheritance" of parameters from the parent
+      // model, however there are a couple of ways to get those parameters. If
+      // we have access to the original list used to create the parent we can
+      // just use that again, or if not we can access the private list stored 
+      // inside the model class. There are also macros to make this less 
+      // verbose, which I shall demo shortly.
+      
       NEW_CHILD_MODEL(P1,CMSSM_base);
-      void P1::defineParameters() {
-        this->CMSSM_base::defineParameters();
-        _definePar("tanb");
-        _definePar("sgnmu");
-      }
+      const std::vector<str> newkeys = {"tanb", "sgnmu"};
+      const std::vector<str> P1::parameterkeys = vecjoin(
+                                                  CMSSM_base::parameterkeys,
+                                                  newkeys
+                                                  );
     }
     
     // Now let's make a second 'branch' of the model tree:
     NEW_CHILD_MODEL(DMHalo_base,model_base)
-    void DMHalo_base::defineParameters() {}
+    const std::vector<str> DMHalo_base::parameterkeys = {};
     
-    // We define lots of parameters at once if we use a vector, or a char array
-    // (so long as the array is terminated by a 0):
+    // We can use the DEFINEPARS macro to define the 'parameterkeys' data
+    // member, and thus the parameters given to the parameter object:
     NEW_CHILD_MODEL(Gaussian_Halo,DMHalo_base)
-    void Gaussian_Halo::defineParameters() {
-      const char* pararray1[] = {"v_earth", "par2", "par3", "par4"};
-      const char* pararray2[] = {"par5","par6","par7",0};
-      std::vector<std::string> parvector(pararray1, pararray1 + 4);
-      _definePar(parvector);
-      _definePar(pararray2);
-      // We cannot pass an initialiser-list-style char array directly to the
-      // function likes this:
-      // _definePar({"par8","par9","par10",0});
-      // However I wrote a variadic macro to achieve the same kind of 
-      // "one-liner" behaviour:
-      DEFINEPARS("par8","par9","par10")
-      // I think in theory we could similarly extend _definePar to deal with a 
-      // variable number of arguments, which would achieve the same thing, but 
-      // it might get messier.
-    }
+    DEFINEPARS(Gaussian_Halo, \
+                  "v_earth", "par2", "par3", "par4","par5", \
+                  "par6","par7","par8","par9","par10")
     
     // Now create a "supermodel" which is an explicit union of two models
     // *Note that this is not the generic way which totally orthogonal models
@@ -121,12 +110,13 @@ namespace gambit{
     // list, i.e. there is no tree information.
     // Usage: NEW_SUPER_MODEL(<new model>,<parent model 1>,<parent model 2>)
     NEW_SUPER_MODEL(CMSSMandGHALO,CMSSM::P1,Gaussian_Halo)
-    void CMSSMandGHALO::defineParameters() {
-      this->Gaussian_Halo::defineParameters();
-      this->CMSSM::P1::defineParameters();
-      DEFINEPARS("extpar1","extpar2","extpar3")
-    }
-    
+    const std::vector<str> newkeys = {"extpar1","extpar2","extpar3"};
+    const std::vector<str> CMSSMandGHALO::parameterkeys = vecjoin3(
+                                                  Gaussian_Halo::parameterkeys,
+                                                  CMSSM::P1::parameterkeys,
+                                                  newkeys
+                                                  );
+    // Could hide this with some macro stuff, but have not invented these yet.
     
   } //end namespace models
 } //end namespace gambit

@@ -1,6 +1,7 @@
 // Miniature test code for ModelBit
 // Ben Farmer, May 1 2013
 
+#include "util_functions.hpp"   // contains defn of overloaded << for vectors.
 #include "MSSM.hpp"
 #include <string>
 #include <iostream>
@@ -9,20 +10,6 @@
 #include <time.h>       /* time */
 
 typedef std::string str;
-
-template < class Type >
-inline std::ostream& operator << (std::ostream& os, const std::vector<Type>& v) 
-{
-    // Compiler complained that I did not have this typename thing, but I don't
-    // really understand what it does. 
-    os << "[";
-    for (typename std::vector<Type>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
-    {
-        os << " " << *ii;
-    }
-    os << " ]";
-    return os;
-}
 
 int main( int argc, const char* argv[] )
 {

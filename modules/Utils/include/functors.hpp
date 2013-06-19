@@ -18,7 +18,7 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June 03 2013
+///  \date 2013 May, June 2013
 ///
 ///  *********************************************
 
@@ -463,6 +463,11 @@ namespace GAMBIT
         needs_recalculating = true;
       }
 
+      void updatePointer(TYPE (*inputFunction)(ARGS...))
+      {
+        myFunction = inputFunction;
+      }
+
     protected:
 
       /// Internal storage of function pointer
@@ -572,10 +577,15 @@ namespace GAMBIT
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
 
+// FIXME: This is probably not the best place to define global variables:
 #ifndef IN_CORE
     extern
 #endif
   std::vector<functor *> globalFunctorList;
+#ifndef IN_CORE
+    extern
+#endif
+  std::vector<functor *> globalBackendFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */

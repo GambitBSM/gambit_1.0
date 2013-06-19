@@ -23,6 +23,9 @@
 ///  \author Pat Scott  
 ///  \date 2012 Nov
 ///
+///  \author Ben Farmer
+///  \date 2013-05-29
+///
 ///  *********************************************
 
 #ifndef __module_rollcall_hpp__
@@ -32,6 +35,7 @@
 #include <ExampleBit_A_rollcall.hpp>
 #include <ExampleBit_B_rollcall.hpp>
 #include <TinyDarkBit_rollcall.hpp>
+#include <SUSYspecBit_rollcall.hpp>
 
 #endif /* defined(__module_rollcall__) */
 

@@ -62,6 +62,9 @@ namespace GAMBIT
         // Adds list of functor pointers to boost graph
         void addFunctors(std::vector<functor *>);
 
+        // Rudimentary backend resolution
+        void resolveBackends(std::vector<functor *>);
+
         // Constructs input/output vertices from parameters and requested
         // observables in ini-file
         void addLegs(const GAMBIT::IniParser::IniFile &);
