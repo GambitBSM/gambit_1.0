@@ -12,7 +12,7 @@
 //  //
 //  //  Aldo Saavedra
 //  //  2013 March
-//  //  2013 June 13
+//  //  2013 June 13,20
 //  //
 //  //  ********************************************
 //
@@ -74,6 +74,9 @@ void FastSim::init(DetectorType which) {
     _minEt_isol_muon = 4.0; 
     _minEt_isol_electron = 4.0; 
     _minEt_isol_photon = 4.0; // GeV
+
+    
+    _max_lep_eta = 2.5; // the eta acceptance of the leptons
 
     _calo_etamax = 5.0;  //GeV
     _calo_dphi =  0.01;
@@ -155,8 +158,8 @@ void FastSim::setElectrons(vector<Particle*> particles) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the electron particle list" << endl;
       continue;
     }
-    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
-    if (particles[i]->pT() > _min_ele_pt) continue;
+    if (fabs(particles[i]->eta()) > _max_lep_eta) continue;
+    if (particles[i]->pT() < _min_ele_pt) continue;
     Particle* chosen = new Particle(particles[i]);
     _stable_electrons.push_back(chosen);
     _stable_interacting_particles.push_back(chosen);
@@ -170,8 +173,8 @@ void FastSim::setMuons(vector<Particle*> particles) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the muon particle list" << endl;
       continue;
     }
-    if (fabs(particles[i]->eta()) > _calo_etamax) continue; //< @todo Should be muon etamax?
-    if (particles[i]->pT() > _min_muon_pt) continue;
+    if (fabs(particles[i]->eta()) > _max_lep_eta) continue; //< @todo Should be muon etamax?
+    if (particles[i]->pT() < _min_muon_pt) continue;
     Particle* chosen = new Particle(particles[i]);
     _stable_muons.push_back(chosen);
     _stable_interacting_particles.push_back(chosen);
@@ -203,7 +206,7 @@ void FastSim::setBQuarks(vector<Particle*> particles) {
       continue;
     }
     if (fabs(particles[i]->eta()) > _calo_etamax) continue; //< @todo Or ~ tracker eta for tagging?
-    if (particles[i]->pT() > _min_bjet_pt) continue;
+    if (particles[i]->pT() < _min_bjet_pt) continue;
     Particle* chosen = new Particle(particles[i]);
     _bquarks.push_back(chosen);
   }
@@ -216,8 +219,8 @@ void FastSim::setTauHads(vector<Particle*> particles) {
       cerr << "Warning: PID " << particles[i]->pid() << " found in the tau particle list" << endl;
       continue;
     }
-    if (fabs(particles[i]->eta()) > _calo_etamax) continue;
-    if (particles[i]->pT() > _min_tauhad_pt) continue;
+    if (fabs(particles[i]->eta()) > _max_lep_eta) continue;
+    if (particles[i]->pT() < _min_tauhad_pt) continue;
     Particle* chosen = new Particle(particles[i]);
     _tauhads.push_back(chosen);
   }

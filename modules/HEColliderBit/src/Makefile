@@ -44,7 +44,7 @@ example-fastsim-py8: HEColliderMain_FastSim_SingleThread.cpp DetectorResponse.cp
 	$(CXX) HEColliderMain_FastSim_SingleThread.cpp DetectorResponse.cpp FastSim.cpp FastSimBackend.cpp  Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION)  $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -lEG -o example-fastsim-py8
 
 example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
-	$(CXX) example-py8-bsm.cpp Analysis.cpp $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
+	$(CXX) example-py8-bsm.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -o example-py8-bsm
 
 example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 	$(CXX) example-py8-0lep.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) -o example-py8-0lep

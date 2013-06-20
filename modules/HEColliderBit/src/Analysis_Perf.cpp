@@ -2,6 +2,7 @@
 
 //written by A Saavedra 19-06-2013
 //to test the FastSim  module
+//last modify 20/06/2013
 
 #include <algorithm>
 
@@ -87,9 +88,9 @@ namespace GAMBIT
     std::sort (electrons.begin(), electrons.end(), SortPt);
 
 //    cout << "after sorting " << endl;
-    for (size_t iEl=0;iEl<electrons.size();iEl++) {
-      cout << " Electron: " << iEl << " Pt " << electrons[iEl]->pT() << endl; 
-    }
+//    for (size_t iEl=0;iEl<electrons.size();iEl++) {
+//      cout << " Electron: " << iEl << " Pt " << electrons[iEl]->pT() << endl; 
+//    }
 
     if (electrons.size() > 1) {
       temp = electrons[0]->mom()+electrons[1]->mom();
