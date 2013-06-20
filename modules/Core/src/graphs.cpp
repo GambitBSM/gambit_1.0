@@ -26,6 +26,7 @@
 #include <functors.hpp>
 #include <graphs.hpp>
 #include <yaml_parser.hpp>
+#include "boost/format.hpp"
 
 namespace GAMBIT
 {
@@ -46,19 +47,19 @@ namespace GAMBIT
     // pushes dependencies of vertex into parameter queue
     void DependencyResolver::fill_parQueue(queue<pair<sspair, Graphs::VertexID> > *parQueue,
         Graphs::VertexID vertex) {
-      (*masterGraph[vertex]).setStatus(2);
-      cout << "Adding " << (*masterGraph[vertex]).name() 
-        << " to parameter queue, with dependencies" << endl;
+      (*masterGraph[vertex]).setStatus(2); // activate node
       vector<sspair> vec = (*masterGraph[vertex]).dependencies();
+      // if (vec.size() != 0)
+      //   cout << "- add dependencies:" << endl;
       for (vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) {
-        cout << "  " << (*it).first << " (" << (*it).second << ")" << endl;
+        cout << "  " << (*it).first << " (" << (*it).second << ")  " << endl;
         (*parQueue).push(*(new pair<sspair, Graphs::VertexID> (*it, vertex)));
       }
     }
 
     // initializes (capability, type) --> vertex multimap
     multimap<sspair, Graphs::VertexID> DependencyResolver::initialize_capMap() {
-      cout << endl << "Filling capability map with" << endl;
+      // cout << endl << "Filling capability map with" << endl;
       multimap<sspair, Graphs::VertexID> capMap;
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       pair<sspair, Graphs::VertexID> ins;
@@ -66,14 +67,15 @@ namespace GAMBIT
         ins.first.first = (*masterGraph[*vi]).capability();
         ins.first.second = (*masterGraph[*vi]).type();
         ins.second = *vi;
-        cout << "  " << ins.first.first << " (" << ins.first.second << ")" << endl;
+        // cout << "  " << ins.first.first << " (" << ins.first.second << ")" << endl;
         capMap.insert(ins);
       };
       return capMap;
     }
 
     void DependencyResolver::initialize_edges(queue<pair<sspair, Graphs::VertexID> > parQueue, multimap<sspair, Graphs::VertexID> capMap) {
-      cout << endl << "Setting up edges/dependencies:" << endl;
+      cout << "Resolving dependency graph" << endl;
+      cout << "--------------------------" << endl;
       int key_multiplicity;
       bool ok;
       Graphs::VertexID fromVertex, toVertex;
@@ -82,7 +84,8 @@ namespace GAMBIT
       while (not parQueue.empty()) {
         var = parQueue.front().first;
         toVertex = parQueue.front().second;
-        cout << var.first << " (" << var.second << ")" << ": ";
+        cout << var.first << " (" << var.second << ")" << " [";
+        cout << (*masterGraph[toVertex]).name() << "]: ";
         key_multiplicity = capMap.count(var);
         if ( key_multiplicity == 0 ) {
           cout << "No matching capability/type pair found." << endl;
@@ -94,19 +97,17 @@ namespace GAMBIT
           exit(0);
         }
         fromVertex = (*capMap.find(var)).second;
-        cout << "resolved." << endl;
+        (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
+        tie(current_edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
+        cout << "resolved by ";
+        cout << (*masterGraph[fromVertex]).name() << endl;
+        // cout << (*masterGraph[toVertex]).name() << endl;
         if ( (*masterGraph[fromVertex]).status() != 2 ) {
           fill_parQueue(&parQueue, fromVertex);
         }
-        cout << "Adding edge: ";
-        cout << (*masterGraph[fromVertex]).name() << " --> ";
-        cout << (*masterGraph[toVertex]).name() << endl;
-        tie(current_edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
-        (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
-        masterGraph[current_edge].variable = var;
-        parQueue.pop();
+        masterGraph[current_edge].variable = var; // set edge label
+        parQueue.pop(); //done
       }
-      cout << endl;
     }
 
     // The boost lib topolical sort
@@ -117,16 +118,15 @@ namespace GAMBIT
     }
 
     // Lists all vertices in correct order
-    void DependencyResolver::list_functions(list<int> topo_order) {
-      cout << "Dependency resolver says:  I will run the module functions in this order (and only the active ones):" << endl;
-      for(list<int>::const_iterator i = topo_order.begin();
-          i != topo_order.end();
+    void DependencyResolver::logOrder() {
+      cout << "Ordered, active functions" << endl;
+      cout << "-------------------------" << endl;
+      for(list<int>::const_iterator i = function_order.begin();
+          i != function_order.end();
           ++i)
       {
-        cout << "  " << (*masterGraph[*i]).name() ;
-        if ( (*masterGraph[*i]).status() == 0 ) cout << " (disabled)" << endl;
-        if ( (*masterGraph[*i]).status() == 1 ) cout << " (available)" << endl;
-        if ( (*masterGraph[*i]).status() == 2 ) cout << " (ACTIVE)" << endl;
+        if ( (*masterGraph[*i]).status() == 2 )
+          cout << (*masterGraph[*i]).name() << endl;
       }
     }
 
@@ -146,35 +146,45 @@ namespace GAMBIT
     }
 
     // Convenience function
-    void DependencyResolver::list_graphs_content() 
+    void DependencyResolver::logFunctors() 
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      cout << "List of registered vertices" << endl;
+      str formatString = "%-25s %-25s %-25s %-25s %-25s %-7i %-5i %-5i\n";
+      int i = 0;
+      cout << "Vertices registered in masterGraph" << endl;
+      cout << "----------------------------------" << endl;
+      cout << boost::format(formatString)%
+        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "OBSTYPE"% "STATUS"% "#DEPs"% "#BE_REQs";
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
-        cout << "  " << (*masterGraph[*vi]).name() << endl;
-        cout << "    Capability: " << (*masterGraph[*vi]).capability();
-        cout << " (" << (*masterGraph[*vi]).type() << ")" << endl;
-        cout << "    Module: " << (*masterGraph[*vi]).origin();
-        cout << " (" << (*masterGraph[*vi]).version() << ")" << endl;
+        cout << boost::format(formatString)%
+          ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
+          (*masterGraph[*vi]).name()%
+          (*masterGraph[*vi]).capability()%
+          (*masterGraph[*vi]).type()%
+          (*masterGraph[*vi]).obsType()%
+          (*masterGraph[*vi]).status()%
+          (*masterGraph[*vi]).dependencies().size()%
+          (*masterGraph[*vi]).backendreqs().size();
+        i++;
       };
+      // cout << "TOTAL: " << i << endl;
     };
 
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
       std::vector<unsigned int> pars = reqObs;
-      list_graphs_content();
       queue<pair<sspair, Graphs::VertexID> > parQueue;
       multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
 
+      cout << "The goal" << endl;
+      cout << "--------" << endl;
       for (std::vector<unsigned int>::iterator it = pars.begin() ; it != pars.end(); ++it)
       {
         fill_parQueue(&parQueue, vertex(*it, masterGraph));
       }
-
       initialize_edges(parQueue, capMap);
       function_order = run_topological_sort();
-      list_functions(function_order);
     }
 
     outputListType DependencyResolver::outputList;
@@ -222,8 +232,8 @@ namespace GAMBIT
       std::vector<functor *> candidateList;
       for (unsigned int i=0; i<functorList.size(); ++i)
       {
-        cout << " BE offer: " << functorList[i]->capability() << " (" <<
-          functorList[i]->type() << ")" << endl;
+        // cout << " BE offer: " << functorList[i]->capability() << " (" <<
+        //   functorList[i]->type() << ")" << endl;
         if ( functorList[i]->quantity() == key )
         {
           candidateList.push_back(functorList[i]);
@@ -235,9 +245,12 @@ namespace GAMBIT
     // Rudimentary backend resolution
     void DependencyResolver::resolveBackends(std::vector<functor *> functorList)
     {
+      cout << "Backend resolution" << endl;
+      cout << "------------------" << endl;
       std::vector<sspair> reqs;
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       std::vector<functor *> candidateList;
+      functor * candidate;
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
         if ( (*masterGraph[*vi]).status() == 2 )
@@ -245,11 +258,11 @@ namespace GAMBIT
           reqs = (*masterGraph[*vi]).backendreqs();
           if (reqs.size() != 0)
           {
-            cout << "Resolving Backends for: " << (*masterGraph[*vi]).name() << endl;
-            for (vector<sspair>::iterator it = reqs.begin(); 
+            cout << (*masterGraph[*vi]).name() << endl;
+            for (vector<sspair>::iterator it = reqs.begin();
                 it != reqs.end(); ++it)
             {
-              cout << " BE req: " << it->first << " (" << it->second << ")" << endl;
+              cout << "  " << it->first << " (" << it->second << "): ";
               candidateList = findBackendCandidates(*it, functorList);
               if (candidateList.size() == 0)
               {
@@ -257,13 +270,15 @@ namespace GAMBIT
                 exit(0);
               }
               // Take just first best right now
-              cout << "Resolve backend requirement" << endl;
+              candidate = candidateList[0];
               (*masterGraph[*vi]).resolveBackendReq(candidateList[0]);
+              cout << "resolved by " << (*candidate).name();
+              cout << " from " << (*candidate).origin() << " (";
+              cout << (*candidate).version() << ")" << endl;
             }
           }
         }
       }
     }
-
   }
 }

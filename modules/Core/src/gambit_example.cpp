@@ -60,9 +60,9 @@ using namespace gambit;
 
 void beispiel()
 {
-  cout << "Number of module functors: " <<
+  cout << "globalFunctorList.size() = " <<
     GAMBIT::globalFunctorList.size() << endl;
-  cout << "Number of backend functors: " <<
+  cout << "globalBackendFunctorList.size() = " <<
     GAMBIT::globalBackendFunctorList.size() << endl;
 
   // Read INI file
@@ -78,8 +78,14 @@ void beispiel()
   // Add input and output legs to the module function vertices
   dependencyResolver.addLegs(iniFile);
 
+  // Log module function infos
+  dependencyResolver.logFunctors();
+
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+
+  // dependencyResolver.logOrder();
+  // dependencyResolver.logFunctors();
 
   // Resolve backends
   dependencyResolver.resolveBackends(globalBackendFunctorList);
