@@ -103,7 +103,6 @@ void beispiel()
 int main( int argc, const char* argv[] )
 {
   beispiel();
-  //return 0;
 
   cout<<endl;
   cout<< "This is a skeleton example for gambit."<<endl;
@@ -115,39 +114,6 @@ int main( int argc, const char* argv[] )
   cout<< "  * hooks module functions up to their dependencies"<<endl;
   cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
   cout<<endl;
-
-  // // Run ini-file parser
-  // ini_parser::IniFileParser my_parser("gambit.ini");
-  // my_parser.print();
-
-  // // TODOCW Define alpha node (from ini-file)
-
-  // // Do some mock parsing of the ini file and pick which things to compute
-  // vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
-  // requested_observables.push_back(1);  // nevents_int
-  // requested_observables.push_back(14); // rdomega
-  // requested_observables.push_back(6);  // nevents_postcuts
-
-  // // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
-
-  // // Run dependency resolution proper
-  // Graphs::dependency_resolution(requested_observables);
-
-  // // Initialize MasterLike;
-  // MasterLike masterLike(Graphs::get_functors());
-
-  // // Call the functions in their sorted order
-  // Graphs::execute_functions();
-
-  // Test it
-  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
 
   // Setup logs
   logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
@@ -320,6 +286,15 @@ functions using pointers of base class type..."<<std::endl;
   // TinyDarkBit code START
   // ****************
 
+  // Test it
+  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
+
   // Some basic TinyDarkBit functionality
   cout << "*** Start Dark ***" << endl;
   cout << "My name is " << TinyDarkBit::name() << endl;
@@ -329,20 +304,20 @@ functions using pointers of base class type..."<<std::endl;
   cout << "*** End Dark ***" << endl << endl;
 
   // DarkSUSY initialization
-  //TinyDarkBit::Functown::initDS.calculate();
+  // TinyDarkBit::Functown::initDS.calculate();
 
   // Run calculate() in correct order by hand and print results
-  //TinyDarkBit::Functown::CMSSM_definition.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  //TinyDarkBit::Functown::SLHA.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  //TinyDarkBit::Functown::Weff.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  //TinyDarkBit::Functown::Wstruct.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  //TinyDarkBit::Functown::omega_DM.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
+  TinyDarkBit::Functown::CMSSM_definition.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
+  TinyDarkBit::Functown::SLHA.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
+  TinyDarkBit::Functown::Weff.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
+  TinyDarkBit::Functown::Wstruct.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
+  TinyDarkBit::Functown::omega_DM.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
 
   // ********************
   // TinyDarkBit code END
@@ -351,6 +326,7 @@ functions using pointers of base class type..."<<std::endl;
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
