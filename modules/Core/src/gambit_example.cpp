@@ -51,6 +51,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
+#include <gambit_scan.hpp>
+#include <crapsample.hpp>
 
 // Ben: It seems we currently are using both these namespaces! Should we pick
 //      one?
@@ -104,6 +106,13 @@ void beispiel()
   // Read output parameters
   cout << masterLike("Likelihood")[0] << endl;
   cout << masterLike("Likelihood")[1] << endl;
+  
+  char *names[2] = {"m_0", "m_1/2"};
+  Gambit_Functor like (&mlike, "Likelihood", names, 2);
+  Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
+	// let's run scanner!
+  CrappySampler sample(&like, &dlike);
+  sample.mcmc();
 }
 
 int main( int argc, const char* argv[] )
