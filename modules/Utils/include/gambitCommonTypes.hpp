@@ -10,7 +10,7 @@
 // \date July 2011
 */
 
-namespace gambit {
+namespace GAMBIT {
   typedef long long longlong ;
   typedef unsigned long long u_longlong ;
 }

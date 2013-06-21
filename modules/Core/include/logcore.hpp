@@ -7,7 +7,7 @@
 /*! \file logcore.hpp
  * \brief Interface for logging.
  *
- * Declares the class gambit::logsetup, defining methods e.g. for setting
+ * Declares the class GAMBIT::logsetup, defining methods e.g. for setting
  * the logfiles and active log/debug levels.
  *
  * as well as the user macros:
@@ -67,17 +67,17 @@
 // should be optimized out by compiler when not required.
 #define GAMBIT_MSG_IMP_DBG1_(text,dblevel)                               \
   do { if((0==(dblevel))||(((GAMBIT_BUILDOPT_LOGLIMIT)<0)&&(0<(dblevel)))){std::stringstream ss; ss <<text; \
-      ::gambit::logsetup::__priv_debug(__FILE__,__LINE__,__FUNCTION__,ss.str(),dblevel);}}while (0)
+      ::GAMBIT::logsetup::__priv_debug(__FILE__,__LINE__,__FUNCTION__,ss.str(),dblevel);}}while (0)
 // ** end of MSG_DEBUG internals.
 
 #endif
 
-#define GAMBIT_MSG_FATAL(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_fatal,text<<"'"<<std::endl<<"stacktrace:'"<<::gambit::logsetup::stacktrace())
-#define GAMBIT_MSG_ERROR(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_error,text)
-#define GAMBIT_MSG_WARNING(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_warning,text)
-#define GAMBIT_MSG_LOG(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_log,text)
-#define GAMBIT_MSG_INFO(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_info,text)
-//#define GAMBIT_MSG_DEBUG(text) GAMBIT_MSG_IMP0_(::gambit::logsetup::__priv_debug,text)
+#define GAMBIT_MSG_FATAL(text) GAMBIT_MSG_IMP0_(::GAMBIT::logsetup::__priv_fatal,text<<"'"<<std::endl<<"stacktrace:'"<<::GAMBIT::logsetup::stacktrace())
+#define GAMBIT_MSG_ERROR(text) GAMBIT_MSG_IMP0_(::GAMBIT::logsetup::__priv_error,text)
+#define GAMBIT_MSG_WARNING(text) GAMBIT_MSG_IMP0_(::GAMBIT::logsetup::__priv_warning,text)
+#define GAMBIT_MSG_LOG(text) GAMBIT_MSG_IMP0_(::GAMBIT::logsetup::__priv_log,text)
+#define GAMBIT_MSG_INFO(text) GAMBIT_MSG_IMP0_(::GAMBIT::logsetup::__priv_info,text)
+//#define GAMBIT_MSG_DEBUG(text) GAMBIT_MSG_IMP0_(::GAMBIT::logsetup::__priv_debug,text)
 /*! \brief. debug message.
  *  syntax: GAMBIT_MSG_DEBUG("message"); or:
  *          GAMBIT_MSG_DEBUG(level,"message"); // where level is a positive int.
@@ -115,7 +115,8 @@
 #endif
 #endif
 
-namespace gambit {
+namespace GAMBIT {
+
   /*! \brief Logging facility
    *
    * The logsetup defines only static methods and no object can be made.
@@ -130,17 +131,17 @@ namespace gambit {
    *
    * To log all messages of severity WARNING or higher to the file errors.txt, do:
    * \code
-   * gambit::logsetup::setfile_downto_WARNING("errors.txt")
+   * GAMBIT::logsetup::setfile_downto_WARNING("errors.txt")
    * \endcode
    * The logcore supports independent logging to stdout/stderr and files.
    *
    * For example: To set the level threshold to LOG for printing to stdout/stderr:
    * \code
-   * gambit::logsetup::setEchoLevel(gambit::logsetup::sLOG);
+   * GAMBIT::logsetup::setEchoLevel(GAMBIT::logsetup::sLOG);
    * \endcode
    * For example: To set the level threshold to DEBUG for writing to files:
    * \code
-   * gambit::logsetup::setLogLevel(gambit::logsetup::sDEBUG);
+   * GAMBIT::logsetup::setLogLevel(GAMBIT::logsetup::sDEBUG);
    * \endcode
    * Note: the use of the setfile_... methods do not modify the logging level. Files are
    *       automatically open and closed as required.
@@ -198,9 +199,9 @@ namespace gambit {
     std::string demangle_traceline(const char* name) throw();
 
     //! default log filename for errors
-    inline std::string _default_errfile(){ return "_gambit.logs.err" ;};
+    inline std::string _default_errfile(){ return "_GAMBIT.logs.err" ;};
     //! default log filename for non-errors
-    inline std::string _default_logfile(){ return "_gambit.logs.log" ;};
+    inline std::string _default_logfile(){ return "_GAMBIT.logs.log" ;};
 
     // these methods should not be called by the user but needs
     // to be public so they can be called from the logging macros

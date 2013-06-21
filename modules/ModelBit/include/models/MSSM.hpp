@@ -20,11 +20,9 @@
 
 #include <string>
 //#include "ModelParameters.hpp"
-#include "ModelMacros.hpp"
+#include <ModelMacros.hpp>
+#include <util_classes.hpp>
 //#include <dictionary.hpp>  //need this for the 'dict' type.
-
-// Local shorthand for different types
-typedef std::string str;
 
 // Brainstorming what the model object is supposed to look like and do...
 
@@ -39,8 +37,9 @@ typedef std::string str;
 // different parameterisations (or is this too specialised?)
 
 
-namespace gambit{
-  namespace models{
+namespace GAMBIT{
+
+  namespace Models{
     
     // In include/modelmacros.hpp we have defined the virtual bass class
     // "model_base". The NEW_CHILD_MODEL macro builds a new class with the 

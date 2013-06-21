@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Example of gambit core framework use.
+///  Example of GAMBIT core framework use.
 ///
 ///  A program to demo what can be done with the 
 ///  current development version of the code. 
@@ -22,9 +22,6 @@
 //#include "RandomScanner.hpp"
 // model class - probably to be replaced too
 //#include "ModelParametersSusy.hpp"
-
-//brief helper for gambit_example
-//using namespace gambit;
 
 /* Ben: I have commented out all model-related stuff in the example (not much)
 since I am screwing with the related code at the moment. I will add something
@@ -54,11 +51,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <gambit_scan.hpp>
 #include <crapsample.hpp>
 
-// Ben: It seems we currently are using both these namespaces! Should we pick
-//      one?
-// Pat: GAMBIT
 using namespace GAMBIT;
-using namespace gambit;
 
 void beispiel()
 {
@@ -107,12 +100,12 @@ void beispiel()
   cout << masterLike("Likelihood")[0] << endl;
   cout << masterLike("Likelihood")[1] << endl;
   
-  char *names[2] = {"m_0", "m_1/2"};
-  Gambit_Functor like (&mlike, "Likelihood", names, 2);
-  Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
+  //char *names[2] = {"m_0", "m_1/2"};
+  //Gambit_Functor like (&mlike, "Likelihood", names, 2);
+  //Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
 	// let's run scanner!
-  CrappySampler sample(&like, &dlike);
-  sample.mcmc();
+  //CrappySampler sample(&like, &dlike);
+  //sample.mcmc();
 }
 
 int main( int argc, const char* argv[] )
@@ -131,11 +124,11 @@ int main( int argc, const char* argv[] )
   cout<<endl;
 
   // Setup logs
-  logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
-  logsetup::setfile_upto_LOG("_gambit_msgs_example_normal.txt");     // into files, depending
-  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug0.txt");   // on debug level.
-  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug1.txt",1);
-  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug2.txt",2);
+  logsetup::setfile("_GAMBIT_msgs_example_errors.txt");              // setup detailed debug
+  logsetup::setfile_upto_LOG("_GAMBIT_msgs_example_normal.txt");     // into files, depending
+  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug0.txt");   // on debug level.
+  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug1.txt",1);
+  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug2.txt",2);
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
@@ -150,68 +143,68 @@ int main( int argc, const char* argv[] )
   // here.
   
   // Need to make model objects in order to access names and lineages.
-  models::CMSSM_base M1;
-  models::CMSSM::P1 M2;
-  models::Gaussian_Halo M3;
-  models::CMSSMandGHALO M4;
+  Models::CMSSM_base M1;
+  Models::CMSSM::P1 M2;
+  Models::Gaussian_Halo M3;
+  Models::CMSSMandGHALO M4;
   
   // We can also refer to models by pointers of the base class type, which means
   // the rest of the code need not know exactly which class a given model is in
   // order to fiddle with the model objects.
-  models::model_base* p1=&M1;
-  models::model_base* p2=&M2;
+  Models::model_base* p1=&M1;
+  Models::model_base* p2=&M2;
   
   //Try this way also:
-  models::model_base &r1=M1;
-  models::model_base &r2=M2;
+  Models::model_base &r1=M1;
+  Models::model_base &r2=M2;
   
   // (having a sudden thought that maybe we can make more native use of this
   // capability - if a module knows about a parent model type can it just
   // declare the appropriate pointer and use all child models similarly?)
-  models::MSSM* MSSM_child1=&M1;
-  models::MSSM* MSSM_child2=&M2;
+  Models::MSSM* MSSM_child1=&M1;
+  Models::MSSM* MSSM_child2=&M2;
   // This would only be useful if there were functions unique to MSSM that
   // model_base had not already declared. Not sure that is the spirit we want.
   
   // Get a pointer to DMHalo model and supermodel too:
-  models::DMHalo_base* Halo_child1=&M3;
-  models::DMHalo_base* Halo_child2=&M4;
+  Models::DMHalo_base* Halo_child1=&M3;
+  Models::DMHalo_base* Halo_child2=&M4;
   
   //Cannot use a pointer of a non-parent model class!
   //(here M1 is not a descendent of DMHalo_base)
-  //gambit::models::DMHalo_base* Halo_child_error=&M1; 
+  //GAMBIT::Models::DMHalo_base* Halo_child_error=&M1; 
     
   // Can then refer to staticly bound functions if we know the class:
-  std::cout<<""<<std::endl;
-  std::cout<<"Disclaimer: I may be using the wrong terms for these C++ \
-technicalities! If so I am sorry :(."<<std::endl;
-  std::cout<<"Retrieving model names and lineages by statically bound get functions..."<<std::endl;
-  std::cout<<"M1.getname(): "<<M1.getname()<<std::endl;
-  std::cout<<"M1.getlineage(): "<<M1.getlineage()<<std::endl;
-  std::cout<<"M2.getname(): "<<M2.getname()<<std::endl;
-  std::cout<<"M2.getlineage(): "<<M2.getlineage()<<std::endl;
+  cout<<""<<endl;
+  cout<<"Disclaimer: I may be using the wrong terms for these C++ \
+technicalities! If so I am sorry :(."<<endl;
+  cout<<"Retrieving model names and lineages by statically bound get functions..."<<endl;
+  cout<<"M1.getname(): "<<M1.getname()<<endl;
+  cout<<"M1.getlineage(): "<<M1.getlineage()<<endl;
+  cout<<"M2.getname(): "<<M2.getname()<<endl;
+  cout<<"M2.getlineage(): "<<M2.getlineage()<<endl;
   
   // Or by using references of the base class type if we don't:
-  std::cout<<""<<std::endl;
-  std::cout<<"Retrieving model names and lineages by statically bound get \
-functions using references of base class type..."<<std::endl;
-  std::cout<<"r1.getname(): "<<r1.getname()<<std::endl;
-  std::cout<<"r1.getlineage(): "<<r1.getlineage()<<std::endl;
-  std::cout<<"r2.getname(): "<<r2.getname()<<std::endl;
-  std::cout<<"r2.getlineage(): "<<r2.getlineage()<<std::endl;
+  cout<<""<<endl;
+  cout<<"Retrieving model names and lineages by statically bound get \
+functions using references of base class type..."<<endl;
+  cout<<"r1.getname(): "<<r1.getname()<<endl;
+  cout<<"r1.getlineage(): "<<r1.getlineage()<<endl;
+  cout<<"r2.getname(): "<<r2.getname()<<endl;
+  cout<<"r2.getlineage(): "<<r2.getlineage()<<endl;
   
   // or also by dynamic binding (apologies if these are the wrong C++ 
   // words...)
-  std::cout<<""<<std::endl;
-  std::cout<<"Retrieving model names and lineages by dynamically bound get \
-functions using pointers of base class type..."<<std::endl;
-  std::cout<<"p1->getname(): "<<p1->getname()<<std::endl;
-  std::cout<<"p1->getlineage(): "<<p1->getlineage()<<std::endl;
-  std::cout<<"p2->getname(): "<<p2->getname()<<std::endl;
-  std::cout<<"p2->getlineage(): "<<p2->getlineage()<<std::endl;
-  std::cout<<"Can also use pointers of any other parent type..."<<std::endl;
-  std::cout<<"MSSM_child1->getname(): "<<MSSM_child1->getname()<<std::endl;
-  std::cout<<"MSSM_child1->getlineage(): "<<MSSM_child1->getlineage()<<std::endl;
+  cout<<""<<endl;
+  cout<<"Retrieving model names and lineages by dynamically bound get \
+functions using pointers of base class type..."<<endl;
+  cout<<"p1->getname(): "<<p1->getname()<<endl;
+  cout<<"p1->getlineage(): "<<p1->getlineage()<<endl;
+  cout<<"p2->getname(): "<<p2->getname()<<endl;
+  cout<<"p2->getlineage(): "<<p2->getlineage()<<endl;
+  cout<<"Can also use pointers of any other parent type..."<<endl;
+  cout<<"MSSM_child1->getname(): "<<MSSM_child1->getname()<<endl;
+  cout<<"MSSM_child1->getlineage(): "<<MSSM_child1->getlineage()<<endl;
   
   // I think we can also just access the public data members directly with these
   // methods:
@@ -219,10 +212,10 @@ functions using pointers of base class type..."<<std::endl;
   // now made the data members 'protected' so that no-one will accidentally try
   // to access them this way.
   /*
-  std::cout<<p1->name<<",(p1) "<<p1->lineage<<std::endl;
-  std::cout<<p2->name<<",(p2) "<<p2->lineage<<std::endl;
-  std::cout<<r1.name<<",(r1) "<<r1.lineage<<std::endl;
-  std::cout<<r2.name<<",(r2) "<<r2.lineage<<std::endl;
+  cout<<p1->name<<",(p1) "<<p1->lineage<<endl;
+  cout<<p2->name<<",(p2) "<<p2->lineage<<endl;
+  cout<<r1.name<<",(r1) "<<r1.lineage<<endl;
+  cout<<r2.name<<",(r2) "<<r2.lineage<<endl;
   */
   
   // Set parameter value by accessing parameter object directly via model object.
@@ -240,54 +233,56 @@ functions using pointers of base class type..."<<std::endl;
   // like.
   ModelParameters* M2params = p2->getparamobjptr();
   
-  std::cout<<""<<std::endl;
-  std::cout<<"Demonstrating different ways of retrieving parameter values..."<<std::endl;
-  std::cout<<"M2 parameters:"<<std::endl;
-  std::cout<<"M0    = "<<M2params->getValue("M0")<<std::endl;
-  std::cout<<"M12   = "<<M2params->getValue("M12")<<std::endl;
+  cout<<""<<endl;
+  cout<<"Demonstrating different ways of retrieving parameter values..."<<endl;
+  cout<<"M2 parameters:"<<endl;
+  cout<<"M0    = "<<M2params->getValue("M0")<<endl;
+  cout<<"M12   = "<<M2params->getValue("M12")<<endl;
   // but of course if we have the actual model object we can dig the 
   // corresponding parameter object straight out of it like before.
-  std::cout<<"A0    = "<<M2.parameters.getValue("A0")<<std::endl;
-  std::cout<<"tanb  = "<<M2.parameters.getValue("tanb")<<std::endl;
-  std::cout<<"sgnmu = "<<M2.parameters.getValue("sgnmu")<<std::endl;
+  cout<<"A0    = "<<M2.parameters.getValue("A0")<<endl;
+  cout<<"tanb  = "<<M2.parameters.getValue("tanb")<<endl;
+  cout<<"sgnmu = "<<M2.parameters.getValue("sgnmu")<<endl;
   
   // Lets also look at the halo models
-  std::cout<<""<<std::endl;
-  std::cout<<"Halo model names and lineages..."<<std::endl;
-  std::cout<<"Halo_child1->getname(): "<<Halo_child1->getname()<<std::endl;
-  std::cout<<"Halo_child1->getlineage(): "<<Halo_child1->getlineage()<<std::endl;
+  cout<<""<<endl;
+  cout<<"Halo model names and lineages..."<<endl;
+  cout<<"Halo_child1->getname(): "<<Halo_child1->getname()<<endl;
+  cout<<"Halo_child1->getlineage(): "<<Halo_child1->getlineage()<<endl;
   Halo_child1->getparamobjptr()->setValue("v_earth",300);
   // There is a function to just dump all the parameters to stdout:
-  std::cout<<"Dumping Halo_child1 parameters...";
+  cout<<"Dumping Halo_child1 parameters...";
   Halo_child1->getparamobjptr()->print();
   
   // Now the 'supermodel':
   ModelParameters* HC2params = Halo_child2->getparamobjptr();
-  std::cout<<""<<std::endl;
-  std::cout<<"\"Super\" model names and lineages..."<<std::endl;
-  std::cout<<"Halo_child2->getname(): "<<Halo_child2->getname()<<std::endl;
-  std::cout<<"Halo_child2->getlineage(): "<<Halo_child2->getlineage()<<std::endl;
-  std::cout<<"Dumping Halo_child2 parameters...";
+  cout<<""<<endl;
+  cout<<"\"Super\" model names and lineages..."<<endl;
+  cout<<"Halo_child2->getname(): "<<Halo_child2->getname()<<endl;
+  cout<<"Halo_child2->getlineage(): "<<Halo_child2->getlineage()<<endl;
+  cout<<"Dumping Halo_child2 parameters...";
   HC2params->setValue("M12",4321);
   HC2params->setValue("A0",100);
   HC2params->setValue("v_earth",300);
   HC2params->print();
   
   // Demonstration of automatic looping over parameters
-  std::cout<<std::endl;
-  std::cout<<"Parameter name retrieval..."<<std::endl;
-  std::cout<<"HC2params->getKeys(): "<< \
-                HC2params->getKeys()<<std::endl;
+  cout<<endl;
+  cout<<"Parameter name retrieval..."<<endl;
+  cout<<"HC2params->getKeys(): "<< \
+                HC2params->getKeys()<<endl;
   // Generate some random values and set parameters to these values
-  
+
+  str rabbit = "dog";  
+
   std::vector<str> keys = HC2params->getKeys();
   
   srand (time(NULL));    // initialize random seed
   for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
-    std::cout <<"Setting random "<<*it<<" value..."<<std::endl;
+    cout <<"Setting random "<<*it<<" value..."<<endl;
     HC2params->setValue(*it, rand()%1000);
   }
-  std::cout<<"Dumping new Halo_child2 parameters...";
+  cout<<"Dumping new Halo_child2 parameters...";
   HC2params->print();
   
   cout << "*** End ModelBit demo ***" << endl;
@@ -595,14 +590,14 @@ functions using pointers of base class type..."<<std::endl;
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
 
   try{
-    GAMBIT_MSG_LOG("gambit example");
+    GAMBIT_MSG_LOG("GAMBIT example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
     //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
     /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
         GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
         GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
     */
-  }catch( exceptions::gambit_exception_base & e){
+  }catch( exceptions::GAMBIT_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
 
