@@ -67,7 +67,8 @@ namespace GAMBIT{
     // Note: parameters are stored in the "parameters" member object, which
     // also is in possession of the needed get/set functions.
     NEW_CHILD_MODEL(CMSSM_base,MSSM)
-    const std::vector<str> CMSSM_base::parameterkeys = {"M0", "M12", "A0"};
+    //const std::vector<str> CMSSM_base::parameterkeys = {"M0", "M12", "A0"}; PS: doesn't work with icc, dunno why -- this is a C++11 feature tho
+    const std::vector<str> CMSSM_base::parameterkeys = delimiterSplit("M0, M12, A0", ",");
 
     namespace CMSSM {
       // Need to go inside CMSSM namespace to create parameterisations (just
@@ -81,7 +82,7 @@ namespace GAMBIT{
       // verbose, which I shall demo shortly.
       
       NEW_CHILD_MODEL(P1,CMSSM_base);
-      const std::vector<str> newkeys = {"tanb", "sgnmu"};
+      const std::vector<str> newkeys = delimiterSplit("tanb, sgnmu", ",");
       const std::vector<str> P1::parameterkeys = vecjoin(
                                                   CMSSM_base::parameterkeys,
                                                   newkeys
@@ -95,9 +96,7 @@ namespace GAMBIT{
     // We can use the DEFINEPARS macro to define the 'parameterkeys' data
     // member, and thus the parameters given to the parameter object:
     NEW_CHILD_MODEL(Gaussian_Halo,DMHalo_base)
-    DEFINEPARS(Gaussian_Halo, \
-                  "v_earth", "par2", "par3", "par4","par5", \
-                  "par6","par7","par8","par9","par10")
+    DEFINEPARS(Gaussian_Halo, v_earth, par2, par3, par4, par5, par6, par7, par8, par9, par10)
     
     // Now create a "supermodel" which is an explicit union of two models
     // *Note that this is not the generic way which totally orthogonal models
@@ -109,7 +108,7 @@ namespace GAMBIT{
     // list, i.e. there is no tree information.
     // Usage: NEW_SUPER_MODEL(<new model>,<parent model 1>,<parent model 2>)
     NEW_SUPER_MODEL(CMSSMandGHALO,CMSSM::P1,Gaussian_Halo)
-    const std::vector<str> newkeys = {"extpar1","extpar2","extpar3"};
+    const std::vector<str> newkeys = delimiterSplit("extpar1, extpar2, extpar3", ",");
     const std::vector<str> CMSSMandGHALO::parameterkeys = vecjoin3(
                                                   Gaussian_Halo::parameterkeys,
                                                   CMSSM::P1::parameterkeys,

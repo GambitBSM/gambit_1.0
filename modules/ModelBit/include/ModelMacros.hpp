@@ -177,7 +177,7 @@ do{                                                                            \
 }while(0);                                                                     \
 */
 #define DEFINEPARS(MODEL,...)                                                  \
-const std::vector<str> MODEL::parameterkeys = {__VA_ARGS__};                   \
+const std::vector<str> MODEL::parameterkeys = delimiterSplit(#__VA_ARGS__,",");\
 
 // Main "child model" class building macros
 
