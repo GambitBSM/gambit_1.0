@@ -69,7 +69,7 @@ namespace gambit{
     // also is in possession of the needed get/set functions.
     NEW_CHILD_MODEL(CMSSM_base,MSSM)
     const std::vector<str> CMSSM_base::parameterkeys = {"M0", "M12", "A0"};
-
+    
     namespace CMSSM {
       // Need to go inside CMSSM namespace to create parameterisations (just
       // so they have unique names). This namespace is not known to the 
@@ -122,6 +122,53 @@ namespace gambit{
 } //end namespace gambit
 
 #endif /* defined(__MSSM_hpp__) */
+
+/* Rough concept: split up definition, so we can create functors for every
+   parameter. Dependency system then deals with these functions.
+   
+    - need a "get parameter value" function for every parameter, which is what
+      the functor calls. Just extracts parameter from the parameter object.
+   Might have to consider ripping everything out of the model classes. But maybe
+   not, will have to see.
+   
+    - "interpret_as_parent" function gives instructions for the creation of the
+      parent parameter object. Possibly does this by calling the constructor
+      for the parent model object, and just providing the appropriate 
+      parameters? We don't want to be creating objects every loop though... needblacksun
+      
+      the dependency system to determine if it is necessary and then create the
+      parent model object if we have to, then simply modify its values via the
+      "interpret_as_parent" function each loop. Bit tricky.
+      
+    - Functors should be pretty much, if not exactly, the same as
+      module_functors, and the core will possibly just deal with them the same
+      way (although they will probably get higher priority than module_functors,
+      since we should resolve dependencies by using these before we decide to
+      go out and calculate anything, unless the ini_file explicitly asks us to
+      get the value from some module function instead).
+      
+   Resources:
+      Utils/include/functors.hpp - line 259 class module_functor
+      Utils/include/module_macros.hpp - line 434 CORE_START_FUNCTION(TYPE)
+      
+      
+
+  #define CHILD_MODEL Gaussian_Halo
+    PARENT(DMHalo_base)
+    
+      #define PARAMETER v_earth
+        CAPABILITY(earthvel)
+        DOSOMETHINGELSE(blah)
+
+      #define PARAMETER par2
+        CAPABILITY(otherstuff)
+
+    INTERPRET_AS_PARENT(
+      *insert real C++ code here*
+    )
+    
+*/
+
 
 /*
 class CMSSM : public MSSM
