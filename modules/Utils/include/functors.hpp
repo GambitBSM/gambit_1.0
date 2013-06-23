@@ -329,7 +329,6 @@ namespace GAMBIT
       safe_ptr<TYPE> valuePtr()
       {
         if (this == NULL) functor::failBigTime();
-        //return &myValue;
         return safe_ptr<TYPE>(&myValue);
       }
 
@@ -544,11 +543,11 @@ namespace GAMBIT
       }
 
       /// 2) Alternative to operation (execute function return a pointer to value)
-      TYPE* valuePtr(ARGS... args)
+      safe_ptr<TYPE> valuePtr(ARGS... args)
       {
         if (this == NULL) functor::functor::failBigTime();
         if(this->needs_recalculating) { myValue = this->myFunction(args...); }
-        return &myValue;
+        return safe_ptr<TYPE>(&myValue);
       }
 
 
