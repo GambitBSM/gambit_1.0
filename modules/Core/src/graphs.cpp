@@ -293,7 +293,7 @@ namespace GAMBIT
 
       cout << "The goal" << endl;
       cout << "--------" << endl;
-      for (std::vector<long unsigned int>::iterator it = pars.begin() ; it != pars.end(); ++it)
+      for (std::vector<unsigned int>::iterator it = pars.begin() ; it != pars.end(); ++it)
       {
         fill_parQueue(&parQueue, vertex(*it, masterGraph));
       }
