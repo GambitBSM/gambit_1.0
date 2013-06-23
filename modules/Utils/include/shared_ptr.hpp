@@ -2,9 +2,9 @@
 #define gambit_shared_ptr_hpp_ 1
 
 /*! \file
-// \brief Adds shared_pointer to gambit::
+// \brief Adds shared_pointer to GAMBIT::
 //
-// example : gambit::shared_ptr<double>::type myPtr.
+// example : GAMBIT::shared_ptr<double>::type myPtr.
 //
 // for now we use the shared pointer from tr1. This works
 // with (at least) gcc 4.2 and later. TODO: setup the makefiles
@@ -35,7 +35,7 @@
 //#warning "using tr1"
 #endif
 
-namespace gambit {
+namespace GAMBIT {
 
   using std::tr1::weak_ptr;
   using std::tr1::shared_ptr;

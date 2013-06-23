@@ -9,7 +9,7 @@ export
 
 CC = icc 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lyaml-cpp
 CFLAGS = -O3 -Wall -g
 
 FC = ifort
@@ -44,13 +44,17 @@ GCC++EXTRA=-Woverloaded-virtual
 CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
 	-I$(COREDIR)/include \
-	-I$(MODELDIR)/include \
+	-I$(MODELDIR)/include -I$(MODELDIR)/include/models \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
 	-I$(BACKENDDIR)/include \
-	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include -IDarkBit/include
+	-I$(BACKENDDIR)/lib \
+	-I$(HECOLLIDERDIR)/include \
+	-IExampleBit_A/include \
+	-IExampleBit_B/include \
+	-IDarkBit/include -IExample_SUSYspecBit/include
 
-COMMONLIBS = -lm 
+COMMONLIBS = -lm
 
 # beb_tester from makefile.test_backend
 TARGETS = gambit_example beb_tester 
@@ -111,7 +115,7 @@ $(UTILSDIR)/src/backend-fherwig.cpp
 
 OTHERLIBS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o \
-$(UTILSDIR)/build/util_functions.o
+$(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp 
 	@echo ___________Compiling $<:
@@ -158,6 +162,18 @@ DarkBit/build/%.o: DarkBit/src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 DarkBit/build/%.o: DarkBit/src/%.f 
+	@echo ___________Compiling $<:
+	$(FC) $(CFLAGS) -c $< -o $@
+	
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.cpp 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f 
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 

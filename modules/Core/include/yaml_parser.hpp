@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__

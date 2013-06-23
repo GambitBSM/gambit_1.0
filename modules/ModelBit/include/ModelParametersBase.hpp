@@ -5,7 +5,8 @@
 #include "gambitCommonTypes.hpp"
 #include "logcore.hpp"
 
-namespace gambit {
+namespace GAMBIT {
+
   /*! \brief virtual base class for model parameters.
   //
   // This class is only taking care of the version
