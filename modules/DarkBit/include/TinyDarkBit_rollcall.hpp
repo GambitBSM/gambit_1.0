@@ -83,6 +83,9 @@ START_MODULE
       BACKEND_OPTION(LibFirst, 1.0)
       #undef BACKEND_REQ
     #undef FUNCTION
+    #define FUNCTION Weff_alt1
+    START_FUNCTION(double)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY omega_DM

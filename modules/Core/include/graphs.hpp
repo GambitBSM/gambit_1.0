@@ -11,9 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Christoph Weniger (c.weniger@uva.nl)
-//  Apr 02++ 2013
-//  May 03 2013
-//  June 03 2013
+//  Apr, May, June 2013
 //  Pat Scott
 //  May 03 2013
 //
@@ -69,11 +67,11 @@ namespace GAMBIT
         void logFunctors();
 
         // Constructs input/output vertices from parameters and requested
-        // observables in ini-file
-        void addLegs(const GAMBIT::IniParser::IniFile &);
+        // observables in inifile
+        void addLegs(GAMBIT::IniParser::IniFile &);
 
         // The dependency resolution
-        void resolveNow();
+        void resolveNow(GAMBIT::IniParser::IniFile &);
 
         // Returns functors in sorted order
         vector<functor*> getFunctors();
@@ -96,7 +94,8 @@ namespace GAMBIT
             Graphs::VertexID vertex);
         multimap<sspair, Graphs::VertexID> initialize_capMap();
         void initialize_edges(queue<pair<sspair, Graphs::VertexID> > parQueue,
-            multimap<sspair, Graphs::VertexID> capMap);
+            multimap<sspair, Graphs::VertexID> capMap,
+            GAMBIT::IniParser::IniFile &);
         list<int> run_topological_sort();
         std::vector<VertexID> reqObs;
 

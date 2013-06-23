@@ -1,9 +1,8 @@
 //////////////////////////////////////////////////////////
-// Simple example for GAMBIT ini-file parser
-// 
+// Simple example for GAMBIT Ini-file parser
+//
 // Christoph Weniger (c.weniger@uva.nl)
-// May 03 2013
-// June 03 2013
+// May, June 2013
 //////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -18,7 +17,7 @@ namespace GAMBIT
   {
     int IniFile::readFile(std::string filename)
     {
-      // Read ini-file file
+      // Read inifile file
       std::vector<YAML::Node> roots = YAML::LoadAllFromFile(filename);
 
       // Set central nodes
@@ -38,6 +37,50 @@ namespace GAMBIT
         parameters.push_back((*it).as<Types::Parameter>());
       }
       return 0;
+    }
+
+    bool IniFile::hasObservable(std::string capability)
+    {
+      for (ObservablesType::const_iterator it = observables.begin();
+          it != observables.end(); ++it)
+      {
+        if ((*it).capability == capability)
+          return true;
+      }
+      return false;
+    }
+
+    bool IniFile::hasDependency(ObservableType observable, std::string capability)
+    {
+      for (ObservablesType::const_iterator it = observable.dependencies.begin();
+          it != observable.dependencies.end(); ++it)
+      {
+        if ((*it).capability == capability)
+          return true;
+      }
+      return false;
+    }
+
+    ObservableType IniFile::getObservable(std::string capability)
+    {
+      ObservableType ret;
+      for (ObservablesType::const_iterator it = observables.begin();
+          it != observables.end(); ++it)
+      {
+        if ((*it).capability == capability)
+          return (*it);
+      }
+    }
+
+    ObservableType IniFile::getDependency(ObservableType observable, std::string capability)
+    {
+      ObservableType ret;
+      for (ObservablesType::const_iterator it = observable.dependencies.begin();
+          it != observable.dependencies.end(); ++it)
+      {
+        if ((*it).capability == capability)
+          return (*it);
+      }
     }
   }
 }
