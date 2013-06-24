@@ -343,7 +343,7 @@ functions using pointers of base class type..."<<endl;
   cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_A::iMayNeed << endl;
   cout << endl;
-
+  
   cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << endl;
   cout << "I can do nevents (string-style) " << ExampleBit_A::provides("nevents") << endl;
   if (ExampleBit_A::requires("nevents_like","nevents")) { 
@@ -419,6 +419,14 @@ functions using pointers of base class type..."<<endl;
   cout << " I can calculate: " << endl << ExampleBit_B::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_B::iMayNeed << endl;
   cout << endl;
+
+  cout << "In fact, given the backend functors I am connected to, my dependencies are exactly:" << endl;
+  std::vector<sspair> tempdeps = ExampleBit_B::Functown::nevents_postcuts.dependencies();
+  for (std::vector<sspair>::iterator it = tempdeps.begin() ; it != tempdeps.end(); ++it)
+  {
+    cout << it->first << "   " << it->second << endl;        
+  }
+
   cout << "I can do nevents " << ExampleBit_B::provides("nevents") << endl;
   cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << endl;
   cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << endl;
