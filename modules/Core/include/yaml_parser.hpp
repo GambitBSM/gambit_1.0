@@ -30,9 +30,11 @@ namespace GAMBIT
         std::string capability;
         std::string function;
         std::string module;
+        std::string backend;
         std::string version;
         std::string options;
         std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
+        std::vector<Observable> backends; // ..deps of deps of deps of obs possible
       };
 
       struct Parameter
@@ -58,6 +60,7 @@ namespace YAML {
       READ(capability)
       READ(function)
       READ(module)
+      READ(backend)
       READ(version)
       READ(options)
       #undef READ
@@ -65,6 +68,11 @@ namespace YAML {
           it!=node["dependencies"].end(); ++it)
       {
         rhs.dependencies.push_back((*it).as<Observable>());
+      }
+      for(YAML::const_iterator it=node["backends"].begin();
+          it!=node["backends"].end(); ++it)
+      {
+        rhs.backends.push_back((*it).as<Observable>());
       }
       return true;
     }

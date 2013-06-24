@@ -68,7 +68,7 @@ void beispiel()
   Graphs::DependencyResolver dependencyResolver;
 
   // Add vertices from rollcall
-  dependencyResolver.addFunctors(globalFunctorList);
+  dependencyResolver.addFunctors(globalFunctorList, globalBackendFunctorList);
 
   // Add input and output legs to the module function vertices
   dependencyResolver.addLegs(iniFile);
@@ -83,7 +83,7 @@ void beispiel()
   // dependencyResolver.logFunctors();
 
   // Resolve backends
-  dependencyResolver.resolveBackends(globalBackendFunctorList);
+  // dependencyResolver.resolveBackends();
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),

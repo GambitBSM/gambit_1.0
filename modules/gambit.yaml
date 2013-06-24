@@ -21,17 +21,20 @@
 
 - obsType:      Likelihood
   capability:   omega_DM
+  function:     ""
   module:       ""
   version:      ""
   options:      ""
-  dependencies:
-  - {capability: "", function: "", module: "", version: "", options: ""}
-  backends:
+  dependencies: # first map that reduces options to one wins (from top to bottom)
+  - {capability: "", function: "", backend: "", version: "", options: ""}
+  backends: # first map that reduces options to one wins (from top to bottom)
   - {capability: "", function: "", backend: "", version: "", options: ""}
 
 - obsType:      Likelihood
   capability:   Weff
   function:     Weff
+  backends:
+  - {capability: "LibFirst_returnResult_capability", function: "", backend: "", version: "", options: ""}
 
 ###############################
 --- # Name/Value Section
