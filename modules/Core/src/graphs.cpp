@@ -173,13 +173,13 @@ namespace GAMBIT
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
-      std::vector<long unsigned int> pars = reqObs;
+      std::vector<unsigned int> pars = reqObs;
       queue<pair<sspair, Graphs::VertexID> > parQueue;
       multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
 
       cout << "The goal" << endl;
       cout << "--------" << endl;
-      for (std::vector<long unsigned int>::iterator it = pars.begin() ; it != pars.end(); ++it)
+      for (std::vector<unsigned int>::iterator it = pars.begin() ; it != pars.end(); ++it)
       {
         fill_parQueue(&parQueue, vertex(*it, masterGraph));
       }
