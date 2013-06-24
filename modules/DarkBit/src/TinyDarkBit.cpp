@@ -90,6 +90,11 @@ namespace GAMBIT {
       result.valA = SLHA * 0.5;
       result.valB = SLHA * 1.5;
     }
+    void Weff_alt1 (double &result)
+    {
+      cout << "I am Weff_alt1" << endl;
+      result = 4;
+    }
     void Weff (double &result)
     {
       double SLHA = GET_DEP(Weff::SLHA);

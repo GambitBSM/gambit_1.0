@@ -77,7 +77,7 @@ void beispiel()
   dependencyResolver.logFunctors();
 
   // Do the dependency resolution
-  dependencyResolver.resolveNow();
+  dependencyResolver.resolveNow(iniFile);
 
   // dependencyResolver.logOrder();
   // dependencyResolver.logFunctors();
@@ -90,8 +90,8 @@ void beispiel()
       dependencyResolver.inputMap, dependencyResolver.outputList);
 
   // Set input parameters
-  masterLike["m0"] = 123.0;
-  masterLike["m1"] = 321.0;
+  masterLike["m0"] = iniFile.getValue<double>("m0");
+  masterLike["m1"] = iniFile.getValue<double>("m1");
 
   // Call the functions in their sorted order
   masterLike.calculate();

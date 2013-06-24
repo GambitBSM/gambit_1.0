@@ -1,7 +1,7 @@
 # GAMBIT Initialization file (in YAML)
-#                                                         
+#
 # Christoph Weniger (c.weniger@uva.nl)
-# June 03 2013
+# June 2013
 #
 
 ###############################
@@ -18,24 +18,24 @@
 ###############################
 --- # Observables of interest
 ###############################
-#
-- obsType:      Likelihood
-  capability:   nevents
-  backend:      atlfast
-  dependencies:
-  - {capability: gossip, module: thisone}
 
 - obsType:      Likelihood
   capability:   omega_DM
-  backend:      DarkSUSY
+  module:       ""
+  version:      ""
+  options:      ""
   dependencies:
-  - {capability: poetry, module: thatone}
+  - {capability: "", function: "", module: "", version: "", options: ""}
+  backends:
+  - {capability: "", function: "", backend: "", version: "", options: ""}
 
+- obsType:      Likelihood
+  capability:   Weff
+  function:     Weff
 
 ###############################
 --- # Name/Value Section
 ###############################
 
-age: 1.3e2
-color: green
-path_to_oblivion: /dev/null
+m0: 43.0
+m1: 33.0

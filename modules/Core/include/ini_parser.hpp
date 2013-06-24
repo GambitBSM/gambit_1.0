@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////
-// Simple example for GAMBIT ini-file parser
+// Simple example for GAMBIT Ini-file parser
 // 
 // Christoph Weniger, 6 May 2013
 //////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ namespace GAMBIT
 {
   namespace ini_parser
   {
-    // Define structures to store ini-file data
+    // Define structures to store inifile data
     namespace client
     {
         namespace qi = boost::spirit::qi;

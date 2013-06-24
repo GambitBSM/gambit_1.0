@@ -28,7 +28,7 @@ namespace GAMBIT
   class MasterLike
   {
     public:
-      // Construct MasterLike from Graphs Output and ini-file
+      // Construct MasterLike from Graphs Output and inifile
       MasterLike(std::vector<functor*> functors, GAMBIT::Graphs::inputMapType
           inputMap, GAMBIT::Graphs::outputListType outputList);
 
