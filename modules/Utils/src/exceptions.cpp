@@ -10,7 +10,7 @@
 #include <execinfo.h>
 #include "logcore.hpp"
 
-namespace gambit{
+namespace GAMBIT{
 
   namespace exceptions{
 
@@ -53,7 +53,7 @@ namespace gambit{
 
       bool needendl=0;
       std::string tmp;
-      if(const gambit_exception_base *tmp=dynamic_cast<const gambit_exception_base*>(&e)){
+      if(const GAMBIT_exception_base *tmp=dynamic_cast<const GAMBIT_exception_base*>(&e)){
         out<<tmp->getName();
         needendl=1;
       }
@@ -94,10 +94,10 @@ namespace gambit{
   Additional code for optional debug messages from exceptions
 
   public:
-  gambit_exception_base() throw() {
+  GAMBIT_exception_base() throw() {
   //GAMBIT_MSG_INFO(exception_origin(*this));
   }
-  gambit_exception_base(const gambit_exception_base& rhs)throw(){
+  GAMBIT_exception_base(const GAMBIT_exception_base& rhs)throw(){
   boost::exception::operator=(rhs);
   std::exception::operator=(rhs);
   try {
@@ -114,9 +114,9 @@ namespace gambit{
   }catch(...){}
   }
   }
-  virtual ~gambit_exception_base() throw(){
+  virtual ~GAMBIT_exception_base() throw(){
   }
-  virtual gambit_exception_base & operator=(const gambit_exception_base& rhs)throw(){
+  virtual GAMBIT_exception_base & operator=(const GAMBIT_exception_base& rhs)throw(){
   std::exception::operator=(rhs);
   boost::exception::operator=(rhs);
   return (*this);

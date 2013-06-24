@@ -36,8 +36,8 @@ class GAMBIT::dict {
   typedef std::string str;
   typedef boost::any any;
   typedef std::map<str,any> dictmap;
-  typedef gambit::exceptions::e_configuration gerr;
-  typedef gambit::exceptions::i_text gerr_txt;
+  typedef GAMBIT::exceptions::e_configuration gerr;
+  typedef GAMBIT::exceptions::i_text gerr_txt;
   
   private:
 
@@ -81,8 +81,8 @@ class GAMBIT::dict {
       // Deal with the error
       catch(gerr e) {
         std::cout<<std::endl;
-        std::cout<<"Error: "<<gambit::exceptions::get_exception_text(e)<<std::endl;
-        std::cout<<"Origin: "<<gambit::exceptions::get_exception_origin(e)<<std::endl;
+        std::cout<<"Error: "<<GAMBIT::exceptions::get_exception_text(e)<<std::endl;
+        std::cout<<"Origin: "<<GAMBIT::exceptions::get_exception_origin(e)<<std::endl;
         std::cout<<"Quitting..."<<std::endl<<std::endl;
         exit(0);
       }
@@ -118,8 +118,8 @@ class GAMBIT::dict {
       // catch and call to e.what() when the exceptions class is fixed up]
       catch(gerr e) {
         std::cout<<std::endl;
-        std::cout<<"Error: "<<gambit::exceptions::get_exception_text(e)<<std::endl;
-        std::cout<<"Origin: "<<gambit::exceptions::get_exception_origin(e)<<std::endl;
+        std::cout<<"Error: "<<GAMBIT::exceptions::get_exception_text(e)<<std::endl;
+        std::cout<<"Origin: "<<GAMBIT::exceptions::get_exception_origin(e)<<std::endl;
         std::cout<<"Quitting..."<<std::endl<<std::endl;
         exit(0);
       }

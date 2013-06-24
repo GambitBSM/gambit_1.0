@@ -214,14 +214,20 @@
 
 /// Redirection of \link START_MODULE() START_MODULE\endlink when invoked from 
 /// within the core.
+
+/// Ben: I pulled this macro into two pieces so that I could re-use the inner
+/// structure in model_macros.hpp while maintaining control of the namespaces.
+
 #define CORE_START_MODULE                                                      \
-                                                                               \
   namespace GAMBIT                                                             \
   {                                                                            \
-                                                                               \
     namespace MODULE                                                           \
     {                                                                          \
-                                                                               \
+      CORE_START_MODULE_GUTS(MODULE)                                           \
+    }                                                                          \
+  }                                                                            \
+  
+#define CORE_START_MODULE_GUTS(MODULE)                                         \
       /* A way to fetch a trait of an observable or likelihood                 \
       (like its type), based on its tag.*/                                     \
       template <typename TAG>                                                  \
@@ -403,13 +409,11 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-                                                                               
+
+
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
+
 #define CORE_START_CAPABILITY                                                  \
                                                                                \
   namespace GAMBIT                                                             \
@@ -431,6 +435,8 @@
 
 
 /// Redirection of START_FUNCTION(TYPE) when invoked from within the core.
+/// Ben: I have pulled the "guts" of the functor creation out into MAKE_FUNCTOR
+/// for recycling in model_macros.hpp
 #define CORE_START_FUNCTION(TYPE)                                              \
                                                                                \
   namespace GAMBIT                                                             \
@@ -441,64 +447,67 @@
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
-                                                                               \
-      /* Set up an auxilary method to report stuff to the core about the       \
-      function.  Not actually sure what this would                             \
-      be used for at this stage. */                                            \
-      template <>                                                              \
-      void report<Tags::FUNCTION>()                                            \
-      {                                                                        \
-        cout<<"Dear Core, I provide the function with tag: "<<                 \
-        STRINGIFY(FUNCTION)<<endl;                                             \
-      }                                                                        \
-                                                                               \
       /* Register (prototype) the function */                                  \
       void FUNCTION (TYPE &);                                                  \
                                                                                \
-      /* Register the FUNCTION's result TYPE */                                \
-      template<>                                                               \
-      struct function_traits<Tags::FUNCTION>                                   \
-      {                                                                        \
-        typedef TYPE type;                                                     \
-      };                                                                       \
-                                                                               \
-      /* Create the function wrapper object (functor) */                       \
-      namespace Functown                                                       \
-      {                                                                        \
-        module_functor<TYPE> FUNCTION                                          \
-         (&MODULE::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),       \
-         STRINGIFY(TYPE), STRINGIFY(MODULE));                                  \
-      }                                                                        \
-                                                                               \
-      /* Set up an alias function to call the function */                      \
-      template <>                                                              \
-      function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()           \
-      {                                                                        \
-         Functown::FUNCTION.calculate();                                       \
-         return Functown::FUNCTION();                                          \
-      }                                                                        \
-                                                                               \
-      /* Set up the commands to be called at runtime to register the function*/\
-      template <>                                                              \
-      void rt_register_function<Tags::FUNCTION> ()                             \
-      {                                                                        \
-        GAMBIT::globalFunctorList.push_back(&Functown::FUNCTION);              \
-        map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;        \
-        map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
-        iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \
-        moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
-      }                                                                        \
-                                                                               \
-      /* Create the function initialisation object */                          \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);             \
-      }                                                                        \
-                                                                               \
+      /* Wrap it in a functor */                                               \
+      MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,MODULE)                            \
     }                                                                          \
                                                                                \
   }                                                                            \
-                                                                          
+
+/// 'guts' of the functor creation
+#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN)                      \
+  /* Set up an auxilary method to report stuff to the core about the       \
+  function.  Not actually sure what this would                             \
+  be used for at this stage. */                                            \
+  template <>                                                              \
+  void report<Tags::FUNCTION>()                                            \
+  {                                                                        \
+    cout<<"Dear Core, I provide the function with tag: "<<                 \
+    STRINGIFY(FUNCTION)<<endl;                                             \
+  }                                                                        \
+                                                                           \
+  /* Register the FUNCTION's result TYPE */                                \
+  template<>                                                               \
+  struct function_traits<Tags::FUNCTION>                                   \
+  {                                                                        \
+    typedef TYPE type;                                                     \
+  };                                                                       \
+                                                                           \
+  /* Create the function wrapper object (functor) */                       \
+  namespace Functown                                                       \
+  {                                                                        \
+    module_functor<TYPE> FUNCTION                                          \
+     (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),       \
+     STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                             \
+  }                                                                        \
+                                                                           \
+  /* Set up an alias function to call the function */                      \
+  template <>                                                              \
+  function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()           \
+  {                                                                        \
+     Functown::FUNCTION.calculate();                             \
+     return Functown::FUNCTION();                                \
+  }                                                                        \
+                                                                           \
+  /* Set up the commands to be called at runtime to register the function*/\
+  template <>                                                              \
+  void rt_register_function<Tags::FUNCTION> ()                             \
+  {                                                                        \
+    GAMBIT::globalFunctorList.push_back(&Functown::FUNCTION);    \
+    map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;        \
+    map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;              \
+    iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                         \
+    moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);\
+  }                                                                        \
+                                                                           \
+  /* Create the function initialisation object */                          \
+  namespace Ini                                                            \
+  {                                                                        \
+    ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);             \
+  }                                                                        \
+  
 
 /// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).

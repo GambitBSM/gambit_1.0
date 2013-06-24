@@ -1,7 +1,8 @@
 #ifndef gambit_Uncopyable_h_
 #define gambit_Uncopyable_h_ 1
 
-namespace gambit {
+namespace GAMBIT {
+
   /*! \brief Class used to copy-protect classes
   //
   // Good for handlers, etc.

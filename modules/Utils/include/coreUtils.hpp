@@ -6,7 +6,8 @@
 #include <vector>
 #include <iostream>
 
-namespace gambit{
+namespace GAMBIT{
+
   /* \bfrief a set of methods, defines, functions relevat for the core code.
      \date 2011-08-15
      \author Johan Lundberg

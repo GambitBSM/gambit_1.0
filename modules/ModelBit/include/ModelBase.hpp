@@ -5,10 +5,10 @@
 #include "Uncopyable.hpp"
 #include "shared_ptr.hpp"
 
-namespace gambit {
+namespace GAMBIT {
+
   class ModelBase;
   typedef shared_ptr<ModelBase> ModelBasePtr;
-
   /*! \brief Virtual base class for model parameters.
   //
   // The user side: get/set is not designed yet.

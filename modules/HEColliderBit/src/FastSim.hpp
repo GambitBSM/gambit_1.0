@@ -12,7 +12,7 @@
 //  //
 //  //  Aldo Saavedra
 //  //  2013 March
-//  //  2013 June 13
+//  //  2013 June 13,20
 //  //
 //  //  ********************************************
 //
@@ -141,6 +141,8 @@ private:
  double _min_jet_pt;
  double _min_tauhad_pt;
  double _min_dr;
+
+ double _max_lep_eta;
 
  // the isolation
  double _minEt_isol_muon; 

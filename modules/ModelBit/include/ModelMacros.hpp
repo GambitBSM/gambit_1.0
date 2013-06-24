@@ -21,14 +21,14 @@
 #ifndef __ModelMacros_hpp__
 #define __ModelMacros_hpp__
 
-#include "ModelParameters.hpp"
-#include "util_macros.hpp"
-#include "util_functions.hpp"
+#include <ModelParameters.hpp>
+#include <util_macros.hpp>
+#include <util_functions.hpp>
+#include <util_classes.hpp>
 
-typedef std::string str;
+namespace GAMBIT{
 
-namespace gambit{
-  namespace models{
+  namespace Models{
   
     // Function to help static initialisation of our const data member vectors.
     // Returns a copy of the vector with the string argument appended.
@@ -149,8 +149,10 @@ You should not be calling it!"<<std::endl;
       //source file, not a header, but surely it is ok if the header has include
       //protection macros so that it only "really" gets included once?)
 
-  } //end namespace models
-} //end namespace gambit
+  } //end namespace Models
+
+} //end namespace GAMBIT
+
 
 // MACRO DEFINITIONS
 
@@ -175,7 +177,7 @@ do{                                                                            \
 }while(0);                                                                     \
 */
 #define DEFINEPARS(MODEL,...)                                                  \
-const std::vector<str> MODEL::parameterkeys = {__VA_ARGS__};                   \
+const std::vector<str> MODEL::parameterkeys = delimiterSplit(#__VA_ARGS__,",");\
 
 // Main "child model" class building macros
 

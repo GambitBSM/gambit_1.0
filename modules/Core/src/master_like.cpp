@@ -33,10 +33,11 @@ namespace GAMBIT
   }
 
   void MasterLike::calculate() {
-    cout << "Dependency resolver says: now I will actually run them." << endl;
+    cout << "Run" << endl;
+    cout << "---" << endl;
     for(unsigned int i=0; i < functor_list.size(); i++)
     {
-      std::cout << i << ": " << functor_list[i]->name() << std::endl;
+      std::cout << functor_list[i]->name() << std::endl;
       functor_list[i]->calculate();
     }
   }

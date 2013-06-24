@@ -62,6 +62,12 @@ namespace GAMBIT
         // Adds list of functor pointers to boost graph
         void addFunctors(std::vector<functor *>);
 
+        // Rudimentary backend resolution
+        void resolveBackends(std::vector<functor *>);
+
+        // Log module functor information;
+        void logFunctors();
+
         // Constructs input/output vertices from parameters and requested
         // observables in ini-file
         void addLegs(const GAMBIT::IniParser::IniFile &);
@@ -74,6 +80,9 @@ namespace GAMBIT
 
         // Map str --> double* for input parameter values
         inputMapType inputMap;
+
+        // Log ordered active vertices
+        void logOrder();
 
         // It is really ugly, but this has to be declared static to work well
         // with the functors member functions. A haircut for anyone who gets
@@ -89,8 +98,6 @@ namespace GAMBIT
         void initialize_edges(queue<pair<sspair, Graphs::VertexID> > parQueue,
             multimap<sspair, Graphs::VertexID> capMap);
         list<int> run_topological_sort();
-        void list_functions(list<int> topo_order);
-        void list_graphs_content();
         std::vector<VertexID> reqObs;
 
         // The central boost graph object

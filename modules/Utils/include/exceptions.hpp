@@ -12,7 +12,7 @@
  *       into the actual exception objects, by adding new member functions to the exception classes and
  *       setting the "what" internal string at construction (although it should have a class default).
  *
- * Declares the namespace gambit::exceptions, defining methods as well the user macro:
+ * Declares the namespace GAMBIT::exceptions, defining methods as well the user macro:
  *
  * GAMBIT_THROW_EXCEPTION(e);
  *
@@ -20,27 +20,27 @@
  * \author Johan Lundberg
  */
 
-/*! \brief user method for throwing exceptions deriving from gambit_exception_base
+/*! \brief user method for throwing exceptions deriving from GAMBIT_exception_base
  *
  * Example use:
  * \code
- * using namespace gambit::exceptions;
+ * using namespace GAMBIT::exceptions;
  * GAMBIT_THROW_EXCEPTION(e_unphysical << i_text("mass is negative"));
  * \endcode
  *
- * The macro enforces use of gambit_exception_base or derived exceptions, and
+ * The macro enforces use of GAMBIT_exception_base or derived exceptions, and
  * adds various debug information to e before throwing.
  */
-#define GAMBIT_THROW_EXCEPTION(e) do{                                    \
-    ::gambit::exceptions::Compiletime_Cast_Test< ::gambit::exceptions::gambit_exception_base>(e); \
+#define GAMBIT_THROW_EXCEPTION(e) do{                                                             \
+    ::GAMBIT::exceptions::Compiletime_Cast_Test< ::GAMBIT::exceptions::GAMBIT_exception_base>(e); \
     BOOST_THROW_EXCEPTION(e) ; }while(0)
 
 
-namespace gambit{
+namespace GAMBIT{
 
-  /*! \brief gambit exceptions
+  /*! \brief GAMBIT exceptions
    *
-   * gambit static/public exception related methods and classes.
+   * GAMBIT static/public exception related methods and classes.
    *
    * Note that the throwing macro GAMBIT_THROW_EXCEPTION(e) is also defined in exceptions.hpp. Please read its
    * documentation first.
@@ -49,13 +49,13 @@ namespace gambit{
    *  \date 2011 Aug */
   namespace exceptions{
 
-    /*! \brief gambit exception base class
+    /*! \brief GAMBIT exception base class
      *  \author Johan Lundberg
      *  \date 2011 Aug
      */
-    class gambit_exception_base: virtual public boost::exception, virtual public std::exception {
+    class GAMBIT_exception_base: virtual public boost::exception, virtual public std::exception {
     public:
-      virtual inline std::string getName() const {return "gambit_exception_base";}
+      virtual inline std::string getName() const {return "GAMBIT_exception_base";}
     };
 
     /*! \brief configuraton exception
@@ -64,7 +64,7 @@ namespace gambit{
      * is internally inconsistent
      *  \author Johan Lundberg
      *  \date 2011 Aug */
-    class e_configuration: virtual public gambit_exception_base {
+    class e_configuration: virtual public GAMBIT_exception_base {
     public:
       virtual inline std::string getName() const {return "e_configuration";}
     };
@@ -74,7 +74,7 @@ namespace gambit{
      * Base exception for cases when you can not calculate the resuls.
      *  \author Johan Lundberg
      *  \date 2011 Aug */
-    class e_incalculable: virtual public gambit_exception_base {
+    class e_incalculable: virtual public GAMBIT_exception_base {
     public:
       virtual inline std::string getName() const {return "e_incalculable";}
     };
@@ -101,9 +101,9 @@ namespace gambit{
     };
 
     //! \brief object for adding a text description to a thrown boost exception
-    typedef boost::error_info<struct tag_gambit_exception_info,std::string> i_text;
+    typedef boost::error_info<struct tag_GAMBIT_exception_info,std::string> i_text;
     //! \brief object for adding a stacktrace (as text) to a thrown boost exception
-    typedef boost::error_info<struct tag_gambit_exception_trace,std::string> i_trace;
+    typedef boost::error_info<struct tag_GAMBIT_exception_trace,std::string> i_trace;
 
     /*! \brief Method for compile time test of type. If cast does not work, it does not compile
      * compiles if there is any conversion is possible.
@@ -123,7 +123,7 @@ namespace gambit{
      *
      * Example use:
      * \code
-     * using namespace gambit::exceptions;
+     * using namespace GAMBIT::exceptions;
      * GAMBIT_THROW_EXCEPTION(e_unphysical << i_trace_do() << i_text("mass is negative"));
      * \endcode
      */

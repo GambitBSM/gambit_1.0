@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Example of gambit core framework use.
+///  Example of GAMBIT core framework use.
 ///
 ///  A program to demo what can be done with the 
 ///  current development version of the code. 
@@ -23,9 +23,6 @@
 // model class - probably to be replaced too
 //#include "ModelParametersSusy.hpp"
 
-//brief helper for gambit_example
-//using namespace gambit;
-
 /* Ben: I have commented out all model-related stuff in the example (not much)
 since I am screwing with the related code at the moment. I will add something
 back in here that uses the new system shortly
@@ -45,21 +42,24 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <logcore.hpp>
 #include <graphs.hpp>
 #include <backend_rollcall.hpp>
-#include <model_rollcall.hpp>
 #include <module_rollcall.hpp>
+#include <model_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
+#include <gambit_scan.hpp>
+#include <crapsample.hpp>
 
-// Ben: It seems we currently are using both these namespaces! Should we pick
-//      one?
-// Pat: GAMBIT
 using namespace GAMBIT;
-using namespace gambit;
 
 void beispiel()
 {
+  cout << "globalFunctorList.size() = " <<
+    GAMBIT::globalFunctorList.size() << endl;
+  cout << "globalBackendFunctorList.size() = " <<
+    GAMBIT::globalBackendFunctorList.size() << endl;
+
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile("gambit.yaml");
@@ -73,8 +73,17 @@ void beispiel()
   // Add input and output legs to the module function vertices
   dependencyResolver.addLegs(iniFile);
 
+  // Log module function infos
+  dependencyResolver.logFunctors();
+
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+
+  // dependencyResolver.logOrder();
+  // dependencyResolver.logFunctors();
+
+  // Resolve backends
+  dependencyResolver.resolveBackends(globalBackendFunctorList);
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),
@@ -90,12 +99,18 @@ void beispiel()
   // Read output parameters
   cout << masterLike("Likelihood")[0] << endl;
   cout << masterLike("Likelihood")[1] << endl;
+  
+  //char *names[2] = {"m_0", "m_1/2"};
+  //Gambit_Functor like (&mlike, "Likelihood", names, 2);
+  //Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
+	// let's run scanner!
+  //CrappySampler sample(&like, &dlike);
+  //sample.mcmc();
 }
 
 int main( int argc, const char* argv[] )
 {
   beispiel();
-  //return 0;
 
   cout<<endl;
   cout<< "This is a skeleton example for gambit."<<endl;
@@ -108,45 +123,12 @@ int main( int argc, const char* argv[] )
   cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
   cout<<endl;
 
-  // // Run ini-file parser
-  // ini_parser::IniFileParser my_parser("gambit.ini");
-  // my_parser.print();
-
-  // // TODOCW Define alpha node (from ini-file)
-
-  // // Do some mock parsing of the ini file and pick which things to compute
-  // vector<int> requested_observables;   // These indices will need to be replaced by strings from the ini file...
-  // requested_observables.push_back(1);  // nevents_int
-  // requested_observables.push_back(14); // rdomega
-  // requested_observables.push_back(6);  // nevents_postcuts
-
-  // // Some mock backend requirement resolution, as it is not done yet by the dependency resolver:
-  // ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
-
-  // // Run dependency resolution proper
-  // Graphs::dependency_resolution(requested_observables);
-
-  // // Initialize MasterLike;
-  // MasterLike masterLike(Graphs::get_functors());
-
-  // // Call the functions in their sorted order
-  // Graphs::execute_functions();
-
-  // Test it
-  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
-
   // Setup logs
-  logsetup::setfile("_gambit_msgs_example_errors.txt");              // setup detailed debug
-  logsetup::setfile_upto_LOG("_gambit_msgs_example_normal.txt");     // into files, depending
-  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug0.txt");   // on debug level.
-  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug1.txt",1);
-  logsetup::setfile_upto_DEBUG("_gambit_msgs_example_debug2.txt",2);
+  logsetup::setfile("_GAMBIT_msgs_example_errors.txt");              // setup detailed debug
+  logsetup::setfile_upto_LOG("_GAMBIT_msgs_example_normal.txt");     // into files, depending
+  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug0.txt");   // on debug level.
+  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug1.txt",1);
+  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug2.txt",2);
   logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   GAMBIT_MSG_INFO("starting example");
@@ -160,146 +142,175 @@ int main( int argc, const char* argv[] )
   // See ModelBit/models/MSSM.hpp for the definitions of the models referenced
   // here.
   
-  // Need to make model objects in order to access names and lineages.
-  models::CMSSM_base M1;
-  models::CMSSM::P1 M2;
-  models::Gaussian_Halo M3;
-  models::CMSSMandGHALO M4;
+  // Ben: new system
+  // Models are no longer objects. Just access the stuff we need for a given
+  // model by knowing the appropriate scope. This won't be possibly dynamically
+  // of course, so the scanner, modules etc will have to interact with the 
+  // models via whatever the dependency resolver wants to give to them.
+  // It would not be a big deal to restore model objects if we want them: all
+  // the machinery I currently use could stay the same and we could just add
+  // an extra macro that boxes it all up into a class as well.
   
-  // We can also refer to models by pointers of the base class type, which means
-  // the rest of the code need not know exactly which class a given model is in
-  // order to fiddle with the model objects.
-  models::model_base* p1=&M1;
-  models::model_base* p2=&M2;
+  // So, no longer have to create model objects.
   
-  //Try this way also:
-  models::model_base &r1=M1;
-  models::model_base &r2=M2;
+  // Can access the various properties of models only if you know the right
+  // namespace. The name stuff in particular is a bit pointless right now
+  // because you have to already know the name in order to get the name string,
+  // but presumably we'll wrap these up in some sort of object or another
+  // somewhere along the line.
   
-  // (having a sudden thought that maybe we can make more native use of this
-  // capability - if a module knows about a parent model type can it just
-  // declare the appropriate pointer and use all child models similarly?)
-  models::MSSM* MSSM_child1=&M1;
-  models::MSSM* MSSM_child2=&M2;
-  // This would only be useful if there were functions unique to MSSM that
-  // model_base had not already declared. Not sure that is the spirit we want.
+  cout<<""<<endl;
+  cout<<"Retrieving model names and lineages from their namespaces..."<<endl;
+  cout<<"models::MSSM::name(): "<<models::MSSM::name()<<endl;
+  cout<<"models::MSSM::I::name(): "<<models::MSSM::I::name()<<endl;
+  cout<<"models::MSSM::I::lineage: "<<models::MSSM::I::lineage<<endl;
   
-  // Get a pointer to DMHalo model and supermodel too:
-  models::DMHalo_base* Halo_child1=&M3;
-  models::DMHalo_base* Halo_child2=&M4;
+  cout<<"models::CMSSM::name(): "<<models::CMSSM::name()<<endl;
+  cout<<"models::CMSSM::I::name(): "<<models::CMSSM::I::name()<<endl;
+  cout<<"models::CMSSM::I::lineage: "<<models::CMSSM::I::lineage<<endl;
+  cout<<"models::CMSSM::II::name(): "<<models::CMSSM::II::name()<<endl;
+  cout<<"models::CMSSM::II::lineage: "<<models::CMSSM::II::lineage<<endl;
   
-  //Cannot use a pointer of a non-parent model class!
-  //(here M1 is not a descendent of DMHalo_base)
-  //gambit::models::DMHalo_base* Halo_child_error=&M1; 
-    
-  // Can then refer to staticly bound functions if we know the class:
-  std::cout<<""<<std::endl;
-  std::cout<<"Disclaimer: I may be using the wrong terms for these C++ \
-technicalities! If so I am sorry :(."<<std::endl;
-  std::cout<<"Retrieving model names and lineages by statically bound get functions..."<<std::endl;
-  std::cout<<"M1.getname(): "<<M1.getname()<<std::endl;
-  std::cout<<"M1.getlineage(): "<<M1.getlineage()<<std::endl;
-  std::cout<<"M2.getname(): "<<M2.getname()<<std::endl;
-  std::cout<<"M2.getlineage(): "<<M2.getlineage()<<std::endl;
+  // If we want to do anything useful with a model, we need to initialise 
+  // (create) its parameter object. Can then get and set parameter values etc.
+  models::CMSSM::I::init_paramobj();
+  // This attaches the object to the smart pointer params_autoptr. This pointer
+  // tracks the parameter object and destroys it if the pointer is destroyed.
+  // We can take responsibility for the parameter object by copying the 
+  // auto_ptr. Note however that the original auto_ptr will no longer point to 
+  // the parameter object if we do this. Probably need to adjust this system
+  // a little.
   
-  // Or by using references of the base class type if we don't:
-  std::cout<<""<<std::endl;
-  std::cout<<"Retrieving model names and lineages by statically bound get \
-functions using references of base class type..."<<std::endl;
-  std::cout<<"r1.getname(): "<<r1.getname()<<std::endl;
-  std::cout<<"r1.getlineage(): "<<r1.getlineage()<<std::endl;
-  std::cout<<"r2.getname(): "<<r2.getname()<<std::endl;
-  std::cout<<"r2.getlineage(): "<<r2.getlineage()<<std::endl;
+  // Set parameter value by accessing parameter object directly via the
+  // auto_ptr:
+  models::CMSSM::I::params_autoptr->setValue("M0",1234);
   
-  // or also by dynamic binding (apologies if these are the wrong C++ 
-  // words...)
-  std::cout<<""<<std::endl;
-  std::cout<<"Retrieving model names and lineages by dynamically bound get \
-functions using pointers of base class type..."<<std::endl;
-  std::cout<<"p1->getname(): "<<p1->getname()<<std::endl;
-  std::cout<<"p1->getlineage(): "<<p1->getlineage()<<std::endl;
-  std::cout<<"p2->getname(): "<<p2->getname()<<std::endl;
-  std::cout<<"p2->getlineage(): "<<p2->getlineage()<<std::endl;
-  std::cout<<"Can also use pointers of any other parent type..."<<std::endl;
-  std::cout<<"MSSM_child1->getname(): "<<MSSM_child1->getname()<<std::endl;
-  std::cout<<"MSSM_child1->getlineage(): "<<MSSM_child1->getlineage()<<std::endl;
+  // Take posession of the parameter object auto_ptr and set values that way:
+  std::auto_ptr<ModelParameters> CMSSMI_autoptr = \
+                                            models::CMSSM::I::params_autoptr;
+  CMSSMI_autoptr->setValue("M12",4321);
+  CMSSMI_autoptr->setValue("A0",100);
+  CMSSMI_autoptr->setValue("tanb",10);
+  CMSSMI_autoptr->setValue("sgnmu",1);
+  CMSSMI_autoptr->setValue("Mstop",900);
   
-  // I think we can also just access the public data members directly with these
-  // methods:
-  // Edit: ok no we can't, just end up with the base class data members. I have
-  // now made the data members 'protected' so that no-one will accidentally try
-  // to access them this way.
-  /*
-  std::cout<<p1->name<<",(p1) "<<p1->lineage<<std::endl;
-  std::cout<<p2->name<<",(p2) "<<p2->lineage<<std::endl;
-  std::cout<<r1.name<<",(r1) "<<r1.lineage<<std::endl;
-  std::cout<<r2.name<<",(r2) "<<r2.lineage<<std::endl;
-  */
+  // Retrieve values (but note that we can't do this via
+  // 'models::CMSSM::I::params_autoptr' anymore! )
+
+  cout<<""<<endl;
+  cout<<"CMSSM::I parameters:"<<endl;
+  cout<<"M0    = "<<CMSSMI_autoptr->getValue("M0")<<endl;
+  cout<<"M12   = "<<CMSSMI_autoptr->getValue("M12")<<endl;
+  cout<<"A0    = "<<CMSSMI_autoptr->getValue("A0")<<endl;
+  cout<<"tanb  = "<<CMSSMI_autoptr->getValue("tanb")<<endl;
+  cout<<"sgnmu = "<<CMSSMI_autoptr->getValue("sgnmu")<<endl;
   
-  // Set parameter value by accessing parameter object directly via model object.
-  M2.parameters.setValue("M0",1234);
-  
-  // If using base class pointer we can't do this. Instead we have to ask the
-  // model object for a pointer to the parameter object, and then work with that.
-  p2->getparamobjptr()->setValue("M12",4321);
-  p2->getparamobjptr()->setValue("A0",100);
-  p2->getparamobjptr()->setValue("tanb",10);
-  p2->getparamobjptr()->setValue("sgnmu",1);
-  
-  // To make things less verbose we can rip this pointer out of the model object
-  // good and proper, and even pass it around to other parts of GAMBIT if we
-  // like.
-  ModelParameters* M2params = p2->getparamobjptr();
-  
-  std::cout<<""<<std::endl;
-  std::cout<<"Demonstrating different ways of retrieving parameter values..."<<std::endl;
-  std::cout<<"M2 parameters:"<<std::endl;
-  std::cout<<"M0    = "<<M2params->getValue("M0")<<std::endl;
-  std::cout<<"M12   = "<<M2params->getValue("M12")<<std::endl;
-  // but of course if we have the actual model object we can dig the 
-  // corresponding parameter object straight out of it like before.
-  std::cout<<"A0    = "<<M2.parameters.getValue("A0")<<std::endl;
-  std::cout<<"tanb  = "<<M2.parameters.getValue("tanb")<<std::endl;
-  std::cout<<"sgnmu = "<<M2.parameters.getValue("sgnmu")<<std::endl;
+  // Actually, we might be able to give control back to the model, let's try:
+  // Note: Ok works! Actually the later tests of CMSSMI will crash if we don't
+  // do this, since they try to use this pointer! Definitely should do something
+  // better.
+  models::CMSSM::I::params_autoptr = CMSSMI_autoptr;
   
   // Lets also look at the halo models
-  std::cout<<""<<std::endl;
-  std::cout<<"Halo model names and lineages..."<<std::endl;
-  std::cout<<"Halo_child1->getname(): "<<Halo_child1->getname()<<std::endl;
-  std::cout<<"Halo_child1->getlineage(): "<<Halo_child1->getlineage()<<std::endl;
-  Halo_child1->getparamobjptr()->setValue("v_earth",300);
+  // First, initialise the parameter object of the desired parameterisation:
+  models::Gaussian_Halo::I::init_paramobj();
+  models::SomeOther_Halo::I::init_paramobj();
+  cout<<""<<endl;
+  cout<<"Halo model names and lineages..."<<endl;
+  cout<<"models::Gaussian_Halo::name(): "<<models::Gaussian_Halo::name()<<endl;
+  cout<<"models::Gaussian_Halo::I::name():"<<models::Gaussian_Halo::I::name()<<endl;
+  cout<<"models::Gaussian_Halo::I::lineage "<<models::Gaussian_Halo::I::lineage<<endl;
+  models::Gaussian_Halo::I::params_autoptr->setValue("v_earth",300);
   // There is a function to just dump all the parameters to stdout:
-  std::cout<<"Dumping Halo_child1 parameters...";
-  Halo_child1->getparamobjptr()->print();
-  
-  // Now the 'supermodel':
-  ModelParameters* HC2params = Halo_child2->getparamobjptr();
-  std::cout<<""<<std::endl;
-  std::cout<<"\"Super\" model names and lineages..."<<std::endl;
-  std::cout<<"Halo_child2->getname(): "<<Halo_child2->getname()<<std::endl;
-  std::cout<<"Halo_child2->getlineage(): "<<Halo_child2->getlineage()<<std::endl;
-  std::cout<<"Dumping Halo_child2 parameters...";
-  HC2params->setValue("M12",4321);
-  HC2params->setValue("A0",100);
-  HC2params->setValue("v_earth",300);
-  HC2params->print();
-  
+  cout<<"Dumping Gaussian_Halo::I parameters...";
+  models::Gaussian_Halo::I::params_autoptr->print();
+  cout<<"models::SomeOther_Halo::name(): "<<models::SomeOther_Halo::name()<<endl;
+  cout<<"models::SomeOther_Halo::I::name() "<<models::SomeOther_Halo::I::name()<<endl;
+  cout<<"models::SomeOther_Halo::I::lineage "<<models::SomeOther_Halo::I::lineage<<endl;
+  models::SomeOther_Halo::I::params_autoptr->setValue("v_earth",500);
+  cout<<"Dumping SomeOther_Halo::I parameters...";
+  models::SomeOther_Halo::I::params_autoptr->print();
   // Demonstration of automatic looping over parameters
-  std::cout<<std::endl;
-  std::cout<<"Parameter name retrieval..."<<std::endl;
-  std::cout<<"HC2params->getKeys(): "<< \
-                HC2params->getKeys()<<std::endl;
+  cout<<endl;
+  cout<<"Parameter name retrieval..."<<endl;
+  cout<<"models::Gaussian_Halo::I::parameterkeys: "<< \
+                models::Gaussian_Halo::I::parameterkeys<<endl;
   // Generate some random values and set parameters to these values
-  
-  std::vector<str> keys = HC2params->getKeys();
+
+  std::vector<str> keys = models::Gaussian_Halo::I::parameterkeys;
   
   srand (time(NULL));    // initialize random seed
   for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
-    std::cout <<"Setting random "<<*it<<" value..."<<std::endl;
-    HC2params->setValue(*it, rand()%1000);
+    cout <<"Setting random "<<*it<<" value..."<<endl;
+    models::Gaussian_Halo::I::params_autoptr->setValue(*it, rand()%1000);
   }
-  std::cout<<"Dumping new Halo_child2 parameters...";
-  HC2params->print();
+  cout<<"Dumping new Gaussian_Halo::I parameters...";
+  models::Gaussian_Halo::I::params_autoptr->print();
+  
+  cout << "*** End demo of old ModelBit stuff ***" << endl;
+  cout << "*** Begin demo of ModelBit 'module-like' capabilities ***" << endl;
+
+  // So, every model parameterisation is now contained in a structure very
+  // similar to a module, and every parameter is wrapped in a functor identical
+  // to those wrapping module functions. Let's see what this lets us do,
+  // focusing on CMSSM::I. Note that most of the "capabilities" have ugly names 
+  // because they are auto-generated case, with enough info to avoid name
+  // clashes. Only explicitly specified capabilities will have a "normal" name.
+  
+  cout << "My name is " << models::CMSSM::I::name() << endl;
+  cout << " I can calculate: " << endl << models::CMSSM::I::iCanDo << endl;
+  cout << " ...but I may need: " << endl << models::CMSSM::I::iMayNeed << endl;
+  cout << endl;
+
+  cout << "I can do CMSSM_I_M0 (tag-style) " << models::CMSSM::I::provides<Tags::CMSSM_I_M0>() << endl;
+  cout << "I can do CMSSM_I_M0 (string-style) " << models::CMSSM::I::provides("CMSSM_I_M0") << endl;
+  cout << "I can do CMSSM_I_M12 " << models::CMSSM::I::provides("CMSSM_I_M12") << endl;
+  cout << "I can do Mstop " << models::CMSSM::I::provides("CMSSM_I_M12") << endl;
+
+  cout << "Core says: report on M0!" << endl;
+  cout << "  " << models::CMSSM::I::name() << " says: ";
+  cout << "  "; models::CMSSM::I::report("M0");
+  
+  // Note: Tags::CAPABILITY is Tags::CMSSM_I_M0 (since this also goes into the global tags box)
+  //       Tags::FUNCTION is Tags::M0 (local to module scope, so this name is ok)
+  // Which tag is which?
+  // provides<Tags::CAPABILITY>
+  // function_traits<Tags::FUNCTION>
+  // report<Tags::FUNCTION>
+  // result<Tags::FUNCTION>
+  // So only 'provides' uses the CAPABILITY tag.
+  if (models::CMSSM::I::provides("CMSSM_I_M0")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef models::CMSSM::I::function_traits<Tags::M0>::type testType; //in this case the underlying type is double
+    // Call the module function by its tag  
+    testType M0 = models::CMSSM::I::result<Tags::M0>() ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << M0 << " (tag-style)" <<endl ;
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    double M02 = models::CMSSM::I::result<double>("M0") ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << M0 << " (string-style)" <<endl ;
+    // Call the module function by its functor 
+    models::CMSSM::I::Functown::M0.calculate();
+    cout << "  " << models::CMSSM::I::name() << " says: " << models::CMSSM::I::Functown::M0() << " (functor-style)" <<endl ; 
+  }
+  
+  // FUNCTION == CAPABILITY in this case.
+  cout << "Core says: report on Mstop!" << endl;
+  cout << "  " << models::CMSSM::I::name() << " says: ";
+  cout << "  "; models::CMSSM::I::report("Mstop");
+  if (models::CMSSM::I::provides("Mstop")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef models::CMSSM::I::function_traits<Tags::Mstop>::type testType; //in this case the underlying type is double
+    // Call the module function by its tag  
+    testType Mstop = models::CMSSM::I::result<Tags::Mstop>() ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << Mstop << " (tag-style)" <<endl ;
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    double Mstop2 = models::CMSSM::I::result<double>("Mstop") ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << Mstop << " (string-style)" <<endl ;
+    // Call the module function by its functor 
+    models::CMSSM::I::Functown::Mstop.calculate();
+    cout << "  " << models::CMSSM::I::name() << " says: " << models::CMSSM::I::Functown::Mstop() << " (functor-style)" <<endl ; 
+  }
+  
   
   cout << "*** End ModelBit demo ***" << endl;
   cout << endl;
@@ -312,6 +323,15 @@ functions using pointers of base class type..."<<std::endl;
   // TinyDarkBit code START
   // ****************
 
+  // Test it
+  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
+
   // Some basic TinyDarkBit functionality
   cout << "*** Start Dark ***" << endl;
   cout << "My name is " << TinyDarkBit::name() << endl;
@@ -321,25 +341,29 @@ functions using pointers of base class type..."<<std::endl;
   cout << "*** End Dark ***" << endl << endl;
 
   // DarkSUSY initialization
-  //TinyDarkBit::Functown::initDS.calculate();
+  // TinyDarkBit::Functown::initDS.calculate();
 
   // Run calculate() in correct order by hand and print results
-  //TinyDarkBit::Functown::CMSSM_definition.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  //TinyDarkBit::Functown::SLHA.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  //TinyDarkBit::Functown::Weff.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  //TinyDarkBit::Functown::Wstruct.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  //TinyDarkBit::Functown::omega_DM.calculate();
-  //cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
+  TinyDarkBit::Functown::CMSSM_definition.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
+  TinyDarkBit::Functown::SLHA.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
+  TinyDarkBit::Functown::Weff.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
+  TinyDarkBit::Functown::Wstruct.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
+  TinyDarkBit::Functown::omega_DM.calculate();
+  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
 
   // ********************
   // TinyDarkBit code END
   // ********************
 
+  // Necessary by-hand dependency resolution (to avoid segfaults)
+  ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
@@ -490,7 +514,7 @@ functions using pointers of base class type..."<<std::endl;
   // ****************
   // Example_SUSYspecBit test code
   // ****************
-
+  /*
 
   cout <<  endl;
   cout << "My name is " << SUSYspecBit::name() << endl;
@@ -510,13 +534,12 @@ functions using pointers of base class type..."<<std::endl;
     cout << "OK, so what is it then?" << endl;
     //MSSMspecQ spectrum = SUSYspecBit::result<Tags::MSSMspectrum>()
     cout << "  " << SUSYspecBit::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << endl;
-    /*
-    cout << "  " << SUSYspecBit::name() << " says: " << endl;
-    cout << "    stop1 mass = " << spectrum.MASS.stop1 << endl;
-    cout << "    neut1 mass = " << spectrum.MASS.neut1 << endl;
-    */
+    
+    //cout << "  " << SUSYspecBit::name() << " says: " << endl;
+    //cout << "    stop1 mass = " << spectrum.MASS.stop1 << endl;
+    //cout << "    neut1 mass = " << spectrum.MASS.neut1 << endl;
   }
-
+  */
 
   // Instantiate the ScannerBit module
 
@@ -593,14 +616,14 @@ functions using pointers of base class type..."<<std::endl;
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
 
   try{
-    GAMBIT_MSG_LOG("gambit example");
+    GAMBIT_MSG_LOG("GAMBIT example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
     //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
     /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
         GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
         GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
     */
-  }catch( exceptions::gambit_exception_base & e){
+  }catch( exceptions::GAMBIT_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
 

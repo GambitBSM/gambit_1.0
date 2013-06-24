@@ -49,11 +49,10 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(SCANDIR)/include \
 	-I$(BACKENDDIR)/include \
 	-I$(BACKENDDIR)/lib \
-	-I$(BACKENDDIR)/lib/softsusy-3.3.8 \
-	-I$(HECOLLIDERDIR)/include -IExampleBit_A/include -IExampleBit_B/include \
-	  -IDarkBit/include -IExample_SUSYspecBit/include
-# Gah damn, didn't want to have to include lib/softsusy-3.3.8, ruins the
-# modularity. Need a new plan...
+	-I$(HECOLLIDERDIR)/include \
+	-IExampleBit_A/include \
+	-IExampleBit_B/include \
+	-IDarkBit/include -IExample_SUSYspecBit/include
 
 COMMONLIBS = -lm
 
