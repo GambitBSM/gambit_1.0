@@ -132,6 +132,7 @@ namespace GAMBIT
       }
 
       /// Getter for listing model-specific conditional dependencies
+      /// FIXME needs to use congruency relation to trigger on model descendents also
       std::vector<sspair> model_conditional_dependencies (str model)
       { 
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
@@ -186,7 +187,13 @@ namespace GAMBIT
            //proposed had been explicitly permitted.
            (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )         
           {
-            (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution
+            (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution.
+            //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
+            std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
+            for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+            {
+              myDependencies.push_back(*it);        
+            }   
           }
           else          
           { 
@@ -204,6 +211,17 @@ namespace GAMBIT
           cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
           ///\todo FIXME throw a real error here
         }        
+      }
+
+      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      void notifyOfModel(str model)
+      {
+        //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
+        std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
+        for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+        {
+          myDependencies.push_back(*it);        
+        }
       }
 
     protected:
@@ -332,7 +350,7 @@ namespace GAMBIT
         return safe_ptr<TYPE>(&myValue);
       }
 
-      /// Add a dependency (a beer for anyone who can explain why this-> is required here)
+      /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
       void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
       {
         sspair key (dep, type);
