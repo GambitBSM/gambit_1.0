@@ -10,8 +10,14 @@
 #
 - parameter: m0
   range:     [1, 3.5]
-
+#
 - parameter: m1
+  range:     [1, 3.5]
+
+- parameter: m2
+  range:     [-2.0, 2.0]
+
+- parameter: m3
   range:     [-2.0, 2.0]
 
 
@@ -36,9 +42,14 @@
   backends:
   - {capability: "LibFirst_returnResult_capability", function: "", backend: "", version: "", options: ""}
 
+# Uncomment this to activate DarkSUSY backend
+# - obsType:      Likelihood
+#   capability:   dsrdomega
+
 ###############################
 --- # Name/Value Section
 ###############################
 
-m0: 43.0
-m1: 33.0
+m1: 22.0
+m2: 23.0
+m3: 34.0

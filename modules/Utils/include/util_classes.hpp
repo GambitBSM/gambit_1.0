@@ -156,6 +156,12 @@ namespace GAMBIT
   //MSSMsoftmassesQ() {};
   };
 
+  struct DS_MSSMPAR
+  {
+    double tanbe, mu, m2, m1, m3, ma;
+    double mass2u[3], mass2q[3], mass2d[3],  mass2l[3], mass2e[3];
+    double asoftu[3], asoftd[3], asofte[3];
+  };
 }
 
 #endif //defined __util_classes_hpp__

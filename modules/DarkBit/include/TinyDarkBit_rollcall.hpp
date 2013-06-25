@@ -97,6 +97,44 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY dssusy
+  START_CAPABILITY
+    #define FUNCTION dssusy
+    START_FUNCTION(int)
+    DEPENDENCY(m1, double)
+    DEPENDENCY(m2, double)
+    DEPENDENCY(m3, double)
+      #define BACKEND_REQ dsinit
+      START_BACKEND_REQ(void)
+      BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ dssusy
+      START_BACKEND_REQ(void)
+      BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ DarkSUSY_setmssmpar_capability
+      START_BACKEND_REQ(void)
+      BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ DarkSUSY_getmssmpar_capability
+      START_BACKEND_REQ(DS_MSSMPAR)
+      BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY dsrdomega
+  START_CAPABILITY
+    #define FUNCTION dsrdomega
+    START_FUNCTION(double)
+    DEPENDENCY(dssusy, int)
+      #define BACKEND_REQ dsrdomega
+      START_BACKEND_REQ(double)
+      BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
+  #undef CAPABILITY
+
 #undef MODULE
 
 #endif /* defined(__TinyDarkBit_rollcall_hpp__) */
