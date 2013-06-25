@@ -753,10 +753,6 @@
             if (GAMBIT::safe_mode)                                             \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
-              /* CW: This example here makes only sense for dssusy */          \
-              /* it deomstantes that casting *can* work            */          \
-              cout << "be_functor* cast: " << dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr)) << endl;\
-              cout << "explicit cast: " << dynamic_cast<backend_functor<void, int&, int&>*>(CAT(BACKEND_REQ,_baseptr)) << endl;\
               if (myptr == 0)                                                  \
               {                                                                \
                 cout<<endl<<"Error: Null returned from dynamic cast in ";      \
