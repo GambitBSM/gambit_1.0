@@ -22,7 +22,7 @@
 #define __ModelMacros_hpp__
 
 #include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/variadic/to_seq.hpp>
+#include <boost_fallbacks.hpp>
 #include <ModelParameters.hpp>
 #include <util_macros.hpp>
 //#include <util_functions.hpp>
@@ -142,19 +142,19 @@ namespace GAMBIT{
              actually need them... */                                          \
                                                                                \
           /*ModelParameters* parametersptr;*/                                  \
-          std::auto_ptr<ModelParameters> params_autoptr;                       \
+          std::shared_ptr<ModelParameters> params_sharedptr;                   \
                                                                                \
           /* Initialise (create) the parameter object                                        
-             Need to use auto_ptr so that ownership of the parameters object
+             Need to use smart pointer so that ownership of the parameters object
              can be transferred out of the scope of the function (i.e. so that
              the pointer is not left dangling due to the object being destroyed
-             when we leave the function scope) 
-             Note: apparently auto_ptr is deprecated, need something else. */  \
+             when we leave the function scope) */                             \
+                                                                              \
           void init_paramobj()                                                 \
           {                                                                    \
-            std::auto_ptr<ModelParameters> \
-                              paramptr (new ModelParameters(parameterkeys));   \
-            params_autoptr = paramptr;                                         \
+            std::shared_ptr<ModelParameters> \
+                              paramptr (new ModelParameters(parameterkeys));  \
+            params_sharedptr = paramptr;                                      \
           }                                                                   \
                                                                                \
         }                                                                      \
@@ -214,7 +214,7 @@ namespace GAMBIT{
              and is what will be wrapped in a functor for processing by the 
              core */                                                           \
           void PARAMETER (double &result) {                               \
-            result = params_autoptr->getValue(STRINGIFY(PARAMETER));           \
+            result = params_sharedptr->getValue(STRINGIFY(PARAMETER));         \
           }                                                                    \
                                                                                \
           /* Wrap it up in a functor (macro from module_macros.hpp) */         \
@@ -244,7 +244,7 @@ namespace GAMBIT{
   LINK_PARAMETER_TO_CAPABILITY(elem,CAT_5(MODEL,_,PARAMETERISATION,_,elem))
   
 #define DEFINEPARS(...) \
-  BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+  BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
 
 #endif /* defined(__ModelMacros_hpp__) */
 

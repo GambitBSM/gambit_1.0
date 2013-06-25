@@ -174,42 +174,33 @@ int main( int argc, const char* argv[] )
   // If we want to do anything useful with a model, we need to initialise 
   // (create) its parameter object. Can then get and set parameter values etc.
   models::CMSSM::I::init_paramobj();
-  // This attaches the object to the smart pointer params_autoptr. This pointer
-  // tracks the parameter object and destroys it if the pointer is destroyed.
-  // We can take responsibility for the parameter object by copying the 
-  // auto_ptr. Note however that the original auto_ptr will no longer point to 
-  // the parameter object if we do this. Probably need to adjust this system
-  // a little.
+  // This attaches the object to the smart pointer params_sharedptr. This 
+  // pointer tracks the parameter object and destroys it if the pointer and all
+  // copies of it are destroyed/go out of scope.
   
   // Set parameter value by accessing parameter object directly via the
-  // auto_ptr:
-  models::CMSSM::I::params_autoptr->setValue("M0",1234);
+  // shared_ptr:
+  models::CMSSM::I::params_sharedptr->setValue("M0",1234);
   
-  // Take posession of the parameter object auto_ptr and set values that way:
-  std::auto_ptr<ModelParameters> CMSSMI_autoptr = \
-                                            models::CMSSM::I::params_autoptr;
-  CMSSMI_autoptr->setValue("M12",4321);
-  CMSSMI_autoptr->setValue("A0",100);
-  CMSSMI_autoptr->setValue("tanb",10);
-  CMSSMI_autoptr->setValue("sgnmu",1);
-  CMSSMI_autoptr->setValue("Mstop",900);
+  // Copy the parameter object shared_ptr and set values that way:
+  std::shared_ptr<ModelParameters> CMSSMI_sharedptr = \
+                                            models::CMSSM::I::params_sharedptr;
+  CMSSMI_sharedptr->setValue("M12",4321);
+  CMSSMI_sharedptr->setValue("A0",100);
+  CMSSMI_sharedptr->setValue("tanb",10);
+  CMSSMI_sharedptr->setValue("sgnmu",1);
+  CMSSMI_sharedptr->setValue("Mstop",900);
   
   // Retrieve values (but note that we can't do this via
-  // 'models::CMSSM::I::params_autoptr' anymore! )
+  // 'models::CMSSM::I::params_sharedptr' anymore! )
 
   cout<<""<<endl;
   cout<<"CMSSM::I parameters:"<<endl;
-  cout<<"M0    = "<<CMSSMI_autoptr->getValue("M0")<<endl;
-  cout<<"M12   = "<<CMSSMI_autoptr->getValue("M12")<<endl;
-  cout<<"A0    = "<<CMSSMI_autoptr->getValue("A0")<<endl;
-  cout<<"tanb  = "<<CMSSMI_autoptr->getValue("tanb")<<endl;
-  cout<<"sgnmu = "<<CMSSMI_autoptr->getValue("sgnmu")<<endl;
-  
-  // Actually, we might be able to give control back to the model, let's try:
-  // Note: Ok works! Actually the later tests of CMSSMI will crash if we don't
-  // do this, since they try to use this pointer! Definitely should do something
-  // better.
-  models::CMSSM::I::params_autoptr = CMSSMI_autoptr;
+  cout<<"M0    = "<<CMSSMI_sharedptr->getValue("M0")<<endl;
+  cout<<"M12   = "<<CMSSMI_sharedptr->getValue("M12")<<endl;
+  cout<<"A0    = "<<CMSSMI_sharedptr->getValue("A0")<<endl;
+  cout<<"tanb  = "<<CMSSMI_sharedptr->getValue("tanb")<<endl;
+  cout<<"sgnmu = "<<CMSSMI_sharedptr->getValue("sgnmu")<<endl;
   
   // Lets also look at the halo models
   // First, initialise the parameter object of the desired parameterisation:
@@ -220,16 +211,16 @@ int main( int argc, const char* argv[] )
   cout<<"models::Gaussian_Halo::name(): "<<models::Gaussian_Halo::name()<<endl;
   cout<<"models::Gaussian_Halo::I::name():"<<models::Gaussian_Halo::I::name()<<endl;
   cout<<"models::Gaussian_Halo::I::lineage "<<models::Gaussian_Halo::I::lineage<<endl;
-  models::Gaussian_Halo::I::params_autoptr->setValue("v_earth",300);
+  models::Gaussian_Halo::I::params_sharedptr->setValue("v_earth",300);
   // There is a function to just dump all the parameters to stdout:
   cout<<"Dumping Gaussian_Halo::I parameters...";
-  models::Gaussian_Halo::I::params_autoptr->print();
+  models::Gaussian_Halo::I::params_sharedptr->print();
   cout<<"models::SomeOther_Halo::name(): "<<models::SomeOther_Halo::name()<<endl;
   cout<<"models::SomeOther_Halo::I::name() "<<models::SomeOther_Halo::I::name()<<endl;
   cout<<"models::SomeOther_Halo::I::lineage "<<models::SomeOther_Halo::I::lineage<<endl;
-  models::SomeOther_Halo::I::params_autoptr->setValue("v_earth",500);
+  models::SomeOther_Halo::I::params_sharedptr->setValue("v_earth",500);
   cout<<"Dumping SomeOther_Halo::I parameters...";
-  models::SomeOther_Halo::I::params_autoptr->print();
+  models::SomeOther_Halo::I::params_sharedptr->print();
   // Demonstration of automatic looping over parameters
   cout<<endl;
   cout<<"Parameter name retrieval..."<<endl;
@@ -242,10 +233,10 @@ int main( int argc, const char* argv[] )
   srand (time(NULL));    // initialize random seed
   for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
     cout <<"Setting random "<<*it<<" value..."<<endl;
-    models::Gaussian_Halo::I::params_autoptr->setValue(*it, rand()%1000);
+    models::Gaussian_Halo::I::params_sharedptr->setValue(*it, rand()%1000);
   }
   cout<<"Dumping new Gaussian_Halo::I parameters...";
-  models::Gaussian_Halo::I::params_autoptr->print();
+  models::Gaussian_Halo::I::params_sharedptr->print();
   
   cout << "*** End demo of old ModelBit stuff ***" << endl;
   cout << "*** Begin demo of ModelBit 'module-like' capabilities ***" << endl;
