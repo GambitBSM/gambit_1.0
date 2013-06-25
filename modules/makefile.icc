@@ -29,8 +29,9 @@ COREDIR = Core
 MODELDIR = ModelBit
 UTILSDIR = Utils
 SCANDIR = ScannerBit
-HECOLLIDERDIR = HEColliderBit
 BACKENDDIR = Backends
+HECOLLIDERDIR = HEColliderBit
+DMDIR = DarkBit
 DOCDIR = ../doc
 
 # Boost is required. Read README for details
