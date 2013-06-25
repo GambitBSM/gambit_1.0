@@ -90,15 +90,15 @@ void beispiel()
       dependencyResolver.inputMap, dependencyResolver.outputList);
 
   // Set input parameters
-  masterLike["m0"] = iniFile.getValue<double>("m0");
   masterLike["m1"] = iniFile.getValue<double>("m1");
+  masterLike["m2"] = iniFile.getValue<double>("m2");
+  masterLike["m3"] = iniFile.getValue<double>("m3");
 
   // Call the functions in their sorted order
   masterLike.calculate();
 
   // Read output parameters
   cout << masterLike("Likelihood")[0] << endl;
-  cout << masterLike("Likelihood")[1] << endl;
   
   //char *names[2] = {"m_0", "m_1/2"};
   //Gambit_Functor like (&mlike, "Likelihood", names, 2);
