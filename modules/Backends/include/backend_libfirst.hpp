@@ -48,6 +48,8 @@ LOAD_LIBRARY
 BE_FUNCTION(initialize, void, (int), "_Z10initializei")
 BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv")
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
+BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
+BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")

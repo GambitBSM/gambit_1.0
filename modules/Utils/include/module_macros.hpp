@@ -701,7 +701,7 @@
          &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \
-      /* Create the dependency initialisation object */                        \
+      /* Create the backend requirement initialisation object */               \
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_3(BACKEND_REQ,_backend_for_,FUNCTION)                     \
@@ -745,8 +745,8 @@
           /* Set up a working alias that casts the (base) pointer to the       \
           backend functor to the appropriate backend_functor type, and then    \
           dereferences it to call the actual backend function. */              \
-          template<typename... ARGS>                                           \
-          TYPE BACKEND_REQ(ARGS ...args)                                       \
+          template<typename ...ARGS>                                           \
+          TYPE BACKEND_REQ(ARGS&& ...args)                                     \
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
             be_functor* myptr;                                                 \
@@ -768,7 +768,8 @@
             {                                                                  \
               myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
             }                                                                  \
-            BOOST_PP_IF(IS_TYPE(void,TYPE),,return) (*myptr)(args...);         \
+            BOOST_PP_IF(IS_TYPE(void,TYPE),,return)                            \
+             (*myptr)(std::forward<ARGS>(args)...);                            \
           }                                                                    \
                                                                                \
         }                                                                      \

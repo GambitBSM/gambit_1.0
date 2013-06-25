@@ -105,6 +105,14 @@ START_MODULE
       //ACTIVATE_FOR_MODEL(MSSM)                             // Dependency counts when scanning the MSSM or one of its sub-models
       #undef CONDITIONAL_DEPENDENCY
 
+      #define BACKEND_REQ refex
+      START_BACKEND_REQ(double)             // A backend requirement added for the purposes of testing the ability to pass parameters
+      #undef BACKEND_REQ                    // to backends both by reference and by value.
+
+      #define BACKEND_REQ refex2
+      START_BACKEND_REQ(void)               // A backend requirement added for the purposes of testing the ability to pass parameters
+      #undef BACKEND_REQ                    // to backends both by reference and by value.
+
     #undef FUNCTION
 
   #undef CAPABILITY

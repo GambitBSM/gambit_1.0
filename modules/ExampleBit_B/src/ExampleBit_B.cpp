@@ -74,8 +74,24 @@ namespace GAMBIT
       cout << "Its value is: ";
       double doall_local = GET_BE_RESULT(nevents_postcuts::awesomeness, 2);
       cout << doall_local << endl << endl;    
+      int stuff = 2;
+      cout << "Again, its value is: ";
+      double doall_local2 = GET_BE_RESULT(nevents_postcuts::awesomeness, byVal(stuff));
+      cout << doall_local2 << endl << endl;    
 
       result = (int) (*Dep::nevents + doall_local);
+
+      //Example showing pass by ref vs pass by val
+      double inputvar1 = 0;
+      double inputvar2 = 0;
+      double inputvar3 = 2.5;
+      cout << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
+      double refex1 = GET_BE_RESULT(nevents_postcuts::refex, inputvar1);
+      cout << "Next returns void, takes parameters both by ref and by val." << endl;
+      GET_BE_RESULT(nevents_postcuts::refex2, inputvar2, byVal(inputvar3));
+      cout << "Results of backend functions with parameters passed byRef: " 
+           << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
+
     }
 
   }
