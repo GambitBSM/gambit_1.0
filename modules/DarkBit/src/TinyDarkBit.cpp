@@ -141,14 +141,24 @@ namespace GAMBIT {
       cout << "Run dsinit:" << endl;
       GET_BE_RESULT(dssusy::dsinit);
       cout << "Set mssmpar:" << endl;
-      GET_BE_RESULT(dssusy::DarkSUSY_setmssmpar_capability, mssmpar);
+      GET_BE_RESULT(dssusy::DarkSUSY_setmssmpar_capability, byVal(mssmpar));
       cout << "Call dssusy(unphys, hwarning):" << endl;
       GET_BE_RESULT(dssusy::dssusy, unphys, hwarning);
-      cout << "...done!:" << endl;
     }
     void dsrdomega(double &result)
     {
-      cout << "dsrdomega!!" << endl;
+      int omtype = 0;
+      int fast = 0;
+      double xf;
+      int ierr;
+      int iwar;
+      int nfc;
+      result = GET_BE_RESULT(dsrdomega::dsrdomega, omtype, fast, xf, ierr, iwar, nfc);
+      cout << "dsrdomega return values: xf = " << xf;
+      cout << "; ierr: " << ierr;
+      cout << "; iwar: " << iwar;
+      cout << "; nfc: " << nfc << endl;
+      cout << "Relic density: " << result << endl;
     }
   }
 }

@@ -750,7 +750,9 @@
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
             be_functor* myptr;                                                 \
-            if (GAMBIT::safe_mode)                                             \
+            /* CW: Temporarily deactivated to get DarkSUSY backend running */  \
+            if (false)                                                         \
+            /*if (GAMBIT::safe_mode)*/                                             \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \
