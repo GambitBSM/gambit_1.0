@@ -32,7 +32,7 @@
 ///  DEALINGS IN THE SOFTWARE.
 ///  *********************************************
 
-# if GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
+# if 0 //GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
 #   include <boost/preprocessor/variadic/size.hpp>
 #   include <boost/preprocessor/tuple/to_seq.hpp>
 # else
@@ -65,19 +65,13 @@
 #    define BOOST_PP_VARIADIC_SIZE_I(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63, size, ...) size
 # endif
 
+
 /// Ben: perhaps we can redesign my macro to not need this, but for now it is
 /// pretty handy to have so I have added it here. Main downside is that it is
 /// pretty damn huge due to the way it takes care of many many arguments.
-///
 
 /// Whoops, to use TUPLE_TO_SEQ we also need OVERLOAD. 
 /// This is small, fortunately.
-
-# ifndef BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
-# define BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
-
-//# include <boost/preprocessor/cat.hpp> //have this already
-//# include <boost/preprocessor/variadic/size.hpp> //have this already
 
 ///  BOOST_PP_OVERLOAD
 /// /* **************************************************************************
@@ -89,10 +83,16 @@
 ///  *     http://www.boost.org/LICENSE_1_0.txt)                                *
 ///  *                                                                          *
 ///  ************************************************************************** */
-///
-# if BOOST_PP_VARIADICS
+
+# ifndef BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
+# define BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
+
+//# include <boost/preprocessor/cat.hpp> //have this already
+//# include <boost/preprocessor/variadic/size.hpp> //have this already
+
+//# if BOOST_PP_VARIADICS
 #    define BOOST_PP_OVERLOAD(prefix, ...) BOOST_PP_CAT(prefix, BOOST_PP_VARIADIC_SIZE(__VA_ARGS__))
-# endif
+//# endif
 #
 # endif
 
@@ -115,7 +115,15 @@
 //# include <boost/preprocessor/facilities/overload.hpp> // have this above!
 //# include <boost/preprocessor/variadic/size.hpp>  // have this above!
 
-# if BOOST_PP_VARIADICS
+//Ben: temporary debugging junk
+//#include <boost/preprocessor/stringize.hpp>
+//#pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
+//#pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
+//#pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
+//#pragma message "BOOST_PP_CONFIG_FLAGS=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_FLAGS())
+//#pragma message "BOOST_PP_CONFIG_MWCC=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_MWCC())
+
+//# if BOOST_PP_VARIADICS
 #    if BOOST_PP_VARIADICS_MSVC
 #        define BOOST_PP_TUPLE_TO_SEQ(...) BOOST_PP_TUPLE_TO_SEQ_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_SEQ_O_, __VA_ARGS__), (__VA_ARGS__))
 #        define BOOST_PP_TUPLE_TO_SEQ_I(m, args) BOOST_PP_TUPLE_TO_SEQ_II(m, args)
@@ -125,21 +133,21 @@
 #    endif
 #    define BOOST_PP_TUPLE_TO_SEQ_O_1(tuple) BOOST_PP_CAT(BOOST_PP_TUPLE_TO_SEQ_, BOOST_PP_VARIADIC_SIZE tuple) tuple
 #    define BOOST_PP_TUPLE_TO_SEQ_O_2(size, tuple) BOOST_PP_TUPLE_TO_SEQ_O_1(tuple)
-# else
-#    if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_MWCC()
-#        define BOOST_PP_TUPLE_TO_SEQ(size, tuple) BOOST_PP_TUPLE_TO_SEQ_I(size, tuple)
-#        if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_MSVC()
-#            define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_ ## s t
-#        else
-#            define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_II(BOOST_PP_TUPLE_TO_SEQ_ ## s t)
-#            define BOOST_PP_TUPLE_TO_SEQ_II(res) res
-#        endif
-#    else
-#        define BOOST_PP_TUPLE_TO_SEQ(size, tuple) BOOST_PP_TUPLE_TO_SEQ_OO((size, tuple))
-#        define BOOST_PP_TUPLE_TO_SEQ_OO(par) BOOST_PP_TUPLE_TO_SEQ_I ## par
-#        define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_ ## s ## t
-#    endif
-# endif
+//# else
+//#    if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_MWCC()
+//#        define BOOST_PP_TUPLE_TO_SEQ(size, tuple) BOOST_PP_TUPLE_TO_SEQ_I(size, tuple)
+//#        if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_MSVC()
+//#            define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_ ## s t
+//#        else
+//#            define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_II(BOOST_PP_TUPLE_TO_SEQ_ ## s t)
+//#            define BOOST_PP_TUPLE_TO_SEQ_II(res) res
+//#        endif
+//#    else
+//#        define BOOST_PP_TUPLE_TO_SEQ(size, tuple) BOOST_PP_TUPLE_TO_SEQ_OO((size, tuple))
+//#        define BOOST_PP_TUPLE_TO_SEQ_OO(par) BOOST_PP_TUPLE_TO_SEQ_I ## par
+//#        define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_ ## s ## t
+//#    endif
+//# endif
 #
 # define BOOST_PP_TUPLE_TO_SEQ_1(e0) (e0)
 # define BOOST_PP_TUPLE_TO_SEQ_2(e0, e1) (e0)(e1)
@@ -209,3 +217,8 @@
 # endif
 
 # endif
+
+//Ben: temporary debugging junk
+#pragma message "TUPLE_TO_SEQ test=" BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_TO_SEQ((1,2,3,4,5)))
+
+

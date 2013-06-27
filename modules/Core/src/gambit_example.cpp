@@ -174,33 +174,28 @@ int main( int argc, const char* argv[] )
   // If we want to do anything useful with a model, we need to initialise 
   // (create) its parameter object. Can then get and set parameter values etc.
   models::CMSSM::I::init_paramobj();
-  // This attaches the object to the smart pointer params_sharedptr. This 
-  // pointer tracks the parameter object and destroys it if the pointer and all
-  // copies of it are destroyed/go out of scope.
+  // This attaches the object to the pointer parametersptr. This object will
+  // need to be manually deleted when we are done wtih it.
   
   // Set parameter value by accessing parameter object directly via the
-  // shared_ptr:
-  models::CMSSM::I::params_sharedptr->setValue("M0",1234);
+  // pointer:
+  models::CMSSM::I::parametersptr->setValue("M0",1234);
   
   // Copy the parameter object shared_ptr and set values that way:
-  std::shared_ptr<ModelParameters> CMSSMI_sharedptr = \
-                                            models::CMSSM::I::params_sharedptr;
-  CMSSMI_sharedptr->setValue("M12",4321);
-  CMSSMI_sharedptr->setValue("A0",100);
-  CMSSMI_sharedptr->setValue("tanb",10);
-  CMSSMI_sharedptr->setValue("sgnmu",1);
-  CMSSMI_sharedptr->setValue("Mstop",900);
+  ModelParameters* CMSSMI_ptr = models::CMSSM::I::parametersptr;
+  CMSSMI_ptr->setValue("M12",4321);
+  CMSSMI_ptr->setValue("A0",100);
+  CMSSMI_ptr->setValue("tanb",10);
+  CMSSMI_ptr->setValue("sgnmu",1);
+  CMSSMI_ptr->setValue("Mstop",900);
   
-  // Retrieve values (but note that we can't do this via
-  // 'models::CMSSM::I::params_sharedptr' anymore! )
-
   cout<<""<<endl;
   cout<<"CMSSM::I parameters:"<<endl;
-  cout<<"M0    = "<<CMSSMI_sharedptr->getValue("M0")<<endl;
-  cout<<"M12   = "<<CMSSMI_sharedptr->getValue("M12")<<endl;
-  cout<<"A0    = "<<CMSSMI_sharedptr->getValue("A0")<<endl;
-  cout<<"tanb  = "<<CMSSMI_sharedptr->getValue("tanb")<<endl;
-  cout<<"sgnmu = "<<CMSSMI_sharedptr->getValue("sgnmu")<<endl;
+  cout<<"M0    = "<<CMSSMI_ptr->getValue("M0")<<endl;
+  cout<<"M12   = "<<CMSSMI_ptr->getValue("M12")<<endl;
+  cout<<"A0    = "<<CMSSMI_ptr->getValue("A0")<<endl;
+  cout<<"tanb  = "<<CMSSMI_ptr->getValue("tanb")<<endl;
+  cout<<"sgnmu = "<<CMSSMI_ptr->getValue("sgnmu")<<endl;
   
   // Lets also look at the halo models
   // First, initialise the parameter object of the desired parameterisation:
@@ -211,32 +206,33 @@ int main( int argc, const char* argv[] )
   cout<<"models::Gaussian_Halo::name(): "<<models::Gaussian_Halo::name()<<endl;
   cout<<"models::Gaussian_Halo::I::name():"<<models::Gaussian_Halo::I::name()<<endl;
   cout<<"models::Gaussian_Halo::I::lineage "<<models::Gaussian_Halo::I::lineage<<endl;
-  models::Gaussian_Halo::I::params_sharedptr->setValue("v_earth",300);
+  models::Gaussian_Halo::I::parametersptr->setValue("v_earth",300);
   // There is a function to just dump all the parameters to stdout:
   cout<<"Dumping Gaussian_Halo::I parameters...";
-  models::Gaussian_Halo::I::params_sharedptr->print();
+  models::Gaussian_Halo::I::parametersptr->print();
   cout<<"models::SomeOther_Halo::name(): "<<models::SomeOther_Halo::name()<<endl;
   cout<<"models::SomeOther_Halo::I::name() "<<models::SomeOther_Halo::I::name()<<endl;
   cout<<"models::SomeOther_Halo::I::lineage "<<models::SomeOther_Halo::I::lineage<<endl;
-  models::SomeOther_Halo::I::params_sharedptr->setValue("v_earth",500);
+  models::SomeOther_Halo::I::parametersptr->setValue("v_earth",500);
   cout<<"Dumping SomeOther_Halo::I parameters...";
-  models::SomeOther_Halo::I::params_sharedptr->print();
+  models::SomeOther_Halo::I::parametersptr->print();
   // Demonstration of automatic looping over parameters
   cout<<endl;
   cout<<"Parameter name retrieval..."<<endl;
   cout<<"models::Gaussian_Halo::I::parameterkeys: "<< \
                 models::Gaussian_Halo::I::parameterkeys<<endl;
   // Generate some random values and set parameters to these values
-
+  
+  typedef std::string str;
   std::vector<str> keys = models::Gaussian_Halo::I::parameterkeys;
   
   srand (time(NULL));    // initialize random seed
   for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
     cout <<"Setting random "<<*it<<" value..."<<endl;
-    models::Gaussian_Halo::I::params_sharedptr->setValue(*it, rand()%1000);
+    models::Gaussian_Halo::I::parametersptr->setValue(*it, rand()%1000);
   }
   cout<<"Dumping new Gaussian_Halo::I parameters...";
-  models::Gaussian_Halo::I::params_sharedptr->print();
+  models::Gaussian_Halo::I::parametersptr->print();
   
   cout << "*** End demo of old ModelBit stuff ***" << endl;
   cout << "*** Begin demo of ModelBit 'module-like' capabilities ***" << endl;
@@ -301,6 +297,42 @@ int main( int argc, const char* argv[] )
     models::CMSSM::I::Functown::Mstop.calculate();
     cout << "  " << models::CMSSM::I::name() << " says: " << models::CMSSM::I::Functown::Mstop() << " (functor-style)" <<endl ; 
   }
+  
+  /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
+     can access the parameters this way now: */
+  cout << "Core says: report on parameters!" << endl;
+  cout << "  " << models::CMSSM::I::name() << " says: ";
+  cout << "  "; models::CMSSM::I::report("parameters");
+  if (models::CMSSM::I::provides("CMSSM_I_parameters")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef models::CMSSM::I::function_traits<Tags::parameters>::type testType; //in this case the underlying type is ModelParameters
+    // Call the module function by its tag
+    // (creates a copy of the parameters object?)
+    testType CMSSMIparameters = models::CMSSM::I::result<Tags::parameters>() ;
+    // Extract parameters from the retrieved parameter object
+    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
+      CMSSMIparameters.getValue("M0")<< " (tag-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
+      CMSSMIparameters.getValue("M12")<< " (tag-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
+      CMSSMIparameters.getValue("tanB")<< " (tag-style)" <<endl ;
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    ModelParameters CMSSMIparameters2 = models::CMSSM::I::result<ModelParameters>("parameters") ;
+    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
+      CMSSMIparameters2.getValue("M0")<< " (string-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
+      CMSSMIparameters2.getValue("M12")<< " (string-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
+      CMSSMIparameters2.getValue("tanB")<< " (string-style)" <<endl ;
+    // Call the module function by its functor 
+    models::CMSSM::I::Functown::parameters.calculate();
+    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
+      models::CMSSM::I::Functown::parameters().getValue("M0") << " (functor-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
+      models::CMSSM::I::Functown::parameters().getValue("M12") << " (functor-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
+      models::CMSSM::I::Functown::parameters().getValue("tanb") << " (functor-style)" <<endl ;
+  }     
   
   
   cout << "*** End ModelBit demo ***" << endl;
@@ -605,19 +637,18 @@ int main( int argc, const char* argv[] )
   //shared_dbl vSigmaV13=myDS.dssigmav("vSigmaV2",13);
   // shared_dbl vPositron=myDS.dshaloyield("vPositron",5.2,51); //egev,yieldk
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
-
+  
   try{
     GAMBIT_MSG_LOG("GAMBIT example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
     //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
-    /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
-        GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
-        GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
-    */
+    //  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
+    //  GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
+    //  GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
+    
   }catch( exceptions::GAMBIT_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
-
 
   // Example 2: use the LLH provided by some Engine:
   //ComparatorBasePtr mySillyLLH_1(new simpleHandleToComparator(vSigmaV)) ;

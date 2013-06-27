@@ -106,10 +106,10 @@ namespace GAMBIT{
     }                                                                          \
   }                                                                            \
 
-#define US _
- 
 #define START_PARAMETERISATION                                                 \
   namespace GAMBIT {                                                           \
+    ADD_TAG_IN_CURRENT_NAMESPACE(parameters)                                   \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CAT_5(MODEL,_,PARAMETERISATION,_,parameters)) \
     namespace models {                                                         \
       namespace MODEL {                                                        \
         namespace PARAMETERISATION {                                           \
@@ -141,21 +141,36 @@ namespace GAMBIT{
              thing perhaps? Don't want to create these objects unless we 
              actually need them... */                                          \
                                                                                \
-          /*ModelParameters* parametersptr;*/                                  \
-          std::shared_ptr<ModelParameters> params_sharedptr;                   \
+          ModelParameters* parametersptr;                                      \
+          /* Ok going back to the raw pointer, so it can be passed by a functor
+             */                                                                \
+          /* std::shared_ptr<ModelParameters> params_sharedptr; */             \
+                                                                               \
+          /* Function to retrieve the ModelParameters object. This will be
+             wrapped in a functor, for delivery of parameters to elsewhere in
+             GAMBIT */                                                         \
+          void parameters (ModelParameters &result) {                          \
+            result = parametersptr;                                            \
+          }                                                                    \
+                                                                               \
+          /* Wrap it up in a functor (macro from module_macros.hpp) */         \
+          MAKE_FUNCTOR(parameters,ModelParameters,\
+            CAT_5(MODEL,_,PARAMETERISATION,_,parameters),\
+            MODEL::PARAMETERISATION)                                           \
                                                                                \
           /* Initialise (create) the parameter object                                        
              Need to use smart pointer so that ownership of the parameters object
              can be transferred out of the scope of the function (i.e. so that
              the pointer is not left dangling due to the object being destroyed
-             when we leave the function scope) */                             \
-                                                                              \
+             when we leave the function scope) */                              \
+                                                                               \
           void init_paramobj()                                                 \
           {                                                                    \
-            std::shared_ptr<ModelParameters> \
-                              paramptr (new ModelParameters(parameterkeys));  \
-            params_sharedptr = paramptr;                                      \
-          }                                                                   \
+            parametersptr = new ModelParameters(parameterkeys);                \
+            /* In principle we now need to delete this object sometime. We will
+               have to explicitly call "delete" to do this, or else wait till 
+               the end of the program for the memory to be released. */        \
+          }                                                                    \
                                                                                \
         }                                                                      \
       }                                                                        \
@@ -214,7 +229,7 @@ namespace GAMBIT{
              and is what will be wrapped in a functor for processing by the 
              core */                                                           \
           void PARAMETER (double &result) {                               \
-            result = params_sharedptr->getValue(STRINGIFY(PARAMETER));         \
+            result = parametersptr->getValue(STRINGIFY(PARAMETER));         \
           }                                                                    \
                                                                                \
           /* Wrap it up in a functor (macro from module_macros.hpp) */         \

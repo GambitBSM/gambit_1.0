@@ -33,7 +33,7 @@
 #include <yaml_parser.hpp>
 
 using namespace boost;
-using namespace std;
+//using namespace std;
 
 namespace GAMBIT
 {
@@ -76,7 +76,7 @@ namespace GAMBIT
         void resolveNow();
 
         // Returns functors in sorted order
-        vector<functor*> getFunctors();
+        std::vector<functor*> getFunctors();
 
         // Map str --> double* for input parameter values
         inputMapType inputMap;
@@ -92,12 +92,12 @@ namespace GAMBIT
       private:
         // Helper functions/arrays
         static void outputResolver(functor * dep_functor);
-        void fill_parQueue(queue<pair<sspair, Graphs::VertexID> > *parQueue,
+        void fill_parQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
             Graphs::VertexID vertex);
-        multimap<sspair, Graphs::VertexID> initialize_capMap();
-        void initialize_edges(queue<pair<sspair, Graphs::VertexID> > parQueue,
-            multimap<sspair, Graphs::VertexID> capMap);
-        list<int> run_topological_sort();
+        std::multimap<sspair, Graphs::VertexID> initialize_capMap();
+        void initialize_edges(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue,
+            std::multimap<sspair, Graphs::VertexID> capMap);
+        std::list<int> run_topological_sort();
         std::vector<VertexID> reqObs;
 
         // The central boost graph object

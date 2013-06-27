@@ -68,6 +68,11 @@ namespace GAMBIT {
       _definePars(paramlist);
     }
     
+    // Copy Constructor
+    ModelParameters(ModelParameters& other): \
+      ModelParametersBase(), _values(other._values) {
+    }
+    
     virtual double getValue(std::string const & inkey) const {
       assert_contains(inkey);
       return _values.at(inkey);
