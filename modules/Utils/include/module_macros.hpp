@@ -457,40 +457,40 @@
   }                                                                            \
 
 /// 'guts' of the functor creation
-#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN)                      \
-  /* Set up an auxilary method to report stuff to the core about the       \
-  function.  Not actually sure what this would                             \
-  be used for at this stage. */                                            \
-  template <>                                                              \
-  void report<Tags::FUNCTION>()                                            \
-  {                                                                        \
-    cout<<"Dear Core, I provide the function with tag: "<<                 \
-    STRINGIFY(FUNCTION)<<endl;                                             \
-  }                                                                        \
-                                                                           \
-  /* Register the FUNCTION's result TYPE */                                \
-  template<>                                                               \
-  struct function_traits<Tags::FUNCTION>                                   \
-  {                                                                        \
-    typedef TYPE type;                                                     \
-  };                                                                       \
-                                                                           \
-  /* Create the function wrapper object (functor) */                       \
-  namespace Functown                                                       \
-  {                                                                        \
-    module_functor<TYPE> FUNCTION                                          \
-     (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),       \
-     STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                             \
-  }                                                                        \
-                                                                           \
-  /* Set up an alias function to call the function */                      \
-  template <>                                                              \
-  function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()           \
-  {                                                                        \
-     Functown::FUNCTION.calculate();                             \
-     return Functown::FUNCTION();                                \
-  }                                                                        \
-                                                                           \
+#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN)                          \
+  /* Set up an auxilary method to report stuff to the core about the       
+  function.  Not actually sure what this would                             
+  be used for at this stage. */                                                \
+  template <>                                                                  \
+  void report<Tags::FUNCTION>()                                                \
+  {                                                                            \
+    cout<<"Dear Core, I provide the function with tag: "<<                     \
+    STRINGIFY(FUNCTION)<<endl;                                                 \
+  }                                                                            \
+                                                                               \
+  /* Register the FUNCTION's result TYPE */                                    \
+  template<>                                                                   \
+  struct function_traits<Tags::FUNCTION>                                       \
+  {                                                                            \
+    typedef TYPE type;                                                         \
+  };                                                                           \
+                                                                               \
+  /* Create the function wrapper object (functor) */                           \
+  namespace Functown                                                           \
+  {                                                                            \
+    module_functor<TYPE> FUNCTION                                              \
+     (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
+     STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
+  }                                                                            \
+                                                                               \
+  /* Set up an alias function to call the function */                          \
+  template <>                                                                  \
+  function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
+  {                                                                            \
+     Functown::FUNCTION.calculate();                                           \
+     return Functown::FUNCTION();                                              \
+  }                                                                            \
+                                                                               \
   /* Set up the commands to be called at runtime to register the function*/\
   template <>                                                              \
   void rt_register_function<Tags::FUNCTION> ()                             \

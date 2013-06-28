@@ -79,7 +79,7 @@ START_MODEL
   
     // Add in a sensibly named capability for good measure
     #define PARAMETER Mstop
-    MAP_TO_CAPABILITY(Mstop)
+    MAP_TO_CAPABILITY(Mstop_obs)
     #undef PARAMETER 
     
   #undef PARAMETERISATION

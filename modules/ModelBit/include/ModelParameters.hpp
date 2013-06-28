@@ -69,9 +69,9 @@ namespace GAMBIT {
     }
     
     // Copy Constructor
-    ModelParameters(ModelParameters& other): \
-      ModelParametersBase(), _values(other._values) {
-    }
+    //ModelParameters(ModelParameters& other): \
+    //  ModelParametersBase(), _values(other._values) {
+    //}
     
     virtual double getValue(std::string const & inkey) const {
       assert_contains(inkey);

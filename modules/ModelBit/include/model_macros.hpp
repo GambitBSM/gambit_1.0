@@ -146,6 +146,11 @@ namespace GAMBIT{
              */                                                                \
           /* std::shared_ptr<ModelParameters> params_sharedptr; */             \
                                                                                \
+          template <>                                                          \
+          bool provides<Tags::CAT_5(MODEL,_,PARAMETERISATION,_,parameters)>() {\
+            return true;                                                       \
+          }                                                                    \
+                                                                               \
           /* Function to retrieve the ModelParameters object. This will be
              wrapped in a functor, for delivery of parameters to elsewhere in
              GAMBIT */                                                         \
@@ -154,7 +159,7 @@ namespace GAMBIT{
           }                                                                    \
                                                                                \
           /* Wrap it up in a functor (macro from module_macros.hpp) */         \
-          MAKE_FUNCTOR(parameters,ModelParameters,\
+          MAKE_FUNCTOR(parameters,ModelParameters*,\
             CAT_5(MODEL,_,PARAMETERISATION,_,parameters),\
             MODEL::PARAMETERISATION)                                           \
                                                                                \

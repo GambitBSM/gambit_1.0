@@ -181,7 +181,7 @@ int main( int argc, const char* argv[] )
   // pointer:
   models::CMSSM::I::parametersptr->setValue("M0",1234);
   
-  // Copy the parameter object shared_ptr and set values that way:
+  // Copy the parameter object pointer and set values that way:
   ModelParameters* CMSSMI_ptr = models::CMSSM::I::parametersptr;
   CMSSMI_ptr->setValue("M12",4321);
   CMSSMI_ptr->setValue("A0",100);
@@ -308,26 +308,30 @@ int main( int argc, const char* argv[] )
     typedef models::CMSSM::I::function_traits<Tags::parameters>::type testType; //in this case the underlying type is ModelParameters
     // Call the module function by its tag
     // (creates a copy of the parameters object?)
-    testType CMSSMIparameters = models::CMSSM::I::result<Tags::parameters>() ;
+    /*
+    testType* CMSSMIparameters = models::CMSSM::I::result<Tags::parameters>;
     // Extract parameters from the retrieved parameter object
     cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
-      CMSSMIparameters.getValue("M0")<< " (tag-style)" <<endl ;
+      CMSSMIparameters->getValue("M0")<< " (tag-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
-      CMSSMIparameters.getValue("M12")<< " (tag-style)" <<endl ;
+      CMSSMIparameters->getValue("M12")<< " (tag-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
-      CMSSMIparameters.getValue("tanB")<< " (tag-style)" <<endl ;
+      CMSSMIparameters->getValue("tanB")<< " (tag-style)" <<endl ;
+    */
     // Call the module function by its string name (could use TestType here too insead of double) 
-    ModelParameters CMSSMIparameters2 = models::CMSSM::I::result<ModelParameters>("parameters") ;
+    ModelParameters* CMSSMIparameters2 = models::CMSSM::I::result<ModelParameters*>("parameters") ;
     cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
-      CMSSMIparameters2.getValue("M0")<< " (string-style)" <<endl ;
+      CMSSMIparameters2->getValue("M0")<< " (string-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
-      CMSSMIparameters2.getValue("M12")<< " (string-style)" <<endl ;
+      CMSSMIparameters2->getValue("M12")<< " (string-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
-      CMSSMIparameters2.getValue("tanB")<< " (string-style)" <<endl ;
+      CMSSMIparameters2->getValue("tanB")<< " (string-style)" <<endl ;
     // Call the module function by its functor 
     models::CMSSM::I::Functown::parameters.calculate();
+    // Get pointer to result:
+    ModelParameters* CMSSMIparameters3 = models::CMSSM::I::Functown::parameters();
     cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
-      models::CMSSM::I::Functown::parameters().getValue("M0") << " (functor-style)" <<endl ;
+      CMSSMIparameters3.getValue("M0") << " (functor-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
       models::CMSSM::I::Functown::parameters().getValue("M12") << " (functor-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
