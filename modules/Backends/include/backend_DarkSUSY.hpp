@@ -50,8 +50,8 @@ LOAD_LIBRARY
 // BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 
 BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
-BE_FUNCTION(dssusy, void, (int,int), "dssusy_", "dssusy")
-BE_FUNCTION(dsrdomega, double, (int,int,double,int,int,int), "dsrdomega_", "dsrdomega")
+BE_FUNCTION(dssusy, void, (int&,int&), "dssusy_", "dssusy")
+BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_", "dsrdomega")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
