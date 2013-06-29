@@ -51,6 +51,7 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(BACKENDDIR)/include \
 	-I$(BACKENDDIR)/lib \
 	-I$(HECOLLIDERDIR)/include \
+	-I$(DMDIR)/include \
 	-IExampleBit_A/include \
 	-IExampleBit_B/include \
 	-IDarkBit/include -IExample_SUSYspecBit/include
@@ -190,9 +191,13 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(CORELIBS) $(OTHERLIBS) $(COREDIR)/build/gambit_example.o 
+gambit_example: $(CORELIBS) $(OTHERLIBS) $(COREDIR)/build/gambit_example.o libfirst.so
 	@echo ___________Linking $@:
 	$(LN) $(CORELIBS) $(OTHERLIBS) $(CFLAGS) -o $@ $(LNFLAGS)
+
+libfirst.so: 
+	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.so
+	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o  
 
 # beb_tester from makefile.test_backend
 beb_tester: $(CORELIBS) $(OTHERLIBS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
