@@ -42,6 +42,12 @@ namespace GAMBIT
   /// and removing any whitespace around the delimiter.
   std::vector<std::string> delimiterSplit(std::string s, std::string delim);
 
+  /// Redirection function to turn an lvalue into an rvalue, so that it
+  /// is correctly passed by value when doing perfect forwarding with
+  /// functor typecasting.
+  template <typename T>
+  T byVal(T t) { return t; }
+
   /// Overload << operator to allow easy printing of contents of vectors to 
   /// stdout. Works only if elements of vector can themselves be output using
   /// << operator.

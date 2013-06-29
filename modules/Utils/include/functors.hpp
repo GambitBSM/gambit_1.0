@@ -50,23 +50,23 @@ namespace GAMBIT
       // from within module functions
 
       /// Getter for the wrapped function's name
-      str name()        { return myName;       }
+      str name()        { if (this == NULL) failBigTime(); return myName;       }
       /// Getter for the wrapped function's reported capability
-      str capability()  { return myCapability; }
+      str capability()  { if (this == NULL) failBigTime(); return myCapability; }
       /// Getter for the wrapped function's reported return type
-      str type()        { return myType;       }
+      str type()        { if (this == NULL) failBigTime(); return myType;       }
       /// Getter for the wrapped function's origin (module or backend name)
-      str origin()      { return myOrigin;     }
+      str origin()      { if (this == NULL) failBigTime(); return myOrigin;     }
       /// Getter for the  version of the wrapped function's origin (module or backend)
-      str version()     { return myVersion;    }
+      str version()     { if (this == NULL) failBigTime(); return myVersion;    }
       /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
-      int status()      { return myStatus;     }
+      int status()      { if (this == NULL) failBigTime(); return myStatus;     }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
-      sspair quantity() { return std::make_pair(myCapability, myType); }
+      sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
       /// Getter for obsType (relevant for output nodes, aka helper structures for the dep. resolution)
-      str obsType()     { return myObsType;    }
+      str obsType()     { if (this == NULL) failBigTime(); return myObsType;    }
       /// Setter for obsType (relevant only for next-to-output nodes)
-      void setObsType(str obsType) { this->myObsType = obsType; }
+      void setObsType(str obsType) { if (this == NULL) failBigTime(); this->myObsType = obsType; }
 
       /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
@@ -132,6 +132,7 @@ namespace GAMBIT
       }
 
       /// Getter for listing model-specific conditional dependencies
+      /// FIXME needs to use congruency relation to trigger on model descendents also
       std::vector<sspair> model_conditional_dependencies (str model)
       { 
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
@@ -186,7 +187,13 @@ namespace GAMBIT
            //proposed had been explicitly permitted.
            (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )         
           {
-            (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution
+            (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution.
+            //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
+            std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
+            for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+            {
+              myDependencies.push_back(*it);        
+            }   
           }
           else          
           { 
@@ -204,6 +211,17 @@ namespace GAMBIT
           cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
           ///\todo FIXME throw a real error here
         }        
+      }
+
+      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      void notifyOfModel(str model)
+      {
+        //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
+        std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
+        for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+        {
+          myDependencies.push_back(*it);        
+        }
       }
 
     protected:
@@ -248,6 +266,17 @@ namespace GAMBIT
 
       /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
       std::map< sspair, std::vector<sspair> > permitted_map;
+
+      /// Attempt to retrieve a dependency or model parameter that has not been resolved
+      static void failBigTime()
+      {
+          cout << endl << "Error in module function!  Attempted to use a conditional " << endl;
+          cout << "dependency that has not been activated, or a model parameter " << endl;
+          cout << "that is not defined in the model for which this function has " << endl;
+          cout << "been invoked.  Please check your module function source code. " << endl;
+          exit(1);
+          /// FIXME \todo throw real error here                             
+      }
 
   };
 
@@ -301,16 +330,36 @@ namespace GAMBIT
         if(needs_recalculating)
         {
           if(usePointer)
-            myValue = * myPointer;
+            myValue = *myPointer;
           else
             this->myFunction(myValue);
         }
       }
 
       /// Operation (return value)
-      TYPE operator()() { return myValue; }
+      TYPE operator()() 
+      { 
+        if (this == NULL) functor::failBigTime();
+        return myValue;
+      }
 
-      /// Add a dependency (a beer for anyone who can explain why this-> is required here)
+      /// Alternative to operation (returns a safe pointer to value)
+      safe_ptr<TYPE> valuePtr()
+      {
+        if (this == NULL) functor::failBigTime();
+        return safe_ptr<TYPE>(&myValue);
+      }
+      
+      /// Ben: added this so we could get write access to myValue, primarily
+      /// for the case of the scanner needing to change the ModelParameter
+      /// object. Not for use in modules.
+      TYPE* rawvaluePtr()
+      {
+        if (this == NULL) functor::failBigTime();
+        return &myValue;
+      }
+
+      /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
       void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
       {
         sspair key (dep, type);
@@ -515,9 +564,19 @@ namespace GAMBIT
       /// 2) Operation (execute function and return value) 
       TYPE operator()(ARGS... args) 
       { 
+        if (this == NULL) functor::failBigTime();
         if(this->needs_recalculating) { myValue = this->myFunction(args...); }
         return myValue;
       }
+
+      /// 2) Alternative to operation (execute function return a pointer to value)
+      safe_ptr<TYPE> valuePtr(ARGS... args)
+      {
+        if (this == NULL) functor::functor::failBigTime();
+        if(this->needs_recalculating) { myValue = this->myFunction(args...); }
+        return safe_ptr<TYPE>(&myValue);
+      }
+
 
     protected:
 
@@ -555,6 +614,7 @@ namespace GAMBIT
       /// 2) Operation (execute function and return value) 
       void operator()(ARGS... args) 
       { 
+        if (this == NULL) functor::functor::failBigTime();
         if(this->needs_recalculating) { this->myFunction(args...); }
       }
 

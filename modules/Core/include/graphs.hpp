@@ -11,9 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Christoph Weniger (c.weniger@uva.nl)
-//  Apr 02++ 2013
-//  May 03 2013
-//  June 03 2013
+//  Apr, May, June 2013
 //  Pat Scott
 //  May 03 2013
 //
@@ -33,7 +31,6 @@
 #include <yaml_parser.hpp>
 
 using namespace boost;
-//using namespace std;
 
 namespace GAMBIT
 {
@@ -60,20 +57,24 @@ namespace GAMBIT
         DependencyResolver() {}
 
         // Adds list of functor pointers to boost graph
-        void addFunctors(std::vector<functor *>);
+        void addFunctors(std::vector<functor *>, std::vector<functor *>);
 
         // Rudimentary backend resolution
-        void resolveBackends(std::vector<functor *>);
+        void resolveBackends();
+
+        //
+        void resolveVertexBackend(bool dirObsFlag,
+            IniParser::ObservableType observable, VertexID vertex);
 
         // Log module functor information;
         void logFunctors();
 
         // Constructs input/output vertices from parameters and requested
-        // observables in ini-file
-        void addLegs(const GAMBIT::IniParser::IniFile &);
+        // observables in inifile
+        void addLegs(GAMBIT::IniParser::IniFile &);
 
         // The dependency resolution
-        void resolveNow();
+        void resolveNow(GAMBIT::IniParser::IniFile &);
 
         // Returns functors in sorted order
         std::vector<functor*> getFunctors();
@@ -95,8 +96,10 @@ namespace GAMBIT
         void fill_parQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
             Graphs::VertexID vertex);
         std::multimap<sspair, Graphs::VertexID> initialize_capMap();
+        std::vector<functor *> myBackendFunctorList;
         void initialize_edges(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue,
-            std::multimap<sspair, Graphs::VertexID> capMap);
+            std::multimap<sspair, Graphs::VertexID> capMap,
+            GAMBIT::IniParser::IniFile &);
         std::list<int> run_topological_sort();
         std::vector<VertexID> reqObs;
 

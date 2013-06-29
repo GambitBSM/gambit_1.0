@@ -90,6 +90,11 @@ namespace GAMBIT {
       result.valA = SLHA * 0.5;
       result.valB = SLHA * 1.5;
     }
+    void Weff_alt1 (double &result)
+    {
+      cout << "I am Weff_alt1" << endl;
+      result = 4;
+    }
     void Weff (double &result)
     {
       double SLHA = GET_DEP(Weff::SLHA);
@@ -108,6 +113,52 @@ namespace GAMBIT {
       GAMBIT::types::Wstruct Wstruct = GET_DEP(omega_DM::Wstruct);
       double Weff = GET_DEP(omega_DM::Weff);
       result = Wstruct.valA + Wstruct.valB + Weff;
+    }
+    void dssusy(int &result)
+    {
+      int i, unphys=0, hwarning=0;
+      DS_MSSMPAR mssmpar;
+      mssmpar.m1 = 500;// GET_DEP(dssusy::m1); // 500
+      mssmpar.m2 = 1000; //GET_DEP(dssusy::m2); // 1000
+      mssmpar.m3 = 3500; //GET_DEP(dssusy::m3); // 3500
+      mssmpar.mu=400;
+      mssmpar.ma=1000;
+      mssmpar.tanbe=10;
+      for(i=0; i<=2; i++){
+        mssmpar.mass2u[i]=mssmpar.mass2q[i]=mssmpar.mass2d[i]=2000*2000;
+        mssmpar.mass2e[i]=mssmpar.mass2l[i]=2000*2000;
+      }
+      for(i=0; i<=1; i++){
+        mssmpar.asoftu[i]=0;
+        mssmpar.asoftd[i]=0;
+      }
+      mssmpar.asofte[0] = 0;
+      mssmpar.asofte[1] = 0;
+      mssmpar.asoftu[2] = 1;
+      mssmpar.asoftd[2] = 1;
+      mssmpar.asofte[2] = 0;
+
+      cout << "Run dsinit:" << endl;
+      GET_BE_RESULT(dssusy::dsinit);
+      cout << "Set mssmpar:" << endl;
+      GET_BE_RESULT(dssusy::DarkSUSY_setmssmpar_capability, byVal(mssmpar));
+      cout << "Call dssusy(unphys, hwarning):" << endl;
+      GET_BE_RESULT(dssusy::dssusy, unphys, hwarning);
+    }
+    void dsrdomega(double &result)
+    {
+      int omtype = 0;
+      int fast = 0;
+      double xf;
+      int ierr;
+      int iwar;
+      int nfc;
+      result = GET_BE_RESULT(dsrdomega::dsrdomega, omtype, fast, xf, ierr, iwar, nfc);
+      cout << "dsrdomega return values: xf = " << xf;
+      cout << "; ierr: " << ierr;
+      cout << "; iwar: " << iwar;
+      cout << "; nfc: " << nfc << endl;
+      cout << "Relic density: " << result << endl;
     }
   }
 }

@@ -1,6 +1,5 @@
 /* 
- * Example of how to use the macros in 'backend_macros.hpp' 
- * to set up a backend for a specific library.
+ * DarkSUSY Backend
  * 
  * \author Anders Kvellestad
  * \date 2013-03-26  
@@ -8,19 +7,20 @@
  * Modified: 2013-04-05
  * Pat Scott 2013-04-22
  * Anders Kvellestad 2013-04-25
+ * Torsten Bringmann, Christoph Weniger June 2013
  */
 
 #include <backend_macros.hpp>
 
 /* Specify the path to the shared library along with a backend name. */
 
-#define LIBPATH      "Backends/lib/libfirst.so"
+#define LIBPATH      "libdarksusy.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME LibFirst
+  #define BACKENDNAME DarkSUSY
 #endif
-#define VERSION 1.0
+#define VERSION 0.1
 
 
 /* The following macro loads the library (using dlmopen) in LIBPATH 
@@ -45,11 +45,13 @@ LOAD_LIBRARY
  * If left out (as done below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability")  */
 
-BE_FUNCTION(initialize, void, (int), "_Z10initializei")
-BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv")
-BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
-BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
-BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
+// BE_FUNCTION(initialize, void, (int), "_Z10initializei")
+// BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv")
+// BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
+
+BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
+BE_FUNCTION(dssusy, void, (int,int), "dssusy_", "dssusy")
+BE_FUNCTION(dsrdomega, double, (int,int,double,int,int,int), "dsrdomega_", "dsrdomega")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
@@ -71,8 +73,9 @@ BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "ref
 /* Syntax for BE_VARIABLE:
  * BE_VARIABLE([choose variable name], [type], "[exact symbol name]")  */
 
-BE_VARIABLE(SomeInt, int, "someInt")
-BE_VARIABLE(SomeDouble, double, "someDouble")
+BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_")
+// BE_VARIABLE(SomeInt, int, "someInt")
+// BE_VARIABLE(SomeDouble, double, "someDouble")
 
 /* We have now created the following:
  *
@@ -95,25 +98,25 @@ BE_VARIABLE(SomeDouble, double, "someDouble")
  * registred/wrapped via the macro BE_CONV_FUNCTION (see below). */
 
 
-namespace GAMBIT
-{
-  namespace Backends
-  {
-    namespace BACKENDNAME
-    {
-
-      /* Convenience functions go here */
-
-      double awesomenessByAnders(int a)
-      {
-        initialize(a);
-        someFunction();
-        return returnResult();
-      }
-
-    } /* end namespace BACKENDNAME */                                          
-  } /* end namespace Backends */                                                
-} /* end namespace GAMBIT */                                                   
+// namespace GAMBIT
+// {
+//   namespace Backends
+//   {
+//     namespace BACKENDNAME
+//     {
+// 
+//       /* Convenience functions go here */
+// 
+//       double awesomenessByAnders(int a)
+//       {
+//         initialize(a);
+//         someFunction();
+//         return returnResult();
+//       }
+// 
+//     } /* end namespace BACKENDNAME */                                          
+//   } /* end namespace Backends */                                                
+// } /* end namespace GAMBIT */                                                   
 
 
 /* Now register any convenience functions and wrap them in functors. 
@@ -123,7 +126,7 @@ namespace GAMBIT
  * 
  * As with BE_FUNCTION, the last argument is optional. */
 
-BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
+// BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
 
 
 // Undefine macros to avoid conflict with other backends

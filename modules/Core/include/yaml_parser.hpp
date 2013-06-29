@@ -3,7 +3,7 @@
 // INI-file parser based on yaml-cpp
 //
 // Christoph Weniger (c.weniger@uva.nl)
-// June 03 2013
+// June 2013
 //
 //////////////////////////////////////////////////////////
 
@@ -19,21 +19,22 @@ namespace GAMBIT
 {
   namespace IniParser
   {
-    // Structs corresponding to ini-file
+    // Structs corresponding to inifile
     namespace Types
     {
-      struct Dependency
-      {
-        std::string capability;
-        std::string module;
-      };
-
+      // Dependency and Observable have the same type (and obsType entry is
+      // irrelevant for dependencies)
       struct Observable
       {
         std::string obsType;
         std::string capability;
+        std::string function;
+        std::string module;
         std::string backend;
-        std::vector<Dependency> dependencies;
+        std::string version;
+        std::string options;
+        std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
+        std::vector<Observable> backends; // ..deps of deps of deps of obs possible
       };
 
       struct Parameter
@@ -45,30 +46,34 @@ namespace GAMBIT
   }
 }
 
-// Rules for ini-file --> Structs mapping
+// Rules for inifile --> Structs mapping
 namespace YAML {
   using namespace GAMBIT::IniParser::Types;
   template<> struct convert<Observable>
   {
     static bool decode(const Node& node, Observable& rhs)
     {
-      rhs.obsType = node["obsType"].as<std::string>();
-      rhs.capability = node["capability"].as<std::string>();
-      rhs.backend = node["backend"].as<std::string>();
+      #define READ(NAME) \
+      if (node[#NAME].IsDefined()) \
+        rhs.NAME = node[#NAME].as<std::string>();
+      READ(obsType)
+      READ(capability)
+      READ(function)
+      READ(module)
+      READ(backend)
+      READ(version)
+      READ(options)
+      #undef READ
       for(YAML::const_iterator it=node["dependencies"].begin();
           it!=node["dependencies"].end(); ++it)
       {
-        rhs.dependencies.push_back((*it).as<Dependency>());
+        rhs.dependencies.push_back((*it).as<Observable>());
       }
-      return true;
-    }
-  };
-  template<> struct convert<Dependency>
-  {
-    static bool decode(const Node& node, Dependency& rhs)
-    {
-      rhs.capability = node["capability"].as<std::string>();
-      rhs.module = node["module"].as<std::string>();
+      for(YAML::const_iterator it=node["backends"].begin();
+          it!=node["backends"].end(); ++it)
+      {
+        rhs.backends.push_back((*it).as<Observable>());
+      }
       return true;
     }
   };
@@ -89,6 +94,8 @@ namespace GAMBIT
   {
     typedef std::vector<Types::Observable> ObservablesType;
     typedef std::vector<Types::Parameter> ParametersType;
+    typedef Types::Observable ObservableType;
+    typedef Types::Parameter ParameterType;
 
     class IniFile
     {
@@ -96,9 +103,15 @@ namespace GAMBIT
         // Read the file
         int readFile(std::string filename);
 
-        // Central ini-file structures: observables and scan parameteres 
+        // Central inifile structures: observables and scan parameteres 
         ObservablesType observables;
         ParametersType parameters;
+
+        // Check for observables etc
+        bool hasObservable(std::string capability);
+        bool hasDependency(ObservableType observable, std::string capability);
+        ObservableType getObservable(std::string capability);
+        ObservableType getDependency(ObservableType observable, std::string capability);
 
         // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getValue(std::string key)

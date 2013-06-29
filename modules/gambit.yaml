@@ -1,7 +1,7 @@
 # GAMBIT Initialization file (in YAML)
-#                                                         
+#
 # Christoph Weniger (c.weniger@uva.nl)
-# June 03 2013
+# June 2013
 #
 
 ###############################
@@ -10,32 +10,46 @@
 #
 - parameter: m0
   range:     [1, 3.5]
-
+#
 - parameter: m1
+  range:     [1, 3.5]
+
+- parameter: m2
+  range:     [-2.0, 2.0]
+
+- parameter: m3
   range:     [-2.0, 2.0]
 
 
 ###############################
 --- # Observables of interest
 ###############################
-#
-- obsType:      Likelihood
-  capability:   nevents
-  backend:      atlfast
-  dependencies:
-  - {capability: gossip, module: thisone}
 
 - obsType:      Likelihood
   capability:   omega_DM
-  backend:      DarkSUSY
-  dependencies:
-  - {capability: poetry, module: thatone}
+  function:     ""
+  module:       ""
+  version:      ""
+  options:      ""
+  dependencies: # first map that reduces options to one wins (from top to bottom)
+  - {capability: "", function: "", backend: "", version: "", options: ""}
+  backends: # first map that reduces options to one wins (from top to bottom)
+  - {capability: "", function: "", backend: "", version: "", options: ""}
 
+- obsType:      Likelihood
+  capability:   Weff
+  function:     Weff
+  backends:
+  - {capability: "LibFirst_returnResult_capability", function: "", backend: "", version: "", options: ""}
+
+# Uncomment this to activate DarkSUSY backend
+# - obsType:      Likelihood
+#   capability:   dsrdomega
 
 ###############################
 --- # Name/Value Section
 ###############################
 
-age: 1.3e2
-color: green
-path_to_oblivion: /dev/null
+m1: 22.0
+m2: 23.0
+m3: 34.0

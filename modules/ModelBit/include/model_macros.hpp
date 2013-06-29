@@ -85,7 +85,6 @@ namespace GAMBIT{
 
 } //end namespace GAMBIT
 
-
 // MACRO DEFINITIONS. 
 
 //  *******************************************************************************
@@ -155,11 +154,11 @@ namespace GAMBIT{
              wrapped in a functor, for delivery of parameters to elsewhere in
              GAMBIT */                                                         \
           void parameters (ModelParameters &result) {                          \
-            result = parametersptr;                                            \
+            result = *parametersptr;                                          \
           }                                                                    \
                                                                                \
           /* Wrap it up in a functor (macro from module_macros.hpp) */         \
-          MAKE_FUNCTOR(parameters,ModelParameters*,\
+          MAKE_FUNCTOR(parameters,ModelParameters,\
             CAT_5(MODEL,_,PARAMETERISATION,_,parameters),\
             MODEL::PARAMETERISATION)                                           \
                                                                                \

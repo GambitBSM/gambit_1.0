@@ -68,7 +68,7 @@ void beispiel()
   Graphs::DependencyResolver dependencyResolver;
 
   // Add vertices from rollcall
-  dependencyResolver.addFunctors(globalFunctorList);
+  dependencyResolver.addFunctors(globalFunctorList, globalBackendFunctorList);
 
   // Add input and output legs to the module function vertices
   dependencyResolver.addLegs(iniFile);
@@ -77,29 +77,28 @@ void beispiel()
   dependencyResolver.logFunctors();
 
   // Do the dependency resolution
-  dependencyResolver.resolveNow();
+  dependencyResolver.resolveNow(iniFile);
 
   // dependencyResolver.logOrder();
   // dependencyResolver.logFunctors();
 
   // Resolve backends
-  dependencyResolver.resolveBackends(globalBackendFunctorList);
+  // dependencyResolver.resolveBackends();
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),
       dependencyResolver.inputMap, dependencyResolver.outputList);
 
   // Set input parameters
-  masterLike["m0"] = 123.0;
-  masterLike["m1"] = 321.0;
+  masterLike["m1"] = iniFile.getValue<double>("m1");
+  masterLike["m2"] = iniFile.getValue<double>("m2");
+  masterLike["m3"] = iniFile.getValue<double>("m3");
 
   // Call the functions in their sorted order
   masterLike.calculate();
 
   // Read output parameters
   cout << masterLike("Likelihood")[0] << endl;
-  cout << masterLike("Likelihood")[1] << endl;
-  
   //char *names[2] = {"m_0", "m_1/2"};
   //Gambit_Functor like (&mlike, "Likelihood", names, 2);
   //Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
@@ -141,7 +140,7 @@ int main( int argc, const char* argv[] )
   
   // See ModelBit/models/MSSM.hpp for the definitions of the models referenced
   // here.
-  
+
   // Ben: new system
   // Models are no longer objects. Just access the stuff we need for a given
   // model by knowing the appropriate scope. This won't be possibly dynamically
@@ -150,37 +149,37 @@ int main( int argc, const char* argv[] )
   // It would not be a big deal to restore model objects if we want them: all
   // the machinery I currently use could stay the same and we could just add
   // an extra macro that boxes it all up into a class as well.
-  
+
   // So, no longer have to create model objects.
-  
+
   // Can access the various properties of models only if you know the right
   // namespace. The name stuff in particular is a bit pointless right now
   // because you have to already know the name in order to get the name string,
   // but presumably we'll wrap these up in some sort of object or another
   // somewhere along the line.
-  
+
   cout<<""<<endl;
   cout<<"Retrieving model names and lineages from their namespaces..."<<endl;
   cout<<"models::MSSM::name(): "<<models::MSSM::name()<<endl;
   cout<<"models::MSSM::I::name(): "<<models::MSSM::I::name()<<endl;
   cout<<"models::MSSM::I::lineage: "<<models::MSSM::I::lineage<<endl;
-  
+
   cout<<"models::CMSSM::name(): "<<models::CMSSM::name()<<endl;
   cout<<"models::CMSSM::I::name(): "<<models::CMSSM::I::name()<<endl;
   cout<<"models::CMSSM::I::lineage: "<<models::CMSSM::I::lineage<<endl;
   cout<<"models::CMSSM::II::name(): "<<models::CMSSM::II::name()<<endl;
   cout<<"models::CMSSM::II::lineage: "<<models::CMSSM::II::lineage<<endl;
-  
+
   // If we want to do anything useful with a model, we need to initialise 
   // (create) its parameter object. Can then get and set parameter values etc.
   models::CMSSM::I::init_paramobj();
   // This attaches the object to the pointer parametersptr. This object will
   // need to be manually deleted when we are done wtih it.
-  
+
   // Set parameter value by accessing parameter object directly via the
   // pointer:
   models::CMSSM::I::parametersptr->setValue("M0",1234);
-  
+
   // Copy the parameter object pointer and set values that way:
   ModelParameters* CMSSMI_ptr = models::CMSSM::I::parametersptr;
   CMSSMI_ptr->setValue("M12",4321);
@@ -188,7 +187,7 @@ int main( int argc, const char* argv[] )
   CMSSMI_ptr->setValue("tanb",10);
   CMSSMI_ptr->setValue("sgnmu",1);
   CMSSMI_ptr->setValue("Mstop",900);
-  
+
   cout<<""<<endl;
   cout<<"CMSSM::I parameters:"<<endl;
   cout<<"M0    = "<<CMSSMI_ptr->getValue("M0")<<endl;
@@ -196,7 +195,7 @@ int main( int argc, const char* argv[] )
   cout<<"A0    = "<<CMSSMI_ptr->getValue("A0")<<endl;
   cout<<"tanb  = "<<CMSSMI_ptr->getValue("tanb")<<endl;
   cout<<"sgnmu = "<<CMSSMI_ptr->getValue("sgnmu")<<endl;
-  
+
   // Lets also look at the halo models
   // First, initialise the parameter object of the desired parameterisation:
   models::Gaussian_Halo::I::init_paramobj();
@@ -216,11 +215,13 @@ int main( int argc, const char* argv[] )
   models::SomeOther_Halo::I::parametersptr->setValue("v_earth",500);
   cout<<"Dumping SomeOther_Halo::I parameters...";
   models::SomeOther_Halo::I::parametersptr->print();
+
   // Demonstration of automatic looping over parameters
   cout<<endl;
   cout<<"Parameter name retrieval..."<<endl;
   cout<<"models::Gaussian_Halo::I::parameterkeys: "<< \
                 models::Gaussian_Halo::I::parameterkeys<<endl;
+
   // Generate some random values and set parameters to these values
   
   typedef std::string str;
@@ -319,25 +320,46 @@ int main( int argc, const char* argv[] )
       CMSSMIparameters->getValue("tanB")<< " (tag-style)" <<endl ;
     */
     // Call the module function by its string name (could use TestType here too insead of double) 
-    ModelParameters* CMSSMIparameters2 = models::CMSSM::I::result<ModelParameters*>("parameters") ;
-    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
-      CMSSMIparameters2->getValue("M0")<< " (string-style)" <<endl ;
-    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
-      CMSSMIparameters2->getValue("M12")<< " (string-style)" <<endl ;
-    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
-      CMSSMIparameters2->getValue("tanB")<< " (string-style)" <<endl ;
-    // Call the module function by its functor 
+    
+    // IMPORTANT!
+    // This is the "proper" way to deal with the full set of a parameters of a model
+    cout << endl ;
+    cout << " Functor access to ModelParameters object (currently read-only) " << endl ;
+    cout << endl ;
+    // First, make sure the functor has "run" so that it is storing a reference
+    // to the ModelParameters object in it's cache ("value" member variable)
     models::CMSSM::I::Functown::parameters.calculate();
-    // Get pointer to result:
-    ModelParameters* CMSSMIparameters3 = models::CMSSM::I::Functown::parameters();
+    
+    // Next, grab a safe pointer to the model object
+    // Cannot get the object using the () method because this *copies* the object
+    // stored in "value". There is no copy constructor for the ModelParameters 
+    // object, because we only want one version of them persisting!
+    safe_ptr<ModelParameters> CMSSMIsafeptr = models::CMSSM::I::Functown::parameters.valuePtr();
+    
+    // Now we can do stuff with the ModelParameters object!
     cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
-      CMSSMIparameters3.getValue("M0") << " (functor-style)" <<endl ;
+      CMSSMIsafeptr->getValue("M0")<< " (functor safe_ptr-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
-      models::CMSSM::I::Functown::parameters().getValue("M12") << " (functor-style)" <<endl ;
+      CMSSMIsafeptr->getValue("M12")<< " (functor safe_ptr-style)" <<endl ;
     cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
-      models::CMSSM::I::Functown::parameters().getValue("tanb") << " (functor-style)" <<endl ;
-  }     
+      CMSSMIsafeptr->getValue("tanb")<< " (functor safe_ptr-style)" <<endl ;
+    cout<<"Dumping CMSSM::I parameters...";
+    CMSSMIsafeptr->print();
+        
+    // We can change the parameters if we like:
+    /* NOTE: I added a new access method to the functors for this purpose. It
+       is indeed for use by ScannerBit, not for general use by modules. */
+    ModelParameters* CMSSMIrawptr = models::CMSSM::I::Functown::parameters.rawvaluePtr();
+    std::vector<str> keys = CMSSMIsafeptr->getKeys();
   
+    srand (time(NULL));    // initialize random seed
+    for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
+      CMSSMIrawptr->setValue(*it, rand()%1000);
+    }
+    
+    cout<<"Dumping altered CMSSM::I parameters...";
+    CMSSMIsafeptr->print();
+  }     
   
   cout << "*** End ModelBit demo ***" << endl;
   cout << endl;
@@ -391,13 +413,15 @@ int main( int argc, const char* argv[] )
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample2);
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_A::iMayNeed << endl;
   cout << endl;
-
+  
   cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << endl;
   cout << "I can do nevents (string-style) " << ExampleBit_A::provides("nevents") << endl;
   if (ExampleBit_A::requires("nevents_like","nevents")) { 
@@ -473,6 +497,14 @@ int main( int argc, const char* argv[] )
   cout << " I can calculate: " << endl << ExampleBit_B::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_B::iMayNeed << endl;
   cout << endl;
+
+  cout << "In fact, given the backend functors I am connected to, my dependencies are exactly:" << endl;
+  std::vector<sspair> tempdeps = ExampleBit_B::Functown::nevents_postcuts.dependencies();
+  for (std::vector<sspair>::iterator it = tempdeps.begin() ; it != tempdeps.end(); ++it)
+  {
+    cout << it->first << "   " << it->second << endl;        
+  }
+
   cout << "I can do nevents " << ExampleBit_B::provides("nevents") << endl;
   cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << endl;
   cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << endl;
@@ -646,10 +678,10 @@ int main( int argc, const char* argv[] )
     GAMBIT_MSG_LOG("GAMBIT example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
     //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
-    //  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
-    //  GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
-    //  GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
-    
+    /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
+        GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
+        GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
+    */
   }catch( exceptions::GAMBIT_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }

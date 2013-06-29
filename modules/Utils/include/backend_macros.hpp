@@ -95,8 +95,8 @@ namespace GAMBIT                                                            \
         auto set##NAME = makeBackendFunctor<void>(                          \
          GAMBIT::Backends::BACKENDNAME::set##NAME,                          \
          STRINGIFY(NAME),                                                   \
-         STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ),           \
-         STRINGIFY(TYPE),                                                   \
+         STRINGIFY( CAT(BACKENDNAME,_##set##NAME##_capability) ),           \
+         "void",                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
                                                                             \

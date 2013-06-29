@@ -25,18 +25,6 @@
 #include <util_classes.hpp>
 //#include <dictionary.hpp>  //need this for the 'dict' type.
 
-// Brainstorming what the model object is supposed to look like and do...
-
-// 'models' base class needs to provide some pseudo-introspection abilities so
-// that we can keep track of the inheritance hierarchy. For now, lets just do
-// this by adding to a "hierarchy" list whenever we inherit, i.e. put it in the
-// constructor or something. This will slightly suck because it won't be done 
-// automatically... maybe can hook it into a nice macro for creating new models 
-// though.
-// Also this does not yet deal with multiple inheritence.
-// May also need to have a "special" top (leaf) level of hierarchy to deal with 
-// different parameterisations (or is this too specialised?)
-
 // Note: the namespaces are all controlled by the macros now, so none appear
 // here! It is a similar deal to the module rollcall headers.
   
@@ -116,7 +104,6 @@ START_MODEL
 #undef PARENT
 #undef MODEL
 
-    
 // Long way of defining a model. Individually specify parameter names and
 // the capabilities they map to. Also allows room to specify other things
 // about parameters if we like. 
@@ -131,12 +118,12 @@ START_MODEL
     MAP_TO_CAPABILITY(earthvel)
     //DOSOMETHINGELSE(blah)
     #undef PARAMETER 
-    
+
     #define PARAMETER blah0
     MAP_TO_CAPABILITY(blah0cap)
     //DOSOMETHINGELSE(blah)
     #undef PARAMETER 
-    
+
   #undef PARAMETERISATION
   
 #undef PARENT

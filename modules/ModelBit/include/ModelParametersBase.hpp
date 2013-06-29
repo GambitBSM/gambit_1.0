@@ -19,7 +19,8 @@ namespace GAMBIT {
     u_longlong getVersion() const {
       return _paramversion ;
     }
-    ModelParametersBase():_paramversion(1) {GAMBIT_MSG_DEBUG("hi.");}
+    //ModelParametersBase():_paramversion(1) {GAMBIT_MSG_DEBUG("hi.");}
+    ModelParametersBase():_paramversion(1) {}
   protected:
     //virtual ~ModelParametersBase(){GAMBIT_MSG_DEBUG("bye.");}
     /* Ben: The debug message can cause crashes/hangs during GAMBIT cleanup if a 

@@ -64,6 +64,7 @@
 
 /// Retrive dependency \em DEP of the current function
 #define GET_DEP(DEP)               (*Dependencies::DEP)()
+#define GET_DEP_PTR(DEP)           Dependencies::DEP->valuePtr()
 /// Retrive the name of the function that fills \em DEP for the current function
 #define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
 /// Retrive the name of the module that provides the function that fills \em DEP for the current function
@@ -147,7 +148,7 @@
   #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
   #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
   #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
-  #define START_CONDITIONAL_DEPENDENCY(TYPE)                DUMMYARG(TYPE)
+  #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
   #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 
 #endif
@@ -536,7 +537,17 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          module_functor<TYPE> *DEP;                                           \
+          module_functor<TYPE>* DEP = NULL;                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Create a safe pointer to the dependency result. To be filled          \
+      automatically at runtime when the dependency is resolved. */             \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Dep { safe_ptr<TYPE> DEP; }                                \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -544,9 +555,12 @@
       template <>                                                              \
       void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
       {                                                                        \
+        /* First try casting the pointer passed in to a module_functor */      \
         Dependencies::FUNCTION::DEP =                                          \
          dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
-        if (Dependencies::FUNCTION::DEP == 0)                                  \
+                                                                               \
+        /* Now test if that cast worked */                                     \
+        if (Dependencies::FUNCTION::DEP == 0)  /* It didn't; throw an error. */\
         {                                                                      \
           cout<<"Error: Null returned from dynamic cast in "<< endl;           \
           cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
@@ -555,6 +569,12 @@
           cout<<dep_functor->origin()<<"."<<endl;                              \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
+        else /* It did!  Now set the pointer to the dependency result. */      \
+        {                                                                      \
+          SafePointers::FUNCTION::Dep::DEP =                                   \
+           Dependencies::FUNCTION::DEP->valuePtr();                            \
+        }                                                                      \
+                                                                               \
       }                                                                        \
 
 
@@ -615,7 +635,17 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          extern module_functor<TYPE> *DEP;                                    \
+          extern module_functor<TYPE>* DEP;                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Create a safe pointer to the dependency result. To be filled          \
+      automatically at runtime when the dependency is resolved. */             \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Dep { extern safe_ptr<TYPE> DEP; }                         \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -649,7 +679,7 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          functor *CAT(BACKEND_REQ,_baseptr);                                  \
+          functor* CAT(BACKEND_REQ,_baseptr) = NULL;                           \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -680,7 +710,7 @@
          &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \
-      /* Create the dependency initialisation object */                        \
+      /* Create the backend requirement initialisation object */               \
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_3(BACKEND_REQ,_backend_for_,FUNCTION)                     \
@@ -709,7 +739,7 @@
                                                                                \
           /* Declare a (base) pointer to the backend function functor.  To be  \
           filled by the dependency resolver at runtime. */                     \
-          extern functor *CAT(BACKEND_REQ,_baseptr);                           \
+          extern functor* CAT(BACKEND_REQ,_baseptr);                           \
                                                                                \
           /* Set up an empty alias for the backend requirement */              \
           template<typename GENERIC_TYPE, typename... ARGS>                    \
@@ -724,12 +754,14 @@
           /* Set up a working alias that casts the (base) pointer to the       \
           backend functor to the appropriate backend_functor type, and then    \
           dereferences it to call the actual backend function. */              \
-          template<typename... ARGS>                                           \
-          TYPE BACKEND_REQ(ARGS ...args)                                       \
+          template<typename ...ARGS>                                           \
+          TYPE BACKEND_REQ(ARGS&& ...args)                                     \
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
-            be_functor *myptr;                                                 \
-            if (GAMBIT::safe_mode)                                             \
+            be_functor* myptr;                                                 \
+            /* CW: Temporarily deactivated to get DarkSUSY backend running */  \
+            if (false)                                                         \
+            /*if (GAMBIT::safe_mode)*/                                             \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \
@@ -747,7 +779,8 @@
             {                                                                  \
               myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
             }                                                                  \
-            BOOST_PP_IF(IS_TYPE(void,TYPE),,return) (*myptr)(args...);         \
+            BOOST_PP_IF(IS_TYPE(void,TYPE),,return)                            \
+             (*myptr)(std::forward<ARGS>(args)...);                            \
           }                                                                    \
                                                                                \
         }                                                                      \
@@ -810,6 +843,12 @@
   DEPENDENCY_COMMON_2(CONDITIONAL_DEPENDENCY, TYPE)                            \
 
                                                                                
+/// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
+/// a module.
+#define MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)                              \
+  MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE)                              \
+
+
 /// Redirection of ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING) when 
 /// invoked from within the core.
 #define CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)                  \

@@ -62,21 +62,34 @@ namespace GAMBIT {
     }
     virtual ~ModelParameters() {}
     
+    //Copy Constructor
+    ModelParameters(const ModelParameters &other): \
+      ModelParametersBase(), _values(other._values) {
+    }
+    
     // Constructor which accepts lists or vectors and defines parameters
-    template <class T>
-    ModelParameters(T &paramlist): ModelParametersBase(),_values(){
+    //template <class T>
+    //ModelParameters(T &paramlist): ModelParametersBase(),_values(){
+    //  _definePars(paramlist);
+    //}
+    // NOTE: For some reason that template is getting used instead of the copy
+    // constructor at weird times. Until I learn how to fix this, I am replacing
+    // the template with two explicity constructors, one for vectors and one
+    // for char arrays.
+
+    ModelParameters(const std::vector<str> &paramlist): ModelParametersBase(),_values(){
       _definePars(paramlist);
     }
     
-    // Copy Constructor
-    //ModelParameters(ModelParameters& other): \
-    //  ModelParametersBase(), _values(other._values) {
-    //}
+    ModelParameters(const char** paramlist): ModelParametersBase(),_values(){
+      _definePars(paramlist);
+    }
     
     virtual double getValue(std::string const & inkey) const {
       assert_contains(inkey);
       return _values.at(inkey);
     }
+    
     virtual const double & operator[](std::string const & inkey) const {
       assert_contains(inkey);
       return _values.at(inkey);
@@ -122,7 +135,7 @@ namespace GAMBIT {
     // Version of _definePar to deal with a std::vector input 
     // (iterates through each element and runs the ordinary _definePar on each 
     // of them)
-    virtual void _definePars(std::vector<std::string> const &v) {
+    virtual void _definePars(const std::vector<std::string> &v) {
       for(std::vector<std::string>::const_iterator
             it = v.begin(); it != v.end(); ++it) {
         _definePar(*it);
