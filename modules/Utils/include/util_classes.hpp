@@ -17,6 +17,10 @@
 ///          (benjamin.farmer@monash.edu)
 ///  \date 2013 Jun
 ///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de)
+///  \date 2013 Jun
+///
 ///  *********************************************
 
 #ifndef __util_classes_hpp__
@@ -162,6 +166,14 @@ namespace GAMBIT
     double mass2u[3], mass2q[3], mass2d[3],  mass2l[3], mass2e[3];
     double asoftu[3], asoftd[3], asofte[3];
   };
+
+  struct DS_MSPCTM
+  {
+    double mass[51];
+    double runmass[51];
+    double mu2gev,md2gev,ms2gev,mcmc,mbmb,mtmt;
+  };
+  
 }
 
 #endif //defined __util_classes_hpp__

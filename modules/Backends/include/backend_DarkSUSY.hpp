@@ -74,6 +74,7 @@ BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_",
  * BE_VARIABLE([choose variable name], [type], "[exact symbol name]")  */
 
 BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_")
+BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_")
 // BE_VARIABLE(SomeInt, int, "someInt")
 // BE_VARIABLE(SomeDouble, double, "someDouble")
 
