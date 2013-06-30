@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, May
+///  \date 2013 Apr, May, June
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -42,7 +42,7 @@ namespace GAMBIT
 
     public:
 
-      /// Empty virtual calculate().  Makes class polymorphic.
+      /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
 
       // It may be safer to have the following things accessible 
@@ -74,58 +74,51 @@ namespace GAMBIT
       /// Set method for status (0 = disabled, 1 = available (default), 2 = active)
       void setStatus(int stat) { myStatus = stat; }
 
-      /// Getter for listing unconditional dependencies
-      std::vector<sspair> dependencies()                  { return myDependencies; }
-      /// Getter for listing backend requirements
-      std::vector<sspair> backendreqs()                   { return myBackendReqs; }
-      /// Getter for listing permitted backends
-      std::vector<sspair> backendspermitted(sspair quant) 
+      /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
+      bool needs_recalculating;
+
+      /// Getter for listing currently activated dependencies
+      virtual std::vector<sspair> dependencies()          
       { 
-        if (permitted_map.find(quant) != permitted_map.end())
-        {
-          return permitted_map[quant]; 
-        }
-        else
-        {
-          std::vector<sspair> empty;
-          return empty;
-        }
+        cout << "Error.  The dependencies method has not been defined in this class." << endl;
+        exit(1);
+        std::vector<sspair> empty;
+        return empty;
+      }
+      /// Getter for listing backend requirements
+      virtual std::vector<sspair> backendreqs()                   
+      {
+        cout << "Error.  The backendreqs method has not been defined in this class." << endl;
+        exit(1);
+        std::vector<sspair> empty;
+        return empty;
+      }
+      /// Getter for listing permitted backends
+      virtual std::vector<sspair> backendspermitted(sspair quant) 
+      { 
+        cout << "Error.  The backendspermitted method has not been defined in this class." << endl;
+        exit(1);
+        std::vector<sspair> empty;
+        return empty;
       }
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
-      std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
+      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
       { 
-        std::vector<sspair> generic_deps, specific_deps, total_deps;
-        std::vector<str> quad;
-        quad.push_back(req);
-        quad.push_back(type);
-        quad.push_back(be);
-        quad.push_back(ver);
-        //Check first what conditional dependencies exist for all versions of this backend
-        if (ver != "any")
-        {
-          generic_deps = backend_conditional_dependencies(req, type, be, "any");
-        }
-        //Now see if there are any for this specific version
-        if (myBackendConditionalDependencies.find(quad) != myBackendConditionalDependencies.end())
-        {
-          specific_deps = myBackendConditionalDependencies[quad];
-        }
-        //Now put them together
-        total_deps.reserve(generic_deps.size() + specific_deps.size());
-        total_deps.insert(total_deps.end(), generic_deps.begin(), generic_deps.end());
-        total_deps.insert(total_deps.end(), specific_deps.begin(), specific_deps.end());        
-        return total_deps;
+        cout << "Error.  The backend_conditional_dependencies method has not been defined in this class." << endl;
+        exit(1);
+        std::vector<sspair> empty;
+        return empty;
       }
       
       /// Getter for backend-specific conditional dependencies (3-string version)
-      std::vector<sspair> backend_conditional_dependencies (str req, str type, str be)  
+      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be)  
       { 
         return backend_conditional_dependencies(req, type, be, "any");
       }
       
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-      std::vector<sspair> backend_conditional_dependencies (functor* be_functor)  
+      virtual std::vector<sspair> backend_conditional_dependencies (functor* be_functor)  
       { 
         return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
          be_functor->origin(), be_functor->version());
@@ -133,95 +126,33 @@ namespace GAMBIT
 
       /// Getter for listing model-specific conditional dependencies
       /// FIXME needs to use congruency relation to trigger on model descendents also
-      std::vector<sspair> model_conditional_dependencies (str model)
+      virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
-        if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
-        {
-          return myModelConditionalDependencies[model];
-        }
-        else
-        {
-          std::vector<sspair> empty;
-          return empty;
-        }
+        cout << "Error.  The model_conditional_dependencies method has not been defined in this class." << endl;
+        exit(1);
+        std::vector<sspair> empty;
+        return empty;
       }
 
-      /// Needs recalculating or not?  (Externally modifiable)
-      bool needs_recalculating;
-
       /// Resolve a dependency using a pointer to another functor object
-      void resolveDependency (functor* dep_functor)
+      virtual void resolveDependency (functor* dep_functor)
       {
-        sspair key (dep_functor->quantity());
-        if (dependency_map.find(key) == dependency_map.end())                            
-        {                                                                      
-          cout << "Error whilst attempting to resolve dependency:" << endl;
-          cout << "Function "<< myName << " in " << myOrigin << " does not depend on " << endl;
-          cout << "capability " << key.first << " with type " << key.second << "." << endl;
-          ///\todo FIXME throw a real error here
-        }
-        else
-        {
-          (*dependency_map[key])(dep_functor);
-          // propagate obsType from next to next-to-output nodes
-          dep_functor->setObsType(this->myObsType);
-        }
+        cout << "Error.  The resolveDependency method has not been defined in this class." << endl;
+        exit(1);
       }
 
       /// Resolve a backend requirement using a pointer to another functor object
-      void resolveBackendReq (functor* be_functor)
+      virtual void resolveBackendReq (functor* be_functor)
       {
-        sspair key (be_functor->quantity());
-        //First make sure that the proposed backend function fulfills a known requirement of the module function.
-        if (backendreq_map.find(key) != backendreq_map.end())                            
-        { 
-          sspair proposal (be_functor->origin(), be_functor->version());  //Proposed backend-version pair
-          sspair generic_proposal (be_functor->origin(), "any");          //Proposed backend, any version 
-          if ( //Check for a condition under which the proposed backend function is an acceptable fit for this requirement.
-           //Check whether there are have been any permitted backends stated for this requirement (if not, anything goes).
-           (permitted_map.find(key) == permitted_map.end()) || 
-           //Iterate over the vector of backend-version pairs for this requirement to see if all versions of the 
-           //proposed backend have been explicitly permitted.
-           (std::find(permitted_map[key].begin(), permitted_map[key].end(), generic_proposal) != permitted_map[key].end()) ||
-           //Iterate over the vector of backend-version pairs again to see if the specific backend version 
-           //proposed had been explicitly permitted.
-           (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )         
-          {
-            (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution.
-            //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
-            std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
-            for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
-            {
-              myDependencies.push_back(*it);        
-            }   
-          }
-          else          
-          { 
-            cout << "Error whilst attempting to resolve backend requirement:" << endl;
-            cout << "Backend capability " << key.first << " with type " << key.second << "." << endl;
-            cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << endl;
-            cout << "to use "<< proposal.first << ", version " << proposal.second << "." << endl;
-            ///\todo FIXME throw a real error here
-          } 
-        }
-        else
-        {                                                                      
-          cout << "Error whilst attempting to resolve backend requirement:" << endl;
-          cout << "Function "<< myName << " in " << myOrigin << " does not require " << endl;
-          cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
-          ///\todo FIXME throw a real error here
-        }        
+        cout << "Error.  The resolveBackendReq method has not been defined in this class." << endl;
+        exit(1);
       }
 
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
-      void notifyOfModel(str model)
+      virtual void notifyOfModel(str model)
       {
-        //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
-        std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
-        for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
-        {
-          myDependencies.push_back(*it);        
-        }
+        cout << "Error.  The notifyOfModel method has not been defined in this class." << endl;
+        exit(1);
       }
 
     protected:
@@ -238,34 +169,8 @@ namespace GAMBIT
       str myVersion;    
       /// myObsType(relevant for output and next-to-output nodes)
       str myObsType;
-
-      /// Vector of dependency-type string pairs 
-      std::vector<sspair> myDependencies;
-      // Vector of backend requirement-type string pairs        
-      std::vector<sspair> myBackendReqs;
-
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
-
-      /// Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
-      std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;
-
-      /// Map from models to (vector of {conditional dependency-type} pairs)
-      std::map< str, std::vector<sspair> > myModelConditionalDependencies;
-
-      /// Map from backend requirements to their required types
-      std::map<str, str> backendreq_types;
-
-      /// Map from (dependency-type pairs) to (pointers to templated void functions 
-      /// that set dependency functor pointers)
-      std::map<sspair, void(*)(functor*)> dependency_map;
-
-      /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
-      /// that set backend requirement functor pointers)
-      std::map<sspair, void(*)(functor*)> backendreq_map;
-
-      /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
-      std::map< sspair, std::vector<sspair> > permitted_map;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime()
@@ -350,12 +255,84 @@ namespace GAMBIT
         return safe_ptr<TYPE>(&myValue);
       }
 
+      /// Getter for listing currently activated dependencies
+      virtual std::vector<sspair> dependencies()                  { return myDependencies; }
+      /// Getter for listing backend requirements
+      virtual std::vector<sspair> backendreqs()                   { return myBackendReqs; }
+      /// Getter for listing permitted backends
+      virtual std::vector<sspair> backendspermitted(sspair quant) 
+      { 
+        if (permitted_map.find(quant) != permitted_map.end())
+        {
+          return permitted_map[quant]; 
+        }
+        else
+        {
+          std::vector<sspair> empty;
+          return empty;
+        }
+      }
+
+      /// Getter for listing backend-specific conditional dependencies (4-string version)
+      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
+      { 
+        std::vector<sspair> generic_deps, specific_deps, total_deps;
+        std::vector<str> quad;
+        quad.push_back(req);
+        quad.push_back(type);
+        quad.push_back(be);
+        quad.push_back(ver);
+        //Check first what conditional dependencies exist for all versions of this backend
+        if (ver != "any")
+        {
+          generic_deps = backend_conditional_dependencies(req, type, be, "any");
+        }
+        //Now see if there are any for this specific version
+        if (myBackendConditionalDependencies.find(quad) != myBackendConditionalDependencies.end())
+        {
+          specific_deps = myBackendConditionalDependencies[quad];
+        }
+        //Now put them together
+        total_deps.reserve(generic_deps.size() + specific_deps.size());
+        total_deps.insert(total_deps.end(), generic_deps.begin(), generic_deps.end());
+        total_deps.insert(total_deps.end(), specific_deps.begin(), specific_deps.end());        
+        return total_deps;
+      }
+      
+      /// Getter for backend-specific conditional dependencies (3-string version)
+      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be)  
+      { 
+        return backend_conditional_dependencies(req, type, be, "any");
+      }
+      
+      /// Getter for backend-specific conditional dependencies (backend functor pointer version)
+      virtual std::vector<sspair> backend_conditional_dependencies (functor* be_functor)  
+      { 
+        return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
+         be_functor->origin(), be_functor->version());
+      }
+
+      /// Getter for listing model-specific conditional dependencies
+      /// FIXME needs to use congruency relation to trigger on model descendents also
+      virtual std::vector<sspair> model_conditional_dependencies (str model)
+      { 
+        if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
+        {
+          return myModelConditionalDependencies[model];
+        }
+        else
+        {
+          std::vector<sspair> empty;
+          return empty;
+        }
+      }
+
       /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
       void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
       {
         sspair key (dep, type);
-        this->myDependencies.push_back(key);
-        this->dependency_map[key] = resolver;
+        myDependencies.push_back(key);
+        dependency_map[key] = resolver;
         this->myObsType = obsType; // only relevant for output nodes
       }
 
@@ -377,10 +354,10 @@ namespace GAMBIT
       {
         sspair key (dep, dep_type);
         std::vector<str> quad;
-        if (this->backendreq_types.find(req) != this->backendreq_types.end())
+        if (backendreq_types.find(req) != backendreq_types.end())
         {
           quad.push_back(req);
-          quad.push_back(this->backendreq_types[req]);
+          quad.push_back(backendreq_types[req]);
           quad.push_back(be);
           quad.push_back(ver);
         }
@@ -392,13 +369,13 @@ namespace GAMBIT
           cout << "is " << this->name() << " in " << this->origin() << "." << endl;
           ///\todo FIXME throw a real error here
         }
-        if (this->myBackendConditionalDependencies.find(quad) == this->myBackendConditionalDependencies.end())
+        if (myBackendConditionalDependencies.find(quad) == myBackendConditionalDependencies.end())
         {
           std::vector<sspair> newvec;
-          this->myBackendConditionalDependencies[quad] = newvec;
+          myBackendConditionalDependencies[quad] = newvec;
         }
-        this->myBackendConditionalDependencies[quad].push_back(key);
-        this->dependency_map[key] = resolver;
+        myBackendConditionalDependencies[quad].push_back(key);
+        dependency_map[key] = resolver;
       }
 
       /// Add a model conditional dependency
@@ -406,22 +383,22 @@ namespace GAMBIT
        (str model, str dep, str dep_type, void(*resolver)(functor*))
       { 
         sspair key (dep, dep_type);
-        if (this->myModelConditionalDependencies.find(model) == this->myModelConditionalDependencies.end())
+        if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
         {
           std::vector<sspair> newvec;
-          this->myModelConditionalDependencies[model] = newvec;
+          myModelConditionalDependencies[model] = newvec;
         }
-        this->myModelConditionalDependencies[model].push_back(key);
-        this->dependency_map[key] = resolver;
+        myModelConditionalDependencies[model].push_back(key);
+        dependency_map[key] = resolver;
       }
 
       /// Add a backend requirement
       void setBackendReq(str req, str type, void(*resolver)(functor*))
       { 
         sspair key (req, type);
-        this->backendreq_types[req] = type;
-        this->myBackendReqs.push_back(key);
-        this->backendreq_map[key] = resolver;
+        backendreq_types[req] = type;
+        myBackendReqs.push_back(key);
+        backendreq_map[key] = resolver;
       }
 
       /// Add multiple versions of a permitted backend 
@@ -439,9 +416,9 @@ namespace GAMBIT
       void setPermittedBackendSingular(str req, str be, str ver)
       { 
         sspair key;
-        if (this->backendreq_types.find(req) != this->backendreq_types.end())
+        if (backendreq_types.find(req) != backendreq_types.end())
         {
-          key = std::make_pair(req, this->backendreq_types[req]);
+          key = std::make_pair(req, backendreq_types[req]);
         }
         else
         {
@@ -451,12 +428,87 @@ namespace GAMBIT
           ///\todo FIXME throw a real error here
         }
         sspair vector_entry (be,  ver);
-        if (this->permitted_map.find(key) == this->permitted_map.end())
+        if (permitted_map.find(key) == permitted_map.end())
         {
           std::vector<sspair> newvec;
-          this->permitted_map[key] = newvec;
+          permitted_map[key] = newvec;
         }
-        this->permitted_map[key].push_back(vector_entry);       
+        permitted_map[key].push_back(vector_entry);       
+      }
+
+      /// Resolve a dependency using a pointer to another functor object
+      virtual void resolveDependency (functor* dep_functor)
+      {
+        sspair key (dep_functor->quantity());
+        if (dependency_map.find(key) == dependency_map.end())                            
+        {                                                                      
+          cout << "Error whilst attempting to resolve dependency:" << endl;
+          cout << "Function "<< myName << " in " << myOrigin << " does not depend on " << endl;
+          cout << "capability " << key.first << " with type " << key.second << "." << endl;
+          ///\todo FIXME throw a real error here
+        }
+        else
+        {
+          (*dependency_map[key])(dep_functor);
+          // propagate obsType from next to next-to-output nodes
+          dep_functor->setObsType(this->myObsType);
+        }
+      }
+
+      /// Resolve a backend requirement using a pointer to another functor object
+      virtual void resolveBackendReq (functor* be_functor)
+      {
+        sspair key (be_functor->quantity());
+        //First make sure that the proposed backend function fulfills a known requirement of the module function.
+        if (backendreq_map.find(key) != backendreq_map.end())                            
+        { 
+          sspair proposal (be_functor->origin(), be_functor->version());  //Proposed backend-version pair
+          sspair generic_proposal (be_functor->origin(), "any");          //Proposed backend, any version 
+          if ( //Check for a condition under which the proposed backend function is an acceptable fit for this requirement.
+           //Check whether there are have been any permitted backends stated for this requirement (if not, anything goes).
+           (permitted_map.find(key) == permitted_map.end()) || 
+           //Iterate over the vector of backend-version pairs for this requirement to see if all versions of the 
+           //proposed backend have been explicitly permitted.
+           (std::find(permitted_map[key].begin(), permitted_map[key].end(), generic_proposal) != permitted_map[key].end()) ||
+           //Iterate over the vector of backend-version pairs again to see if the specific backend version 
+           //proposed had been explicitly permitted.
+           (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )         
+          {
+            (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution.
+            //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
+            std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
+            for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+            {
+              myDependencies.push_back(*it);        
+            }   
+          }
+          else          
+          { 
+            cout << "Error whilst attempting to resolve backend requirement:" << endl;
+            cout << "Backend capability " << key.first << " with type " << key.second << "." << endl;
+            cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << endl;
+            cout << "to use "<< proposal.first << ", version " << proposal.second << "." << endl;
+            ///\todo FIXME throw a real error here
+          } 
+        }
+        else
+        {                                                                      
+          cout << "Error whilst attempting to resolve backend requirement:" << endl;
+          cout << "Function "<< myName << " in " << myOrigin << " does not require " << endl;
+          cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
+          ///\todo FIXME throw a real error here
+        }        
+      }
+
+      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      virtual void notifyOfModel(str model)
+      {
+        //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
+        std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
+        for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+        {
+          myDependencies.push_back(*it);        
+        }
       }
 
     protected:
@@ -472,6 +524,31 @@ namespace GAMBIT
 
       /// myValue either determined by myFunction (false) or myPointer (true)
       bool usePointer;
+
+      /// Vector of dependency-type string pairs 
+      std::vector<sspair> myDependencies;
+      /// Vector of backend requirement-type string pairs        
+      std::vector<sspair> myBackendReqs;
+
+      /// Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
+      std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;
+
+      /// Map from models to (vector of {conditional dependency-type} pairs)
+      std::map< str, std::vector<sspair> > myModelConditionalDependencies;
+
+      /// Map from backend requirements to their required types
+      std::map<str, str> backendreq_types;
+
+      /// Map from (dependency-type pairs) to (pointers to templated void functions 
+      /// that set dependency functor pointers)
+      std::map<sspair, void(*)(functor*)> dependency_map;
+
+      /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
+      /// that set backend requirement functor pointers)
+      std::map<sspair, void(*)(functor*)> backendreq_map;
+
+      /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
+      std::map< sspair, std::vector<sspair> > permitted_map;
 
   };
 
