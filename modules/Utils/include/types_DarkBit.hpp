@@ -13,6 +13,8 @@
 //
 //  Christoph Weniger
 //  Mar 24 2012 
+//  Torsten Bringmann
+//  Jun 2013
 //
 //  *********************************************
 
@@ -27,6 +29,18 @@ namespace GAMBIT{
       double valA;
       double valB;
     };
+
+    struct RDrestype
+    {
+      double mass_res[1000];
+      double width_res[1000];
+      int part_res[1000];
+      int copart_res[1000];
+      double E_thr[1000];
+      int n_res;
+      int n_thr;
+    };
+
   }
 }
 
