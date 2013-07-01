@@ -1,0 +1,21 @@
+Ben: Just a quick file to remind us how to get gambit_example to run :). I am
+sure we'll want some similar thing in the end though.
+
+To build GAMBIT:
+
+make -f makefile.g++
+or
+make -f makefile.icc
+
+To build backend libraries (libfirst.so probably needs to be built on each
+system, or else gambit_example will crash when it tries to load it)
+
+libfirst:
+Source is in extras/backend_dev/libfirst.cpp
+
+build with:
+
+g++ -fpic -c libfirst.cpp
+g++ --shared -o libfirst.so libfirst.o
+
+copy 'libfirst.so' to modules/Backends/lib

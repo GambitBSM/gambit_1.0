@@ -45,27 +45,27 @@ namespace GAMBIT
     }
 
     // Saved calling order for functions
-    list<int> function_order;
+    std::list<int> function_order;
 
     // pushes dependencies of vertex into parameter queue
-    void DependencyResolver::fill_parQueue(queue<pair<sspair, Graphs::VertexID> > *parQueue,
+    void DependencyResolver::fill_parQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
         Graphs::VertexID vertex) {
       (*masterGraph[vertex]).setStatus(2); // activate node
-      vector<sspair> vec = (*masterGraph[vertex]).dependencies();
+      std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
       // if (vec.size() != 0)
       //   cout << "- add dependencies:" << endl;
-      for (vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) {
+      for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) {
         cout << "  " << (*it).first << " (" << (*it).second << ")  " << endl;
-        (*parQueue).push(*(new pair<sspair, Graphs::VertexID> (*it, vertex)));
+        (*parQueue).push(*(new std::pair<sspair, Graphs::VertexID> (*it, vertex)));
       }
     }
 
     // initializes (capability, type) --> vertex multimap
-    multimap<sspair, Graphs::VertexID> DependencyResolver::initialize_capMap() {
+    std::multimap<sspair, Graphs::VertexID> DependencyResolver::initialize_capMap() {
       // cout << endl << "Filling capability map with" << endl;
-      multimap<sspair, Graphs::VertexID> capMap;
+      std::multimap<sspair, Graphs::VertexID> capMap;
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      pair<sspair, Graphs::VertexID> ins;
+      std::pair<sspair, Graphs::VertexID> ins;
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
         ins.first.first = (*masterGraph[*vi]).capability();
         ins.first.second = (*masterGraph[*vi]).type();
@@ -126,9 +126,9 @@ namespace GAMBIT
     // The hard stuff happens here
     //
     void DependencyResolver::initialize_edges(
-        queue<pair<sspair,
+        std::queue<std::pair<sspair,
         Graphs::VertexID> > parQueue,
-        multimap<sspair, Graphs::VertexID> capMap,
+        std::multimap<sspair, Graphs::VertexID> capMap,
         GAMBIT::IniParser::IniFile &iniFile)
     {
       // two vertices that we will connect and the edge
@@ -220,7 +220,7 @@ namespace GAMBIT
           }
           // Compare all matches with the inifile entry
           i = 0;
-          for(multimap<sspair, Graphs::VertexID>::iterator it =
+          for(std::multimap<sspair, Graphs::VertexID>::iterator it =
               capMap.lower_bound(var); it !=capMap.upper_bound(var); it++)
           {
             if (compare(observable, masterGraph[(*it).second]))
@@ -267,8 +267,8 @@ namespace GAMBIT
     }
 
     // The boost lib topolical sort
-    list<int> DependencyResolver::run_topological_sort() {
-      list<int> topo_order;
+    std::list<int> DependencyResolver::run_topological_sort() {
+      std::list<int> topo_order;
       topological_sort(masterGraph, front_inserter(topo_order));
       return topo_order;
     }
@@ -277,7 +277,7 @@ namespace GAMBIT
     void DependencyResolver::logOrder() {
       cout << "Ordered, active functions" << endl;
       cout << "-------------------------" << endl;
-      for(list<int>::const_iterator i = function_order.begin();
+      for(std::list<int>::const_iterator i = function_order.begin();
           i != function_order.end();
           ++i)
       {
@@ -289,7 +289,7 @@ namespace GAMBIT
     // Return active vertices in correct order
     std::vector<functor*> DependencyResolver::getFunctors() {
       std::vector<functor*> functor_list;
-      for(list<int>::const_iterator i = function_order.begin();
+      for(std::list<int>::const_iterator i = function_order.begin();
           i != function_order.end();
           ++i)
       {
@@ -330,8 +330,8 @@ namespace GAMBIT
     void DependencyResolver::resolveNow(GAMBIT::IniParser::IniFile &iniFile)
     {
       std::vector<VertexID> pars = reqObs;
-      queue<pair<sspair, Graphs::VertexID> > parQueue; // (cap., typ) --> dep. functor/vertex map
-      multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
+      std::queue<std::pair<sspair, Graphs::VertexID> > parQueue; // (cap., typ) --> dep. functor/vertex map
+      std::multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
 
       cout << "The goal" << endl;
       cout << "--------" << endl;
@@ -409,7 +409,7 @@ namespace GAMBIT
       if (reqs.size() != 0)
       {
         cout << "Backend resolution for vertex " << (*masterGraph[vertex]).name() << endl;
-        for (vector<sspair>::iterator it = reqs.begin();
+        for (std::vector<sspair>::iterator it = reqs.begin();
             it != reqs.end(); ++it)
         {
           cout << "  search for " << it->first << " (" << it->second << "): ";

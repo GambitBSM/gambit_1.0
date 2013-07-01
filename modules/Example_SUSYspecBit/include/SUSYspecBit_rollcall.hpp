@@ -26,7 +26,7 @@
 #define __SUSYspecBit_rollcall_hpp__
 
 #include <module_macros.hpp>
-#include <util_classes.hpp> // Contains definition of MSSMspecQ type.
+#include <MSSM_classes.hpp> // Contains definition of MSSMspecQ type.
 
 #define MODULE SUSYspecBit
 START_MODULE

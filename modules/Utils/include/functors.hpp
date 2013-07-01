@@ -254,6 +254,15 @@ namespace GAMBIT
         if (this == NULL) functor::failBigTime();
         return safe_ptr<TYPE>(&myValue);
       }
+      
+      /// Ben: added this so we could get write access to myValue, primarily
+      /// for the case of the scanner needing to change the ModelParameter
+      /// object. Not for use in modules.
+      TYPE* rawvaluePtr()
+      {
+        if (this == NULL) functor::failBigTime();
+        return &myValue;
+      }
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()                  { return myDependencies; }
