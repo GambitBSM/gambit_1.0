@@ -112,81 +112,91 @@ namespace GAMBIT{
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT_5(MODEL,_,PARAMETERISATION,_,parameters)) \
     namespace models {                                                         \
       namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
-                                                                             \
+                                                                               \
         /* Parameterisation name 
         DON'T NEED THIS! Already created (as a function, name()) by 
-        CORE_START_MODULE_GUTS. \
-        const str name = STRINGIFY(PARAMETERISATION);                        \
-        */                                                                   \
-                                                                             \
+        CORE_START_MODULE_GUTS.
+        const str name = STRINGIFY(PARAMETERISATION);                        
+        */                                                                     \
+                                                                               \
         /* Basic machinery, same as for modules 
-           (macro from module_macros.hpp) */                                 \
-        CORE_START_MODULE_GUTS( CAT_3(MODEL,_,PARAMETERISATION) )            \
-                                                                             \
+           (macro from module_macros.hpp) */                                   \
+        CORE_START_MODULE_GUTS( CAT_3(MODEL,_,PARAMETERISATION) )              \
+                                                                               \
         /* Model lineage                                                       
            Note: each parameterisation is automatically marked as a child of 
            the host model. They are treated internally as seperate models. 
-           Child models can indeed inherit directly from these if desired. */\
+           Child models can indeed inherit directly from these if desired. */  \
         const std::vector<str> lineage = \
            vecappend(PARENT::lineage, \
-                        STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) );        \
-                                                                             \
+                        STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) );          \
+                                                                               \
         /* Congruency function (checks if this model is a descendent of the
            specified model (or is itself the specified model) ) 
            Returns 'true' if the supplied string is an element of 'lineage',
-           else returns 'false'. */                                          \
-        bool isdescendantof(str testmodel)                                   \
-        {                                                                    \
-          for (std::vector<str>::const_iterator it = lineage.begin();        \
-               it!=lineage.end(); ++it)                                      \
-          {                                                                  \
-            if (testmodel==*it) {return true;};                              \
-          }                                                                  \
-          return false;                                                      \
-        }                                                                    \
-                                                                             \
-        /* Model parameter names */                                          \
-        std::vector<str> parameterkeys;                                      \
-                                                                             \
+           else returns 'false'. */                                            \
+        bool isdescendantof(str testmodel)                                     \
+        {                                                                      \
+          for (std::vector<str>::const_iterator it = lineage.begin();          \
+               it!=lineage.end(); ++it)                                        \
+          {                                                                    \
+            if (testmodel==*it) {return true;};                                \
+          }                                                                    \
+          return false;                                                        \
+        }                                                                      \
+                                                                               \
+        /* Model parameter names */                                            \
+        std::vector<str> parameterkeys;                                        \
+                                                                               \
         /* Pointer to the parameter object
            (points to nothing until we initialise the parameter object) 
            Not sure if there is some nicer way to do this, some prototyping
            thing perhaps? Don't want to create these objects unless we 
-           actually need them... */                                          \
-        ModelParameters* parametersptr;                                      \
-                                                                             \
+           actually need them... */                                            \
+        ModelParameters* parametersptr;                                        \
+                                                                               \
         /* Add appropriate 'provides' check to confirm the parameters object 
-           as a CAPABILITY of this model. */                                 \
-        template <>                                                          \
-        bool provides<Tags::CAT_5(MODEL,_,PARAMETERISATION,_,parameters)>() {\
-          return true;                                                       \
-        }                                                                    \
-                                                                             \
+           as a CAPABILITY of this model. */                                   \
+        template <>                                                            \
+        bool provides<Tags::CAT_5(MODEL,_,PARAMETERISATION,_,parameters)>() {  \
+          return true;                                                         \
+        }                                                                      \
+                                                                               \
+        /* Track whether 'parametersptr' has been bound to the functor
+           'myValue' member yet */                                             \
+        bool isinitialised(false);                                             \
+                                                                               \
         /* Function to retrieve the ModelParameters object. This will be
            wrapped in a functor, for delivery of parameters to elsewhere in
-           GAMBIT */                                                         \
-        void parameters (ModelParameters &result) {                          \
-          result = *parametersptr;                                           \
-        }                                                                    \
-                                                                             \
-        /* Wrap it up in a functor (macro from module_macros.hpp) */         \
+           GAMBIT 
+           UPDATE: Old method was doing a copy. New method is slightly
+           backwards, but does align the binding of the functor and 
+           parametersptr objects. */                                           \
+        void parameters (ModelParameters &functorobject)                       \
+        {                                                                      \
+           /* old way:
+           functorobject = *parametersptr;                                           
+              new way: 
+              -Initialise the functor ModelParameters object
+              -Redirect parametersptr to point to this object. */              \
+          if (not isinitialised)                                               \
+          {                                                                    \
+            /* Need to populate the functor parameters object with model
+               parameters. */                                                  \
+            cout<<"Initialising "STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))\
+            " parameter object"<<endl;                                         \
+                                                                               \
+            functorobject._definePars(parameterkeys);                          \
+            parametersptr = &functorobject;                                    \
+            isinitialised = true;                                              \
+          }                                                                    \
+        }                                                                      \
+                                                                               \
+        /* Wrap it up in a functor (macro from module_macros.hpp) */           \
         MAKE_FUNCTOR(parameters,ModelParameters,\
           CAT_5(MODEL,_,PARAMETERISATION,_,parameters),\
-          CAT_3(MODEL,_,PARAMETERISATION))                                   \
-                                                                             \
-        /* Initialise (create) the parameter object                                        
-           Need to use smart pointer so that ownership of the parameters object
-           can be transferred out of the scope of the function (i.e. so that
-           the pointer is not left dangling due to the object being destroyed
-           when we leave the function scope) */                              \
-        void init_paramobj()                                                 \
-        {                                                                    \
-          parametersptr = new ModelParameters(parameterkeys);                \
-          /* In principle we now need to delete this object sometime. We will
-             have to explicitly call "delete" to do this, or else wait till 
-             the end of the program for the memory to be released. */        \
-        }                                                                    \
-                                                                             \
+          CAT_3(MODEL,_,PARAMETERISATION))                                     \
+                                                                               \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -292,19 +302,44 @@ namespace GAMBIT{
       namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
                                                                                \
         /* Indicate that this model::parameterisation can provide quantity 
-           MODEL_X_parameters */                                             \
-        template <>                                                          \
-        bool provides<Tags::CAT_3(MODEL_X,_,parameters)>() { return true; }  \
-                                                                             \
+           MODEL_X_parameters */                                               \
+        template <>                                                            \
+        bool provides<Tags::CAT_3(MODEL_X,_,parameters)>() { return true; }    \
+                                                                               \
+        /* Track whether MODEL_X_parameters functor has been initialised yet */\
+        bool CAT_3(MODEL_X,_,parameters_isinitialised)(false);                 \
+                                                                               \
+        /* Container function for the user-defined portion of the 
+           interpret_as_X function */                                          \
+        void CAT_3(MODEL_X,_,usercode) (ModelParameters &target_parameters) CODE \
+                                                                               \
         /* The function which computes the MODEL_X_parameters object. This
            is the analogue of a module function, and is what will be wrapped 
            in a functor for processing by the core 
-           Note: CODE must be enclosed in braces. */                         \
-        void CAT_3(MODEL_X,_,parameters) (ModelParameters &result) CODE      \
-                                                                             \
-        /* Wrap it up in a functor (macro from module_macros.hpp) */         \
+           Note: CODE must be enclosed in braces. */                           \
+        void CAT_3(MODEL_X,_,parameters) (ModelParameters &target_parameters)  \
+        {                                                                      \
+          if (not CAT_3(MODEL_X,_,parameters_isinitialised) )                  \
+          {                                                                    \
+            /* Need to populate the functor parameters object with MODEL_X's   \
+               parameters. We could rewrite this to get the parameterkeys via
+               the dependency system if we like. Currently this won't compile
+               if MODEL_X has not been defined prior to the current model. */  \
+            cout<<"Initialising "STRINGIFY(MODEL_X)" parameter object "\
+            "at behest of model "STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))\
+            <<endl;                                                            \
+                                                                               \
+            target_parameters._definePars(models::MODEL_X::parameterkeys);     \
+            CAT_3(MODEL_X,_,parameters_isinitialised) = true;                  \
+          }                                                                    \
+          /* Run user-supplied code */                                         \
+          CAT_3(MODEL_X,_,usercode) (target_parameters);                       \
+                                                                               \
+        }                                                                      \
+                                                                               \
+        /* Wrap it up in a functor (macro from module_macros.hpp) */           \
         MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,\
-          CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION))       \
+          CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION))         \
                                                                                \
       }                                                                        \
     }                                                                          \

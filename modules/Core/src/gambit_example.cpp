@@ -173,9 +173,14 @@ int main( int argc, const char* argv[] )
 
   // If we want to do anything useful with a model, we need to initialise 
   // (create) its parameter object. Can then get and set parameter values etc.
-  models::CMSSM_I::init_paramobj();
-  // This attaches the object to the pointer parametersptr. This object will
-  // need to be manually deleted when we are done wtih it.
+  // models::CMSSM_I::init_paramobj();
+  // DON'T DO THIS WAY ANYMORE.
+  // New way to initialise parameters is simply to run the relevant functors.
+  // This causes the model container to bind it's internal parametersptr to the
+  // memory location of the functor "myValue" member (which is a 
+  // ModelParameters object).
+  models::CMSSM_I::Functown::parameters.calculate();
+  // This attaches the object to the pointer parametersptr. 
 
   // Set parameter value by accessing parameter object directly via the
   // pointer:
@@ -199,8 +204,10 @@ int main( int argc, const char* argv[] )
 
   // Lets also look at the halo models
   // First, initialise the parameter object of the desired parameterisation:
-  models::Gaussian_Halo_I::init_paramobj();
-  models::SomeOther_Halo_I::init_paramobj();
+  //models::Gaussian_Halo_I::init_paramobj();
+  //models::SomeOther_Halo_I::init_paramobj();
+  models::Gaussian_Halo_I::Functown::parameters.calculate();
+  models::SomeOther_Halo_I::Functown::parameters.calculate();
   cout<<""<<endl;
   cout<<"Halo model names and lineages..."<<endl;
   cout<<"models::Gaussian_Halo_I::name():"<<models::Gaussian_Halo_I::name()<<endl;
@@ -325,9 +332,10 @@ int main( int argc, const char* argv[] )
     cout << endl ;
     cout << " Functor access to ModelParameters object (currently read-only) " << endl ;
     cout << endl ;
-    // First, make sure the functor has "run" so that it is storing a reference
-    // to the ModelParameters object in it's cache ("value" member variable)
-    models::CMSSM_I::Functown::parameters.calculate();
+    // First, make sure the functor has "run" so that it's internal reference
+    // to the ModelParameters object ("myValue" member variable) matches the
+    // parametersptr (not necessary if only dealing with the functor).
+    models::CMSSM_I::Functown::parameters.calculate(); //Already done, but doing it again won't hurt
     
     // Next, grab a safe pointer to the model object
     // Cannot get the object using the () method because this *copies* the object
@@ -385,17 +393,41 @@ int main( int argc, const char* argv[] )
   // Interpret_as_parent features
   // (currently just function wrapped in a functor, provided PARENT parameter 
   // object as a CAPABILITY)
-  cout<<"models::CMSSM_I::Functown::MSSM_I_parameters.calculate()"<<endl; 
-  models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
-  // safe_ptr to parent parameters object
-  safe_ptr<ModelParameters> CMSSMI_parent_safeptr = \
-                models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr();
-  cout<<"Parent parameters:"<<endl;
-  CMSSMI_parent_safeptr->print();
-  // Currently cannot tell from a parameter object what model the parameters
-  // are for. I will add an extra string in there for this purpose.
-  
-  cout<<endl;
+  // I guess the core needs to do something like this:
+  cout<<"Am I a decendant of MSSM_I?..."<<endl;
+  if (models::CMSSM_I::isdescendantof("MSSM_I"))
+  {
+    cout<<"...yes! Ok then use my parameters to compute the MSSM_I parameters."<<endl;
+    cout<<"models::CMSSM_I::Functown::MSSM_I_parameters.calculate()"<<endl; 
+    models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
+    // safe_ptr to parent parameters object
+    safe_ptr<ModelParameters> CMSSMI_parent_safeptr = \
+                  models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr();
+    cout<<"Parent parameters:"<<endl;
+    CMSSMI_parent_safeptr->print();
+    // Currently cannot tell from a parameter object what model the parameters
+    // are for. I will add an extra string in there for this purpose.
+    
+    // Dammit, why are these not the same as the parameters from the MSSM_I
+    // functor? Test raw pointer method:
+    ModelParameters* CMSSMI_parent_rawptr = 
+                  models::CMSSM_I::Functown::MSSM_I_parameters.rawvaluePtr();
+    CMSSMI_parent_rawptr->print();
+    cout<<endl;
+    
+    // Nope, those are the same. Try these:
+    models::CMSSM_I::Functown::parameters.valuePtr()->print();
+    models::CMSSM_I::Functown::parameters.rawvaluePtr()->print();
+    models::CMSSM_I::parametersptr->print();
+    cout<< models::CMSSM_I::Functown::parameters.valuePtr()->getVersion() <<endl;
+    cout<< models::CMSSM_I::Functown::parameters.rawvaluePtr()->getVersion() <<endl;
+    cout<< models::CMSSM_I::parametersptr->getVersion() <<endl;
+    
+  }
+  else
+  {
+    cout<<"...no.";
+  }
   
   cout << "*** End ModelBit demo ***" << endl;
   cout << endl;

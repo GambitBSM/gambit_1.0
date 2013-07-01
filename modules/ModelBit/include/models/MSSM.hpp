@@ -83,22 +83,18 @@
         double M0 = parametersptr->getValue("M0");
         double M12 = parametersptr->getValue("M12");
         double A0 = parametersptr->getValue("A0");
-         
-        /* Create parent parameter object, initialise it, set some values, and
-           return it. In the future the dependency resolver may be able to
-           recognise that we need the parent parameter object initialised and
-           do that for us automatically */
-        PARENT::init_paramobj();
-        PARENT::parametersptr->setValue("M1", M0);
-        PARENT::parametersptr->setValue("M2", 0.5*M0);
-        PARENT::parametersptr->setValue("M3", 3*M0);
-        PARENT::parametersptr->setValue("AU1", A0);
-        PARENT::parametersptr->setValue("AU2", 2*A0);
-        PARENT::parametersptr->setValue("AU3", 0);
-           
-        /* deference pointer to PARENT parameter object and assign to 'result'
-           reference (no copy occurs here) */
-        result = *PARENT::parametersptr;
+
+        /* Grab reference to parent parameter object and set some values. 
+           The parent parameter object already exists if we have gotten this 
+           far (was created along with the functor that wraps this function) */
+
+        target_parameters.setValue("M1", M0);
+        target_parameters.setValue("M2", 0.5*M0);
+        target_parameters.setValue("M3", 3*M0);
+        target_parameters.setValue("AU1", A0);
+        target_parameters.setValue("AU2", 2*A0);
+        target_parameters.setValue("AU3", 0);
+   
       }
     ) 
     

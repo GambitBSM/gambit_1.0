@@ -65,6 +65,9 @@ namespace GAMBIT {
     //Copy Constructor
     ModelParameters(const ModelParameters &other): \
       ModelParametersBase(), _values(other._values) {
+      // I want to know when this gets called, so let's force a crash:
+      std::abort(); // Err, apparently never being called. wtf? Why are the
+                    // parameters being copied then?
     }
     
     // Constructor which accepts lists or vectors and defines parameters
@@ -123,10 +126,11 @@ namespace GAMBIT {
       }
       return strm;
     }
-  private:
-    std::map<std::string,double> _values;
 
-  protected:
+  // Ben: Turns out I need these to be public for now, since I cannot initialise
+  // the parameters via the constructor in the current setup.
+  // protected:
+  
     // define a parameter with name, value. Value is initialised to zero
     virtual void _definePar(const std::string &newkey) {
       this->updateVersion();
@@ -151,6 +155,9 @@ namespace GAMBIT {
         i++;
       }
     }
+  
+  private:
+    std::map<std::string,double> _values;
 
   };
 
