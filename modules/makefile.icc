@@ -97,43 +97,45 @@ $(COREDIR)/build/.minihelp:
 	@touch $(COREDIR)/build/.minihelp
 mh: $(COREDIR)/build/.minihelp
 
-COREINC:=$(wildcard $(COREDIR)/include/*hpp)
+COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp) $(wildcard $(COREDIR)/src/*c)
 CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(CORESRC)))))
 
-MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp)
+MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp) \
+$(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
 MODELSRC:=$(wildcard $(MODELDIR)/source/*cpp) $(wildcard $(MODELDIR)/source/*c)
 MODELLIBS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(MODELSRC)))))
 
-UTILSINC:=$(wildcard $(UTILSDIR)/include/*hpp)
+UTILSINC:=$(wildcard $(UTILSDIR)/include/*hpp) $(wildcard $(UTILSDIR)/include/*h)
 UTILSSRC:=$(wildcard $(UTILSDIR)/src/*cpp) $(wildcard $(UTILSDIR)/src/*c)
 UTILSLIBS:=$(addprefix $(UTILSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(UTILSSRC)))))
 
-BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp)  $(wildcard $(BACKENDDIR)/lib/*hpp)
+BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp)  $(wildcard $(BACKENDDIR)/lib/*hpp) \
+$(wildcard $(BACKENDDIR)/include/*h)  $(wildcard $(BACKENDDIR)/lib/*h)
 BACKENDSRC:=$(wildcard $(BACKENDDIR)/src/*cpp) $(wildcard $(BACKENDDIR)/src/*c)
 BACKENDLIBS:=$(addprefix $(BACKENDDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(BACKENDSRC)))))
 
-SCANINC:=$(wildcard $(SCANDIR)/include/*hpp)
+SCANINC:=$(wildcard $(SCANDIR)/include/*hpp) $(wildcard $(SCANDIR)/include/*h)
 SCANSRC:=$(wildcard $(SCANDIR)/src/*cpp) $(wildcard $(SCANDIR)/src/*c)
 SCANLIBS:=$(addprefix $(SCANDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SCANSRC)))))
 
-DARKINC:=$(wildcard $(DARKDIR)/include/*hpp)
+DARKINC:=$(wildcard $(DARKDIR)/include/*hpp) $(wildcard $(DARKDIR)/include/*h)
 DARKSRC:=$(wildcard $(DARKDIR)/src/*cpp) $(wildcard $(DARKDIR)/src/*c)
 DARKLIBS:=$(addprefix $(DARKDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(DARKSRC)))))
 
-HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp)
+HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
 HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
 HECOLLIDERLIBS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(HECOLLIDERSRC)))))
 
-EXAMPLE_AINC:=$(wildcard ExampleBit_A/include/*hpp)
+EXAMPLE_AINC:=$(wildcard ExampleBit_A/include/*hpp) $(wildcard ExampleBit_A/include/*h)
 EXAMPLE_ASRC:=$(wildcard ExampleBit_A/src/*cpp) $(wildcard ExampleBit_A/src/*c)
 EXAMPLE_ALIBS:=$(addprefix ExampleBit_A/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXAMPLE_ASRC)))))
 
-EXAMPLE_BINC:=$(wildcard ExampleBit_B/include/*hpp)
+EXAMPLE_BINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/include/*h)
 EXAMPLE_BSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
 EXAMPLE_BLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXAMPLE_BSRC)))))
 
-EXSUSYSPECINC:=$(wildcard ExampleBit_B/include/*hpp)
+EXSUSYSPECINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/include/*h)
 EXSUSYSPECSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
 EXSUSYSPECLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXSUSYSPECSRC)))))
 
@@ -146,75 +148,75 @@ BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o 
 DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(UTILSINC) $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(ALLINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.c $(UTILSINC) $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.c $(ALLINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.f $(UTILSINC) $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.f $(ALLINC)
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC)
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.c $(EXAMPLE_AINC) $(UTILSINC) $(COREINC)
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.c $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.f $(EXAMPLE_AINC) $(UTILSINC) $(COREINC)
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.f $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.cpp $(EXAMPLE_BINC) $(UTILSINC) $(COREINC)
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.cpp $(EXAMPLE_BINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.c $(EXAMPLE_BINC) $(UTILSINC) $(COREINC)
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.c $(EXAMPLE_BINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.f $(EXAMPLE_BINC) $(UTILSINC) $(COREINC)
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.f $(EXAMPLE_BINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-DarkBit/build/%.o: DarkBit/src/%.cpp $(DARKINC) $(UTILSINC) $(COREINC)
+DarkBit/build/%.o: DarkBit/src/%.cpp $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-DarkBit/build/%.o: DarkBit/src/%.c $(DARKINC) $(UTILSINC) $(COREINC)
+DarkBit/build/%.o: DarkBit/src/%.c $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-DarkBit/build/%.o: DarkBit/src/%.f $(DARKINC) $(UTILSINC) $(COREINC)
+DarkBit/build/%.o: DarkBit/src/%.f $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 	
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.cpp $(EXSUSYSPECINC) $(UTILSINC) $(COREINC)
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.cpp $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c $(EXSUSYSPECINC) $(UTILSINC) $(COREINC)
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f $(EXSUSYSPECINC) $(UTILSINC) $(COREINC)
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(UTILSINC) $(COREINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c $(UTILSINC) $(COREINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
@@ -223,7 +225,7 @@ gambit_example: $(CORELIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so
 	$(LN) $(CORELIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 libfirst.so:
-	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.so
+	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
 	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o  
 
 # beb_tester from makefile.test_backend
