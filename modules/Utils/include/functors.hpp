@@ -349,6 +349,15 @@ namespace GAMBIT
         if (this == NULL) functor::failBigTime();
         return safe_ptr<TYPE>(&myValue);
       }
+      
+      /// Ben: added this so we could get write access to myValue, primarily
+      /// for the case of the scanner needing to change the ModelParameter
+      /// object. Not for use in modules.
+      TYPE* rawvaluePtr()
+      {
+        if (this == NULL) functor::failBigTime();
+        return &myValue;
+      }
 
       /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
       void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")

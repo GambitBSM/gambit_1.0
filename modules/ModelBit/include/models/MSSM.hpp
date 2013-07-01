@@ -20,164 +20,175 @@
 
 #include <string>
 //#include "ModelParameters.hpp"
-#include <ModelMacros.hpp>
+//#include <ModelMacros.hpp>
+#include <model_macros.hpp>
 #include <util_classes.hpp>
 //#include <dictionary.hpp>  //need this for the 'dict' type.
 
-// Brainstorming what the model object is supposed to look like and do...
+// Note: the namespaces are all controlled by the macros now, so none appear
+// here! It is a similar deal to the module rollcall headers.
+  
+// In include/modelmacros.hpp we have defined the virtual bass class
+// "model_base". The NEW_CHILD_MODEL macro builds a new class with the 
+// specified name, which inherits from either model_base or a child of
+// model_base and automatically builds a function "lineage()" which will spit 
+// out a vector of strings containing the names of all its parents (and 
+// itself)
 
-// 'models' base class needs to provide some pseudo-introspection abilities so
-// that we can keep track of the inheritance hierarchy. For now, lets just do
-// this by adding to a "hierarchy" list whenever we inherit, i.e. put it in the
-// constructor or something. This will slightly suck because it won't be done 
-// automatically... maybe can hook it into a nice macro for creating new models 
-// though.
-// Also this does not yet deal with multiple inheritence.
-// May also need to have a "special" top (leaf) level of hierarchy to deal with 
-// different parameterisations (or is this too specialised?)
+// NEW FRAMEWORK
+
+#define MODEL MSSM
+#define PARENT model_base
+START_MODEL /* currently this only adds the name for the model */
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
+  DEFINEPARS(null)  /* Might be able to do something so that this is unneccesary */
+  #undef PARAMETERISATION
+#undef PARENT
+#undef MODEL
+
+// Fast way of defining a model. Wraps every parameter in a functor,
+// with the matched CAPABILITY given a name based on PARAMETER.
+// To avoid name clashes we have to give these really ugly names since all the
+// functor tags living in the global GAMBIT namespace need unique names. 
+// ( e.g. CMSSM_I_M0 )
+// If a parameter is to be matched to a "proper" capability then this needs to 
+// be specified using the long method.
+#define MODEL CMSSM
+// Currently only the parameterisations have a "lineage" vector, so we need to
+// pick one of those to inherit from. Probably need functions to map
+// horizontally between parametersations, similar to INTERPRET_AS_PARENT.
+#define PARENT MSSM::I
+START_MODEL
+
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
+  DEFINEPARS(M0, M12, A0, tanb, sgnmu)
+  
+    // Add in a sensibly named capability for good measure
+    #define PARAMETER Mstop
+    MAP_TO_CAPABILITY(Mstop_obs)
+    #undef PARAMETER 
+    
+  #undef PARAMETERISATION
+  
+  #define PARAMETERISATION II
+  START_PARAMETERISATION
+  DEFINEPARS(M0, M12, A0, B, mu)
+  #undef PARAMETERISATION
+  
+#undef PARENT
+#undef MODEL
 
 
-namespace GAMBIT{
+// Make second branch of model tree
 
-  namespace Models{
-    
-    // In include/modelmacros.hpp we have defined the virtual bass class
-    // "model_base". The NEW_CHILD_MODEL macro builds a new class with the 
-    // specified name, which inherits from either model_base or a child of
-    // model_base and automatically builds a function "lineage()" which will spit 
-    // out a vector of strings containing the names of all its parents (and 
-    // itself)
-    // Usage: NEW_CHILD_MODEL(<new model>,<parent model>)
-    NEW_CHILD_MODEL(MSSM,model_base)
-    // We also need to provide a definition for the "parameterkeys" data member,
-    // which the model class is going to use to construct the parameter object.
-    // We will demonstrate macros that do this shortly.
-    const std::vector<str> MSSM::parameterkeys = {};
-    
-    
-    // Test create second model from base
-    NEW_CHILD_MODEL(test_model,model_base)
-    const std::vector<str> test_model::parameterkeys = {};
-    
-    NEW_CHILD_MODEL(test_model2,test_model)
-    const std::vector<str> test_model2::parameterkeys = {};
-    
-    // Next iteration...
-    // This time we define some parameters
-    // Note: parameters are stored in the "parameters" member object, which
-    // also is in possession of the needed get/set functions.
-    NEW_CHILD_MODEL(CMSSM_base,MSSM)
-    //const std::vector<str> CMSSM_base::parameterkeys = {"M0", "M12", "A0"}; PS: doesn't work with icc, dunno why -- this is a C++11 feature tho
-    const std::vector<str> CMSSM_base::parameterkeys = delimiterSplit("M0, M12, A0", ",");
+#define MODEL DMHalo_base
+#define PARENT model_base
+START_MODEL
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
+  DEFINEPARS(null)
+  #undef PARAMETERISATION
+#undef PARENT
+#undef MODEL   
 
-    namespace CMSSM {
-      // Need to go inside CMSSM namespace to create parameterisations (just
-      // so they have unique names). This namespace is not known to the 
-      // hierarchy though.
-      // There is no automatic "inheritance" of parameters from the parent
-      // model, however there are a couple of ways to get those parameters. If
-      // we have access to the original list used to create the parent we can
-      // just use that again, or if not we can access the private list stored 
-      // inside the model class. There are also macros to make this less 
-      // verbose, which I shall demo shortly.
-      
-      NEW_CHILD_MODEL(P1,CMSSM_base);
-      const std::vector<str> newkeys = delimiterSplit("tanb, sgnmu", ",");
-      const std::vector<str> P1::parameterkeys = vecjoin(
-                                                  CMSSM_base::parameterkeys,
-                                                  newkeys
-                                                  );
-    }
+#define MODEL Gaussian_Halo
+#define PARENT DMHalo_base::I
+START_MODEL 
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
+  DEFINEPARS(v_earth, par2, par3)   // Can call this more than once:
+  DEFINEPARS(par4, par5, par6, par7, par8, par9, par10)
+  #undef PARAMETERISATION
+#undef PARENT
+#undef MODEL
+
+// Long way of defining a model. Individually specify parameter names and
+// the capabilities they map to. Also allows room to specify other things
+// about parameters if we like. 
+#define MODEL SomeOther_Halo
+#define PARENT DMHalo_base::I
+START_MODEL
+
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
+  
+    #define PARAMETER v_earth
+    MAP_TO_CAPABILITY(earthvel)
+    //DOSOMETHINGELSE(blah)
+    #undef PARAMETER 
+
+    #define PARAMETER blah0
+    MAP_TO_CAPABILITY(blah0cap)
+    //DOSOMETHINGELSE(blah)
+    #undef PARAMETER 
+
+  #undef PARAMETERISATION
+  
+#undef PARENT
+#undef MODEL
+
+//  #define PARAMETER par2
+//    CAPABILITY(otherstuff)
+
+//INTERPRET_AS_PARENT(
+//  *insert real C++ code here*
+//)
     
-    // Now let's make a second 'branch' of the model tree:
-    NEW_CHILD_MODEL(DMHalo_base,model_base)
-    const std::vector<str> DMHalo_base::parameterkeys = {};
-    
-    // We can use the DEFINEPARS macro to define the 'parameterkeys' data
-    // member, and thus the parameters given to the parameter object:
-    NEW_CHILD_MODEL(Gaussian_Halo,DMHalo_base)
-    DEFINEPARS(Gaussian_Halo, v_earth, par2, par3, par4, par5, par6, par7, par8, par9, par10)
-    
-    // Now create a "supermodel" which is an explicit union of two models
-    // *Note that this is not the generic way which totally orthogonal models
-    // will be combined. This is a fancy mixed up model which just happens
-    // to predict halos and MSSM masses simultaneously. Not sure if this is
-    // a useful thing to be able to do or not...
-    // Calls a different macro, so that the new class inherits from both
-    // branches of the hierachy. Currently just combines lineages into a big
-    // list, i.e. there is no tree information.
-    // Usage: NEW_SUPER_MODEL(<new model>,<parent model 1>,<parent model 2>)
-    NEW_SUPER_MODEL(CMSSMandGHALO,CMSSM::P1,Gaussian_Halo)
-    const std::vector<str> newkeys = delimiterSplit("extpar1, extpar2, extpar3", ",");
-    const std::vector<str> CMSSMandGHALO::parameterkeys = vecjoin3(
-                                                  Gaussian_Halo::parameterkeys,
-                                                  CMSSM::P1::parameterkeys,
-                                                  newkeys
-                                                  );
-    // Could hide this with some macro stuff, but have not invented these yet.
-    
-  } //end namespace models
-} //end namespace gambit
+
+// Currently cannot create "supermodels" as we could before, but I can
+// add this ability easily. Might have problems dealing with the
+// INTERPRET_AS_PARENT functions. Would just have to specify which parent
+// I guess.         
 
 #endif /* defined(__MSSM_hpp__) */
 
-/*
-class CMSSM : public MSSM
-    {
-    public:
+/* Rough concept: split up definition, so we can create functors for every
+   parameter. Dependency system then deals with these functions.
+   
+    - need a "get parameter value" function for every parameter, which is what
+      the functor calls. Just extracts parameter from the parameter object.
+   Might have to consider ripping everything out of the model classes. But maybe
+   not, will have to see.
+   
+    - "interpret_as_parent" function gives instructions for the creation of the
+      parent parameter object. Possibly does this by calling the constructor
+      for the parent model object, and just providing the appropriate 
+      parameters? We don't want to be creating objects every loop though... needblacksun
+      
+      the dependency system to determine if it is necessary and then create the
+      parent model object if we have to, then simply modify its values via the
+      "interpret_as_parent" function each loop. Bit tricky.
+      
+    - Functors should be pretty much, if not exactly, the same as
+      module_functors, and the core will possibly just deal with them the same
+      way (although they will probably get higher priority than module_functors,
+      since we should resolve dependencies by using these before we decide to
+      go out and calculate anything, unless the ini_file explicitly asks us to
+      get the value from some module function instead).
+      
+   Resources:
+      Utils/include/functors.hpp - line 259 class module_functor
+      Utils/include/module_macros.hpp - line 434 CORE_START_FUNCTION(TYPE)
+      
+      
 
-      // Constructor
-      functor(void (*inputFunction)(TYPE &), std::string iDo) {
-        myFunction = inputFunction;
-        myQuantity = iDo;
-        needs_recalculating = true;
-      }
+  #define CHILD_MODEL Gaussian_Halo
+    PARENT(DMHalo_base)
+    
+      #define PARAMETER v_earth
+        CAPABILITY(earthvel)
+        DOSOMETHINGELSE(blah)
 
-      // 
-      // Operation (return value) 
-      TYPE operator()() { return myValue; }
+      #define PARAMETER par2
+        CAPABILITY(otherstuff)
 
-      // Add pointer to pointer to dependent functor
-      template <typename DEP>
-      void addToDepList(functor<DEP>* &dep_functor) { 
-        dependency_list.push_back (&dep_functor);
-      }
-
-      // It may be safer to have the following four things made accessible 
-      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
-      // from within module functions
-
-      // Calculate method
-      void calculate() { if(needs_recalculating) { myFunction(myValue); } }
-
-      // Identification method
-      std::string quantity() { return myQuantity; }
-
-      // Needs recalculating or not?  (Externally modifiable)
-      bool needs_recalculating;
-
-      // Internal list of pointers to pointers to dependent functors
-      std::list<boost::any> dependency_list;
-
-    private:
-
-      // Internal storage of function value
-      TYPE myValue;
-
-      // Internal storage of function pointer
-      void (*myFunction)(TYPE &);
-
-      // Internal storage of exactly what it is that this function calculates
-      std::string myQuantity;
-
-  };
+    INTERPRET_AS_PARENT(
+      *insert real C++ code here*
+    )
+    
 */
-
-
-
-
-
-
 
 
 

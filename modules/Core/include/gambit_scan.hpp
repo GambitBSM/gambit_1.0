@@ -5,20 +5,20 @@
 #include <cstring>
 #include <master_like.hpp>
 
-using namespace std;
+//using namespace std;
 using namespace GAMBIT;
 
 struct Gambit_Functor
 { 
 	MasterLike *a; 
-	string *params; 
-	string output; 
+	std::string *params; 
+	std::string output; 
 	int defint;
 	int N;
 
 	Gambit_Functor (MasterLike *a, char *name, char **names, int N, int defint = 0) : a(a), output(name), N(N), defint(defint)
 	{
-		params = new string[N];
+		params = new std::string[N];
 		for (int i = 0; i < N; i++)
 		{
 			params[i] = names[i];

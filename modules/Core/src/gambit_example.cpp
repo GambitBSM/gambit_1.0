@@ -42,8 +42,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <logcore.hpp>
 #include <graphs.hpp>
 #include <backend_rollcall.hpp>
-#include <model_rollcall.hpp>
 #include <module_rollcall.hpp>
+#include <model_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
 #include <master_like.hpp>
@@ -99,7 +99,6 @@ void beispiel()
 
   // Read output parameters
   cout << masterLike("Likelihood")[0] << endl;
-  
   //char *names[2] = {"m_0", "m_1/2"};
   //Gambit_Functor like (&mlike, "Likelihood", names, 2);
   //Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
@@ -141,149 +140,225 @@ int main( int argc, const char* argv[] )
   
   // See ModelBit/models/MSSM.hpp for the definitions of the models referenced
   // here.
-  
-  // Need to make model objects in order to access names and lineages.
-  Models::CMSSM_base M1;
-  Models::CMSSM::P1 M2;
-  Models::Gaussian_Halo M3;
-  Models::CMSSMandGHALO M4;
-  
-  // We can also refer to models by pointers of the base class type, which means
-  // the rest of the code need not know exactly which class a given model is in
-  // order to fiddle with the model objects.
-  Models::model_base* p1=&M1;
-  Models::model_base* p2=&M2;
-  
-  //Try this way also:
-  Models::model_base &r1=M1;
-  Models::model_base &r2=M2;
-  
-  // (having a sudden thought that maybe we can make more native use of this
-  // capability - if a module knows about a parent model type can it just
-  // declare the appropriate pointer and use all child models similarly?)
-  Models::MSSM* MSSM_child1=&M1;
-  Models::MSSM* MSSM_child2=&M2;
-  // This would only be useful if there were functions unique to MSSM that
-  // model_base had not already declared. Not sure that is the spirit we want.
-  
-  // Get a pointer to DMHalo model and supermodel too:
-  Models::DMHalo_base* Halo_child1=&M3;
-  Models::DMHalo_base* Halo_child2=&M4;
-  
-  //Cannot use a pointer of a non-parent model class!
-  //(here M1 is not a descendent of DMHalo_base)
-  //GAMBIT::Models::DMHalo_base* Halo_child_error=&M1; 
-    
-  // Can then refer to staticly bound functions if we know the class:
+
+  // Ben: new system
+  // Models are no longer objects. Just access the stuff we need for a given
+  // model by knowing the appropriate scope. This won't be possibly dynamically
+  // of course, so the scanner, modules etc will have to interact with the 
+  // models via whatever the dependency resolver wants to give to them.
+  // It would not be a big deal to restore model objects if we want them: all
+  // the machinery I currently use could stay the same and we could just add
+  // an extra macro that boxes it all up into a class as well.
+
+  // So, no longer have to create model objects.
+
+  // Can access the various properties of models only if you know the right
+  // namespace. The name stuff in particular is a bit pointless right now
+  // because you have to already know the name in order to get the name string,
+  // but presumably we'll wrap these up in some sort of object or another
+  // somewhere along the line.
+
   cout<<""<<endl;
-  cout<<"Disclaimer: I may be using the wrong terms for these C++ \
-technicalities! If so I am sorry :(."<<endl;
-  cout<<"Retrieving model names and lineages by statically bound get functions..."<<endl;
-  cout<<"M1.getname(): "<<M1.getname()<<endl;
-  cout<<"M1.getlineage(): "<<M1.getlineage()<<endl;
-  cout<<"M2.getname(): "<<M2.getname()<<endl;
-  cout<<"M2.getlineage(): "<<M2.getlineage()<<endl;
-  
-  // Or by using references of the base class type if we don't:
+  cout<<"Retrieving model names and lineages from their namespaces..."<<endl;
+  cout<<"models::MSSM::name(): "<<models::MSSM::name()<<endl;
+  cout<<"models::MSSM::I::name(): "<<models::MSSM::I::name()<<endl;
+  cout<<"models::MSSM::I::lineage: "<<models::MSSM::I::lineage<<endl;
+
+  cout<<"models::CMSSM::name(): "<<models::CMSSM::name()<<endl;
+  cout<<"models::CMSSM::I::name(): "<<models::CMSSM::I::name()<<endl;
+  cout<<"models::CMSSM::I::lineage: "<<models::CMSSM::I::lineage<<endl;
+  cout<<"models::CMSSM::II::name(): "<<models::CMSSM::II::name()<<endl;
+  cout<<"models::CMSSM::II::lineage: "<<models::CMSSM::II::lineage<<endl;
+
+  // If we want to do anything useful with a model, we need to initialise 
+  // (create) its parameter object. Can then get and set parameter values etc.
+  models::CMSSM::I::init_paramobj();
+  // This attaches the object to the pointer parametersptr. This object will
+  // need to be manually deleted when we are done wtih it.
+
+  // Set parameter value by accessing parameter object directly via the
+  // pointer:
+  models::CMSSM::I::parametersptr->setValue("M0",1234);
+
+  // Copy the parameter object pointer and set values that way:
+  ModelParameters* CMSSMI_ptr = models::CMSSM::I::parametersptr;
+  CMSSMI_ptr->setValue("M12",4321);
+  CMSSMI_ptr->setValue("A0",100);
+  CMSSMI_ptr->setValue("tanb",10);
+  CMSSMI_ptr->setValue("sgnmu",1);
+  CMSSMI_ptr->setValue("Mstop",900);
+
   cout<<""<<endl;
-  cout<<"Retrieving model names and lineages by statically bound get \
-functions using references of base class type..."<<endl;
-  cout<<"r1.getname(): "<<r1.getname()<<endl;
-  cout<<"r1.getlineage(): "<<r1.getlineage()<<endl;
-  cout<<"r2.getname(): "<<r2.getname()<<endl;
-  cout<<"r2.getlineage(): "<<r2.getlineage()<<endl;
-  
-  // or also by dynamic binding (apologies if these are the wrong C++ 
-  // words...)
-  cout<<""<<endl;
-  cout<<"Retrieving model names and lineages by dynamically bound get \
-functions using pointers of base class type..."<<endl;
-  cout<<"p1->getname(): "<<p1->getname()<<endl;
-  cout<<"p1->getlineage(): "<<p1->getlineage()<<endl;
-  cout<<"p2->getname(): "<<p2->getname()<<endl;
-  cout<<"p2->getlineage(): "<<p2->getlineage()<<endl;
-  cout<<"Can also use pointers of any other parent type..."<<endl;
-  cout<<"MSSM_child1->getname(): "<<MSSM_child1->getname()<<endl;
-  cout<<"MSSM_child1->getlineage(): "<<MSSM_child1->getlineage()<<endl;
-  
-  // I think we can also just access the public data members directly with these
-  // methods:
-  // Edit: ok no we can't, just end up with the base class data members. I have
-  // now made the data members 'protected' so that no-one will accidentally try
-  // to access them this way.
-  /*
-  cout<<p1->name<<",(p1) "<<p1->lineage<<endl;
-  cout<<p2->name<<",(p2) "<<p2->lineage<<endl;
-  cout<<r1.name<<",(r1) "<<r1.lineage<<endl;
-  cout<<r2.name<<",(r2) "<<r2.lineage<<endl;
-  */
-  
-  // Set parameter value by accessing parameter object directly via model object.
-  M2.parameters.setValue("M0",1234);
-  
-  // If using base class pointer we can't do this. Instead we have to ask the
-  // model object for a pointer to the parameter object, and then work with that.
-  p2->getparamobjptr()->setValue("M12",4321);
-  p2->getparamobjptr()->setValue("A0",100);
-  p2->getparamobjptr()->setValue("tanb",10);
-  p2->getparamobjptr()->setValue("sgnmu",1);
-  
-  // To make things less verbose we can rip this pointer out of the model object
-  // good and proper, and even pass it around to other parts of GAMBIT if we
-  // like.
-  ModelParameters* M2params = p2->getparamobjptr();
-  
-  cout<<""<<endl;
-  cout<<"Demonstrating different ways of retrieving parameter values..."<<endl;
-  cout<<"M2 parameters:"<<endl;
-  cout<<"M0    = "<<M2params->getValue("M0")<<endl;
-  cout<<"M12   = "<<M2params->getValue("M12")<<endl;
-  // but of course if we have the actual model object we can dig the 
-  // corresponding parameter object straight out of it like before.
-  cout<<"A0    = "<<M2.parameters.getValue("A0")<<endl;
-  cout<<"tanb  = "<<M2.parameters.getValue("tanb")<<endl;
-  cout<<"sgnmu = "<<M2.parameters.getValue("sgnmu")<<endl;
-  
+  cout<<"CMSSM::I parameters:"<<endl;
+  cout<<"M0    = "<<CMSSMI_ptr->getValue("M0")<<endl;
+  cout<<"M12   = "<<CMSSMI_ptr->getValue("M12")<<endl;
+  cout<<"A0    = "<<CMSSMI_ptr->getValue("A0")<<endl;
+  cout<<"tanb  = "<<CMSSMI_ptr->getValue("tanb")<<endl;
+  cout<<"sgnmu = "<<CMSSMI_ptr->getValue("sgnmu")<<endl;
+
   // Lets also look at the halo models
+  // First, initialise the parameter object of the desired parameterisation:
+  models::Gaussian_Halo::I::init_paramobj();
+  models::SomeOther_Halo::I::init_paramobj();
   cout<<""<<endl;
   cout<<"Halo model names and lineages..."<<endl;
-  cout<<"Halo_child1->getname(): "<<Halo_child1->getname()<<endl;
-  cout<<"Halo_child1->getlineage(): "<<Halo_child1->getlineage()<<endl;
-  Halo_child1->getparamobjptr()->setValue("v_earth",300);
+  cout<<"models::Gaussian_Halo::name(): "<<models::Gaussian_Halo::name()<<endl;
+  cout<<"models::Gaussian_Halo::I::name():"<<models::Gaussian_Halo::I::name()<<endl;
+  cout<<"models::Gaussian_Halo::I::lineage "<<models::Gaussian_Halo::I::lineage<<endl;
+  models::Gaussian_Halo::I::parametersptr->setValue("v_earth",300);
   // There is a function to just dump all the parameters to stdout:
-  cout<<"Dumping Halo_child1 parameters...";
-  Halo_child1->getparamobjptr()->print();
-  
-  // Now the 'supermodel':
-  ModelParameters* HC2params = Halo_child2->getparamobjptr();
-  cout<<""<<endl;
-  cout<<"\"Super\" model names and lineages..."<<endl;
-  cout<<"Halo_child2->getname(): "<<Halo_child2->getname()<<endl;
-  cout<<"Halo_child2->getlineage(): "<<Halo_child2->getlineage()<<endl;
-  cout<<"Dumping Halo_child2 parameters...";
-  HC2params->setValue("M12",4321);
-  HC2params->setValue("A0",100);
-  HC2params->setValue("v_earth",300);
-  HC2params->print();
-  
+  cout<<"Dumping Gaussian_Halo::I parameters...";
+  models::Gaussian_Halo::I::parametersptr->print();
+  cout<<"models::SomeOther_Halo::name(): "<<models::SomeOther_Halo::name()<<endl;
+  cout<<"models::SomeOther_Halo::I::name() "<<models::SomeOther_Halo::I::name()<<endl;
+  cout<<"models::SomeOther_Halo::I::lineage "<<models::SomeOther_Halo::I::lineage<<endl;
+  models::SomeOther_Halo::I::parametersptr->setValue("v_earth",500);
+  cout<<"Dumping SomeOther_Halo::I parameters...";
+  models::SomeOther_Halo::I::parametersptr->print();
+
   // Demonstration of automatic looping over parameters
   cout<<endl;
   cout<<"Parameter name retrieval..."<<endl;
-  cout<<"HC2params->getKeys(): "<< \
-                HC2params->getKeys()<<endl;
+  cout<<"models::Gaussian_Halo::I::parameterkeys: "<< \
+                models::Gaussian_Halo::I::parameterkeys<<endl;
+
   // Generate some random values and set parameters to these values
-
-  str rabbit = "dog";  
-
-  std::vector<str> keys = HC2params->getKeys();
+  
+  typedef std::string str;
+  std::vector<str> keys = models::Gaussian_Halo::I::parameterkeys;
   
   srand (time(NULL));    // initialize random seed
   for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
     cout <<"Setting random "<<*it<<" value..."<<endl;
-    HC2params->setValue(*it, rand()%1000);
+    models::Gaussian_Halo::I::parametersptr->setValue(*it, rand()%1000);
   }
-  cout<<"Dumping new Halo_child2 parameters...";
-  HC2params->print();
+  cout<<"Dumping new Gaussian_Halo::I parameters...";
+  models::Gaussian_Halo::I::parametersptr->print();
+  
+  cout << "*** End demo of old ModelBit stuff ***" << endl;
+  cout << "*** Begin demo of ModelBit 'module-like' capabilities ***" << endl;
+
+  // So, every model parameterisation is now contained in a structure very
+  // similar to a module, and every parameter is wrapped in a functor identical
+  // to those wrapping module functions. Let's see what this lets us do,
+  // focusing on CMSSM::I. Note that most of the "capabilities" have ugly names 
+  // because they are auto-generated case, with enough info to avoid name
+  // clashes. Only explicitly specified capabilities will have a "normal" name.
+  
+  cout << "My name is " << models::CMSSM::I::name() << endl;
+  cout << " I can calculate: " << endl << models::CMSSM::I::iCanDo << endl;
+  cout << " ...but I may need: " << endl << models::CMSSM::I::iMayNeed << endl;
+  cout << endl;
+
+  cout << "I can do CMSSM_I_M0 (tag-style) " << models::CMSSM::I::provides<Tags::CMSSM_I_M0>() << endl;
+  cout << "I can do CMSSM_I_M0 (string-style) " << models::CMSSM::I::provides("CMSSM_I_M0") << endl;
+  cout << "I can do CMSSM_I_M12 " << models::CMSSM::I::provides("CMSSM_I_M12") << endl;
+  cout << "I can do Mstop " << models::CMSSM::I::provides("CMSSM_I_M12") << endl;
+
+  cout << "Core says: report on M0!" << endl;
+  cout << "  " << models::CMSSM::I::name() << " says: ";
+  cout << "  "; models::CMSSM::I::report("M0");
+  
+  // Note: Tags::CAPABILITY is Tags::CMSSM_I_M0 (since this also goes into the global tags box)
+  //       Tags::FUNCTION is Tags::M0 (local to module scope, so this name is ok)
+  // Which tag is which?
+  // provides<Tags::CAPABILITY>
+  // function_traits<Tags::FUNCTION>
+  // report<Tags::FUNCTION>
+  // result<Tags::FUNCTION>
+  // So only 'provides' uses the CAPABILITY tag.
+  if (models::CMSSM::I::provides("CMSSM_I_M0")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef models::CMSSM::I::function_traits<Tags::M0>::type testType; //in this case the underlying type is double
+    // Call the module function by its tag  
+    testType M0 = models::CMSSM::I::result<Tags::M0>() ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << M0 << " (tag-style)" <<endl ;
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    double M02 = models::CMSSM::I::result<double>("M0") ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << M0 << " (string-style)" <<endl ;
+    // Call the module function by its functor 
+    models::CMSSM::I::Functown::M0.calculate();
+    cout << "  " << models::CMSSM::I::name() << " says: " << models::CMSSM::I::Functown::M0() << " (functor-style)" <<endl ; 
+  }
+  
+  // FUNCTION == CAPABILITY in this case.
+  cout << "Core says: report on Mstop!" << endl;
+  cout << "  " << models::CMSSM::I::name() << " says: ";
+  cout << "  "; models::CMSSM::I::report("Mstop");
+  if (models::CMSSM::I::provides("Mstop")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef models::CMSSM::I::function_traits<Tags::Mstop>::type testType; //in this case the underlying type is double
+    // Call the module function by its tag  
+    testType Mstop = models::CMSSM::I::result<Tags::Mstop>() ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << Mstop << " (tag-style)" <<endl ;
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    double Mstop2 = models::CMSSM::I::result<double>("Mstop") ;
+    cout << "  " << models::CMSSM::I::name() << " says: " << Mstop << " (string-style)" <<endl ;
+    // Call the module function by its functor 
+    models::CMSSM::I::Functown::Mstop.calculate();
+    cout << "  " << models::CMSSM::I::name() << " says: " << models::CMSSM::I::Functown::Mstop() << " (functor-style)" <<endl ; 
+  }
+  
+  /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
+     can access the parameters this way now: */
+  cout << "Core says: report on parameters!" << endl;
+  cout << "  " << models::CMSSM::I::name() << " says: ";
+  cout << "  "; models::CMSSM::I::report("parameters");
+  if (models::CMSSM::I::provides("CMSSM_I_parameters")) {
+    cout << "OK, so what is it then?" << endl;
+    typedef models::CMSSM::I::function_traits<Tags::parameters>::type testType; //in this case the underlying type is ModelParameters
+    // Call the module function by its tag
+    // (creates a copy of the parameters object?)
+    /*
+    testType* CMSSMIparameters = models::CMSSM::I::result<Tags::parameters>;
+    // Extract parameters from the retrieved parameter object
+    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
+      CMSSMIparameters->getValue("M0")<< " (tag-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
+      CMSSMIparameters->getValue("M12")<< " (tag-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
+      CMSSMIparameters->getValue("tanB")<< " (tag-style)" <<endl ;
+    */
+    // Call the module function by its string name (could use TestType here too insead of double) 
+    
+    // IMPORTANT!
+    // This is the "proper" way to deal with the full set of a parameters of a model
+    cout << endl ;
+    cout << " Functor access to ModelParameters object (currently read-only) " << endl ;
+    cout << endl ;
+    // First, make sure the functor has "run" so that it is storing a reference
+    // to the ModelParameters object in it's cache ("value" member variable)
+    models::CMSSM::I::Functown::parameters.calculate();
+    
+    // Next, grab a safe pointer to the model object
+    // Cannot get the object using the () method because this *copies* the object
+    // stored in "value".
+    safe_ptr<ModelParameters> CMSSMIsafeptr = models::CMSSM::I::Functown::parameters.valuePtr();
+    
+    // Now we can do stuff with the ModelParameters object!
+    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
+      CMSSMIsafeptr->getValue("M0")<< " (functor safe_ptr-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
+      CMSSMIsafeptr->getValue("M12")<< " (functor safe_ptr-style)" <<endl ;
+    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
+      CMSSMIsafeptr->getValue("tanb")<< " (functor safe_ptr-style)" <<endl ;
+    cout<<"Dumping CMSSM::I parameters...";
+    CMSSMIsafeptr->print();
+        
+    // We can change the parameters if we like:
+    /* NOTE: I added a new access method to the functors for this purpose. It
+       is indeed for use by ScannerBit, not for general use by modules. */
+    ModelParameters* CMSSMIrawptr = models::CMSSM::I::Functown::parameters.rawvaluePtr();
+    std::vector<str> keys = CMSSMIsafeptr->getKeys();
+  
+    srand (time(NULL));    // initialize random seed
+    for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
+      CMSSMIrawptr->setValue(*it, rand()%1000);
+    }
+    
+    cout<<"Dumping altered CMSSM::I parameters...";
+    CMSSMIsafeptr->print();
+  }     
   
   cout << "*** End ModelBit demo ***" << endl;
   cout << endl;
@@ -339,7 +414,11 @@ functions using pointers of base class type..."<<endl;
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample2);
-
+  
+  SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setSMpars);
+  SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setsoftmasses);
+  SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&GAMBIT::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
+  
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
@@ -498,7 +577,6 @@ functions using pointers of base class type..."<<endl;
   // Example_SUSYspecBit test code
   // ****************
 
-
   cout <<  endl;
   cout << "My name is " << SUSYspecBit::name() << endl;
   cout << " I can calculate: " << endl << SUSYspecBit::iCanDo << endl;
@@ -512,18 +590,27 @@ functions using pointers of base class type..."<<endl;
   
   cout << "Core says: report on MSSMspectrum!" << endl;
   cout << SUSYspecBit::name() << " says: ";
-  cout << "  "; SUSYspecBit::report("MSSMspectrum");
+  cout << "  "; SUSYspecBit::report("genMSSMspec"); //need to specify the FUNCTION, not the CAPABILITY to report.
+  
+  cout << "Tell me some stuff about genMSSMspec."<<endl;
+  //std::vector<sspair> deps, deps2, deps3, reqs, permitted;//reusing these
+  deps =  SUSYspecBit::Functown::genMSSMspec.dependencies();
+  cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
+  reqs =  SUSYspecBit::Functown::genMSSMspec.backendreqs();
+  cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl;
+
+  /* I am having trouble figuring out the "by-hand" dependency resolution for
+     this, so cutting it out for now
   if (SUSYspecBit::provides("MSSMspectrum")) {
     cout << "OK, so what is it then?" << endl;
-    //MSSMspecQ spectrum = SUSYspecBit::result<Tags::MSSMspectrum>()
-    cout << "  " << SUSYspecBit::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << endl;
-    /*
+    SUSYspecBit::Functown::genMSSMspec.calculate(); // Not done automatically by valuePtr!
+    safe_ptr<MSSMspecQ> spectrum = SUSYspecBit::Functown::genMSSMspec.valuePtr();
     cout << "  " << SUSYspecBit::name() << " says: " << endl;
-    cout << "    stop1 mass = " << spectrum.MASS.stop1 << endl;
-    cout << "    neut1 mass = " << spectrum.MASS.neut1 << endl;
-    */
+    cout << "    stop1 mass = " << spectrum->MASS.stop1 << endl;
+    cout << "    neut1 mass = " << spectrum->MASS.neut1 << endl;
   }
-
+  */
+  
 
   // Instantiate the ScannerBit module
 
@@ -598,7 +685,7 @@ functions using pointers of base class type..."<<endl;
   //shared_dbl vSigmaV13=myDS.dssigmav("vSigmaV2",13);
   // shared_dbl vPositron=myDS.dshaloyield("vPositron",5.2,51); //egev,yieldk
   // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
-
+  
   try{
     GAMBIT_MSG_LOG("GAMBIT example");
     //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
@@ -610,7 +697,6 @@ functions using pointers of base class type..."<<endl;
   }catch( exceptions::GAMBIT_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
-
 
   // Example 2: use the LLH provided by some Engine:
   //ComparatorBasePtr mySillyLLH_1(new simpleHandleToComparator(vSigmaV)) ;

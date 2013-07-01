@@ -27,6 +27,7 @@
 #include <iostream>
 #include <TinyDarkBit_rollcall.hpp>
 #include <types_DarkBit.hpp>
+#include <MSSM_classes.hpp> // Ben: your "DS_MSSMPAR" struct is now in this file (under ModelBit/include)
 
 //PS This will go in some header file eventually
 // #include <dictionary.hpp>
