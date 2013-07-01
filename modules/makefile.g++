@@ -225,7 +225,7 @@ gambit_example: $(CORELIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so
 	$(LN) $(CORELIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 libfirst.so:
-	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.so
+	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
 	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o  
 
 # beb_tester from makefile.test_backend
