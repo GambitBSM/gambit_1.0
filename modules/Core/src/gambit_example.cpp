@@ -332,8 +332,7 @@ int main( int argc, const char* argv[] )
     
     // Next, grab a safe pointer to the model object
     // Cannot get the object using the () method because this *copies* the object
-    // stored in "value". There is no copy constructor for the ModelParameters 
-    // object, because we only want one version of them persisting!
+    // stored in "value".
     safe_ptr<ModelParameters> CMSSMIsafeptr = models::CMSSM::I::Functown::parameters.valuePtr();
     
     // Now we can do stuff with the ModelParameters object!
