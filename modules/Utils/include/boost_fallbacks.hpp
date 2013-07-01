@@ -32,7 +32,7 @@
 ///  DEALINGS IN THE SOFTWARE.
 ///  *********************************************
 
-# if 0 //GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
+# if GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
 #   include <boost/preprocessor/variadic/size.hpp>
 #   include <boost/preprocessor/tuple/to_seq.hpp>
 # else
@@ -107,6 +107,14 @@
 ///  *                                                                          *
 ///  ************************************************************************** */
 ///
+
+// debugging: check if BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP already defined
+#ifdef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
+#   pragma message "BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP = defined"
+#else
+#   pragma message "BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP = not defined"
+#endif
+
 # ifndef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
 # define BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
 
@@ -118,12 +126,12 @@
 //Ben: temporary debugging junk
 #include <boost/preprocessor/stringize.hpp>
 #pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
-#if BOOST_PP_VARIADICS
+#ifdef BOOST_PP_VARIADICS
 #   pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
 #else
 #   pragma message "BOOST_PP_VARIADICS= not defined"
 #endif
-#if BOOST_PP_VARIADICS_MSVC
+#ifdef BOOST_PP_VARIADICS_MSVC
 #   pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
 #else
 #   pragma message "BOOST_PP_VARIADICS_MSVC= not defined"
