@@ -39,10 +39,9 @@
 
 #define MODEL MSSM
 #define PARENT model_base
-START_MODEL /* currently this only adds the name for the model */
   #define PARAMETERISATION I
   START_PARAMETERISATION
-  DEFINEPARS(null)  /* Might be able to do something so that this is unneccesary */
+  DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
   #undef PARAMETERISATION
 #undef PARENT
 #undef MODEL
@@ -58,8 +57,7 @@ START_MODEL /* currently this only adds the name for the model */
 // Currently only the parameterisations have a "lineage" vector, so we need to
 // pick one of those to inherit from. Probably need functions to map
 // horizontally between parametersations, similar to INTERPRET_AS_PARENT.
-#define PARENT MSSM::I
-START_MODEL
+#define PARENT MSSM_I
 
   #define PARAMETERISATION I
   START_PARAMETERISATION
@@ -69,6 +67,40 @@ START_MODEL
     #define PARAMETER Mstop
     MAP_TO_CAPABILITY(Mstop_obs)
     #undef PARAMETER 
+  
+    // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
+    // object as a CAPABILITY of this model)
+    INTERPRET_AS_PARENT(
+      {
+        /* Write actual code here! Don't forget the curly braces. */
+        cout<<"Running interpret_as_parent calculations for CMSSM_I -> MSSM_I ..."<<endl;
+        /* Have not hook up dependency system for models yet, but we may need it
+           here. However, can access the current model's parameters (and any
+           other model's parameters) without this system, because we are already
+           in the namespace for the current model and can just straight out
+           access the original pointer. We could also use the functor if we
+           like. */
+        double M0 = parametersptr->getValue("M0");
+        double M12 = parametersptr->getValue("M12");
+        double A0 = parametersptr->getValue("A0");
+         
+        /* Create parent parameter object, initialise it, set some values, and
+           return it. In the future the dependency resolver may be able to
+           recognise that we need the parent parameter object initialised and
+           do that for us automatically */
+        PARENT::init_paramobj();
+        PARENT::parametersptr->setValue("M1", M0);
+        PARENT::parametersptr->setValue("M2", 0.5*M0);
+        PARENT::parametersptr->setValue("M3", 3*M0);
+        PARENT::parametersptr->setValue("AU1", A0);
+        PARENT::parametersptr->setValue("AU2", 2*A0);
+        PARENT::parametersptr->setValue("AU3", 0);
+           
+        /* deference pointer to PARENT parameter object and assign to 'result'
+           reference (no copy occurs here) */
+        result = *PARENT::parametersptr;
+      }
+    ) 
     
   #undef PARAMETERISATION
   
@@ -85,7 +117,6 @@ START_MODEL
 
 #define MODEL DMHalo_base
 #define PARENT model_base
-START_MODEL
   #define PARAMETERISATION I
   START_PARAMETERISATION
   DEFINEPARS(null)
@@ -94,8 +125,7 @@ START_MODEL
 #undef MODEL   
 
 #define MODEL Gaussian_Halo
-#define PARENT DMHalo_base::I
-START_MODEL 
+#define PARENT DMHalo_base_I
   #define PARAMETERISATION I
   START_PARAMETERISATION
   DEFINEPARS(v_earth, par2, par3)   // Can call this more than once:
@@ -108,8 +138,7 @@ START_MODEL
 // the capabilities they map to. Also allows room to specify other things
 // about parameters if we like. 
 #define MODEL SomeOther_Halo
-#define PARENT DMHalo_base::I
-START_MODEL
+#define PARENT DMHalo_base_I
 
   #define PARAMETERISATION I
   START_PARAMETERISATION
