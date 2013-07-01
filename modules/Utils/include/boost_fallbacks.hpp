@@ -116,12 +116,20 @@
 //# include <boost/preprocessor/variadic/size.hpp>  // have this above!
 
 //Ben: temporary debugging junk
-//#include <boost/preprocessor/stringize.hpp>
-//#pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
-//#pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
-//#pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
-//#pragma message "BOOST_PP_CONFIG_FLAGS=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_FLAGS())
-//#pragma message "BOOST_PP_CONFIG_MWCC=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_MWCC())
+#include <boost/preprocessor/stringize.hpp>
+#pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
+#if BOOST_PP_VARIADICS
+#   pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
+#else
+#   pragma message "BOOST_PP_VARIADICS= not defined"
+#endif
+#if BOOST_PP_VARIADICS_MSVC
+#   pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
+#else
+#   pragma message "BOOST_PP_VARIADICS_MSVC= not defined"
+#endif
+#pragma message "BOOST_PP_CONFIG_FLAGS=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_FLAGS())
+#pragma message "BOOST_PP_CONFIG_MWCC=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_MWCC())
 
 //# if BOOST_PP_VARIADICS
 #    if BOOST_PP_VARIADICS_MSVC
