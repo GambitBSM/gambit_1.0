@@ -20,7 +20,7 @@
 #include <string>
 #include <iostream>
 #include <SUSYspecBit_rollcall.hpp>
-#include <util_classes.hpp> // Contains definition of MSSMspecQ type.
+#include <MSSM_classes.hpp> // Contains definition of MSSMspecQ type.
 
 namespace GAMBIT {
 

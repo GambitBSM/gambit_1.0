@@ -29,6 +29,7 @@
 
 #include <module_macros.hpp>
 #include <types_DarkBit.hpp>
+#include <MSSM_classes.hpp> // Ben: your "DS_MSSMPAR" struct is now in this file (under ModelBit/include)
 
 //PS This will go into the rollcall system eventually, when the darksusy backend is converted to the rollcall style
 #include "backend-darksusy.hpp"

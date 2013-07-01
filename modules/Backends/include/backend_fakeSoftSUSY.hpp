@@ -7,7 +7,7 @@
 */
 
 #include <backend_macros.hpp>
-#include <util_classes.hpp> //Contains definition of MSSMspecQ type.
+#include <MSSM_classes.hpp> //Contains definition of MSSMspecQ type.
 
 /* Specify the path to the shared library along with a backend name. */
 
@@ -52,6 +52,9 @@ namespace GAMBIT
       {
         MSSMspecQ spectrum; // GAMBIT format spectrum object.
         /* run SoftSUSY, stick results into spectrum object */
+        spectrum.MASS.stop1 = 1000;
+        spectrum.MASS.neut1 = 500;
+    
         return spectrum;
       };
       

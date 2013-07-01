@@ -414,7 +414,11 @@ int main( int argc, const char* argv[] )
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample2);
-
+  
+  SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setSMpars);
+  SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setsoftmasses);
+  SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&GAMBIT::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
+  
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
@@ -572,7 +576,6 @@ int main( int argc, const char* argv[] )
   // ****************
   // Example_SUSYspecBit test code
   // ****************
-  /*
 
   cout <<  endl;
   cout << "My name is " << SUSYspecBit::name() << endl;
@@ -587,17 +590,27 @@ int main( int argc, const char* argv[] )
   
   cout << "Core says: report on MSSMspectrum!" << endl;
   cout << SUSYspecBit::name() << " says: ";
-  cout << "  "; SUSYspecBit::report("MSSMspectrum");
+  cout << "  "; SUSYspecBit::report("genMSSMspec"); //need to specify the FUNCTION, not the CAPABILITY to report.
+  
+  cout << "Tell me some stuff about genMSSMspec."<<endl;
+  //std::vector<sspair> deps, deps2, deps3, reqs, permitted;//reusing these
+  deps =  SUSYspecBit::Functown::genMSSMspec.dependencies();
+  cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
+  reqs =  SUSYspecBit::Functown::genMSSMspec.backendreqs();
+  cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl;
+
+  /* I am having trouble figuring out the "by-hand" dependency resolution for
+     this, so cutting it out for now
   if (SUSYspecBit::provides("MSSMspectrum")) {
     cout << "OK, so what is it then?" << endl;
-    //MSSMspecQ spectrum = SUSYspecBit::result<Tags::MSSMspectrum>()
-    cout << "  " << SUSYspecBit::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << endl;
-    
-    //cout << "  " << SUSYspecBit::name() << " says: " << endl;
-    //cout << "    stop1 mass = " << spectrum.MASS.stop1 << endl;
-    //cout << "    neut1 mass = " << spectrum.MASS.neut1 << endl;
+    SUSYspecBit::Functown::genMSSMspec.calculate(); // Not done automatically by valuePtr!
+    safe_ptr<MSSMspecQ> spectrum = SUSYspecBit::Functown::genMSSMspec.valuePtr();
+    cout << "  " << SUSYspecBit::name() << " says: " << endl;
+    cout << "    stop1 mass = " << spectrum->MASS.stop1 << endl;
+    cout << "    neut1 mass = " << spectrum->MASS.neut1 << endl;
   }
   */
+  
 
   // Instantiate the ScannerBit module
 
