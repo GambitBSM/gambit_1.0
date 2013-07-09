@@ -1,25 +1,21 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
+//  **********************************************
 //
-//  Dependecy resolution with boost graph library
+//  Dependency resolution with boost graph library
 //
-//  *********************************************
+//  **********************************************
 //
 //  Authors
 //  =======
 //
 //  (add name and date if you modify)
 //
-//  Christoph Weniger (c.weniger@uva.nl)
-//  May, June 2013
+//  Christoph Weniger <c.weniger@uva.nl>
+//  May, June, July 2013
 //  Pat Scott 
 //  May 03 2013
 //
 //  *********************************************
-//
-//  NOTE: 
-//    - "vertex" = module function
-//    - "edge" = dependency
 
 #include <vector>
 #include <functors.hpp>
@@ -27,81 +23,50 @@
 #include <yaml_parser.hpp>
 #include "boost/format.hpp"
 #include <regex>
+#include <boost/graph/graphviz.hpp>
+
+#define OMEGA_VERTEXID 52314768
 
 namespace GAMBIT
 {
   namespace Graphs
   {
-    void DependencyResolver::addFunctors(
-        std::vector<functor *> functorList,
-        std::vector<functor *> backendFunctorList )
+    //
+    // Helper functions
+    //
+
+    // Compare two strings
+    bool stringComp(str s1, str s2)
     {
-      for (std::vector<functor *>::iterator it = functorList.begin();
-          it != functorList.end(); ++it)
-      {
-        boost::add_vertex(*it, masterGraph);
-      }
-      this->myBackendFunctorList = backendFunctorList;
+      if ( s1 == s2 ) return true;
+      if ( s1 == "" ) return true;
+      if ( s1 == "*" ) return true;
+      if ( regex_match ( s2, *(new regex(s1)) ) ) return true; 
+      return false;
     }
 
-    // Saved calling order for functions
-    list<int> function_order;
-
-    // pushes dependencies of vertex into parameter queue
-    void DependencyResolver::fill_parQueue(queue<pair<sspair, Graphs::VertexID> > *parQueue,
-        Graphs::VertexID vertex) {
-      (*masterGraph[vertex]).setStatus(2); // activate node
-      vector<sspair> vec = (*masterGraph[vertex]).dependencies();
-      // if (vec.size() != 0)
-      //   cout << "- add dependencies:" << endl;
-      for (vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) {
-        cout << "  " << (*it).first << " (" << (*it).second << ")  " << endl;
-        (*parQueue).push(*(new pair<sspair, Graphs::VertexID> (*it, vertex)));
-      }
-    }
-
-    // initializes (capability, type) --> vertex multimap
-    multimap<sspair, Graphs::VertexID> DependencyResolver::initialize_capMap() {
-      // cout << endl << "Filling capability map with" << endl;
-      multimap<sspair, Graphs::VertexID> capMap;
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      pair<sspair, Graphs::VertexID> ins;
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
-        ins.first.first = (*masterGraph[*vi]).capability();
-        ins.first.second = (*masterGraph[*vi]).type();
-        ins.second = *vi;
-        // cout << "  " << ins.first.first << " (" << ins.first.second << ")" << endl;
-        capMap.insert(ins);
-      };
-      return capMap;
-    }
-
-    bool compare(IniParser::ObservableType observable, functor* func)
+    bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
     {
-      cout << "Comparing inifile entry " ;
-      cout << observable.capability << " with ";
-      cout << (*func).name() << " from ";
-      cout << (*func).origin() << endl;
-
-      // Check function names
-      if ( observable.function != "" and observable.function != (*func).name()
-          ) return false;
-      // Check module name
-      if ( observable.module != "" and observable.module != (*func).origin()
-          ) return false;
-      // Check module version
-      if ( observable.version != "" and observable.version != (*func).version()
-          ) return false;
-      cout << "match!" << endl;
-      return true; // everything consistent
+      // Compares dependency specifications of auxiliary entries or observable
+      // entries with capability (capabilities have to be unique for these
+      // lists))
+      if ( stringComp( observable.capability, quantity.first ) ) return true;
+      else return false;
     }
 
+    bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e)
+    {
+      if (     stringComp( e.capability, (*f).capability() )
+           and stringComp( e.type, (*f).type() )
+           and stringComp( e.function, (*f).name() )
+           and stringComp( e.module, (*f).origin() ) )
+           return true;
+      else return false;
+    }
+
+    // Compare backend function with backend entry in inifile
     bool compareBE(IniParser::ObservableType observable, functor* func)
     {
-      cout << "Comparing backend requirements of inifile entry " ;
-      cout << observable.capability << " with backend function ";
-      cout << (*func).name() << " from ";
-      cout << (*func).origin() << endl;
       for (std::vector<IniParser::ObservableType>::iterator be =
           observable.backends.begin(); be != observable.backends.end(); be++)
       {
@@ -122,236 +87,51 @@ namespace GAMBIT
       return true; // everything consistent
     }
 
-    //
-    // The hard stuff happens here
-    //
-    void DependencyResolver::initialize_edges(
-        queue<pair<sspair,
-        Graphs::VertexID> > parQueue,
-        multimap<sspair, Graphs::VertexID> capMap,
-        GAMBIT::IniParser::IniFile &iniFile)
+    // returns a list of backend functors which match in capability and type
+    std::vector<functor *> findBackendCandidates(sspair key, std::vector<functor *> functorList)
     {
-      // two vertices that we will connect and the edge
-      Graphs::VertexID fromVertex, toVertex;
-      Graphs::EdgeID current_edge;
-      // relevant observable entry (could be dependency of another observable)
-      IniParser::ObservableType observable, directObs;
-      int key_multiplicity, i;
-      bool ok, obsFlag, dirObsFlag;
-      sspair var;
-
-      // Master loop
-      cout << "Resolving dependency graph" << endl;
-      cout << "--------------------------" << endl;
-      while (not parQueue.empty()) {
-
-        // Capability/type pair to resolve...
-        var = parQueue.front().first;
-        // ...and the unresolved vertex
-        toVertex = parQueue.front().second;
-        cout << var.first << " (" << var.second << ")" << " [";
-        cout << (*masterGraph[toVertex]).name() << "]: ";
-
-        // Find relevant inifile entry
-        // Does inifile entry for capability exist?
-        obsFlag = false;
-        dirObsFlag = false;
-        if (iniFile.hasObservable(var.first))
-        {
-          // TODO: Allow for multiple directObservables with same
-          // capability/type pairs, but different origin etc.  This will be
-          // required for general enough backend/model resolution as some
-          // point. Observables (below) should be unique.
-
-          // store it in observable
-          observable = iniFile.getObservable(var.first);
-          directObs = iniFile.getObservable(var.first);
-          // and set flag
-          obsFlag = true;
-          dirObsFlag = true;
-        }
-        // Does inifile entry for capability of parent node exist?
-        // (dependencies of parent nodes have priority)
-        if (iniFile.hasObservable((*masterGraph[toVertex]).capability()))
-        {
-          IniParser::ObservableType parent_observable =
-            iniFile.getObservable((*masterGraph[toVertex]).capability());
-          // Does parent node entry have dependency with right capability?
-          if (iniFile.hasDependency(parent_observable, var.first))
-          {
-            observable = iniFile.getDependency(parent_observable, var.first);
-            obsFlag = true;
-          }
-        }
-
-        // Get number of matching capability/type pairs.
-        key_multiplicity = capMap.count(var);
-
-        // Nothing matches.
-        if ( key_multiplicity == 0 ) {
-          cout << "No matching capability/type pair found." << endl;
-          exit(0);
-        }
-
-        // Unique solution,...
-        if ( key_multiplicity == 1 )
-        {
-          fromVertex = (*capMap.find(var)).second;
-          // ...but compatible with inifile entries...
-          if (obsFlag) // ...if they exist?
-          {
-            if(not compare(observable, masterGraph[fromVertex]))
-            {
-              cout << "Only solution incompatible with inifile entry." << endl;
-              exit (0);
-            }
-          }
-        }
-
-        // Too many solutions. Requires resolution via inifile.
-        if ( key_multiplicity > 1 ) {
-          cout << "Non-unique dependency resolution." << endl;
-
-          // Find inifile entry that matches capability of interest
-          if (not obsFlag)
-          {
-            cout << "Ambiguous capability not mentioned in inifile" << endl;
-            exit(0);
-          }
-          // Compare all matches with the inifile entry
-          i = 0;
-          for(multimap<sspair, Graphs::VertexID>::iterator it =
-              capMap.lower_bound(var); it !=capMap.upper_bound(var); it++)
-          {
-            if (compare(observable, masterGraph[(*it).second]))
-            {
-              fromVertex = (*it).second;
-              i++;
-            }
-          }
-          // Stop in case of...
-          if (i==0) // ...too few matches...
-          {
-            cout << "Nothing fits" << endl;
-            exit (0);
-          }
-          if (i>1) // ...or too many matches.
-          {
-            cout << "Still ambiguous" << endl;
-            exit (0);
-          }
-        }
-
-        // Resolve dependency with new "fromVertex"
-        (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
-        // and add edge to mastergraph
-        tie(current_edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
-
-        // done!
-        cout << "resolved by ";
-        cout << (*masterGraph[fromVertex]).name() << endl;
-
-        // Is new vertex already activated?
-        if ( (*masterGraph[fromVertex]).status() != 2 ) {
-          // if not, fill its dependencies into queue
-          resolveVertexBackend(dirObsFlag, directObs, fromVertex);
-          fill_parQueue(&parQueue, fromVertex);
-        }
-
-        // set edge label (for the joy of graphviz)
-        masterGraph[current_edge].variable = var;
-
-        // and the next one
-        parQueue.pop();
-      }
-    }
-
-    // The boost lib topolical sort
-    list<int> DependencyResolver::run_topological_sort() {
-      list<int> topo_order;
-      topological_sort(masterGraph, front_inserter(topo_order));
-      return topo_order;
-    }
-
-    // Lists all vertices in correct order
-    void DependencyResolver::logOrder() {
-      cout << "Ordered, active functions" << endl;
-      cout << "-------------------------" << endl;
-      for(list<int>::const_iterator i = function_order.begin();
-          i != function_order.end();
-          ++i)
+      std::vector<functor *> candidateList;
+      for (unsigned int i=0; i<functorList.size(); ++i)
       {
-        if ( (*masterGraph[*i]).status() == 2 )
-          cout << (*masterGraph[*i]).name() << endl;
-      }
-    }
-
-    // Return active vertices in correct order
-    std::vector<functor*> DependencyResolver::getFunctors() {
-      std::vector<functor*> functor_list;
-      for(list<int>::const_iterator i = function_order.begin();
-          i != function_order.end();
-          ++i)
-      {
-        if ( (*masterGraph[*i]).status() == 2 )
+        if ( functorList[i]->quantity() == key )
         {
-          functor_list.push_back(masterGraph[*i]);
+          candidateList.push_back(functorList[i]);
         }
       }
-      return functor_list;
+      return candidateList;
     }
 
-    // Convenience function
-    void DependencyResolver::logFunctors() 
+    class labelWriter
     {
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      str formatString = "%-25s %-25s %-25s %-25s %-25s %-7i %-5i %-5i\n";
-      int i = 0;
-      cout << "Vertices registered in masterGraph" << endl;
-      cout << "----------------------------------" << endl;
-      cout << boost::format(formatString)%
-        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "OBSTYPE"% "STATUS"% "#DEPs"% "#BE_REQs";
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
-        cout << boost::format(formatString)%
-          ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
-          (*masterGraph[*vi]).name()%
-          (*masterGraph[*vi]).capability()%
-          (*masterGraph[*vi]).type()%
-          (*masterGraph[*vi]).obsType()%
-          (*masterGraph[*vi]).status()%
-          (*masterGraph[*vi]).dependencies().size()%
-          (*masterGraph[*vi]).backendreqs().size();
-        i++;
-      };
-      // cout << "TOTAL: " << i << endl;
+      private:
+        const Graphs::MasterGraphType * myGraph;
+      public:
+        labelWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
+        void operator()(std::ostream& out, const VertexID& v) const
+        {
+	        out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
+          out << "label=< ";
+          out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->capability() << "</font><br/>";
+          out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";
+          out <<  "Function: " << (*myGraph)[v]->name() << "<br/>";
+          out <<  "Module: " << (*myGraph)[v]->origin();
+          out << ">]";
+        }
     };
 
-    // Main dependency resolution
-    void DependencyResolver::resolveNow(GAMBIT::IniParser::IniFile &iniFile)
-    {
-      std::vector<VertexID> pars = reqObs;
-      queue<pair<sspair, Graphs::VertexID> > parQueue; // (cap., typ) --> dep. functor/vertex map
-      multimap<sspair, Graphs::VertexID> capMap = initialize_capMap();
+    //
+    // Public functions of DependencyResolver
+    //
 
-      cout << "The goal" << endl;
-      cout << "--------" << endl;
-      for (std::vector<VertexID>::iterator it = pars.begin() ; it != pars.end(); ++it)
-      {
-        fill_parQueue(&parQueue, vertex(*it, masterGraph));
-      }
-      initialize_edges(parQueue, capMap, iniFile);
-      function_order = run_topological_sort();
+    // Constructor. 
+    // Add module and backend functors to class internal lists.
+    DependencyResolver::DependencyResolver(std::vector<functor *> functorList,
+        std::vector<functor *> backendFunctorList)
+    {
+      addFunctors(functorList, backendFunctorList);
     }
 
-    outputListType DependencyResolver::outputList;
-
-    // Push all output functors in some final list
-    void DependencyResolver::outputResolver(functor * dep_functor)
-    {
-      DependencyResolver::outputList.push_back(dep_functor);
-    }
-
-    // Add legs, return pointers
+    // Add alpha and omega legs to masterGraph
     void DependencyResolver::addLegs(GAMBIT::IniParser::IniFile &iniFile)
     {
       // Define alpha/omega vertices
@@ -372,29 +152,343 @@ namespace GAMBIT
       }
 
       // Output legs
-      double * dummy_double = new double;
+      // double * dummy_double = new double;
+      sspair s;
       for (IniParser::ObservablesType::const_iterator it =
           iniFile.observables.begin(); it != iniFile.observables.end(); ++it)
       {
-        p_modfunc = new module_functor<double> (dummy_double, (*it).capability +
-            "_CoreOut", "NULL", "void", "Core");
-        (*p_modfunc).setDependency((*it).capability, "double", &outputResolver, (*it).obsType);
-        reqObs.push_back(boost::add_vertex(p_modfunc, masterGraph));
+        s.first = (*it).capability;
+        s.second = (*it).type;
+        requestedQuantities.push_back(s);
       }
     }
 
-    // returns a list of backend functors which match in capability and type
-    std::vector<functor *> findBackendCandidates(sspair key, std::vector<functor *> functorList)
+    // Main dependency resolution
+    void DependencyResolver::resolveNow(GAMBIT::IniParser::IniFile &iniFile)
     {
-      std::vector<functor *> candidateList;
-      for (unsigned int i=0; i<functorList.size(); ++i)
+      // (cap., typ) --> dep. vertex map
+      queue<pair<sspair, Graphs::VertexID> > parQueue;
+      pair<sspair, Graphs::VertexID> queueEntry;
+
+      cout << endl << "Target likelihoods/observables" << endl;
+      cout <<         "------------------------------" << endl;
+      cout <<         "CAPABILITY (TYPE)"   << endl;
+      for (std::vector<sspair>::iterator it = requestedQuantities.begin() ; it
+          != requestedQuantities.end(); ++it)
       {
-        if ( functorList[i]->quantity() == key )
+        cout << (*it).first << " (" << (*it).second << ")" << endl;
+        queueEntry.first = (*it);
+        queueEntry.second = OMEGA_VERTEXID;
+        parQueue.push(queueEntry);
+      }
+      generateTree(parQueue, iniFile);
+      function_order = run_topological_sort();
+
+      // graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end, next;
+      // tie(vi, vi_end) = vertices(masterGraph);
+      // for (next = vi; vi != vi_end; vi = next) {
+      //   ++next;
+      //   if ( out_degree(*vi, masterGraph) == 0 )
+      //     if ( in_degree(*vi, masterGraph) == 0 )
+      //     {
+      //       clear_vertex(*vi, masterGraph);
+      //       remove_vertex(*vi, masterGraph);
+      //     }
+      // };
+
+      ofstream outf("graph.gv");
+      write_graphviz(outf, masterGraph, labelWriter(&masterGraph));
+    }
+
+    // Inputmap getter
+    inputMapType DependencyResolver::getInputMap()
+    {
+      return inputMap;
+    }
+
+    // Return active vertices in correct order
+    std::vector<functor*> DependencyResolver::getFunctors()
+    {
+      std::vector<functor*> functor_list;
+      for(list<int>::const_iterator i = function_order.begin();
+          i != function_order.end();
+          ++i)
+      {
+        if ( (*masterGraph[*i]).status() == 2 )
         {
-          candidateList.push_back(functorList[i]);
+          functor_list.push_back(masterGraph[*i]);
         }
       }
-      return candidateList;
+      return functor_list;
+    }
+
+    // Outputmap getter
+    outputMapType DependencyResolver::getOutputMap()
+    {
+      return outputMap;
+    }
+
+    // List of masterGraph content
+    void DependencyResolver::printFunctorList() 
+    {
+      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      str formatString = "%-25s %-25s %-25s %-25s %-25s %-7i %-5i %-5i\n";
+      int i = 0;
+      cout << endl << "Vertices registered in masterGraph" << endl;
+      cout << "----------------------------------" << endl;
+      cout << boost::format(formatString)%
+        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "OBSTYPE"% "STATUS"% "#DEPs"% "#BE_REQs";
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
+        cout << boost::format(formatString)%
+          ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
+          (*masterGraph[*vi]).name()%
+          (*masterGraph[*vi]).capability()%
+          (*masterGraph[*vi]).type()%
+          (*masterGraph[*vi]).obsType()%
+          (*masterGraph[*vi]).status()%
+          (*masterGraph[*vi]).dependencies().size()%
+          (*masterGraph[*vi]).backendreqs().size();
+        i++;
+      };
+      // cout << "TOTAL: " << i << endl;
+    };
+
+    // Lists all vertices in correct order (deprecated)
+    void DependencyResolver::printSortedOrder()
+    {
+      cout << "Ordered, active functions" << endl;
+      cout << "-------------------------" << endl;
+      for(list<int>::const_iterator i = function_order.begin();
+          i != function_order.end();
+          ++i)
+      {
+        if ( (*masterGraph[*i]).status() == 2 )
+          cout << (*masterGraph[*i]).name() << endl;
+      }
+    }
+
+
+    //
+    // Private functions of DependencyResolver
+    //
+
+    // Add module and backend functors to class internal lists.
+    void DependencyResolver::addFunctors(
+        std::vector<functor *> functorList,
+        std::vector<functor *> backendFunctorList )
+    {
+      // - module functors go into masterGraph
+      // - backend functors go into myBackendFunctorList
+      for (std::vector<functor *>::iterator it = functorList.begin();
+          it != functorList.end(); ++it)
+      {
+        boost::add_vertex(*it, this->masterGraph);
+      }
+      this->myBackendFunctorList = backendFunctorList;
+    }
+
+    // Resolve dependency
+    pair<str, Graphs::VertexID> DependencyResolver::resolveDependency(
+        Graphs::VertexID toVertex, sspair quantity,
+        GAMBIT::IniParser::IniFile &iniFile)
+    {
+      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      const IniParser::ObservableType *auxEntry, *depEntry;
+      vector<Graphs::VertexID> vertexCandidates;
+      bool entryExists = false;
+      str obsType;
+
+      // Find inifile entry:
+      // If toVertex is CoreOut vertex, use observable entries.
+      if ( toVertex == OMEGA_VERTEXID)
+      {
+        depEntry = findIniEntry(quantity, iniFile.observables);
+        obsType = depEntry->obsType;
+        entryExists = true;
+      }
+      // for all other vertices.
+      else 
+      {
+        obsType = "auxiliary";
+        auxEntry = findIniEntry(toVertex, iniFile.auxiliaries);
+        if ( auxEntry != NULL )
+          depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
+        if ( auxEntry != NULL and depEntry != NULL ) 
+          entryExists = true;
+      }
+
+      // Loop over available vertices (possibly matching inifile entry)
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      {
+        if ( ( (not entryExists)
+               and (*masterGraph[*vi]).capability() == quantity.first
+               and (*masterGraph[*vi]).type() == quantity.second )
+          or ( entryExists
+               and funcMatchesIniEntry(masterGraph[*vi], *depEntry) ) )
+        {
+          vertexCandidates.push_back(*vi);
+        }
+      }
+      if ( vertexCandidates.size() == 0 ) 
+      {
+        cout << "ERROR: I could not find any module function that provides the requested" << endl;
+        cout << "capability with the requested type. Check your inifile for typos, your modules" << endl;
+        cout << "for consistency, etc." << endl;
+        exit(0); // Throw error here
+      }
+      if ( vertexCandidates.size() > 1 ) 
+      {
+        cout << "ERROR: I found too many module functions that provide the requested" << endl;
+        cout << "capability with the requested type. Check your inifile for typos, your modules" << endl;
+        cout << "for consistency, etc." << endl;
+        exit(0); // Throw error here
+      }
+      return make_pair(obsType, vertexCandidates[0]);
+    }
+
+    // Set up dependency tree
+    void DependencyResolver::generateTree(
+        queue<pair<sspair, Graphs::VertexID> > parQueue,
+        GAMBIT::IniParser::IniFile &iniFile)
+    {
+      Graphs::VertexID fromVertex, toVertex;
+      Graphs::EdgeID edge;
+      // relevant observable entry (could be dependency of another observable)
+      IniParser::ObservableType observable, directObs;
+      bool ok, obsFlag, dirObsFlag;
+      dirObsFlag = false;
+      sspair quantity;
+      str obsType;
+
+      cout << endl << "Dependency resolution" << endl;
+      cout <<         "---------------------" << endl;
+      cout <<         "CAPABILITY (TYPE) [FUNCTION, MODULE]" << endl << endl;
+      // Repeat until dependency queue is empty
+      while (not parQueue.empty()) {
+        // Retrieve capability, type and vertex ID of dependency of interest
+        quantity = parQueue.front().first;
+        toVertex = parQueue.front().second;
+
+        // Print information
+        if ( toVertex != OMEGA_VERTEXID )
+        {
+          cout << (*masterGraph[toVertex]).capability() << " (";
+          cout << (*masterGraph[toVertex]).type() << ") [";
+          cout << (*masterGraph[toVertex]).name() << ", ";
+          cout << (*masterGraph[toVertex]).origin() << "]" << endl;
+          cout << "depends on: ";
+          cout << quantity.first << " (" << quantity.second << ")" << endl;
+        }
+        else
+        {
+          cout << "Core depends on: ";
+          cout << quantity.first << " (" << quantity.second << ")" << endl;
+        }
+
+        // Resolve dependency
+        tie(obsType, fromVertex) = resolveDependency(toVertex, quantity, iniFile);
+
+        // Print user info.
+        cout << "resolved by: [";
+        cout << (*masterGraph[fromVertex]).name() << ", ";
+        cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
+
+        if ( toVertex != OMEGA_VERTEXID)
+        {
+          // Resolve dependency on functor level...
+          (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
+          // ...and on masterGraph level.
+          tie(edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
+        }
+        else
+        {
+          // Resolve dependency for Output nodes
+          outputMap[obsType].push_back(masterGraph[fromVertex]);
+        }
+
+        // Is fromVertex already activated?
+        if ( (*masterGraph[fromVertex]).status() != 2 ) {
+          cout << "Adding module function to dependency tree..." << endl;
+          // If not, perform resolution of backend dependencies...
+          // TODO: rewrite
+          resolveVertexBackend(dirObsFlag, directObs, fromVertex);
+          // TODO: Treat other conditional dependencies
+          // ...and fill its dependencies into queue.
+          fillParQueue(&parQueue, fromVertex);
+        }
+
+        // Conclude.
+        cout << endl;
+        parQueue.pop();
+      }
+    }
+
+    // Push module function dependencies on parameter queue
+    void DependencyResolver::fillParQueue(
+        queue<pair<sspair, Graphs::VertexID> > *parQueue,
+        Graphs::VertexID vertex) 
+    {
+      (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
+      vector<sspair> vec = (*masterGraph[vertex]).dependencies();
+      for (vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
+      {
+        cout << (*it).first << " (" << (*it).second << ")" << endl;
+        (*parQueue).push(*(new pair<sspair, Graphs::VertexID> (*it, vertex)));
+      }
+    }
+
+    // Boost lib topological sort
+    list<int> DependencyResolver::run_topological_sort()
+    {
+      list<int> topo_order;
+      topological_sort(masterGraph, front_inserter(topo_order));
+      return topo_order;
+    }
+
+    // Find auxiliary entry that matches vertex
+    const IniParser::ObservableType * DependencyResolver::findIniEntry(
+        Graphs::VertexID toVertex,
+        const IniParser::ObservablesType &entries)
+    {
+      vector<const IniParser::ObservableType*> auxEntryCandidates;
+      for (IniParser::ObservablesType::const_iterator it =
+          entries.begin(); it != entries.end(); ++it)
+      {
+        if ( funcMatchesIniEntry(masterGraph[toVertex], *it ) )
+        {
+          auxEntryCandidates.push_back(&(*it));
+        }
+      }
+      if ( auxEntryCandidates.size() == 0 ) return NULL;
+      if ( auxEntryCandidates.size() == 1 ) return auxEntryCandidates[0];
+      else
+      {
+        cout << "ERROR: Multiple matching auxiliary entries found for same vertex." << endl;
+        exit(0);
+      }
+    }
+
+    // Find observable entry that matches capability/type
+    const IniParser::ObservableType *DependencyResolver::findIniEntry(
+        sspair quantity, const IniParser::ObservablesType &entries)
+    {
+      vector<const IniParser::ObservableType*> obsEntryCandidates;
+      for (IniParser::ObservablesType::const_iterator it =
+          entries.begin(); it != entries.end(); ++it)
+      {
+        if ( quantityMatchesIniEntry(quantity, *it) ) // use same criteria than for normal dependencies
+        {
+          obsEntryCandidates.push_back(&(*it));
+        }
+      }
+      if ( obsEntryCandidates.size() == 0 ) return NULL;
+      if ( obsEntryCandidates.size() == 1 ) return obsEntryCandidates[0];
+      else
+      {
+        cout << "ERROR: Multiple matches for identical capability in inifile." << endl;
+        cout << "Capability: " << quantity.first << " (" << quantity.second << ")" << endl;
+        exit(0);
+      }
     }
 
     // Node-by-node backend resolution
@@ -412,7 +506,7 @@ namespace GAMBIT
         for (vector<sspair>::iterator it = reqs.begin();
             it != reqs.end(); ++it)
         {
-          cout << "  search for " << it->first << " (" << it->second << "): ";
+          cout << "  " << it->first << " (" << it->second << ")" << endl;
           // Find backend function candidates (by matching capabilities and
           // types)
           candidateList = findBackendCandidates(*it, myBackendFunctorList);
@@ -425,7 +519,8 @@ namespace GAMBIT
           // One candidate...
           if (candidateList.size() == 1)
           {
-            cout << "one candidate found" << endl;
+            // VERBOSE
+            // cout << "one candidate found" << endl;
             // ...but is it the choosen one?
             if (dirObsFlag)
             {
@@ -461,32 +556,13 @@ namespace GAMBIT
           }
           // Resolve it
           (*masterGraph[vertex]).resolveBackendReq(candidate);
-          cout << "resolved by " << (*candidate).name();
+          cout << "  resolved by: " << (*candidate).name();
           cout << " from " << (*candidate).origin() << " (";
           cout << (*candidate).version() << ")" << endl;
         }
       }
-      else cout << "No backends to resolve" << endl;
-    }
-
-    // Rudimentary backend resolution
-    void DependencyResolver::resolveBackends()
-    {
-      cout << "Backend resolution" << endl;
-      cout << "------------------" << endl;
-      std::vector<sspair> reqs;
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      std::vector<functor *> candidateList;
-      functor * candidate;
-      // Loop over vertices
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
-      {
-        // If vertex is active...
-        if ( (*masterGraph[*vi]).status() == 2 )
-        {
-          // resolveVertexBackend(*vi);
-        }
-      }
+      // VERBOSE
+      // else cout << "no backends to resolve" << endl;
     }
   }
 }

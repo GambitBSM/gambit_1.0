@@ -55,9 +55,11 @@ using namespace GAMBIT;
 
 void beispiel()
 {
-  cout << "globalFunctorList.size() = " <<
+  cout << endl << "Start MAIN" << endl;
+  cout << "----------" << endl;
+  cout << "Registered module functors [globalFunctorList.size()]: " <<
     GAMBIT::globalFunctorList.size() << endl;
-  cout << "globalBackendFunctorList.size() = " <<
+  cout << "Registered backend functors [globalBackendFunctorList.size()]: " <<
     GAMBIT::globalBackendFunctorList.size() << endl;
 
   // Read INI file
@@ -65,29 +67,23 @@ void beispiel()
   iniFile.readFile("gambit.yaml");
 
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver;
-
-  // Add vertices from rollcall
-  dependencyResolver.addFunctors(globalFunctorList, globalBackendFunctorList);
+  Graphs::DependencyResolver dependencyResolver(globalFunctorList, globalBackendFunctorList);
 
   // Add input and output legs to the module function vertices
   dependencyResolver.addLegs(iniFile);
 
   // Log module function infos
-  dependencyResolver.logFunctors();
+  dependencyResolver.printFunctorList();
 
   // Do the dependency resolution
   dependencyResolver.resolveNow(iniFile);
 
-  // dependencyResolver.logOrder();
-  // dependencyResolver.logFunctors();
-
-  // Resolve backends
-  // dependencyResolver.resolveBackends();
+  // dependencyResolver.printSortedOrder();
+  // dependencyResolver.printFunctorList();
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),
-      dependencyResolver.inputMap, dependencyResolver.outputList);
+      dependencyResolver.getInputMap(), dependencyResolver.getOutputMap());
 
   // Set input parameters
   masterLike["m1"] = iniFile.getValue<double>("m1");
