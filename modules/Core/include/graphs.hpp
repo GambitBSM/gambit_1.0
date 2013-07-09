@@ -45,6 +45,18 @@ namespace GAMBIT
     typedef std::map<std::string, double *> inputMapType;
     typedef std::map<std::string, std::vector<functor*> > outputMapType;
 
+    // Information passed to MasterLikelihood
+    struct OutputVertexInfo
+    {
+      functor* myfunc;
+      VertexID vertex;
+      std::string capability;
+      std::string type;
+      std::string obsType;
+      std::vector<functor *> parentFunctors;
+    };
+
+    // Main dependency resolver
     class DependencyResolver
     {
       public:
@@ -92,7 +104,7 @@ namespace GAMBIT
             Graphs::VertexID vertex);
 
         // Topological sort
-        std::list<int> run_topological_sort();
+        std::list<VertexID> run_topological_sort();
 
         // Find entries (comparison of inifile entry with quantity or functor)
         const IniParser::ObservableType * findIniEntry(
@@ -110,8 +122,8 @@ namespace GAMBIT
         // Map str --> double* for input parameter values
         inputMapType inputMap;
 
-        // Map str --> vector<functor *>
-        outputMapType outputMap;
+        // Output Vertex Infos
+        std::vector<OutputVertexInfo> outputVertexInfos;
 
         // The central boost graph object
         MasterGraphType masterGraph;
@@ -120,7 +132,7 @@ namespace GAMBIT
         std::vector<functor *> myBackendFunctorList;
 
         // Saved calling order for functions
-        std::list<int> function_order;
+        std::list<VertexID> function_order;
     };
   }
 }

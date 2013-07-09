@@ -35,6 +35,38 @@ namespace GAMBIT
     // Helper functions
     //
 
+    // Collect parent vertices recursively (including root vertex)
+    std::set<VertexID> getParentVertices(const VertexID & vertex, const
+        Graphs::MasterGraphType & graph)
+    {
+      std::set<VertexID> myVertexList;
+      myVertexList.insert(vertex);
+      std::set<VertexID> parentVertexList;
+
+      graph_traits<Graphs::MasterGraphType>::in_edge_iterator ibegin, iend;
+      for (boost::tie(ibegin, iend) = in_edges(vertex, graph);
+          ibegin != iend; ++ibegin)
+      {
+        parentVertexList = getParentVertices(source(*ibegin, graph), graph);
+        myVertexList.insert(parentVertexList.begin(), parentVertexList.end());
+      }
+      return myVertexList;
+    }
+
+    // Get sorted list (according to topological sort result))
+    std::vector<VertexID> getSortedParentVertices(const VertexID & vertex, const
+        Graphs::MasterGraphType & graph, std::list<VertexID> topoOrder)
+    {
+      std::set<VertexID> set = getParentVertices(vertex, graph);
+      std::vector<VertexID> result;
+      for(std::list<VertexID>::iterator it = topoOrder.begin(); it != topoOrder.end(); it++)
+      {
+        if (set.find(*it) != set.end())
+          result.push_back(*it);
+      }
+      return result;
+    }
+
     // Compare two strings
     bool stringComp(str s1, str s2)
     {
@@ -184,18 +216,7 @@ namespace GAMBIT
       generateTree(parQueue, iniFile);
       function_order = run_topological_sort();
 
-      // graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end, next;
-      // tie(vi, vi_end) = vertices(masterGraph);
-      // for (next = vi; vi != vi_end; vi = next) {
-      //   ++next;
-      //   if ( out_degree(*vi, masterGraph) == 0 )
-      //     if ( in_degree(*vi, masterGraph) == 0 )
-      //     {
-      //       clear_vertex(*vi, masterGraph);
-      //       remove_vertex(*vi, masterGraph);
-      //     }
-      // };
-
+      // Generate graphviz plot
       std::ofstream outf("graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph));
     }
@@ -210,7 +231,7 @@ namespace GAMBIT
     std::vector<functor*> DependencyResolver::getFunctors()
     {
       std::vector<functor*> functor_list;
-      for(std::list<int>::const_iterator i = function_order.begin();
+      for(std::list<VertexID>::const_iterator i = function_order.begin();
           i != function_order.end();
           ++i)
       {
@@ -222,10 +243,16 @@ namespace GAMBIT
       return functor_list;
     }
 
-    // Outputmap getter
+    // Outputmap getter (obsType -> vector of *functors)
     outputMapType DependencyResolver::getOutputMap()
     {
-      return outputMap;
+      outputMapType result;
+      for(std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
+          it != outputVertexInfos.end(); it++)
+      {
+        result[it->obsType].push_back(it->myfunc);
+      }
+      return result;
     }
 
     // List of masterGraph content
@@ -258,7 +285,7 @@ namespace GAMBIT
     {
       cout << "Ordered, active functions" << endl;
       cout << "-------------------------" << endl;
-      for(std::list<int>::const_iterator i = function_order.begin();
+      for(std::list<VertexID>::const_iterator i = function_order.begin();
           i != function_order.end();
           ++i)
       {
@@ -351,6 +378,7 @@ namespace GAMBIT
         std::queue<std::pair<sspair, Graphs::VertexID> > parQueue,
         GAMBIT::IniParser::IniFile &iniFile)
     {
+      OutputVertexInfo outInfo;
       Graphs::VertexID fromVertex, toVertex;
       Graphs::EdgeID edge;
       // relevant observable entry (could be dependency of another observable)
@@ -402,8 +430,14 @@ namespace GAMBIT
         }
         else
         {
-          // Resolve dependency for Output nodes
-          outputMap[obsType].push_back(masterGraph[fromVertex]);
+          // Store Information about Output Nodes 
+          outInfo.myfunc = masterGraph[fromVertex];
+          outInfo.vertex = fromVertex;
+          outInfo.obsType = obsType;
+          outInfo.capability = masterGraph[fromVertex]->capability();
+          outInfo.type = masterGraph[fromVertex]->type();
+          outInfo.parentFunctors.clear();
+          outputVertexInfos.push_back(outInfo);
         }
 
         // Is fromVertex already activated?
@@ -438,9 +472,9 @@ namespace GAMBIT
     }
 
     // Boost lib topological sort
-    std::list<int> DependencyResolver::run_topological_sort()
+    std::list<VertexID> DependencyResolver::run_topological_sort()
     {
-      std::list<int> topo_order;
+      std::list<VertexID> topo_order;
       topological_sort(masterGraph, front_inserter(topo_order));
       return topo_order;
     }
