@@ -30,7 +30,7 @@ namespace GAMBIT
     public:
       // Construct MasterLike from Graphs Output and inifile
       MasterLike(std::vector<functor*> functors, GAMBIT::Graphs::inputMapType
-          inputMap, GAMBIT::Graphs::outputListType outputList);
+          inputMap, GAMBIT::Graphs::outputMapType outputMap);
 
       // Executes active vertices in correct order
       void calculate();
@@ -45,7 +45,7 @@ namespace GAMBIT
       // Storage
       std::vector<functor*> functor_list;
       Graphs::inputMapType inputMap;
-      Graphs::outputListType outputList;
+      Graphs::outputMapType outputMap;
   };
 };
 #endif /* defined(__master_like_hpp__) */

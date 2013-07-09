@@ -28,6 +28,7 @@ namespace GAMBIT
       {
         std::string obsType;
         std::string capability;
+        std::string type;
         std::string function;
         std::string module;
         std::string backend;
@@ -58,6 +59,7 @@ namespace YAML {
         rhs.NAME = node[#NAME].as<std::string>();
       READ(obsType)
       READ(capability)
+      READ(type)
       READ(function)
       READ(module)
       READ(backend)
@@ -105,13 +107,8 @@ namespace GAMBIT
 
         // Central inifile structures: observables and scan parameteres 
         ObservablesType observables;
+        ObservablesType auxiliaries;
         ParametersType parameters;
-
-        // Check for observables etc
-        bool hasObservable(std::string capability);
-        bool hasDependency(ObservableType observable, std::string capability);
-        ObservableType getObservable(std::string capability);
-        ObservableType getDependency(ObservableType observable, std::string capability);
 
         // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getValue(std::string key)
