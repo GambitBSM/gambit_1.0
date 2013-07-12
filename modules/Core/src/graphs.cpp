@@ -167,38 +167,6 @@ namespace GAMBIT
       addLegs();
     }
 
-    // Add alpha and omega legs to masterGraph
-    void DependencyResolver::addLegs()
-    {
-      // Define alpha/omega vertices
-      module_functor<double> * p_modfunc;
-
-      // Input legs
-      for (IniParser::ParametersType::const_iterator it =
-          myIniFile.parameters.begin(); it != myIniFile.parameters.end(); ++it)
-      {
-        inputMap[(*it).name] = new double;
-      }
-      for (inputMapType::iterator it = inputMap.begin(); it != inputMap.end();
-          ++it)
-      {
-        p_modfunc = new module_functor<double> (it->second, it->first +
-            "_CoreIn", it->first, "double", "Core");
-        boost::add_vertex(p_modfunc, masterGraph);
-      }
-
-      // Output legs
-      // double * dummy_double = new double;
-      sspair s;
-      for (IniParser::ObservablesType::const_iterator it =
-          myIniFile.observables.begin(); it != myIniFile.observables.end(); ++it)
-      {
-        s.first = (*it).capability;
-        s.second = (*it).type;
-        requestedQuantities.push_back(s);
-      }
-    }
-
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
@@ -209,11 +177,12 @@ namespace GAMBIT
       cout << endl << "Target likelihoods/observables" << endl;
       cout <<         "------------------------------" << endl;
       cout <<         "CAPABILITY (TYPE)"   << endl;
-      for (std::vector<sspair>::iterator it = requestedQuantities.begin() ; it
-          != requestedQuantities.end(); ++it)
+      for (IniParser::ObservablesType::const_iterator it =
+          myIniFile.observables.begin(); it != myIniFile.observables.end(); ++it)
       {
-        cout << (*it).first << " (" << (*it).second << ")" << endl;
-        queueEntry.first = (*it);
+        cout << (*it).capability << " (" << (*it).type << ")" << endl;
+        queueEntry.first.first = (*it).capability;
+        queueEntry.first.second = (*it).type;
         queueEntry.second = OMEGA_VERTEXID;
         parQueue.push(queueEntry);
       }
@@ -223,40 +192,6 @@ namespace GAMBIT
       // Generate graphviz plot
       std::ofstream outf("graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph));
-    }
-
-    // Inputmap getter
-    inputMapType DependencyResolver::getInputMap()
-    {
-      return inputMap;
-    }
-
-    // Return active vertices in correct order
-    std::vector<functor*> DependencyResolver::getFunctors()
-    {
-      std::vector<functor*> functor_list;
-      for(std::list<VertexID>::const_iterator i = function_order.begin();
-          i != function_order.end();
-          ++i)
-      {
-        if ( (*masterGraph[*i]).status() == 2 )
-        {
-          functor_list.push_back(masterGraph[*i]);
-        }
-      }
-      return functor_list;
-    }
-
-    // Outputmap getter (obsType -> vector of *functors)
-    outputMapType DependencyResolver::getOutputMap()
-    {
-      outputMapType result;
-      for(std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
-          it != outputVertexInfos.end(); it++)
-      {
-        result[it->obsType].push_back(it->myfunc);
-      }
-      return result;
     }
 
     // List of masterGraph content
@@ -284,24 +219,86 @@ namespace GAMBIT
       // cout << "TOTAL: " << i << endl;
     };
 
-    // Lists all vertices in correct order (deprecated)
-    void DependencyResolver::printSortedOrder()
+    // New IO routines
+    std::vector<VertexID> DependencyResolver::getObsLikeOrder()
     {
-      cout << "Ordered, active functions" << endl;
-      cout << "-------------------------" << endl;
-      for(std::list<VertexID>::const_iterator i = function_order.begin();
-          i != function_order.end();
-          ++i)
+      // TODO: Time optimization should happen somewhere here
+      std::vector<VertexID> result;
+      for(std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
+          it != outputVertexInfos.end(); it++)
       {
-        if ( (*masterGraph[*i]).status() == 2 )
-          cout << (*masterGraph[*i]).name() << endl;
+        result.push_back(it->vertex);
+      }
+      return result;
+    }
+
+    void DependencyResolver::calcObsLike(VertexID vertex)
+    {
+      std::vector<VertexID> order;
+      // TODO: Should happen only once
+      order = getSortedParentVertices(vertex, masterGraph, function_order);
+      for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it) {
+        masterGraph[*it]->calculate();
       }
     }
 
+    const IniParser::ObservableType * DependencyResolver::getIniEntry(VertexID vertex)
+    {
+      for(std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
+          it != outputVertexInfos.end(); it++)
+      {
+        if (it->vertex == vertex)
+          return it->iniEntry;
+      }
+      cout << "ERROR" << endl;
+      exit(1);
+    }
+
+    double DependencyResolver::getObsLike(VertexID vertex)
+    {
+      // Returns just doubles, and crashes for other types
+      // TODO: Catch errors
+      return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))();
+    }
+
+    void DependencyResolver::notifyOfInvalidation(VertexID)
+    {
+      // TODO: To be implemented
+    }
+
+    void DependencyResolver::resetAll()
+    {
+      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      {
+        masterGraph[*vi]->needs_recalculating = true;
+      }
+    }
 
     //
     // Private functions of DependencyResolver
     //
+
+    // Add alpha and omega legs to masterGraph
+    void DependencyResolver::addLegs()
+    {
+      // Define alpha/omega vertices
+      module_functor<double> * p_modfunc;
+
+      // Input legs
+      for (IniParser::ParametersType::const_iterator it =
+          myIniFile.parameters.begin(); it != myIniFile.parameters.end(); ++it)
+      {
+        inputMap[(*it).name] = new double;
+      }
+      for (inputMapType::iterator it = inputMap.begin(); it != inputMap.end();
+          ++it)
+      {
+        p_modfunc = new module_functor<double> (it->second, it->first +
+            "_CoreIn", it->first, "double", "Core");
+        boost::add_vertex(p_modfunc, masterGraph);
+      }
+    }
 
     // Add module and backend functors to class internal lists.
     void DependencyResolver::addFunctors(
@@ -319,27 +316,25 @@ namespace GAMBIT
     }
 
     // Resolve dependency
-    std::pair<std::string, Graphs::VertexID> DependencyResolver::resolveDependency(
+    std::pair<const IniParser::ObservableType *, Graphs::VertexID>
+      DependencyResolver::resolveDependency(
         Graphs::VertexID toVertex, sspair quantity)
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       const IniParser::ObservableType *auxEntry, *depEntry;
       std::vector<Graphs::VertexID> vertexCandidates;
       bool entryExists = false;
-      std::string obsType;
 
       // Find inifile entry:
       // If toVertex is CoreOut vertex, use observable entries.
       if ( toVertex == OMEGA_VERTEXID)
       {
         depEntry = findIniEntry(quantity, myIniFile.observables);
-        obsType = depEntry->obsType;
         entryExists = true;
       }
       // for all other vertices.
       else 
       {
-        obsType = "auxiliary";
         auxEntry = findIniEntry(toVertex, myIniFile.auxiliaries);
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
@@ -373,7 +368,7 @@ namespace GAMBIT
         cout << "for consistency, etc." << endl;
         exit(0); // Throw error here
       }
-      return make_pair(obsType, vertexCandidates[0]);
+      return std::make_pair(depEntry, vertexCandidates[0]);
     }
 
     // Set up dependency tree
@@ -385,10 +380,10 @@ namespace GAMBIT
       Graphs::EdgeID edge;
       // relevant observable entry (could be dependency of another observable)
       IniParser::ObservableType observable, directObs;
+      const IniParser::ObservableType * iniEntry;
       bool ok, obsFlag, dirObsFlag;
       dirObsFlag = false;
       sspair quantity;
-      str obsType;
 
       cout << endl << "Dependency resolution" << endl;
       cout <<         "---------------------" << endl;
@@ -416,7 +411,7 @@ namespace GAMBIT
         }
 
         // Resolve dependency
-        tie(obsType, fromVertex) = resolveDependency(toVertex, quantity);
+        tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
         cout << "resolved by: [";
@@ -432,13 +427,8 @@ namespace GAMBIT
         }
         else
         {
-          // Store Information about Output Nodes 
-          outInfo.myfunc = masterGraph[fromVertex];
           outInfo.vertex = fromVertex;
-          outInfo.obsType = obsType;
-          outInfo.capability = masterGraph[fromVertex]->capability();
-          outInfo.type = masterGraph[fromVertex]->type();
-          outInfo.parentFunctors.clear();
+          outInfo.iniEntry = iniEntry;
           outputVertexInfos.push_back(outInfo);
         }
 

@@ -81,20 +81,20 @@ void beispiel()
 
   // MasterLike masterLike(dependencyResolver.getHandler());
 
-  // Initialize MasterLike;
-  MasterLike masterLike(dependencyResolver.getFunctors(),
-      dependencyResolver.getInputMap(), dependencyResolver.getOutputMap());
+  // // Initialize MasterLike;
+  // MasterLike masterLike(dependencyResolver.getFunctors(),
+  //     dependencyResolver.getInputMap(), dependencyResolver.getOutputMap());
 
-  // Set input parameters
-  masterLike["m1"] = iniFile.getValue<double>("m1");
-  masterLike["m2"] = iniFile.getValue<double>("m2");
-  masterLike["m3"] = iniFile.getValue<double>("m3");
+  // // Set input parameters
+  // masterLike["m1"] = iniFile.getValue<double>("m1");
+  // masterLike["m2"] = iniFile.getValue<double>("m2");
+  // masterLike["m3"] = iniFile.getValue<double>("m3");
 
-  // Call the functions in their sorted order
-  masterLike.calculate();
+  // // Call the functions in their sorted order
+  // masterLike.calculate();
 
-  // Read output parameters
-  cout << masterLike("Likelihood")[0] << endl;
+  // // Read output parameters
+  // cout << masterLike("Likelihood")[0] << endl;
   //char *names[2] = {"m_0", "m_1/2"};
   //Gambit_Functor like (&mlike, "Likelihood", names, 2);
   //Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);
