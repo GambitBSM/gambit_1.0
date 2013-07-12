@@ -157,21 +157,25 @@ namespace GAMBIT
 
     // Constructor. 
     // Add module and backend functors to class internal lists.
-    DependencyResolver::DependencyResolver(std::vector<functor *> functorList,
-        std::vector<functor *> backendFunctorList)
+    DependencyResolver::DependencyResolver(
+        std::vector<functor *> functorList,
+        std::vector<functor *> backendFunctorList, 
+        IniParser::IniFile iniFile)
     {
       addFunctors(functorList, backendFunctorList);
+      myIniFile = iniFile;
+      addLegs();
     }
 
     // Add alpha and omega legs to masterGraph
-    void DependencyResolver::addLegs(GAMBIT::IniParser::IniFile &iniFile)
+    void DependencyResolver::addLegs()
     {
       // Define alpha/omega vertices
       module_functor<double> * p_modfunc;
 
       // Input legs
       for (IniParser::ParametersType::const_iterator it =
-          iniFile.parameters.begin(); it != iniFile.parameters.end(); ++it)
+          myIniFile.parameters.begin(); it != myIniFile.parameters.end(); ++it)
       {
         inputMap[(*it).name] = new double;
       }
@@ -187,7 +191,7 @@ namespace GAMBIT
       // double * dummy_double = new double;
       sspair s;
       for (IniParser::ObservablesType::const_iterator it =
-          iniFile.observables.begin(); it != iniFile.observables.end(); ++it)
+          myIniFile.observables.begin(); it != myIniFile.observables.end(); ++it)
       {
         s.first = (*it).capability;
         s.second = (*it).type;
@@ -196,7 +200,7 @@ namespace GAMBIT
     }
 
     // Main dependency resolution
-    void DependencyResolver::resolveNow(GAMBIT::IniParser::IniFile &iniFile)
+    void DependencyResolver::resolveNow()
     {
       // (cap., typ) --> dep. vertex map
       std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
@@ -213,7 +217,7 @@ namespace GAMBIT
         queueEntry.second = OMEGA_VERTEXID;
         parQueue.push(queueEntry);
       }
-      generateTree(parQueue, iniFile);
+      generateTree(parQueue);
       function_order = run_topological_sort();
 
       // Generate graphviz plot
@@ -316,8 +320,7 @@ namespace GAMBIT
 
     // Resolve dependency
     std::pair<std::string, Graphs::VertexID> DependencyResolver::resolveDependency(
-        Graphs::VertexID toVertex, sspair quantity,
-        GAMBIT::IniParser::IniFile &iniFile)
+        Graphs::VertexID toVertex, sspair quantity)
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       const IniParser::ObservableType *auxEntry, *depEntry;
@@ -329,7 +332,7 @@ namespace GAMBIT
       // If toVertex is CoreOut vertex, use observable entries.
       if ( toVertex == OMEGA_VERTEXID)
       {
-        depEntry = findIniEntry(quantity, iniFile.observables);
+        depEntry = findIniEntry(quantity, myIniFile.observables);
         obsType = depEntry->obsType;
         entryExists = true;
       }
@@ -337,7 +340,7 @@ namespace GAMBIT
       else 
       {
         obsType = "auxiliary";
-        auxEntry = findIniEntry(toVertex, iniFile.auxiliaries);
+        auxEntry = findIniEntry(toVertex, myIniFile.auxiliaries);
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 
@@ -375,8 +378,7 @@ namespace GAMBIT
 
     // Set up dependency tree
     void DependencyResolver::generateTree(
-        std::queue<std::pair<sspair, Graphs::VertexID> > parQueue,
-        GAMBIT::IniParser::IniFile &iniFile)
+        std::queue<std::pair<sspair, Graphs::VertexID> > parQueue)
     {
       OutputVertexInfo outInfo;
       Graphs::VertexID fromVertex, toVertex;
@@ -414,7 +416,7 @@ namespace GAMBIT
         }
 
         // Resolve dependency
-        tie(obsType, fromVertex) = resolveDependency(toVertex, quantity, iniFile);
+        tie(obsType, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
         cout << "resolved by: [";

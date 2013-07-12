@@ -62,14 +62,14 @@ namespace GAMBIT
       public:
         // Constructor, provide module and backend functor lists
         DependencyResolver(std::vector<functor *>,
-            std::vector<functor *>);
+            std::vector<functor *>, IniParser::IniFile);
 
         // Constructs input/output vertices from parameters and requested
         // observables in inifile
-        void addLegs(GAMBIT::IniParser::IniFile &);
+        void addLegs();
 
         // The dependency resolution
-        void resolveNow(GAMBIT::IniParser::IniFile &);
+        void resolveNow();
 
         // Getter for input Map
         inputMapType getInputMap();
@@ -93,11 +93,10 @@ namespace GAMBIT
         // Resolution of individual module function dependencies
         std::pair<std::string, Graphs::VertexID> resolveDependency(
             Graphs::VertexID toVertex, sspair
-            quantity, GAMBIT::IniParser::IniFile &iniFile);
+            quantity);
 
         // Generate full dependency tree
-        void generateTree(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue,
-            GAMBIT::IniParser::IniFile &);
+        void generateTree(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue);
 
         // Helper functions/arrays
         void fillParQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
@@ -133,6 +132,9 @@ namespace GAMBIT
 
         // Saved calling order for functions
         std::list<VertexID> function_order;
+
+        // Private copy of iniFile Object
+        IniParser::IniFile myIniFile;
     };
   }
 }

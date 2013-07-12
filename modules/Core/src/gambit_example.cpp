@@ -67,19 +67,19 @@ void beispiel()
   iniFile.readFile("gambit.yaml");
 
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(globalFunctorList, globalBackendFunctorList);
-
-  // Add input and output legs to the module function vertices
-  dependencyResolver.addLegs(iniFile);
+  Graphs::DependencyResolver dependencyResolver(globalFunctorList,
+      globalBackendFunctorList, iniFile);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
 
   // Do the dependency resolution
-  dependencyResolver.resolveNow(iniFile);
+  dependencyResolver.resolveNow();
 
   // dependencyResolver.printSortedOrder();
   // dependencyResolver.printFunctorList();
+
+  // MasterLike masterLike(dependencyResolver.getHandler());
 
   // Initialize MasterLike;
   MasterLike masterLike(dependencyResolver.getFunctors(),
