@@ -67,6 +67,17 @@ namespace GAMBIT
       return result;
     }
 
+    // Return time estimate for set of nodes
+    double getTimeEstimate(std::set<VertexID> vertexList, const Graphs::MasterGraphType &graph)
+    {
+      double result = 0;
+      for (std::set<VertexID>::iterator it = vertexList.begin(); it != vertexList.end(); ++it)
+      {
+        result += graph[*it]->getRuntimeAverage();
+      }
+      return result;
+    }
+
     // Compare two strings
     bool stringComp(str s1, str s2)
     {
@@ -222,14 +233,41 @@ namespace GAMBIT
     // New IO routines
     std::vector<VertexID> DependencyResolver::getObsLikeOrder()
     {
-      // TODO: Time optimization should happen somewhere here
-      std::vector<VertexID> result;
-      for(std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
+      std::vector<VertexID> unsorted;
+      std::vector<VertexID> sorted;
+      std::set<VertexID> parents, friends;
+      // Copy unsorted vertexIDs --> unsorted
+      for (std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
           it != outputVertexInfos.end(); it++)
       {
-        result.push_back(it->vertex);
+        unsorted.push_back(it->vertex);
       }
-      return result;
+      // Sort iteratively (unsorted --> sorted)
+      while (unsorted.size() > 0)
+      {
+        double t2p_now;
+        double t2p_min = -1;
+        std::vector<VertexID>::iterator it_min;
+        for (std::vector<VertexID>::iterator it = unsorted.begin(); it !=
+            unsorted.end(); ++it)
+        {
+          parents = getParentVertices(*it, masterGraph);
+          parents.insert(friends.begin(), friends.end()); // parents and friends
+          t2p_now = (double) getTimeEstimate(parents, masterGraph);
+          t2p_now /= masterGraph[*it]->getInvalidationRate();
+          if (t2p_min < 0 or t2p_now < t2p_min)
+          {
+            t2p_min = t2p_now;
+            it_min = it;
+          }
+        }
+        double prop = masterGraph[*it_min]->getInvalidationRate();
+        cout << "Estimated T [ns]: " << t2p_min*prop << endl;
+        cout << "Estimated p: " << prop << endl;
+        sorted.push_back(*it_min);
+        unsorted.erase(it_min);
+      }
+      return sorted;
     }
 
     void DependencyResolver::calcObsLike(VertexID vertex)
@@ -261,9 +299,9 @@ namespace GAMBIT
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))();
     }
 
-    void DependencyResolver::notifyOfInvalidation(VertexID)
+    void DependencyResolver::notifyOfInvalidation(VertexID vertex)
     {
-      // TODO: To be implemented
+      masterGraph[vertex]->notifyOfInvalidation();
     }
 
     void DependencyResolver::resetAll()
@@ -271,7 +309,7 @@ namespace GAMBIT
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
-        masterGraph[*vi]->needs_recalculating = true;
+        masterGraph[*vi]->reset();
       }
     }
 

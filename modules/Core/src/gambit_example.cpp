@@ -76,8 +76,18 @@ void beispiel()
   // Do the dependency resolution
   dependencyResolver.resolveNow();
 
-  // dependencyResolver.printSortedOrder();
-  // dependencyResolver.printFunctorList();
+  // Run 100 times
+  for (int i = 0; i<1000; i++)
+  {
+    std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+    for (std::vector<Graphs::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
+    {
+      dependencyResolver.calcObsLike(*it);
+      dependencyResolver.notifyOfInvalidation(*it);
+    }
+    dependencyResolver.resetAll();
+    cout << endl;
+  }
 
   // MasterLike masterLike(dependencyResolver.getHandler());
 
@@ -106,6 +116,7 @@ void beispiel()
 int main( int argc, const char* argv[] )
 {
   beispiel();
+  exit(0);
 
   cout<<endl;
   cout<< "This is a skeleton example for gambit."<<endl;

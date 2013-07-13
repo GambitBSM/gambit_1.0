@@ -11,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Christoph Weniger (c.weniger@uva.nl)
-//  Apr, May, June 2013
+//  Apr, May, June, July 2013
 //  Pat Scott
 //  May 03 2013
 //
@@ -81,7 +81,6 @@ namespace GAMBIT
         void notifyOfInvalidation(VertexID);
 
         void resetAll();
-
 
       private:
         // Constructs input/output vertices from parameters and requested
