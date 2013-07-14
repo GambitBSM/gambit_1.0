@@ -22,7 +22,7 @@
 #include <graphs.hpp>
 #include <yaml_parser.hpp>
 #include "boost/format.hpp"
-#include <regex>
+// #include <regex>
 #include <boost/graph/graphviz.hpp>
 
 #define OMEGA_VERTEXID 52314768
@@ -84,7 +84,7 @@ namespace GAMBIT
       if ( s1 == s2 ) return true;
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
-      if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
+      // if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
       return false;
     }
 

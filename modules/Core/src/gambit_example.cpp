@@ -116,7 +116,6 @@ void beispiel()
 int main( int argc, const char* argv[] )
 {
   beispiel();
-  exit(0);
 
   cout<<endl;
   cout<< "This is a skeleton example for gambit."<<endl;
