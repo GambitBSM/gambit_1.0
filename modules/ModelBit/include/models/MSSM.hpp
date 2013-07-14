@@ -37,11 +37,35 @@
 
 // NEW FRAMEWORK
 
-#define MODEL MSSM
+#define MODEL test_parent
 #define PARENT model_base
   #define PARAMETERISATION I
   START_PARAMETERISATION
+  DEFINEPARS(p1,p2,p3)
+  #undef PARAMETERISATION
+#undef PARENT
+#undef MODEL
+
+#define MODEL MSSM
+#define PARENT test_parent_I /* We may define a different parent for
+  different parameterisations if we like. */
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
   DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
+  INTERPRET_AS_PARENT__BEGIN
+  INTERPRET_AS_PARENT__DEFINE(
+    {
+      cout<<"Running interpret_as_parent calculations for MSSM_I -> test_parent_I ..."<<endl;
+      using namespace SafePointers::test_parent_I_parameters;
+      double M1 = Dep::MSSM_I_parameters->getValue("M1");
+      double M2 = Dep::MSSM_I_parameters->getValue("M2");
+      double M3 = Dep::MSSM_I_parameters->getValue("M3");
+      
+      target_parameters.setValue("p1", 0.01*M1*M2*M3);
+      target_parameters.setValue("p2", 0.10*M1*M2*M3);
+      target_parameters.setValue("p3", 1.00*M1*M2*M3);
+    }
+  )
   #undef PARAMETERISATION
 #undef PARENT
 #undef MODEL
@@ -64,39 +88,57 @@
   DEFINEPARS(M0, M12, A0, tanb, sgnmu)
   
     // Add in a sensibly named capability for good measure
+    // -> convert to having ModelParameters as a dependency, no individual functors
+    // by default.
     #define PARAMETER Mstop
     MAP_TO_CAPABILITY(Mstop_obs)
     #undef PARAMETER 
   
-    // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
-    // object as a CAPABILITY of this model)
-    INTERPRET_AS_PARENT(
-      {
-        /* Write actual code here! Don't forget the curly braces. */
-        cout<<"Running interpret_as_parent calculations for CMSSM_I -> MSSM_I ..."<<endl;
-        /* Have not hook up dependency system for models yet, but we may need it
-           here. However, can access the current model's parameters (and any
-           other model's parameters) without this system, because we are already
-           in the namespace for the current model and can just straight out
-           access the original pointer. We could also use the functor if we
-           like. */
-        double M0 = parametersptr->getValue("M0");
-        double M12 = parametersptr->getValue("M12");
-        double A0 = parametersptr->getValue("A0");
-
-        /* Grab reference to parent parameter object and set some values. 
-           The parent parameter object already exists if we have gotten this 
-           far (was created along with the functor that wraps this function) */
-
-        target_parameters.setValue("M1", M0);
-        target_parameters.setValue("M2", 0.5*M0);
-        target_parameters.setValue("M3", 3*M0);
-        target_parameters.setValue("AU1", A0);
-        target_parameters.setValue("AU2", 2*A0);
-        target_parameters.setValue("AU3", 0);
-   
-      }
-    ) 
+  // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
+  // object as a CAPABILITY of this model)
+  INTERPRET_AS_PARENT__BEGIN
+  INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
+  INTERPRET_AS_PARENT__DEFINE(
+  {
+    cout<<"Running interpret_as_parent calculations for CMSSM_I -> MSSM_I ..."<<endl;
+    /* Get host model parameter object using dependency system 
+       (can technically use parametersptr directly since we have access to it,
+        but I might try and restore proper encapsulation of the 
+        ModelParameters objects in their functors, i.e. this pointer might be
+        removed in the future, so better to use this proper method. */
+    
+    using namespace SafePointers::MSSM_I_parameters;
+    double M0 = Dep::CMSSM_I_parameters->getValue("M0");
+    double M12 = Dep::CMSSM_I_parameters->getValue("M12");
+    double A0 = Dep::CMSSM_I_parameters->getValue("A0");
+    
+    // Can we set parameters with this pointer?
+    /*
+    cout<<"testing safepointer->setValue"<<endl;
+    cout<<M0<<endl;
+    Dep::CMSSM_I_parameters->setValue("M0",500);
+    cout<<Dep::CMSSM_I_parameters->getValue("M0")<<endl;
+    ...no*/
+    /*
+    double M0 = parametersptr->getValue("M0");
+    double M12 = parametersptr->getValue("M12");
+    double A0 = parametersptr->getValue("A0");
+    */
+    
+    /* Play around with the extra info obtained from dependency */
+    cout<<"nevents dependency has supplied the value: "<<*Dep::nevents<<endl;
+    
+    /* Grab reference to parent parameter object and set some values. 
+       The parent parameter object already exists if we have gotten this 
+       far (was created along with the functor that wraps this function) */
+    
+    target_parameters.setValue("M1", M0);
+    target_parameters.setValue("M2", 0.5*M0);
+    target_parameters.setValue("M3", 3*M0);
+    target_parameters.setValue("AU1", A0);
+    target_parameters.setValue("AU2", 2*A0);
+    target_parameters.setValue("AU3", 0);
+  })
     
   #undef PARAMETERISATION
   
