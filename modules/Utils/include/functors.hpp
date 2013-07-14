@@ -18,7 +18,7 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June 2013
+///  \date 2013 May, June, July 2013
 ///
 ///  *********************************************
 
@@ -30,6 +30,7 @@
 #include <vector>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
+#include <time.h>
 
 namespace GAMBIT
 {
@@ -44,6 +45,13 @@ namespace GAMBIT
 
       /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
+
+      /// Interface for runtime optimization
+      /// Needs to be implemented by daughters
+      virtual double getRuntimeAverage() {}
+      virtual double getInvalidationRate() {}
+      virtual void notifyOfInvalidation() {}
+      virtual void reset() {}
 
       // It may be safer to have the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
@@ -210,9 +218,14 @@ namespace GAMBIT
         myStatus        = 1;
         needs_recalculating = true;
         usePointer = false;
+        runtime_average = 1000; // default 1 micro second
+        runtime         = 1000;
+        fadeRate        = 0.01;
+        pInvalidation   = 0.01;
       }
 
       /// Overloading Constructor
+      // CW: Should be removed again once proper module parameters work
       module_functor(TYPE * outputPointer,
                             str func_name,
                             str func_capability,
@@ -227,6 +240,10 @@ namespace GAMBIT
         myStatus        = 1;
         needs_recalculating = true;
         usePointer = true;
+        runtime_average = 1000;
+        runtime         = 1000;
+        fadeRate        = 0.01;
+        pInvalidation   = 0.01;
       }
 
       /// Calculate method (using either function or pointer)
@@ -234,11 +251,50 @@ namespace GAMBIT
       {
         if(needs_recalculating)
         {
+          timespec tp;
+          double nsec, sec;
+          clock_gettime(CLOCK_MONOTONIC, &tp);
+          nsec = (double)-tp.tv_nsec;
+          sec = (double)-tp.tv_sec;
           if(usePointer)
             myValue = *myPointer;
           else
             this->myFunction(myValue);
+          clock_gettime(CLOCK_MONOTONIC, &tp);
+          nsec += (double)tp.tv_nsec;
+          sec += (double)tp.tv_sec;
+          runtime = sec*1e9 + nsec;
+          needs_recalculating = false;
+          runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
+          pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*0.01;
+          cout << "Runtime " << myName << ": " << runtime << " ns (" <<
+            runtime_average << " ns)" << endl;
         }
+      }
+
+      // Getter for averaged runtime
+      double getRuntimeAverage()
+      {
+        return runtime_average;
+      }
+
+      // Reset functor
+      void reset()
+      {
+        needs_recalculating = true;
+        runtime = .0;
+      }
+
+      // Tell functor that it invalidated the current point in model space
+      void notifyOfInvalidation()
+      {
+        pInvalidation += fadeRate;
+      }
+
+      // Invalidation rate
+      double getInvalidationRate()
+      {
+        return pInvalidation;
       }
 
       /// Operation (return value)
@@ -544,6 +600,18 @@ namespace GAMBIT
 
       /// myValue either determined by myFunction (false) or myPointer (true)
       bool usePointer;
+
+      /// Current runtime in ns
+      double runtime;
+
+      /// Averaged runtime in ns
+      double runtime_average;
+
+      /// Fade rate for average runtime
+      double fadeRate;
+
+      /// Probability that functors invalidates point in model parameter space
+      double pInvalidation;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;

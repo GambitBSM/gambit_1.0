@@ -55,9 +55,11 @@ using namespace GAMBIT;
 
 void beispiel()
 {
-  cout << "globalFunctorList.size() = " <<
+  cout << endl << "Start MAIN" << endl;
+  cout << "----------" << endl;
+  cout << "Registered module functors [globalFunctorList.size()]: " <<
     GAMBIT::globalFunctorList.size() << endl;
-  cout << "globalBackendFunctorList.size() = " <<
+  cout << "Registered backend functors [globalBackendFunctorList.size()]: " <<
     GAMBIT::globalBackendFunctorList.size() << endl;
 
   // Read INI file
@@ -65,40 +67,44 @@ void beispiel()
   iniFile.readFile("gambit.yaml");
 
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver;
-
-  // Add vertices from rollcall
-  dependencyResolver.addFunctors(globalFunctorList, globalBackendFunctorList);
-
-  // Add input and output legs to the module function vertices
-  dependencyResolver.addLegs(iniFile);
+  Graphs::DependencyResolver dependencyResolver(globalFunctorList,
+      globalBackendFunctorList, iniFile);
 
   // Log module function infos
-  dependencyResolver.logFunctors();
+  dependencyResolver.printFunctorList();
 
   // Do the dependency resolution
-  dependencyResolver.resolveNow(iniFile);
+  dependencyResolver.resolveNow();
 
-  // dependencyResolver.logOrder();
-  // dependencyResolver.logFunctors();
+  // Run 100 times
+  for (int i = 0; i<1000; i++)
+  {
+    std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+    for (std::vector<Graphs::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
+    {
+      dependencyResolver.calcObsLike(*it);
+      dependencyResolver.notifyOfInvalidation(*it);
+    }
+    dependencyResolver.resetAll();
+    cout << endl;
+  }
 
-  // Resolve backends
-  // dependencyResolver.resolveBackends();
+  // MasterLike masterLike(dependencyResolver.getHandler());
 
-  // Initialize MasterLike;
-  MasterLike masterLike(dependencyResolver.getFunctors(),
-      dependencyResolver.inputMap, dependencyResolver.outputList);
+  // // Initialize MasterLike;
+  // MasterLike masterLike(dependencyResolver.getFunctors(),
+  //     dependencyResolver.getInputMap(), dependencyResolver.getOutputMap());
 
-  // Set input parameters
-  masterLike["m1"] = iniFile.getValue<double>("m1");
-  masterLike["m2"] = iniFile.getValue<double>("m2");
-  masterLike["m3"] = iniFile.getValue<double>("m3");
+  // // Set input parameters
+  // masterLike["m1"] = iniFile.getValue<double>("m1");
+  // masterLike["m2"] = iniFile.getValue<double>("m2");
+  // masterLike["m3"] = iniFile.getValue<double>("m3");
 
-  // Call the functions in their sorted order
-  masterLike.calculate();
+  // // Call the functions in their sorted order
+  // masterLike.calculate();
 
-  // Read output parameters
-  cout << masterLike("Likelihood")[0] << endl;
+  // // Read output parameters
+  // cout << masterLike("Likelihood")[0] << endl;
   //char *names[2] = {"m_0", "m_1/2"};
   //Gambit_Functor like (&mlike, "Likelihood", names, 2);
   //Gambit_Functor dlike (&mlike, "DLikelihood", names, 2);

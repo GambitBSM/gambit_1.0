@@ -24,12 +24,12 @@
 namespace GAMBIT
 {
   MasterLike::MasterLike(std::vector<functor*> functors,
-      GAMBIT::Graphs::inputMapType inputMap, GAMBIT::Graphs::outputListType
-      outputList)
+      GAMBIT::Graphs::inputMapType inputMap, GAMBIT::Graphs::outputMapType
+      outputMap)
   {
     this->functor_list = functors;
     this->inputMap = inputMap;
-    this->outputList = outputList;
+    this->outputMap = outputMap;
   }
 
   void MasterLike::calculate() {
@@ -44,16 +44,14 @@ namespace GAMBIT
 
   std::vector<double> MasterLike::operator() (std::string key)
   {
-    // Check output map
+    std::vector<functor*> flist;
     std::vector<double> ret;
-    for (Graphs::outputListType::iterator it = outputList.begin(); it !=
-        outputList.end(); ++it)
-    {
-      if ( (*it)->obsType() == key )
-      {
-        ret.push_back((*(dynamic_cast<module_functor<double>*>(*it)))());
-      }
-    }
+    flist = this->outputMap[key];
+    // Typecasting to double is hardcoded!
+    cout << "WARNING: Hard coded typecasting to double" << endl;
+    for (std::vector<functor*>::iterator it = flist.begin(); it !=
+        flist.end(); ++it)
+      ret.push_back((*(dynamic_cast<module_functor<double>*>(*it)))());
     return ret;
   }
 

@@ -86,6 +86,9 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION Weff_alt1
     START_FUNCTION(double)
+    DEPENDENCY(SLHA, double) 
+    DEPENDENCY(m0, double) 
+    DEPENDENCY(m1, double) 
     #undef FUNCTION
   #undef CAPABILITY
 

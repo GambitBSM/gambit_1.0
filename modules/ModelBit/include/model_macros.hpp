@@ -207,7 +207,7 @@ namespace GAMBIT{
           {                                                                    \
             /* Need to populate the functor parameters object with model
                parameters. */                                                  \
-            cout<<"Initialising "STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))\
+            cout<<"Initialising " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))\
             " parameter object"<<endl;                                         \
                                                                                \
             functorobject._definePars(parameterkeys);                          \
@@ -422,8 +422,8 @@ namespace GAMBIT{
                parameters. We could rewrite this to get the parameterkeys via
                the dependency system if we like. Currently this won't compile
                if MODEL_X has not been defined prior to the current model. */  \
-            cout<<"Initialising "STRINGIFY(MODEL_X)" parameter object "\
-            "at behest of model "STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))\
+            cout<<"Initialising " STRINGIFY(MODEL_X) " parameter object "\
+            "at behest of model " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) \
             <<endl;                                                            \
                                                                                \
             target_parameters._definePars(models::MODEL_X::parameterkeys);     \

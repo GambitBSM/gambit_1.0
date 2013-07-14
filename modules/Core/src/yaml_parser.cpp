@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // Simple example for GAMBIT Ini-file parser
 //
-// Christoph Weniger (c.weniger@uva.nl)
-// May, June 2013
+// Christoph Weniger <c.weniger@uva.nl>
+// May, June, July 2013
 //////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -23,12 +23,19 @@ namespace GAMBIT
       // Set central nodes
       YAML::Node inputNode = roots[0];
       YAML::Node outputNode = roots[1];
-      mapNode = roots[2];
+      YAML::Node auxNode = roots[2];
+      mapNode = roots[3];
 
-      // Read observables
+      // Read likelihood/observables
       for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)
       {
         observables.push_back((*it).as<Types::Observable>());
+      }
+
+      // Read auxiliaries
+      for(YAML::const_iterator it=auxNode.begin(); it!=auxNode.end(); ++it)
+      {
+        auxiliaries.push_back((*it).as<Types::Observable>());
       }
 
       // Read scanner parameters
@@ -37,50 +44,6 @@ namespace GAMBIT
         parameters.push_back((*it).as<Types::Parameter>());
       }
       return 0;
-    }
-
-    bool IniFile::hasObservable(std::string capability)
-    {
-      for (ObservablesType::const_iterator it = observables.begin();
-          it != observables.end(); ++it)
-      {
-        if ((*it).capability == capability)
-          return true;
-      }
-      return false;
-    }
-
-    bool IniFile::hasDependency(ObservableType observable, std::string capability)
-    {
-      for (ObservablesType::const_iterator it = observable.dependencies.begin();
-          it != observable.dependencies.end(); ++it)
-      {
-        if ((*it).capability == capability)
-          return true;
-      }
-      return false;
-    }
-
-    ObservableType IniFile::getObservable(std::string capability)
-    {
-      ObservableType ret;
-      for (ObservablesType::const_iterator it = observables.begin();
-          it != observables.end(); ++it)
-      {
-        if ((*it).capability == capability)
-          return (*it);
-      }
-    }
-
-    ObservableType IniFile::getDependency(ObservableType observable, std::string capability)
-    {
-      ObservableType ret;
-      for (ObservablesType::const_iterator it = observable.dependencies.begin();
-          it != observable.dependencies.end(); ++it)
-      {
-        if ((*it).capability == capability)
-          return (*it);
-      }
     }
   }
 }

@@ -32,6 +32,7 @@ SCANDIR = ScannerBit
 BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
 DARKDIR = DarkBit
+FLAVDIR = FlavBit
 DOCDIR = ../doc
 
 # Boost is required. Read README for details
@@ -52,9 +53,11 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-I$(BACKENDDIR)/lib \
 	-I$(HECOLLIDERDIR)/include \
 	-I$(DARKDIR)/include \
+	-I$(FLAVDIR)/include \
 	-IExampleBit_A/include \
 	-IExampleBit_B/include \
-	-IDarkBit/include -IExample_SUSYspecBit/include
+	-IDarkBit/include -IExample_SUSYspecBit/include \
+	-IFlavBit/include
 
 COMMONLIBS = -lm
 
@@ -123,7 +126,11 @@ DARKINC:=$(wildcard $(DARKDIR)/include/*hpp) $(wildcard $(DARKDIR)/include/*h)
 DARKSRC:=$(wildcard $(DARKDIR)/src/*cpp) $(wildcard $(DARKDIR)/src/*c)
 DARKLIBS:=$(addprefix $(DARKDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(DARKSRC)))))
 
-HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
+HFLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
+FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp) $(wildcard $(FLAVDIR)/src/*c)
+FLAVLIBS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(FLAVSRC)))))
+
+ECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
 HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
 HECOLLIDERLIBS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(HECOLLIDERSRC)))))
 
@@ -139,13 +146,13 @@ EXSUSYSPECINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/inc
 EXSUSYSPECSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
 EXSUSYSPECLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXSUSYSPECSRC)))))
 
-ALLINC = $(COREINC) $(MODELINC) $(UTILSINC) $(BACKENDINC) $(SCANINC) $(DARKINC) $(HECOLLIDERINC) $(EXAMPLE_AINC) $(EXAMPLE_BINC)
-ALLSRC = $(CORESRC) $(MODELSRC) $(UTILSSRC) $(BACKENDSRC) $(SCANSRC) $(DARKSRC) $(HECOLLIDERSRC) $(EXAMPLE_ASRC) $(EXAMPLE_BSRC)
-ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) 
+ALLINC = $(COREINC) $(MODELINC) $(UTILSINC) $(BACKENDINC) $(SCANINC) $(DARKINC) $(FLAVINC) $(HECOLLIDERINC) $(EXAMPLE_AINC) $(EXAMPLE_BINC)
+ALLSRC = $(CORESRC) $(MODELSRC) $(UTILSSRC) $(BACKENDSRC) $(SCANSRC) $(DARKSRC) $(FLAVSRC) $(HECOLLIDERSRC) $(EXAMPLE_ASRC) $(EXAMPLE_BSRC)
+ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(FLAVLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) 
 
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
-DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o $(UTILSDIR)/build/rngs.o \
+DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(ALLINC)
@@ -193,6 +200,18 @@ DarkBit/build/%.o: DarkBit/src/%.c $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDIN
 	$(CC) $(CFLAGS) -c $< -o $@
 
 DarkBit/build/%.o: DarkBit/src/%.f $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+	@echo ___________Compiling $<:
+	$(FC) $(CFLAGS) -c $< -o $@
+	
+FlavBit/build/%.o: FlavBit/src/%.cpp $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+FlavBit/build/%.o: FlavBit/src/%.c $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+FlavBit/build/%.o: FlavBit/src/%.f $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 	

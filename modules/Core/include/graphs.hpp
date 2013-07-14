@@ -11,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Christoph Weniger (c.weniger@uva.nl)
-//  Apr, May, June 2013
+//  Apr, May, June, July 2013
 //  Pat Scott
 //  May 03 2013
 //
@@ -36,75 +36,106 @@ namespace GAMBIT
 {
   namespace Graphs
   {
-    // The graph edges (vertices are pointers on the module function functors)
-    struct Edge {
-      sspair variable; // e.g. (capability, type), might be useful later
-    };
-
     // Typedefs for central boost graph
-    typedef adjacency_list<vecS, vecS, directedS, functor*, Edge> MasterGraphType;
+    typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
 
     // Typedefs for communication channels with the master-likelihood
     typedef std::map<std::string, double *> inputMapType;
-    typedef std::vector<functor *> outputListType;
+    typedef std::map<std::string, std::vector<functor*> > outputMapType;
 
-    // The beast
+    // Minimal info about outputVertices
+    struct OutputVertexInfo
+    {
+      VertexID vertex;
+      const IniParser::ObservableType * iniEntry;
+    };
+
+    // Main dependency resolver
     class DependencyResolver
     {
       public:
-        DependencyResolver() {}
+        // Constructor, provide module and backend functor lists
+        DependencyResolver(std::vector<functor *>,
+            std::vector<functor *>, IniParser::IniFile);
 
-        // Adds list of functor pointers to boost graph
+        // The dependency resolution
+        void resolveNow();
+
+        // Pretty print module functor information
+        void printFunctorList();
+
+        // Pretty print backend functor information
+        void printBackendFunctorList();
+
+        // New IO routines
+        std::vector<VertexID> getObsLikeOrder();
+
+        void calcObsLike(VertexID);
+
+        const IniParser::ObservableType * getIniEntry(VertexID);
+
+        double getObsLike(VertexID);
+
+        void notifyOfInvalidation(VertexID);
+
+        void resetAll();
+
+      private:
+        // Constructs input/output vertices from parameters and requested
+        // observables in inifile
+        void addLegs();
+
+        // Adds list of functor pointers to master graph
         void addFunctors(std::vector<functor *>, std::vector<functor *>);
 
-        // Rudimentary backend resolution
-        void resolveBackends();
+        // Resolution of individual module function dependencies
+        std::pair<const IniParser::ObservableType *, Graphs::VertexID>
+          resolveDependency(Graphs::VertexID toVertex, sspair quantity);
 
-        //
+        // Generate full dependency tree
+        void generateTree(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue);
+
+        // Helper functions/arrays
+        void fillParQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
+            Graphs::VertexID vertex);
+
+        // Topological sort
+        std::list<VertexID> run_topological_sort();
+
+        // Find entries (comparison of inifile entry with quantity or functor)
+        const IniParser::ObservableType * findIniEntry(
+            sspair quantity, const IniParser::ObservablesType &);
+        const IniParser::ObservableType * findIniEntry(
+            Graphs::VertexID toVertex, const IniParser::ObservablesType &);
+
+        // Resolution of backend dependencies
         void resolveVertexBackend(bool dirObsFlag,
             IniParser::ObservableType observable, VertexID vertex);
 
-        // Log module functor information;
-        void logFunctors();
+        //
+        // Private data members
+        //
 
-        // Constructs input/output vertices from parameters and requested
-        // observables in inifile
-        void addLegs(GAMBIT::IniParser::IniFile &);
+        // WILL BECOME OBSOLETE WITH MODEL PARAMETERS
+        inputMapType inputMap; // DEPRECATED
+        // DEPRECATED
 
-        // The dependency resolution
-        void resolveNow(GAMBIT::IniParser::IniFile &);
-
-        // Returns functors in sorted order
-        std::vector<functor*> getFunctors();
-
-        // Map str --> double* for input parameter values
-        inputMapType inputMap;
-
-        // Log ordered active vertices
-        void logOrder();
-
-        // It is really ugly, but this has to be declared static to work well
-        // with the functors member functions. A haircut for anyone who gets
-        // around that:
-        static outputListType outputList;
-
-      private:
-        // Helper functions/arrays
-        static void outputResolver(functor * dep_functor);
-        void fill_parQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
-            Graphs::VertexID vertex);
-        std::multimap<sspair, Graphs::VertexID> initialize_capMap();
+        // List of backend functors
         std::vector<functor *> myBackendFunctorList;
-        void initialize_edges(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue,
-            std::multimap<sspair, Graphs::VertexID> capMap,
-            GAMBIT::IniParser::IniFile &);
-        std::list<int> run_topological_sort();
-        std::vector<VertexID> reqObs;
 
-        // The central boost graph object
+        // *** Output Vertex Infos
+        std::vector<OutputVertexInfo> outputVertexInfos;
+
+        // *** The central boost graph object
         MasterGraphType masterGraph;
+
+        // *** Saved calling order for functions
+        std::list<VertexID> function_order;
+
+        // *** Private copy of iniFile Object
+        IniParser::IniFile myIniFile;
     };
   }
 }
