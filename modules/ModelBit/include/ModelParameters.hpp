@@ -102,6 +102,22 @@ namespace GAMBIT {
       this->updateVersion();
       _values[inkey]=value;
     }
+    // 'map' version of setValue. Takes a map of the same struture as _values
+    // and dumps its contents to _values (dumping values by matching their
+    // keys)
+    virtual void setValues(std::map<std::string,double> const &params_map) {
+      typedef std::map<std::string,double>::const_iterator it_type;
+      for(it_type iterator = params_map.begin();
+          iterator != params_map.end(); 
+          iterator++) {
+        // iterator->first = key
+        // iterator->second = value
+        assert_contains(iterator->first);
+        _values[iterator->first]=iterator->second;
+        // Should probably do some extra checks, duplicate keys, all parameters
+        // used, etc.
+      }
+    }
     
     // get keys (the names) for external iteration
     virtual std::vector<std::string> getKeys() const {

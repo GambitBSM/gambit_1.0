@@ -328,11 +328,22 @@ namespace GAMBIT
       /// Ben: added this so we could get write access to myValue, primarily
       /// for the case of the scanner needing to change the ModelParameter
       /// object. Not for use in modules.
-      TYPE* rawvaluePtr()
-      {
-        if (this == NULL) functor::failBigTime();
-        return &myValue;
-      }
+      /// Make this "protected", and make some ScannerBit object a friend?
+      /// Could also make functions specific to ModelParameter objects which
+      /// allow access to the methods of those objects, but these would cause
+      /// problems if used by any other functor.
+      /// IDEA: Actually, I could make it so that the "calculate" method of the
+      /// primary ModelParameters functor does the "setting" of parameters!
+      /// Just need to add a dependency on some "input_parameters" capability
+      /// which must be provided from somewhere, presumably scannerbit! This
+      /// is probably the most elegant solution.
+      /// UPDATE: The above idea is now implemented, so I have removed this
+      /// "dangerous" raw pointer.
+      //TYPE* rawvaluePtr()
+      //{
+      // if (this == NULL) functor::failBigTime();
+      //  return &myValue;
+      //}
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()                  { return myDependencies; }

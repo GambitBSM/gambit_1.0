@@ -509,11 +509,15 @@
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
   
+/// Ben: I have again altered these macros slightly so that they can be reused
+/// easily by ModelBit. It makes them slightly uglier, but it really seems a
+/// waste to copy them since the required functionality is almost exactly the 
+/// same. 
 
 /// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
+
 #define DEPENDENCY_COMMON_1(DEP, TYPE)                                         \
-                                                                               \
   namespace GAMBIT                                                             \
   {                                                                            \
                                                                                \
@@ -522,6 +526,9 @@
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
+      DEPENDENCY_COMMON_1_GUTS(DEP, TYPE, MODULE, FUNCTION)                    \
+  
+#define DEPENDENCY_COMMON_1_GUTS(DEP, TYPE, MODULE, FUNCTION)                  \
                                                                                \
       /* Register the required TYPE of the required observable or likelihood   \
       function DEP */                                                          \
@@ -576,7 +583,6 @@
         }                                                                      \
                                                                                \
       }                                                                        \
-
 
 /// Second common component of CORE_DEPENDENCY(DEP, TYPE) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
