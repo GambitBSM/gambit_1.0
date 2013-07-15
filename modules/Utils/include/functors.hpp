@@ -32,6 +32,13 @@
 #include <util_functions.hpp>
 #include <time.h>
 
+// Decay rate of average runtime estimate
+#define FUNCTORS_FADE_RATE 0.01
+// Minimum invaldiation rate (should be 0<...<<1)
+#define FUNCTORS_BASE_INVALIDATION_RATE 0.01
+// Initial runtime estimate
+#define FUNCTORS_RUNTIME_INIT 1000
+
 namespace GAMBIT
 {
 
@@ -50,6 +57,7 @@ namespace GAMBIT
       /// Needs to be implemented by daughters
       virtual double getRuntimeAverage() {}
       virtual double getInvalidationRate() {}
+      virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
 
@@ -218,10 +226,10 @@ namespace GAMBIT
         myStatus        = 1;
         needs_recalculating = true;
         usePointer = false;
-        runtime_average = 1000; // default 1 micro second
-        runtime         = 1000;
-        fadeRate        = 0.01;
-        pInvalidation   = 0.01;
+        runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
+        runtime         = FUNCTORS_RUNTIME_INIT;
+        pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
+        fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
       }
 
       /// Overloading Constructor
@@ -240,10 +248,10 @@ namespace GAMBIT
         myStatus        = 1;
         needs_recalculating = true;
         usePointer = true;
-        runtime_average = 1000;
-        runtime         = 1000;
-        fadeRate        = 0.01;
-        pInvalidation   = 0.01;
+        runtime_average = FUNCTORS_RUNTIME_INIT;
+        runtime         = FUNCTORS_RUNTIME_INIT;
+        pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
+        fadeRate        = FUNCTORS_FADE_RATE;
       }
 
       /// Calculate method (using either function or pointer)
@@ -266,7 +274,8 @@ namespace GAMBIT
           runtime = sec*1e9 + nsec;
           needs_recalculating = false;
           runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
-          pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*0.01;
+          pInvalidation = pInvalidation*(1-fadeRate) +
+            fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
           cout << "Runtime " << myName << ": " << runtime << " ns (" <<
             runtime_average << " ns)" << endl;
         }
@@ -288,13 +297,18 @@ namespace GAMBIT
       // Tell functor that it invalidated the current point in model space
       void notifyOfInvalidation()
       {
-        pInvalidation += fadeRate;
+        pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
       }
 
       // Invalidation rate
       double getInvalidationRate()
       {
         return pInvalidation;
+      }
+
+      void setFadeRate(double new_rate)
+      {
+        fadeRate = new_rate;
       }
 
       /// Operation (return value)
