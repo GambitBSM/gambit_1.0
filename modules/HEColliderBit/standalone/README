@@ -1,0 +1,5 @@
+This directory contains code for running the ATLAS 0 lepton analysis out of the box. It also has the ATLAS analysis conference paper to aid debugging of the ATLAS limit.
+
+main41.cc is a Pythia example, to be built and run in the Pythia "examples" directory. It will require a SLHA file called sps1aWithDecays.spc, and will spit out a hepmc file (if it fails to build, make sure that your makefile is linking to the hepmc libraries).
+
+You can then run the DELPHES code on the hepmc file using DelphesHepMC. This will produce a ROOT file on which you can run the macro ATLAS0Lep.cxx. This can be built with the supplied Makefile.
