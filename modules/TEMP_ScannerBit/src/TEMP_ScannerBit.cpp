@@ -76,7 +76,7 @@ namespace GAMBIT {
       */
       
       // Hacky temp version
-      std::vector<str> paramkeys = {"M0", "M12", "A0", "tanb", "sgnmu"};
+      std::vector<str> paramkeys = delimiterSplit("M0, M12, A0, tanb, sgnmu",", ");
       srand (time(NULL));    // initialize random seed
       for (std::vector<str>::iterator key = paramkeys.begin(); key!=paramkeys.end(); ++key) {
         result[*key] = rand()%1000;
