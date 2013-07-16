@@ -2,7 +2,7 @@
 #define gambit_ModelParametersBase_hpp 1
 
 #include <vector>
-#include "gambitCommonTypes.hpp"
+#include "common_return_types.hpp"
 #include "logcore.hpp"
 
 namespace GAMBIT {

@@ -22,6 +22,7 @@
 
 namespace GAMBIT
 {
+  /* Moved to common_return_types
   /// A placeholder "MSSM" low-energy spectrum object. Defined at scale Q.
   struct MSSMspecQ
   {
@@ -41,6 +42,7 @@ namespace GAMBIT
     struct BLOCK_STOPMIX {} STOPMIX;
     // ...etc...
   };
+  */
   
   // Placeholder type for SM parameters. Will be used all over GAMBIT so will
   // need to think hard about how this works (different energy scales,

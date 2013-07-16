@@ -7,7 +7,8 @@
 */
 
 #include <backend_macros.hpp>
-#include <MSSM_classes.hpp> //Contains definition of MSSMspecQ type.
+#include <common_return_types.hpp> //Contains definition of MSSMspecQ type.
+#include <MSSM_classes.hpp>
 
 /* Specify the path to the shared library along with a backend name. */
 
