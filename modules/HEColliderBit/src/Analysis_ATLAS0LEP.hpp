@@ -1,6 +1,6 @@
 #include "Analysis.hpp"
 #include <vector>
-
+#include <cmath>
 
 namespace GAMBIT {
 
@@ -24,6 +24,19 @@ namespace GAMBIT {
       _numD  = 0;
       _numET = 0; _numEM = 0; _numEL = 0;
     }
+
+    double SmallestdPhi(std::vector<Jet *> jets,double phi_met)
+    {
+      if(jets.size()<2) return(999);
+      double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
+      double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
+      double dphi3 = 999;
+      if(jets.size()>2&&jets.at(2)->pT()>40.) 
+	dphi3= std::acos(std::cos(jets.at(2)->phi()-phi_met));
+      double min1=std::min(dphi1,dphi2);
+      return(std::min(min1,dphi3));
+    }
+
 
     void analyze(const Event* event) {
       P4 ptot = event->missingMom();
@@ -122,7 +135,7 @@ namespace GAMBIT {
 
       if (nJets>1) {
         if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60.) {
-
+	  
           float dPhiMin=9999;
           int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
@@ -135,7 +148,8 @@ namespace GAMBIT {
               dPhiMin=dphi;
               numJets+=1;
             }
-          }
+	  }
+	  dPhiMin=SmallestdPhi(signalJets,ptot.phi());
 
 	  dphimin_debug=dPhiMin;
 
@@ -290,7 +304,7 @@ namespace GAMBIT {
           }
         }
       }
-      cout << "NJETS " << signalJets.size() << " NELE " << signalElectrons.size() << " NMUO " << signalMuons.size() << " MET " << met << " MET/MEFF " << met/meff2j_debug << " DPHIMIN " << dphimin_debug << " MEFF " << meff_incl << endl;
+      cout << "NJETS " << signalJets.size() << " NELE " << signalElectrons.size() << " NMUO " << signalMuons.size() << " MET " << met << " MET/MEFF " << met/meff2j_debug << " DPHIMIN " << dphimin_debug << " MEFF " << meff_incl << " METPHI " << ptot.phi() << endl;
 
 
     }
