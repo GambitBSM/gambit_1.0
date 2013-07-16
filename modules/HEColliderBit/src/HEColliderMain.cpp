@@ -35,7 +35,7 @@
 
 // External
 #include "omp.h"
-#define NEVENTS 1000
+#define NEVENTS 10000
 #define MAIN_SHARED counter,slhaFileName,delphesConfigFile,myDelphes
 #define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,temp,myPythia
 

@@ -116,8 +116,8 @@ namespace GAMBIT {
       }
 
       meff_incl+=met;
-
-
+      float meff2j_debug=0;
+      float dphimin_debug=0;
       // Do 2 jet regions
 
       if (nJets>1) {
@@ -137,7 +137,10 @@ namespace GAMBIT {
             }
           }
 
+	  float dphimin_debug=dPhiMin;
+
           float meff2j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
+	  meff2j_debug=meff2j;
           if (leptonCut && metCut && dPhiMin>0.4) {
             if ((met/meff2j)>0.3 && meff_incl>1900.)_numAT++;
             if ((met/meff2j)>0.4 && meff_incl>1300.)_numAM++;
@@ -287,6 +290,8 @@ namespace GAMBIT {
           }
         }
       }
+      cout << "NJETS " << signalJets.size() << " NELE " << signalElectrons.size() << " NMUO " << signalMuons.size() << " MET " << met << " MET/MEFF " << met/meff2j_debug << " DPHIMIN " << dphimin_debug << " MEFF " << meff_incl << endl;
+
 
     }
 

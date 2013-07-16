@@ -46,10 +46,13 @@ namespace GAMBIT
       pythiaInstance->readString("Random:seed = " + boost::lexical_cast<string>(slhaf._seed));
 
       pythiaInstance->readString("PartonLevel:MPI = off");
-      pythiaInstance->readString("PartonLevel:FSR = off");
-      pythiaInstance->readString("HadronLevel:all = off");
+      pythiaInstance->readString("PartonLevel:FSR = on");
+      pythiaInstance->readString("HadronLevel:all = on");
 
       pythiaInstance->readString("SUSY:all = on");
+      pythiaInstance->readString("SUSY:qqbar2chi0chi0 = off");
+      pythiaInstance->readString("SUSY:qqbar2chi+-chi0 = off");
+      pythiaInstance->readString("SUSY:qqbar2chi+chi- = off");
       pythiaInstance->readString("SLHA:file = " + slhaf._filename);
 
       pythiaInstance->init();
