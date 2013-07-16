@@ -146,7 +146,7 @@ namespace GAMBIT
       if((candidate = static_cast<Candidate*>(arrayMissingET->At(0))))
       {
         const TLorentzVector &momentum = candidate->Momentum;
-        event.setMissingMom(P4::mkXYZM(momentum.Px(), momentum.Py(), 0., 0.));
+        event.setMissingMom(P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
       }
 
       // Delphes particle arrays: Post-Detector Sim
