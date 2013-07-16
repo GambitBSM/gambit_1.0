@@ -40,9 +40,9 @@ int main() {
   pythiaInstance.readString("Next:numberShowInfo = 0");
   pythiaInstance.readString("Next:numberShowProcess = 0");
   pythiaInstance.readString("Random:setSeed = on");
-  pythiaInstance.readString("Random:seed = 1");
+  pythiaInstance.readString("Random:seed = 12345");
 
-  pythiaInstance.readString("PartonLevel:MPI = on");
+  pythiaInstance.readString("PartonLevel:MPI = off");
   pythiaInstance.readString("PartonLevel:FSR = on");
   pythiaInstance.readString("HadronLevel:all = on");
   

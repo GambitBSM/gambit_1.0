@@ -137,7 +137,7 @@ namespace GAMBIT {
             }
           }
 
-	  float dphimin_debug=dPhiMin;
+	  dphimin_debug=dPhiMin;
 
           float meff2j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
 	  meff2j_debug=meff2j;
