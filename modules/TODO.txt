@@ -1,0 +1,25 @@
+TODO:
+* Support alternative ini format
+* Grouping backend requirements into blocks/groups
+* Conditional backend requirements on model
+* Fix naming conventions
+  - GAMBIT->Gambit
+  - filenames (lowercase+underscore)
+* Experiment with automake and cmake for build
+* Implement exception handling/logging system
+* Create SLHA internal representation, plus hook up file reader/writer.
+* General review of legacy code -> cull obsolete stuff
+* Convert comments to Doxygen
+* Tracking of config files -> lists in module/backend rollcall headers?
+  - Add function-level "HAS_CONFIG_FILE" macro to do this
+    - for both modules and backends
+* No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
+* Create "little guys" (parameter mini-functors : e.g. *params::M0)
+* Create mini-core for module stand-alone releases
+
+Decisions:
+* Separate gambit_example.cpp's
+* Module specific types in module directories
+  -> BUT common return types in 
+     utils/include/common_return_types.hpp
+* Separate output/log for points with "BadPoint" errors

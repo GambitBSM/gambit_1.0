@@ -1,0 +1,64 @@
+Notes for GAMBIT@Stockholm
+
+Code structure:
+- "using namespace std" = bad to do in headers
+
+ModelBit:
+- Get dependency system hooked up
+  - Full chain of "interpret_as_parent" possible
+  - Toy setup using "FakeSoftSUSYBit"?
+
+- interpret_as_parent functions moved to .cpp files? Requires users to have to
+  fiddle with the makefile to define new models, not sure if beneficial. Can
+  just do with nested headers. Depends how closely we want to follow the
+  structure of modules.
+  - Ahh. Would restore ability of compiler to pick up errors if this is done.
+    So probably it is a good idea.
+
+- simplify modelbit namespace (remove "models" namespace)?
+  - would allow even closer alignment to structure of modules, increase macro
+    reuse. Models would then be almost exactly the same as modules, just with
+    special kinds of capabilities and dependencies. Not sure if this is
+    worthwhile, quite a few special features currently remain.
+    
+    
+=====================================
+
+Notes FROM meeting:
+
+-------------------------------------
+Day 1 - Monday 15 Jul
+
+graph.viz - Creates nice graphs of resolved dependencies. Could do a similar
+            thing to show model hierarchies/dependencies
+            
+* Simplify ModelBit macro syntax (PARENT)
+* Restore individual functors for model parameters? Name clashing ok -> will
+  leave it to dependency resolver to sort out based on which model is active
+  - related to this, put references to these in "params" namespace (analogous
+    to Dep namespace) or similar, for simpler access in interpret_as_parent
+    and possibly module functions? 
+    
+Doxygen syntax (gambit standard file headers)
+
+Error handling -> later day
+
+-------------------------------------
+Day 2 - Tuesday 16 Jul
+
+Dinner - 7.30pm @ Pelikan
+         Blekingegatan 40
+         Sodermalm (T skanstull / Medborgarplatsen)
+
+Groupings in backend macros
+
+-------------------------------------
+Day 3 - Wednesday 17 Jul
+
+Room change! FA32
+
+-------------------------------------
+
+
+
+
