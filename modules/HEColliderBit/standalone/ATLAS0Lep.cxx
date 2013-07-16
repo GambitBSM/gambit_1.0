@@ -9,15 +9,23 @@ root -l examples/Example1.C\(\"martin.root\"\)
 #include "ExRootAnalysis/ExRootTreeReader.h"
 #include "classes/DelphesClasses.h"
 #include "TClonesArray.h"
+#include <assert.h>
 
 using namespace std;
 
 
-double deltaPhi(double phi1, double phi2) {
-  double pi = TMath::Pi();
-  return fabs(fmod((phi1 - phi2)+3*pi,2*pi)-pi);
-}
-
+double deltaPhi(double a, double b) {
+    double rtn = a - b;
+    rtn = fmod(rtn, 2*M_PI);
+    if (rtn == 0) return 0;
+    assert(rtn >= -2*M_PI && rtn <= 2*M_PI);
+    rtn = (rtn >   M_PI ? rtn-2*M_PI :
+           rtn <= -M_PI ? rtn+2*M_PI : rtn);
+    assert(rtn > -M_PI && rtn <= M_PI);
+    if (rtn < 0) rtn += M_PI;
+    assert(rtn > 0 && rtn <= M_PI);
+    return rtn;
+  }
 
 
 //------------------------------------------------------------------------------
@@ -166,12 +174,9 @@ void ATLAS0Lep(const char *inputFile)
      //if(metCut)cout << "Passes met cut" << endl;
      float meff_incl=0;
      for (int iJet=0;iJet<signalJets.size();iJet++) {
-       cout << "MEFFCHECK " << signalJets.at(iJet)->PT << " iJet " << iJet;
        if (signalJets.at(iJet)->PT>40.)meff_incl+=signalJets.at(iJet)->PT;
-       cout << " ";
      }
-     cout << endl;
-     
+          
      meff_incl+=met->MET;
 
      // Do 2 jet regions
