@@ -31,7 +31,7 @@ DELPHESFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external -L$(DELPHESDIR) -lDelph
 
 .PHONY = all clean
 
-all: example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8
+all: example-py8-bsm example-py8-0lep example-delphes-py8 example-fastsim example-fastsim-py8
 	@true
 
 # the simples example of fastsim
