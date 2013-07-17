@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, May, June
+///  \date 2013 Apr, May, June, July
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -53,10 +53,10 @@ namespace GAMBIT
       /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
 
-      /// Interface for runtime optimization
+      /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
-      virtual double getRuntimeAverage() {}
-      virtual double getInvalidationRate() {}
+      virtual double getRuntimeAverage() { return 0; }
+      virtual double getInvalidationRate() { return 0; }
       virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}

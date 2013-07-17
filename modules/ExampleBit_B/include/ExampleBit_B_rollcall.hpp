@@ -59,6 +59,8 @@
 
 #include <module_macros.hpp>
 
+typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp
+
 #define MODULE ExampleBit_B
 START_MODULE
  
@@ -89,6 +91,7 @@ START_MODULE
     #define FUNCTION nevents_postcuts       // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
+    DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
     //TYPICAL_EXECUTION_SECS(1e-05)         // Typical time required for obtaining a result from this function
 
       #define BACKEND_REQ awesomeness       // awesomeness must be obtained from an external (backend) code, with
