@@ -2,6 +2,11 @@
 #include <vector>
 #include <cmath>
 
+#ifdef MKHISTOS
+#include "TFile.h"
+#include "TH1F.h"
+#endif
+
 namespace GAMBIT {
 
 
@@ -11,19 +16,42 @@ namespace GAMBIT {
   class Analysis_ATLAS0LEP : public Analysis {
   private:
 
+    // Numbers passing cuts
     int _numAT, _numAM, _numAL, _numBT, _numBM,
       _numCT, _numCM, _numCL, _numD, _numET, _numEM, _numEL;
+
+    // Debug histos
+    #ifdef MKHISTOS
+    TFile* _f;
+    TH1 *_njets, *_jetpt_1, *_jetpt_all, *_cutflow;
+    #endif
 
 
   public:
 
-    void init() {
+    Analysis_ATLAS0LEP() {
       _numAT = 0; _numAM = 0; _numAL = 0;
       _numBT = 0; _numBM = 0;
       _numCT = 0; _numCM = 0; _numCL = 0;
       _numD  = 0;
       _numET = 0; _numEM = 0; _numEL = 0;
+
+      #ifdef MKHISTOS
+      _f = new TFile("Analysis_ATLAS0LEP_debug.root", "RECREATE");
+      _njets = new TH1F("njets", "Num jets", 10, -0.5, 9.5);
+      _jetpt_1 = new TH1F("jetpt_1", "Lead jet pT", 20, 0.0, 300.0);
+      _jetpt_all = new TH1F("jetpt_all", "All jets pT", 20, 0.0, 300.0);
+      _cutflow = new TH1F("cutflow", "Cut flow", 10, -0.5, 9.5);
+      // _njets = 0; _jetpt_1 = 0; _jetpt_all = 0; _cutflow = 0;
+      #endif
     }
+
+
+    // void init() {
+    //   #ifdef MKHISTOS
+    //   #endif
+    // }
+
 
     double SmallestdPhi(std::vector<Jet *> jets,double phi_met)
     {
@@ -133,15 +161,18 @@ namespace GAMBIT {
       int nJets=signalJets.size();
 
       //DEBUG info
+      #ifndef QUIET
       cout << "Number of electrons " <<  nElectrons << " Number of muons " << nMuons << " Number of jets " << nJets << endl;
+      #endif
 
       bool leptonCut=false;
       if (nElectrons==0 && nMuons==0)leptonCut=true;
 
-      bool metCut=false;
+      bool metCut = (met > 160.);
+      #ifndef QUIET
       //cout << "MET " << met << endl;
-      if (met>160.)metCut=true;
-      if(metCut)cout << "Passes met cut" << endl;
+      if (metCut) cout << "Passes MET cut" << endl;
+      #endif
       float meff_incl=0;
       for (size_t iJet=0;iJet<signalJets.size();iJet++) {
         if (signalJets.at(iJet)->pT()>40.)meff_incl+=signalJets.at(iJet)->pT();
@@ -330,9 +361,16 @@ namespace GAMBIT {
           }
         }
       }
-      cout << "NJETS " << signalJets.size() << " NELE " << signalElectrons.size() << " NMUO " << signalMuons.size() << " MET " << met << " MET/MEFF " << met/meff2j_debug << " DPHIMIN " << dphimin_debug << " MEFF " << meff_incl << " METPHI " << ptot.phi() << endl;
-
-
+      #ifndef QUIET
+      cout << "NJETS " << signalJets.size()
+           << " NELE " << signalElectrons.size()
+           << " NMUO " << signalMuons.size()
+           << " MET " << met
+           << " MET/MEFF " << met/meff2j_debug
+           << " DPHIMIN " << dphimin_debug
+           << " MEFF " << meff_incl
+           << " METPHI " << ptot.phi() << endl;
+      #endif
     }
 
 
@@ -340,11 +378,19 @@ namespace GAMBIT {
       cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " "
            << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " "
            << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
+
+      #ifdef MKHISTOS
+      cout << "Writing ROOT file" << endl;
+      _f->Write();
+      _f->Close();
+      /// @todo Use smart pointers for proper memory clean-up of ROOT crap?
+      #endif
     }
 
 
     double logLikelihood() {
-      return -1.0;
+      /// @todo Implement!
+      return 1.0;
     }
 
 
