@@ -23,7 +23,7 @@ namespace GAMBIT {
     // Debug histos
     #ifdef MKHISTOS
     TFile* _f;
-    TH1 *_njets, *_jetpt_1, *_jetpt_all, *_cutflow;
+    TH1 *_njets, *_nelecs, *_nmuons, *_jetpt_1, *_jetpt_all, *_meff_all, *_met, *_cutflow;
     #endif
 
 
@@ -38,18 +38,19 @@ namespace GAMBIT {
 
       #ifdef MKHISTOS
       _f = new TFile("Analysis_ATLAS0LEP_debug.root", "RECREATE");
-      _njets = new TH1F("njets", "Num jets", 10, -0.5, 9.5);
+      _njets = new TH1F("njets", "Num jets", 21, -0.5, 20.5);
+      _nelecs = new TH1F("nelecs", "Num electrons", 6, -0.5, 5.5);
+      _nmuons = new TH1F("nmuons", "Num muons", 6, -0.5, 5.5);
       _jetpt_1 = new TH1F("jetpt_1", "Lead jet pT", 20, 0.0, 300.0);
-      _jetpt_all = new TH1F("jetpt_all", "All jets pT", 20, 0.0, 300.0);
-      _cutflow = new TH1F("cutflow", "Cut flow", 10, -0.5, 9.5);
-      // _njets = 0; _jetpt_1 = 0; _jetpt_all = 0; _cutflow = 0;
+      _jetpt_all = new TH1F("jetpt_all", "All jets pT", 50, 0.0, 500.0);
+      _meff_all = new TH1F("meff_all", "Inclusive m_eff", 20, 0.0, 300.0);
+      _met = new TH1F("met", "Missing ET", 40, 0.0, 800.0);
+      _cutflow = new TH1F("cutflow", "Cut flow", 11, -0.5, 10.5);
       #endif
     }
 
 
     // void init() {
-    //   #ifdef MKHISTOS
-    //   #endif
     // }
 
 
@@ -91,6 +92,7 @@ namespace GAMBIT {
       vector<Jet *> jets=event->jets();
       vector<Particle *> electrons=event->electrons();
       vector<Particle *> muons=event->muons();
+
 
       // Now define vectors of baseline objects
       vector<Particle *> baselineElectrons;
@@ -154,11 +156,20 @@ namespace GAMBIT {
       //Let's move on to the 0 lepton 2012 analysis
 
 
-
       //Calculate common variables and cuts first
       int nElectrons=signalElectrons.size();
       int nMuons=signalMuons.size();
       int nJets=signalJets.size();
+
+
+      #ifdef MKHISTOS
+      int NCUT = 0;
+      #define FILL_CUTFLOW _cutflow->Fill(NCUT++)
+      FILL_CUTFLOW;
+      #else
+      #define FILL_CUTFLOW {}
+      #endif
+
 
       //DEBUG info
       #ifndef QUIET
@@ -166,7 +177,7 @@ namespace GAMBIT {
       #endif
 
       bool leptonCut=false;
-      if (nElectrons==0 && nMuons==0)leptonCut=true;
+      if (nElectrons==0 && nMuons==0) leptonCut=true;
 
       bool metCut = (met > 160.);
       #ifndef QUIET
@@ -177,12 +188,23 @@ namespace GAMBIT {
       for (size_t iJet=0;iJet<signalJets.size();iJet++) {
         if (signalJets.at(iJet)->pT()>40.)meff_incl+=signalJets.at(iJet)->pT();
       }
-
       meff_incl+=met;
       float meff2j_debug=0;
       float dphimin_debug=0;
-      // Do 2 jet regions
 
+
+      #ifdef MKHISTOS
+      _njets->Fill(nJets);
+      _nelecs->Fill(nElectrons);
+      _nmuons->Fill(nMuons);
+      _jetpt_1->Fill(signalJets[0]->pT());
+      for (size_t iJet=0;iJet<signalJets.size();iJet++) _jetpt_all->Fill(signalJets[iJet]->pT());
+      _met->Fill(met);
+      _meff_all->Fill(meff_incl);
+      #endif
+
+
+      // Do 2 jet regions
       if (nJets>1) {
         if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60.) {
 
@@ -205,6 +227,19 @@ namespace GAMBIT {
 
           float meff2j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
           meff2j_debug=meff2j;
+
+          #ifdef MKHISTOS
+          if (leptonCut) {
+            FILL_CUTFLOW;
+            if (metCut) {
+              FILL_CUTFLOW;
+              if (dPhiMin>0.4) {
+                FILL_CUTFLOW;
+              }
+            }
+          }
+          #endif
+
           if (leptonCut && metCut && dPhiMin>0.4) {
             if ((met/meff2j)>0.3 && meff_incl>1900.)_numAT++;
             if ((met/meff2j)>0.4 && meff_incl>1300.)_numAM++;
