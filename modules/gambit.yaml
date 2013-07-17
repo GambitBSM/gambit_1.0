@@ -18,13 +18,13 @@
 --- # Observables of interest
 ###############################
 
-# - obsType:      Likelihood
+# - purpose:      Likelihood
 #   capability:   nevents_like
 #   type:         ""
 #   function:     ""
 #   module:       ""
 
-- obsType:      Likelihood
+- purpose:      Likelihood
   capability:   omega_DM
   type:         ""
   function:     ""

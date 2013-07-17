@@ -22,11 +22,11 @@ namespace GAMBIT
     // Structs corresponding to inifile
     namespace Types
     {
-      // Dependency and Observable have the same type (and obsType entry is
+      // Dependency and Observable have the same type (and purpose entry is
       // irrelevant for dependencies)
       struct Observable
       {
-        std::string obsType;
+        std::string purpose;
         std::string capability;
         std::string type;
         std::string function;
@@ -57,7 +57,7 @@ namespace YAML {
       #define READ(NAME) \
       if (node[#NAME].IsDefined()) \
         rhs.NAME = node[#NAME].as<std::string>();
-      READ(obsType)
+      READ(purpose)
       READ(capability)
       READ(type)
       READ(function)

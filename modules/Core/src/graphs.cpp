@@ -214,14 +214,14 @@ namespace GAMBIT
       cout << endl << "Vertices registered in masterGraph" << endl;
       cout << "----------------------------------" << endl;
       cout << boost::format(formatString)%
-        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "OBSTYPE"% "STATUS"% "#DEPs"% "#BE_REQs";
+        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
         cout << boost::format(formatString)%
           ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
           (*masterGraph[*vi]).name()%
           (*masterGraph[*vi]).capability()%
           (*masterGraph[*vi]).type()%
-          (*masterGraph[*vi]).obsType()%
+          (*masterGraph[*vi]).purpose()%
           (*masterGraph[*vi]).status()%
           (*masterGraph[*vi]).dependencies().size()%
           (*masterGraph[*vi]).backendreqs().size();
