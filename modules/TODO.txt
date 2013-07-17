@@ -16,6 +16,7 @@ TODO:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
 * Create "little guys" (parameter mini-functors : e.g. *params::M0)
 * Create mini-core for module stand-alone releases
+* Add chained 'depends on parameter' to functor class
 
 Decisions:
 * Separate gambit_example.cpp's
