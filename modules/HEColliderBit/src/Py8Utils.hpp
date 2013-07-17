@@ -55,6 +55,8 @@ namespace GAMBIT {
   /// @name Detailed Pythia8 event record walking/mangling functions
   //@{
 
+
+  /// @todo Rewrite using the Py8 > 176 particle-based methods
   bool fromBottom(int n, const Pythia8::Event& evt) {
     const Pythia8::Particle& p = evt[n];
     if (abs(p.id()) == 5 || PID::hasBottom(p.id())) return true;
@@ -67,12 +69,25 @@ namespace GAMBIT {
   }
 
 
+  /// @todo Rewrite using the Py8 > 176 particle-based methods
   bool fromTau(int n, const Pythia8::Event& evt) {
     const Pythia8::Particle& p = evt[n];
     if (abs(p.id()) == 15) return true;
-    if (p.isParton()) return false; // stop the walking at hadron level
+    if (p.isParton()) return false; // stop the walking at the end of the hadron level
     foreach (int m, evt.motherList(n)) {
       if (fromTau(m, evt)) return true;
+    }
+    return false;
+  }
+
+
+  /// @todo Rewrite using the Py8 > 176 particle-based methods
+  bool fromHadron(int n, const Pythia8::Event& evt) {
+    const Pythia8::Particle& p = evt[n];
+    if (p.isHadron()) return true;
+    if (p.isParton()) return false; // stop the walking at the end of the hadron level
+    foreach (int m, evt.motherList(n)) {
+      if (fromHadron(m, evt)) return true;
     }
     return false;
   }
@@ -110,7 +125,7 @@ namespace GAMBIT {
 
 
   bool isFinalTau(int n, const Pythia8::Event& evt) {
-    // *This* particle must be a b or b-hadron
+    // *This* particle must be a tau
     if (abs(evt[n].id()) != 15) return false;
     // Daughters must *not* include a tau
     foreach (int m, evt.daughterList(n)) {
@@ -152,27 +167,55 @@ namespace GAMBIT {
   inline void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
     Pythia8::Vec4 ptot;
     std::vector<fastjet::PseudoJet> jetparticles;
+    std::vector<fastjet::PseudoJet> bhadrons, taus;
 
+    // Make a first pass to gather unstable final B hadrons and taus
     for (int i = 0; i < pevt.size(); ++i) {
-      if (!pevt[i].isFinal()) continue;
-      if (pevt[i].eta() > 5.0) continue;
       const Pythia8::Particle& p = pevt[i];
 
-      /// @todo Promptness: need an isPrompt function that walks back up the tree
-      bool prompt = false;
+      // Find last b-hadrons in b decay chains as the best proxy for b-tagging
+      if (PID::hasBottom(p.id())) {
+        const vector<int> daughters = p.daughterList();
+        bool no_b_daughter = true;
+        for (int d = 0; d < daughters.size(); ++d) {
+          if (PID::hasBottom(pevt[d].id())) {
+            no_b_daughter = false;
+            break;
+          }
+        }
+        if (no_b_daughter) bhadrons.push_back(vec4_to_pseudojet(p.p()));
+      }
+
+
+    }
+
+
+    for (int i = 0; i < pevt.size(); ++i) {
+      const Pythia8::Particle& p = pevt[i];
+
+
+      // Only consider final state particles within ATLAS/CMS acceptance
+      if (!p.isFinal()) continue;
+      if (abs(p.eta()) > 5.0) continue;
+      // Add to total final state momentum
+      ptot += p.p();
+
+      // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
+      /// @todo Prompt taus... and include hadronically decaying ones only?
+      const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
+
       if (prompt) {
-        /// @todo taus... and include hadronically decaying ones only?
         Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
-        gevt.addParticle(gp); // will be automatically categorised, including invisibles
+        gp->setPrompt();
+        gevt.addParticle(gp); // Will be automatically categorised
       } else {
         // Choose jet constituents (should include neutrinos?)
         /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
         jetparticles.push_back(vec4_to_pseudojet(p.p()));
       }
 
-      // Add to total momentum
-      ptot += p.p();
     }
+
     // Jets
     const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
     fastjet::ClusterSequence cseq(jetparticles, jet_def);
@@ -182,6 +225,7 @@ namespace GAMBIT {
       bool isB = false;
       gevt.addJet(new Jet(pseudojet_to_p4(pj), isB));
     }
+
     // MET
     gevt.setMissingMom(-vec4_to_p4(ptot));
   }
