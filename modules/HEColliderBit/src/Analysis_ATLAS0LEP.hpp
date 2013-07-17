@@ -41,7 +41,7 @@ namespace GAMBIT {
       _njets = new TH1F("njets", "Num jets", 21, -0.5, 20.5);
       _nelecs = new TH1F("nelecs", "Num electrons", 6, -0.5, 5.5);
       _nmuons = new TH1F("nmuons", "Num muons", 6, -0.5, 5.5);
-      _jetpt_1 = new TH1F("jetpt_1", "Lead jet pT", 20, 0.0, 300.0);
+      _jetpt_1 = new TH1F("jetpt_1", "Lead jet pT", 20, 0.0, 1000.0);
       _jetpt_all = new TH1F("jetpt_all", "All jets pT", 50, 0.0, 500.0);
       _meff_all = new TH1F("meff_all", "Inclusive m_eff", 20, 0.0, 300.0);
       _met = new TH1F("met", "Missing ET", 40, 0.0, 800.0);
