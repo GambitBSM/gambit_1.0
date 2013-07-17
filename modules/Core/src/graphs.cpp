@@ -181,6 +181,7 @@ namespace GAMBIT
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
+      IniParser::ObservablesType observables = myIniFile.getObservables();
       // (cap., typ) --> dep. vertex map
       std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
       std::pair<sspair, Graphs::VertexID> queueEntry;
@@ -189,7 +190,7 @@ namespace GAMBIT
       cout <<         "------------------------------" << endl;
       cout <<         "CAPABILITY (TYPE)"   << endl;
       for (IniParser::ObservablesType::const_iterator it =
-          myIniFile.observables.begin(); it != myIniFile.observables.end(); ++it)
+          observables.begin(); it != observables.end(); ++it)
       {
         cout << (*it).capability << " (" << (*it).type << ")" << endl;
         queueEntry.first.first = (*it).capability;
@@ -322,12 +323,13 @@ namespace GAMBIT
     {
       // Define alpha/omega vertices
       module_functor<double> * p_modfunc;
+      std::vector<std::string> parameters = myIniFile.getParameterList();
 
       // Input legs
-      for (IniParser::ParametersType::const_iterator it =
-          myIniFile.parameters.begin(); it != myIniFile.parameters.end(); ++it)
+      for (std::vector<std::string>::const_iterator it =
+          parameters.begin(); it != parameters.end(); ++it)
       {
-        inputMap[(*it).name] = new double;
+        inputMap[*it] = new double;
       }
       for (inputMapType::iterator it = inputMap.begin(); it != inputMap.end();
           ++it)
@@ -367,13 +369,13 @@ namespace GAMBIT
       // If toVertex is CoreOut vertex, use observable entries.
       if ( toVertex == OMEGA_VERTEXID)
       {
-        depEntry = findIniEntry(quantity, myIniFile.observables);
+        depEntry = findIniEntry(quantity, myIniFile.getObservables());
         entryExists = true;
       }
       // for all other vertices.
       else 
       {
-        auxEntry = findIniEntry(toVertex, myIniFile.auxiliaries);
+        auxEntry = findIniEntry(toVertex, myIniFile.getAuxiliaries());
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 

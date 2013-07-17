@@ -21,10 +21,10 @@ namespace GAMBIT
       std::vector<YAML::Node> roots = YAML::LoadAllFromFile(filename);
 
       // Set central nodes
-      YAML::Node inputNode = roots[0];
+      parametersNode = roots[0];
       YAML::Node outputNode = roots[1];
       YAML::Node auxNode = roots[2];
-      mapNode = roots[3];
+      keyValuePairNode = roots[3];
 
       // Read likelihood/observables
       for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)
@@ -37,13 +37,6 @@ namespace GAMBIT
       {
         auxiliaries.push_back((*it).as<Types::Observable>());
       }
-
-      // Read scanner parameters
-      for(YAML::const_iterator it=inputNode.begin(); it!=inputNode.end(); ++it)
-      {
-        parameters.push_back((*it).as<Types::Parameter>());
-      }
-      return 0;
     }
   }
 }
