@@ -1,17 +1,14 @@
-CC=g++
-CFLAGS=-c -g -Wall `root-config --cflags`
-LDFLAGS=`root-config --glibs`
-DELPHESINCL=-I/home/mwhi/heplocal/external -I/home/mwhi/heplocal/modules -I/home/mwhi/heplocal 
-DELPHESLIB=-L/home/mwhi/heplocal -lDelphes
+CC := g++
+CFLAGS := -O3 -pedantic -Wall -Wno-long-long #-std=c++11
+ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 
-ATLAS0Lep: ATLAS0Lep.o 
-	$(CC) $(LDFLAGS) $(DELPHESLIB)  ATLAS0Lep.o  -o ATLAS0Lep
+#You can set your own xxxDIR variables in your .bashrc 
+DELPHESDIR := $(DELPSDIR)
 
-ATLAS0Lep.o : ATLAS0Lep.cxx
-	$(CC) $(CFLAGS) $(DELPHESINCL) ATLAS0Lep.cxx
+DELPHESFLAGS := -I$(DELPHESDIR)/external -I$(DELPHESDIR)/modules -I$(DELPHESDIR) -L$(DELPHESDIR) -lDelphes
 
-ATLAS0Lep-INT: ATLAS0Lep-INT.o
-	$(CC) $(LDFLAGS) $(DELPHESLIB)  ATLAS0Lep-INT.o  -o ATLAS0Lep-INT
+ATLAS0Lep : ATLAS0Lep.cxx
+	$(CC) ATLAS0Lep.cxx $(CFLAGS) $(ROOTFLAGS) $(DELPHESFLAGS) -lEG -o ATLAS0Lep
 
-ATLAS0Lep-INT.o : ATLAS0Lep-INT.cxx
-	$(CC) $(CFLAGS) $(DELPHESINCL) ATLAS0Lep-INT.cxx
+ATLAS0Lep-INT : ATLAS0Lep-INT.cxx
+	$(CC) ATLAS0Lep-INT.cxx $(CFLAGS) $(ROOTFLAGS) $(DELPHESFLAGS) -lEG -o ATLAS0Lep-INT
