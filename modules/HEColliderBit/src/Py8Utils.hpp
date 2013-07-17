@@ -174,25 +174,21 @@ namespace GAMBIT {
       const Pythia8::Particle& p = pevt[i];
 
       // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-      if (PID::hasBottom(p.id())) {
-        const vector<int> daughters = p.daughterList();
-        bool no_b_daughter = true;
-        for (int d = 0; d < daughters.size(); ++d) {
-          if (PID::hasBottom(pevt[d].id())) {
-            no_b_daughter = false;
-            break;
-          }
-        }
-        if (no_b_daughter) bhadrons.push_back(vec4_to_pseudojet(p.p()));
+      if (isFinalB(i, pevt)) bhadrons.push_back(vec4_to_pseudojet(p.p()));
+
+      // Find last tau in tau replica chains as a proxy for tau-tagging
+      // Also require that the tau are prompt
+      /// @todo Only accept hadronically decaying taus?
+      if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
+        taus.push_back(vec4_to_pseudojet(p.p()));
+        Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
+        gp->setPrompt();
+        gevt.addParticle(gp); // Will be automatically categorised
       }
-
-
     }
-
 
     for (int i = 0; i < pevt.size(); ++i) {
       const Pythia8::Particle& p = pevt[i];
-
 
       // Only consider final state particles within ATLAS/CMS acceptance
       if (!p.isFinal()) continue;
@@ -201,7 +197,6 @@ namespace GAMBIT {
       ptot += p.p();
 
       // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-      /// @todo Prompt taus... and include hadronically decaying ones only?
       const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
       if (prompt) {
@@ -211,22 +206,33 @@ namespace GAMBIT {
       } else {
         // Choose jet constituents (should include neutrinos?)
         /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
+        /// @todo Use ghost tagging! For fun...
         jetparticles.push_back(vec4_to_pseudojet(p.p()));
       }
 
     }
 
-    // Jets
+    // Jet finding
+    // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
     const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
     fastjet::ClusterSequence cseq(jetparticles, jet_def);
     vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+
+    // Do jet b-tagging, etc. and add to the Event
     foreach (const fastjet::PseudoJet& pj, pjets) {
-      /// @todo b-tagging
+      /// @todo Use ghost tagging! For fun...
       bool isB = false;
+      foreach (const fastjet::PseudoJet& pb, bhadrons) {
+        if (pj.delta_R(pb) < 0.3) {
+          isB = true;
+          break;
+        }
+      }
+      /// Add to the event
       gevt.addJet(new Jet(pseudojet_to_p4(pj), isB));
     }
 
-    // MET
+    // MET (not equal to sum of prompt invisibles)
     gevt.setMissingMom(-vec4_to_p4(ptot));
   }
 
