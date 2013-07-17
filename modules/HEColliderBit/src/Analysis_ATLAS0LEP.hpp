@@ -37,6 +37,25 @@ namespace GAMBIT {
       return(std::min(min1,dphi3));
     }
 
+    double SmallestRemainingdPhi(const std::vector<Jet *> jets,double phi_met)
+    {
+      double remainingDPhi=999;
+      double dphiMin=999;
+      unsigned int jetcount = 0;
+      int njets=jets.size();
+      for (int i=0;i<njets;i++)
+	{      
+	  Jet * jet = jets.at(i);
+	  jetcount++;
+	  if(jetcount>3&&jet->pT()>40.){
+	    remainingDPhi=std::acos(std::cos((jet->phi()
+					      -phi_met)));
+	    dphiMin=std::min(remainingDPhi,dphiMin);
+	  }
+	}
+      return(dphiMin);
+    }
+    
 
     void analyze(const Event* event) {
       P4 ptot = event->missingMom();
@@ -138,7 +157,7 @@ namespace GAMBIT {
 	  
           float dPhiMin=9999;
           int numJets=0;
-          for (int iJet=0;iJet<nJets;iJet++) {
+          /*for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
             if (jet->pT()<40.) continue;
@@ -148,7 +167,7 @@ namespace GAMBIT {
               dPhiMin=dphi;
               numJets+=1;
             }
-	  }
+	    }*/
 	  dPhiMin=SmallestdPhi(signalJets,ptot.phi());
 
 	  dphimin_debug=dPhiMin;
@@ -169,7 +188,7 @@ namespace GAMBIT {
         if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60.) {
           float dPhiMin=9999;
           int numJets=0;
-          for (int iJet=0;iJet<nJets;iJet++) {
+          /*for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
             if (jet->pT()<40.) continue;
@@ -179,7 +198,8 @@ namespace GAMBIT {
               dPhiMin=dphi;
               numJets+=1;
             }
-          }
+	    }*/
+	  dPhiMin=SmallestdPhi(signalJets,ptot.phi());
 
           float meff3j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT();
           if (leptonCut && metCut && dPhiMin>0.4) {
@@ -195,7 +215,7 @@ namespace GAMBIT {
         if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60.) {
           float dPhiMin4=9999;
           int numJets=0;
-          for (int iJet=0;iJet<nJets;iJet++) {
+          /*for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
             if (jet->pT()<40.) continue;
@@ -205,10 +225,13 @@ namespace GAMBIT {
               dPhiMin4=dphi;
               numJets+=1;
             }
-          }
+	    }*/
+	  dPhiMin4=SmallestdPhi(signalJets,ptot.phi());
+
+	  
 
           float dPhiMin2=9999;
-          for (int iJet=0;iJet<nJets;iJet++) {
+          /*for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
             if (jet->pT()<40.) continue;
@@ -216,7 +239,8 @@ namespace GAMBIT {
             if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
-          }
+	    }*/
+	  dPhiMin2=SmallestRemainingdPhi(signalJets,ptot.phi());
 
           float meff4j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT();
 
@@ -234,7 +258,7 @@ namespace GAMBIT {
 
 
           float dPhiMin4=9999;
-          int numJets=0;
+          /*int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
@@ -245,10 +269,11 @@ namespace GAMBIT {
               dPhiMin4=dphi;
               numJets+=1;
             }
-          }
+	    }*/
+	  dPhiMin4=SmallestdPhi(signalJets,ptot.phi());
 
           float dPhiMin2=9999;
-          for (int iJet=0;iJet<nJets;iJet++) {
+          /*for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
             if (jet->pT()<40.) continue;
@@ -256,7 +281,8 @@ namespace GAMBIT {
             if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
-          }
+	    }*/
+	  dPhiMin2=SmallestRemainingdPhi(signalJets,ptot.phi());
 
           float meff5j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT();
 
@@ -272,7 +298,7 @@ namespace GAMBIT {
 
 
           float dPhiMin4=9999;
-          int numJets=0;
+          /*int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             P4 jetVec=jet->mom();
@@ -283,17 +309,19 @@ namespace GAMBIT {
               dPhiMin4=dphi;
               numJets+=1;
             }
-          }
-
+	    }*/
+	  dPhiMin4=SmallestdPhi(signalJets,ptot.phi());
+	  
           float dPhiMin2=9999;
-          for (int iJet=0;iJet<nJets;iJet++) {
+          /*for (int iJet=0;iJet<nJets;iJet++) {
             Jet * jet=signalJets.at(iJet);
             if (jet->pT()<40.) continue;
             float dphi=ptot.deltaPhi(jet->mom());
             if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
-          }
+	    }*/
+	  dPhiMin2=SmallestRemainingdPhi(signalJets,ptot.phi());
 
           float meff6j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT() + signalJets.at(5)->pT();
 

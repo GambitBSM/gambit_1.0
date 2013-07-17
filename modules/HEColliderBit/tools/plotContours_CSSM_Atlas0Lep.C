@@ -65,7 +65,9 @@ TH2D * makeMy0Lep(string channel,float systematic){
   ifstream in;
   ofstream out;
   ostringstream inputFile;
-  inputFile << "sigmaTimesATimesEff_cmssm_atlas0lep.txt";
+  //inputFile << "sigmaTimesATimesEff_cmssm_atlas0lep.txt";
+  //inputFile << "sigmaTimesATimesEffStandalone.txt";
+  inputFile << "sigmaTimesATimesEff.txt";
   in.open(inputFile.str().c_str());
   
   // Declaration of leaf types
