@@ -13,6 +13,7 @@ namespace GAMBIT {
   /// Simple event class, separating into various classes of particle
   class Event {
   private:
+
     /// @name Serialization
     //@{
     friend class boost::serialization::access;
@@ -189,9 +190,6 @@ namespace GAMBIT {
     const std::vector<Particle*>& photons() const {
       return _photons;
     }
-
-
-    /// @todo Don't do the on the fly calculation, actually: it's up to the filling routine to do that
 
 
     /// @name Jets
