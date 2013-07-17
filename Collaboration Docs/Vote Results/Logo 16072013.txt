@@ -1,0 +1,33 @@
+16 votes received.
+
+1st preferences:
+
+Torsten's blobs   3
+Joakim blobls     0
+Contours          3
+Chess             3
+Poker             2
+Card              5
+
+Joakim's blobs eliminated.  No preferences distributed.
+Poker eliminated.  Preferences distributed:
+
+Torsten's blobs   3
+Contours          3 1/3
+Chess             3 1/3
+Card              6 1/3
+
+Torsten's blobs eliminated.  Preferences distributed:
+
+Contours          3 1/3
+Chess             4 1/3
+Card              8 1/3
+
+Card has passed 50%.  Card wins.  2-option preferred would look like:
+
+Chess             5 1/3
+Card              9 1/3 
+
+
+
+
