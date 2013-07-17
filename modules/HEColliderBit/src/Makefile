@@ -9,7 +9,7 @@ BOOST :=$(BOOSTDIR)
 
 
 CXX := g++
-CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long #-std=c++11
+CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized -Werror=delete-non-virtual-dtor #-std=c++11
 
 UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
 DELPHESHEADERS := Delphes3Backend.hpp
