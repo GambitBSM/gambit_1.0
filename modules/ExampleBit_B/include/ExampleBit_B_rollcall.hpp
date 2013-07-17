@@ -92,7 +92,6 @@ START_MODULE
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
     DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
-    //TYPICAL_EXECUTION_SECS(1e-05)         // Typical time required for obtaining a result from this function
 
       #define BACKEND_REQ awesomeness       // awesomeness must be obtained from an external (backend) code, with
       START_BACKEND_REQ(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
@@ -101,9 +100,13 @@ START_MODULE
       BACKEND_OPTION(LibThird,1.2,1.3 , 1.5)// Specify that v1.2/1.3/1.5 of LibThird are also a viable providers of awesomeness
       #undef BACKEND_REQ                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
        
+      #define BACKEND_REQ runMe             // runMe subroutine needs to come from a backend
+      START_BACKEND_REQ(void)               
+      #undef BACKEND_REQ
+
       #define CONDITIONAL_DEPENDENCY id     // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
       START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
-      ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.0, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
+      ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
       ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
       //ACTIVATE_FOR_MODEL(MSSM)                             // Dependency counts when scanning the MSSM or one of its sub-models
       #undef CONDITIONAL_DEPENDENCY

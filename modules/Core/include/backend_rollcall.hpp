@@ -41,13 +41,13 @@
 
 // Get a bit fancy and include duplicate backends 
 
-#define BACKENDRENAME LibSecond
-  #include "backend_libfirst.hpp"
-#undef BACKENDRENAME
+//#define BACKENDRENAME LibSecond
+//  #include "backend_libfirst.hpp"
+//#undef BACKENDRENAME
 
-#define BACKENDRENAME LibThird
-  #include "backend_libfirst.hpp"
-#undef BACKENDRENAME
+//#define BACKENDRENAME LibThird
+//  #include "backend_libfirst.hpp"
+//#undef BACKENDRENAME
 
 
 #endif /* defined __backend_rollcall_hpp__ */

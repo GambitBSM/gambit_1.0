@@ -18,11 +18,11 @@
 --- # Observables of interest
 ###############################
 
-# - purpose:      Likelihood
-#   capability:   nevents_like
-#   type:         ""
-#   function:     ""
-#   module:       ""
+- purpose:      Likelihood
+  capability:   nevents_postcuts
+  type:         ""
+  function:     ""
+  module:       ""
 
 - purpose:      Likelihood
   capability:   omega_DM
@@ -44,6 +44,10 @@
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
+#- capability:   "awesomeness"
+#  type:         ""
+#  function:     ""
+#  backend:      "libFirst"
 
 ##########################
 --- # Name/Value Section

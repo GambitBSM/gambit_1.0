@@ -67,7 +67,7 @@ START_MODULE
     #define FUNCTION function_pointer_retriever
     START_FUNCTION(fptr)
 
-      #define BACKEND_REQ runMe            
+      #define BACKEND_REQ externalFunction            
       START_BACKEND_REQ(double)            
       #undef BACKEND_REQ
 
