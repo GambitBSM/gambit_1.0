@@ -14,6 +14,7 @@ namespace GAMBIT {
     virtual ~Analysis() {  }
 
     /// Initialize counters etc.
+    /// @todo Call this automatically on first call to analyze() -- requires a bit of indirection
     virtual void init() {  }
 
     /// Analyze the event (accessed by reference)
@@ -21,12 +22,13 @@ namespace GAMBIT {
 
     /// Analyze the event (accessed by pointer)
     /// @todo Make this the convenience method and the ref version the one to be overridden
+    /// @todo Call init() automatically on first call to analyze() -- requires a bit of indirection
     virtual void analyze(const Event* e) = 0;
 
     /// Finalize: scale by number of input events, etc.
     virtual void finalize() {  }
 
-    /// Return the log likelihood (at the end of the run)
+    /// Return the log_e likelihood (at the end of the run)
     virtual double logLikelihood() = 0;
 
     /// Return the likelihood (at the end of the run, via logLikelihood)
