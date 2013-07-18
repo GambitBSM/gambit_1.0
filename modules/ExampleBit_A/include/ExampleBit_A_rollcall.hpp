@@ -28,6 +28,8 @@
 
 #include <module_macros.hpp>
 
+typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp
+
 #define MODULE ExampleBit_A
 START_MODULE
 
@@ -54,6 +56,21 @@ START_MODULE
     #define FUNCTION nevents_like           // Likelihood: Likelihood of seeing number of events 
     START_FUNCTION(double)                  // Function calculates the nevents_like likelihood as a double precision variable                  
     DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events       
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY function_pointer
+  START_CAPABILITY
+
+    #define FUNCTION function_pointer_retriever
+    START_FUNCTION(fptr)
+
+      #define BACKEND_REQ externalFunction            
+      START_BACKEND_REQ(double)            
+      #undef BACKEND_REQ
+
     #undef FUNCTION
 
   #undef CAPABILITY

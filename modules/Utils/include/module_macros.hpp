@@ -774,8 +774,10 @@
                 cout<<"attempting to retrieve backend requirement"<<endl;      \
                 cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
                 cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
-                cout<<"). Probably you have passed arguments of the wrong ";   \
-                cout<<"type(s) when calling this function."<<endl;             \
+                cout<<"). Probably you have passed arguments of the "<<endl;   \
+                cout<<"wrong type(s) when calling this function."<<endl;       \
+                cout<<"The return type of the backend function is supposed ";  \
+                cout<<"to be "<<STRINGIFY(TYPE)<<endl;                         \
                 /** FIXME \todo throw real error here */                       \
               }                                                                \
             }                                                                  \

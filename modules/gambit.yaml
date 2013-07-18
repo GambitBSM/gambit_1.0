@@ -8,23 +8,24 @@
 --- # Input parameters
 ########################
 
-- parameter: m0
-  range:     [1, 3.5]
+m0:
+  range: [1, 3.5]
+  fixed: true
 
-- parameter: m1
-  range:     [1, 3.5]
+m1:
+  range: [2, 4.5]
 
 ###############################
 --- # Observables of interest
 ###############################
 
-# - obsType:      Likelihood
-#   capability:   nevents_like
-#   type:         ""
-#   function:     ""
-#   module:       ""
+- purpose:      Likelihood
+  capability:   nevents_postcuts
+  type:         ""
+  function:     ""
+  module:       ""
 
-- obsType:      Likelihood
+- purpose:      Likelihood
   capability:   omega_DM
   type:         ""
   function:     ""
@@ -44,9 +45,19 @@
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
+#- capability:   "awesomeness"
+#  type:         ""
+#  function:     ""
+#  backend:      "libFirst"
 
 ##########################
 --- # Name/Value Section
 ##########################
 
-key: param
+my_key: 12345
+another_key:
+  subkey1: 3.1415
+  subkey2: green
+  subkey3:
+    subsubkey1: going
+    subsubkey2: deeper
