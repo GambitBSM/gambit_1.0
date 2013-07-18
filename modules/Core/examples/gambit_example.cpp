@@ -48,8 +48,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
-#include <crapsample.hpp>
+//#include <gambit_scan.hpp>
+//#include <crapsample.hpp>
 
 using namespace GAMBIT;
 

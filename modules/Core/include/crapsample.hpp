@@ -6,7 +6,7 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-#include <ofstream>
+#include <fstream>
 
 class Ran
 {
@@ -49,7 +49,7 @@ public:
 	
 	void Run()
 	{
-		ofstream out(output_file.c_str());
+		std::ofstream out(output_file.c_str());
 		double ans, chisq, chisqnext;
 		int mult = 1, count = 0, total = 0, ma = upper_limits.size();
 		std::vector<double> a(ma);
