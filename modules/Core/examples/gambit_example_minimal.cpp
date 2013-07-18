@@ -52,10 +52,11 @@ void beispiel(const char* inifilename)
   selectedmodels.push_back(iniFile.getValue<std::string>("model"));  ///TODO: improve
   selectedmodels.push_back(iniFile.getValue<std::string>("model2")); ///TODO: improve
   
-  // Activate "primary" model functors
-  ModelBit::ModelFunctorClaw ModelClaw(globalPrimaryModelFunctorList);
+  // Initialise ModelFunctorClaw (for manipulating primary model functors)
+  ModelBit::ModelFunctorClaw modelClaw(globalPrimaryModelFunctorList);
   
-  ModelClaw.activatePrimaryModels(selectedmodels);
+  // Activate "primary" model functors
+  modelClaw.activatePrimaryModels(selectedmodels);
                                    
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(globalFunctorList,
@@ -68,7 +69,7 @@ void beispiel(const char* inifilename)
   dependencyResolver.resolveNow();
 
   // Check that all requested models are used for at least one computation
-  ModelClaw.checkPrimaryModelFunctorUsage();
+  modelClaw.checkPrimaryModelFunctorUsage();
 
   // Run 100 times
   srand (time(NULL));    // initialize random seed
@@ -82,8 +83,8 @@ void beispiel(const char* inifilename)
   for (int i = 0; i<1000; i++)
   {
     // Set parameter values in active primary_model_parameter functors
-    for(activemodel_it it = ModelClaw.activeModelFunctors.begin(); 
-        it != ModelClaw.activeModelFunctors.end(); it++) 
+    for(activemodel_it it = modelClaw.activeModelFunctors.begin(); 
+        it != modelClaw.activeModelFunctors.end(); it++) 
     {
         modelname = it->first;
         functorPtr= it->second;
