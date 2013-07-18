@@ -181,7 +181,7 @@ namespace GAMBIT
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
-      IniParser::ObservablesType observables = myIniFile.getObservables();
+      const IniParser::ObservablesType & observables = myIniFile.getObservables();
       // (cap., typ) --> dep. vertex map
       std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
       std::pair<sspair, Graphs::VertexID> queueEntry;
@@ -536,7 +536,7 @@ namespace GAMBIT
 
     // Find observable entry that matches capability/type
     const IniParser::ObservableType *DependencyResolver::findIniEntry(
-        sspair quantity, const IniParser::ObservablesType &entries)
+        sspair quantity, const IniParser::ObservablesType & entries)
     {
       std::vector<const IniParser::ObservableType*> obsEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =
