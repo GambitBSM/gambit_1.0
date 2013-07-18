@@ -120,6 +120,7 @@ int main( int argc, const char* argv[] )
     std::cout << "Error! No inifile specified!" << std::endl;
     std::cout << "Usage is: gambit_example_minimal <inifile>" << std::endl; // Inform the user of how to use the program
     std::cout << "  e.g.  : gambit_example_minimal gambit.yaml" << std::endl;
+    std::cout << "        : gambit_example_minimal modelbit_test.yaml" << std::endl;
     exit(0);
   } 
   else { // if we got enough parameters...

@@ -9,7 +9,8 @@ export
 
 CC = g++ 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lyaml-cpp -lirc -lrt
+LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lyaml-cpp -lrt
+# -lirc
 CFLAGS = -O3 -Wall -g
 
 FC = gfortran
