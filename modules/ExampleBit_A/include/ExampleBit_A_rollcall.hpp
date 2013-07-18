@@ -27,6 +27,9 @@
 #define __ExampleBit_A_rollcall_hpp__
 
 #include <module_macros.hpp>
+#include <ModelParameters.hpp> //replace with model_macros.hpp?
+
+typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp
 
 #define MODULE ExampleBit_A
 START_MODULE
@@ -59,6 +62,21 @@ START_MODULE
   #undef CAPABILITY
 
 
+  #define CAPABILITY function_pointer
+  START_CAPABILITY
+
+    #define FUNCTION function_pointer_retriever
+    START_FUNCTION(fptr)
+
+      #define BACKEND_REQ externalFunction            
+      START_BACKEND_REQ(double)            
+      #undef BACKEND_REQ
+
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
   #define CAPABILITY id                     // A physical observable or likelihood that this module can calculate
   START_CAPABILITY
 
@@ -68,6 +86,15 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
+  START_CAPABILITY
+  
+    #define FUNCTION damu
+    START_FUNCTION(double)
+    DEPENDENCY(test_parent_I_parameters, ModelParameters)      // to be replaced with specialised macro (probably just a wrapper for DEPENDENCY which automatically appends "_parameters" to a model name and attached the type (ModelParameters)
+    #undef FUNCTION
+
+  #undef CAPABILITY
 
 #undef MODULE
 

@@ -181,6 +181,7 @@ namespace GAMBIT
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
+      const IniParser::ObservablesType & observables = myIniFile.getObservables();
       // (cap., typ) --> dep. vertex map
       std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
       std::pair<sspair, Graphs::VertexID> queueEntry;
@@ -189,7 +190,7 @@ namespace GAMBIT
       cout <<         "------------------------------" << endl;
       cout <<         "CAPABILITY (TYPE)"   << endl;
       for (IniParser::ObservablesType::const_iterator it =
-          myIniFile.observables.begin(); it != myIniFile.observables.end(); ++it)
+          observables.begin(); it != observables.end(); ++it)
       {
         cout << (*it).capability << " (" << (*it).type << ")" << endl;
         queueEntry.first.first = (*it).capability;
@@ -214,14 +215,14 @@ namespace GAMBIT
       cout << endl << "Vertices registered in masterGraph" << endl;
       cout << "----------------------------------" << endl;
       cout << boost::format(formatString)%
-        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "OBSTYPE"% "STATUS"% "#DEPs"% "#BE_REQs";
+        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
         cout << boost::format(formatString)%
           ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
           (*masterGraph[*vi]).name()%
           (*masterGraph[*vi]).capability()%
           (*masterGraph[*vi]).type()%
-          (*masterGraph[*vi]).obsType()%
+          (*masterGraph[*vi]).purpose()%
           (*masterGraph[*vi]).status()%
           (*masterGraph[*vi]).dependencies().size()%
           (*masterGraph[*vi]).backendreqs().size();
@@ -322,12 +323,13 @@ namespace GAMBIT
     {
       // Define alpha/omega vertices
       module_functor<double> * p_modfunc;
+      std::vector<std::string> parameters = myIniFile.getParameterList();
 
       // Input legs
-      for (IniParser::ParametersType::const_iterator it =
-          myIniFile.parameters.begin(); it != myIniFile.parameters.end(); ++it)
+      for (std::vector<std::string>::const_iterator it =
+          parameters.begin(); it != parameters.end(); ++it)
       {
-        inputMap[(*it).name] = new double;
+        inputMap[*it] = new double;
       }
       for (inputMapType::iterator it = inputMap.begin(); it != inputMap.end();
           ++it)
@@ -348,7 +350,14 @@ namespace GAMBIT
       for (std::vector<functor *>::iterator it = functorList.begin();
           it != functorList.end(); ++it)
       {
-        boost::add_vertex(*it, this->masterGraph);
+        // Ben: Added check to ignore functors with status set to 0 (i.e. never
+        // add them to the graph). If you don't want the value 0 to mean this,
+        // we can use -1 or something instead. I am doing this so that we can
+        // ignore primary_model_functors which are not to be used for the scan.
+        if ( (*it)->status() != 0 ) 
+        {
+          boost::add_vertex(*it, this->masterGraph);
+        }
       }
       this->myBackendFunctorList = backendFunctorList;
     }
@@ -367,13 +376,13 @@ namespace GAMBIT
       // If toVertex is CoreOut vertex, use observable entries.
       if ( toVertex == OMEGA_VERTEXID)
       {
-        depEntry = findIniEntry(quantity, myIniFile.observables);
+        depEntry = findIniEntry(quantity, myIniFile.getObservables());
         entryExists = true;
       }
       // for all other vertices.
       else 
       {
-        auxEntry = findIniEntry(toVertex, myIniFile.auxiliaries);
+        auxEntry = findIniEntry(toVertex, myIniFile.getAuxiliaries());
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 
@@ -534,7 +543,7 @@ namespace GAMBIT
 
     // Find observable entry that matches capability/type
     const IniParser::ObservableType *DependencyResolver::findIniEntry(
-        sspair quantity, const IniParser::ObservablesType &entries)
+        sspair quantity, const IniParser::ObservablesType & entries)
     {
       std::vector<const IniParser::ObservableType*> obsEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =

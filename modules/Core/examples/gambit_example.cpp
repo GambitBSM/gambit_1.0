@@ -76,6 +76,17 @@ void beispiel()
   // Do the dependency resolution
   dependencyResolver.resolveNow();
 
+  // Examples for getting information from the key/value section of the
+  // inifile
+  cout << iniFile.getValue<double>("my_key") << endl;
+  cout << iniFile.getValue<string>("another_key", "subkey3", "subsubkey1") << endl;
+
+  // Examples for getting information from the parameter section
+  cout << iniFile.getParameterList() << endl;
+  cout << iniFile.getParameterEntry<bool>("m0", "fixed");
+  std::pair<double, double> range = iniFile.getParameterEntry< std::pair<double, double> >("m1", "range");
+  cout << range.first << " " << range.second << endl;
+
   // Run 100 times
   for (int i = 0; i<1000; i++)
   {
@@ -160,12 +171,12 @@ int main( int argc, const char* argv[] )
   // ---- Resolve dependencies --------------
   
   // CMSSM_I parameters dependency
-  models::CMSSM_I::Functown::parameters.resolveDependency(
+  models::CMSSM_I::Functown::primary_parameters.resolveDependency(
                                 &TEMP_ScannerBit::Functown::generate_parameters);
   
   // CMSSM_I interpret_as_parent dependencies
   models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
-                                &models::CMSSM_I::Functown::parameters);
+                                &models::CMSSM_I::Functown::primary_parameters);
   models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
                                 &ExampleBit_A::Functown::nevents_dbl);
   
@@ -182,7 +193,7 @@ int main( int argc, const char* argv[] )
   TEMP_ScannerBit::Functown::generate_parameters.calculate();
   
   // ModelBit: insert alpha_parameters into primary parameters functor
-  models::CMSSM_I::Functown::parameters.calculate();
+  models::CMSSM_I::Functown::primary_parameters.calculate();
   
   // Model parameters now ready for delivery to other functors
   // e.g. interpret_as_parent
@@ -208,7 +219,7 @@ int main( int argc, const char* argv[] )
       }
   cout<<"  ModelBit:"<<endl;
   cout<<"    CMSSM_I parameters:"<<endl;
-  models::CMSSM_I::Functown::parameters.valuePtr()->print();
+  models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
   cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
   models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
   cout<<"    MSSM_I -> test_parent_I_parameters:"<<endl;
@@ -282,11 +293,11 @@ int main( int argc, const char* argv[] )
   cout << "  "; models::CMSSM_I::report("parameters");
   if (models::CMSSM_I::provides("CMSSM_I_parameters")) {
     cout << "OK, so what is it then?" << endl;
-    typedef models::CMSSM_I::function_traits<Tags::parameters>::type testType; //in this case the underlying type is ModelParameters
+    typedef models::CMSSM_I::function_traits<Tags::primary_parameters>::type testType; //in this case the underlying type is ModelParameters
     // Call the module function by its tag
     // (creates a copy of the parameters object?)
     /*
-    testType* CMSSMIparameters = models::CMSSM::I::result<Tags::parameters>;
+    testType* CMSSMIparameters = models::CMSSM::I::result<Tags::primary_parameters>;
     // Extract parameters from the retrieved parameter object
     cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
       CMSSMIparameters->getValue("M0")<< " (tag-style)" <<endl ;
@@ -304,12 +315,12 @@ int main( int argc, const char* argv[] )
     cout << endl ;
     // First, make sure the functor has "run" so that it has obtained its values
     // from the alpha_parameters map supplied by TEMP_ScannerBit.
-    models::CMSSM_I::Functown::parameters.calculate(); //Already done, but doing it again won't hurt
+    models::CMSSM_I::Functown::primary_parameters.calculate(); //Already done, but doing it again won't hurt
     
     // Next, grab a safe pointer to the model object
     // Cannot get the object using the () method because this *copies* the object
     // stored in "value".
-    safe_ptr<ModelParameters> CMSSMIsafeptr = models::CMSSM_I::Functown::parameters.valuePtr();
+    safe_ptr<ModelParameters> CMSSMIsafeptr = models::CMSSM_I::Functown::primary_parameters.valuePtr();
     
     // Now we can do stuff with the ModelParameters object!
     cout << "  " << models::CMSSM_I::name() << " says: M0 = " << \
@@ -326,7 +337,7 @@ int main( int argc, const char* argv[] )
     // via the dependency system (via alpha_parameters capability)
     /* NOTE: I added a new access method to the functors for this purpose. It
        is indeed for use by ScannerBit, not for general use by modules. */
-    /*ModelParameters* CMSSMIrawptr = models::CMSSM_I::Functown::parameters.rawvaluePtr();
+    /*ModelParameters* CMSSMIrawptr = models::CMSSM_I::Functown::primary_parameters.rawvaluePtr();
     std::vector<str> keys = CMSSMIsafeptr->getKeys();
   
     srand (time(NULL));    // initialize random seed
@@ -380,7 +391,7 @@ int main( int argc, const char* argv[] )
     
     // Resolve dependency by hand
     models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(\
-        &models::CMSSM_I::Functown::parameters);
+        &models::CMSSM_I::Functown::primary_parameters);
     // Have now added an extra dependency, resolve this too:
     models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(\
         &ExampleBit_A::Functown::nevents_dbl);

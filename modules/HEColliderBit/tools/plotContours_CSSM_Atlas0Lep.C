@@ -18,7 +18,7 @@ TGraph * makeAtlas0Lep(string filename){
   ifstream in;
   in.open(filename.c_str());
   float m0,mhf;
-  float m0values[38],mhfvalues[38],dummyvalues[38];
+  float m0values[70],mhfvalues[70],dummyvalues[70];
   int entry=0;
 
   while (1) {
@@ -32,7 +32,7 @@ TGraph * makeAtlas0Lep(string filename){
     }
   }
   
-  TGraph* gr = new TGraph(38,m0values, mhfvalues);
+  TGraph* gr = new TGraph(70,m0values, mhfvalues);
   gr->SetLineColor(1);
   gr->SetLineWidth(3);
   //gr->Draw("AL");
@@ -42,7 +42,7 @@ TGraph * makeAtlas0Lep(string filename){
 
 
 
-TH2D * makeMy0Lep(string channel,float systematic){
+TH2F * makeMy0Lep(string channel,float systematic){
   //Thus function makes my limit from tabulated data
   //The data is made by simulating events in the m0-mhf plane
   //Read in sigma*A*eff and scale to correct luminosity
@@ -65,7 +65,9 @@ TH2D * makeMy0Lep(string channel,float systematic){
   ifstream in;
   ofstream out;
   ostringstream inputFile;
-  inputFile << "sigmaTimesATimesEff_cmssm_atlas0lep.txt";
+  //inputFile << "sigmaTimesATimesEff_cmssm_atlas0lep.txt";
+  //inputFile << "sigmaTimesATimesEffStandalone.txt";
+  inputFile << "sigmaTimesATimesEffIsolFix.txt";
   in.open(inputFile.str().c_str());
   
   // Declaration of leaf types
@@ -79,20 +81,17 @@ TH2D * makeMy0Lep(string channel,float systematic){
   Float_t         sigma;
   Float_t         At,Am,Al,Bt,Bm,Ct,Cm,Cl,D,Et,Em,El;;
 
-  float lumi=5800;
-
-  TH2F * histAtlas=new TH2F("atlasHist","atlasHist",100,300.,3500.,100,180.,900.);
+  float lumi=1.;//5800 (Have already accounted for lumi)
+  string histString="atlasHist"+channel;
+  TH2F * histAtlas=new TH2F(histString.c_str(),histString.c_str(),100,300.,3500.,100,180.,900.);
 
   float m0values[1000],mhfvalues[1000],atlasValues[1000];
 
-  //MJW temp fix to account for the fact that the yield numbers were not originally scaled by the number of generated events (10000)
-  systematic=systematic/10000.;
-  
   int entry=0;
   while (1) {
     if (!in.good()) break;
     in >> m0 >> mhf >> At >> Am >> Al >> Bt >> Bm >> Ct >> Cm >> Cl >> D >> Et >> Em >> El;
-    cout << "At " << At << endl;
+    cout << "Et " << Et << endl;
     if(channel=="At"){
       histAtlas->Fill(m0,mhf,At*lumi*systematic);
       atlasValues[entry]=At*lumi*systematic;
@@ -119,21 +118,21 @@ TH2D * makeMy0Lep(string channel,float systematic){
     }
 
     if(channel=="Ct"){
-      histAtlas->Fill(m0,mhf,At*lumi*systematic);
-      atlasValues[entry]=At*lumi*systematic;
+      histAtlas->Fill(m0,mhf,Ct*lumi*systematic);
+      atlasValues[entry]=Ct*lumi*systematic;
     }
 
     if(channel=="Cm"){
-      histAtlas->Fill(m0,mhf,Am*lumi*systematic);
-      atlasValues[entry]=Am*lumi*systematic;
+      histAtlas->Fill(m0,mhf,Cm*lumi*systematic);
+      atlasValues[entry]=Cm*lumi*systematic;
     }
 
     if(channel=="Cl"){
-      histAtlas->Fill(m0,mhf,Al*lumi*systematic);
-      atlasValues[entry]=Al*lumi*systematic;
+      histAtlas->Fill(m0,mhf,Cl*lumi*systematic);
+      atlasValues[entry]=Cl*lumi*systematic;
     }
 
-    if(channel=="D"){
+    if(channel=="Dt"){
       histAtlas->Fill(m0,mhf,D*lumi*systematic);
       atlasValues[entry]=D*lumi*systematic;
     }
@@ -160,15 +159,16 @@ TH2D * makeMy0Lep(string channel,float systematic){
 
   //The following steps are the torturous ROOT code required to make a contour
   gStyle->SetPaintTextFormat("3.1f");
-  TCanvas * c1debug = new TCanvas("c1debug", "ATLAS limits", 500, 500);
-  histAtlas->Draw("text");
-
-  TCanvas * c1 = new TCanvas("c1", "ATLAS limits", 500, 500);
+  //TCanvas * c1debug = new TCanvas("c1debug", "ATLAS limits", 500, 500);
+  //histAtlas->Draw("text");
+  string canvasString="c1"+channel;
+  TCanvas * c1 = new TCanvas(canvasString.c_str(), "ATLAS limits", 500, 500);
   
 
   //Make a TGraph for contour plotting
   TGraph2D* gr = new TGraph2D(999, m0values, mhfvalues, atlasValues );
-  
+  string graphString="gr1"+channel;
+  gr->SetName(graphString.c_str());
   //Draw the graph with Delauney interpolation (i.e. smooth the grid)
   gr->Draw("TRIW");
   //Make a histogram object from the graph
@@ -196,10 +196,11 @@ TH2D * makeMy0Lep(string channel,float systematic){
   frame->Draw();
   h->Draw( "same&&cont2" );
 
-  //TGraph * RealR1Limit=makeAtlas0Lep("RealAtlasLimitR1.txt");
-  //RealR1Limit->GetXaxis()->SetLimits(180.,3500.);
-  //RealR1Limit->GetYaxis()->SetRangeUser(150.,700);
-  //RealR1Limit->Draw("L");
+  
+  TGraph * RealR1Limit=makeAtlas0Lep("atlas"+channel+".dat");
+  RealR1Limit->GetXaxis()->SetLimits(180.,3500.);
+  RealR1Limit->GetYaxis()->SetRangeUser(300.,900);
+  RealR1Limit->Draw("L");
 
   TLegend * pl = new TLegend(0.2,0.65,0.4,0.94);
   pl->SetBorderSize(0);
@@ -209,7 +210,7 @@ TH2D * makeMy0Lep(string channel,float systematic){
   pl->SetLineColor(0);
   
   pl->AddEntry(h,"Delphes","l");
-  //pl->AddEntry(RealR1Limit,"ATLAS","l");
+  pl->AddEntry(RealR1Limit,"ATLAS","l");
   pl->Draw("same");
   
   ostringstream outFile;

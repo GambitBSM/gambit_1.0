@@ -29,7 +29,14 @@ namespace GAMBIT {
 
   namespace ExampleBit_A {
 
+    // Some local module codes and declarations
     double count = 3.5;
+    double some_other_function(int &input)
+    {
+      std::cout << "  This is some_other_function, invoked with argument " << input << std::endl;
+      return input * 2.0;
+    }
+
 
     // Initialization routine
     void initialize ()
@@ -40,12 +47,35 @@ namespace GAMBIT {
       std::cout << "********************************************" << std::endl;
     }
 
+
     // Module functions
     void nevents_dbl  (double &result)    { result = count++; }
     void nevents_int  (int    &result)    { result = (int) (GET_DEP(nevents_int::nevents)); }
     void nevents_like (double &result)    { result = 1.5; }
     void identity     (str    &result)    { result = "turkion"; }
+    void function_pointer_retriever( double(*&result)(int&) )
+    {
+      //Two ways to try this: a pointer to a fortran function that has been backended:
+      //result = GET_BE_FUNCTION_POINTER(backend_function_pointer_retriever::runMe);
+      //or a pointer to a local C++ funtion
+      result = &some_other_function;
+    }
 
+    // Example of interacting with models
+    void damu (double &result)
+    {
+      using namespace SafePointers::damu;
+      // Put these in a map or some such automatically?
+      double p1 = Dep::test_parent_I_parameters->getValue("p1");
+      double p2 = Dep::test_parent_I_parameters->getValue("p2");
+      double p3 = Dep::test_parent_I_parameters->getValue("p3");
+      
+      std::cout << "In ExampleBit_A, function damu" << std::endl;
+      std::cout << "  test_parent_parameters resolved successfully!" << std::endl;
+      std::cout << "  Printing values:" << std::endl;
+      Dep::test_parent_I_parameters->print();
+      
+    }
   }
 
 }

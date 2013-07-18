@@ -68,7 +68,7 @@ int main()
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
   /// @todo Generalise to a vector of analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
 
   ana->init();
   pythia8_input = new GAMBIT::HEColliderBit::slhaFileName(12345 + 17 * omp_get_thread_num(), slhaFileName);

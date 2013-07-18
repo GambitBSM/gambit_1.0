@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, May, June
+///  \date 2013 Apr, May, June, July
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -19,6 +19,10 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 May, June, July 2013
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 July --> Added primary_model_functor class
 ///
 ///  *********************************************
 
@@ -31,6 +35,7 @@
 #include <util_classes.hpp>
 #include <util_functions.hpp>
 #include <time.h>
+#include <ModelParameters.hpp>
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
@@ -53,10 +58,10 @@ namespace GAMBIT
       /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
 
-      /// Interface for runtime optimization
+      /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
-      virtual double getRuntimeAverage() {}
-      virtual double getInvalidationRate() {}
+      virtual double getRuntimeAverage() { return 0; }
+      virtual double getInvalidationRate() { return 0; }
       virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
@@ -79,10 +84,10 @@ namespace GAMBIT
       int status()      { if (this == NULL) failBigTime(); return myStatus;     }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
-      /// Getter for obsType (relevant for output nodes, aka helper structures for the dep. resolution)
-      str obsType()     { if (this == NULL) failBigTime(); return myObsType;    }
-      /// Setter for obsType (relevant only for next-to-output nodes)
-      void setObsType(str obsType) { if (this == NULL) failBigTime(); this->myObsType = obsType; }
+      /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
+      str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
+      /// Setter for purpose (relevant only for next-to-output nodes)
+      void setPurpose(str purpose) { if (this == NULL) failBigTime(); this->myPurpose = purpose; }
 
       /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
@@ -183,8 +188,8 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
-      /// myObsType(relevant for output and next-to-output nodes)
-      str myObsType;
+      /// myPurpose (relevant for output and next-to-output nodes)
+      str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
 
@@ -324,26 +329,6 @@ namespace GAMBIT
         if (this == NULL) functor::failBigTime();
         return safe_ptr<TYPE>(&myValue);
       }
-      
-      /// Ben: added this so we could get write access to myValue, primarily
-      /// for the case of the scanner needing to change the ModelParameter
-      /// object. Not for use in modules.
-      /// Make this "protected", and make some ScannerBit object a friend?
-      /// Could also make functions specific to ModelParameter objects which
-      /// allow access to the methods of those objects, but these would cause
-      /// problems if used by any other functor.
-      /// IDEA: Actually, I could make it so that the "calculate" method of the
-      /// primary ModelParameters functor does the "setting" of parameters!
-      /// Just need to add a dependency on some "input_parameters" capability
-      /// which must be provided from somewhere, presumably scannerbit! This
-      /// is probably the most elegant solution.
-      /// UPDATE: The above idea is now implemented, so I have removed this
-      /// "dangerous" raw pointer.
-      //TYPE* rawvaluePtr()
-      //{
-      // if (this == NULL) functor::failBigTime();
-      //  return &myValue;
-      //}
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()                  { return myDependencies; }
@@ -418,12 +403,12 @@ namespace GAMBIT
       }
 
       /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
-      void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
+      void setDependency(str dep, str type, void(*resolver)(functor*), str purpose= "")
       {
         sspair key (dep, type);
         myDependencies.push_back(key);
         dependency_map[key] = resolver;
-        this->myObsType = obsType; // only relevant for output nodes
+        this->myPurpose = purpose; // only relevant for output nodes
       }
 
       /// Add a backend conditional dependency for multiple backend versions
@@ -540,8 +525,8 @@ namespace GAMBIT
         else
         {
           (*dependency_map[key])(dep_functor);
-          // propagate obsType from next to next-to-output nodes
-          dep_functor->setObsType(this->myObsType);
+          // propagate purpose from next to next-to-output nodes
+          dep_functor->setPurpose(this->myPurpose);
         }
       }
 
@@ -790,7 +775,41 @@ namespace GAMBIT
 
   };
 
+  /// Functors specific to primary ModelParameters objects
+  ///
+  /// These allow direct access to the functor contents via a raw pointer, so 
+  /// that the parameter values can be set (not allowed via safe pointers).
+  class primary_model_functor : public module_functor<ModelParameters>
+  {
+  
+    public:
+    
+      /// Constructor
+      ///
+      /// This is not inherited from the parent class, but we don't need anything
+      /// different so we just directly call the parent class constructor.
+      primary_model_functor(void (*inputFunction)(ModelParameters &),
+                              str func_name,
+                              str func_capability,
+                              str result_type,
+                              str origin_name)
+        : module_functor<ModelParameters>(inputFunction,
+                                          func_name,
+                                          func_capability,
+                                          result_type,
+                                          origin_name) {}   
+      
+      /// Functor contents raw pointer "get" function
+      /// Returns a raw pointer to myValue, so that the contents may be 
+      /// modified (intended for setting parameter values in primary 
+      /// ModelParameters objects)
+      ModelParameters* getcontentsPtr()
+      {
+        if (this == NULL) functor::failBigTime();
+        return &this->myValue;
+      }   
 
+  };    
 
   /// Function for creating backend functor objects.
   ///
@@ -806,6 +825,8 @@ namespace GAMBIT
   { 
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
+  
+
 
 // FIXME: This is probably not the best place to define global variables:
 #ifndef IN_CORE
@@ -816,6 +837,10 @@ namespace GAMBIT
     extern
 #endif
   std::vector<functor *> globalBackendFunctorList;
+#ifndef IN_CORE
+    extern
+#endif
+  std::vector<primary_model_functor *> globalPrimaryModelFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */

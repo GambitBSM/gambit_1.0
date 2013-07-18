@@ -338,7 +338,7 @@ module Isolation ElectronIsolation {
 
   set OutputArray electrons
 
-  set DeltaRMax 0.5
+  set DeltaRMax 0.2
 
   set PTMin 0.5
 
@@ -366,17 +366,17 @@ module Efficiency MuonEfficiency {
 # Muon isolation
 ################
 
-module Isolation MuonIsolation {
+module AbsoluteIsolation MuonIsolation {
   set CandidateInputArray MuonEfficiency/muons
   set IsolationInputArray EFlowMerger/eflow
 
   set OutputArray muons
 
-  set DeltaRMax 0.5
+  set DeltaRMax 0.2
 
   set PTMin 0.5
 
-  set PTRatioMax 0.1
+  set PTRatioMax 1.8
 }
 
 ###################

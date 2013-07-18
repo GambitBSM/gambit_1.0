@@ -1,0 +1,48 @@
+# GAMBIT Initialization file (in YAML)
+#
+# ModelBit testing version
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# July 2013
+#
+
+########################
+--- # Input parameters
+########################
+
+m0:
+  range: [1, 3.5]
+  fixed: true
+
+m1:
+  range: [2, 4.5]
+
+###############################
+--- # Observables of interest
+###############################
+
+- obsType:      Observable
+  capability:   damu
+  type:         ""
+  function:     ""
+  module:       ""
+#  dependencies:
+#  - {capability: "test_parent_I_parameters", type: "ModelParameters", function: "test_parent_I_parameters", module: "MSSM_I"}
+
+#########################
+--- # Auxiliary entries
+#########################
+
+#- capability:   "test_parent_I_parameters"
+#  type:         "ModelParameters"
+#  function:     "test_parent_I_parameters"
+#  module:       "MSSM_I"
+
+##########################
+--- # Name/Value Section
+##########################
+
+key: param
+model: CMSSM_I
+
+
