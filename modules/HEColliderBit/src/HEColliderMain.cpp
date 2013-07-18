@@ -30,6 +30,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/lexical_cast.hpp"
 
@@ -46,13 +47,14 @@ namespace GAMBIT {
     struct Pythia8Thread {
       Pythia8Thread(const string& name, double xs, const vector<string>& procs)
         : name(name), xsec(xs), processes(procs) { }
+      void add_analysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
       string name;
       double xsec;
       // double nevents;
       /// @todo Calc effective lumi?
       /// @todo Add some metric of CPU cost per event for this process type?
       vector<string> processes;
-      vector<Analysis*> analyses; //< @todo Convert to std::shared_ptr. Currently leaky!
+      vector<shared_ptr<Analysis>> analyses;
     };
 
   }
@@ -92,9 +94,9 @@ int main()
   GAMBIT::HEColliderBit::Pythia8Thread SP_GAUGINO("X", 0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
 
   // Bind subprocesses to analysis pointers
-  SP_GLUINO.analyses.push_back(GAMBIT::mkAnalysis("ATLAS_0LEP"));
-  SP_SQUARK.analyses.push_back(GAMBIT::mkAnalysis("ATLAS_0LEP"));
-  SP_GAUGINO.analyses.push_back(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+  SP_GLUINO.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+  SP_SQUARK.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+  SP_GAUGINO.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
 
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
@@ -143,7 +145,7 @@ int main()
         myDelphes->processEvent(genEvent, recoEvent);
       }
       // Run all attached analyses
-      for (GAMBIT::Analysis* ana : process_cfgs[NTHREAD].analyses)
+      for (shared_ptr<GAMBIT::Analysis> ana : process_cfgs[NTHREAD].analyses)
         ana->analyze(recoEvent);
       // Write recoEvent instance to file
       (*outArchive) << recoEvent;
@@ -160,7 +162,6 @@ int main()
   SP_GAUGINO.analyses[0]->finalize();
   /// @todo Combine results from each subprocess with appropriate target NLO xsecs applied
   //cout << "LIKELIHOOD = " << ana->likelihood() << endl;
-  // delete ana; //< @todo Rely on shared_ptrs for this once tidied up a bit...
 
   delete myDelphes;
 
