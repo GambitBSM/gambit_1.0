@@ -27,6 +27,7 @@
 #define __ExampleBit_A_rollcall_hpp__
 
 #include <module_macros.hpp>
+#include <ModelParameters.hpp> //replace with model_macros.hpp?
 
 #define MODULE ExampleBit_A
 START_MODULE
@@ -68,6 +69,15 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
+  START_CAPABILITY
+  
+    #define FUNCTION damu
+    START_FUNCTION(double)
+    DEPENDENCY(test_parent_I_parameters, ModelParameters)      // to be replaced with specialised macro (probably just a wrapper for DEPENDENCY which automatically appends "_parameters" to a model name and attached the type (ModelParameters)
+    #undef FUNCTION
+
+  #undef CAPABILITY
 
 #undef MODULE
 

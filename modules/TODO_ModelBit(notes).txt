@@ -57,6 +57,11 @@ Day 3 - Wednesday 17 Jul
 
 Room change! FA32
 
+Goals for Ben for today:
+  * Figure out "mini-guys" modelparameters functors and their delivery to module
+    functions.
+  * Figure out how ScannerBit should interact with ModelParameters functors
+
 -------------------------------------
 
 

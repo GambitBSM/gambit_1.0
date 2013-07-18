@@ -46,6 +46,21 @@ namespace GAMBIT {
     void nevents_like (double &result)    { result = 1.5; }
     void identity     (str    &result)    { result = "turkion"; }
 
+    // Example of interacting with models
+    void damu (double &result)
+    {
+      using namespace SafePointers::damu;
+      // Put these in a map or some such automatically?
+      double p1 = Dep::test_parent_I_parameters->getValue("p1");
+      double p2 = Dep::test_parent_I_parameters->getValue("p2");
+      double p3 = Dep::test_parent_I_parameters->getValue("p3");
+      
+      std::cout << "In ExampleBit_A, function damu" << std::endl;
+      std::cout << "  test_parent_parameters resolved successfully!" << std::endl;
+      std::cout << "  Printing values:" << std::endl;
+      Dep::test_parent_I_parameters->print();
+      
+    }
   }
 
 }

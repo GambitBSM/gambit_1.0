@@ -80,7 +80,7 @@ namespace GAMBIT {
     // the template with two explicity constructors, one for vectors and one
     // for char arrays.
 
-    ModelParameters(const std::vector<str> &paramlist): ModelParametersBase(),_values(){
+    ModelParameters(const std::vector<std::string> &paramlist): ModelParametersBase(),_values(){
       _definePars(paramlist);
     }
     

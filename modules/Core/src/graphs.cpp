@@ -348,7 +348,14 @@ namespace GAMBIT
       for (std::vector<functor *>::iterator it = functorList.begin();
           it != functorList.end(); ++it)
       {
-        boost::add_vertex(*it, this->masterGraph);
+        // Ben: Added check to ignore functors with status set to 0 (i.e. never
+        // add them to the graph). If you don't want the value 0 to mean this,
+        // we can use -1 or something instead. I am doing this so that we can
+        // ignore primary_model_functors which are not to be used for the scan.
+        if ( (*it)->status() != 0 ) 
+        {
+          boost::add_vertex(*it, this->masterGraph);
+        }
       }
       this->myBackendFunctorList = backendFunctorList;
     }
