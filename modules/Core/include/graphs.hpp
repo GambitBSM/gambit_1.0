@@ -74,8 +74,6 @@ namespace GAMBIT
 
         void calcObsLike(VertexID);
 
-        const IniParser::ObservableType * getIniEntry(VertexID);
-
         double getObsLike(VertexID);
 
         void notifyOfInvalidation(VertexID);
@@ -91,7 +89,7 @@ namespace GAMBIT
         void addFunctors(std::vector<functor *>, std::vector<functor *>);
 
         // Resolution of individual module function dependencies
-        std::pair<const IniParser::ObservableType *, Graphs::VertexID>
+        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
           resolveDependency(Graphs::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree
@@ -111,8 +109,7 @@ namespace GAMBIT
             Graphs::VertexID toVertex, const IniParser::ObservablesType &);
 
         // Resolution of backend dependencies
-        void resolveVertexBackend(bool dirObsFlag,
-            IniParser::ObservableType observable, VertexID vertex);
+        void resolveVertexBackend(VertexID);
 
         //
         // Private data members

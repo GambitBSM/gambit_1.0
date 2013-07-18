@@ -116,6 +116,26 @@ namespace GAMBIT
           return auxiliaries;
         }
 
+        bool hasKey(std::string key)
+        {
+          return keyValuePairNode[key];
+        }
+
+        bool hasKey(std::string s1, std::string s2)
+        {
+          return keyValuePairNode[s1][s2];
+        }
+
+        bool hasKey(std::string s1, std::string s2, std::string s3)
+        {
+          return keyValuePairNode[s1][s2][s3];
+        }
+
+        bool hasKey(std::string s1, std::string s2, std::string s3, std::string s4)
+        {
+          return keyValuePairNode[s1][s2][s3][s4];
+        }
+
         // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getValue(std::string key)
         {
@@ -142,6 +162,11 @@ namespace GAMBIT
         {
           return parametersNode[param][key].as<TYPE>();
         };
+
+        bool hasParameterEntry(std::string param, std::string key)
+        {
+          return parametersNode[param][key];
+        }
 
         std::vector<std::string> getParameterList()
         {
