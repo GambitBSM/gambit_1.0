@@ -46,7 +46,7 @@ int main()
 {
   // simulation setup...
   //string slhaFileName = "mhmodBenchmark.slha";
-  string slhaFileName = "susy_msugra_2600_350_0_10_P_softsusy.slha";
+  string slhaFileName = "sps1aWithDecays.spc";
   string delphesConfigFile = "delphes_card_ATLAS.tcl";
 
   // variables used during parallelization
