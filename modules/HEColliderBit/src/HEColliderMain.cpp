@@ -17,7 +17,7 @@
 //  //  Abram Krislock
 //  //  2013 Apr 23
 //  //  Aldo Saavedra
-//  //  2013 June 14 
+//  //  2013 June 14
 //  //
 //  //  ********************************************
 //
@@ -56,7 +56,7 @@ int main()
   int counter;
 
   // For event generation
-  GAMBIT::HEColliderBit::slhaFileName *pythia8_input;
+  GAMBIT::HEColliderBit::SLHAConfig *pythia8_input;
   GAMBIT::HEColliderBit::Pythia8Backend *myPythia;
   GAMBIT::HEColliderBit::Delphes3Backend *myDelphes;
   myDelphes = new GAMBIT::HEColliderBit::Delphes3Backend(delphesConfigFile);
@@ -75,7 +75,7 @@ int main()
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Initialize the backends
-    pythia8_input = new GAMBIT::HEColliderBit::slhaFileName(12345 + 17 * omp_get_thread_num(), slhaFileName);
+    pythia8_input = new GAMBIT::HEColliderBit::SLHAConfig(12345 + 17 * omp_get_thread_num(), slhaFileName);
     myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(*pythia8_input);
 //    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(12345 + 17 * omp_get_thread_num(), slhaFileName);
 
