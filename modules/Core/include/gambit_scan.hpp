@@ -21,6 +21,8 @@
 #define __gambit_scan_hpp__
 
 #include <vector>
+#include <unordered_map>
+#include <string>
 #include <functors.hpp>
 #include <graphs.hpp>
 #include <functors.hpp>
@@ -29,104 +31,135 @@ namespace Gambit
 {
 	namespace Scanner
 	{
+		using namespace GAMBIT;
+		
 		class Gambit_Scanner
 		{
-		protected:
-			vector <double> upper_limit;
-			vector <double> lower_limit;
-			vector <std::string> param_names;
-			Graphs::DependencyResolver *dependencyResolver;
-			vector <primary_model_functor *> functors;
 			
-			Gambit_Scanner (Graphs::DependencyResolver &a, IniParser::IniFile &inifile, std::string name) : dependencyResolver(&a)
+		protected:
+			vector <double> upper_limits;
+			vector <double> lower_limits;
+			vector <std::string> keys;
+			vector <std::string> functions;
+			Graphs::DependencyResolver *dependencyResolver;
+			std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> functors;
+			std::string name;
+			
+		public:
+			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &inifile, std::string name) 
+					: dependencyResolver(&a), name(name)
 			{
-				param_names = iniFile.getParameterList();
-				for (vector<std::string>::iterator it = param_names.begin(); it != param_names.end(); ++it)
+				functions = iniFile.getValue<std::vector<std::string>>(name, "functions");
+				
+				for(std::map<std::string, primary_model_functor *>::iterator it = activemodelFunctorMap.begin(); it != activemodelFunctorMap.end(); it++) 
+				{
+					//it->first = model name, it->second = functor pointer
+					std::vector <std::string> paramkeys = functorPtr->getcontentsPtr()->getKeys();
+					for (std::vector<std::string>::iterator it2 = paramkeys.begin(); it2 != paramkeys.end(); ++it2)
+					{
+						string name = it->first + string("::") + *it2;
+						functors[name]->first = *it2;
+						functors[name]->second = it->second;
+					}
+				}
+				
+				keys = iniFile.getParameterList();
+				lower_limits.resize(keys.size());
+				upper_limits.resize(keys.size());
+				std::vector<double>::iterator it_l = lower_limits.begin(), it_u = upper_limits.begin();
+				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it_l, ++it_u)
 				{
 					std::pair<double, double> range = iniFile.getParameterEntry< std::pair<double, double> >(*it, "range");
+					std::string modelname = iniFile.getParameterEntry<std::string>(*it, "model");
+					*it = modelname + string("::") + *it;
 					if (range.first > range.second)
 					{
 						double temp = range.first;
 						range.first = range.second;
 						range.second = temp;
 					}
-					lower_limit.push_back(range.first);
-					upper_limit.push_back(range.second);
+					*it_l = range.first;
+					*it_u = range.second;
 				}
 			}
 			
+			void InputParameters (std::vector<double> &vec) 
+			{
+				std::vector<double>::iterator it2 = vec.begin();
+				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2);
+					functors[*it]->second->getcontentsPtr()->setValue(functors[*it]->first, *it2)
+			}
+			
+			void CalcPropose(Graphs::VertexID &it) {dependencyResolver->calcPropose(it);}
+			double GetPropose(Graphs::VertexID &it) {dependencyResolver->getPropose(it);}
+			
+			const std::string Name() const {return name;}
+			
+			void Reset() {dependencyResolver->resetAll();}
+			
 			virtual int Run() = 0;
+			
+			friend class Scanner_Function_Base;
 		}
 		
 		class Scanner_Function_Base
 		{
 		protected:
-			// Storage
 			std::vector<Graphs::VertexID> vertices;
-			Gambit::Scanner::Gambit_Scanner *parent
-			
+			Gambit_Scanner *parent;
 			
 		public:
-			// Construct MasterLike from Graphs Output and inifile
-			Scanner_Function_Base(Gambit::Scanner::Gambit_Scanner *a, int funcNum) : parent(a)
+			Scanner_Function_Base(Gambit_Scanner *a, int funcNum) : parent(a)
 			{
-				vertices = dependencyResolver.getObsLikeOrder();
+				vertices = parent->dependencyResolver->getObsLikeOrder();
 				int size = 0;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin; it != vertices.end(); ++it)
 				{
-					if (dependencyResolver->getIniEntry(*it)).obsType == key)
+					if (parent->dependencyResolver->getIniEntry(*it)).obsType == functions[funcNum])
 					{
-						*(++it2) = *it;
+						*it2 = *it;
+						it2++;
 						size++;
 					}
 				}
 				vertices.resize(size);
 			}
-			
-			void Reset() {dependencyResolver.resetAll();}
-			
-			std::vector <std:string> GetParameterValues(){}
 		};
 		
 		template <class output, class input>
 		class Scanner_Function : public Scanner_Function_Base
 		{
 		public:
-			Scanner_Function (Graphs::DependencyResolver &a, std::string key) : Scanner_Function_Base (a, key) {}
+			Scanner_Function (Gambit_Scanner *a, int funcNum) : Scanner_Function_Base (a, funcNum) {}
 			
 			virtual output & operator () (input in)
 			{
 				//Ben stuff
 				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-				output ret = 0;
-				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
-				{
-					dependencyResolver.calcObsLike(*it);
-					//dependencyResolver.notifyOfInvalidation(*it);
-					output ret += dependencyResolver.getObsLike(*it);
-				}
-				dependencyResolver.resetAll();
 			}
 		};
 		
 		template <>
-		class Scanner_Function <double *, double *> : public Scanner_Function_Base
+		class Scanner_Function <double, std::vector<double>> : public Scanner_Function_Base
 		{
 		public:
-			Scanner_Function (Graphs::DependencyResolver &a, std::string key) : Scanner_Function_Base (a, key) {}
+			Scanner_Function (Gambit_Scanner *a, int funcNum) : Scanner_Function_Base (a, funcNum) {}
 			
-			virtual output & operator () (input in)
+			virtual double operator () (std::vector<double> &in)
 			{
-				//Ben stuff
+				parent->InputParameters(in);
 				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-				output ret = 0;
+				double ret = 0;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 				{
-					dependencyResolver.calcObsLike(*it);
+					parent->CalcPropose(*it);
 					//dependencyResolver.notifyOfInvalidation(*it);
-					output ret += dependencyResolver.getObsLike(*it);
+					double ret += parent->GetPropose(*it);
 				}
-				dependencyResolver.resetAll();
+				
+				parent->Reset();
+				
+				return ret;
 			}
 		};
 		

@@ -32,38 +32,44 @@ class Ran
 		inline unsigned int int32(){return (unsigned int)int64();}
 };
 	
-class CrapSample
+class CrapSample : Gambit::Scanner::Gambit_Scanner
 {
 private:
-	
+	int N:
+	std::string output_file;
 	
 public:
-	void MetHas(MasterLike <double, vector <double>> &LogLike, char *name, int N)
+	CrapSample(GAMBIT::Graphs::DependencyResolver &a, std::map<std::string, GAMBIT::primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &inifile) 
+			: Gambit::Scanner::Gambit_Scanner(a, activemodelFunctorMap, inifile, "crapsampler")
 	{
-		ofstream out(name);
-		double chisq;
+		N = iniFile.getValue<int>(Name(), "point_number");
+		output_file = iniFile.getValue<int>(Name(), "output_file");
+		Scanner_Function <double, vector <double>> LogLike(this, 0);
+	}
+	
+	void Run()
+	{
+		ofstream out(output_file.c_str());
+		double ans, chisq, chisqnext;
+		int mult = 1, count = 0, total = 0, ma = upper_limits.size();
 		std::vector<double> a(ma);
 		std::vector<double> aNext(ma);
-		double ans, chisqnext;
-		int mult = 1;
-		int count = 0, total = 0;
+		Ran gDev(0);
 		
 		for (int i = 0; i < ma; i++)
 			a[i] = gDev.Doub();
 		
 		chisq = LogLike(a);
-		Ran gDev(0);
 		
 		cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << endl;
 		
 		do
 		{
-
+			total++;
 			for (int i = 0; i < ma; i++)
 			{
-				aNext[i] = gDev.Doub();
+				aNext[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
 			}
-
 
 			chisqnext = LogLike(aNext);
 
