@@ -9,7 +9,7 @@ BOOST :=$(BOOSTDIR)
 
 
 CXX := g++
-CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized -Werror=delete-non-virtual-dtor #-std=c++11
+CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor #-std=c++11
 
 UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
 DELPHESHEADERS := Delphes3Backend.hpp
@@ -49,8 +49,12 @@ example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 	$(CXX) example-py8-0lep.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) -o example-py8-0lep
 
 OPTFLAGS := -DQUIET -DMKHISTOS
-example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp
-	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
+example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc
+	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
+
+AbsoluteIsolation_dict.cc: AbsoluteIsolation.h
+	@echo "Generating dictionary ..."
+	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external AbsoluteIsolation.h
 
 clean:
 	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread*
