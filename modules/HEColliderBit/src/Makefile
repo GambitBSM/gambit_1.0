@@ -57,4 +57,4 @@ AbsoluteIsolation_dict.cc: AbsoluteIsolation.h
 	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external AbsoluteIsolation.h AbsoluteIsolationLinkDef.h 
 
 clean:
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread*
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* AbsoluteIsolation_dict.cc
