@@ -228,6 +228,20 @@ namespace GAMBIT
           (*masterGraph[*vi]).backendreqs().size();
         i++;
       };
+      formatString = "%-25s %-25s %-45s %-25s\n";
+      cout << endl << "Registered Backend vertices" << endl;
+      cout <<         "---------------------------" << endl;
+      cout << boost::format(formatString)%
+        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE";
+      for (std::vector<functor *>::iterator it = myBackendFunctorList.begin();
+          it != myBackendFunctorList.end(); ++it) {
+        cout << boost::format(formatString)%
+          ((*it)->origin() + " (" + (*it)->version() + ")") %
+          (*it)->name()%
+          (*it)->capability()%
+          (*it)->type();
+        i++;
+      };
       // cout << "TOTAL: " << i << endl;
     };
 
@@ -279,18 +293,6 @@ namespace GAMBIT
       for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it) {
         masterGraph[*it]->calculate();
       }
-    }
-
-    const IniParser::ObservableType * DependencyResolver::getIniEntry(VertexID vertex)
-    {
-      for(std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
-          it != outputVertexInfos.end(); it++)
-      {
-        if (it->vertex == vertex)
-          return it->iniEntry;
-      }
-      cout << "ERROR" << endl;
-      exit(1);
     }
 
     double DependencyResolver::getObsLike(VertexID vertex)
@@ -363,23 +365,29 @@ namespace GAMBIT
     }
 
     // Resolve dependency
-    std::pair<const IniParser::ObservableType *, Graphs::VertexID>
+    std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
       DependencyResolver::resolveDependency(
         Graphs::VertexID toVertex, sspair quantity)
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      const IniParser::ObservableType *auxEntry, *depEntry;
+      const IniParser::ObservableType *auxEntry = NULL;
+      const IniParser::ObservableType *depEntry = NULL;
       std::vector<Graphs::VertexID> vertexCandidates;
       bool entryExists = false;
 
-      // Find inifile entry:
-      // If toVertex is CoreOut vertex, use observable entries.
+      // First, we check whether the dependent vertex has a unique
+      // correspondence in the inifile. Final (output) vertices have to be
+      // treated different from all other vertices, since they do not appear
+      // as dependencies in the auxiliaries section of the inifile. For them,
+      // we just use the entry from the observable/likelihood section for the
+      // resolution of ambiguities.  A pointer to the relevant inifile entry
+      // is stored in depEntry.
       if ( toVertex == OMEGA_VERTEXID)
       {
         depEntry = findIniEntry(quantity, myIniFile.getObservables());
         entryExists = true;
       }
-      // for all other vertices.
+      // for all other vertices use the auxiliaries entries
       else 
       {
         auxEntry = findIniEntry(toVertex, myIniFile.getAuxiliaries());
@@ -389,15 +397,20 @@ namespace GAMBIT
           entryExists = true;
       }
 
-      // Loop over available vertices (possibly matching inifile entry)
+      // Loop over all available vertices in masterGraph, and make a list of
+      // functors that fulfill the dependency requirement.
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
-        if ( ( (not entryExists)
-               and (*masterGraph[*vi]).capability() == quantity.first
-               and (*masterGraph[*vi]).type() == quantity.second )
-          or ( entryExists
-               and funcMatchesIniEntry(masterGraph[*vi], *depEntry) ) )
+        // Without inifile entry, just match capabilities and types (no type
+        // comparison when no types are given; this should only happen for
+        // output nodes)
+        if ( ( (*masterGraph[*vi]).capability() == quantity.first and
+              ( (*masterGraph[*vi]).type() == quantity.second  or quantity.second == "" ) )
+        // with inifile entry, we check capability, type, function name and
+        // module name.
+          and ( entryExists ?  funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
         {
+        // Add to vertex candidate list
           vertexCandidates.push_back(*vi);
         }
       }
@@ -415,7 +428,7 @@ namespace GAMBIT
         cout << "for consistency, etc." << endl;
         exit(0); // Throw error here
       }
-      return std::make_pair(depEntry, vertexCandidates[0]);
+      return std::tie(depEntry, auxEntry, vertexCandidates[0]);
     }
 
     // Set up dependency tree
@@ -426,10 +439,15 @@ namespace GAMBIT
       Graphs::VertexID fromVertex, toVertex;
       Graphs::EdgeID edge;
       // relevant observable entry (could be dependency of another observable)
-      IniParser::ObservableType observable, directObs;
-      const IniParser::ObservableType * iniEntry;
-      bool ok, obsFlag, dirObsFlag;
-      dirObsFlag = false;
+      IniParser::ObservableType observable;
+      // Inifile entry relevant for dependency resolution (either something
+      // from the observable/likelihood section, or a dependency from the
+      // auxiliary section).
+      const IniParser::ObservableType * iniEntry; 
+      // Inifile entry to relevant auxiliary entry (required for backend
+      // resolution)
+      const IniParser::ObservableType * auxEntry; 
+      bool ok;
       sspair quantity;
 
       cout << endl << "Dependency resolution" << endl;
@@ -444,21 +462,21 @@ namespace GAMBIT
         // Print information
         if ( toVertex != OMEGA_VERTEXID )
         {
+          cout << quantity.first << " (" << quantity.second << ")" << endl;
+          cout << "required by: ";
           cout << (*masterGraph[toVertex]).capability() << " (";
           cout << (*masterGraph[toVertex]).type() << ") [";
           cout << (*masterGraph[toVertex]).name() << ", ";
-          cout << (*masterGraph[toVertex]).origin() << "]" << endl;
-          cout << "depends on: ";
-          cout << quantity.first << " (" << quantity.second << ")" << endl;
+          cout << (*masterGraph[toVertex]).origin() << "]" << endl;;
         }
         else
         {
-          cout << "Core depends on: ";
           cout << quantity.first << " (" << quantity.second << ")" << endl;
+          cout << "required by: Core" << endl;
         }
 
         // Resolve dependency
-        tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        std::tie(iniEntry, auxEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
         cout << "resolved by: [";
@@ -481,12 +499,8 @@ namespace GAMBIT
 
         // Is fromVertex already activated?
         if ( (*masterGraph[fromVertex]).status() != 2 ) {
-          cout << "Adding module function to dependency tree..." << endl;
-          // If not, perform resolution of backend dependencies...
-          // TODO: rewrite
-          resolveVertexBackend(dirObsFlag, directObs, fromVertex);
-          // TODO: Treat other conditional dependencies
-          // ...and fill its dependencies into queue.
+          cout << "adding new module function to dependnecy tree..." << endl;
+          resolveVertexBackend(fromVertex);
           fillParQueue(&parQueue, fromVertex);
         }
 
@@ -503,6 +517,10 @@ namespace GAMBIT
     {
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
+      if (vec.size() > 0)
+        cout << "adding module function dependencies to resolution queue:" << endl;
+      else
+        cout << "no further module function dependencies." << endl;
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         cout << (*it).first << " (" << (*it).second << ")" << endl;
@@ -536,7 +554,7 @@ namespace GAMBIT
       if ( auxEntryCandidates.size() == 1 ) return auxEntryCandidates[0];
       else
       {
-        cout << "ERROR: Multiple matching auxiliary entries found for same vertex." << endl;
+        cout << "ERROR: Found multiple matching auxiliary entries for the same vertex." << endl;
         exit(0);
       }
     }
@@ -565,77 +583,72 @@ namespace GAMBIT
     }
 
     // Node-by-node backend resolution
-    void DependencyResolver::resolveVertexBackend(bool dirObsFlag,
-        IniParser::ObservableType observable, VertexID vertex)
+    void DependencyResolver::resolveVertexBackend(VertexID vertex)
     {
-      std::vector<sspair> reqs;
-      std::vector<functor *> candidateList;
-      functor * candidate;
-      // Get list of backend requirements of vertex
-      reqs = (*masterGraph[vertex]).backendreqs();
-      if (reqs.size() != 0)
+      // Find relevant ini file entry
+      const IniParser::ObservableType * auxEntry = NULL;
+      const IniParser::ObservableType * depEntry = NULL;
+      bool entryExists = false;
+      std::vector<functor *> vertexCandidates;
+
+      // Collect list of backend requirements of vertex
+      std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
+      if (reqs.size() == 0) // nothing to do --> return
+        return;
+      cout << "backend function resolution: " << endl;
+
+      // Check whether vertex is mentioned in inifile
+      auxEntry = findIniEntry(vertex, myIniFile.getAuxiliaries());
+
+      // A loop over all requirements
+      for (std::vector<sspair>::iterator it = reqs.begin();
+          it != reqs.end(); ++it)
       {
-        cout << "Backend resolution for vertex " << (*masterGraph[vertex]).name() << endl;
-        for (std::vector<sspair>::iterator it = reqs.begin();
-            it != reqs.end(); ++it)
+        cout << it->first << " (" << it->second << ")" << endl;
+        depEntry = NULL;
+        entryExists = false;
+        vertexCandidates.clear();
+        // Find relevant iniFile entry from auxiliaries section
+        if ( auxEntry != NULL )
+          depEntry = findIniEntry(*it, (*auxEntry).backends);
+        if ( auxEntry != NULL and depEntry != NULL ) 
+          entryExists = true;
+
+        // Loop over all available backend vertices, and make a list of
+        // functors that fulfill the backend dependency requirement
+        for (std::vector<functor *>::iterator itf =
+            myBackendFunctorList.begin(); itf != myBackendFunctorList.end();
+            ++itf) 
         {
-          cout << "  " << it->first << " (" << it->second << ")" << endl;
-          // Find backend function candidates (by matching capabilities and
-          // types)
-          candidateList = findBackendCandidates(*it, myBackendFunctorList);
-          // No candidate found, that is bad news.
-          if (candidateList.size() == 0)
+          // Without inifile entry, just match capabilities and types exactly
+          if ( (*itf)->capability() == it->first and (*itf)->type() == it->second
+          // with inifile entry, we check capability, type, function name and
+          // module name.
+            and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
           {
-            cout << "no candidate found" << endl;
-            exit(0);
+          // Add to vertex candidate list
+            vertexCandidates.push_back(*itf);
           }
-          // One candidate...
-          if (candidateList.size() == 1)
-          {
-            // VERBOSE
-            // cout << "one candidate found" << endl;
-            // ...but is it the choosen one?
-            if (dirObsFlag)
-            {
-              if (not compareBE(observable, candidateList[0]))
-              {
-                cout << "Inconsistent BE infos." << endl;
-                exit(0);
-              }
-            }
-            candidate = candidateList[0];
-          }
-          // Multiple options, nice.
-          if (candidateList.size() > 1)
-          {
-            // loop over options
-            int i = 0;
-            for(std::vector<functor *>::iterator it = candidateList.begin();
-                it != candidateList.end(); it++)
-            {
-              // if some option works
-              if (compareBE(observable, *it))
-              {
-                // save it and proceed
-                candidate = *it;
-                i++;
-              }
-            }
-            if (i!=1) // There can be only one!
-            {
-              cout << "Multiple backend options, but no unique solution." << endl;
-              exit(0);
-            }
-          }
-          // Resolve it
-          (*masterGraph[vertex]).resolveBackendReq(candidate);
-          cout << "  resolved by: " << (*candidate).name();
-          cout << " from " << (*candidate).origin() << " (";
-          cout << (*candidate).version() << ")" << endl;
         }
+
+        if (vertexCandidates.size() == 0)
+        {
+          cout << "ERROR: Found no candidates for backend requirement." << endl;
+          exit(0);
+        }
+
+        // One candidate...
+        if (vertexCandidates.size() > 1)
+        {
+          cout << "ERROR: Found too many candidates for backend requirement." << endl;
+          exit(0);
+        }
+        // Resolve it
+        (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
+        cout << "resolved by: [" << (*vertexCandidates[0]).name();
+        cout << ", " << (*vertexCandidates[0]).origin() << " (";
+        cout << (*vertexCandidates[0]).version() << ")]" << endl;
       }
-      // VERBOSE
-      // else cout << "no backends to resolve" << endl;
     }
   }
 }

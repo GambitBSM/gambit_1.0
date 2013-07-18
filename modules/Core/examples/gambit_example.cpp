@@ -49,8 +49,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
-#include <crapsample.hpp>
+//#include <gambit_scan.hpp>
+//#include <crapsample.hpp>
 
 using namespace GAMBIT;
 
@@ -100,6 +100,11 @@ void beispiel()
   cout << iniFile.getParameterEntry<bool>("m0", "fixed");
   std::pair<double, double> range = iniFile.getParameterEntry< std::pair<double, double> >("m1", "range");
   cout << range.first << " " << range.second << endl;
+
+  cout << iniFile.hasKey("model") << endl;
+  cout << iniFile.hasKey("model123", "model321") << endl;
+  cout << iniFile.hasParameterEntry("m0", "fixed") << endl;
+  cout << iniFile.hasParameterEntry("m1", "fixed") << endl;
 
   // Run 100 times
   for (int i = 0; i<1000; i++)

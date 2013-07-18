@@ -129,4 +129,5 @@ BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME
+#undef VERSION
 

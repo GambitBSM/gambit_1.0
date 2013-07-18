@@ -647,10 +647,18 @@ namespace GAMBIT
   class backend_functor_common : public functor
   {
 
+    protected:
+
+      /// Type of the function pointer being encapsulated
+      typedef TYPE (*funcPtrType)(ARGS...);
+
+      /// Internal storage of function pointer
+      funcPtrType myFunction;
+
     public:
 
       /// Constructor 
-      backend_functor_common (TYPE (*inputFunction)(ARGS...), 
+      backend_functor_common (funcPtrType inputFunction, 
                               str func_name,
                               str func_capability, 
                               str result_type,
@@ -667,15 +675,17 @@ namespace GAMBIT
         needs_recalculating = true;
       }
 
-      void updatePointer(TYPE (*inputFunction)(ARGS...))
+      /// Update the internal function pointer wrapped by the functor
+      void updatePointer(funcPtrType inputFunction)
       {
         myFunction = inputFunction;
       }
 
-    protected:
-
-      /// Internal storage of function pointer
-      TYPE (*myFunction)(ARGS...);
+      /// Hand out the internal function pointer wrapped by the functor
+      funcPtrType handoutFunctionPointer() 
+      {
+        return myFunction;
+      }
 
   };
 

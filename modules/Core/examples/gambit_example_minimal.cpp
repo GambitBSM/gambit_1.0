@@ -28,8 +28,8 @@
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
-#include <crapsample.hpp>
+//#include <gambit_scan.hpp>
+//#include <crapsample.hpp>
 
 using namespace GAMBIT;
 
@@ -67,11 +67,16 @@ void beispiel(const char* inifilename)
 
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+  
+  //Let's run the scanner!
+  //Gambit::Scanner::Gambit_Scanner *scanner = new CrapSampler(dependencyResolver, activemodelFunctorMap, iniFile);
+  //scanner->Run();
 
   // Check that all requested models are used for at least one computation
   modelClaw.checkPrimaryModelFunctorUsage();
 
   // Run 100 times
+
   srand (time(NULL));    // initialize random seed
   
   typedef std::map<std::string, primary_model_functor *>::iterator activemodel_it;
@@ -103,14 +108,6 @@ void beispiel(const char* inifilename)
         
     }
   
-  
-    std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-    for (std::vector<Graphs::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
-    {
-      dependencyResolver.calcObsLike(*it);
-      dependencyResolver.notifyOfInvalidation(*it);
-    }
-    dependencyResolver.resetAll();
     cout << endl;
   }
 

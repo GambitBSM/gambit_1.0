@@ -106,17 +106,15 @@ namespace GAMBIT {
     
     void CMSSMspec (MSSMspecQ &result)          
     {
+      using namespace SafePointers::CMSSMspec;
+
       // Dependency resolution
       cout << endl << "My dependency on SMparameters has been filled by " << 
        GET_DEP_FUNCNAME(CMSSMspec::SMparameters) << " from " <<
        GET_DEP_MODULE(CMSSMspec::SMparameters) << "." << endl;
       cout << "Some values it contains are: ";
-      SMpars smpars = GET_DEP(CMSSMspec::SMparameters);
-      cout << "mZ: " << smpars.mZ << endl;
-      cout << "mtop: " << smpars.mtop << endl;
-      
-      // Same for CMSSM parameters, until we can get them from modelbit
-      CMSSMpars cmssmpars = GET_DEP(CMSSMspec::CMSSMparameters);
+      cout << "mZ: " << (*Dep::SMparameters).mZ << endl;
+      cout << "mtop: " << (*Dep::SMparameters).mtop << endl;
       
       // Backend resolution
       cout << "My backend requirement of CMSSMspectrum has been filled by " << 
@@ -124,22 +122,20 @@ namespace GAMBIT {
        GET_BE_PACKAGE(CMSSMspec::BECMSSMspectrum) << ", v" << 
        GET_BE_VERSION(CMSSMspec::BECMSSMspectrum) << "." << endl;
       cout << "Running backend function...";
-      result = GET_BE_RESULT(CMSSMspec::BECMSSMspectrum, smpars, cmssmpars);
+      result = GET_BE_RESULT(CMSSMspec::BECMSSMspectrum, *Dep::SMparameters, *Dep::CMSSMparameters);
     }
     
     void genMSSMspec (MSSMspecQ &result)
     {
+      using namespace SafePointers::genMSSMspec;
+
       // Dependency resolution
       cout << endl << "My dependency on SMparameters has been filled by " << 
        GET_DEP_FUNCNAME(genMSSMspec::SMparameters) << " from " <<
        GET_DEP_MODULE(genMSSMspec::SMparameters) << "." << endl;
       cout << "Some values it contains are: ";
-      SMpars smpars = GET_DEP(genMSSMspec::SMparameters);
-      cout << "mZ: " << smpars.mZ << endl;
-      cout << "mtop: " << smpars.mtop << endl;
-      
-      // Same for general soft masses, until we can get them from modelbit
-      MSSMsoftmassesQ softmasses = GET_DEP(genMSSMspec::MSSMsoftmasses);
+      cout << "mZ: " << (*Dep::SMparameters).mZ << endl;
+      cout << "mtop: " << (*Dep::SMparameters).mtop << endl;
       
       // Backend resolution
       cout << "My backend requirement of genMSSMspectrum has been filled by " << 
@@ -147,8 +143,8 @@ namespace GAMBIT {
        GET_BE_PACKAGE(genMSSMspec::BEgenMSSMspectrum) << ", v" << 
        GET_BE_VERSION(genMSSMspec::BEgenMSSMspectrum) << "." << endl;
       cout << "Running backend function...";
-      result = GET_BE_RESULT(genMSSMspec::BEgenMSSMspectrum, smpars, 
-                                  softmasses);
+      result = GET_BE_RESULT(genMSSMspec::BEgenMSSMspectrum, *Dep::SMparameters, 
+                                  *Dep::MSSMsoftmasses);
     }
     
   }

@@ -116,32 +116,75 @@ namespace GAMBIT
           return auxiliaries;
         }
 
+        bool hasKey(std::string key)
+        {
+          return keyValuePairNode[key];
+        }
+
+        bool hasKey(std::string s1, std::string s2)
+        {
+          return keyValuePairNode[s1][s2];
+        }
+
+        bool hasKey(std::string s1, std::string s2, std::string s3)
+        {
+          return keyValuePairNode[s1][s2][s3];
+        }
+
+        bool hasKey(std::string s1, std::string s2, std::string s3, std::string s4)
+        {
+          return keyValuePairNode[s1][s2][s3][s4];
+        }
+
         // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getValue(std::string key)
         {
-          return keyValuePairNode[key].as<TYPE>();
+          if (keyValuePairNode[key])
+            return keyValuePairNode[key].as<TYPE>();
+          std::cout << "ERROR: No inifile entry for " << key << std::endl;
+          exit(1);
         };
 
         template<typename TYPE> TYPE getValue(std::string key, std::string subkey)
         {
-          return keyValuePairNode[key][subkey].as<TYPE>();
+          if (keyValuePairNode[key][subkey])
+            return keyValuePairNode[key][subkey].as<TYPE>();
+          std::cout << "ERROR: No inifile entry for " <<
+            key << "." << subkey << std::endl;
+          exit(1);
         };
 
         template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3)
         {
-          return keyValuePairNode[s1][s2][s3].as<TYPE>();
+          if (keyValuePairNode[s1][s2][s3])
+            return keyValuePairNode[s1][s2][s3].as<TYPE>();
+          std::cout << "ERROR: No inifile entry for " << 
+            s1 << "." << s2 << "." << s3 << std::endl;
+          exit(1);
         };
 
         template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4)
         {
-          return keyValuePairNode[s1][s2][s3][s4].as<TYPE>();
+          if (keyValuePairNode[s1][s2][s3][s4])
+            return keyValuePairNode[s1][s2][s3][s4].as<TYPE>();
+          std::cout << "ERROR: No inifile entry for " << 
+            s1 << "." << s2 << "." << s3 << "." << s4 << std::endl;
+          exit(1);
         };
 
         // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getParameterEntry(std::string param, std::string key)
         {
-          return parametersNode[param][key].as<TYPE>();
+          if (parametersNode[param][key])
+            return parametersNode[param][key].as<TYPE>();
+          std::cout << "ERROR: Parameter " << param << " has no inifile entry " << key << std::endl;
+          exit(1);
         };
+
+        bool hasParameterEntry(std::string param, std::string key)
+        {
+          return parametersNode[param][key];
+        }
 
         std::vector<std::string> getParameterList()
         {

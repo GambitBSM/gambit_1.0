@@ -17,10 +17,10 @@
 //  //  2013 Apr 22, Apr 23
 //  //  Aldo F Saavedra
 //  //  2013 June 14
+//  //  Andy Buckley
+//  //  2013 July 18
 //  //
 //  //  ********************************************
-//
-//
 
 #include "Pythia.h"
 
@@ -30,45 +30,39 @@ namespace GAMBIT {
   namespace HEColliderBit {
 
 
-    struct SLHAConfig {
-      SLHAConfig(){}
-      SLHAConfig(int seed, string filename ) : seed(seed), filename(filename) {}
-      int seed;
-      string filename;
-    };
-
-
-    struct CmndConfig {
-      CmndConfig(){}
-      CmndConfig(int seed, string filename ) : seed(seed), filename(filename) {}
-      int seed;
-      string filename;
-    };
-
-
     class Pythia8Backend {
     public:
 
-      Pythia8Backend(const SLHAConfig& slhaf);
-      Pythia8Backend(const CmndConfig& cmndf);
-      ~Pythia8Backend();
+      Pythia8Backend(int seed);
+
+      ~Pythia8Backend() {
+        delete _pythiaInstance;
+      }
+
+      /// @todo Throw an exception if already initialized
+      void set(const std::string& key, int val) { _pythiaInstance->settings.mode(key, val); }
+      void set(const std::string& key, bool val) { _pythiaInstance->settings.flag(key, val); }
+      void set(const std::string& key, double val) { _pythiaInstance->settings.parm(key, val); }
+      void set(const std::string& key, const std::string& val) { _pythiaInstance->settings.word(key, val); }
+      void set(const std::string& command) { _pythiaInstance->readString(command); }
+
       void nextEvent(Pythia8::Event& event);
 
-      int nEvents();
-      int nAborts();
+      int nEvents() { return _pythiaInstance->mode("Main:numberOfEvents"); }
+      int nAborts() { return _pythiaInstance->mode("Main:timesAllowErrors"); }
 
     private:
-      // TODO: should this be/use a standard GAMBIT exception?
-      class EventFailureError: public exception
-      {
-        virtual const char* what() const throw()
-        {
+
+      /// @todo Should this be/use a standard GAMBIT exception?
+      class EventFailureError : public exception {
+        virtual const char* what() const throw() {
           return "For whatever reason, Pythia could not make the next event.";
         }
-      } eventFailureError;
+      };
 
+      bool _initialized;
 
-      Pythia8::Pythia *pythiaInstance;
+      Pythia8::Pythia* _pythiaInstance;
 
       /// @todo Rollcall?
 

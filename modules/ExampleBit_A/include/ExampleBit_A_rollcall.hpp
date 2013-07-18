@@ -27,7 +27,8 @@
 #define __ExampleBit_A_rollcall_hpp__
 
 #include <module_macros.hpp>
-#include <ModelParameters.hpp> //replace with model_macros.hpp?
+#include <ModelParameters.hpp> //replace with model_macros.hpp?      
+
 
 typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp
 

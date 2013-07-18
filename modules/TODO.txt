@@ -13,14 +13,19 @@ TODO:
 * Tracking of config files -> lists in module/backend rollcall headers?
   - Add function-level "HAS_CONFIG_FILE" macro to do this
     - for both modules and backends
-* No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
 * Create "little guys" (parameter mini-functors : e.g. *params::M0)
 * Create mini-core for module stand-alone releases
 * Add chained 'depends on parameter' to functor class
 
-Decisions:
-* Separate gambit_example.cpp's
+
+
+Recent decisions:
+* Separate gambit_example.cpps
 * Module specific types in module directories
   -> BUT common return types in 
      utils/include/common_return_types.hpp
 * Separate output/log for points with "BadPoint" errors
+
+Done:
+* No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
+
