@@ -44,6 +44,7 @@ namespace GAMBIT {
       void set(const std::string& key, bool val) { _pythiaInstance->settings.flag(key, val); }
       void set(const std::string& key, double val) { _pythiaInstance->settings.parm(key, val); }
       void set(const std::string& key, const std::string& val) { _pythiaInstance->settings.word(key, val); }
+      void set(const std::string& command) { _pythiaInstance->readString(command); }
 
       void nextEvent(Pythia8::Event& event);
 

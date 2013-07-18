@@ -66,8 +66,14 @@ int main()
 
   cout << endl << "Running parallelized HECollider simulation" << endl << endl;
 
+  /// @todo Use fast lookup of interpolated NLO subprocess cross-sections to decide how many events of each subprocess group to use
+  /// @note Hard-coded for now, to break the chicken & egg scenario...
+  vector<string> foo = {{ "foo", "bar" }};
+
   /// @todo Generalise to a vector of (vector of) analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
+  // GAMBIT::Analysis* anas[4];
+  // omp_get_num_threads();
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
   ana->init(); //< @todo Convert to auto-initialize
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
@@ -93,13 +99,11 @@ int main()
     // myPythia->set("SUSY:qqbar2chi+-chi0", false);
     // myPythia->set("SUSY:qqbar2chi+chi-", false);
 
-
     // For a reasonable output
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";
     outFile.open(temp.c_str());
     outArchive = new boost::archive::text_oarchive(outFile);
 
-    int nevents = myPythia->nEvents(); // this is hardwired for slha files, so use the def for now
     cout << " The number of events to process is " << NEVENTS << endl;
     #pragma omp for schedule(guided)
     for (counter=0; counter<NEVENTS; counter++)
