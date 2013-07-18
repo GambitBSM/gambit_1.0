@@ -82,14 +82,14 @@ namespace GAMBIT {
     }
     void SLHA(double &result)
     {
-      double CMSSM_definition = GET_DEP(SLHA::CMSSM_definition);
-      result = CMSSM_definition * 0.5;
+      using namespace SafePointers::SLHA;
+      result = *Dep::CMSSM_definition * 0.5;
     }
     void Wstruct (GAMBIT::types::Wstruct &result)
     {
-      double SLHA = GET_DEP(Wstruct::SLHA);
-      result.valA = SLHA * 0.5;
-      result.valB = SLHA * 1.5;
+      using namespace SafePointers::Wstruct;
+      result.valA = *Dep::SLHA * 0.5;
+      result.valB = *Dep::SLHA * 1.5;
     }
     void Weff_alt1 (double &result)
     {
@@ -98,8 +98,8 @@ namespace GAMBIT {
     }
     void Weff (double &result)
     {
-      double SLHA = GET_DEP(Weff::SLHA);
-      result = SLHA * 2.0;
+      using namespace SafePointers::Weff;
+      result = *Dep::SLHA * 2.0;
 
       std::cout << "My backend requirement of returnResult has been filled by " << 
        GET_BE_FUNCNAME(Weff::LibFirst_returnResult_capability) << " from " <<
@@ -111,9 +111,8 @@ namespace GAMBIT {
     }
     void omega_DM (double &result)
     {
-      GAMBIT::types::Wstruct Wstruct = GET_DEP(omega_DM::Wstruct);
-      double Weff = GET_DEP(omega_DM::Weff);
-      result = Wstruct.valA + Wstruct.valB + Weff;
+      using namespace SafePointers::omega_DM;
+      result = (*Dep::Wstruct).valA + (*Dep::Wstruct).valB + *Dep::Weff;
     }
     void dssusy(int &result)
     {

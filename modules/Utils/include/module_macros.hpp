@@ -62,9 +62,6 @@
 /// to fulfill dependencies.
 /// @{
 
-/// Retrive dependency \em DEP of the current function
-#define GET_DEP(DEP)               (*Dependencies::DEP)()
-#define GET_DEP_PTR(DEP)           Dependencies::DEP->valuePtr()
 /// Retrive the name of the function that fills \em DEP for the current function
 #define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
 /// Retrive the name of the module that provides the function that fills \em DEP for the current function
@@ -87,6 +84,8 @@
 #define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
 /// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
 #define GET_BE_VERSION(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->version()
+/// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
+#define GET_BE_POINTER(BE_REQ, ...)  Backend_Reqs::CAT(BE_REQ,_get_function_ptr)<__VA_ARGS__>()
 /// @}
 
 
@@ -787,6 +786,41 @@
             }                                                                  \
             BOOST_PP_IF(IS_TYPE(void,TYPE),,return)                            \
              (*myptr)(std::forward<ARGS>(args)...);                            \
+                                                                               \
+          }                                                                    \
+                                                                               \
+          /* Set up a working alias that casts the (base) pointer to the       \
+          backend functor to the appropriate backend_functor type, and then    \
+          returns the underlying pointer to the actual backend function. */    \
+          template<typename ...ARGS>                                           \
+          /* Horrifically complicated syntax to return a function ptr */       \
+          TYPE(*CAT(BACKEND_REQ,_get_function_ptr)())(ARGS...)                 \
+          {                                                                    \
+            typedef backend_functor<TYPE, ARGS...> be_functor;                 \
+            be_functor* myptr;                                                 \
+            if (GAMBIT::safe_mode)                                             \
+            {                                                                  \
+              myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
+              if (myptr == 0)                                                  \
+              {                                                                \
+                cout<<endl<<"Error: Null returned from dynamic cast in ";      \
+                cout<<"attempting to retrieve underlying function pointer ";   \
+                cout<<endl<<"for backend requirement"<<endl;                   \
+                cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
+                cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
+                cout<<"). Probably you have passed arguments of the "<<endl;   \
+                cout<<"wrong type(s) when calling this function."<<endl;       \
+                cout<<"The return type of the backend function is supposed ";  \
+                cout<<"to be "<<STRINGIFY(TYPE)<<endl;                         \
+                /** FIXME \todo throw real error here */                       \
+              }                                                                \
+            }                                                                  \
+            else                                                               \
+            {                                                                  \
+              myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
+            }                                                                  \
+            return myptr->handoutFunctionPointer();                            \
+                                                                               \
           }                                                                    \
                                                                                \
         }                                                                      \
