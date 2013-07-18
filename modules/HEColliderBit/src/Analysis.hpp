@@ -11,7 +11,7 @@ namespace GAMBIT {
   public:
 
     /// Virtual destructor (needed for correct deletion of inherited classes)
-    virtual ~Analysis() {  }
+    virtual ~Analysis() { init(); }
 
     /// Initialize counters etc.
     /// @todo Call this automatically on first call to analyze() -- requires a bit of indirection
