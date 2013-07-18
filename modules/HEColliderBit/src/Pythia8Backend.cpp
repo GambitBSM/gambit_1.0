@@ -13,23 +13,19 @@
 //  //
 //  //  Abram Krislock
 //  //  2013 Apr 19, Apr 23
+//  //  Andy Buckley
+//  //  2013 July 18
 //  //
 //  //  ********************************************
-//
-//
-#include <string>
-#include "boost/lexical_cast.hpp"
+
 #include "Pythia8Backend.hpp"
 
 using namespace std;
 
-namespace GAMBIT
-{
-  namespace HEColliderBit
-  {
+namespace GAMBIT {
+  namespace HEColliderBit {
 
 
-    //Pythia8Backend::Pythia8Backend(int seed, string slhaFileName)
     Pythia8Backend::Pythia8Backend(const SLHAConfig& cfg)
     {
       pythiaInstance = new Pythia8::Pythia();
@@ -110,12 +106,9 @@ namespace GAMBIT
     }
 
 
-    void Pythia8Backend::nextEvent(Pythia8::Event& event)
-    {
-      if (!pythiaInstance->next())
-        throw eventFailureError;
-      else
-        event = pythiaInstance->event;
+    void Pythia8Backend::nextEvent(Pythia8::Event& event) {
+      if (!pythiaInstance->next()) throw EventFailureError();
+      event = pythiaInstance->event;
     }
 
 

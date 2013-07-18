@@ -17,10 +17,10 @@
 //  //  2013 Apr 22, Apr 23
 //  //  Aldo F Saavedra
 //  //  2013 June 14
+//  //  Andy Buckley
+//  //  2013 July 18
 //  //
 //  //  ********************************************
-//
-//
 
 #include "Pythia.h"
 
@@ -31,18 +31,20 @@ namespace GAMBIT {
 
 
     struct SLHAConfig {
-      SLHAConfig(){}
-      SLHAConfig(int seed, string filename ) : seed(seed), filename(filename) {}
+      SLHAConfig(int seed, const std::string& filename)
+        : seed(seed), filename(filename)
+      { }
       int seed;
       string filename;
     };
 
 
     struct CmndConfig {
-      CmndConfig(){}
-      CmndConfig(int seed, string filename ) : seed(seed), filename(filename) {}
+      CmndConfig(int seed, const std::string& filename)
+        : seed(seed), filename(filename)
+      { }
       int seed;
-      string filename;
+      std::string filename;
     };
 
 
@@ -58,17 +60,15 @@ namespace GAMBIT {
       int nAborts();
 
     private:
-      // TODO: should this be/use a standard GAMBIT exception?
-      class EventFailureError: public exception
-      {
-        virtual const char* what() const throw()
-        {
+
+      /// @todo Should this be/use a standard GAMBIT exception?
+      class EventFailureError : public exception {
+        virtual const char* what() const throw() {
           return "For whatever reason, Pythia could not make the next event.";
         }
-      } eventFailureError;
+      }; //< @todo Huh?
 
-
-      Pythia8::Pythia *pythiaInstance;
+      Pythia8::Pythia* pythiaInstance;
 
       /// @todo Rollcall?
 
