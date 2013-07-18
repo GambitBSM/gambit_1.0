@@ -817,7 +817,7 @@ namespace GAMBIT
       {
         if (this == NULL) functor::failBigTime();
         return &this->myValue;
-      }   
+      }
 
   };    
 

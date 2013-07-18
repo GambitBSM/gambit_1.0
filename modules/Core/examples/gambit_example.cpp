@@ -41,6 +41,7 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #define  IN_CORE
 #include <logcore.hpp>
 #include <graphs.hpp>
+#include <modelbit.hpp>
 #include <backend_rollcall.hpp>
 #include <module_rollcall.hpp>
 #include <model_rollcall.hpp>
@@ -48,8 +49,8 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
-#include <crapsample.hpp>
+//#include <gambit_scan.hpp>
+//#include <crapsample.hpp>
 
 using namespace GAMBIT;
 
@@ -66,6 +67,16 @@ void beispiel()
   IniParser::IniFile iniFile;
   iniFile.readFile("gambit.yaml");
 
+  // Determine selected model(s)
+  std::vector<std::string> selectedmodels;
+
+  selectedmodels.push_back(iniFile.getValue<std::string>("model"));  ///TODO: improve
+
+  // Initialise ModelFunctorClaw (for manipulating primary model functors)
+  ModelBit::ModelFunctorClaw modelClaw(globalPrimaryModelFunctorList);
+  
+  // Activate "primary" model functors
+  modelClaw.activatePrimaryModels(selectedmodels);
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(globalFunctorList,
       globalBackendFunctorList, iniFile);
@@ -75,6 +86,9 @@ void beispiel()
 
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+
+  // Check that all requested models are used for at least one computation
+  modelClaw.checkPrimaryModelFunctorUsage();
 
   // Examples for getting information from the key/value section of the
   // inifile
@@ -367,22 +381,34 @@ int main( int argc, const char* argv[] )
   cout<<"Checking congruency of "<<models::CMSSM_I::name()<<"..."<<endl;
   cout<<"lineage is:"<<models::CMSSM_I::lineage<<endl;
   cout<<"is descendant of model_base?     :"<<models::CMSSM_I::isdescendantof("model_base")<<endl;
-  cout<<"is descendant of MSSM?           :"<<models::CMSSM_I::isdescendantof("MSSM")<<endl;
   cout<<"is descendant of MSSM_I?         :"<<models::CMSSM_I::isdescendantof("MSSM_I")<<endl;
-  cout<<"is descendant of CMSSM?          :"<<models::CMSSM_I::isdescendantof("CMSSM")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<models::CMSSM_I::isdescendantof("CMSSM_I")<<endl;
   cout<<"is descendant of CMSSM_II?       :"<<models::CMSSM_I::isdescendantof("CMSSM_II")<<endl;
-  cout<<"is descendant of DMHalo_base?    :"<<models::CMSSM_I::isdescendantof("DMHalo_base")<<endl;
   cout<<"is descendant of DMHalo_base_I?  :"<<models::CMSSM_I::isdescendantof("DMHalo_base_I")<<endl;
-  cout<<"is descendant of Gaussian_Halo?  :"<<models::CMSSM_I::isdescendantof("Gaussian_Halo")<<endl;
   cout<<"is descendant of Gaussian_Halo_I?:"<<models::CMSSM_I::isdescendantof("Gaussian_Halo_I")<<endl;
   cout<<endl;
   
+  // New way of checking congruency using global lineage database
+  cout<<"Checking congruency of "<<models::CMSSM_I::name()<<" using database..."<<endl;
+  cout<<"lineage is:"<< models::lineageDB["CMSSM_I"] <<endl;
+  cout<<"is descendant of model_base?     :"<<models::isdescendantofDB["CMSSM_I"]("model_base")<<endl;
+  cout<<"is descendant of MSSM_I?         :"<<models::isdescendantofDB["CMSSM_I"]("MSSM_I")<<endl;
+  cout<<"is descendant of CMSSM_I?        :"<<models::isdescendantofDB["CMSSM_I"]("CMSSM_I")<<endl;
+  cout<<"is descendant of CMSSM_II?       :"<<models::isdescendantofDB["CMSSM_I"]("CMSSM_II")<<endl;
+    
+  // Can now check ancestry using global 'descendants' database
+  cout<<"Finding descendants of "<<models::MSSM_I::name()<<" using database..."<<endl;
+  cout<<"descendants are:"<< models::descendantsDB["MSSM_I"] <<endl;
+  cout<<"is ancestor of model_base?     :"<<models::isancestorofDB["MSSM_I"]("model_base")<<endl;
+  cout<<"is ancestor of MSSM_I?         :"<<models::isancestorofDB["MSSM_I"]("MSSM_I")<<endl;
+  cout<<"is ancestor of CMSSM_I?        :"<<models::isancestorofDB["MSSM_I"]("CMSSM_I")<<endl;
+  cout<<"is ancestor of CMSSM_II?       :"<<models::isancestorofDB["MSSM_I"]("CMSSM_II")<<endl;
+            
   // Interpret_as_parent features
   // (currently just function wrapped in a functor, provided PARENT parameter 
   // object as a CAPABILITY)
   // I guess the core needs to do something like this:
-  cout<<"Am I a decendant of MSSM_I?..."<<endl;
+  cout<<"Am I a descendant of MSSM_I?..."<<endl;
   if (models::CMSSM_I::isdescendantof("MSSM_I"))
   {
     cout<<"...yes!"<<endl;

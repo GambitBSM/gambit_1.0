@@ -50,15 +50,15 @@ namespace GAMBIT {
 
     // Module functions
     void nevents_dbl  (double &result)    { result = count++; }
-    void nevents_int  (int    &result)    { result = (int) (GET_DEP(nevents_int::nevents)); }
+    void nevents_int  (int    &result)    { result = (int) (*SafePointers::nevents_int::Dep::nevents); }
     void nevents_like (double &result)    { result = 1.5; }
     void identity     (str    &result)    { result = "turkion"; }
     void function_pointer_retriever( double(*&result)(int&) )
     {
-      //Two ways to try this: a pointer to a fortran function that has been backended:
-      //result = GET_BE_FUNCTION_POINTER(backend_function_pointer_retriever::runMe);
+      //Two ways to try this: a pointer to a fortran function that has been backended (and takes an int as an input by reference):
+      result = GET_BE_POINTER(function_pointer_retriever::externalFunction, int&);
       //or a pointer to a local C++ funtion
-      result = &some_other_function;
+      //result = &some_other_function;
     }
 
     // Example of interacting with models

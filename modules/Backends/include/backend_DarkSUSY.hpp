@@ -133,4 +133,5 @@ BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_")
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME
+#undef VERSION
 

@@ -175,6 +175,10 @@ $(COREDIR)/build/%.o: $(COREDIR)/src/%.c $(ALLINC)
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.f $(ALLINC)
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.f $(ALLINC)
+	@echo ___________Compiling $<:
+	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
 	
 $(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(ALLINC)
 	@echo ___________Compiling $<:
@@ -183,10 +187,18 @@ $(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(ALLINC)
 $(COREDIR)/build/%.o: $(COREDIR)/examples/%.c $(ALLINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
-
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.f $(ALLINC)
+	
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.f $(ALLINC)
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+	
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.c $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
 
 ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:

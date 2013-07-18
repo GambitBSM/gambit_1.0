@@ -118,5 +118,12 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       
     } //end checkPrimaryModelFunctorUsage
 
+
+    /// Model congruency checking functions
+    ///
+    /// During model registration we have created a series of "lineage" vectors,
+    /// one for each model, detailing their ancestry. These functions are tools
+    /// for checking whether one model is a descendant of another, or whether 
+    /// one model is an ancestor of another.
   }
 }

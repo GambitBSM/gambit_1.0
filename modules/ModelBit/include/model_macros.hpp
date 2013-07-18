@@ -78,24 +78,63 @@ namespace GAMBIT{
     
     namespace model_base
       {
-          /* Model lineage */
-          const std::vector<str> lineage (1, "model_base");
-          
+        /* Model lineage */
+        const std::vector<str> lineage (1, "model_base");
+        
       }
-  } //end namespace Models
+      
+    /// global Lineage/Ancestry databases
+    typedef bool (*LineageFunction)(std::string); // function pointer type
+    #ifndef IN_CORE
+    extern
+    #endif
+    std::vector<std::string> allmodelnames (1, "model_base");
+    #ifndef IN_CORE
+    extern
+    #endif
+    std::map<std::string, std::vector<std::string> > lineageDB;
+    #ifndef IN_CORE
+    extern
+    #endif
+    std::map<std::string, std::vector<std::string> > descendantsDB;
+    #ifndef IN_CORE
+    extern
+    #endif
+    std::map<std::string, LineageFunction> isdescendantofDB;
+    #ifndef IN_CORE
+    extern
+    #endif
+    std::map<std::string, LineageFunction> isancestorofDB;
+    
+    /// Helper function to test if a string matches a model in 'allmodelnames'
+    void verifymodelname(std::string testname)
+    {
+      for (std::vector<str>::iterator it = allmodelnames.begin();
+           it!=allmodelnames.end(); ++it)
+      {
+        if (testname==*it) {return;};
+      }
+      ///TODO: convert to proper GAMBIT error
+      std::cout<<"ERROR! Test string '"<<testname<<"'<< does not match the name\
+ of any currently defined model!"<<std::endl;
+      std::cout<<"  Currently defined models are: "<<allmodelnames<<std::endl;
+      exit(0); 
+    }
+    
+  } //end namespace models
 
 } //end namespace GAMBIT
 
 // MACRO DEFINITIONS. 
 
-//  *******************************************************************************
+//  ****************************************************************************
 /// "Rollcall" macros. These are lifted straight from module_macros.hpp
 /// but are modified here and there to suit the role of models.
 
-/// Note: Piggybacks off the CORE_START_MODULE_GUTS macro, since we need all the 
+/// Note: Piggybacks off the CORE_START_MODULE_GUTS macro, since we need all the
 /// same basic machinery this creates.
 // Removed for now
-//#define START_MODEL                                                            \
+//#define START_MODEL                                                          \
   namespace GAMBIT {                                                           \
     namespace models {                                                         \
       namespace MODEL {                                                        \
@@ -113,7 +152,7 @@ namespace GAMBIT{
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT_5(MODEL,_,PARAMETERISATION,_,parameters)) \
     /* Begin setting up dependency of primary ModelParameters object on
        alpha_parameters (capability supplied by ScannerBit) */                 \
-    /*BEGIN_ALPHAPARAMS_DEPENDENCY*/                                               \
+    /*BEGIN_ALPHAPARAMS_DEPENDENCY*/                                           \
     namespace models {                                                         \
       namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
                                                                                \
@@ -141,12 +180,79 @@ namespace GAMBIT{
            else returns 'false'. */                                            \
         bool isdescendantof(str testmodel)                                     \
         {                                                                      \
+          verifymodelname(testmodel);                                          \
           for (std::vector<str>::const_iterator it = lineage.begin();          \
                it!=lineage.end(); ++it)                                        \
           {                                                                    \
             if (testmodel==*it) {return true;};                                \
           }                                                                    \
           return false;                                                        \
+        }                                                                      \
+                                                                               \
+        /* Inverse of congruency function (checks if this model is an
+           ancestor of the specified model (or is itself the specified model) ) 
+           Returns 'true' if the supplied string is an element of 
+           'models::descendantsDB[MODEL]', else returns 'false'. */            \
+        bool isancestorof(str testmodel)                                       \
+        {                                                                      \
+          verifymodelname(testmodel);                                          \
+          for (std::vector<str>::const_iterator it =                           \
+            descendantsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))].begin(); \
+            it!=descendantsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))].end();\
+            ++it)                                                              \
+          {                                                                    \
+            if (testmodel==*it) {return true;};                                \
+          }                                                                    \
+          return false;                                                        \
+        }                                                                      \
+                                                                               \
+        /* Runtime addition of lineage vector and isdescendantof function to 
+           global databases */                                                 \
+        void rt_addmodeltoDB() {                                               \
+          allmodelnames.push_back(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)));   \
+          }                                                                    \
+                                                                               \
+        void rt_addlineage() {                                                 \
+          lineageDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))] = lineage;     \
+          }                                                                    \
+                                                                               \
+        void rt_addisdescendantof() {                                          \
+          isdescendantofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))] \
+                                                            = &isdescendantof; \
+          }                                                                    \
+        void rt_addisancestorof() {                                            \
+          isancestorofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))] \
+                                                            = &isancestorof;   \
+          }                                                                    \
+        /*Function to add this model to the 'descendants' vector for all of
+          the models it descends from. No new parent models can be added to 
+          the 'allmodelnames' vector after this model is already defined so
+          we won't miss any. */                                                \
+        void rt_add_self_to_descendantsDB()                                    \
+        {                                                                      \
+          for (std::vector<std::string>::iterator                              \
+                modelthem = allmodelnames.begin();                             \
+                modelthem != allmodelnames.end(); ++modelthem)                 \
+          {                                                                    \
+            if ( isdescendantofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))]  \
+                                                                (*modelthem) ) \
+            {                                                                  \
+              /* if we are a descendant of modelthem, add us to their      
+                'descendants' vectors. */                                      \
+              descendantsDB[*modelthem].push_back(                             \
+                                  STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))); \
+            }                                                                  \
+          }                                                                    \
+                                                                               \
+        }                                                                      \
+                                                                               \
+        namespace Ini                                                          \
+        {                                                                      \
+          ini_code AddModel (&rt_addmodeltoDB);                                \
+          ini_code AddLineage (&rt_addlineage);                                \
+          ini_code AddDescFunc (&rt_addisdescendantof);                        \
+          ini_code AddAnceFunc (&rt_addisancestorof);                          \
+          ini_code AddToDescendants (&rt_add_self_to_descendantsDB);           \
         }                                                                      \
                                                                                \
         /* Model parameter names */                                            \
@@ -308,12 +414,12 @@ namespace GAMBIT{
 // Macro to easily define parameters who don't need special CAPABILITY 
 // definitions. Iteratively calls MAP_TO_CAPABILITY, with CAPABILITYs defined
 // with the same name as the parameters.
-//#define DEFINEPARS(...)                                                        \
-//do{                                                                            \
-//    const char* _arr_[] = {__VA_ARGS__};                                       \
-//    for(int i=0; i<sizeof(_arr_)/sizeof(const char*) ; i++){                   \
-//      LINK_PARAMETER_TO_CAPABILITY(_arr_[i],_arr_[i]));                        \
-//    }                                                                          \
+//#define DEFINEPARS(...)                                                      \
+//do{                                                                          \
+//    const char* _arr_[] = {__VA_ARGS__};                                     \
+//    for(int i=0; i<sizeof(_arr_)/sizeof(const char*) ; i++){                 \
+//      LINK_PARAMETER_TO_CAPABILITY(_arr_[i],_arr_[i]));                      \
+//    }                                                                        \
 //}while(0);   
 
 // Ugghh, ok it is not great calling a macro in a loop like that, since it gets
@@ -564,6 +670,7 @@ namespace GAMBIT{
   {                                                                            \
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
+
 
 #endif /* defined(__ModelMacros_hpp__) */
 

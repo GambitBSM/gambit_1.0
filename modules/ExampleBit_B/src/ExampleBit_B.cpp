@@ -52,20 +52,10 @@ namespace GAMBIT
       cout << endl << "My dependency on nevents has been filled by " << 
        GET_DEP_FUNCNAME(nevents_postcuts::nevents) << " from " <<
        GET_DEP_MODULE(nevents_postcuts::nevents) << "." << endl;
-      cout << "Its value is: ";
-      double nevents_local = GET_DEP(nevents_postcuts::nevents);
-      cout << nevents_local << endl << endl;
-      cout << "Just to reiterate, its value is: ";
-      safe_ptr<double> pnevents_local = GET_DEP_PTR(nevents_postcuts::nevents);
-      cout << *pnevents_local << endl << endl;
-      cout << "Seriously, the value is: " << *Dep::nevents << endl;
+      cout << "Its value is: " << *Dep::nevents << endl;
 
-      //The following will not work until the dependency resolver is able to handle conditional deps.      
       //cout << "Now let's see what happens when we try to retrieve a conditional dependency." << endl;
-      //str id = GET_DEP(nevents_postcuts::id);
-      //cout << "The id is: " << id << endl;
-      //cout << "...and again via the automagic safe pointer: " << endl;
-      //cout << *Dep::id << endl;
+      //cout << "The id is: " << *Dep::id << endl;
 
       cout << "My backend requirement of awesomeness has been filled by " << 
        GET_BE_FUNCNAME(nevents_postcuts::awesomeness) << " from " <<

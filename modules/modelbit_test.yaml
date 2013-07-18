@@ -26,8 +26,12 @@ m1:
   type:         ""
   function:     ""
   module:       ""
-#  dependencies:
-#  - {capability: "test_parent_I_parameters", type: "ModelParameters", function: "test_parent_I_parameters", module: "MSSM_I"}
+
+- obsType:      Observable
+  capability:   nevents_postcuts
+  type:         ""
+  function:     ""
+  module:       ""
 
 #########################
 --- # Auxiliary entries

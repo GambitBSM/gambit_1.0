@@ -35,6 +35,10 @@
 # ifndef __boost_fallbacks_hpp__
 # define __boost_fallbacks_hpp__
 
+#include<boost/version.hpp>
+
+#pragma message "BOOST_VERSION = " BOOST_VERSION
+#pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
 # if 0//GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
 #   include <boost/preprocessor/variadic/size.hpp>
 #   include <boost/preprocessor/tuple/to_seq.hpp>
@@ -126,6 +130,22 @@
 //# include <boost/preprocessor/config/config.hpp> // have this above!
 //# include <boost/preprocessor/facilities/overload.hpp> // have this above!
 //# include <boost/preprocessor/variadic/size.hpp>  // have this above!
+
+//Ben: temporary debugging junk
+#include <boost/preprocessor/stringize.hpp>
+#pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
+#ifdef BOOST_PP_VARIADICS
+#   pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
+#else
+#   pragma message "BOOST_PP_VARIADICS= not defined"
+#endif
+#ifdef BOOST_PP_VARIADICS_MSVC
+#   pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
+#else
+#   pragma message "BOOST_PP_VARIADICS_MSVC= not defined"
+#endif
+#pragma message "BOOST_PP_CONFIG_FLAGS=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_FLAGS())
+#pragma message "BOOST_PP_CONFIG_MWCC=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_MWCC())
 
 //# if BOOST_PP_VARIADICS
 #    if BOOST_PP_VARIADICS_MSVC
@@ -221,6 +241,9 @@
 //# endif //ifndef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
 
 # endif //GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
+
+//Ben: temporary debugging junk
+#pragma message "TUPLE_TO_SEQ test=" BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_TO_SEQ((1,2,3,4,5)))
 
 # endif //__boost_fallbacks_hpp__
 
