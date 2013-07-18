@@ -132,7 +132,7 @@ void AbsoluteIsolation::Process()
 {
   Candidate *candidate, *isolation;
   TObjArray *isolationArray;
-  Double_t sumPT, ratio;
+  Double_t sumPT; //, ratio;
   Int_t counter;
   Double_t rho = 0.0;
 
@@ -173,9 +173,9 @@ void AbsoluteIsolation::Process()
     }
 
     // correct sumPT for pile-up contamination
-    sumPT = sumPT - rho*fDeltaRMax*fDeltaRMax*TMath::Pi();  
+    sumPT = sumPT - rho*fDeltaRMax*fDeltaRMax*TMath::Pi();
 
-    ratio = sumPT/candidateMomentum.Pt();
+    //ratio = sumPT/candidateMomentum.Pt();
     if(sumPT > fPTRatioMax) continue;
 
     fOutputArray->Add(candidate);

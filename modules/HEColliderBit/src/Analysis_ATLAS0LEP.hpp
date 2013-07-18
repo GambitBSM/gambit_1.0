@@ -184,9 +184,9 @@ namespace GAMBIT {
         if (signalJets[iJet]->pT() > 40) meff_incl += signalJets[iJet]->pT();
       }
       meff_incl += met;
-      float meff2j_debug = 0;
-      float dphimin_debug = 0;
 
+      float meff2j = 0;
+      float dPhiMin = 0;
 
       #ifdef MKHISTOS
       _njets->Fill(nJets);
@@ -217,12 +217,8 @@ namespace GAMBIT {
           //       numJets+=1;
           //     }
           // }
-          float dPhiMin=SmallestdPhi(signalJets,ptot.phi());
-
-          dphimin_debug=dPhiMin;
-
-          float meff2j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
-          meff2j_debug=meff2j;
+          dPhiMin = SmallestdPhi(signalJets,ptot.phi());
+          meff2j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
 
           #ifdef MKHISTOS
           if (leptonCut) {
@@ -397,8 +393,8 @@ namespace GAMBIT {
            << " NELE " << signalElectrons.size()
            << " NMUO " << signalMuons.size()
            << " MET " << met
-           << " MET/MEFF " << met/meff2j_debug
-           << " DPHIMIN " << dphimin_debug
+           << " MET/MEFF " << met/meff2j
+           << " DPHIMIN " << dPhiMin
            << " MEFF " << meff_incl
            << " METPHI " << ptot.phi() << endl;
       #endif
