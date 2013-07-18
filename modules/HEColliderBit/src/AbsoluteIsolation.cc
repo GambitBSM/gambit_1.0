@@ -14,23 +14,8 @@
  *
  */
 
-#include "modules/AbsoluteIsolation.h"
-
-#include "classes/DelphesClasses.h"
-#include "classes/DelphesFactory.h"
-#include "classes/DelphesFormula.h"
-
-#include "ExRootAnalysis/ExRootResult.h"
-#include "ExRootAnalysis/ExRootFilter.h"
-#include "ExRootAnalysis/ExRootClassifier.h"
-
-#include "TMath.h"
-#include "TString.h"
-#include "TFormula.h"
-#include "TRandom3.h"
-#include "TObjArray.h"
-#include "TDatabasePDG.h"
-#include "TLorentzVector.h"
+#include "AbsoluteIsolation.h"
+ClassImp(AbsoluteIsolation)
 
 #include <algorithm>
 #include <stdexcept>

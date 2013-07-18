@@ -71,11 +71,11 @@ int main()
   GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
 
   ana->init();
-  pythia8_input = new GAMBIT::HEColliderBit::slhaFileName(12345 + 17 * omp_get_thread_num(), slhaFileName);
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Initialize the backends
+    pythia8_input = new GAMBIT::HEColliderBit::slhaFileName(12345 + 17 * omp_get_thread_num(), slhaFileName);
     myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(*pythia8_input);
 //    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(12345 + 17 * omp_get_thread_num(), slhaFileName);
 
