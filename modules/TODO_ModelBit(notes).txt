@@ -63,7 +63,12 @@ Goals for Ben for today:
   * Figure out how ScannerBit should interact with ModelParameters functors
 
 -------------------------------------
+Day 4 - Thursday 18 Jul
 
+Goals:
+  * Create function in ModelBit to check that all the user-request models are
+    actually used by the depedency resolver. If not, throw an error to say that
+    they are wasting their cpu time with the unused parameters.
 
 
 
