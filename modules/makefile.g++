@@ -65,12 +65,12 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 COMMONLIBS = -lm
 
 # beb_tester from makefile.test_backend
-TARGETS = gambit_example beb_tester 
+TARGETS = gambit_example beb_tester gambit_example_minimal
 
-default: mh gambit_example 
+default: mh gambit_example gambit_example_minimal
 .PHONY: default
 
-all: mh doxygen gambit_example beb_tester 
+all: mh doxygen gambit_example beb_tester gambit_example_minimal
 .PHONY: all
 
 clean: 
@@ -110,7 +110,7 @@ CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst
 
 MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp) \
 $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
-MODELSRC:=$(wildcard $(MODELDIR)/source/*cpp) $(wildcard $(MODELDIR)/source/*c)
+MODELSRC:=$(wildcard $(MODELDIR)/src/*cpp) $(wildcard $(MODELDIR)/source/*c)
 MODELLIBS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(MODELSRC)))))
 
 UTILSINC:=$(wildcard $(UTILSDIR)/include/*hpp) $(wildcard $(UTILSDIR)/include/*h)
@@ -175,6 +175,30 @@ $(COREDIR)/build/%.o: $(COREDIR)/src/%.c $(ALLINC)
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.f $(ALLINC)
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.f $(ALLINC)
+	@echo ___________Compiling $<:
+	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+	
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.c $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
+	
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.f $(ALLINC)
+	@echo ___________Compiling $<:
+	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+	
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.c $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -c $< -o $@
 
 ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
@@ -260,9 +284,13 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(CORELIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
+gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
 	@echo ___________Linking $@:
-	$(LN) $(CORELIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+
+gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
+	@echo ___________Linking $@:
+	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
