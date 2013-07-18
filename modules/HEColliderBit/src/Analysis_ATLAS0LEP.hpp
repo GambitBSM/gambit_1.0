@@ -141,9 +141,9 @@ namespace GAMBIT {
       bool metCut=false;
       //cout << "MET " << met << endl;
       if (met>160.)metCut=true;
-      if(metCut)cout << "Passes met cut" << endl;
+      
       float meff_incl=0;
-      for (size_t iJet=0;iJet<signalJets.size();iJet++) {
+      for (size_t iJet=0;iJet<nJets;iJet++) {
         if (signalJets.at(iJet)->pT()>40.)meff_incl+=signalJets.at(iJet)->pT();
       }
 
