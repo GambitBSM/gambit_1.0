@@ -126,7 +126,7 @@ int main()
       myPythia->set(p, true);
 
     // Persistency config
-    temp = "tester_thread" + boost::lexical_cast<string>(NTHREAD)+".dat";
+    temp = "tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat";
     outFile.open(temp.c_str());
     outArchive = new boost::archive::text_oarchive(outFile);
 

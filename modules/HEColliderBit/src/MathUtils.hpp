@@ -11,6 +11,14 @@ namespace GAMBIT {
   /// @name Numerical helpers
   //@{
 
+  /// Convenience function for getting the sign of a number
+  ///
+  /// @todo Template and SFINAE on numerical types?
+  inline int sign(double val) {
+    if (val == 0) return 0;
+    return (val < 0) ? -1 : 1;
+  }
+
   /// Convenience function for squaring (better than repeating long expressions)
   ///
   /// @todo Template and SFINAE on numerical types?
