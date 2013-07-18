@@ -127,22 +127,6 @@
 //# include <boost/preprocessor/facilities/overload.hpp> // have this above!
 //# include <boost/preprocessor/variadic/size.hpp>  // have this above!
 
-//Ben: temporary debugging junk
-#include <boost/preprocessor/stringize.hpp>
-#pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
-#ifdef BOOST_PP_VARIADICS
-#   pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
-#else
-#   pragma message "BOOST_PP_VARIADICS= not defined"
-#endif
-#ifdef BOOST_PP_VARIADICS_MSVC
-#   pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
-#else
-#   pragma message "BOOST_PP_VARIADICS_MSVC= not defined"
-#endif
-#pragma message "BOOST_PP_CONFIG_FLAGS=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_FLAGS())
-#pragma message "BOOST_PP_CONFIG_MWCC=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_MWCC())
-
 //# if BOOST_PP_VARIADICS
 #    if BOOST_PP_VARIADICS_MSVC
 #        define BOOST_PP_TUPLE_TO_SEQ(...) BOOST_PP_TUPLE_TO_SEQ_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_SEQ_O_, __VA_ARGS__), (__VA_ARGS__))
@@ -237,9 +221,6 @@
 //# endif //ifndef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
 
 # endif //GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
-
-//Ben: temporary debugging junk
-#pragma message "TUPLE_TO_SEQ test=" BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_TO_SEQ((1,2,3,4,5)))
 
 # endif //__boost_fallbacks_hpp__
 
