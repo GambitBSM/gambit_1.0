@@ -366,7 +366,7 @@ module Efficiency MuonEfficiency {
 # Muon isolation
 ################
 
-module Isolation MuonIsolation {
+module AbsoluteIsolation MuonIsolation {
   set CandidateInputArray MuonEfficiency/muons
   set IsolationInputArray EFlowMerger/eflow
 
