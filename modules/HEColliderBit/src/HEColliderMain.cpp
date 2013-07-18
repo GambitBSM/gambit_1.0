@@ -103,18 +103,17 @@ int main()
   /// @todo Don't want to round any processes down to 0 threads... unless really
   /// negligible: need to check rel size > some threshold.
   const int NUM_THREADS = omp_get_max_threads();
-  cout << "Total #threads = " << NUM_THREADS << endl;
+  // cout << "Total #threads = " << NUM_THREADS << endl;
+  // const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
   vector<GAMBIT::HEColliderBit::Pythia8Thread> process_cfgs; process_cfgs.reserve(NUM_THREADS);
   double total_xsec = SP_GLUINO.xsec + SP_SQUARK.xsec + SP_GAUGINO.xsec;
-  cout << "GLUINO #threads = " << round(NUM_THREADS * SP_GLUINO.xsec / total_xsec) << endl;
-  cout << "SQUARK #threads = " << round(NUM_THREADS * SP_SQUARK.xsec / total_xsec) << endl;
-  cout << "GAUGINO #threads = " << round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec) << endl;
-
   for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GLUINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GLUINO);
   for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_SQUARK.xsec / total_xsec); ++i) process_cfgs.push_back(SP_SQUARK);
   for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GAUGINO);
+  // cout << "GLUINO #threads = " << round(NUM_THREADS * SP_GLUINO.xsec / total_xsec) << endl;
+  // cout << "SQUARK #threads = " << round(NUM_THREADS * SP_SQUARK.xsec / total_xsec) << endl;
+  // cout << "GAUGINO #threads = " << round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec) << endl;
 
-  const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Py8 backend process configuration
