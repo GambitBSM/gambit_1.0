@@ -9,7 +9,7 @@ BOOST :=$(BOOSTDIR)
 
 
 CXX := g++
-CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long #-std=c++11
+CXXFLAGS := -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized -Werror=delete-non-virtual-dtor #-std=c++11
 
 UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
 DELPHESHEADERS := Delphes3Backend.hpp
@@ -31,15 +31,14 @@ DELPHESFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external -L$(DELPHESDIR) -lDelph
 
 .PHONY = all clean
 
-all: example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8
+all: example-py8-bsm example-py8-0lep example-delphes-py8 #example-fastsim example-fastsim-py8
 	@true
 
-# the simples example of fastsim
+# The simplest example of fastsim
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
 	$(CXX) example-fastsim.cpp FastSim.cpp DetectorResponse.cpp $(CXXFLAGS) $(BOOSTFLAGS) $(FJFLAGS) $(ROOTFLAGS) -lm -o example-fastsim
 
-# A HECollider example interfaced to fastim and pythia using the respective backends
-# this examples reads the cmndpythia_zee.cmnd file
+# A HECollider example interfaced to FastSim and Pythia8 using the respective backends (reads cmndpythia_zee.cmnd)
 example-fastsim-py8: HEColliderMain_FastSim_SingleThread.cpp DetectorResponse.cpp FastSim.cpp FastSimBackend.cpp Pythia8Backend.cpp Analysis.cpp  Analysis_Perf.cpp $(HEADERS)
 	$(CXX) HEColliderMain_FastSim_SingleThread.cpp DetectorResponse.cpp FastSim.cpp FastSimBackend.cpp  Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION)  $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) -lEG -o example-fastsim-py8
 
@@ -49,8 +48,9 @@ example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 	$(CXX) example-py8-0lep.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) -o example-py8-0lep
 
+OPTFLAGS := -DQUIET -DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp
-	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG -o example-delphes-py8
+	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
 
 clean:
 	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread*

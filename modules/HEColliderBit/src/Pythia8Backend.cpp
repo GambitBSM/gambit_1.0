@@ -35,7 +35,7 @@ namespace GAMBIT
       pythiaInstance->readString("Beams:eCM = 8000.");
       pythiaInstance->readString("Main:numberOfEvents = 1000");
       pythiaInstance->readString("Main:timesAllowErrors = 1000");
-      pythiaInstance->readString("Init:showProcesses = off");
+      pythiaInstance->readString("Init:showProcesses = on");
       pythiaInstance->readString("Init:showMultipartonInteractions = off");
       pythiaInstance->readString("Init:showChangedSettings = off");
       pythiaInstance->readString("Init:showChangedParticleData = off");
@@ -49,10 +49,11 @@ namespace GAMBIT
       pythiaInstance->readString("PartonLevel:FSR = on");
       pythiaInstance->readString("HadronLevel:all = on");
 
-      //pythiaInstance->readString("SUSY:all = on");
-      //pythiaInstance->readString("SUSY:qqbar2chi0chi0 = off");
-      //pythiaInstance->readString("SUSY:qqbar2chi+-chi0 = off");
-      //pythiaInstance->readString("SUSY:qqbar2chi+chi- = off");
+//    pythiaInstance->readString("SUSY:all = on");
+//    pythiaInstance->readString("SUSY:qqbar2chi0chi0 = off");
+//    pythiaInstance->readString("SUSY:qqbar2chi+-chi0 = off");
+//    pythiaInstance->readString("SUSY:qqbar2chi+chi- = off");
+
       pythiaInstance->readString("SUSY:gg2gluinogluino = on");
       pythiaInstance->readString("SUSY:qqbar2gluinogluino = on");
       pythiaInstance->readString("SUSY:qg2squarkgluino = on");

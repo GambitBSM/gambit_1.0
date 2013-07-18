@@ -46,7 +46,7 @@ int main()
 {
   // simulation setup...
   //string slhaFileName = "mhmodBenchmark.slha";
-  string slhaFileName = "sps1aWithDecays.spc";
+  string slhaFileName = "susy_msugra_2600_350_0_10_P_softsusy.slha";
   string delphesConfigFile = "delphes_card_ATLAS.tcl";
 
   // variables used during parallelization
@@ -68,7 +68,7 @@ int main()
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
   /// @todo Generalise to a vector of analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
 
   ana->init();
   pythia8_input = new GAMBIT::HEColliderBit::slhaFileName(12345 + 17 * omp_get_thread_num(), slhaFileName);

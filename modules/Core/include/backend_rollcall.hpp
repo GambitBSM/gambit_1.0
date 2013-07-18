@@ -35,18 +35,19 @@
 // Just include these backends 'as-is'
 
 #include "backend_libfirst.hpp"
+#include "backend_libfortran.hpp"
 #include "backend_fakeSoftSUSY.hpp"
 #include "backend_DarkSUSY.hpp"
 
 // Get a bit fancy and include duplicate backends 
 
-#define BACKENDRENAME LibSecond
-  #include "backend_libfirst.hpp"
-#undef BACKENDRENAME
+//#define BACKENDRENAME LibSecond
+//  #include "backend_libfirst.hpp"
+//#undef BACKENDRENAME
 
-#define BACKENDRENAME LibThird
-  #include "backend_libfirst.hpp"
-#undef BACKENDRENAME
+//#define BACKENDRENAME LibThird
+//  #include "backend_libfirst.hpp"
+//#undef BACKENDRENAME
 
 
 #endif /* defined __backend_rollcall_hpp__ */
