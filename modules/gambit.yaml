@@ -10,10 +10,11 @@
 
 m0:
   range: [1, 3.5]
-  fixed: true
+  model: CMSSM_I
 
 m1:
   range: [2, 4.5]
+  model: CMSSM_I
 
 ###############################
 --- # Observables of interest
@@ -63,3 +64,8 @@ another_key:
     subsubkey2: deeper
     
 model: CMSSM_I
+
+crapsampler:
+  functions:  [Likelihood]
+  point_number: 10000
+  output_file:  output
