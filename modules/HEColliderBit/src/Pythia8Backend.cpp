@@ -35,7 +35,7 @@ namespace GAMBIT
       pythiaInstance = new Pythia8::Pythia();
       Pythia8::Settings& pycfg = pythiaInstance->settings;
 
-      // Some examples of using readString
+      // Basic setup
       pycfg.parm("Beams:eCM", 8000);
       pycfg.mode("Main:numberOfEvents", 1000);
       pycfg.mode("Main:timesAllowErrors", 1000);
@@ -46,18 +46,21 @@ namespace GAMBIT
       pycfg.mode("Next:numberShowEvent", 0);
       pycfg.mode("Next:numberShowInfo", 0);
       pycfg.mode("Next:numberShowProcess", 0);
-      pycfg.flag("Random:setSeed", true);
-      pycfg.mode("Random:seed", cfg.seed);
 
+      // Modelling elements
       pycfg.flag("PartonLevel:MPI", false);
       pycfg.flag("PartonLevel:FSR", true);
       pycfg.flag("HadronLevel:all", true);
 
-      // pycfg.flag("SUSY:all", true);
-      // pycfg.flag("SUSY:qqbar2chi0chi0", false);
-      // pycfg.flag("SUSY:qqbar2chi+-chi0", false);
-      // pycfg.flag("SUSY:qqbar2chi+chi-", false);
+      // Random seed setup
+      pycfg.flag("Random:setSeed", true);
+      pycfg.mode("Random:seed", cfg.seed);
 
+      // SLHA model file setup
+      pycfg.word("SLHA:file", cfg.filename);
+
+      // Subprocesses
+      /// @todo Need to be able to pass subprocess specs in the Config
       pycfg.flag("SUSY:gg2gluinogluino", true);
       pycfg.flag("SUSY:qqbar2gluinogluino", true);
       pycfg.flag("SUSY:qg2squarkgluino", true);
@@ -68,12 +71,17 @@ namespace GAMBIT
       pycfg.flag("SUSY:qg2chi+-squark", true);
       pycfg.flag("SUSY:qqbar2chi0gluino", true);
       pycfg.flag("SUSY:qqbar2chi+-gluino", true);
-      pycfg.word("SLHA:file", cfg.filename);
+      // This way doesn't work!
+      // pycfg.flag("SUSY:all", true);
+      // pycfg.flag("SUSY:qqbar2chi0chi0", false);
+      // pycfg.flag("SUSY:qqbar2chi+-chi0", false);
+      // pycfg.flag("SUSY:qqbar2chi+chi-", false);
 
       pythiaInstance->init();
     }
 
 
+    /// @todo Eliminate and merge the config object types
     Pythia8Backend::Pythia8Backend(const CmndConfig& cfg)
     {
       pythiaInstance = new Pythia8::Pythia();
