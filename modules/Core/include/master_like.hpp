@@ -19,33 +19,4 @@
 #ifndef __master_like_hpp__
 #define __master_like_hpp__
 
-#include <vector>
-#include <functors.hpp>
-#include <graphs.hpp>
-
-namespace GAMBIT
-{
-  class MasterLike
-  {
-    public:
-      // Construct MasterLike from Graphs Output and inifile
-      MasterLike(std::vector<functor*> functors, GAMBIT::Graphs::inputMapType
-          inputMap, GAMBIT::Graphs::outputMapType outputMap);
-
-      // Executes active vertices in correct order
-      void calculate();
-
-      // Set input
-      double& operator[] (std::string key);
-
-      // Get output
-      std::vector<double> operator() (std::string key);
-
-    private:
-      // Storage
-      std::vector<functor*> functor_list;
-      Graphs::inputMapType inputMap;
-      Graphs::outputMapType outputMap;
-  };
-};
 #endif /* defined(__master_like_hpp__) */

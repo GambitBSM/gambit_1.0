@@ -33,14 +33,31 @@
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/lexical_cast.hpp"
 
-// External
 #include "omp.h"
-
 #define MAIN_SHARED counter,slhaFileName,delphesConfigFile,myDelphes
 #define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,temp,myPythia
 
-
 using namespace std;
+
+
+namespace GAMBIT {
+  namespace HEColliderBit {
+
+    struct Pythia8Thread {
+      Pythia8Thread(const string& name, double xs, const vector<string>& procs)
+        : name(name), xsec(xs), processes(procs) { }
+      string name;
+      double xsec;
+      // double nevents;
+      /// @todo Calc effective lumi?
+      /// @todo Add some metric of CPU cost per event for this process type?
+      vector<string> processes;
+      vector<Analysis*> analyses;
+    };
+
+  }
+}
+
 
 int main()
 {
@@ -66,27 +83,34 @@ int main()
   cout << endl << "Running parallelized HECollider simulation" << endl << endl;
 
   // Subprocess group setup
-  vector<string> foo = {{ "SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino" }};
-  vector<string> bar = {{ "SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark" }};
-  vector<string> baz = {{ "SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino" }};
-
   // Decide how many events of each subprocess group to use, split according to number of threads
   /// @todo Use fast lookup of interpolated NLO subprocess cross-sections to do this
   /// @note Hard-coded for now, so I can do *something*
-  const int num_threads = omp_get_num_threads();
-  const int num_events_per_thread = (int) ceil(NEVENTS / (double) num_threads);
-  const double xsecs[3] = { 0.1, 0.2, 0.4 };
-  double total_xsec = 0; for (double x : xsecs) total_xsec += x;
-  vector<int> num_threads_per_process;
-  for (double x : xsecs) {
-    /// @note Only round *up* numbers? Don't want to round any processes down to 0 threads...
-    ///       ... unless they are really negligible: need to check rel size > some threshold
-    const double frac_nthreads = num_threads * x / total_xsec;
-    num_threads_per_process.push_back((int) round(frac_nthreads));
-  }
+  /// @todo Hard coding of nthread assignment calc: yuck, yuck, yuck! Generalise to containers of subprocesses
+  GAMBIT::HEColliderBit::Pythia8Thread SP_GLUINO("g", 0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
+  GAMBIT::HEColliderBit::Pythia8Thread SP_SQUARK("q", 0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
+  GAMBIT::HEColliderBit::Pythia8Thread SP_GAUGINO("X", 0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+
+  const int NUM_THREADS = omp_get_num_threads();
+  const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
+  double total_xsec = SP_GLUINO.xsec + SP_SQUARK.xsec + SP_GAUGINO.xsec;
+  vector<GAMBIT::HEColliderBit::Pythia8Thread> process_cfgs; process_cfgs.reserve(NUM_THREADS);
+  for (size_t i = 0; i < (size_t)round(NUM_THREADS * SP_GLUINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GLUINO);
+  for (size_t i = 0; i < (size_t)round(NUM_THREADS * SP_SQUARK.xsec / total_xsec); ++i) process_cfgs.push_back(SP_SQUARK);
+  for (size_t i = 0; i < (size_t)round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GAUGINO);
+
+  // vector<int> num_threads_per_process;
+  // for (double x : xsecs) {
+  //   /// @note Only round *up* numbers? Don't want to round any processes down to 0 threads...
+  //   ///       ... unless they are really negligible: need to check rel size > some threshold
+  //   const double frac_nthreads = NUM_THREADS * x / total_xsec;
+  //   num_threads_per_process.push_back((int) round(frac_nthreads));
+  // }
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
   /// don't get accidentally missed
+
+
 
   /// @todo Object for thread config: contain xsec, effective lumi, pointers to Analysis (-> AnaGroup), nevents, ...
 
