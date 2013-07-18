@@ -25,6 +25,8 @@
 #include <util_classes.hpp>
 //#include <dictionary.hpp>  //need this for the 'dict' type.
 
+typedef std::map<std::string, double> parameterMap;
+
 // Note: the namespaces are all controlled by the macros now, so none appear
 // here! It is a similar deal to the module rollcall headers.
   
@@ -53,19 +55,28 @@
   START_PARAMETERISATION
   DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
   INTERPRET_AS_PARENT__BEGIN
-  INTERPRET_AS_PARENT__DEFINE(
-    {
+  INTERPRET_AS_PARENT__DEFINE(MSSM_I_IAPfunc)
+  namespace GAMBIT{ namespace models{ namespace MSSM_I{
+  void MSSM_I_IAPfunc (ModelParameters &parentparams)
+  {
       cout<<"Running interpret_as_parent calculations for MSSM_I -> test_parent_I ..."<<endl;
       using namespace SafePointers::test_parent_I_parameters;
-      double M1 = Dep::MSSM_I_parameters->getValue("M1");
-      double M2 = Dep::MSSM_I_parameters->getValue("M2");
-      double M3 = Dep::MSSM_I_parameters->getValue("M3");
+      const ModelParameters &p = *Dep::MSSM_I_parameters;
       
-      target_parameters.setValue("p1", 0.01*M1*M2*M3);
-      target_parameters.setValue("p2", 0.10*M1*M2*M3);
-      target_parameters.setValue("p3", 1.00*M1*M2*M3);
+      double M1 = p["M1"];
+      double M2 = p["M2"];
+      double M3 = p["M3"];
+      
+      //Can now get parameters less verbosely:
+      //double M1 = *Dep::M1;
+      //double M2 = *Dep::M2;
+      //double M3 = *Dep::M3;
+      
+      parentparams.setValue("p1", 0.01*M1*M2*M3);
+      parentparams.setValue("p2", 0.10*M1*M2*M3);
+      parentparams.setValue("p3", 1.00*M1*M2*M3);
     }
-  )
+    }}} //exiting namespaces
   #undef PARAMETERISATION
 #undef PARENT
 #undef MODEL
@@ -98,9 +109,12 @@
   // object as a CAPABILITY of this model)
   INTERPRET_AS_PARENT__BEGIN
   INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
-  INTERPRET_AS_PARENT__DEFINE(
+  INTERPRET_AS_PARENT__DEFINE(CMSSM_I_IAPfunc)
+  
+  namespace GAMBIT{ namespace models{ namespace CMSSM_I{
+  void CMSSM_I_IAPfunc (ModelParameters &parentparams)
   {
-    cout<<"Running interpret_as_parent calculations for CMSSM_I -> MSSM_I ..."<<endl;
+    std::cout<<"Running interpret_as_parent calculations for CMSSM_I -> MSSM_I ..."<<std::endl;
     /* Get host model parameter object using dependency system 
        (can technically use parametersptr directly since we have access to it,
         but I might try and restore proper encapsulation of the 
@@ -108,22 +122,11 @@
         removed in the future, so better to use this proper method. */
     
     using namespace SafePointers::MSSM_I_parameters;
-    double M0 = Dep::CMSSM_I_parameters->getValue("M0");
-    double M12 = Dep::CMSSM_I_parameters->getValue("M12");
-    double A0 = Dep::CMSSM_I_parameters->getValue("A0");
-    
-    // Can we set parameters with this pointer?
-    /*
-    cout<<"testing safepointer->setValue"<<endl;
-    cout<<M0<<endl;
-    Dep::CMSSM_I_parameters->setValue("M0",500);
-    cout<<Dep::CMSSM_I_parameters->getValue("M0")<<endl;
-    ...no*/
-    /*
-    double M0 = parametersptr->getValue("M0");
-    double M12 = parametersptr->getValue("M12");
-    double A0 = parametersptr->getValue("A0");
-    */
+    const ModelParameters &p = *Dep::CMSSM_I_parameters;
+      
+    double M0  = p["M0"];
+    double M12 = p["M12"];
+    double A0  = p["A0"];
     
     /* Play around with the extra info obtained from dependency */
     cout<<"nevents dependency has supplied the value: "<<*Dep::nevents<<endl;
@@ -132,14 +135,14 @@
        The parent parameter object already exists if we have gotten this 
        far (was created along with the functor that wraps this function) */
     
-    target_parameters.setValue("M1", M0);
-    target_parameters.setValue("M2", 0.5*M0);
-    target_parameters.setValue("M3", 3*M0);
-    target_parameters.setValue("AU1", A0);
-    target_parameters.setValue("AU2", 2*A0);
-    target_parameters.setValue("AU3", 0);
-  })
-    
+    parentparams.setValue("M1", M0);
+    parentparams.setValue("M2", 0.5*M0);
+    parentparams.setValue("M3", 3*M0);
+    parentparams.setValue("AU1", A0);
+    parentparams.setValue("AU2", 2*A0);
+    parentparams.setValue("AU3", 0);
+  }
+  }}} //exiting namespaces  
   #undef PARAMETERISATION
   
   #define PARAMETERISATION II

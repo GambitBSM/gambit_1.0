@@ -181,7 +181,7 @@ namespace GAMBIT
     // Main dependency resolution
     void DependencyResolver::resolveNow()
     {
-      IniParser::ObservablesType observables = myIniFile.getObservables();
+      const IniParser::ObservablesType & observables = myIniFile.getObservables();
       // (cap., typ) --> dep. vertex map
       std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
       std::pair<sspair, Graphs::VertexID> queueEntry;
@@ -350,7 +350,14 @@ namespace GAMBIT
       for (std::vector<functor *>::iterator it = functorList.begin();
           it != functorList.end(); ++it)
       {
-        boost::add_vertex(*it, this->masterGraph);
+        // Ben: Added check to ignore functors with status set to 0 (i.e. never
+        // add them to the graph). If you don't want the value 0 to mean this,
+        // we can use -1 or something instead. I am doing this so that we can
+        // ignore primary_model_functors which are not to be used for the scan.
+        if ( (*it)->status() != 0 ) 
+        {
+          boost::add_vertex(*it, this->masterGraph);
+        }
       }
       this->myBackendFunctorList = backendFunctorList;
     }
@@ -536,7 +543,7 @@ namespace GAMBIT
 
     // Find observable entry that matches capability/type
     const IniParser::ObservableType *DependencyResolver::findIniEntry(
-        sspair quantity, const IniParser::ObservablesType &entries)
+        sspair quantity, const IniParser::ObservablesType & entries)
     {
       std::vector<const IniParser::ObservableType*> obsEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =

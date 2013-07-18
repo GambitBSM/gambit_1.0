@@ -20,6 +20,10 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2013 May, June, July 2013
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 July --> Added primary_model_functor class
+///
 ///  *********************************************
 
 
@@ -31,6 +35,7 @@
 #include <util_classes.hpp>
 #include <util_functions.hpp>
 #include <time.h>
+#include <ModelParameters.hpp>
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
@@ -324,26 +329,6 @@ namespace GAMBIT
         if (this == NULL) functor::failBigTime();
         return safe_ptr<TYPE>(&myValue);
       }
-      
-      /// Ben: added this so we could get write access to myValue, primarily
-      /// for the case of the scanner needing to change the ModelParameter
-      /// object. Not for use in modules.
-      /// Make this "protected", and make some ScannerBit object a friend?
-      /// Could also make functions specific to ModelParameter objects which
-      /// allow access to the methods of those objects, but these would cause
-      /// problems if used by any other functor.
-      /// IDEA: Actually, I could make it so that the "calculate" method of the
-      /// primary ModelParameters functor does the "setting" of parameters!
-      /// Just need to add a dependency on some "input_parameters" capability
-      /// which must be provided from somewhere, presumably scannerbit! This
-      /// is probably the most elegant solution.
-      /// UPDATE: The above idea is now implemented, so I have removed this
-      /// "dangerous" raw pointer.
-      //TYPE* rawvaluePtr()
-      //{
-      // if (this == NULL) functor::failBigTime();
-      //  return &myValue;
-      //}
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()                  { return myDependencies; }
@@ -800,7 +785,41 @@ namespace GAMBIT
 
   };
 
+  /// Functors specific to primary ModelParameters objects
+  ///
+  /// These allow direct access to the functor contents via a raw pointer, so 
+  /// that the parameter values can be set (not allowed via safe pointers).
+  class primary_model_functor : public module_functor<ModelParameters>
+  {
+  
+    public:
+    
+      /// Constructor
+      ///
+      /// This is not inherited from the parent class, but we don't need anything
+      /// different so we just directly call the parent class constructor.
+      primary_model_functor(void (*inputFunction)(ModelParameters &),
+                              str func_name,
+                              str func_capability,
+                              str result_type,
+                              str origin_name)
+        : module_functor<ModelParameters>(inputFunction,
+                                          func_name,
+                                          func_capability,
+                                          result_type,
+                                          origin_name) {}   
+      
+      /// Functor contents raw pointer "get" function
+      /// Returns a raw pointer to myValue, so that the contents may be 
+      /// modified (intended for setting parameter values in primary 
+      /// ModelParameters objects)
+      ModelParameters* getcontentsPtr()
+      {
+        if (this == NULL) functor::failBigTime();
+        return &this->myValue;
+      }   
 
+  };    
 
   /// Function for creating backend functor objects.
   ///
@@ -816,6 +835,8 @@ namespace GAMBIT
   { 
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
+  
+
 
 // FIXME: This is probably not the best place to define global variables:
 #ifndef IN_CORE
@@ -826,6 +847,10 @@ namespace GAMBIT
     extern
 #endif
   std::vector<functor *> globalBackendFunctorList;
+#ifndef IN_CORE
+    extern
+#endif
+  std::vector<primary_model_functor *> globalPrimaryModelFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */

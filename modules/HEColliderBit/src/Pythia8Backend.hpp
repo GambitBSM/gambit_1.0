@@ -26,33 +26,33 @@
 
 // #define PYTHIA8BACKEND_PRIVATE GAMBIT::HEColliderBit::Pythia8Backend::pythiaInstance,GAMBIT::HEColliderBit::Pythia8Backend::eventFailureError
 
-namespace GAMBIT
-{
-  namespace HEColliderBit
-  {
-    struct slhaFileName {
-      slhaFileName(){}
-      slhaFileName(int seed, string filename ) : _seed(seed), _filename(filename) {}
-      int _seed;
-      string _filename;
+namespace GAMBIT {
+  namespace HEColliderBit {
+
+
+    struct SLHAConfig {
+      SLHAConfig(){}
+      SLHAConfig(int seed, string filename ) : seed(seed), filename(filename) {}
+      int seed;
+      string filename;
     };
 
-    struct cmndFileName {
-      cmndFileName(){}
-      cmndFileName(int seed, string filename ) : _seed(seed), _filename(filename) {}
-      int _seed;
-      string _filename;
+
+    struct CmndConfig {
+      CmndConfig(){}
+      CmndConfig(int seed, string filename ) : seed(seed), filename(filename) {}
+      int seed;
+      string filename;
     };
 
-    class Pythia8Backend
-    {
+
+    class Pythia8Backend {
     public:
-      Pythia8Backend(slhaFileName & slhaf);
-      Pythia8Backend(cmndFileName & cmndf);
 
-//      Pythia8Backend(int seed, string slhaFileName);
+      Pythia8Backend(const SLHAConfig& slhaf);
+      Pythia8Backend(const CmndConfig& cmndf);
       ~Pythia8Backend();
-      void nextEvent(Pythia8::Event &event);
+      void nextEvent(Pythia8::Event& event);
 
       int nEvents();
       int nAborts();
@@ -66,9 +66,14 @@ namespace GAMBIT
           return "For whatever reason, Pythia could not make the next event.";
         }
       } eventFailureError;
+
+
       Pythia8::Pythia *pythiaInstance;
 
-      // TODO: rollcall?
+      /// @todo Rollcall?
+
     };
+
+
   }
 }

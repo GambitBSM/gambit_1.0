@@ -109,7 +109,7 @@ namespace GAMBIT{
 
 #define START_PARAMETERISATION                                                 \
   namespace GAMBIT {                                                           \
-    ADD_TAG_IN_CURRENT_NAMESPACE(parameters)                                   \
+    ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT_5(MODEL,_,PARAMETERISATION,_,parameters)) \
     /* Begin setting up dependency of primary ModelParameters object on
        alpha_parameters (capability supplied by ScannerBit) */                 \
@@ -177,31 +177,14 @@ namespace GAMBIT{
            alpha_parameters provided by ScannerBit and puts them into the
            ModelParameters object */                                           \
         /* Register (prototype) the function */                                \
-        void parameters (ModelParameters &);                                   \
+        void primary_parameters (ModelParameters &);                           \
                                                                                \
-        /* Wrap it up in a functor (macro from module_macros.hpp) */           \
-        MAKE_FUNCTOR(parameters,ModelParameters,\
-          CAT_5(MODEL,_,PARAMETERISATION,_,parameters),\
-          CAT_3(MODEL,_,PARAMETERISATION))                                     \
+        /* Wrap it up in a primary_model_functor */                            \
+        MAKE_PRIMARY_MODEL_FUNCTOR                                             \
                                                                                \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-  /* Create dependency of 'parameters' functor on
-     alpha_parameters (capability supplied by ScannerBit) */                   \
-  MODEL_DEPENDENCY(alpha_parameters,parameters_map,                            \
-                    CAT_3(MODEL,_,PARAMETERISATION),                           \
-                    parameters                                                 \
-                  )                                                            \
-  /* Define the actual parameter setting function, now that we have the
-     functor and its dependency */                                             \
-  namespace GAMBIT {                                                           \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
-        /* Functor "calculate" function. Grabs parameters from the
-           alpha_parameters provided by ScannerBit and puts them into the
-           'parameters' functor */                                             \
-        void parameters (ModelParameters &functorobject)                       \
+        /* Functor "calculate" function. Initialises the ModelParameters object,
+           causing it to define its parameters correctly */                    \
+        void primary_parameters (ModelParameters &functorobject)               \
         {                                                                      \
           if (not isinitialised)                                               \
           {                                                                    \
@@ -214,10 +197,6 @@ namespace GAMBIT{
             /*parametersptr = &functorobject;  now obsolete*/                  \
             isinitialised = true;                                              \
           }                                                                    \
-          /* Grab the alpha_parameters from the dependency pool, and stick
-             them into the functorobject */                                    \
-          using namespace SafePointers::parameters;                            \
-          functorobject.setValues(*Dep::alpha_parameters);                     \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -272,7 +251,7 @@ namespace GAMBIT{
   }                                                                            \
   /* Create dependency of PARAMETER functor on
      host model parameters object */                                           \
-  MODEL_DEPENDENCY(CAT_5(MODEL,_,PARAMETERISATION,_,parameters),               \
+  MODEL_DEPENDENCY(CAT_5(MODEL,_,PARAMETERISATION,_,parameters),       \
                    ModelParameters,                                            \
                    CAT_3(MODEL,_,PARAMETERISATION),                            \
                    PARAMETER                                                   \
@@ -346,8 +325,13 @@ namespace GAMBIT{
 // custom CAPABILITIES
 //#define DO_LINK(r,data,elem) \
 //  LINK_PARAMETER_TO_CAPABILITY(elem,CAT_5(MODEL,_,PARAMETERISATION,_,elem))
+// Changed our minds again: We do want these "miniguys".
+//#define DO_LINK(r,data,elem) DEFINEPAR(elem)
 
-#define DO_LINK(r,data,elem) DEFINEPAR(elem)
+// Want simple names though: can resolve name clashes with dependency resolver,
+// in principle.
+#define DO_LINK(r,data,elem) \
+  LINK_PARAMETER_TO_CAPABILITY(elem,elem)
 
 #define DEFINEPARS(...) \
   BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
@@ -380,24 +364,31 @@ namespace GAMBIT{
         void CAT_3(MODEL_X,_,parameters) (ModelParameters &);                  \
                                                                                \
         /* Wrap it up in a functor (macro from module_macros.hpp) */           \
-        MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,\
+        MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,              \
           CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION))         \
                                                                                \
       }                                                                        \
     }                                                                          \
   }                                                                            \
-  /* Automatically add a dependency on the host model's parameters */         \
+  /* Automatically add a dependency on the host model's parameters */          \
   INTERPRET_AS_X__DEPENDENCY(MODEL_X,                                          \
                               CAT_5(MODEL,_,PARAMETERISATION,_,parameters),    \
                               ModelParameters                                  \
                             )                                                  \
-
+  /* Automatically add dependencies on the individual host model parameter
+     functors                                                               \
+  INTERPRET_AS_X__DEPENDENCY(MODEL_X,                                          \
+                              CAT_5(MODEL,_,PARAMETERISATION,_,parameters),    \
+                              ModelParameters                                  \
+                            )    */                                           
+  
+  
 // Actually define the interpret_as_X function. Alternatively this could be
 // moved into a seperate source file, as occurs for module functions, rather
 // than making the user write it in the model header. This would let the
 // compiler help the user debug their code more easily, since stuck into a 
 // macro like this the compiler can't see what line the user's error occurs on.
-#define INTERPRET_AS_X__DEFINE(MODEL_X,CODE)                                   \
+#define INTERPRET_AS_X__DEFINE(MODEL_X,FUNC)                                   \
                                                                                \
   namespace GAMBIT {                                                           \
     namespace models {                                                         \
@@ -406,19 +397,15 @@ namespace GAMBIT{
         /* Track whether MODEL_X_parameters functor has been initialised yet */\
         bool CAT_3(MODEL_X,_,parameters_isinitialised)(false);                 \
                                                                                \
-        /* Container function for the user-defined portion of the 
-           interpret_as_X function */                                          \
-        void CAT_3(MODEL_X,_,usercode) (ModelParameters &target_parameters)    \
-          {                                                                    \
-            CODE                                                               \
-          }                                                                    \
+        /* Prototype the user-defined function */                              \
+        void FUNC (ModelParameters &);                                         \
                                                                                \
         /* The actual definition of the interpret_as_X function */             \
         void CAT_3(MODEL_X,_,parameters) (ModelParameters &target_parameters)  \
         {                                                                      \
           if (not CAT_3(MODEL_X,_,parameters_isinitialised) )                  \
           {                                                                    \
-            /* Need to populate the functor parameters object with MODEL_X's   \
+            /* Need to populate the functor parameters object with MODEL_X's
                parameters. We could rewrite this to get the parameterkeys via
                the dependency system if we like. Currently this won't compile
                if MODEL_X has not been defined prior to the current model. */  \
@@ -429,8 +416,9 @@ namespace GAMBIT{
             target_parameters._definePars(models::MODEL_X::parameterkeys);     \
             CAT_3(MODEL_X,_,parameters_isinitialised) = true;                  \
           }                                                                    \
-          /* Run user-supplied code */                                         \
-          CAT_3(MODEL_X,_,usercode) (target_parameters);                       \
+          /* Run user-supplied code (which must take target_parameters as an
+             argument, and set the parameters it contains as desired) */       \
+          FUNC (target_parameters);                                            \
                                                                                \
         }                                                                      \
       }                                                                        \
@@ -450,8 +438,8 @@ namespace GAMBIT{
 #define INTERPRET_AS_PARENT__DEPENDENCY(DEP, TYPE)                             \
   INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                \
 
-#define INTERPRET_AS_PARENT__DEFINE(CODE)                                      \
-  INTERPRET_AS_X__DEFINE(PARENT,CODE)                                          \
+#define INTERPRET_AS_PARENT__DEFINE(FUNC)                                      \
+  INTERPRET_AS_X__DEFINE(PARENT,FUNC)                                          \
 
 /// Dependency related macros. Note macro format:
 ///   CORE_DEPENDENCY_GUTS(DEP, TYPE, MODULE, FUNCTION)
@@ -508,6 +496,73 @@ namespace GAMBIT{
       }                                                                        \
      }                                                                         \
     }                                                                          \
+  }                                                                            \
+
+/// Macro to create and register primary model functors. 
+///
+/// Need this extra wrapper in order to register these special functors in the
+/// globalPrimaryModelFunctorList (no other functors are allowed here)         
+#define MAKE_PRIMARY_MODEL_FUNCTOR                                             \
+  MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(primary_parameters,ModelParameters,          \
+    CAT_5(MODEL,_,PARAMETERISATION,_,parameters),                              \
+    CAT_3(MODEL,_,PARAMETERISATION))                                           \
+  
+/// Version of MAKE_FUNCTOR modified to build primary_parameters functors.
+#define MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(FUNCTION,TYPE,CAPABILITY,ORIGIN)       \
+                                                                               \
+  /* Set up an auxilary method to report stuff to the core about the       
+  function.  Not actually sure what this would                             
+  be used for at this stage. */                                                \
+  template <>                                                                  \
+  void report<Tags::FUNCTION>()                                                \
+  {                                                                            \
+    cout<<"Dear Core, I provide the function with tag: "<<                     \
+    STRINGIFY(FUNCTION)<<endl;                                                 \
+  }                                                                            \
+                                                                               \
+  /* Register the FUNCTION's result TYPE */                                    \
+  template<>                                                                   \
+  struct function_traits<Tags::FUNCTION>                                       \
+  {                                                                            \
+    typedef TYPE type;                                                         \
+  };                                                                           \
+                                                                               \
+  /* Create the function wrapper object (functor) */                           \
+  /* Note: primary_model_functors can only contain results of type 
+     ModelParameters, so the TYPE argument is not very useful in this macro.
+     It exists mainly for copy/paste reasons. */                               \
+  namespace Functown                                                           \
+  {                                                                            \
+    primary_model_functor FUNCTION                                             \
+     (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
+     STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
+  }                                                                            \
+                                                                               \
+  /* Set up an alias function to call the function */                          \
+  template <>                                                                  \
+  function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
+  {                                                                            \
+     Functown::FUNCTION.calculate();                                           \
+     return Functown::FUNCTION();                                              \
+  }                                                                            \
+                                                                               \
+  /* Set up the commands to be called at runtime to register the function, now 
+     including registration of the functor in globalPrimaryModelFunctorList */ \
+  template <>                                                                  \
+  void rt_register_function<Tags::FUNCTION> ()                                 \
+  {                                                                            \
+    GAMBIT::globalFunctorList.push_back(&Functown::FUNCTION);                  \
+    GAMBIT::globalPrimaryModelFunctorList.push_back(&Functown::FUNCTION);      \
+    map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;            \
+    map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;                  \
+    iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                             \
+    moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);    \
+  }                                                                            \
+                                                                               \
+  /* Create the function initialisation object */                              \
+  namespace Ini                                                                \
+  {                                                                            \
+    ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
 
 #endif /* defined(__ModelMacros_hpp__) */

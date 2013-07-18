@@ -106,12 +106,12 @@ namespace GAMBIT
         int readFile(std::string filename);
 
         // Getters for private observable, auxiliaries and parameter entries
-        ObservablesType getObservables()
+        const ObservablesType & getObservables()
         {
           return observables;
         }
 
-        ObservablesType getAuxiliaries()
+        const ObservablesType & getAuxiliaries()
         {
           return auxiliaries;
         }

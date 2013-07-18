@@ -17,7 +17,7 @@
 //  //  Abram Krislock
 //  //  2013 Apr 23
 //  //  Aldo Saavedra
-//  //  2013 June 14 
+//  //  2013 June 14
 //  //
 //  //  ********************************************
 //
@@ -46,7 +46,7 @@ int main()
 {
   // simulation setup...
   //string slhaFileName = "mhmodBenchmark.slha";
-  string slhaFileName = "susy_msugra_2600_350_0_10_P_softsusy.slha";
+  string slhaFileName = "sps1aWithDecays.spc";
   string delphesConfigFile = "delphes_card_ATLAS.tcl";
 
   // variables used during parallelization
@@ -56,7 +56,7 @@ int main()
   int counter;
 
   // For event generation
-  GAMBIT::HEColliderBit::slhaFileName *pythia8_input;
+  GAMBIT::HEColliderBit::SLHAConfig *pythia8_input;
   GAMBIT::HEColliderBit::Pythia8Backend *myPythia;
   GAMBIT::HEColliderBit::Delphes3Backend *myDelphes;
   myDelphes = new GAMBIT::HEColliderBit::Delphes3Backend(delphesConfigFile);
@@ -68,14 +68,14 @@ int main()
   cout<<"\n\n Now testing Parallelized HECollider Simulation:\n\n";
 
   /// @todo Generalise to a vector of analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
+  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
 
   ana->init();
-  pythia8_input = new GAMBIT::HEColliderBit::slhaFileName(12345 + 17 * omp_get_thread_num(), slhaFileName);
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Initialize the backends
+    pythia8_input = new GAMBIT::HEColliderBit::SLHAConfig(12345 + 17 * omp_get_thread_num(), slhaFileName);
     myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(*pythia8_input);
 //    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(12345 + 17 * omp_get_thread_num(), slhaFileName);
 
