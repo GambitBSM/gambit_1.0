@@ -56,7 +56,6 @@ int main()
   int counter;
 
   // For event generation
-  GAMBIT::HEColliderBit::SLHAConfig* pythia8_input;
   GAMBIT::HEColliderBit::Pythia8Backend* myPythia;
   GAMBIT::HEColliderBit::Delphes3Backend* myDelphes;
   myDelphes = new GAMBIT::HEColliderBit::Delphes3Backend(delphesConfigFile);
@@ -65,18 +64,35 @@ int main()
   Pythia8::Event genEvent;
   GAMBIT::Event recoEvent;
 
-  cout << "\n\n Testing parallelized HECollider simulation" << endl;
+  cout << endl << "Running parallelized HECollider simulation" << endl << endl;
 
   /// @todo Generalise to a vector of (vector of) analyses, populated by names
   GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
-
-  ana->init();
+  ana->init(); //< @todo Convert to auto-initialize
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Initialize the backends
-    pythia8_input = new GAMBIT::HEColliderBit::SLHAConfig(12345 + 17 * omp_get_thread_num(), slhaFileName);
-    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(*pythia8_input);
+    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(omp_get_thread_num());
+    myPythia->set("SLHA:file", slhaFileName);
+
+    // Subprocesses
+    myPythia->set("SUSY:gg2gluinogluino", true);
+    myPythia->set("SUSY:qqbar2gluinogluino", true);
+    myPythia->set("SUSY:qg2squarkgluino", true);
+    myPythia->set("SUSY:gg2squarkantisquark", true);
+    myPythia->set("SUSY:qqbar2squarkantisquark ", true);
+    myPythia->set("SUSY:qq2squarksquark ", true);
+    myPythia->set("SUSY:qg2chi0squark", true);
+    myPythia->set("SUSY:qg2chi+-squark", true);
+    myPythia->set("SUSY:qqbar2chi0gluino", true);
+    myPythia->set("SUSY:qqbar2chi+-gluino", true);
+    // This way doesn't work!
+    // myPythia->set("SUSY:all", true);
+    // myPythia->set("SUSY:qqbar2chi0chi0", false);
+    // myPythia->set("SUSY:qqbar2chi+-chi0", false);
+    // myPythia->set("SUSY:qqbar2chi+chi-", false);
+
 
     // For a reasonable output
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";

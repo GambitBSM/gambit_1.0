@@ -20,95 +20,48 @@
 
 #include "Pythia8Backend.hpp"
 
-using namespace std;
-
 namespace GAMBIT {
   namespace HEColliderBit {
 
 
-    Pythia8Backend::Pythia8Backend(const SLHAConfig& cfg)
+    Pythia8Backend::Pythia8Backend(int seed)
     {
-      pythiaInstance = new Pythia8::Pythia();
-      Pythia8::Settings& pycfg = pythiaInstance->settings;
+      _initialized = false;
+      _pythiaInstance = new Pythia8::Pythia();
 
       // Basic setup
-      pycfg.parm("Beams:eCM", 8000);
-      pycfg.mode("Main:numberOfEvents", 1000);
-      pycfg.mode("Main:timesAllowErrors", 1000);
-      pycfg.flag("Init:showProcesses", true);
-      pycfg.flag("Init:showMultipartonInteractions", false);
-      pycfg.flag("Init:showChangedSettings", false);
-      pycfg.flag("Init:showChangedParticleData", false);
-      pycfg.mode("Next:numberShowEvent", 0);
-      pycfg.mode("Next:numberShowInfo", 0);
-      pycfg.mode("Next:numberShowProcess", 0);
+      _pythiaInstance->settings.parm("Beams:eCM", 8000);
+      _pythiaInstance->settings.mode("Main:numberOfEvents", 1000);
+      _pythiaInstance->settings.mode("Main:timesAllowErrors", 1000);
+      _pythiaInstance->settings.flag("Init:showProcesses", true);
+      _pythiaInstance->settings.flag("Init:showMultipartonInteractions", false);
+      _pythiaInstance->settings.flag("Init:showChangedSettings", false);
+      _pythiaInstance->settings.flag("Init:showChangedParticleData", false);
+      _pythiaInstance->settings.mode("Next:numberShowEvent", 0);
+      _pythiaInstance->settings.mode("Next:numberShowInfo", 0);
+      _pythiaInstance->settings.mode("Next:numberShowProcess", 0);
 
       // Modelling elements
-      pycfg.flag("PartonLevel:MPI", false);
-      pycfg.flag("PartonLevel:FSR", true);
-      pycfg.flag("HadronLevel:all", true);
+      _pythiaInstance->settings.flag("PartonLevel:MPI", false);
+      _pythiaInstance->settings.flag("PartonLevel:FSR", true);
+      _pythiaInstance->settings.flag("HadronLevel:all", true);
 
       // Random seed setup
-      pycfg.flag("Random:setSeed", true);
-      pycfg.mode("Random:seed", cfg.seed);
-
-      // SLHA model file setup
-      pycfg.word("SLHA:file", cfg.filename);
-
-      // Subprocesses
-      /// @todo Need to be able to pass subprocess specs in the Config
-      pycfg.flag("SUSY:gg2gluinogluino", true);
-      pycfg.flag("SUSY:qqbar2gluinogluino", true);
-      pycfg.flag("SUSY:qg2squarkgluino", true);
-      pycfg.flag("SUSY:gg2squarkantisquark", true);
-      pycfg.flag("SUSY:qqbar2squarkantisquark ", true);
-      pycfg.flag("SUSY:qq2squarksquark ", true);
-      pycfg.flag("SUSY:qg2chi0squark", true);
-      pycfg.flag("SUSY:qg2chi+-squark", true);
-      pycfg.flag("SUSY:qqbar2chi0gluino", true);
-      pycfg.flag("SUSY:qqbar2chi+-gluino", true);
-      // This way doesn't work!
-      // pycfg.flag("SUSY:all", true);
-      // pycfg.flag("SUSY:qqbar2chi0chi0", false);
-      // pycfg.flag("SUSY:qqbar2chi+-chi0", false);
-      // pycfg.flag("SUSY:qqbar2chi+chi-", false);
-
-      pythiaInstance->init();
-    }
-
-
-    /// @todo Eliminate and merge the config object types
-    Pythia8Backend::Pythia8Backend(const CmndConfig& cfg)
-    {
-      pythiaInstance = new Pythia8::Pythia();
-      pythiaInstance->readFile(cfg.filename);
-      pythiaInstance->settings.flag("Random:setSeed", true);
-      pythiaInstance->settings.mode("Random:seed", cfg.seed);
-      pythiaInstance->init();
-    }
-
-
-    Pythia8Backend::~Pythia8Backend()
-    {
-      delete pythiaInstance;
-    }
-
-
-    int Pythia8Backend::nEvents() {
-     int nEvents = pythiaInstance->mode("Main:numberOfEvents");
-     return nEvents;
-    }
-
-
-    int Pythia8Backend::nAborts() {
-     int nAborts = pythiaInstance->mode("Main:timesAllowErrors");
-     return nAborts;
+      _pythiaInstance->settings.flag("Random:setSeed", true);
+      _pythiaInstance->settings.mode("Random:seed", seed);
     }
 
 
     void Pythia8Backend::nextEvent(Pythia8::Event& event) {
-      if (!pythiaInstance->next()) throw EventFailureError();
-      event = pythiaInstance->event;
+      // Automatically initialize when a first event is requested
+      if (!_initialized) {
+        _pythiaInstance->init();
+        _initialized = true;
+      }
+
+      // Try to make and populate an event
+      if (!_pythiaInstance->next()) throw EventFailureError();
+      event = _pythiaInstance->event;
     }
 
 

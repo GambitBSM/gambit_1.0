@@ -30,34 +30,25 @@ namespace GAMBIT {
   namespace HEColliderBit {
 
 
-    struct SLHAConfig {
-      SLHAConfig(int seed, const std::string& filename)
-        : seed(seed), filename(filename)
-      { }
-      int seed;
-      string filename;
-    };
-
-
-    struct CmndConfig {
-      CmndConfig(int seed, const std::string& filename)
-        : seed(seed), filename(filename)
-      { }
-      int seed;
-      std::string filename;
-    };
-
-
     class Pythia8Backend {
     public:
 
-      Pythia8Backend(const SLHAConfig& slhaf);
-      Pythia8Backend(const CmndConfig& cmndf);
-      ~Pythia8Backend();
+      Pythia8Backend(int seed);
+
+      ~Pythia8Backend() {
+        delete _pythiaInstance;
+      }
+
+      /// @todo Throw an exception if already initialized
+      void set(const std::string& key, int val) { _pythiaInstance->settings.mode(key, val); }
+      void set(const std::string& key, bool val) { _pythiaInstance->settings.flag(key, val); }
+      void set(const std::string& key, double val) { _pythiaInstance->settings.parm(key, val); }
+      void set(const std::string& key, const std::string& val) { _pythiaInstance->settings.word(key, val); }
+
       void nextEvent(Pythia8::Event& event);
 
-      int nEvents();
-      int nAborts();
+      int nEvents() { return _pythiaInstance->mode("Main:numberOfEvents"); }
+      int nAborts() { return _pythiaInstance->mode("Main:timesAllowErrors"); }
 
     private:
 
@@ -66,9 +57,11 @@ namespace GAMBIT {
         virtual const char* what() const throw() {
           return "For whatever reason, Pythia could not make the next event.";
         }
-      }; //< @todo Huh?
+      };
 
-      Pythia8::Pythia* pythiaInstance;
+      bool _initialized;
+
+      Pythia8::Pythia* _pythiaInstance;
 
       /// @todo Rollcall?
 
