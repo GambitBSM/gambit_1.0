@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, May, June
+///  \date 2013 Apr, May, June, July
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -58,10 +58,10 @@ namespace GAMBIT
       /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
 
-      /// Interface for runtime optimization
+      /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
-      virtual double getRuntimeAverage() {}
-      virtual double getInvalidationRate() {}
+      virtual double getRuntimeAverage() { return 0; }
+      virtual double getInvalidationRate() { return 0; }
       virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
@@ -84,10 +84,10 @@ namespace GAMBIT
       int status()      { if (this == NULL) failBigTime(); return myStatus;     }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
-      /// Getter for obsType (relevant for output nodes, aka helper structures for the dep. resolution)
-      str obsType()     { if (this == NULL) failBigTime(); return myObsType;    }
-      /// Setter for obsType (relevant only for next-to-output nodes)
-      void setObsType(str obsType) { if (this == NULL) failBigTime(); this->myObsType = obsType; }
+      /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
+      str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
+      /// Setter for purpose (relevant only for next-to-output nodes)
+      void setPurpose(str purpose) { if (this == NULL) failBigTime(); this->myPurpose = purpose; }
 
       /// Set method for version
       void setVersion(str ver) { myVersion = ver; }
@@ -188,8 +188,8 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
-      /// myObsType(relevant for output and next-to-output nodes)
-      str myObsType;
+      /// myPurpose (relevant for output and next-to-output nodes)
+      str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
 
@@ -403,12 +403,12 @@ namespace GAMBIT
       }
 
       /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
-      void setDependency(str dep, str type, void(*resolver)(functor*), str obsType = "")
+      void setDependency(str dep, str type, void(*resolver)(functor*), str purpose= "")
       {
         sspair key (dep, type);
         myDependencies.push_back(key);
         dependency_map[key] = resolver;
-        this->myObsType = obsType; // only relevant for output nodes
+        this->myPurpose = purpose; // only relevant for output nodes
       }
 
       /// Add a backend conditional dependency for multiple backend versions
@@ -525,8 +525,8 @@ namespace GAMBIT
         else
         {
           (*dependency_map[key])(dep_functor);
-          // propagate obsType from next to next-to-output nodes
-          dep_functor->setObsType(this->myObsType);
+          // propagate purpose from next to next-to-output nodes
+          dep_functor->setPurpose(this->myPurpose);
         }
       }
 

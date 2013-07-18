@@ -22,11 +22,11 @@ namespace GAMBIT
     // Structs corresponding to inifile
     namespace Types
     {
-      // Dependency and Observable have the same type (and obsType entry is
+      // Dependency and Observable have the same type (and purpose entry is
       // irrelevant for dependencies)
       struct Observable
       {
-        std::string obsType;
+        std::string purpose;
         std::string capability;
         std::string type;
         std::string function;
@@ -57,7 +57,7 @@ namespace YAML {
       #define READ(NAME) \
       if (node[#NAME].IsDefined()) \
         rhs.NAME = node[#NAME].as<std::string>();
-      READ(obsType)
+      READ(purpose)
       READ(capability)
       READ(type)
       READ(function)
@@ -105,19 +105,60 @@ namespace GAMBIT
         // Read the file
         int readFile(std::string filename);
 
-        // Central inifile structures: observables and scan parameteres 
-        ObservablesType observables;
-        ObservablesType auxiliaries;
-        ParametersType parameters;
+        // Getters for private observable, auxiliaries and parameter entries
+        const ObservablesType & getObservables()
+        {
+          return observables;
+        }
+
+        const ObservablesType & getAuxiliaries()
+        {
+          return auxiliaries;
+        }
 
         // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getValue(std::string key)
         {
-          return mapNode[key].as<TYPE>();
+          return keyValuePairNode[key].as<TYPE>();
         };
 
+        template<typename TYPE> TYPE getValue(std::string key, std::string subkey)
+        {
+          return keyValuePairNode[key][subkey].as<TYPE>();
+        };
+
+        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3)
+        {
+          return keyValuePairNode[s1][s2][s3].as<TYPE>();
+        };
+
+        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4)
+        {
+          return keyValuePairNode[s1][s2][s3][s4].as<TYPE>();
+        };
+
+        // Templated getter function for arbitrary key-value pairs
+        template<typename TYPE> TYPE getParameterEntry(std::string param, std::string key)
+        {
+          return parametersNode[param][key].as<TYPE>();
+        };
+
+        std::vector<std::string> getParameterList()
+        {
+          std::vector<std::string> parList;
+          for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
+          {
+            parList.push_back( it->first.as<std::string>() );
+          }
+          return parList;
+        }
+
       private:
-        YAML::Node mapNode;
+        YAML::Node keyValuePairNode;
+        YAML::Node parametersNode;
+        // Central inifile structures: observables and scan parameteres 
+        ObservablesType observables;
+        ObservablesType auxiliaries;
     };
   }
 }

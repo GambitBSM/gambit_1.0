@@ -71,11 +71,11 @@ void FastSim::init(DetectorType which) {
     _min_bjet_pt  = 10.0;  //GeV
     _min_photon_pt = 0.2; //GeV
 
-    _minEt_isol_muon = 4.0; 
-    _minEt_isol_electron = 4.0; 
+    _minEt_isol_muon = 4.0;
+    _minEt_isol_electron = 4.0;
     _minEt_isol_photon = 4.0; // GeV
 
-    
+
     _max_lep_eta = 2.5; // the eta acceptance of the leptons
 
     _calo_etamax = 5.0;  //GeV
@@ -336,7 +336,7 @@ void FastSim::doDetectorResponse() {
   // determine which cells which have been traversed by the interacting particles
   FindCells();
 
-  
+
 //  cout << "electron response " << endl;
   // for the individual particles determine the response of detector on their momentum
   ElectronResponse();
@@ -347,7 +347,7 @@ void FastSim::doDetectorResponse() {
   // missing momentum and phi
   calcMET();
 
-  
+
   // now for the jets, only clustering for now, fast jet will be incorporated soon
   switch(_simtype)
     {
@@ -358,7 +358,7 @@ void FastSim::doDetectorResponse() {
     default:;
     }
 
-  
+
   JetResponse();
 
   // determine which leptons and photons are isolated
@@ -369,12 +369,12 @@ void FastSim::doDetectorResponse() {
   AppliedIsolation();
   // find bjets
   FindBJets();
-  
+
   // the taus to be implemented
 
 //  printParticles();
-//  printSummary(); 
-  
+//  printSummary();
+
 }
 
 void FastSim::getRecoEvent(Event &event) {
@@ -382,13 +382,13 @@ void FastSim::getRecoEvent(Event &event) {
 
   // we will copy the prompt particles only - the isolated ones
 
-  for (size_t i=0;i<_iso_electrons.size();i++) 
+  for (size_t i=0;i<_iso_electrons.size();i++)
     event.addParticle(_iso_electrons[i]);
 
-  for (size_t i=0;i<_iso_muons.size();i++) 
+  for (size_t i=0;i<_iso_muons.size();i++)
     event.addParticle(_iso_muons[i]);
 
-  for (size_t i=0;i<_iso_photons.size();i++) 
+  for (size_t i=0;i<_iso_photons.size();i++)
     event.addParticle(_iso_photons[i]);
 
 // the MET
@@ -396,10 +396,10 @@ void FastSim::getRecoEvent(Event &event) {
 
   /* still need to add the jets, bjets and the taus
   if(candidate->BTag)
-    recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+    recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(),
         momentum.E(), true);
   else
-    recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+    recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(),
         momentum.E(), false);
   event.addJet(recoJet);
   */
@@ -581,7 +581,7 @@ void FastSim::AppliedIsolation() {
     }
   }
 
-  // muon 
+  // muon
   for (size_t mu=0;mu<_stable_muons.size();mu++) {
 
     isolated = true;
@@ -613,7 +613,7 @@ void FastSim::AppliedIsolation() {
       _noniso_photons.push_back(temp_p);
       isolated = false;
     }
-    if (isolated) { 
+    if (isolated) {
 
 //       cout << "Isolated photon eta " << _stable_photons[ph]->mom().eta() << " phi " <<_stable_photons[ph]->mom().phi() << endl;
 //
@@ -1037,7 +1037,7 @@ double FastSim::calcIsoEt(double or_eta, double or_phi) {
     eta = _celleta[i];
     phi = _cellphi[i];
 
-    
+
     dphi = deltaPhi(or_phi,phi);
     deta = fabs(or_eta - eta);
     dR = sqrt(dphi*dphi + deta*deta);
@@ -1062,7 +1062,7 @@ void FastSim::printParticles() {
 void FastSim::printMuons() {
   cout << "Number of muons is " << _stable_muons.size() << endl;
   for (int j=0;j<(int)_stable_muons.size();j++) {
-    cout << "Muon " << j << " "<< _stable_muons[j]->pid() << " P: "<< _stable_muons[j]->mom().px() << " " << _stable_muons[j]->mom().py() << " " << _stable_muons[j]->mom().pz() << " " << _stable_muons[j]->mom().E() << " Eta: " << 
+    cout << "Muon " << j << " "<< _stable_muons[j]->pid() << " P: "<< _stable_muons[j]->mom().px() << " " << _stable_muons[j]->mom().py() << " " << _stable_muons[j]->mom().pz() << " " << _stable_muons[j]->mom().E() << " Eta: " <<
       _stable_muons[j]->mom().eta() << " Phi: " << _stable_muons[j]->mom().phi()  << endl;
   }
 }
@@ -1072,7 +1072,7 @@ void FastSim::printMuons() {
 void FastSim::printElectrons() {
   cout << "Number of electrons is " << _stable_electrons.size() << endl;
   for (int j=0;j<(int)_stable_electrons.size();j++) {
-    cout << "Electron " << j << " "<< _stable_electrons[j]->pid() << " P: "<< _stable_electrons[j]->mom().px() << " " << _stable_electrons[j]->mom().py() << " " << _stable_electrons[j]->mom().pz() << " " << _stable_electrons[j]->mom().E() 
+    cout << "Electron " << j << " "<< _stable_electrons[j]->pid() << " P: "<< _stable_electrons[j]->mom().px() << " " << _stable_electrons[j]->mom().py() << " " << _stable_electrons[j]->mom().pz() << " " << _stable_electrons[j]->mom().E()
      << " Eta: " << _stable_electrons[j]->mom().eta() << " Phi: " << _stable_electrons[j]->mom().phi()  << endl;
   }
 }
@@ -1082,8 +1082,8 @@ void FastSim::printElectrons() {
 void FastSim::printPhotons() {
   cout << "Number of photons is " << _stable_photons.size() << endl;
   for (int j=0;j<(int)_stable_photons.size();j++) {
-    cout << "Photon " << j <<" "<< _stable_photons[j]->pid() << " P: "<< _stable_photons[j]->mom().px() << " " << _stable_photons[j]->mom().py() << " " << _stable_photons[j]->mom().pz() << " " << _stable_photons[j]->mom().E() 
-      << " Eta: " << _stable_photons[j]->mom().eta() << " Phi: " << _stable_photons[j]->mom().phi()  
+    cout << "Photon " << j <<" "<< _stable_photons[j]->pid() << " P: "<< _stable_photons[j]->mom().px() << " " << _stable_photons[j]->mom().py() << " " << _stable_photons[j]->mom().pz() << " " << _stable_photons[j]->mom().E()
+      << " Eta: " << _stable_photons[j]->mom().eta() << " Phi: " << _stable_photons[j]->mom().phi()
       << endl;
   }
 }
@@ -1098,4 +1098,4 @@ void FastSim::printSummary() {
   cout << "Number of isolated photons  : " << _iso_photons.size() << endl;
 
 }
-  
+

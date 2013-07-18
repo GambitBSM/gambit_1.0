@@ -30,7 +30,7 @@ namespace GAMBIT
 
   namespace ExampleBit_B
   {
-
+  
     // Initialization routine
     void initialize () 
     {
@@ -91,6 +91,10 @@ namespace GAMBIT
       GET_BE_RESULT(nevents_postcuts::refex2, inputvar2, byVal(inputvar3));
       cout << "Results of backend functions with parameters passed byRef: " 
            << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
+
+      //Example showing passing of function pointer to an external Fortran (or other language) routine
+      int arg2 = 15;
+      GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
 
     }
 

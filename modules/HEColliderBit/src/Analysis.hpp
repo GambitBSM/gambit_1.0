@@ -10,6 +10,9 @@ namespace GAMBIT {
   class Analysis {
   public:
 
+    /// Virtual destructor (needed for correct deletion of inherited classes)
+    virtual ~Analysis() {  }
+
     /// Initialize counters etc.
     virtual void init() {  }
 

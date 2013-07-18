@@ -13,6 +13,7 @@ LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lyaml-cpp -lrt
 CFLAGS = -O3 -Wall -g
 
 FC = ifort
+FFLAGS = -O3 -fPIC
 
 ######################################################
 # Explicit options for gambit building:
@@ -77,6 +78,7 @@ clean:
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -f _*.txt $(DOCDIR)/Manual.html
 	@rm -rf $(DOCDIR)/html
+	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 .PHONY: clean
 
 # also removes ~ files and other weirdly generated files
@@ -128,11 +130,11 @@ DARKINC:=$(wildcard $(DARKDIR)/include/*hpp) $(wildcard $(DARKDIR)/include/*h)
 DARKSRC:=$(wildcard $(DARKDIR)/src/*cpp) $(wildcard $(DARKDIR)/src/*c)
 DARKLIBS:=$(addprefix $(DARKDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(DARKSRC)))))
 
-HFLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
+FLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
 FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp) $(wildcard $(FLAVDIR)/src/*c)
 FLAVLIBS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(FLAVSRC)))))
 
-ECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
+HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
 HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
 HECOLLIDERLIBS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(HECOLLIDERSRC)))))
 
@@ -221,7 +223,7 @@ DarkBit/build/%.o: DarkBit/src/%.c $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDIN
 DarkBit/build/%.o: DarkBit/src/%.f $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
-	
+
 FlavBit/build/%.o: FlavBit/src/%.cpp $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -257,7 +259,7 @@ TEMP_ScannerBit/build/%.o: TEMP_ScannerBit/src/%.c $(TMPSCANBITINC) $(UTILSINC) 
 TEMP_ScannerBit/build/%.o: TEMP_ScannerBit/src/%.f $(TMPSCANBITINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
-	
+
 $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -270,17 +272,21 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so
+gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so
+gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
 	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o  
+
+libfortran.so:
+	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
+	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o  
 
 # beb_tester from makefile.test_backend
 beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 

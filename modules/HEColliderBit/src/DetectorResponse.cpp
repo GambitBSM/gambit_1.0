@@ -47,7 +47,7 @@ void ATLAS_Simple_Response::MuonResponse(Particle& muon){
 void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
   // smears the momemtum of a photon
 
-  double newpx,newpy,newpz,newe; //,newpt;
+  double newpx,newpy,newpz; //,newe; //,newpt;
 
   if (photon.mom().E() <= 0)
     return ;
@@ -58,7 +58,7 @@ void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
   newpx = photon.mom().px()/(1+sigma);
   newpy = photon.mom().py()/(1+sigma);
   newpz = photon.mom().pz()/(1+sigma);
-  newe = photon.mom().E()/(1+sigma);
+  //newe = photon.mom().E()/(1+sigma);
 
 //  float oldeta = photon.mom().eta();
 //  float oldphi = photon.mom().phi();
@@ -67,7 +67,7 @@ void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
 //      photon.mom().px(),photon.mom().py(),photon.mom().pz(),photon.mom().E());
 //  printf(" oldeta %.2f old phi %.2f\n",oldeta,oldphi);
 
-  P4 newp=P4::mkXYZM(newpx,newpy,newpz,0);
+  P4 newp = P4::mkXYZM(newpx,newpy,newpz,0);
   photon.setMom(newp);
 
 //  printf("new Photon px = %f  py = %f pz = %f newe %f\n",
