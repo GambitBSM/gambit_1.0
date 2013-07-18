@@ -63,3 +63,5 @@ another_key:
     subsubkey2: deeper
     
 model: CMSSM_I
+model123:
+  model321: testCMSSM
