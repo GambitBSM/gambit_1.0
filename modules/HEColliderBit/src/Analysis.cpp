@@ -16,8 +16,7 @@ namespace GAMBIT {
       return new Analysis_Perf();
     } else if (name == "ATLAS_0LEP_7TeV"){
       return new Analysis_ATLAS0LEP_7TeV();
-    }
-    else {
+    } else {
       throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
     }
   }

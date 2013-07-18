@@ -31,14 +31,38 @@ namespace GAMBIT
 
   namespace ModelBit
   {
-  
-    /// Model activation function
-    ///
-    /// Activates primary_model_functors according to the model(s) being scanned
-    std::map<std::string, primary_model_functor *> activatePrimaryModels(
-        const std::vector<std::string> &, 
-        std::vector<primary_model_functor *> &
-        );
+    
+    /// Modelbit object which performs initialisation and checking operations
+    /// on the global primary_model_functor list.
+    class ModelFunctorClaw
+    {
+      public:
+        /// Constructor
+        ///
+        /// Hooks the "claw" into the global primary model functor list
+        ModelFunctorClaw (std::vector<primary_model_functor *> &);
+        
+        /// Model activation function
+        ///
+        /// Activates primary_model_functors according to the model(s) being 
+        /// scanned
+        void activatePrimaryModels( const std::vector<std::string> &);
+        
+        /// Active model functor "usefulness" checker
+        ///
+        /// Checks that all the active primary model functors are actually used 
+        /// for something in the dependency tree. If not throws an error to warn
+        /// the user.
+        void checkPrimaryModelFunctorUsage();
+        
+        /// Member variable which stores the map of user-activated models
+        std::map<std::string, primary_model_functor *> activeModelFunctors;
+
+      private:
+        /// Private reference to the global functor list
+        std::vector<primary_model_functor *> &_globalPrimaryModelFunctors;
+
+    };
     
   }
 }

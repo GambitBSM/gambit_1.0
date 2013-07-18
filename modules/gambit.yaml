@@ -64,8 +64,13 @@ another_key:
     subsubkey2: deeper
     
 model: CMSSM_I
+<<<<<<< HEAD
 
 crapsampler:
   functions:  [Likelihood]
   point_number: 10000
   output_file:  output
+=======
+model123:
+  model321: testCMSSM
+>>>>>>> acc98da96e0b89200ff8b4432ed0bb81f83d87e6

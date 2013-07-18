@@ -48,13 +48,15 @@ void beispiel(const char* inifilename)
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels;
-  std::map<std::string, primary_model_functor *> activemodelFunctorMap;
-        
-  selectedmodels.push_back(iniFile.getValue<std::string>("model")); ///TODO: improve
+
+  selectedmodels.push_back(iniFile.getValue<std::string>("model"));  ///TODO: improve
+  selectedmodels.push_back(iniFile.getValue<std::string>("model2")); ///TODO: improve
+  
+  // Initialise ModelFunctorClaw (for manipulating primary model functors)
+  ModelBit::ModelFunctorClaw modelClaw(globalPrimaryModelFunctorList);
   
   // Activate "primary" model functors
-  activemodelFunctorMap = ModelBit::activatePrimaryModels(  selectedmodels,
-                                                globalPrimaryModelFunctorList );
+  modelClaw.activatePrimaryModels(selectedmodels);
                                    
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(globalFunctorList,
@@ -70,46 +72,42 @@ void beispiel(const char* inifilename)
   Gambit::Scanner::Gambit_Scanner *scanner = new CrapSampler(dependencyResolver, activemodelFunctorMap, iniFile);
   scanner->Run();
 
+  // Check that all requested models are used for at least one computation
+  modelClaw.checkPrimaryModelFunctorUsage();
+
   // Run 100 times
-//  srand (time(NULL));    // initialize random seed
+
+  srand (time(NULL));    // initialize random seed
   
-//   typedef std::map<std::string, primary_model_functor *>::iterator activemodel_it;
-//   std::map<std::string, std::map<std::string, double>> parametermaps;
-//   std::string modelname;
-//   std::vector<std::string> paramkeys;
-//   primary_model_functor *functorPtr;
-//   
-//   for (int i = 0; i<1000; i++)
-//   {
-//     // Set parameter values in active primary_model_parameter functors
-//     for(activemodel_it it = activemodelFunctorMap.begin(); 
-//         it != activemodelFunctorMap.end(); it++) 
-//     {
-//         modelname = it->first;
-//         functorPtr= it->second;
-//         paramkeys = functorPtr->getcontentsPtr()->getKeys();
-//         
-//         // Iterate through keys, generate some random numbers
-//         for (std::vector<std::string>::iterator key = paramkeys.begin(); 
-//               key!=paramkeys.end(); ++key) 
-//         {
-//             parametermaps[modelname][*key] = rand()%1000;
-//         }
-//         
-//         // Give the map for this model to the ModelParameters object so it can
-//         // use it to set its parameters
-//         functorPtr->getcontentsPtr()->setValues(parametermaps[modelname]);
-//         
-//     }
-//   
-//   
-//     std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-//     for (std::vector<Graphs::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
-//     {
-//       dependencyResolver.calcObsLike(*it);
-//       dependencyResolver.notifyOfInvalidation(*it);
-//     }
-//     dependencyResolver.resetAll();
+  typedef std::map<std::string, primary_model_functor *>::iterator activemodel_it;
+  std::map<std::string, std::map<std::string, double>> parametermaps;
+  std::string modelname;
+  std::vector<std::string> paramkeys;
+  primary_model_functor *functorPtr;
+  
+  for (int i = 0; i<1000; i++)
+  {
+    // Set parameter values in active primary_model_parameter functors
+    for(activemodel_it it = modelClaw.activeModelFunctors.begin(); 
+        it != modelClaw.activeModelFunctors.end(); it++) 
+    {
+        modelname = it->first;
+        functorPtr= it->second;
+        paramkeys = functorPtr->getcontentsPtr()->getKeys();
+        
+        // Iterate through keys, generate some random numbers
+        for (std::vector<std::string>::iterator key = paramkeys.begin(); 
+              key!=paramkeys.end(); ++key) 
+        {
+            parametermaps[modelname][*key] = rand()%1000;
+        }
+        
+        // Give the map for this model to the ModelParameters object so it can
+        // use it to set its parameters
+        functorPtr->getcontentsPtr()->setValues(parametermaps[modelname]);
+        
+    }
+  
     cout << endl;
   }
 

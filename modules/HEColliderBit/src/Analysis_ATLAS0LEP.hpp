@@ -157,9 +157,9 @@ namespace GAMBIT {
 
 
       //Calculate common variables and cuts first
-      int nElectrons=signalElectrons.size();
-      int nMuons=signalMuons.size();
-      int nJets=signalJets.size();
+      int nElectrons = signalElectrons.size();
+      int nMuons = signalMuons.size();
+      int nJets = signalJets.size();
 
 
       #ifdef MKHISTOS
@@ -176,26 +176,25 @@ namespace GAMBIT {
       cout << "Number of electrons " <<  nElectrons << " Number of muons " << nMuons << " Number of jets " << nJets << endl;
       #endif
 
-      bool leptonCut=false;
-      if (nElectrons==0 && nMuons==0) leptonCut=true;
-
+      bool leptonCut = (nElectrons == 0 && nMuons == 0);
       bool metCut = (met > 160.);
-      
-      float meff_incl=0;
-      for (size_t iJet=0;iJet<nJets;iJet++) {
-        if (signalJets.at(iJet)->pT()>40.)meff_incl+=signalJets.at(iJet)->pT();
-      }
-      meff_incl+=met;
-      float meff2j_debug=0;
-      float dphimin_debug=0;
 
+      float meff_incl = 0;
+      for (size_t iJet = 0; iJet < signalJets.size(); iJet++) {
+        if (signalJets[iJet]->pT() > 40) meff_incl += signalJets[iJet]->pT();
+      }
+      meff_incl += met;
+
+      float meff2j = 0;
+      float dPhiMin = 0;
 
       #ifdef MKHISTOS
       _njets->Fill(nJets);
       _nelecs->Fill(nElectrons);
       _nmuons->Fill(nMuons);
       _jetpt_1->Fill(signalJets[0]->pT());
-      for (size_t iJet=0;iJet<signalJets.size();iJet++) _jetpt_all->Fill(signalJets[iJet]->pT());
+      for (size_t iJet = 0; iJet < signalJets.size(); iJet++)
+        _jetpt_all->Fill(signalJets[iJet]->pT());
       _met->Fill(met);
       _meff_all->Fill(meff_incl);
       #endif
@@ -218,12 +217,8 @@ namespace GAMBIT {
           //       numJets+=1;
           //     }
           // }
-          float dPhiMin=SmallestdPhi(signalJets,ptot.phi());
-
-          dphimin_debug=dPhiMin;
-
-          float meff2j=met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
-          meff2j_debug=meff2j;
+          dPhiMin = SmallestdPhi(signalJets,ptot.phi());
+          meff2j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT();
 
           #ifdef MKHISTOS
           if (leptonCut) {
@@ -398,8 +393,8 @@ namespace GAMBIT {
            << " NELE " << signalElectrons.size()
            << " NMUO " << signalMuons.size()
            << " MET " << met
-           << " MET/MEFF " << met/meff2j_debug
-           << " DPHIMIN " << dphimin_debug
+           << " MET/MEFF " << met/meff2j
+           << " DPHIMIN " << dPhiMin
            << " MEFF " << meff_incl
            << " METPHI " << ptot.phi() << endl;
       #endif

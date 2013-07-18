@@ -59,4 +59,8 @@ private:
   ClassDef(AbsoluteIsolation, 1)
 };
 
+#ifdef __CINT__
+#pragma link C++ class AbsoluteIsolation+;
+#endif // __CINT__
+
 #endif
