@@ -33,6 +33,8 @@ namespace GAMBIT
 {
   namespace HEColliderBit
   {
+
+
     Delphes3Backend::Delphes3Backend(string configFileName)
     {
       try
@@ -107,8 +109,12 @@ namespace GAMBIT
         const Pythia8::Particle& p = event[ip];
         candidate = factory->NewCandidate();
 
+        /// @todo Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
+
+        /// @todo How to convert Py8 events without hadronisation?
+
         candidate->PID = p.id();
-        pdgCode = TMath::Abs(candidate->PID);
+        pdgCode = abs(candidate->PID);
 
         candidate->Status = p.status();
 
@@ -157,7 +163,7 @@ namespace GAMBIT
       while((candidate = static_cast<Candidate*>(iteratorPhotons.Next())))
       {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+        recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                     momentum.E(), PID::PHOTON);
 	recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
@@ -173,10 +179,10 @@ namespace GAMBIT
 
         const TLorentzVector &momentum = candidate->Momentum;
         if(candidate->Charge < 0)
-          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), PID::ELECTRON);
         else
-          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), PID::POSITRON);
 	recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
@@ -191,10 +197,10 @@ namespace GAMBIT
       {
         const TLorentzVector &momentum = candidate->Momentum;
         if(candidate->Charge < 0)
-          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), PID::MUON);
         else
-          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), PID::ANTIMUON);
 	recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
@@ -211,20 +217,21 @@ namespace GAMBIT
         if (candidate->TauTag)
         {
           if(candidate->Charge < 0)
-            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                         momentum.E(), PID::TAU);
           else
-            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(), 
+            recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                         momentum.E(), PID::ANTITAU);
 	  recoParticle->setPrompt(true);
           event.addParticle(recoParticle);
           continue;
         }
+        /// @todo Avoid branching
         if(candidate->BTag)
-          recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(),
                             momentum.E(), true);
         else
-          recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), 
+          recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(),
                             momentum.E(), false);
         event.addJet(recoJet);
       }
