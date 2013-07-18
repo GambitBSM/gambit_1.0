@@ -50,7 +50,8 @@ void beispiel(const char* inifilename)
   std::vector<std::string> selectedmodels;
   std::map<std::string, primary_model_functor *> activemodelFunctorMap;
         
-  selectedmodels.push_back(iniFile.getValue<std::string>("model")); ///TODO: improve
+  selectedmodels.push_back(iniFile.getValue<std::string>("model"));  ///TODO: improve
+  selectedmodels.push_back(iniFile.getValue<std::string>("model2")); ///TODO: improve
   
   // Activate "primary" model functors
   activemodelFunctorMap = ModelBit::activatePrimaryModels(  selectedmodels,
@@ -65,6 +66,9 @@ void beispiel(const char* inifilename)
 
   // Do the dependency resolution
   dependencyResolver.resolveNow();
+
+  // Check that all requested models are used for at least one computation
+  ModelBit::checkPrimaryModelFunctorUsage(activemodelFunctorMap);
 
   // Run 100 times
   srand (time(NULL));    // initialize random seed

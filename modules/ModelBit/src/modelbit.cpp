@@ -18,11 +18,15 @@
 
 // Duties:
 // * Activate primary_model_functors according to the model(s) being scanned
+// * Check whether all active primary_model_functors are actually used in the
+//   the dependency graph
 
 #include <modelbit.hpp>
 
 namespace GAMBIT
 {
+  typedef std::map<std::string, primary_model_functor *> activemodel_map;
+  typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
 
   namespace ModelBit
   {
@@ -30,7 +34,7 @@ namespace GAMBIT
     /// Model activation function
     ///
     /// Activates primary_model_functors according to the model(s) being scanned
-    std::map<std::string, primary_model_functor *> activatePrimaryModels (
+    activemodel_map activatePrimaryModels (
           const std::vector<std::string> &selectedmodels, 
           std::vector<primary_model_functor *> &functorList
           )
@@ -61,7 +65,48 @@ namespace GAMBIT
     }
     
     
-    /// Some other function
+    /// Active model functor "usefulness" checker
+    ///
+    /// Checks that all the active primary model functors are actually used for
+    /// something in the dependency tree. If not throws an error to warn the
+    /// user.
+    void checkPrimaryModelFunctorUsage(const activemodel_map &functorMap)
+    {
+      std::vector<std::string> unusedmodels;
+      std::string modelname;
+      primary_model_functor* functorPtr;
+      // Loop through functor list and check that their statuses have all been
+      // set to 2 ("active"). If not, it means that some of them were not
+      // activated by the dependency resolver and thus are not used for 
+      // computing anything.
+      for(activemodel_it it = functorMap.begin(); it != functorMap.end(); it++) 
+      {
+        modelname  = it->first;
+        functorPtr = it->second;
+        
+        if ( functorPtr->status()!=2 )
+        {
+          unusedmodels.push_back( modelname );
+        } 
+      }     
+    
+      // If we found unused models throw an error
+      ///TODO: Make this into a proper GAMBIT error!
+      if ( unusedmodels.size() > 0 )
+      {
+        std::cout<<"ERROR! Some models selected for scanning are not required \
+by any of the requested observables/likelihoods! Please switch these off in the\
+ inifile or add a target which actually uses them."<<std::endl;
+        std::cout<<"List of unused models:"<<std::endl;
+        for (std::vector<std::string>::iterator it = unusedmodels.begin();
+          it != unusedmodels.end(); ++it)
+        {
+          std::cout<<(*it)<<std::endl;
+        }
+        exit (EXIT_FAILURE);
+      }
+      
+    } //end checkPrimaryModelFunctorUsage
     
   }
 }

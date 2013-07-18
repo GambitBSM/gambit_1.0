@@ -39,6 +39,13 @@ namespace GAMBIT
         const std::vector<std::string> &, 
         std::vector<primary_model_functor *> &
         );
+        
+    /// Active model functor "usefulness" checker
+    ///
+    /// Checks that all the active primary model functors are actually used for
+    /// something in the dependency tree. If not throws an error to warn the
+    /// user.
+    void checkPrimaryModelFunctorUsage(const std::map<std::string, primary_model_functor *> &);
     
   }
 }
