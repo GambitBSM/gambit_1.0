@@ -117,6 +117,10 @@
   /// return type \em TYPE.
   #define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE)
 
+  /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
+  /// specific models listed as arguments.
+  #define ALLOWED_MODELS(...)                               CORE_ALLOW_MODELS(#__VA_ARGS__)
+
   /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
   /// a backend function to be available with capability \link BACKEND_REQ() 
   /// BACKEND_REQ\endlink and return type \em TYPE.
@@ -145,6 +149,7 @@
   #define START_CAPABILITY                                  DUMMY
   #define START_FUNCTION(TYPE)                              DUMMYARG(TYPE)
   #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
+  #define ALLOW_MODELS(...)                                 DUMMYARG(...)
   #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
   #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
   #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
@@ -223,11 +228,11 @@
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
-      CORE_START_MODULE_GUTS(MODULE)                                           \
+      CORE_START_MODULE_COMMON(MODULE)                                         \
     }                                                                          \
   }                                                                            \
   
-#define CORE_START_MODULE_GUTS(MODULE)                                         \
+#define CORE_START_MODULE_COMMON(MODULE)                                       \
       /* A way to fetch a trait of an observable or likelihood                 \
       (like its type), based on its tag.*/                                     \
       template <typename TAG>                                                  \
@@ -435,8 +440,6 @@
 
 
 /// Redirection of START_FUNCTION(TYPE) when invoked from within the core.
-/// Ben: I have pulled the "guts" of the functor creation out into MAKE_FUNCTOR
-/// for recycling in model_macros.hpp
 #define CORE_START_FUNCTION(TYPE)                                              \
                                                                                \
   namespace GAMBIT                                                             \
@@ -456,10 +459,10 @@
                                                                                \
   }                                                                            \
 
-/// 'guts' of the functor creation
+/// Main parts of the functor creation
 #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN)                          \
-  /* Set up an auxilary method to report stuff to the core about the       
-  function.  Not actually sure what this would                             
+  /* Set up an auxilary method to report stuff to the core about the           \
+  function.  Not actually sure what this would                                 \
   be used for at this stage. */                                                \
   template <>                                                                  \
   void report<Tags::FUNCTION>()                                                \
@@ -508,26 +511,10 @@
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
   
-/// Ben: I have again altered these macros slightly so that they can be reused
-/// easily by ModelBit. It makes them slightly uglier, but it really seems a
-/// waste to copy them since the required functionality is almost exactly the 
-/// same. 
 
 /// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
-
-#define DEPENDENCY_COMMON_1(DEP, TYPE)                                         \
-  namespace GAMBIT                                                             \
-  {                                                                            \
-                                                                               \
-    /* Add DEP to global set of tags of recognised module capabilities/deps */ \
-    ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
-                                                                               \
-    namespace MODULE                                                           \
-    {                                                                          \
-      DEPENDENCY_COMMON_1_GUTS(DEP, TYPE, MODULE, FUNCTION)                    \
-  
-#define DEPENDENCY_COMMON_1_GUTS(DEP, TYPE, MODULE, FUNCTION)                  \
+#define DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                       \
                                                                                \
       /* Register the required TYPE of the required observable or likelihood   \
       function DEP */                                                          \
@@ -602,7 +589,16 @@
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE)                                             \
                                                                                \
-  DEPENDENCY_COMMON_1(DEP, TYPE)                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    /* Add DEP to global set of tags of recognised module capabilities/deps */ \
+    ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                         \
                                                                                \
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
       template <>                                                              \
@@ -868,7 +864,16 @@
 /// the core.
 #define CORE_START_CONDITIONAL_DEPENDENCY(TYPE)                                \
                                                                                \
-  DEPENDENCY_COMMON_1(CONDITIONAL_DEPENDENCY, TYPE)                            \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    /* Add DEP to global set of tags of recognised module capabilities/deps */ \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CONDITIONAL_DEPENDENCY)                       \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      DEPENDENCY_COMMON_1(CONDITIONAL_DEPENDENCY, TYPE, MODULE, FUNCTION)      \
                                                                                \
       /* Set up the first set of commands to be called at runtime to register  \
       the conditional dependency. */                                           \

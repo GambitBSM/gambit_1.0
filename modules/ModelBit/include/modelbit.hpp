@@ -22,6 +22,8 @@
 #ifndef __modelbit_hpp__
 #define __modelbit_hpp__
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/topological_sort.hpp>
 #include <vector>
 #include <string>
 #include <functors.hpp>
@@ -31,6 +33,15 @@ namespace GAMBIT
 
   namespace ModelBit
   {
+  
+    using namespace boost;
+    
+    // Typedefs for central boost (model) graph
+    typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
+    typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
+    typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
+    
+    typedef std::map<std::string, std::vector<std::string>> map_of_vectors;
     
     /// Modelbit object which performs initialisation and checking operations
     /// on the global primary_model_functor list.
@@ -55,6 +66,13 @@ namespace GAMBIT
         /// the user.
         void checkPrimaryModelFunctorUsage();
         
+        /// Add model functors (vertices) to model hierarchy graph
+        void addFunctorsToGraph (std::vector<primary_model_functor *> &);
+        
+        /// Add edges (relationships) to model hierarchy graph
+        void learnModelHierarchy (map_of_vectors &);
+        
+        
         /// Member variable which stores the map of user-activated models
         std::map<std::string, primary_model_functor *> activeModelFunctors;
 
@@ -62,8 +80,10 @@ namespace GAMBIT
         /// Private reference to the global functor list
         std::vector<primary_model_functor *> &_globalPrimaryModelFunctors;
 
+        // *** The central boost graph object
+        MasterGraphType modelGraph;
     };
-    
+ 
   }
 }
 
