@@ -6,8 +6,8 @@
  * 
  * Modified: 2013-04-05
  * Pat Scott 2013-04-22
- * Anders Kvellestad 2013-04-25
- * Torsten Bringmann, Christoph Weniger June 2013
+ * Anders Kvellestad 2013-04-25 
+ * Torsten Bringmann July 2013
  */
 
 #include <backend_macros.hpp>
@@ -52,6 +52,11 @@ LOAD_LIBRARY
 BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
 BE_FUNCTION(dssusy, void, (int&,int&), "dssusy_", "dssusy")
 BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_", "dsrdomega")
+BE_FUNCTION(dsrdinit, void, (), "dsrdinit_", "dsrdinit")
+BE_FUNCTION(dsrdthlim, void, (), "dsrdthlim_", "dsrdthlim")
+BE_FUNCTION(dsrdtab, void, (double&,double&), "dsrdtab_", "dsrdtab") // CW: wrong types? Needs to be checked.
+BE_FUNCTION(dsrdeqn, void, (double(*)(const double&),const double&,double&,double&,int&), "dsrdeqn_", "dsrdeqn")
+BE_FUNCTION(dsrdwintp, double, (const double&), "dsrdwintp_", "dsrdwintp")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
@@ -75,6 +80,18 @@ BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_",
 
 BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_")
 BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_")
+BE_VARIABLE(intdof, DS_INTDOF, "intdof_")
+BE_VARIABLE(pacodes, DS_PACODES, "pacodes_")
+BE_VARIABLE(widths, DS_WIDTHS, "widths_")
+BE_VARIABLE(rdmgev, DS_RDMGEV, "rdmgev_")
+BE_VARIABLE(rdpth, DS_RDPTH, "rdpth_")
+BE_VARIABLE(rddof, DS_RDDOF, "rddof_")
+BE_VARIABLE(rdpars, DS_RDPARS, "rdpars_")
+BE_VARIABLE(rdswitch, DS_RDSWITCH, "rdswitch_")
+BE_VARIABLE(rdlun, DS_RDLUN, "rdlun_")
+BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_")
+
+
 // BE_VARIABLE(SomeInt, int, "someInt")
 // BE_VARIABLE(SomeDouble, double, "someDouble")
 
@@ -133,5 +150,4 @@ BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_")
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME
-#undef VERSION
 

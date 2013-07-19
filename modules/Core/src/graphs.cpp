@@ -307,6 +307,17 @@ namespace GAMBIT
       masterGraph[vertex]->notifyOfInvalidation();
     }
 
+    const IniParser::ObservableType * DependencyResolver::getIniEntry(VertexID v)
+    {
+      for (std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
+          it != outputVertexInfos.end(); it++)
+      {
+        if (it->vertex == v)
+          return it->iniEntry;
+      }
+      return NULL;
+    }
+
     void DependencyResolver::resetAll()
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;

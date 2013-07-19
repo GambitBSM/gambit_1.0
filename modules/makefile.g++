@@ -10,7 +10,6 @@ export
 CC = g++ 
 LN = $(CC)
 LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt
-# -lirc
 CFLAGS = -O3 -Wall -g
 
 FC = gfortran
@@ -78,7 +77,6 @@ all: mh doxygen gambit_example beb_tester gambit_example_minimal
 
 clean: 
 	@echo cleaning
-	cd contrib/yaml-cpp-0.5.1; make -f makefile.g++ clean
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -f _*.txt $(DOCDIR)/Manual.html
 	@rm -rf $(DOCDIR)/html
@@ -87,6 +85,7 @@ clean:
 
 # also removes ~ files and other weirdly generated files
 distclean: clean
+	cd contrib/yaml-cpp-0.5.1; make -f makefile.g++ clean
 	rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
 .PHONY: distclean
 
@@ -167,6 +166,7 @@ BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o 
 DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
 TEMP_ScannerBit/build/TEMP_ScannerBit.o\
+DarkBit/build/DarkBit.o\
 $(YAMLDIR)/yaml-cpp.a
 
 $(YAMLDIR)/yaml-cpp.a:

@@ -34,6 +34,8 @@ namespace GAMBIT {
     /// Return the likelihood (at the end of the run, via logLikelihood)
     virtual double likelihood() { return std::exp(logLikelihood()); }
 
+    /// @todo Need a combine() or operator+ to do (weighted) combination of analysis results
+
   };
 
 
