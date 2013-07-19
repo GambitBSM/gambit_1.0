@@ -72,6 +72,13 @@ Goals:
   * Sort out 'warning redefined' warnings from BOOST about TUPLE_TO_SEQ.
     Need to check if variadics exists before bothering to redefine the macro,
     or something.
+  
+-------------------------------------
+Day 5 - Friday 19 Jul
 
+Goals:
+  * Create boost graph to display model hierarchy (and maybe even replace the
+    lineage/ancestry database I created yesterday?)
+    
 
 

@@ -65,7 +65,7 @@ namespace GAMBIT
       
       chisq = LogLike(a);
       
-      cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << endl;
+      cout << "Metropolis Hastings Algorthm Started" << endl; // << "tpoints = " << "\n\taccept ratio = " << endl;
       
       do
       {
@@ -78,7 +78,8 @@ namespace GAMBIT
         chisqnext = LogLike(aNext);
 
         ans = chisqnext - chisq;
-        if ((ans <= 0.0)||(-std::log(gDev.Doub()) >= ans))
+        // if ((ans <= 0.0)||(-std::log(gDev.Doub()) >= ans))
+        if (true)
         {
           out << mult << "   ";
           for (int k = 0; k < ma; k++)
@@ -91,7 +92,8 @@ namespace GAMBIT
           chisq = chisqnext;
           mult = 1;
           count++;
-          cout << "\033[2A\tpoints = " << count << "\n\taccept ratio = " << "               \033[15D" << (double)count/(double)total << endl;
+          // cout << "\033[2A\tpoints = " << count << "\n\taccept ratio = " << "               \033[15D" << (double)count/(double)total << endl;
+          cout << "points = " << count << "; accept ratio = " << (double)count/(double)total << endl;
         }
         else
         {

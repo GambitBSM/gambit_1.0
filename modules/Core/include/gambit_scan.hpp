@@ -87,11 +87,22 @@ namespace GAMBIT
 			{
 				std::vector<double>::iterator it2 = vec.begin();
 				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2)
+        {
+          cout << "Setting variable " << functors[*it].first;
+          cout << " with " << *it2 << endl;
 					functors[*it].second->getcontentsPtr()->setValue(functors[*it].first, *it2);
+        }
 			}
 			
-			void CalcPropose(Graphs::VertexID &it) {dependencyResolver->calcObsLike(it);}
-			double GetPropose(Graphs::VertexID &it) {dependencyResolver->getObsLike(it);}
+			void CalcPropose(Graphs::VertexID &it) 
+      {
+        dependencyResolver->calcObsLike(it);
+      }
+
+			double GetPropose(Graphs::VertexID &it) 
+      {
+        return dependencyResolver->getObsLike(it);
+      }
 			
 			const std::string Name() const {return name;}
 			
@@ -115,14 +126,19 @@ namespace GAMBIT
 				int size = 0;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
 				{
+          cout << parent->functions[funcNum] << endl;
+					cout << parent->dependencyResolver->getIniEntry(*it)->purpose << endl;
 					if (parent->dependencyResolver->getIniEntry(*it)->purpose == parent->functions[funcNum])
 					{
+            cout << parent->functions[funcNum] << endl;
 						*it2 = *it;
 						it2++;
 						size++;
 					}
 				}
+        cout << size << endl;
 				vertices.resize(size);
+        cout << vertices << endl;
 			}
 		};
 		
@@ -147,25 +163,22 @@ namespace GAMBIT
 			
 			virtual double operator () (std::vector<double> &in)
 			{
-        cout << "1" << endl;
-				parent->InputParameters(in);
-        cout << "2" << endl;
-				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
 				double ret = 0;
-        cout << "3" << endl;
+				parent->InputParameters(in);
+				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+        std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 				{
-          cout << "4" << endl;
+          std::cout << "__________calculating vertex " << *it << std::endl;
 					parent->CalcPropose(*it);
+          std::cout << "----------done " << std::endl;
 					//dependencyResolver.notifyOfInvalidation(*it);
-          cout << "5" << endl;
 					ret += parent->GetPropose(*it);
+          std::cout << "...collected double" << endl;
 				}
 				
-        cout << "6" << endl;
 				parent->Reset();
 				
-        cout << "7" << endl;
 				return ret;
 			}
 		};

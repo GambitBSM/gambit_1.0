@@ -92,6 +92,10 @@ namespace GAMBIT{
     #ifndef IN_CORE
     extern
     #endif
+    std::map<std::string, std::vector<std::string> > parentsDB;
+    #ifndef IN_CORE
+    extern
+    #endif
     std::map<std::string, std::vector<std::string> > lineageDB;
     #ifndef IN_CORE
     extern
@@ -209,7 +213,13 @@ namespace GAMBIT{
         /* Runtime addition of lineage vector and isdescendantof function to 
            global databases */                                                 \
         void rt_addmodeltoDB() {                                               \
-          allmodelnames.push_back(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)));   \
+          allmodelnames.push_back(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))); \
+          }                                                                    \
+                                                                               \
+        /* ///TODO: need to change this to allow multiple parents */           \
+        void rt_addparents() {                                                 \
+          parentsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))].push_back(     \
+                                                          STRINGIFY(PARENT) ); \
           }                                                                    \
                                                                                \
         void rt_addlineage() {                                                 \
@@ -249,6 +259,7 @@ namespace GAMBIT{
         namespace Ini                                                          \
         {                                                                      \
           ini_code AddModel (&rt_addmodeltoDB);                                \
+          ini_code AddParents (&rt_addparents);                                \
           ini_code AddLineage (&rt_addlineage);                                \
           ini_code AddDescFunc (&rt_addisdescendantof);                        \
           ini_code AddAnceFunc (&rt_addisancestorof);                          \
