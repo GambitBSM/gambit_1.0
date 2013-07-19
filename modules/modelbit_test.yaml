@@ -12,10 +12,11 @@
 
 m0:
   range: [1, 3.5]
-  fixed: true
+  model: CMSSM
 
 m1:
   range: [2, 4.5]
+  model: CMSSM
 
 ###############################
 --- # Observables of interest
@@ -49,4 +50,7 @@ m1:
 key: param
 model: CMSSM_I
 model2: CMSSM_I
-
+crapsampler:
+  functions: [Likelihood]
+  point_number: 3
+  output_file: test.txt

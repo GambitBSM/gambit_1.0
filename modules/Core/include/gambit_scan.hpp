@@ -27,7 +27,7 @@
 #include <graphs.hpp>
 #include <functors.hpp>
 
-namespace Gambit
+namespace GAMBIT
 {
 	namespace Scanner
 	{
@@ -46,7 +46,7 @@ namespace Gambit
 			std::string name;
 			
 		public:
-			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &inifile, std::string name) 
+			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name) 
 					: dependencyResolver(&a), name(name)
 			{
 				functions = iniFile.getValue<std::vector<std::string>>(name, "functions");
@@ -54,12 +54,12 @@ namespace Gambit
 				for(std::map<std::string, primary_model_functor *>::iterator it = activemodelFunctorMap.begin(); it != activemodelFunctorMap.end(); it++) 
 				{
 					//it->first = model name, it->second = functor pointer
-					std::vector <std::string> paramkeys = functorPtr->getcontentsPtr()->getKeys();
+					std::vector <std::string> paramkeys = it->second->getcontentsPtr()->getKeys();
 					for (std::vector<std::string>::iterator it2 = paramkeys.begin(); it2 != paramkeys.end(); ++it2)
 					{
 						string name = it->first + string("::") + *it2;
-						functors[name]->first = *it2;
-						functors[name]->second = it->second;
+						functors[name].first = *it2;
+						functors[name].second = it->second;
 					}
 				}
 				
@@ -86,12 +86,12 @@ namespace Gambit
 			void InputParameters (std::vector<double> &vec) 
 			{
 				std::vector<double>::iterator it2 = vec.begin();
-				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2);
-					functors[*it]->second->getcontentsPtr()->setValue(functors[*it]->first, *it2)
+				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2)
+					functors[*it].second->getcontentsPtr()->setValue(functors[*it].first, *it2);
 			}
 			
-			void CalcPropose(Graphs::VertexID &it) {dependencyResolver->calcPropose(it);}
-			double GetPropose(Graphs::VertexID &it) {dependencyResolver->getPropose(it);}
+			void CalcPropose(Graphs::VertexID &it) {dependencyResolver->calcObsLike(it);}
+			double GetPropose(Graphs::VertexID &it) {dependencyResolver->getObsLike(it);}
 			
 			const std::string Name() const {return name;}
 			
@@ -100,7 +100,7 @@ namespace Gambit
 			virtual int Run() = 0;
 			
 			friend class Scanner_Function_Base;
-		}
+		};
 		
 		class Scanner_Function_Base
 		{
@@ -113,9 +113,9 @@ namespace Gambit
 			{
 				vertices = parent->dependencyResolver->getObsLikeOrder();
 				int size = 0;
-				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin; it != vertices.end(); ++it)
+				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
 				{
-					if (parent->dependencyResolver->getIniEntry(*it)).obsType == functions[funcNum])
+					if (parent->dependencyResolver->getIniEntry(*it)->purpose == parent->functions[funcNum])
 					{
 						*it2 = *it;
 						it2++;
@@ -147,18 +147,25 @@ namespace Gambit
 			
 			virtual double operator () (std::vector<double> &in)
 			{
+        cout << "1" << endl;
 				parent->InputParameters(in);
+        cout << "2" << endl;
 				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
 				double ret = 0;
+        cout << "3" << endl;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 				{
+          cout << "4" << endl;
 					parent->CalcPropose(*it);
 					//dependencyResolver.notifyOfInvalidation(*it);
-					double ret += parent->GetPropose(*it);
+          cout << "5" << endl;
+					ret += parent->GetPropose(*it);
 				}
 				
+        cout << "6" << endl;
 				parent->Reset();
 				
+        cout << "7" << endl;
 				return ret;
 			}
 		};
