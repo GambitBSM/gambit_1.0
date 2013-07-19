@@ -10,29 +10,47 @@
 --- # Input parameters
 ########################
 
-m0:
-  range: [1, 3.5]
-  model: CMSSM
-
-m1:
+# m0:
+#   range: [1, 3.5]
+#   model: CMSSM
+# 
+# m1:
+#   range: [2, 4.5]
+#   model: CMSSM
+M0:
   range: [2, 4.5]
-  model: CMSSM
+  model: CMSSM_I
+M12:
+  range: [2, 4.5]
+  model: CMSSM_I
+A0:
+  range: [2, 4.5]
+  model: CMSSM_I
+tanb:
+  range: [2, 4.5]
+  model: CMSSM_I
+sgnmu:
+  range: [2, 4.5]
+  model: CMSSM_I
+Mstop:
+  range: [2, 4.5]
+  model: CMSSM_I
 
 ###############################
 --- # Observables of interest
 ###############################
 
-- obsType:      Observable
+- purpose:      Likelihood
   capability:   damu
   type:         ""
   function:     ""
   module:       ""
 
-- obsType:      Observable
-  capability:   nevents_postcuts
-  type:         ""
-  function:     ""
-  module:       ""
+# - purpose:      Likelihood
+#   capability:   nevents_postcuts
+#   type:         ""
+#   function:     ""
+#   module:       ""
 
 #########################
 --- # Auxiliary entries

@@ -108,7 +108,6 @@ void beispiel(const char* inifilename)
         
     }
   
-    cout << endl;
   }
 
 }
