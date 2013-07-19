@@ -54,7 +54,7 @@ BE_FUNCTION(dssusy, void, (int&,int&), "dssusy_", "dssusy")
 BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_", "dsrdomega")
 BE_FUNCTION(dsrdinit, void, (), "dsrdinit_", "dsrdinit")
 BE_FUNCTION(dsrdthlim, void, (), "dsrdthlim_", "dsrdthlim")
-BE_FUNCTION(dsrdtab, void, (double&,double&), "dsrdtab_", "dsrdtab") // Wrong types
+BE_FUNCTION(dsrdtab, void, (double&,double&), "dsrdtab_", "dsrdtab") // CW: wrong types? Needs to be checked.
 BE_FUNCTION(dsrdeqn, void, (double(*)(const double&),const double&,double&,double&,int&), "dsrdeqn_", "dsrdeqn")
 BE_FUNCTION(dsrdwintp, double, (const double&), "dsrdwintp_", "dsrdwintp")
 
