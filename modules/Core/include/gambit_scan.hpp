@@ -42,15 +42,18 @@ namespace GAMBIT
 			vector <std::string> keys;
 			vector <std::string> functions;
 			Graphs::DependencyResolver *dependencyResolver;
-			std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> functors;
+                        std::vector <primary_model_functor *> functors;
+                        std::vector <std::string> functorsMembers;
 			std::string name;
+                        bool isFuncFull;
 			
 		public:
 			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name) 
-					: dependencyResolver(&a), name(name)
+					: dependencyResolver(&a), name(name), ifFuncFull(true)
 			{
 				functions = iniFile.getValue<std::vector<std::string>>(name, "functions");
 				
+                                std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> tempMap;
 				for(std::map<std::string, primary_model_functor *>::iterator it = activemodelFunctorMap.begin(); it != activemodelFunctorMap.end(); it++) 
 				{
 					//it->first = model name, it->second = functor pointer
@@ -58,16 +61,22 @@ namespace GAMBIT
 					for (std::vector<std::string>::iterator it2 = paramkeys.begin(); it2 != paramkeys.end(); ++it2)
 					{
 						string name = it->first + string("::") + *it2;
-						functors[name].first = *it2;
-						functors[name].second = it->second;
+						tempMap[name].first = *it2;
+						tempMap[name].second = it->second;
 					}
 				}
 				
 				keys = iniFile.getParameterList();
 				lower_limits.resize(keys.size());
 				upper_limits.resize(keys.size());
+                                functors.resize(keys.size());
+                                functorsMembers.resize(keys.size());
+                                
 				std::vector<double>::iterator it_l = lower_limits.begin(), it_u = upper_limits.begin();
-				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it_l, ++it_u)
+                                std::vector<primary_model_functor *>::iterator functors_it = functors.begin();
+                                int funcSize = 0;
+                                
+				for (std::vector<std::string>::iterator it = keys.begin(), funcMem_it = functorsMembers.begin(); it != keys.end(); ++it, ++it_l, ++it_u)
 				{
 					std::pair<double, double> range = iniFile.getParameterEntry< std::pair<double, double> >(*it, "range");
 					std::string modelname = iniFile.getParameterEntry<std::string>(*it, "model");
@@ -80,22 +89,40 @@ namespace GAMBIT
 					}
 					*it_l = range.first;
 					*it_u = range.second;
+                                        std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> mit = tempMap.find(*it);
+                                        if (mit != unordered_map::end)
+                                        {
+                                                *(functors_it++) = mit->second;
+                                                *(funcMem_it++) = mit->first;
+                                                funcSize++;
+                                        }
 				}
+				
+				if (funcSize != keys.size())
+                                {
+                                        funcFull = false;
+                                        functors.resize(funcSize);
+                                        functorsMembers.resize(funcSize);
+                                }
+				
 			}
 			
 			void InputParameters (std::vector<double> &vec) 
 			{
 				std::vector<double>::iterator it2 = vec.begin();
-				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2)
-					functors[*it].second->getcontentsPtr()->setValue(functors[*it].first, *it2);
+                                std::vector<std:string>::iterator it3 = functersMembers.begin();
+				for (std::vector<primary_model_functor *>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2 ,++it3)
+					it->getcontentsPtr()->setValue(*it3, *it2);
 			}
 			
 			void CalcPropose(Graphs::VertexID &it) {dependencyResolver->calcObsLike(it);}
-			double GetPropose(Graphs::VertexID &it) {dependencyResolver->getObsLike(it);}
+			double GetPropose(Graphs::VertexID &it) {return dependencyResolver->getObsLike(it);}
 			
 			const std::string Name() const {return name;}
 			
 			void Reset() {dependencyResolver->resetAll();}
+			
+			bool IniHaveAllParameters(){return isFuncFull;}
 			
 			virtual int Run() = 0;
 			
@@ -112,6 +139,7 @@ namespace GAMBIT
 			Scanner_Function_Base(Gambit_Scanner *a, int funcNum) : parent(a)
 			{
 				vertices = parent->dependencyResolver->getObsLikeOrder();
+                                
 				int size = 0;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
 				{
@@ -147,25 +175,20 @@ namespace GAMBIT
 			
 			virtual double operator () (std::vector<double> &in)
 			{
-        cout << "1" << endl;
 				parent->InputParameters(in);
-        cout << "2" << endl;
+
 				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
 				double ret = 0;
-        cout << "3" << endl;
+
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 				{
-          cout << "4" << endl;
 					parent->CalcPropose(*it);
 					//dependencyResolver.notifyOfInvalidation(*it);
-          cout << "5" << endl;
 					ret += parent->GetPropose(*it);
 				}
 				
-        cout << "6" << endl;
 				parent->Reset();
 				
-        cout << "7" << endl;
 				return ret;
 			}
 		};
