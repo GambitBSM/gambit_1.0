@@ -303,8 +303,24 @@
         return (*map_bools[dep+obs])();                                        \
       }                                                                        \
                                                                                \
+      /* Module allows use of model MODEL_TAG when computing TAG */            \
+      template <typename MODEL_TAG, typename TAG>                              \
+      bool allowed_model()                                                     \
+      /*FIXME do something smart to check of there are *no* entries */         \
+      {                                                                        \
+        return false;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Overloaded, non-templated version */                                  \
+      bool allowed_model(str model, str obs)                                   \
+      {                                                                        \
+        /*FIXME do something smart to check of there are *no* entries */       \
+        if (map_bools.find(model+obs) == map_bools.end()) { return false; }    \
+        return (*map_bools[model+obs])();                                      \
+      }                                                                        \
+                                                                               \
       /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
-      depending on the backend and version used to meet requirment REQ_TAG. */ \
+      depending on the backend and version used to meet requirement REQ_TAG. */\
       template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
       bool requires_conditional_on_backend(str ver) {return false; }           \
                                                                                \
@@ -726,7 +742,7 @@
           cout<<params_functor->origin()<<"."<<endl;                           \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did!  Now set the pointers to the dependency result. */     \
+        else /* It did!  Now set the pointers to the model parameter result. */\
         {                                                                      \
           SafePointers::FUNCTION::Param::MODEL =                               \
            Parameters::FUNCTION::MODEL->valuePtr();                            \
@@ -734,22 +750,16 @@
                                                                                \
       }                                                                        \
                                                                                \
-      /* Indicate that FUNCTION requires the model parameters functor to have  \
-      be provided*/                                                            \
-      template <>                                                              \
-      bool requires<ModelTags::MODEL, Tags::FUNCTION>()                        \
-      {                                                                        \
-        return true;                                                           \
-      }                                                                        \
-                                                                               \
-      /* Set up the commands to be called at runtime to register dependency*/  \
+      /* Set up the commands to be called at runtime to register the           \
+      compatibility of the model with the functor */                           \
       template <>                                                              \
       void rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION> ()         \
       {                                                                        \
         map_bools[STRINGIFY(CAT(MODEL,FUNCTION))] =                            \
-         &requires<ModelTags::MODEL, Tags::FUNCTION>;                          \
+         &allowed_model<ModelTags::MODEL, Tags::FUNCTION>;                     \
         iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
-        Functown::FUNCTION.setDependency(STRINGIFY(MODEL),"ModelParameters",   \
+        Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
+         STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \
          &resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>);               \
       }                                                                        \
                                                                                \
