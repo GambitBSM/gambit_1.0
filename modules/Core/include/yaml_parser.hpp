@@ -38,11 +38,11 @@ namespace GAMBIT
         std::vector<Observable> backends; // ..deps of deps of deps of obs possible
       };
 
-      struct Parameter
-      {
-        std::string name;
-        std::pair<double, double> range;
-      };
+      // struct Parameter
+      // {
+      //   std::string name;
+      //   std::pair<double, double> range;
+      // };
     }
   }
 }
@@ -79,15 +79,15 @@ namespace YAML {
       return true;
     }
   };
-  template<> struct convert<Parameter>
-  {
-    static bool decode(const Node& node, Parameter& rhs)
-    {
-      rhs.name =  node["parameter"].as<std::string>();
-      rhs.range = node["range"].as<std::pair<double,double> >();
-      return true;
-    }
-  };
+  // template<> struct convert<Parameter>
+  // {
+  //   static bool decode(const Node& node, Parameter& rhs)
+  //   {
+  //     rhs.name =  node["parameter"].as<std::string>();
+  //     rhs.range = node["range"].as<std::pair<double,double> >();
+  //     return true;
+  //   }
+  // };
 }
 
 namespace GAMBIT
@@ -95,9 +95,9 @@ namespace GAMBIT
   namespace IniParser
   {
     typedef std::vector<Types::Observable> ObservablesType;
-    typedef std::vector<Types::Parameter> ParametersType;
+    // typedef std::vector<Types::Parameter> ParametersType;
     typedef Types::Observable ObservableType;
-    typedef Types::Parameter ParameterType;
+    // typedef Types::Parameter ParameterType;
 
     class IniFile
     {
@@ -105,7 +105,9 @@ namespace GAMBIT
         // Read the file
         int readFile(std::string filename);
 
-        // Getters for private observable, auxiliaries and parameter entries
+        //
+        // Getters for private observable and auxiliaries entries
+        //
         const ObservablesType & getObservables()
         {
           return observables;
@@ -116,6 +118,9 @@ namespace GAMBIT
           return auxiliaries;
         }
 
+        //
+        // Getters for key/value section
+        //
         bool hasKey(std::string key)
         {
           return keyValuePairNode[key];
@@ -136,7 +141,6 @@ namespace GAMBIT
           return keyValuePairNode[s1][s2][s3][s4];
         }
 
-        // Templated getter function for arbitrary key-value pairs
         template<typename TYPE> TYPE getValue(std::string key)
         {
           if (keyValuePairNode[key])
@@ -172,7 +176,53 @@ namespace GAMBIT
           exit(1);
         };
 
-        // Templated getter function for arbitrary key-value pairs
+        //
+        // Getters for model/parameter section
+        //
+        template<typename TYPE> TYPE getModelParameterEntry(std::string model,
+            std::string param, std::string key)
+        {
+          if (parametersNode[model][param][key])
+            return parametersNode[model][param][key].as<TYPE>();
+          std::cout << "ERROR: " << model << "." << param << "." << key << "not found in inifile" << std::endl;
+          exit(1);
+        };
+
+        bool hasModelParameterEntry(std::string model, std::string param, std::string key)
+        {
+          return parametersNode[model][param][key];
+        }
+
+        std::vector<std::string> getModelNames()
+        {
+          std::set<std::string> result;
+          for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
+          {
+            result.insert( it->first.as<std::string>() );
+          }
+          std::vector<std::string> output(result.size());
+          std::copy(result.begin(), result.end(), output.begin());
+          return output;
+        }
+
+        std::vector<std::string> getModelParameters(std::string model)
+        {
+          std::vector<std::string> result;
+          if (parametersNode[model])
+          {
+            for (YAML::const_iterator it = parametersNode[model].begin(); it!=parametersNode[model].end(); ++it)
+            {
+              result.push_back( it->first.as<std::string>() );
+            }
+            return result;
+          }
+          std::cout << "ERROR: " << model << " does not exist in inifile." << std::endl;
+          exit(1);
+        }
+
+        //
+        // OLD. TOO BE REMOVED SOON
+        //
         template<typename TYPE> TYPE getParameterEntry(std::string param, std::string key)
         {
           if (parametersNode[param][key])
@@ -180,11 +230,6 @@ namespace GAMBIT
           std::cout << "ERROR: Parameter " << param << " has no inifile entry " << key << std::endl;
           exit(1);
         };
-
-        bool hasParameterEntry(std::string param, std::string key)
-        {
-          return parametersNode[param][key];
-        }
 
         std::vector<std::string> getParameterList()
         {

@@ -332,6 +332,7 @@ namespace GAMBIT
     //
 
     // Add alpha and omega legs to masterGraph
+    // Replaced by models
     void DependencyResolver::addLegs()
     {
       // Define alpha/omega vertices
