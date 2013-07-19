@@ -92,20 +92,6 @@ namespace GAMBIT
   //MSSMsoftmassesQ() {};
   };
 
-  struct DS_MSSMPAR
-  {
-    double tanbe, mu, m2, m1, m3, ma;
-    double mass2u[3], mass2q[3], mass2d[3],  mass2l[3], mass2e[3];
-    double asoftu[3], asoftd[3], asofte[3];
-  };
-
-  struct DS_MSPCTM
-  {
-    double mass[51];
-    double runmass[51];
-    double mu2gev,md2gev,ms2gev,mcmc,mbmb,mtmt;
-  };
-  
 }
 
 #endif //ifndef __MSSM_classes_hpp__
