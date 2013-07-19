@@ -30,6 +30,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/lexical_cast.hpp"
 
@@ -46,13 +47,14 @@ namespace GAMBIT {
     struct Pythia8Thread {
       Pythia8Thread(const string& name, double xs, const vector<string>& procs)
         : name(name), xsec(xs), processes(procs) { }
+      void add_analysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
       string name;
       double xsec;
       // double nevents;
       /// @todo Calc effective lumi?
       /// @todo Add some metric of CPU cost per event for this process type?
       vector<string> processes;
-      vector<Analysis*> analyses;
+      vector<shared_ptr<Analysis>> analyses;
     };
 
   }
@@ -91,66 +93,49 @@ int main()
   GAMBIT::HEColliderBit::Pythia8Thread SP_SQUARK("q", 0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
   GAMBIT::HEColliderBit::Pythia8Thread SP_GAUGINO("X", 0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
 
-  const int NUM_THREADS = omp_get_num_threads();
-  const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
-  double total_xsec = SP_GLUINO.xsec + SP_SQUARK.xsec + SP_GAUGINO.xsec;
-  vector<GAMBIT::HEColliderBit::Pythia8Thread> process_cfgs; process_cfgs.reserve(NUM_THREADS);
-  for (size_t i = 0; i < (size_t)round(NUM_THREADS * SP_GLUINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GLUINO);
-  for (size_t i = 0; i < (size_t)round(NUM_THREADS * SP_SQUARK.xsec / total_xsec); ++i) process_cfgs.push_back(SP_SQUARK);
-  for (size_t i = 0; i < (size_t)round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GAUGINO);
+  // Bind subprocesses to analysis pointers
+  SP_GLUINO.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+  SP_SQUARK.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+  SP_GAUGINO.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
 
-  // vector<int> num_threads_per_process;
-  // for (double x : xsecs) {
-  //   /// @note Only round *up* numbers? Don't want to round any processes down to 0 threads...
-  //   ///       ... unless they are really negligible: need to check rel size > some threshold
-  //   const double frac_nthreads = NUM_THREADS * x / total_xsec;
-  //   num_threads_per_process.push_back((int) round(frac_nthreads));
-  // }
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
-  /// don't get accidentally missed
-
-
-
-  /// @todo Object for thread config: contain xsec, effective lumi, pointers to Analysis (-> AnaGroup), nevents, ...
-
-  /// @todo Bind subprocesses to analysis pointers
-
-  /// @todo Generalise to a vector of (vector of) analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
-  ana->init(); //< @todo Convert to auto-initialize
+  /// don't get accidentally missed.
+  ///
+  /// @todo Don't want to round any processes down to 0 threads... unless really
+  /// negligible: need to check rel size > some threshold.
+  const int NUM_THREADS = omp_get_max_threads();
+  // cout << "Total #threads = " << NUM_THREADS << endl;
+  // const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
+  vector<GAMBIT::HEColliderBit::Pythia8Thread> process_cfgs; process_cfgs.reserve(NUM_THREADS);
+  double total_xsec = SP_GLUINO.xsec + SP_SQUARK.xsec + SP_GAUGINO.xsec;
+  for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GLUINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GLUINO);
+  for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_SQUARK.xsec / total_xsec); ++i) process_cfgs.push_back(SP_SQUARK);
+  for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GAUGINO);
+  // cout << "GLUINO #threads = " << round(NUM_THREADS * SP_GLUINO.xsec / total_xsec) << endl;
+  // cout << "SQUARK #threads = " << round(NUM_THREADS * SP_SQUARK.xsec / total_xsec) << endl;
+  // cout << "GAUGINO #threads = " << round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec) << endl;
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
-    // Initialize the backends
-    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(omp_get_thread_num());
+    // Py8 backend process configuration
+    const int NTHREAD = omp_get_thread_num();
+    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(NTHREAD);
     myPythia->set("SLHA:file", slhaFileName);
+    for (const string& p : process_cfgs[NTHREAD].processes)
+      myPythia->set(p, true);
 
-    // Subprocesses
-    myPythia->set("SUSY:gg2gluinogluino", true);
-    myPythia->set("SUSY:qqbar2gluinogluino", true);
-    myPythia->set("SUSY:qg2squarkgluino", true);
-    myPythia->set("SUSY:gg2squarkantisquark", true);
-    myPythia->set("SUSY:qqbar2squarkantisquark", true);
-    myPythia->set("SUSY:qq2squarksquark ", true);
-    myPythia->set("SUSY:qg2chi0squark", true);
-    myPythia->set("SUSY:qg2chi+-squark", true);
-    myPythia->set("SUSY:qqbar2chi0gluino", true);
-    myPythia->set("SUSY:qqbar2chi+-gluino", true);
-    // This way doesn't work!
-    // myPythia->set("SUSY:all", true);
-    // myPythia->set("SUSY:qqbar2chi0chi0", false);
-    // myPythia->set("SUSY:qqbar2chi+-chi0", false);
-    // myPythia->set("SUSY:qqbar2chi+chi-", false);
-
-    // For a reasonable output
-    temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";
+    // Persistency config
+    temp = "tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat";
     outFile.open(temp.c_str());
     outArchive = new boost::archive::text_oarchive(outFile);
 
+    /// @todo Now need to convert this because the threads are not running the
+    /// same things... and we might want some threads to run more events than
+    /// others, if their process is more CPU-expensive
     cout << " The number of events to process is " << NEVENTS << endl;
     #pragma omp for schedule(guided)
-    for (counter=0; counter<NEVENTS; counter++)
+    for (counter = 0; counter < NEVENTS; counter++)
     {
       genEvent.clear();
       recoEvent.clear();
@@ -159,8 +144,10 @@ int main()
       {
         myDelphes->processEvent(genEvent, recoEvent);
       }
-      ana->analyze(recoEvent);
-      // write recoEvent instance to file
+      // Run all attached analyses
+      for (shared_ptr<GAMBIT::Analysis> ana : process_cfgs[NTHREAD].analyses)
+        ana->analyze(recoEvent);
+      // Write recoEvent instance to file
       (*outArchive) << recoEvent;
     }
     cout << endl;
@@ -169,9 +156,13 @@ int main()
     delete myPythia;
   } // end omp parallel block
 
-  ana->finalize();
+  /// @todo Generalize
+  SP_GLUINO.analyses[0]->finalize();
+  SP_SQUARK.analyses[0]->finalize();
+  SP_GAUGINO.analyses[0]->finalize();
+  /// @todo Combine results from each subprocess with appropriate target NLO xsecs applied
   //cout << "LIKELIHOOD = " << ana->likelihood() << endl;
-  delete ana;
+
   delete myDelphes;
 
   return 0;

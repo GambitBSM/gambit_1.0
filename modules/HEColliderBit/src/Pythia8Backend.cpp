@@ -43,8 +43,8 @@ namespace GAMBIT {
 
       // Modelling elements
       _pythiaInstance->settings.flag("PartonLevel:MPI", false);
-      _pythiaInstance->settings.flag("PartonLevel:FSR", true);
-      _pythiaInstance->settings.flag("HadronLevel:all", true);
+      _pythiaInstance->settings.flag("PartonLevel:FSR", false); //true);
+      _pythiaInstance->settings.flag("HadronLevel:all", false); //true);
 
       // Random seed setup
       _pythiaInstance->settings.flag("Random:setSeed", true);
