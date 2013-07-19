@@ -20,6 +20,5 @@
 #pragma link off all functions;
 
 #pragma link C++ class AbsoluteIsolation+;
-#pragma link C++ class BTaggingWithTruth+;
 
 #endif

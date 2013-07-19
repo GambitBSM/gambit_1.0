@@ -87,7 +87,7 @@ namespace GAMBIT {
     /// Set BTag value
     void setBJet(bool isb=true) { _isB = isb; }
     /// Set the ID of the truth particle used to choose the btag efficiency function
-    int setPdgId(int pdgId=0) { _pdgId = pdgId; } 
+    void setPdgId(int pdgId=0) { _pdgId = pdgId; } 
 
     //@}
 
