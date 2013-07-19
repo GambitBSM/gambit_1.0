@@ -2,11 +2,14 @@
 #include <vector>
 #include <cmath>
 #include <memory>
+#include "TLorentzVector.h"
+#include "MT2Calculator/ComputeMT2.h"
 
 /* The ATLAS 1 lepton direct stop analysis (20fb^-1). 
    Code by Martin White.
    Known errors:
    a) The isolation is already applied in the simulation rather than after overlap removal
+   b) The ATLAS analysis uses the two jets with the highest b tag weight for the MT2 calculation. This is impossible for us. Instead, we should use the two truth b jets. However, the b efficiency will be applied when preselecting events.
 
    Known features:
    a) Must run simulator with 75% b tagging efficiency and 2% mis-id rate
@@ -17,11 +20,23 @@ namespace GAMBIT {
 
 
   using namespace std;
-
-
+  
+  class MT2 {
+    
+  public:
+    MT2(){
+      MT2tauB=0;
+      aMT2_BM=0;
+    }
+    
+    double MT2tauB;
+    double aMT2_BM;
+  };
+    
+    
   class Analysis_ATLAS_1LEPStop_20invfb : public Analysis {
   private:
-
+    
     // Numbers passing cuts
     int _numTN1Shape, _numTN2, _numTN3, _numBC1, _numBC2,
       _numBC3;
@@ -38,32 +53,74 @@ namespace GAMBIT {
 
     // void init() {
     // }
+    MT2 MT2Helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, P4 metVec){
 
+      MT2 results;
+      
+      bool passmu = false;
+      if(muons.size()==1)passmu=true;
 
-    double SmallestdPhi(std::vector<Jet *> jets,double phi_met)
-    {
-      if (jets.size()<2) return(999);
-      double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
-      double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
-      double dphi3 = 999;
-      if (jets.size() > 2 && jets[2]->pT() > 40.)
-        dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
-      double min1 = std::min(dphi1, dphi2);
-      return std::min(min1, dphi3);
-    }
+      bool passel = false;
+      if(electrons.size()==1)passel=true;
 
-    double SmallestRemainingdPhi(const std::vector<Jet *> jets,double phi_met)
-    {
-      double remainingDPhi = 999;
-      double dphiMin = 999;
-      for (size_t i = 0; i < jets.size(); i++) {
-        if (i > 2 && jets[i]->pT() > 40.) { //< @todo Just start the loop at i = 3?
-          remainingDPhi = std::acos(std::cos((jets[i]->phi() - phi_met)));
-          dphiMin = std::min(remainingDPhi, dphiMin);
-        }
+      int nJet = jets.size();
+      if(nJet < 2)return results;
+      
+      //ATLAS use the two jets with highest MV1 weights
+      //DELPHES does not have a continuous b weight
+      //Thus must approximate using the two true b jets
+      Jet * trueBjet1; //need to assign this
+      Jet * trueBjet2; //nee to assign this
+
+      TLorentzVector jet1B,jet2B;
+      jet1B.SetPtEtaPhiE(trueBjet1->pT(),trueBjet1->eta(),trueBjet1->phi(),trueBjet1->E());
+      jet2B.SetPtEtaPhiE(trueBjet2->pT(),trueBjet2->eta(),trueBjet2->phi(),trueBjet2->E());
+
+      P4 leptontmp;
+      float leptonmass = 0;
+      if(passel){
+	leptonmass = 0.510998910; //MeV
+	leptontmp = electrons[0]->mom();
       }
-      return dphiMin;
+      else if(passmu){
+	leptonmass =  105.658367; // MeV
+        leptontmp = muons[0]->mom();
+      }
+
+      TLorentzVector lepton;
+      lepton.SetPtEtaPhiM(leptontmp.pT(),leptontmp.eta(),leptontmp.phi(),leptonmass/1000.);
+
+      TLorentzVector MET;
+      MET.SetXYZM(metVec.px(),metVec.py(),0.,0.);
+
+      ComputeMT2 stuff(jet1B+lepton,jet2B,MET,0.,80.);
+      double mt2a  = stuff.ComputeNumeric();
+      
+      ComputeMT2 stuff2(jet2B+lepton,jet1B,MET,0.,80.);
+      double mt2b = stuff2.ComputeNumeric();
+      
+      double aMT2_BM = min(mt2a,mt2b);
+      results.MT2tauB=aMT2_BM;
+      
+      if (nJet > 3){
+        Jet * jet3;
+	for(Jet * current: jets){
+	  if (current == trueBjet1)continue;
+	  if (current == trueBjet2)continue;
+	  jet3 = current;
+	  break;
+	}
+        TLorentzVector jet3B;
+	jet3B.SetPtEtaPhiE(jet3->pT(),jet3->eta(),jet3->phi(),jet3->E());
+        ComputeMT2 stuff3(jet3B,lepton,MET,0.,0.);
+	double MT2tauB = stuff3.ComputeNumeric();
+	results.MT2tauB=MT2tauB;
+      }
+      return results;
+      
+      
     }
+
 
     void analyze(const Event* event) {
       // Missing energy
@@ -124,7 +181,7 @@ namespace GAMBIT {
           if (muVec.deltaR_eta(jetVec)<0.4)overlap=true;
         }
         if (!overlap && muVec.pT()>25.)signalMuons.push_back(baselineMuons.at(iMu));
-	if(!overlap)leptonsForVeto.push_back(baselineMuons.at(iEl));
+	if(!overlap)leptonsForVeto.push_back(baselineMuons.at(iMu));
       }
 
       // We now have the signal electrons, muons, jets and b jets- move on to the analysis
@@ -137,20 +194,20 @@ namespace GAMBIT {
 
       //Common preselection for all signal regions
       if(!(nJets>=4 
-	 && signalJets[0]->pT() > 80.
-	 && signalJets[1]->pT() > 60.
-	 && signalJets[2]->pT() > 40.
-	   && signalJets[3]->pT() > 25.))continue;
-
+	   && signalJets[0]->pT() > 80.
+	   && signalJets[1]->pT() > 60.
+	   && signalJets[2]->pT() > 40.
+	   && signalJets[3]->pT() > 25.))return;
+          
       //At least one of the leading four jets must be a b jet
       if(!(signalJets[0]->isBJet() ||
-	 signalJets[1]->isBJet() ||
-	 signalJets[2]->isBJet() ||
-	   signalJets[3]->isBJet()))continue;
-
+	   signalJets[1]->isBJet() ||
+	   signalJets[2]->isBJet() ||
+	   signalJets[3]->isBJet()))return;
+      
       //Must have exactly one lepton
-      if(!(nElectrons==1||nMuons==1))continue;
-      if(leptonsForVeto.size()>1)continue;
+      if(!(nElectrons==1||nMuons==1))return;
+      if(leptonsForVeto.size()>1)return;
 
       //Calculate dphi(jet,met) for the two leading jets
       float dphi_jetmet1=std::acos(std::cos(signalJets.at(0)->phi()-ptot.phi()));
@@ -164,11 +221,11 @@ namespace GAMBIT {
       P4 lepVec;
       if(nElectrons==1)lepVec=baselineElectrons[0]->mom();
       if(nMuons==1)lepVec=baselineMuons[0]->mom();
-      mT = sqrt(2.*lepVec->pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
+      float mT = sqrt(2.*lepVec.pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
   
       //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
-      float meff = met + lepVec->pT();
-      for (Jet* jet : signalJets()) {
+      float meff = met + lepVec.pT();
+      for (Jet* jet : signalJets) {
 	if(jet->pT()>30.)meff += jet->pT();
       }
       
@@ -176,7 +233,7 @@ namespace GAMBIT {
       float mindR1=9999.;
       float mindR2=9999.;
       float index1=9999.;
-      float index2=9999;.
+      float index2=9999.;
       float index3=9999.;
       
       bool whad=false;
@@ -186,8 +243,8 @@ namespace GAMBIT {
       for(int iJet=0;iJet<nJets;iJet++){
 	for(int jJet=0;jJet<nJets;jJet++){
 	  if(iJet != jJet){
-  	    if(signalJets[iJet]->mom().DeltaR(signalJets[jJet]->mom()) < mindR1 && (signalJets[iJet]->mom()+signalJets[jJet]->mom()).M() > 60.){
-	      mindR1 = signalJets[iJet]->mom().DeltaR(signalJets[jJet]->mom());
+  	    if(signalJets[iJet]->mom().deltaR_eta(signalJets[jJet]->mom()) < mindR1 && (signalJets[iJet]->mom()+signalJets[jJet]->mom()).m() > 60.){
+	      mindR1 = signalJets[iJet]->mom().deltaR_eta(signalJets[jJet]->mom());
 	      index1 = iJet;
 	      index2 = jJet;
 	      whad   = true;
@@ -198,28 +255,31 @@ namespace GAMBIT {
       if(whad){
 	for(int kJet=0;kJet<nJets;kJet++){
 	  if(kJet !=index1 && kJet !=index2){
-	    if(signalJets[kJet]->mom().DeltaR( signalJets[index1]->mom() + signalJets[index2]->mom()) < mindR2 && (signalJets[index1]->mom()+signalJets[index2]->mom()+signalJets[kJet]->mom()).M() > 130.){
-	      mindR2=signalJets[kJet]->mom().DeltaR(signalJets[index1]->mom() + signalJets[index2]->mom());
+	    if(signalJets[kJet]->mom().deltaR_eta( signalJets[index1]->mom() + signalJets[index2]->mom()) < mindR2 && (signalJets[index1]->mom()+signalJets[index2]->mom()+signalJets[kJet]->mom()).m() > 130.){
+	      mindR2=signalJets[kJet]->mom().deltaR_eta(signalJets[index1]->mom() + signalJets[index2]->mom());
 	      index3=kJet;
 	      Thad=true;
 	    }
 	  }
 	}
       }
-      if(Thad)mHadTop = (signalJets[index1]->mom()+signalJets[index2]->mom()+signalJets[index3]->mom()).M();
+      if(Thad)mHadTop = (signalJets[index1]->mom()+signalJets[index2]->mom()+signalJets[index3]->mom()).m();
       
       bool passHadTop=false;
       if(mHadTop>130.&& mHadTop<205.)passHadTop=true;
-
-     
       
+      //Do MT2 calculations
+      //ComputeMT2(jet1B+lepton,jet2B,MET,0.,80.)
+      TLorentzVector shit;
+      
+      return;
       
     }
       
     void finalize() {
-      cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " "
-           << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " "
-           << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
+      //cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " "
+      //   << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " "
+      //   << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
 
     }
 
@@ -228,9 +288,9 @@ namespace GAMBIT {
       /// @todo Implement!
       return 1.0;
     }
+    
+    
+    };
+    
 
-
-  };
-
-
-}
+  }

@@ -1,0 +1,30 @@
+#include <iostream>
+#include "TLorentzVector.h"
+
+void test() {
+  // load library
+  gSystem->Load("libBinnedLik.so");
+
+  TLorentzVector Visa = TLorentzVector( 17.6496 , -59.3427 , 4.96999 , 168.795);
+  TLorentzVector Visb = TLorentzVector( 35.3298 , 54.6915 , -8.45409 , 66.4121);
+  TLorentzVector MET = TLorentzVector( -35.2052 , -17.6621 , -6.00919 , 75.5295);
+  TLorentzVector up = TLorentzVector( -17.7742 ,22.3134 ,9.49329, -310.737);
+
+  //The vectors below are already projected
+  TLorentzVector Visap = TLorentzVector( -18.1222 , -14.4356 , 0 , 158.653);
+  TLorentzVector Visbp = TLorentzVector( 48.2681 , 38.449 , 0 , 62.513);
+  TLorentzVector METp = TLorentzVector( -30.1459 , -24.0134 , 0 , 74.8509);
+
+  //If you don't want to project, setup the class like this.
+  ComputeMT2 stuff = ComputeMT2(Visap,Visbp,METp,0.,80.);
+  std::cout << stuff.ComputeNumeric() << std::endl;
+  std::cout << stuff.ComputeAnalytic() << std::endl;
+  //MT2 = 156.952
+
+  //If youdo wantto project, place the vector to projectagainst as the last argument.
+  ComputeMT2 stuff = ComputeMT2(Visa,Visb,MET,0.,80.,up);
+  std::cout << stuff.ComputeNumeric() << std::endl;
+  std::cout << stuff.ComputeAnalytic() << std::endl;
+  //MT2 = 156.952
+
+}

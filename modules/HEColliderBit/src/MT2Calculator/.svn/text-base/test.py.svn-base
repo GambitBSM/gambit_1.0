@@ -1,0 +1,61 @@
+from ROOT import TMinuit
+
+gSystem.Load("libBinnedLik.so")
+
+# number of distinct background components
+Nbkg = 1
+# number of quadrants
+NbinsX = 2
+NbinsY = 2
+NbinsZ = 1
+
+Nobs = TH2D("Nobs", "Nobs", NbinsX, 0, NbinsX, NbinsY, 0, NbinsY)
+effB = TH2D("effB", "effB", NbinsX, 0, NbinsX, NbinsY, 0, NbinsY)
+
+# fill the quadrants with number of observed events and the corresponding background efficiencies
+Nobs.SetBinContent(1, 1, 312.)
+Nobs.SetBinContent(1, 2, 135.)
+Nobs.SetBinContent(2, 1, 73.)
+Nobs.SetBinContent(2, 2, 180.)
+
+effB.SetBinContent(1, 1, 6.19469046592712402e-01)
+effB.SetBinContent(1, 2, 2.30088502168655396e-01)
+effB.SetBinContent(2, 1, 1.41592919826507568e-01)
+effB.SetBinContent(2, 2, 8.84955748915672302e-03)
+
+
+Nobs3D = TH3D("Nobs", "Nobs", NbinsX, 0, NbinsX, NbinsY, 0, NbinsY, NbinsZ, 0, NbinsZ)
+BgPDF3D = TH3D("bgPDF", "bgPDF", NbinsX, 0, NbinsX, NbinsY, 0, NbinsY, NbinsZ, 0, NbinsZ)
+
+# fill the quadrants with number of observed events and the corresponding background efficiencies
+Nobs3D.SetBinContent(1, 1, 1, 312.)
+Nobs3D.SetBinContent(1, 2, 1, 135.)
+Nobs3D.SetBinContent(2, 1, 1, 73.)
+Nobs3D.SetBinContent(2, 2, 1, 180.)
+
+Nobs3D.SetBinContent(1, 1, 2, 12.)
+Nobs3D.SetBinContent(1, 2, 2, 35.)
+Nobs3D.SetBinContent(2, 1, 2, 3.)
+Nobs3D.SetBinContent(2, 2, 2, 80.)
+
+
+BgPDF3D.SetBinContent(1, 1, 1, 6.19469046592712402e-01/2)
+BgPDF3D.SetBinContent(1, 2, 1, 2.30088502168655396e-01/2)
+BgPDF3D.SetBinContent(2, 1, 1, 1.41592919826507568e-01/2)
+BgPDF3D.SetBinContent(2, 2, 1, 8.84955748915672302e-03/2)
+
+BgPDF3D.SetBinContent(1, 1, 2, 6.19469046592712402e-01/2)
+BgPDF3D.SetBinContent(1, 2, 2, 2.30088502168655396e-01/2)
+BgPDF3D.SetBinContent(2, 1, 2, 1.41592919826507568e-01/2)
+BgPDF3D.SetBinContent(2, 2, 2, 8.84955748915672302e-03/2)
+
+
+
+#perform fit
+blhfitter = TilesFit( Nbkg, NbinsX, NbinsY, NbinsZ ) 
+blhfitter.SetNobs( Nobs3D )
+#blhfitter.SetBgPDF( 0, BgPDF3D , "incl.bg.PDF")
+blhfitter.SetBgPDF( 0, effB , "incl.bg.PDF")
+blhfitter.PrintDebug()
+blhfitter.Fit()
+
