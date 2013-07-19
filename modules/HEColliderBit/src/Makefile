@@ -57,7 +57,11 @@ example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp A
 
 AbsoluteIsolation_dict.cc: AbsoluteIsolation.h
 	@echo "Generating dictionary ..."
-	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
+	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external AbsoluteIsolation.h DelphesModuleLinkDef.h
+
+BTaggingWithTruth_dict.cc: BTaggingWithTruth.h
+	@echo "Generating dictionary ..."
+	@rootcint -f BTaggingWithTruth_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external BTaggingWithTruth.h DelphesModuleLinkDef.h
 
 clean:
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* AbsoluteIsolation_dict.cc
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.cc
