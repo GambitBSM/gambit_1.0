@@ -30,16 +30,29 @@ namespace GAMBIT{
       double valB;
     };
 
+    struct RDspectype
+    {
+//coannihilating particles
+      int n_co;
+      int part_co[1000],dof_co[1000];
+      double mass_co[1000];
+//location and type of resonances
+      int n_res;
+      int part_res[10];
+      double mass_res[10], width_res[10];
+//location of thresholds
+      int n_thr;
+      double E_thr[100];
+    };
+
     struct RDrestype
     {
-      double mass_res[1000];
-      double width_res[1000];
-      int part_res[1000];
-      int copart_res[1000];
-      double E_thr[1000];
-      int n_res;
-      int n_thr;
+//location of resonances and thresholds
+      int n_res, n_thr;
+      double E_res[10], dE_res[10], E_thr[100];
     };
+
+
 
   }
 }
