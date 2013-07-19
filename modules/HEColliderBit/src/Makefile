@@ -5,10 +5,12 @@
 PY8DIR := $(PYTHIA8DIR)
 FJDIR := $(FASTJETDIR)
 DELPHESDIR := $(DELPSDIR)
-BOOST :=$(BOOSTDIR)
+BOOST := $(BOOSTDIR)
 
+# TODO: Check that all these variables are defined
 
-CXX := /opt/gcc-4.8.1/bin/g++-4.8
+CXX := g++
+
 CXXFLAGS := -std=c++0x -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
 
 UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
@@ -48,7 +50,7 @@ example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 	$(CXX) example-py8-0lep.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) -o example-py8-0lep
 
-OPTFLAGS := -DQUIET #-DMKHISTOS
+OPTFLAGS := -DQUIET -DARCHIVE #-DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc
 	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc \
       -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8

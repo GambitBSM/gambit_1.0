@@ -92,6 +92,10 @@ namespace GAMBIT{
     #ifndef IN_CORE
     extern
     #endif
+    std::map<std::string, std::vector<std::string> > parentsDB;
+    #ifndef IN_CORE
+    extern
+    #endif
     std::map<std::string, std::vector<std::string> > lineageDB;
     #ifndef IN_CORE
     extern
@@ -131,7 +135,7 @@ namespace GAMBIT{
 /// "Rollcall" macros. These are lifted straight from module_macros.hpp
 /// but are modified here and there to suit the role of models.
 
-/// Note: Piggybacks off the CORE_START_MODULE_GUTS macro, since we need all the
+/// Note: Piggybacks off the CORE_START_MODULE_COMMON macro, since we need all the
 /// same basic machinery this creates.
 // Removed for now
 //#define START_MODEL                                                          \
@@ -158,13 +162,13 @@ namespace GAMBIT{
                                                                                \
         /* Parameterisation name 
         DON'T NEED THIS! Already created (as a function, name()) by 
-        CORE_START_MODULE_GUTS.
+        CORE_START_MODULE_COMMON.
         const str name = STRINGIFY(PARAMETERISATION);                        
         */                                                                     \
                                                                                \
         /* Basic machinery, same as for modules 
            (macro from module_macros.hpp) */                                   \
-        CORE_START_MODULE_GUTS( CAT_3(MODEL,_,PARAMETERISATION) )              \
+        CORE_START_MODULE_COMMON( CAT_3(MODEL,_,PARAMETERISATION) )            \
                                                                                \
         /* Model lineage                                                       
            Note: each parameterisation is automatically marked as a child of 
@@ -209,7 +213,13 @@ namespace GAMBIT{
         /* Runtime addition of lineage vector and isdescendantof function to 
            global databases */                                                 \
         void rt_addmodeltoDB() {                                               \
-          allmodelnames.push_back(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)));   \
+          allmodelnames.push_back(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))); \
+          }                                                                    \
+                                                                               \
+        /* ///TODO: need to change this to allow multiple parents */           \
+        void rt_addparents() {                                                 \
+          parentsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))].push_back(     \
+                                                          STRINGIFY(PARENT) ); \
           }                                                                    \
                                                                                \
         void rt_addlineage() {                                                 \
@@ -249,6 +259,7 @@ namespace GAMBIT{
         namespace Ini                                                          \
         {                                                                      \
           ini_code AddModel (&rt_addmodeltoDB);                                \
+          ini_code AddParents (&rt_addparents);                                \
           ini_code AddLineage (&rt_addlineage);                                \
           ini_code AddDescFunc (&rt_addisdescendantof);                        \
           ini_code AddAnceFunc (&rt_addisancestorof);                          \
@@ -574,7 +585,7 @@ namespace GAMBIT{
     {                                                                          \
      namespace MODULE                                                          \
      {                                                                         \
-      DEPENDENCY_COMMON_1_GUTS(DEP, TYPE, MODULE, FUNCTION)                    \
+      DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                         \
                                                                                \
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
       template <>                                                              \

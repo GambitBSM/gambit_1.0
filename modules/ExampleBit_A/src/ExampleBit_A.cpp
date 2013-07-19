@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include <ExampleBit_A_rollcall.hpp>
+#include <math.h>
 
 namespace GAMBIT {
 
@@ -76,6 +77,50 @@ namespace GAMBIT {
       Dep::test_parent_I_parameters->print();
       
     }
+    
+    // Helper function: not wrapped in rollcall header
+    // (un-normalised gaussian log-likelihood)
+    double logf (double x, double mu, double sig)
+      {
+        return pow(x-mu, 2) / (2*pow(sig, 2));
+      }
+      
+    // Likelihood function for fitting the population parameters of a
+    // normal distribution (with hard-coded "observations")
+    void normaldist_loglike (double &result)
+    {
+      using namespace SafePointers::normaldist_loglike;
+      const ModelParameters &p = *Dep::NormalDist_I_parameters;
+      double mu    = p["mu"];
+      double sigma = p["sigma"];
+      
+      //double muTrue = 20;   // Actually these are irrelevant since I just
+      //double sigmaTrue = 3; // made up the data rather than sampling.
+      
+      // Say we have a sample of 20 drawn from a normal distribution with
+      // parameters muTrue and sigmaTrue. Let the sample mean and standard
+      // deviation be as follows (this is our data):
+      double N = 20;
+      double samples [] = { 
+        21.32034213,  20.39713359,  19.27957134,  19.81839231,
+        20.89474358,  20.11058756,  22.38214557,  21.41479798,
+        23.49896999,  17.55991187,  24.9921142 ,  23.90166585,
+        20.97913273,  18.59180551,  23.49038072,  19.08201714,
+        21.19538797,  16.42544039,  18.93568891,  22.40925288 
+        };
+    
+      double loglTotal;
+      
+      // The loglikelihood value for the hypothesised parameters is then:
+      for (int i=0; i <= N; ++i)
+      {
+        //std::cout<<samples[i]<<mu<<sigma<<std::endl;
+        loglTotal += logf(samples[i], mu, sigma);
+      }
+      
+      result = loglTotal;
+    }  
+
   }
 
 }

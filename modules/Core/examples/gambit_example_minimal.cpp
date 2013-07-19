@@ -28,8 +28,8 @@
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
-//#include <gambit_scan.hpp>
-//#include <crapsample.hpp>
+#include <gambit_scan.hpp>
+#include <crapsample.hpp>
 
 using namespace GAMBIT;
 
@@ -69,11 +69,15 @@ void beispiel(const char* inifilename)
   dependencyResolver.resolveNow();
   
   //Let's run the scanner!
-  //Gambit::Scanner::Gambit_Scanner *scanner = new CrapSampler(dependencyResolver, activemodelFunctorMap, iniFile);
-  //scanner->Run();
+  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
+  scanner->Run();
 
   // Check that all requested models are used for at least one computation
   modelClaw.checkPrimaryModelFunctorUsage();
+
+  // Create a graph of the available model hierarchy. Currently for 
+  // visualisation purposes only.
+  modelClaw.learnModelHierarchy(models::parentsDB);
 
   // Run 100 times
 
@@ -106,9 +110,10 @@ void beispiel(const char* inifilename)
         // use it to set its parameters
         functorPtr->getcontentsPtr()->setValues(parametermaps[modelname]);
         
+        // Test setting an invalid value
+        //functorPtr->getcontentsPtr()->setValue("Not defined!", 5.67);
     }
   
-    cout << endl;
   }
 
 }

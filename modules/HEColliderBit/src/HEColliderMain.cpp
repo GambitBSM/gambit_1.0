@@ -31,12 +31,16 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <numeric>
+
+#ifdef ARCHIVE
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/lexical_cast.hpp"
+#endif
 
 #include "omp.h"
-#define MAIN_SHARED counter,slhaFileName,delphesConfigFile,myDelphes
-#define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,temp,myPythia
+#define MAIN_SHARED slhaFileName,delphesConfigFile,myDelphes
+#define MAIN_PRIVATE genEvent,recoEvent,myPythia
 
 using namespace std;
 
@@ -44,12 +48,14 @@ using namespace std;
 namespace GAMBIT {
   namespace HEColliderBit {
 
-    struct Pythia8Thread {
-      Pythia8Thread(const string& name, double xs, const vector<string>& procs)
-        : name(name), xsec(xs), processes(procs) { }
+    struct SubprocessGroup {
+      SubprocessGroup()
+        : xsec(-1) { }
+      SubprocessGroup(double xs, const vector<string>& procs)
+        : xsec(xs), processes(procs) { }
       void add_analysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
-      string name;
       double xsec;
+      //string name;
       // double nevents;
       /// @todo Calc effective lumi?
       /// @todo Add some metric of CPU cost per event for this process type?
@@ -64,15 +70,11 @@ namespace GAMBIT {
 int main()
 {
   // Basic setup
+  /// @todo Model info including SLHA will need to come from ModelBit
   const string slhaFileName = "sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
+  /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
   const int NEVENTS = 10000;
-
-  // Variables used during parallelization
-  string temp;
-  ofstream outFile;
-  boost::archive::text_oarchive* outArchive;
-  int counter;
 
   // For event generation
   GAMBIT::HEColliderBit::Pythia8Backend* myPythia;
@@ -89,14 +91,14 @@ int main()
   /// @todo Use fast lookup of interpolated NLO subprocess cross-sections to do this
   /// @note Hard-coded for now, so I can do *something*
   /// @todo Hard coding of nthread assignment calc: yuck, yuck, yuck! Generalise to containers of subprocesses
-  GAMBIT::HEColliderBit::Pythia8Thread SP_GLUINO("g", 0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
-  GAMBIT::HEColliderBit::Pythia8Thread SP_SQUARK("q", 0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
-  GAMBIT::HEColliderBit::Pythia8Thread SP_GAUGINO("X", 0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+  map<string, GAMBIT::HEColliderBit::SubprocessGroup> sp_groups;
+  sp_groups["g~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
+  sp_groups["q~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
+  sp_groups["X~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
 
   // Bind subprocesses to analysis pointers
-  SP_GLUINO.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
-  SP_SQUARK.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
-  SP_GAUGINO.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+  for (auto& sp_group : sp_groups)
+    sp_group.second.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
 
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
@@ -104,17 +106,24 @@ int main()
   ///
   /// @todo Don't want to round any processes down to 0 threads... unless really
   /// negligible: need to check rel size > some threshold.
+  ///
+  /// @todo Need to make sure that there are at least as many threads as there are subprocess groups
+  /// with non-negligible cross-sections (modulo the analysis acceptance point below).
+  ///
+  /// @note Needs even more complexity when we want to run different analyses
+  /// with high acceptances for low-xsec subprocesses.
   const int NUM_THREADS = omp_get_max_threads();
-  // cout << "Total #threads = " << NUM_THREADS << endl;
-  // const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
-  vector<GAMBIT::HEColliderBit::Pythia8Thread> process_cfgs; process_cfgs.reserve(NUM_THREADS);
-  double total_xsec = SP_GLUINO.xsec + SP_SQUARK.xsec + SP_GAUGINO.xsec;
-  for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GLUINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GLUINO);
-  for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_SQUARK.xsec / total_xsec); ++i) process_cfgs.push_back(SP_SQUARK);
-  for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GAUGINO);
-  // cout << "GLUINO #threads = " << round(NUM_THREADS * SP_GLUINO.xsec / total_xsec) << endl;
-  // cout << "SQUARK #threads = " << round(NUM_THREADS * SP_SQUARK.xsec / total_xsec) << endl;
-  // cout << "GAUGINO #threads = " << round(NUM_THREADS * SP_GAUGINO.xsec / total_xsec) << endl;
+  cout << "Total #threads = " << NUM_THREADS << endl;
+  const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
+  vector<GAMBIT::HEColliderBit::SubprocessGroup> thread_cfgs; thread_cfgs.reserve(NUM_THREADS);
+  double total_xsec = 0;
+  for (auto& sp_group : sp_groups) total_xsec += sp_group.second.xsec;
+  for (auto& sp_group : sp_groups) {
+    const size_t sp_group_num_threads = (size_t) round(NUM_THREADS * sp_group.second.xsec / total_xsec);
+    cout << sp_group.first << " #threads = " << sp_group_num_threads << endl;
+    for (size_t i = 0; i < sp_group_num_threads; ++i)
+      thread_cfgs.push_back(sp_group.second);
+  }
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
@@ -122,21 +131,22 @@ int main()
     const int NTHREAD = omp_get_thread_num();
     myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(NTHREAD);
     myPythia->set("SLHA:file", slhaFileName);
-    for (const string& p : process_cfgs[NTHREAD].processes)
+    for (const string& p : thread_cfgs[NTHREAD].processes)
       myPythia->set(p, true);
 
+    #ifdef ARCHIVE
     // Persistency config
-    temp = "tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat";
-    outFile.open(temp.c_str());
-    outArchive = new boost::archive::text_oarchive(outFile);
+    ofstream outFile("tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat");
+    boost::archive::text_oarchive outArchive(outFile);
+    #endif
 
     /// @todo Now need to convert this because the threads are not running the
     /// same things... and we might want some threads to run more events than
     /// others, if their process is more CPU-expensive
     cout << " The number of events to process is " << NEVENTS << endl;
-    #pragma omp for schedule(guided)
-    for (counter = 0; counter < NEVENTS; counter++)
-    {
+    //#pragma omp for schedule(guided)
+    int counter = 0;
+    for (counter = 0; counter < num_events_per_thread; counter++) {
       genEvent.clear();
       recoEvent.clear();
       myPythia->nextEvent(genEvent);
@@ -145,21 +155,27 @@ int main()
         myDelphes->processEvent(genEvent, recoEvent);
       }
       // Run all attached analyses
-      for (shared_ptr<GAMBIT::Analysis> ana : process_cfgs[NTHREAD].analyses)
+      for (shared_ptr<GAMBIT::Analysis> ana : thread_cfgs[NTHREAD].analyses)
         ana->analyze(recoEvent);
-      // Write recoEvent instance to file
-      (*outArchive) << recoEvent;
+
+      #ifdef ARCHIVE
+      // Archive recoEvent instance to file
+      outArchive << recoEvent;
+      #endif
     }
-    cout << endl;
-    delete outArchive;
+    cout << "Thread #" << NTHREAD << " has run " << counter << " events" << endl;
+
+    #ifdef ARCHIVE
     outFile.close();
+    #endif
+
     delete myPythia;
   } // end omp parallel block
 
-  /// @todo Generalize
-  SP_GLUINO.analyses[0]->finalize();
-  SP_SQUARK.analyses[0]->finalize();
-  SP_GAUGINO.analyses[0]->finalize();
+  for (auto& sp_group : sp_groups) {
+    cout << "Finalizing " << sp_group.first << endl;
+    sp_group.second.analyses[0]->finalize();
+  }
   /// @todo Combine results from each subprocess with appropriate target NLO xsecs applied
   //cout << "LIKELIHOOD = " << ana->likelihood() << endl;
 

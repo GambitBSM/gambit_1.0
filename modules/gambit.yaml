@@ -18,10 +18,23 @@ m1:
   model: CMSSM_I
   fixed: true
 
+m2:
+  range: [2, 4.5]
+  model: CMSSM_I
+  fixed: true
+
+m3:
+  range: [2, 4.5]
+  model: CMSSM_I
+  fixed: true
+
 ###############################
 --- # Observables of interest
 ###############################
 
+# - purpose:      Likelihood
+#   capability:   RD_oh2
+# 
 - purpose:      Likelihood
   capability:   nevents_postcuts
   type:         ""

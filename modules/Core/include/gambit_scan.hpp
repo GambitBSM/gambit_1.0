@@ -27,7 +27,7 @@
 #include <graphs.hpp>
 #include <functors.hpp>
 
-namespace Gambit
+namespace GAMBIT
 {
 	namespace Scanner
 	{
@@ -46,7 +46,7 @@ namespace Gambit
 			std::string name;
 			
 		public:
-			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &inifile, std::string name) 
+			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name) 
 					: dependencyResolver(&a), name(name)
 			{
 				functions = iniFile.getValue<std::vector<std::string>>(name, "functions");
@@ -54,12 +54,12 @@ namespace Gambit
 				for(std::map<std::string, primary_model_functor *>::iterator it = activemodelFunctorMap.begin(); it != activemodelFunctorMap.end(); it++) 
 				{
 					//it->first = model name, it->second = functor pointer
-					std::vector <std::string> paramkeys = functorPtr->getcontentsPtr()->getKeys();
+					std::vector <std::string> paramkeys = it->second->getcontentsPtr()->getKeys();
 					for (std::vector<std::string>::iterator it2 = paramkeys.begin(); it2 != paramkeys.end(); ++it2)
 					{
 						string name = it->first + string("::") + *it2;
-						functors[name]->first = *it2;
-						functors[name]->second = it->second;
+						functors[name].first = *it2;
+						functors[name].second = it->second;
 					}
 				}
 				
@@ -86,12 +86,23 @@ namespace Gambit
 			void InputParameters (std::vector<double> &vec) 
 			{
 				std::vector<double>::iterator it2 = vec.begin();
-				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2);
-					functors[*it]->second->getcontentsPtr()->setValue(functors[*it]->first, *it2)
+				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2)
+        {
+          cout << "Setting variable " << functors[*it].first;
+          cout << " with " << *it2 << endl;
+					functors[*it].second->getcontentsPtr()->setValue(functors[*it].first, *it2);
+        }
 			}
 			
-			void CalcPropose(Graphs::VertexID &it) {dependencyResolver->calcPropose(it);}
-			double GetPropose(Graphs::VertexID &it) {dependencyResolver->getPropose(it);}
+			void CalcPropose(Graphs::VertexID &it) 
+      {
+        dependencyResolver->calcObsLike(it);
+      }
+
+			double GetPropose(Graphs::VertexID &it) 
+      {
+        return dependencyResolver->getObsLike(it);
+      }
 			
 			const std::string Name() const {return name;}
 			
@@ -100,7 +111,7 @@ namespace Gambit
 			virtual int Run() = 0;
 			
 			friend class Scanner_Function_Base;
-		}
+		};
 		
 		class Scanner_Function_Base
 		{
@@ -113,16 +124,21 @@ namespace Gambit
 			{
 				vertices = parent->dependencyResolver->getObsLikeOrder();
 				int size = 0;
-				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin; it != vertices.end(); ++it)
+				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
 				{
-					if (parent->dependencyResolver->getIniEntry(*it)).obsType == functions[funcNum])
+          cout << parent->functions[funcNum] << endl;
+					cout << parent->dependencyResolver->getIniEntry(*it)->purpose << endl;
+					if (parent->dependencyResolver->getIniEntry(*it)->purpose == parent->functions[funcNum])
 					{
+            cout << parent->functions[funcNum] << endl;
 						*it2 = *it;
 						it2++;
 						size++;
 					}
 				}
+        cout << size << endl;
 				vertices.resize(size);
+        cout << vertices << endl;
 			}
 		};
 		
@@ -147,14 +163,18 @@ namespace Gambit
 			
 			virtual double operator () (std::vector<double> &in)
 			{
+				double ret = 0;
 				parent->InputParameters(in);
 				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-				double ret = 0;
+        std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 				{
+          std::cout << "__________calculating vertex " << *it << std::endl;
 					parent->CalcPropose(*it);
+          std::cout << "----------done " << std::endl;
 					//dependencyResolver.notifyOfInvalidation(*it);
-					double ret += parent->GetPropose(*it);
+					ret += parent->GetPropose(*it);
+          std::cout << "...collected double" << endl;
 				}
 				
 				parent->Reset();

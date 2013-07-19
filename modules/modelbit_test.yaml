@@ -10,25 +10,52 @@
 --- # Input parameters
 ########################
 
-m0:
-  range: [1, 3.5]
-  fixed: true
-
-m1:
+# m0:
+#   range: [1, 3.5]
+#   model: CMSSM
+# 
+# m1:
+#   range: [2, 4.5]
+#   model: CMSSM
+M0:
   range: [2, 4.5]
+  model: CMSSM_I
+M12:
+  range: [2, 4.5]
+  model: CMSSM_I
+A0:
+  range: [2, 4.5]
+  model: CMSSM_I
+tanb:
+  range: [2, 4.5]
+  model: CMSSM_I
+sgnmu:
+  range: [2, 4.5]
+  model: CMSSM_I
+Mstop:
+  range: [2, 4.5]
+  model: CMSSM_I
+
+mu:
+  range: [0, 50]
+  model: NormalDist_I
+sigma:
+  range: [0, 10]
+  model: NormalDist_I
 
 ###############################
 --- # Observables of interest
 ###############################
 
-- obsType:      Observable
+- purpose:      Observable
   capability:   damu
   type:         ""
   function:     ""
   module:       ""
 
-- obsType:      Observable
-  capability:   nevents_postcuts
+  
+- purpose:      Likelihood
+  capability:   normaldist_loglike
   type:         ""
   function:     ""
   module:       ""
@@ -47,6 +74,10 @@ m1:
 ##########################
 
 key: param
-model: CMSSM_I
+model: NormalDist_I
 model2: CMSSM_I
+crapsampler:
+  functions: [Likelihood]
+  point_number: 3
+  output_file: test.txt
 

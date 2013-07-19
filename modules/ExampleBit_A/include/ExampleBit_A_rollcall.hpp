@@ -97,6 +97,17 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY normaldist_loglike   // Test likelihood: normal distribution
+  START_CAPABILITY
+  
+    #define FUNCTION normaldist_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(NormalDist_I_parameters, ModelParameters)      // to be replaced with specialised macro (probably just a wrapper for DEPENDENCY which automatically appends "_parameters" to a model name and attached the type (ModelParameters)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
 #undef MODULE
 
 
