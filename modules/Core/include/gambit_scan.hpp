@@ -96,7 +96,7 @@ namespace GAMBIT
 			
 			void CalcPropose(Graphs::VertexID &it) 
       {
-        return dependencyResolver->calcObsLike(it);
+        dependencyResolver->calcObsLike(it);
       }
 
 			double GetPropose(Graphs::VertexID &it) 
@@ -171,8 +171,10 @@ namespace GAMBIT
 				{
           std::cout << "__________calculating vertex " << *it << std::endl;
 					parent->CalcPropose(*it);
+          std::cout << "----------done " << std::endl;
 					//dependencyResolver.notifyOfInvalidation(*it);
 					ret += parent->GetPropose(*it);
+          std::cout << "...collected double" << endl;
 				}
 				
 				parent->Reset();
