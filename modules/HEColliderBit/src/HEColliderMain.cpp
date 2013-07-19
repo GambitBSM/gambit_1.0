@@ -31,12 +31,15 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+
+#ifdef ARCHIVE
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/lexical_cast.hpp"
+#endif
 
 #include "omp.h"
-#define MAIN_SHARED counter,slhaFileName,delphesConfigFile,myDelphes
-#define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,temp,myPythia
+#define MAIN_SHARED slhaFileName,delphesConfigFile,myDelphes
+#define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,myPythia
 
 using namespace std;
 
@@ -69,10 +72,8 @@ int main()
   const int NEVENTS = 10000;
 
   // Variables used during parallelization
-  string temp;
   ofstream outFile;
   boost::archive::text_oarchive* outArchive;
-  int counter;
 
   // For event generation
   GAMBIT::HEColliderBit::Pythia8Backend* myPythia;
@@ -106,7 +107,7 @@ int main()
   /// negligible: need to check rel size > some threshold.
   const int NUM_THREADS = omp_get_max_threads();
   // cout << "Total #threads = " << NUM_THREADS << endl;
-  // const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
+  const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
   vector<GAMBIT::HEColliderBit::Pythia8Thread> process_cfgs; process_cfgs.reserve(NUM_THREADS);
   double total_xsec = SP_GLUINO.xsec + SP_SQUARK.xsec + SP_GAUGINO.xsec;
   for (size_t i = 0; i < (size_t) round(NUM_THREADS * SP_GLUINO.xsec / total_xsec); ++i) process_cfgs.push_back(SP_GLUINO);
@@ -125,18 +126,19 @@ int main()
     for (const string& p : process_cfgs[NTHREAD].processes)
       myPythia->set(p, true);
 
+    #ifdef ARCHIVE
     // Persistency config
-    temp = "tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat";
-    outFile.open(temp.c_str());
+    outFile.open("tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat");
     outArchive = new boost::archive::text_oarchive(outFile);
+    #endif
 
     /// @todo Now need to convert this because the threads are not running the
     /// same things... and we might want some threads to run more events than
     /// others, if their process is more CPU-expensive
     cout << " The number of events to process is " << NEVENTS << endl;
-    #pragma omp for schedule(guided)
-    for (counter = 0; counter < NEVENTS; counter++)
-    {
+    //#pragma omp for schedule(guided)
+    int counter = 0;
+    for (counter = 0; counter < num_events_per_thread; counter++) {
       genEvent.clear();
       recoEvent.clear();
       myPythia->nextEvent(genEvent);
@@ -147,12 +149,19 @@ int main()
       // Run all attached analyses
       for (shared_ptr<GAMBIT::Analysis> ana : process_cfgs[NTHREAD].analyses)
         ana->analyze(recoEvent);
+
+      #ifdef ARCHIVE
       // Write recoEvent instance to file
       (*outArchive) << recoEvent;
+      #endif
     }
-    cout << endl;
+    cout << "Thread #" << NTHREAD << " has run " << counter << " events" << endl;
+
+    #ifdef ARCHIVE
     delete outArchive;
     outFile.close();
+    #endif
+
     delete myPythia;
   } // end omp parallel block
 
