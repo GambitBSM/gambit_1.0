@@ -749,7 +749,8 @@
         map_bools[STRINGIFY(CAT(MODEL,FUNCTION))] =                            \
          &requires<ModelTags::MODEL, Tags::FUNCTION>;                          \
         iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
-        Functown::FUNCTION.setDependency(STRINGIFY(MODEL),"ModelParameters",   \
+        Functown::FUNCTION.setDependency(                                      \
+            STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",               \
          &resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>);               \
       }                                                                        \
                                                                                \
