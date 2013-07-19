@@ -8,8 +8,8 @@ DELPHESDIR := $(DELPSDIR)
 BOOST :=$(BOOSTDIR)
 
 
-CXX := g++
-CXXFLAGS := -std=c++11 -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+CXX := /opt/gcc-4.8.1/bin/g++-4.8
+CXXFLAGS := -std=c++0x -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
 
 UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
 DELPHESHEADERS := Delphes3Backend.hpp
