@@ -20,8 +20,13 @@
 // * Activate primary_model_functors according to the model(s) being scanned
 // * Check whether all active primary_model_functors are actually used in the
 //   the dependency graph
+// * Create and track a graph of the model hierarchy, for both visualisation
+//   and for relationship checks (needed in order to activate conditional
+//   dependencies on models)
 
 #include <modelbit.hpp>
+#include <boost/graph/graphviz.hpp>
+
 
 namespace GAMBIT
 {
@@ -30,11 +35,38 @@ namespace GAMBIT
 
   namespace ModelBit
   {
+    /// Helper class for drawing the model hierarchy graph
+    class labelWriter
+    {
+      private:
+        const MasterGraphType * myGraph;
+      public:
+        labelWriter(const MasterGraphType * modelGraph) : myGraph(modelGraph) {};
+        void operator()(std::ostream& out, const VertexID& v) const
+        {
+          if ( (*myGraph)[v]->status() == 2 )
+          {
+	          out << "[fillcolor=\"red\", style=\"rounded,filled\", shape=box,";
+            out << "label=< ";
+            out << "<font point-size=\"20\" color=\"black\">" << (*myGraph)[v]->origin() << "</font><br/>";
+          } else {
+            out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
+            out << "label=< ";
+            out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->origin() << "</font><br/>";
+          } 
+          /*out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";
+          out <<  "Function: " << (*myGraph)[v]->name() << "<br/>";
+          out <<  "Module: " << (*myGraph)[v]->origin();*/
+          out << ">]";
+        }
+    };
+    
     //
     /// ModelFunctorClaw function definitions
     /// 
     /// Modelbit object which performs initialisation and checking operations
     /// on the global primary_model_functor list.
+    /// Also creates a graph of the model hierarchy for visualisation purposes.
 
     // Public functions and data members
     
@@ -43,7 +75,11 @@ namespace GAMBIT
     /// Hooks the "claw" into the global primary model functor list
     ModelFunctorClaw::ModelFunctorClaw (std::vector<primary_model_functor *> 
                                                   &globalPrimaryModelFunctors)
-      : _globalPrimaryModelFunctors(globalPrimaryModelFunctors) {}
+      : _globalPrimaryModelFunctors(globalPrimaryModelFunctors) 
+    {
+      // Add all primary model functors to the model hierarchy graph
+      this->addFunctorsToGraph(_globalPrimaryModelFunctors);
+    }
     
     /// Model activation function
     ///
@@ -118,12 +154,71 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       
     } //end checkPrimaryModelFunctorUsage
 
+    /// Add model functors to the modelGraph
+    void ModelFunctorClaw::addFunctorsToGraph(
+                    std::vector<primary_model_functor *> &functorList
+                    )
+    {
+      // - model functors go into masterGraph
+      for (std::vector<primary_model_functor *>::const_iterator
+          it  = functorList.begin();
+          it != functorList.end(); ++it)
+      {
+        //if ( (*it)->status() != 0 ) 
+        boost::add_vertex(*it, this->modelGraph);
+      
+      }
+    
+    }
+    
+    typedef std::map<std::string, VertexID>::iterator vertexIDmap_it;
 
-    /// Model congruency checking functions
-    ///
-    /// During model registration we have created a series of "lineage" vectors,
-    /// one for each model, detailing their ancestry. These functions are tools
-    /// for checking whether one model is a descendant of another, or whether 
-    /// one model is an ancestor of another.
+    /// Figure out relationships between primary model functors    
+    void ModelFunctorClaw::learnModelHierarchy (map_of_vectors &parentsDB)
+    {
+      boost::graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
+      std::map<std::string, VertexID> vertexIDmap;
+      std::string model;
+      
+      // Loop over all vertices (models) in modelGraph and create a map from
+      // model names to vertex IDs.
+      for (boost::tie(vi, vi_end) = boost::vertices(modelGraph); 
+              vi != vi_end; ++vi) 
+      {
+        vertexIDmap[(*modelGraph[*vi]).origin()] = *vi;
+      }
+      
+      // Loop over all vertices (models) in vertexIDmap, look up the 'parents' 
+      // of each one in parentsDB, and add an edge from parent to child in the
+      // model graph.
+      //
+      for (vertexIDmap_it vimap = vertexIDmap.begin(); 
+              vimap != vertexIDmap.end(); vimap++) 
+      {
+        model = vimap->first;
+        
+        std::cout<<"parents:"<<std::endl;
+        std::cout<<model<<"; parents: "<<parentsDB[model]<<std::endl;;
+        
+        // Loop through vector of parents of 'model'
+        for(std::vector<std::string>::const_iterator 
+                    parent = parentsDB[model].begin(); 
+                    parent!= parentsDB[model].end(); parent++) 
+        {
+          if (*parent != "model_base") // This is not a real model!
+          {
+            // Add edge between parent and child
+            std::cout<<model<<"; parent: "<<*parent<<std::endl;
+            boost::add_edge(vertexIDmap[*parent], vertexIDmap[model], modelGraph);
+          }
+        }
+      }
+      
+      // Generate graphviz plot
+      std::ofstream outf("modelgraph.gv");
+      write_graphviz(outf, modelGraph, labelWriter(&modelGraph)); 
+      
+    } //end learnHierarchy
+    
   }
 }

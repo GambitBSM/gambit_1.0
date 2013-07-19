@@ -48,6 +48,15 @@ typedef std::map<std::string, double> parameterMap;
 #undef PARENT
 #undef MODEL
 
+#define MODEL NormalDist
+#define PARENT model_base
+  #define PARAMETERISATION I
+  START_PARAMETERISATION
+  DEFINEPARS(mu,sigma)
+  #undef PARAMETERISATION
+#undef PARENT
+#undef MODEL
+
 #define MODEL MSSM
 #define PARENT test_parent_I /* We may define a different parent for
   different parameterisations if we like. */

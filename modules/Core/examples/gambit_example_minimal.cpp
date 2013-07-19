@@ -75,6 +75,10 @@ void beispiel(const char* inifilename)
   // Check that all requested models are used for at least one computation
   modelClaw.checkPrimaryModelFunctorUsage();
 
+  // Create a graph of the available model hierarchy. Currently for 
+  // visualisation purposes only.
+  modelClaw.learnModelHierarchy(models::parentsDB);
+
   // Run 100 times
 
   srand (time(NULL));    // initialize random seed
@@ -106,9 +110,11 @@ void beispiel(const char* inifilename)
         // use it to set its parameters
         functorPtr->getcontentsPtr()->setValues(parametermaps[modelname]);
         
+        // Test setting an invalid value
+        //functorPtr->getcontentsPtr()->setValue("Not defined!", 5.67);
     }
   
-    cout << endl;
+    //cout << endl;
   }
 
 }

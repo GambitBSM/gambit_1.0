@@ -32,6 +32,12 @@ m1:
   type:         ""
   function:     ""
   module:       ""
+  
+- obsType:      Likelihood
+  capability:   normaldist_loglike
+  type:         ""
+  function:     ""
+  module:       ""
 
 #########################
 --- # Auxiliary entries
@@ -48,5 +54,5 @@ m1:
 
 key: param
 model: CMSSM_I
-model2: CMSSM_I
+model2: NormalDist_I
 
