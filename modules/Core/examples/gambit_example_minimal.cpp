@@ -114,7 +114,6 @@ void beispiel(const char* inifilename)
         //functorPtr->getcontentsPtr()->setValue("Not defined!", 5.67);
     }
   
-    //cout << endl;
   }
 
 }

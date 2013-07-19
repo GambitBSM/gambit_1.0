@@ -114,7 +114,7 @@ namespace GAMBIT {
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)
       {
-        std::cout<<samples[i]<<mu<<sigma<<std::endl;
+        //std::cout<<samples[i]<<mu<<sigma<<std::endl;
         loglTotal += logf(samples[i], mu, sigma);
       }
       
