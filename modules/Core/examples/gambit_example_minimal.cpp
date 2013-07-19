@@ -28,8 +28,8 @@
 #include <map_extensions.hpp>
 #include <master_like.hpp>
 #include <yaml_parser.hpp>
-//#include <gambit_scan.hpp>
-//#include <crapsample.hpp>
+#include <gambit_scan.hpp>
+#include <crapsample.hpp>
 
 using namespace GAMBIT;
 
@@ -69,8 +69,8 @@ void beispiel(const char* inifilename)
   dependencyResolver.resolveNow();
   
   //Let's run the scanner!
-  //Gambit::Scanner::Gambit_Scanner *scanner = new CrapSampler(dependencyResolver, activemodelFunctorMap, iniFile);
-  //scanner->Run();
+  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
+  scanner->Run();
 
   // Check that all requested models are used for at least one computation
   modelClaw.checkPrimaryModelFunctorUsage();

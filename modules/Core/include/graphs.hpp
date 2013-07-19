@@ -76,6 +76,8 @@ namespace GAMBIT
 
         double getObsLike(VertexID);
 
+        const IniParser::ObservableType * getIniEntry(VertexID);
+
         void notifyOfInvalidation(VertexID);
 
         void resetAll();
