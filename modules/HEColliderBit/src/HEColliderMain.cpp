@@ -39,7 +39,7 @@
 
 #include "omp.h"
 #define MAIN_SHARED slhaFileName,delphesConfigFile,myDelphes
-#define MAIN_PRIVATE genEvent,recoEvent,outFile,outArchive,myPythia
+#define MAIN_PRIVATE genEvent,recoEvent,myPythia
 
 using namespace std;
 
@@ -67,13 +67,11 @@ namespace GAMBIT {
 int main()
 {
   // Basic setup
+  /// @todo Model info including SLHA will need to come from ModelBit
   const string slhaFileName = "sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
+  /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
   const int NEVENTS = 10000;
-
-  // Variables used during parallelization
-  ofstream outFile;
-  boost::archive::text_oarchive* outArchive;
 
   // For event generation
   GAMBIT::HEColliderBit::Pythia8Backend* myPythia;
@@ -128,8 +126,8 @@ int main()
 
     #ifdef ARCHIVE
     // Persistency config
-    outFile.open("tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat");
-    outArchive = new boost::archive::text_oarchive(outFile);
+    ofstream outFile("tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat");
+    boost::archive::text_oarchive outArchive(outFile);
     #endif
 
     /// @todo Now need to convert this because the threads are not running the
@@ -151,14 +149,13 @@ int main()
         ana->analyze(recoEvent);
 
       #ifdef ARCHIVE
-      // Write recoEvent instance to file
-      (*outArchive) << recoEvent;
+      // Archive recoEvent instance to file
+      outArchive << recoEvent;
       #endif
     }
     cout << "Thread #" << NTHREAD << " has run " << counter << " events" << endl;
 
     #ifdef ARCHIVE
-    delete outArchive;
     outFile.close();
     #endif
 
