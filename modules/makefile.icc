@@ -9,7 +9,7 @@ export
 
 CC = icc 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt -lyaml-cpp
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lyaml-cpp -lrt
 CFLAGS = -O3 -Wall -g
 
 FC = ifort
@@ -35,7 +35,7 @@ HECOLLIDERDIR = HEColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
 DOCDIR = ../doc
-# YAMLDIR = contrib/yaml-cpp-0.5.1
+YAMLDIR = contrib/yaml-cpp-0.5.1
 
 # Boost is required. Read README for details
 ifdef BOOST
@@ -61,8 +61,8 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-IDarkBit/include \
 	-IExample_SUSYspecBit/include \
 	-ITEMP_ScannerBit/include \
-	-IFlavBit/include
-	# -I$(YAMLDIR)/include
+	-IFlavBit/include \
+	-I$(YAMLDIR)/include
 
 COMMONLIBS = -lm
 
@@ -77,7 +77,7 @@ all: mh doxygen gambit_example beb_tester gambit_example_minimal
 
 clean: 
 	@echo cleaning
-	# cd contrib/yaml-cpp-0.5.1; make -f makefile.icc clean
+	cd contrib/yaml-cpp-0.5.1; make -f makefile.icc clean
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -f _*.txt $(DOCDIR)/Manual.html
 	@rm -rf $(DOCDIR)/html
@@ -165,12 +165,12 @@ ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 DarkBit/build/TinyDarkBit.o DarkBit/build/backend-darksusy.o FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
-TEMP_ScannerBit/build/TEMP_ScannerBit.o
-# $(YAMLDIR)/yaml-cpp.a
+TEMP_ScannerBit/build/TEMP_ScannerBit.o\
+$(YAMLDIR)/yaml-cpp.a
 
-# $(YAMLDIR)/yaml-cpp.a:
-# 	@echo ___________Building YAML:
-# 	cd contrib/yaml-cpp-0.5.1; make -f makefile.icc
+$(YAMLDIR)/yaml-cpp.a:
+	@echo ___________Building YAML:
+	cd contrib/yaml-cpp-0.5.1; make -f makefile.icc
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(ALLINC)
 	@echo ___________Compiling $<:
