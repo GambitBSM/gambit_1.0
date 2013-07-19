@@ -79,6 +79,7 @@ START_MODULE
 
     #define FUNCTION exampleCharge          // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
+    //ALLOW_MODELS(MSSM, twoHDM, UED)         // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
