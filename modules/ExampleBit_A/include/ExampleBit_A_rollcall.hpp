@@ -92,7 +92,7 @@ START_MODULE
   
     #define FUNCTION damu
     START_FUNCTION(double)
-    ALLOW_MODEL(test_parent_I)
+    ALLOW_MODELS(test_parent_I)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -102,7 +102,7 @@ START_MODULE
   
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    ALLOW_MODEL(NormalDist_I)
+    ALLOW_MODELS(NormalDist_I, test_parent_I)
     #undef FUNCTION
 
   #undef CAPABILITY

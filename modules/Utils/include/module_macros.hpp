@@ -167,15 +167,15 @@
 /// If ALLOW_MODELS is not present, all models are considered to be
 /// allowed.
 #define ALLOW_MODELS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8) ALLOW_MODEL(_9) ALLOW_MODEL(_10)
-#define ALLOW_MODELS_9 (_1, _2, _3, _4, _5, _6, _7, _8, _9)      ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8) ALLOW_MODEL(_9) 
-#define ALLOW_MODELS_8 (_1, _2, _3, _4, _5, _6, _7, _8)          ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8)
-#define ALLOW_MODELS_7 (_1, _2, _3, _4, _5, _6, _7)              ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7)
-#define ALLOW_MODELS_6 (_1, _2, _3, _4, _5, _6)                  ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6)
-#define ALLOW_MODELS_5 (_1, _2, _3, _4, _5)                      ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5)
-#define ALLOW_MODELS_4 (_1, _2, _3, _4)                          ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) 
-#define ALLOW_MODELS_3 (_1, _2, _3)                              ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) 
-#define ALLOW_MODELS_2 (_1, _2)                                  ALLOW_MODEL(_1) ALLOW_MODEL(_2)  
-#define ALLOW_MODELS_1 (_1)                                      ALLOW_MODEL(_1) 
+#define ALLOW_MODELS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8) ALLOW_MODEL(_9) 
+#define ALLOW_MODELS_8(_1, _2, _3, _4, _5, _6, _7, _8)           ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8)
+#define ALLOW_MODELS_7(_1, _2, _3, _4, _5, _6, _7)               ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7)
+#define ALLOW_MODELS_6(_1, _2, _3, _4, _5, _6)                   ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6)
+#define ALLOW_MODELS_5(_1, _2, _3, _4, _5)                       ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5)
+#define ALLOW_MODELS_4(_1, _2, _3, _4)                           ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) 
+#define ALLOW_MODELS_3(_1, _2, _3)                               ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) 
+#define ALLOW_MODELS_2(_1, _2)                                   ALLOW_MODEL(_1) ALLOW_MODEL(_2)  
+#define ALLOW_MODELS_1(_1)                                       ALLOW_MODEL(_1) 
 #define ALLOW_MODELS(...)                                        VARARG(ALLOW_MODELS, __VA_ARGS__)
 
 
@@ -229,6 +229,8 @@
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; };
 /// Add a backend tag to the current namespace
 #define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; };
+/// Add a backend tag to the current namespace
+#define ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(TAG) namespace ModelTags { struct TAG; };
 /// @}
 
 
@@ -675,11 +677,126 @@
 
 /// Redirection of ALLOW_MODEL when invoked from within the core.
 #define CORE_ALLOW_MODEL(MODEL)                                                \
-  CORE_DEPENDENCY(CAT(MODEL,_parameters), ModelParameters)
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    /* Add MODEL to global set of tags of recognised models */                 \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Create a pointer to the model parameter functor. To be filled by the  \
+      dependency resolver during runtime. */                                   \
+      namespace Parameters                                                     \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          module_functor<ModelParameters>* MODEL = NULL;                       \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Create a safe pointer to the dependency result. To be filled          \
+      automatically at runtime when the dependency is resolved. */             \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Param { safe_ptr<ModelParameters> MODEL; }                 \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Resolve dependency on parameters of MODEL in FUNCTION */              \
+      template <>                                                              \
+      void resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>                \
+       (functor* params_functor)                                               \
+      {                                                                        \
+        /* First try casting the pointer passed in to a module_functor */      \
+        Parameters::FUNCTION::MODEL =                                          \
+         dynamic_cast<module_functor<ModelParameters>*>(params_functor);       \
+                                                                               \
+        /* Now test if that cast worked */                                     \
+        if (Parameters::FUNCTION::MODEL == 0)  /* It didn't; throw an error. */\
+        {                                                                      \
+          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
+          cout<<"MODULE::resolve_dependency, for model"<< endl;                \
+          cout<<"MODEL of function FUNCTION.  Attempt was to "<< endl;         \
+          cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;        \
+          cout<<params_functor->origin()<<"."<<endl;                           \
+          /** FIXME \todo throw real error here */                             \
+        }                                                                      \
+        else /* It did!  Now set the pointers to the dependency result. */     \
+        {                                                                      \
+          SafePointers::FUNCTION::Param::MODEL =                               \
+           Parameters::FUNCTION::MODEL->valuePtr();                            \
+        }                                                                      \
+                                                                               \
+      }                                                                        \
+                                                                               \
+      /* Indicate that FUNCTION requires the model parameters functor to have  \
+      be provided*/                                                            \
+      template <>                                                              \
+      bool requires<ModelTags::MODEL, Tags::FUNCTION>()                        \
+      {                                                                        \
+        return true;                                                           \
+      }                                                                        \
+                                                                               \
+      /* Set up the commands to be called at runtime to register dependency*/  \
+      template <>                                                              \
+      void rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION> ()         \
+      {                                                                        \
+        map_bools[STRINGIFY(CAT(MODEL,FUNCTION))] =                            \
+         &requires<ModelTags::MODEL, Tags::FUNCTION>;                          \
+        iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
+        Functown::FUNCTION.setDependency(STRINGIFY(MODEL),"ModelParameters",   \
+         &resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>);               \
+      }                                                                        \
+                                                                               \
+      /* Create the dependency initialisation object */                        \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(MODEL,_params_for_,FUNCTION)                            \
+         (&rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION>);          \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
 
 /// Redirection of ALLOW_MODEL when invoked from within a module.
 #define MODULE_ALLOW_MODEL(MODEL)                                              \
-  MODULE_DEPENDENCY(CAT(MODEL,_parameters), ModelParameters)
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Create a pointer to the dependency functor. To be filled by the       \
+      dependency resolver during runtime. */                                   \
+      namespace Parameters                                                     \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          extern module_functor<ModelParameters>* MODEL;                       \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Create a safe pointer to the dependency result. To be filled          \
+      automatically at runtime when the dependency is resolved. */             \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Param { extern safe_ptr<ModelParameters> MODEL; }          \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
 
 
 /// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.

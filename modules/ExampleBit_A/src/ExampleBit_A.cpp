@@ -67,14 +67,14 @@ namespace GAMBIT {
     {
       using namespace SafePointers::damu;
       // Put these in a map or some such automatically?
-      double p1 = Dep::test_parent_I_parameters->getValue("p1");
-      double p2 = Dep::test_parent_I_parameters->getValue("p2");
-      double p3 = Dep::test_parent_I_parameters->getValue("p3");
+      double p1 = Param::test_parent_I->getValue("p1");
+      double p2 = Param::test_parent_I->getValue("p2");
+      double p3 = Param::test_parent_I->getValue("p3");
       
       std::cout << "In ExampleBit_A, function damu" << std::endl;
       std::cout << "  test_parent_parameters resolved successfully!" << std::endl;
       std::cout << "  Printing values:" << std::endl;
-      Dep::test_parent_I_parameters->print();
+      Param::test_parent_I->print();
       
     }
     
@@ -90,7 +90,7 @@ namespace GAMBIT {
     void normaldist_loglike (double &result)
     {
       using namespace SafePointers::normaldist_loglike;
-      const ModelParameters &p = *Dep::NormalDist_I_parameters;
+      const ModelParameters &p = *Param::NormalDist_I;
       double mu    = p["mu"];
       double sigma = p["sigma"];
       
