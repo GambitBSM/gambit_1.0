@@ -1,21 +1,22 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  **********************************************
-//
-//  Dependency resolution with boost graph library
-//
-//  **********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Christoph Weniger <c.weniger@uva.nl>
-//  May, June, July 2013
-//  Pat Scott 
-//  May 03 2013
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Dependency resolution with boost graph library
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 May, June, July 2013
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 May, July
+///
+///  *********************************************
 
 #include <vector>
 #include <functors.hpp>
@@ -107,7 +108,7 @@ namespace GAMBIT
       else return false;
     }
 
-    // Compare backend function with backend entry in inifile
+    /// Compare backend function with backend entry in inifile
     bool compareBE(IniParser::ObservableType observable, functor* func)
     {
       for (std::vector<IniParser::ObservableType>::iterator be =
@@ -130,7 +131,7 @@ namespace GAMBIT
       return true; // everything consistent
     }
 
-    // returns a list of backend functors which match in capability and type
+    /// Return a list of backend functors which match in capability and type
     std::vector<functor *> findBackendCandidates(sspair key, std::vector<functor *> functorList)
     {
       std::vector<functor *> candidateList;
@@ -152,7 +153,7 @@ namespace GAMBIT
         labelWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
         void operator()(std::ostream& out, const VertexID& v) const
         {
-	        out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
+          out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
           out << "label=< ";
           out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->capability() << "</font><br/>";
           out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";
@@ -166,8 +167,8 @@ namespace GAMBIT
     // Public functions of DependencyResolver
     //
 
-    // Constructor. 
-    // Add module and backend functors to class internal lists.
+    /// Constructor. 
+    /// Add module and backend functors to class internal lists.
     DependencyResolver::DependencyResolver(
         std::vector<functor *> functorList,
         std::vector<functor *> backendFunctorList, 
@@ -178,7 +179,7 @@ namespace GAMBIT
       addAdhocNodes();
     }
 
-    // Main dependency resolution
+    /// Main dependency resolution
     void DependencyResolver::resolveNow()
     {
       const IniParser::ObservablesType & observables = myIniFile.getObservables();
@@ -206,7 +207,7 @@ namespace GAMBIT
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph));
     }
 
-    // List of masterGraph content
+    /// List of masterGraph content
     void DependencyResolver::printFunctorList() 
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
@@ -245,7 +246,7 @@ namespace GAMBIT
       // cout << "TOTAL: " << i << endl;
     };
 
-    // New IO routines
+    /// New IO routines
     std::vector<VertexID> DependencyResolver::getObsLikeOrder()
     {
       std::vector<VertexID> unsorted;
@@ -353,7 +354,7 @@ namespace GAMBIT
       }
     }
 
-    // Add module and backend functors to class internal lists.
+    /// Add module and backend functors to class internal lists.
     void DependencyResolver::addFunctors(
         std::vector<functor *> functorList,
         std::vector<functor *> backendFunctorList )
@@ -375,7 +376,7 @@ namespace GAMBIT
       this->myBackendFunctorList = backendFunctorList;
     }
 
-    // Resolve dependency
+    /// Resolve dependency
     std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
       DependencyResolver::resolveDependency(
         Graphs::VertexID toVertex, sspair quantity)
@@ -442,7 +443,7 @@ namespace GAMBIT
       return std::tie(depEntry, auxEntry, vertexCandidates[0]);
     }
 
-    // Set up dependency tree
+    /// Set up dependency tree
     void DependencyResolver::generateTree(
         std::queue<std::pair<sspair, Graphs::VertexID> > parQueue)
     {
@@ -510,7 +511,9 @@ namespace GAMBIT
 
         // Is fromVertex already activated?
         if ( (*masterGraph[fromVertex]).status() != 2 ) {
-          cout << "adding new module function to dependnecy tree..." << endl;
+          cout << "Adding new module function to dependency tree..." << endl;
+          masterGraph[fromVertex]->notifyOfModel("CMSSM_I");      //FIXME testing code only!!
+          masterGraph[fromVertex]->notifyOfModel("NormalDist_I"); //FIXME testing code only!!
           resolveVertexBackend(fromVertex);
           fillParQueue(&parQueue, fromVertex);
         }
@@ -521,7 +524,7 @@ namespace GAMBIT
       }
     }
 
-    // Push module function dependencies on parameter queue
+    /// Push module function dependencies on parameter queue
     void DependencyResolver::fillParQueue(
         std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
         Graphs::VertexID vertex) 
@@ -539,7 +542,7 @@ namespace GAMBIT
       }
     }
 
-    // Boost lib topological sort
+    /// Boost lib topological sort
     std::list<VertexID> DependencyResolver::run_topological_sort()
     {
       std::list<VertexID> topo_order;
@@ -547,7 +550,7 @@ namespace GAMBIT
       return topo_order;
     }
 
-    // Find auxiliary entry that matches vertex
+    /// Find auxiliary entry that matches vertex
     const IniParser::ObservableType * DependencyResolver::findIniEntry(
         Graphs::VertexID toVertex,
         const IniParser::ObservablesType &entries)
@@ -570,7 +573,7 @@ namespace GAMBIT
       }
     }
 
-    // Find observable entry that matches capability/type
+    /// Find observable entry that matches capability/type
     const IniParser::ObservableType *DependencyResolver::findIniEntry(
         sspair quantity, const IniParser::ObservablesType & entries)
     {
@@ -593,7 +596,7 @@ namespace GAMBIT
       }
     }
 
-    // Node-by-node backend resolution
+    /// Node-by-node backend resolution
     void DependencyResolver::resolveVertexBackend(VertexID vertex)
     {
       // Find relevant ini file entry

@@ -60,15 +60,24 @@ namespace GAMBIT
 
       /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
+      /// @{
       virtual double getRuntimeAverage() { return 0; }
       virtual double getInvalidationRate() { return 0; }
       virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
+      /// @}
 
-      // It may be safer to have the following things accessible 
+      // It may be safer to have some of the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
+
+      /// Setter for version
+      void setVersion(str ver) { if (this == NULL) failBigTime(); myVersion = ver; }
+      /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
+      void setStatus(int stat) { if (this == NULL) failBigTime(); myStatus = stat; }
+      /// Setter for purpose (relevant only for next-to-output functors)
+      void setPurpose(str purpose) { if (this == NULL) failBigTime(); myPurpose = purpose; }
 
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime(); return myName;       }
@@ -86,17 +95,6 @@ namespace GAMBIT
       sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
-      /// Setter for purpose (relevant only for next-to-output nodes)
-      void setPurpose(str purpose) { if (this == NULL) failBigTime(); this->myPurpose = purpose; }
-
-      /// Set method for version
-      void setVersion(str ver) { myVersion = ver; }
-
-      /// Set method for status (0 = disabled, 1 = available (default), 2 = active)
-      void setStatus(int stat) { myStatus = stat; }
-
-      /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
-      bool needs_recalculating;
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()          
@@ -146,7 +144,6 @@ namespace GAMBIT
       }
 
       /// Getter for listing model-specific conditional dependencies
-      /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
         cout << "Error.  The model_conditional_dependencies method has not been defined in this class." << endl;
@@ -176,6 +173,16 @@ namespace GAMBIT
         exit(1);
       }
 
+      /// Test whether the functor is allowed to be used with a given model 
+      bool modelAllowed(str model)
+      {
+        
+      }
+
+
+      /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
+      bool needs_recalculating;
+
     protected:
 
       /// Internal storage of the function name.
@@ -188,10 +195,13 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
-      /// myPurpose (relevant for output and next-to-output nodes)
+      /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
+
+      /// List of allowed models
+      std::vector<str> allowedModels;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime()
@@ -272,7 +282,7 @@ namespace GAMBIT
           if(usePointer)
             myValue = *myPointer;
           else
-            this->myFunction(myValue);
+            this->myFunction(myValue); //Python++??
           clock_gettime(CLOCK_MONOTONIC, &tp);
           nsec += (double)tp.tv_nsec;
           sec += (double)tp.tv_sec;
@@ -391,6 +401,15 @@ namespace GAMBIT
       /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
+        //cout<<"List of all model conditional dependencies: "<<endl;
+        //for (std::map<str, std::vector<sspair> >::iterator preit = myModelConditionalDependencies.begin() ; preit != myModelConditionalDependencies.end(); ++preit)
+        //{
+        //  cout << "Model: " << preit->first << endl;
+        //  for (std::vector<sspair>::iterator it = (preit->second).begin() ; it != (preit->second).end(); ++it)
+        //  {
+        //    cout<<it->first<<"  "<<it->second<<endl;        
+        //  }
+        //}
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
         {
           return myModelConditionalDependencies[model];
@@ -453,8 +472,20 @@ namespace GAMBIT
         dependency_map[key] = resolver;
       }
 
-      /// Add a model conditional dependency
+      /// Add a model conditional dependency for multiple models
       void setModelConditionalDependency
+       (str model, str dep, str dep_type, void(*resolver)(functor*))
+      {
+        // Split the model string and send each model to be registered
+        std::vector<str> models = delimiterSplit(model, ",");
+        for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
+        {
+          setModelConditionalDependencySingular(*it, dep, dep_type, resolver);
+        }
+      }
+
+      /// Add a model conditional dependency for a single model
+      void setModelConditionalDependencySingular
        (str model, str dep, str dep_type, void(*resolver)(functor*))
       { 
         sspair key (dep, dep_type);
@@ -734,7 +765,7 @@ namespace GAMBIT
         return myValue;
       }
 
-      /// 2) Alternative to operation (execute function return a pointer to value)
+      /// 2) Alternative to operation (execute function and return a pointer to value)
       safe_ptr<TYPE> valuePtr(ARGS... args)
       {
         if (this == NULL) functor::functor::failBigTime();
