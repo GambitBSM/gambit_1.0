@@ -68,9 +68,8 @@ void beispiel()
   iniFile.readFile("gambit.yaml");
 
   // Determine selected model(s)
-  std::vector<std::string> selectedmodels;
-
-  selectedmodels.push_back(iniFile.getValue<std::string>("model"));  ///TODO: improve
+  std::vector<std::string> selectedmodels = iniFile.getModelNames();
+  cout << "Your selected models are: " << selectedmodels << endl;
 
   // Initialise ModelFunctorClaw (for manipulating primary model functors)
   ModelBit::ModelFunctorClaw modelClaw(globalPrimaryModelFunctorList);

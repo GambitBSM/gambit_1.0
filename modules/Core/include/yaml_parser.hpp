@@ -193,16 +193,16 @@ namespace GAMBIT
           return parametersNode[model][param][key];
         }
 
+        // Return list of model names (without "adhoc" model!)
         std::vector<std::string> getModelNames()
         {
-          std::set<std::string> result;
+          std::vector<std::string> result;
           for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
           {
-            result.insert( it->first.as<std::string>() );
+            if (it->first.as<std::string>() != "adhoc")
+              result.push_back( it->first.as<std::string>() );
           }
-          std::vector<std::string> output(result.size());
-          std::copy(result.begin(), result.end(), output.begin());
-          return output;
+          return result;
         }
 
         std::vector<std::string> getModelParameters(std::string model)
@@ -214,31 +214,8 @@ namespace GAMBIT
             {
               result.push_back( it->first.as<std::string>() );
             }
-            return result;
           }
-          std::cout << "ERROR: " << model << " does not exist in inifile." << std::endl;
-          exit(1);
-        }
-
-        //
-        // OLD. TOO BE REMOVED SOON
-        //
-        template<typename TYPE> TYPE getParameterEntry(std::string param, std::string key)
-        {
-          if (parametersNode[param][key])
-            return parametersNode[param][key].as<TYPE>();
-          std::cout << "ERROR: Parameter " << param << " has no inifile entry " << key << std::endl;
-          exit(1);
-        };
-
-        std::vector<std::string> getParameterList()
-        {
-          std::vector<std::string> parList;
-          for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
-          {
-            parList.push_back( it->first.as<std::string>() );
-          }
-          return parList;
+          return result;
         }
 
       private:

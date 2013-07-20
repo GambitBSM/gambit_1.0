@@ -8,25 +8,33 @@
 --- # Input parameters
 ########################
 
-m0:
-  range: [1, 3.5]
-  model: CMSSM_I
-  fixed: true
+CMSSM_I:
+  m0:
+    range: [1,2]
+    fixed: true
+  m1:
+    range: [1,2]
+    fixed: true
+  m2:
+    range: [1,2]
+    fixed: true
+  m3:
+    range: [1,2]
+    fixed: true
 
-m1:
-  range: [2, 4.5]
-  model: CMSSM_I
-  fixed: true
-
-m2:
-  range: [2, 4.5]
-  model: CMSSM_I
-  fixed: true
-
-m3:
-  range: [2, 4.5]
-  model: CMSSM_I
-  fixed: true
+adhoc:
+  m0:
+    range: [1, 3.5]
+    model: CMSSM_I
+  m1:
+    range: [2, 4.5]
+    fixed: true
+  m2:
+    range: [2, 4.5]
+    fixed: true
+  m3:
+    range: [2, 4.5]
+    fixed: true
 
 ###############################
 --- # Observables of interest
@@ -34,7 +42,7 @@ m3:
 
 # - purpose:      Likelihood
 #   capability:   RD_oh2
-# 
+
 - purpose:      Likelihood
   capability:   nevents_postcuts
   type:         ""
