@@ -106,11 +106,6 @@ namespace GAMBIT
     #endif
       std::map<std::string, LineageFunction> is_descendant_ofDB;
 
-    #ifndef IN_CORE
-      extern
-    #endif
-      std::map<std::string, LineageFunction> is_ancestor_ofDB;
-
     /// @}
     
   } //end namespace models

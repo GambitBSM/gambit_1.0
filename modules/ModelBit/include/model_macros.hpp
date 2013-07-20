@@ -99,23 +99,6 @@
           return false;                                                        \
         }                                                                      \
                                                                                \
-        /* Inverse of congruency function (checks if this model is an
-           ancestor of the specified model (or is itself the specified model) ) 
-           Returns 'true' if the supplied string is an element of 
-           'models::descendantsDB[MODEL]', else returns 'false'. */            \
-        bool is_ancestor_of(str testmodel)                                     \
-        {                                                                      \
-          verify_model(testmodel);                                             \
-          for (std::vector<str>::const_iterator it =                           \
-            descendantsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))].begin(); \
-            it!=descendantsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))]      \
-            .end(); ++it)                                                      \
-          {                                                                    \
-            if (testmodel==*it) {return true;};                                \
-          }                                                                    \
-          return false;                                                        \
-        }                                                                      \
-                                                                               \
         /* Runtime addition of lineage vector and is_descendant_of function to 
            global databases */                                                 \
         void rt_add_model_to_DB() {                                            \
@@ -135,10 +118,6 @@
         void rt_add_is_descendant_of() {                                       \
           is_descendant_ofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))]       \
                                                           = &is_descendant_of; \
-          }                                                                    \
-        void rt_add_is_ancestor_of() {                                         \
-          is_ancestor_ofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))] \
-                                                            = &is_ancestor_of; \
           }                                                                    \
         /*Function to add this model to the 'descendants' vector for all of
           the models it descends from. No new parent models can be added to 
@@ -168,7 +147,6 @@
           ini_code AddParents (&rt_add_parents);                               \
           ini_code AddLineage (&rt_add_lineage);                               \
           ini_code AddDescFunc (&rt_add_is_descendant_of);                     \
-          ini_code AddAnceFunc (&rt_add_is_ancestor_of);                       \
           ini_code AddToDescendants (&rt_add_self_to_descendantsDB);           \
         }                                                                      \
                                                                                \

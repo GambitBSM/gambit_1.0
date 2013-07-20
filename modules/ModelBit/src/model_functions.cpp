@@ -41,7 +41,8 @@ namespace GAMBIT
   /// "Ancestor of or equal to" function
   bool ancestor_of (const str &model1, const str &model2)
   {
-    return models::is_ancestor_ofDB[model1](model2);
+    if (model2 == "model_base") return false; //FIXME this can be removed if model_base is gotten rid of
+    return models::is_descendant_ofDB[model2](model1);
   }
 
   /// "Strict descendent of" function
