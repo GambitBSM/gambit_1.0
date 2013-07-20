@@ -1,0 +1,95 @@
+/**********************************************************************************
+ * Package : BinnedLik                                                            *
+ * Class   : TilesFit                                                             *
+ * Creation: 5 Sep 2008                                                           *
+ *                                                                                *
+ * Author : Andreas Hoecker <Andreas.Hoecker@cern.ch> - CERN, Switzerland         *
+ * Author : Till Eifert <Till.Eifert@cern.ch>         - CERN, Switzerland         *
+ *                                                                                *
+ * File and Version Information:                                                  *
+ * $Id: TilesFit.h,v 1.1 2009/06/30 12:30:11 eifert Exp $
+ **********************************************************************************/
+
+#include <vector>
+
+#include "TMinuit.h"
+//class TMinuit;
+class TH1D;
+class TH2D;
+class TH3D;
+
+typedef  std::vector< Double_t > Tile1D;
+typedef  std::vector< Tile1D   > Tile2D;
+typedef  std::vector< Tile2D   > Tile3D;
+
+class TilesFit {
+
+public:
+
+   enum StatMode { GaussStat, PoissonStat };
+
+   // constructor only, doesn't do anything
+   TilesFit( UInt_t NbackgroundComponents, UInt_t NbinsX, UInt_t NbinsY, UInt_t NbinsZ = 1,
+	     StatMode = PoissonStat, Bool_t noSignal = kFALSE, Bool_t verbose = kFALSE );
+
+   // set number of observed events
+   void SetNobs( const TH3D& Nobs); 
+   void SetNobs( const TH2D& Nobs); 
+   // set the background binned PDF(s), name(s)
+   void SetBgPDF( unsigned int i, const TH2D& effB, TString name="");
+   void SetBgPDF( unsigned int i, const TH3D& effB, TString name="");
+
+   void PrintDebug();
+   // launch fit
+   void Fit( Int_t printLevel = 0 );
+
+   Int_t GetParameter(Int_t parNo, Double_t &par, Double_t &err);
+   Double_t GetCovarianceMatrixElement( Int_t i, Int_t j );
+
+   TMinuit&    GetMinuit() { return *m_tminuit; }
+   const TMinuit&    GetMinuit() const { return *m_tminuit; }
+
+   Int_t GetCovStatus();
+   Int_t GetFitStatus() { return m_tminuit->GetStatus(); }
+   Double_t GetLogL();
+   Double_t GetRho();
+   Double_t GetLogLAsChiSquared();
+   Double_t GetChiSquaredFromBins();
+
+   void SetSigXFraction(UInt_t pos, Double_t value);
+   void SetSigYFraction(UInt_t pos, Double_t value);
+   void SetSigZFraction(UInt_t pos, Double_t value);
+
+protected:
+
+   static void ILHFCN( Int_t& /* npars */, Double_t* /* grad */, Double_t &f, Double_t* fitPars, Int_t iflag );
+
+   static TilesFit* m_StaticThis;
+
+
+   Int_t SetParameter( Int_t ipar, const char *parname,
+                       Double_t value, Double_t verr, Double_t vlow, Double_t vhigh );
+   Int_t SetPrintLevel( Int_t );
+
+   void        LHFCN ( Double_t &f, Double_t* fitPars );
+
+   TMinuit*    m_tminuit;
+   Double_t    m_Nobstot;
+   Tile3D  m_Nobs;
+   // background PDF(s), name(s)
+   std::vector< Tile3D > m_BgPDF;
+   std::vector< TString > m_BgPDFnames;
+   std::vector< Double_t > m_sigXfractions;
+   std::vector< Double_t > m_sigYfractions;
+   std::vector< Double_t > m_sigZfractions;
+   const UInt_t m_Nbgs;
+   const UInt_t m_NbinsX;
+   const UInt_t m_NbinsY;
+   const UInt_t m_NbinsZ;
+   StatMode    m_statMode;
+   Bool_t      m_noSignal;
+   Bool_t      m_verbose;
+   UInt_t      m_npars;
+   Bool_t      m_isInit;
+
+};

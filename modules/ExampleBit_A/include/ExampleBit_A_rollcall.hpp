@@ -92,7 +92,13 @@ START_MODULE
   
     #define FUNCTION damu
     START_FUNCTION(double)
-    ALLOW_MODELS(test_parent_I)
+    ALLOW_MODELS(test_parent_I, CMSSM_I)
+
+      //#define CONDITIONAL_DEPENDENCY xsection   // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
+      //START_CONDITIONAL_DEPENDENCY(double)
+      //ACTIVATE_FOR_MODEL(test_parent_I)
+      //#undef CONDITIONAL_DEPENDENCY
+
     #undef FUNCTION
 
   #undef CAPABILITY

@@ -476,7 +476,7 @@ module ConstituentFilter ConstituentFilter {
 # b-tagging
 ###########
 
-module BTagging BTagging {
+module BTaggingWithTruth BTagging {
   set PartonInputArray Delphes/partons
   set JetInputArray FastJetFinder/jets
 

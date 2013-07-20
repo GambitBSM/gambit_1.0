@@ -1,7 +1,7 @@
 TODO:
 * Support alternative ini format
 * Grouping backend requirements into blocks/groups
-* Conditional backend requirements on model
+* Allow conditional backend requirements (conditional on model only, not dependency)
 * Fix naming conventions
   - GAMBIT->Gambit
   - filenames (lowercase+underscore)

@@ -60,15 +60,24 @@ namespace GAMBIT
 
       /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
+      /// @{
       virtual double getRuntimeAverage() { return 0; }
       virtual double getInvalidationRate() { return 0; }
       virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
+      /// @}
 
-      // It may be safer to have the following things accessible 
+      // It may be safer to have some of the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
+
+      /// Setter for version
+      void setVersion(str ver) { if (this == NULL) failBigTime(); myVersion = ver; }
+      /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
+      void setStatus(int stat) { if (this == NULL) failBigTime(); myStatus = stat; }
+      /// Setter for purpose (relevant only for next-to-output functors)
+      void setPurpose(str purpose) { if (this == NULL) failBigTime(); myPurpose = purpose; }
 
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime(); return myName;       }
@@ -86,14 +95,6 @@ namespace GAMBIT
       sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
-      /// Setter for purpose (relevant only for next-to-output nodes)
-      void setPurpose(str purpose) { if (this == NULL) failBigTime(); this->myPurpose = purpose; }
-
-      /// Set method for version
-      void setVersion(str ver) { myVersion = ver; }
-
-      /// Set method for status (0 = disabled, 1 = available (default), 2 = active)
-      void setStatus(int stat) { myStatus = stat; }
 
       /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
       bool needs_recalculating;
@@ -188,7 +189,7 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
-      /// myPurpose (relevant for output and next-to-output nodes)
+      /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
@@ -391,6 +392,15 @@ namespace GAMBIT
       /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
+        cout<<"List of all model conditional dependencies: "<<endl;
+        for (std::map<str, std::vector<sspair> >::iterator preit = myModelConditionalDependencies.begin() ; preit != myModelConditionalDependencies.end(); ++preit)
+        {
+          cout << "Model: " << preit->first << endl;
+          for (std::vector<sspair>::iterator it = (preit->second).begin() ; it != (preit->second).end(); ++it)
+          {
+            cout<<it->first<<"  "<<it->second<<endl;        
+          }
+        }
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
         {
           return myModelConditionalDependencies[model];
@@ -578,10 +588,13 @@ namespace GAMBIT
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
       virtual void notifyOfModel(str model)
       {
+        cout<<"I am activating "<<this->name()<<" for model "<<model<<endl;
+
         //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
         std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
         for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
         {
+          cout<<"activating a dependency!"<<endl;
           myDependencies.push_back(*it);        
         }
       }

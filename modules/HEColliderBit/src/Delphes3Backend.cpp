@@ -190,7 +190,8 @@ namespace GAMBIT {
           event.addParticle(recoParticle);
           continue;
         }
-        recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E(), candidate->BTag);
+        recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E(), 
+                          candidate->PID, candidate->BTag);
         event.addJet(recoJet);
       }
     }

@@ -1,0 +1,50 @@
+// is needed
+#include "TMinuit.h"
+
+void test() {
+  // load library
+  gSystem->Load("libBinnedLik.so");
+  // number of quadrants
+  const Int_t Nbins = 2;
+
+  TH2D Nobs("Nobs", "Nobs", Nbins, 1, Nbins+1, Nbins, 1, Nbins+1);
+  TH2D fracBg("fracBg", "fracBg", Nbins, 1, Nbins+1, Nbins, 1, Nbins+1);
+
+  // fill the quadrants with number of observed events and the corresponding background efficiencies
+//   Nobs[0][0] = 312.;
+//   Nobs[0][1] = 135.;
+//   Nobs[1][0] = 73.;
+//   Nobs[1][1] = 180.;
+
+//   effB[0][0] = 6.19469046592712402e-01;
+//   effB[0][1] = 2.30088502168655396e-01;
+//   effB[1][0] = 1.41592919826507568e-01;
+//   effB[1][1] = 8.84955748915672302e-03;
+
+  // fill the quadrants with number of observed events and the corresponding background efficiencies
+  Nobs.Fill(1, 1, 1373.55 +  68.00 );
+  Nobs.Fill(1, 2, 132.49  +  87.01 );
+  Nobs.Fill(2, 1, 313.53  + 249.44 );
+  Nobs.Fill(2, 2,  48.93  + 363.39 );
+  // -> SM bkg tot = 1868.49, SU3 tot = 767.83
+  fracBg.Fill(1, 1,  7.35e-01 );
+  fracBg.Fill(1, 2,  7.09e-02 );
+  fracBg.Fill(2, 1,  1.68e-01 );
+  fracBg.Fill(2, 2,  2.62e-02 );
+
+
+
+  // perform fit
+  TilesFit fitter( 1, Nbins, Nbins, 1, TilesFit::PoissonStat, kFALSE, kFALSE );
+  fitter.SetNobs( Nobs );
+  fitter.SetBgPDF(0, fracBg );
+  
+  fitter.PrintDebug();
+  fitter.Fit();
+
+  cout << "signal corr rho = " << fitter.GetRho() << ", logL = " << fitter.GetLogL()
+       << ", chi2 (obtained from logL) = " << fitter.GetLogLAsChiSquared() 
+       << ", chi2 (obtained from bins) = " << fitter.GetChiSquaredFromBins() << endl;
+
+
+}

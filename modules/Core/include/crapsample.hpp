@@ -47,8 +47,8 @@ namespace GAMBIT
     CrapSample(GAMBIT::Graphs::DependencyResolver &a, std::map<std::string, GAMBIT::primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile) 
         : GAMBIT::Scanner::Gambit_Scanner(a, activemodelFunctorMap, iniFile, "crapsampler"), LogLike(this, 0)
     {
-      N = iniFile.getValue<int>(Name(), "point_number");
-      output_file = iniFile.getValue<std::string>(Name(), "output_file");
+      N = iniFile.getValue<int>(getName(), "point_number");
+      output_file = iniFile.getValue<std::string>(getName(), "output_file");
     }
     
     int Run()
