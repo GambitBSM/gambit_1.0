@@ -20,6 +20,10 @@
 //  Torsten Bringmann (torsten.bringmann@desy.de)
 //  [cloned from TinyDarkBit]
 //  2013 Jun
+//
+//  Christoph Weniger <c.weniger@uva.nl>
+//  July 2013
+//
 //  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -35,6 +39,8 @@
 // #else
 //   namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
 // #endif
+
+typedef double(*fptr_dd)(double&);
 
 #define MODULE DarkBit
 START_MODULE
@@ -73,11 +79,10 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
   #define CAPABILITY RD_eff_annrate
   START_CAPABILITY 
     #define FUNCTION RD_eff_annrate_SUSY
-      START_FUNCTION(double)
+      START_FUNCTION(fptr_dd)
       DEPENDENCY(RD_spectrum, GAMBIT::types::RDspectype)
       #define BACKEND_REQ DarkSUSY_setrdmgev_capability
         START_BACKEND_REQ(void)
@@ -91,7 +96,7 @@ START_MODULE
     #define FUNCTION RD_oh2_general
       START_FUNCTION(double)
       DEPENDENCY(RD_thresholds_resonances, GAMBIT::types::RDrestype)
-      DEPENDENCY(RD_eff_annrate, double)
+      DEPENDENCY(RD_eff_annrate, fptr_dd)
       #define BACKEND_REQ dsrdinit
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -104,14 +109,14 @@ START_MODULE
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-//      #define BACKEND_REQ dsrdeqn
-//        START_BACKEND_REQ(void)
-//        BACKEND_OPTION(DarkSUSY, 0.1)
-//      #undef BACKEND_REQ
-//      #define BACKEND_REQ dsrdwintp
-//        START_BACKEND_REQ(double)
-//        BACKEND_OPTION(DarkSUSY, 0.1)
-//      #undef BACKEND_REQ
+     #define BACKEND_REQ dsrdeqn
+       START_BACKEND_REQ(void)
+       BACKEND_OPTION(DarkSUSY, 0.1)
+     #undef BACKEND_REQ
+     #define BACKEND_REQ dsrdwintp
+       START_BACKEND_REQ(double)
+       BACKEND_OPTION(DarkSUSY, 0.1)
+     #undef BACKEND_REQ
       #define BACKEND_REQ DarkSUSY_setrdmgev_capability
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -142,6 +147,10 @@ START_MODULE
       #undef BACKEND_REQ
       #define BACKEND_REQ DarkSUSY_getrdpars_capability
         START_BACKEND_REQ(DS_RDPARS)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ dsanwx
+        START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
     #undef FUNCTION

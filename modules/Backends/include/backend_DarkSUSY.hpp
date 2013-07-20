@@ -8,6 +8,7 @@
  * Pat Scott 2013-04-22
  * Anders Kvellestad 2013-04-25 
  * Torsten Bringmann July 2013
+ * Christoph Weniger July 2013
  */
 
 #include <backend_macros.hpp>
@@ -54,9 +55,10 @@ BE_FUNCTION(dssusy, void, (int&,int&), "dssusy_", "dssusy")
 BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_", "dsrdomega")
 BE_FUNCTION(dsrdinit, void, (), "dsrdinit_", "dsrdinit")
 BE_FUNCTION(dsrdthlim, void, (), "dsrdthlim_", "dsrdthlim")
-BE_FUNCTION(dsrdtab, void, (double&,double&), "dsrdtab_", "dsrdtab") // CW: wrong types? Needs to be checked.
-BE_FUNCTION(dsrdeqn, void, (double(*)(const double&),const double&,double&,double&,int&), "dsrdeqn_", "dsrdeqn")
-BE_FUNCTION(dsrdwintp, double, (const double&), "dsrdwintp_", "dsrdwintp")
+BE_FUNCTION(dsrdtab, void, (double(*)(double&), double&), "dsrdtab_", "dsrdtab")
+BE_FUNCTION(dsrdeqn, void, (double(*)(double&),double&,double&,double&,double&,int&), "dsrdeqn_", "dsrdeqn")
+BE_FUNCTION(dsrdwintp, double, (double&), "dsrdwintp_", "dsrdwintp")
+BE_FUNCTION(dsanwx, double, (double&), "dsanwx_", "dsanwx")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")

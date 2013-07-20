@@ -100,7 +100,7 @@ void beispiel()
   cout << iniFile.hasKey("model123", "model321") << endl;
 
   // Run 100 times
-  for (int i = 0; i<1000; i++)
+  for (int i = 0; i<100; i++)
   {
     std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
     for (std::vector<Graphs::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
