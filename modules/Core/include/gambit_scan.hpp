@@ -40,30 +40,37 @@ namespace GAMBIT
 			vector <double> upper_limits;
 			vector <double> lower_limits;
 			vector <std::string> keys;
-			vector <std::string> functions;
+			vector <std::string> functions; // TODO: functions to scan over, this is scanner specific --> move to crapsampler
 			Graphs::DependencyResolver *dependencyResolver;
-			std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> functors;
-			std::string name;
+			std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> functors; // Rename to parameterFunctorMap
+			std::string name; // Sampler name
 			
 		public:
 			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name) 
 					: dependencyResolver(&a), name(name)
 			{
-				functions = iniFile.getValue<std::vector<std::string>>(name, "functions");
+				functions = iniFile.getValue<std::vector<std::string>>(name, "functions"); // TODO: Remove
 				
+        // Loop over active models
 				for(std::map<std::string, primary_model_functor *>::iterator it = activemodelFunctorMap.begin(); it != activemodelFunctorMap.end(); it++) 
 				{
-					//it->first = model name, it->second = functor pointer
+          // Loop over model parameters
 					std::vector <std::string> paramkeys = it->second->getcontentsPtr()->getKeys();
 					for (std::vector<std::string>::iterator it2 = paramkeys.begin(); it2 != paramkeys.end(); ++it2)
 					{
+            // Constrcut map
+            // MODEL::PARAMETER -> (PARAMETER, POINTER_TO_MODEL)
 						string name = it->first + string("::") + *it2;
 						functors[name].first = *it2;
 						functors[name].second = it->second;
 					}
 				}
 				
+        // Get model parameters from the inifile
 				keys = iniFile.getParameterList();
+
+        // Set lower_limits, upper_limits
+        // Set keys to composite keys
 				lower_limits.resize(keys.size());
 				upper_limits.resize(keys.size());
 				std::vector<double>::iterator it_l = lower_limits.begin(), it_u = upper_limits.begin();
@@ -71,6 +78,7 @@ namespace GAMBIT
 				{
 					std::pair<double, double> range = iniFile.getParameterEntry< std::pair<double, double> >(*it, "range");
 					std::string modelname = iniFile.getParameterEntry<std::string>(*it, "model");
+          // Replace short PARAMETER key by MODEL::PARAMETER key
 					*it = modelname + string("::") + *it;
 					if (range.first > range.second)
 					{
@@ -83,7 +91,7 @@ namespace GAMBIT
 				}
 			}
 			
-			void InputParameters (std::vector<double> &vec) 
+			void setParameters (std::vector<double> &vec) 
 			{
 				std::vector<double>::iterator it2 = vec.begin();
 				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2)
@@ -94,19 +102,25 @@ namespace GAMBIT
         }
 			}
 			
-			void CalcPropose(Graphs::VertexID &it) 
+			void calcObsLike(Graphs::VertexID &it) 
       {
-        return dependencyResolver->calcObsLike(it);
+        dependencyResolver->calcObsLike(it);
       }
 
-			double GetPropose(Graphs::VertexID &it) 
+			double getObsLike(Graphs::VertexID &it) 
       {
         return dependencyResolver->getObsLike(it);
       }
 			
-			const std::string Name() const {return name;}
+			const std::string getName() const 
+      {
+        return name;
+      }
 			
-			void Reset() {dependencyResolver->resetAll();}
+			void resetAll() 
+      {
+        dependencyResolver->resetAll();
+      }
 			
 			virtual int Run() = 0;
 			
@@ -122,6 +136,7 @@ namespace GAMBIT
 		public:
 			Scanner_Function_Base(Gambit_Scanner *a, int funcNum) : parent(a)
 			{
+        // Find subset of vertices that match requested funcNum
 				vertices = parent->dependencyResolver->getObsLikeOrder();
 				int size = 0;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
@@ -164,24 +179,24 @@ namespace GAMBIT
 			virtual double operator () (std::vector<double> &in)
 			{
 				double ret = 0;
-				parent->InputParameters(in);
+				parent->setParameters(in);
 				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
         std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 				{
           std::cout << "__________calculating vertex " << *it << std::endl;
-					parent->CalcPropose(*it);
+					parent->calcObsLike(*it);
+          std::cout << "----------done " << std::endl;
 					//dependencyResolver.notifyOfInvalidation(*it);
-					ret += parent->GetPropose(*it);
+					ret += parent->getObsLike(*it);
+          std::cout << "...collected double" << endl;
 				}
 				
-				parent->Reset();
+				parent->resetAll();
 				
 				return ret;
 			}
 		};
-		
-
 	};
 };
 

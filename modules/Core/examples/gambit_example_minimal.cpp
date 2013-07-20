@@ -67,13 +67,13 @@ void beispiel(const char* inifilename)
 
   // Do the dependency resolution
   dependencyResolver.resolveNow();
-  
-  //Let's run the scanner!
-  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
-  scanner->Run();
 
   // Check that all requested models are used for at least one computation
   modelClaw.checkPrimaryModelFunctorUsage();
+
+  //Let's run the scanner!
+  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
+  scanner->Run();
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.

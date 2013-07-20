@@ -1,0 +1,553 @@
+/**********************************************************************************
+ * Package : BinnedLik                                                            *
+ * Class   : TilesFit                                                             *
+ * Creation: 5 Sep 2008                                                           *
+ *                                                                                *
+ * Author : Andreas Hoecker <Andreas.Hoecker@cern.ch> - CERN, Switzerland         *
+ * Author : Till Eifert <Till.Eifert@cern.ch>         - CERN, Switzerland         *
+ *                                                                                *
+ * File and Version Information:                                                  *
+ * $Id: TilesFit.cxx,v 1.1 2009/06/30 12:30:11 eifert Exp $
+ **********************************************************************************/
+
+#include "Riostream.h"
+#include "TMath.h"
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TH3D.h"
+#include "TMatrixD.h"
+
+#include "TilesFit.h"
+
+#include <iomanip>
+
+TilesFit* TilesFit::m_StaticThis = 0;
+
+TilesFit::TilesFit( UInt_t  NbackgroundComponents, UInt_t NbinsX, UInt_t NbinsY, UInt_t NbinsZ,
+		    StatMode statMode, Bool_t noSignal, Bool_t verbose )
+   : m_tminuit ( 0 ),
+     m_Nobstot ( 0 ),
+     m_Nbgs    ( NbackgroundComponents ),
+     m_NbinsX   ( NbinsX ),
+     m_NbinsY   ( NbinsY ),
+     m_NbinsZ   ( NbinsZ ), // by default == 1 --> makes the TilesFit effectively 2dim !
+     m_statMode( statMode ),
+     m_noSignal( noSignal ),
+     m_verbose ( verbose ),
+     m_npars( 0),
+     m_isInit( kFALSE)
+{
+  if ( NbinsX < 1 or NbinsY < 1 or NbinsZ < 1) {
+    cerr << " number of bins in (x,y,z) must not be smaller than 1 !!!" << endl;
+    exit(0);
+  }
+
+  m_StaticThis = this;
+  m_Nobs = Tile3D( m_NbinsX, Tile2D( m_NbinsY, Tile1D( m_NbinsZ, 0)));
+  m_BgPDF = std::vector< Tile3D >( m_Nbgs, Tile3D( m_NbinsX, Tile2D( m_NbinsY, Tile1D( m_NbinsZ, 0 ) ) ) );
+  m_BgPDFnames = std::vector< TString >(m_Nbgs, "");
+
+  // signal fractions (the last fraction is computed from unitarity)
+  for (UInt_t binx=0; binx < m_NbinsX-1; binx++) {
+    m_sigXfractions.push_back( 1.0/m_NbinsX );
+  }
+  for (UInt_t biny=0; biny < m_NbinsY-1; biny++) {
+    m_sigYfractions.push_back( 1.0/m_NbinsY );
+  }   
+  for (UInt_t binz=0; binz < m_NbinsZ-1; binz++) {
+    m_sigZfractions.push_back( 1.0/m_NbinsZ );
+  }  
+
+}
+
+void TilesFit::SetNobs( const TH3D& Nobs)
+{
+  // set values, take from histograms
+   for (UInt_t binx=0; binx < m_NbinsX; binx++) {
+     for (UInt_t biny=0; biny < m_NbinsY; biny++) {
+       for (UInt_t binz=0; binz < m_NbinsZ; binz++) {
+	 cout << "Pos.(x="<<binx<<",y="<<biny<<",z="<<binz<< ") Nobs = " << Nobs.GetBinContent(binx+1, biny+1, binz+1) <<  endl;
+	 m_Nobs[binx][biny][binz] = Nobs.GetBinContent(binx+1, biny+1, binz+1);
+       }
+     }
+   }
+}
+
+void TilesFit::SetNobs( const TH2D& Nobs)
+{
+  SetNobs( (TH3D&)Nobs);
+}
+
+void TilesFit::SetBgPDF( unsigned int nBG, const TH3D& effB, TString name)
+{
+  // sanity check:
+  if ( nBG > (m_Nbgs-1) ) {
+    cerr << "ERROR in SetBgPDF -> nBG = " << nBG << " too small or too big!" << endl;
+    return;
+  }
+  // set values, take from histograms
+  for (UInt_t binx=0; binx < m_NbinsX; binx++) {
+    for (UInt_t biny=0; biny < m_NbinsY; biny++) {
+      for (UInt_t binz=0; binz < m_NbinsZ; binz++) {
+	m_BgPDF[nBG][binx][biny][binz] = effB.GetBinContent(binx+1, biny+1 ,binz+1);
+      }
+    }
+  }
+  if (name.Length() > 0)  m_BgPDFnames[nBG] = name;
+  else m_BgPDFnames[nBG] = Form("BgPDF_%i", nBG);
+}
+
+void TilesFit::SetBgPDF( unsigned int nBG, const TH2D& effB, TString name)
+{
+  SetBgPDF( nBG, (TH3D&)effB, name);
+}
+
+void TilesFit::SetSigXFraction(UInt_t pos, Double_t value)
+{
+  // sanity check
+  if ( pos > (m_NbinsX-1)) { cerr << "error: pos over limit" << endl; return; }
+  m_sigXfractions[pos] = value;
+}
+void TilesFit::SetSigYFraction(UInt_t pos, Double_t value)
+{
+  // sanity check
+  if ( pos > (m_NbinsY-1)) { cerr << "error: pos over limit" << endl; return; }
+  m_sigYfractions[pos] = value;
+}
+void TilesFit::SetSigZFraction(UInt_t pos, Double_t value)
+{
+  // sanity check
+  if ( pos > (m_NbinsZ-1)) { cerr << "error: pos over limit" << endl; return; }
+  m_sigZfractions[pos] = value;
+}
+
+
+void TilesFit::PrintDebug()
+{
+  cout << "print m_Nobs" << endl;
+  Double_t sum = 0.0;
+  for (UInt_t binx=0; binx < m_Nobs.size(); binx++) {
+    for (UInt_t biny=0; biny < m_Nobs[0].size(); biny++) {
+      for (UInt_t binz=0; binz < m_Nobs[0][0].size(); binz++) {
+        cout << "Nobs["<<binx<<"]["<<biny<<"]["<<binz<<"] = " << m_Nobs[binx][biny][binz] << endl;
+	sum +=  m_Nobs[binx][biny][binz];
+      }
+    }
+  }
+  cout << "Total number of observed events = " << sum << endl;
+  cout << " ----------- " << endl;
+  cout << "print m_BgPDF" << endl;
+  for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+    cout << "--> Start with background component: " << m_BgPDFnames[bkgI] << endl;
+    sum = 0.0; // cross-check
+    for (UInt_t binx=0; binx < m_Nobs.size(); binx++) {
+      for (UInt_t biny=0; biny < m_Nobs[0].size(); biny++) {
+	for (UInt_t binz=0; binz < m_Nobs[0][0].size(); binz++) {
+	  cout << "Tile fraction (binned PDF) ["<<binx<<"]["<<biny<<"]["<<binz<<"] = " << m_BgPDF[bkgI][binx][biny][binz] << endl;
+	  sum += m_BgPDF[bkgI][binx][biny][binz];
+	}
+      }
+    }
+    cout << "Cross-check: sum = " << sum << endl;
+    cout << " ----------- " << endl;
+  }
+  
+}
+
+Int_t TilesFit::SetPrintLevel( Int_t level )
+{
+   if (level < -1 || level > 1) {
+      cout << "TilesFit::SetPrintLevel -- ERROR -- "
+           << "print level should be -1(quiet), 0(results), 1(verbose)" << endl;
+      return -1;
+   }
+
+   Double_t args[1] = { 0 };
+   Int_t ierr;
+   m_tminuit->mnexcm( "SET PRINTOUT", args, level, ierr );
+
+   return ierr;
+}
+
+void TilesFit::Fit( Int_t printLevel )
+{
+  // get total number of observed events
+  m_Nobstot = 0;
+  for (UInt_t binx=0; binx < m_Nobs.size(); binx++) {
+    for (UInt_t biny=0; biny < m_Nobs[0].size(); biny++) {
+      for (UInt_t binz=0; binz < m_Nobs[0][0].size(); binz++) {
+	m_Nobstot +=  m_Nobs[binx][biny][binz];
+      }
+    }
+  }
+  if (m_verbose) cout << "Total number of observed events: " << m_Nobstot << endl;
+
+  // instantiate minuit
+  // maximum number of fit parameters is equal to active GParameters
+  // (2 x npar as workaround for TMinuit allocation bug (taken from RooMinuit))
+  Int_t Nunknowns =  m_NbinsX + m_NbinsY + m_NbinsZ - 3 + 1 + m_Nbgs;
+  m_tminuit = new TMinuit( 2*Nunknowns );
+
+  // minuit-specific settings
+  Int_t ierr = 0;
+  Double_t args[10];
+
+  // set print level
+  SetPrintLevel( printLevel );
+
+  // book fit parameters
+  UInt_t npars = 0;
+
+  // number of events
+  Float_t scale = (m_noSignal ? 0 : 0.3);
+  SetParameter( npars++, "Nsig", scale*m_Nobstot, 0.01*m_Nobstot, -0.5 * m_Nobstot,  2.0 * m_Nobstot );
+
+  // add one fit parameter per Background type:
+  for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+    SetParameter( npars++,  m_BgPDFnames[bkgI], (1.-scale)*m_Nobstot / (Double_t)(m_Nbgs) , 0.1*m_Nobstot, 0. * m_Nobstot,  2.0 * m_Nobstot );
+  }
+
+  // signal efficiencies (the last fraction is computed from unitarity)
+  // WARNING : too tight bounds (e.g. [0,1]) will create a bias !
+  for (UInt_t binx=0; binx < m_Nobs.size()-1; binx++) {
+    TString parname = Form( "Sig_X_%i", binx );  
+    SetParameter( npars++, parname, m_sigXfractions[binx], 0.05, -0.7, 1.7);
+  }
+  for (UInt_t biny=0; biny < m_Nobs[0].size()-1; biny++) {
+    TString parname = Form( "Sig_Y_%i", biny );  
+    SetParameter( npars++, parname, m_sigYfractions[biny], 0.05, -0.7, 1.7);
+  }   
+   
+  for (UInt_t binz=0; binz < m_Nobs[0][0].size()-1; binz++) {
+    TString parname = Form( "Sig_Z_%i", binz );  
+    SetParameter( npars++, parname, m_sigZfractions[binz], 0.05, -0.7, 1.7);
+  }  
+  
+  m_npars = npars;
+
+  // fix number of signal events to zero ? (background-only hypothesis)
+  if (m_noSignal) m_tminuit->FixParameter( 0 );
+
+  // define the likelihood function
+  m_tminuit->SetFCN( &ILHFCN );
+
+  // error level: 1 (2*log(L) fit
+  args[0] = 0.5;
+  m_tminuit->mnexcm( "SET ERR", args, 1, ierr );
+
+  // print warnings ?
+  m_tminuit->mnexcm( "SET NOWARNINGS", args, 0, ierr );
+
+  // define fit strategy
+  args[0] = 2;
+  m_tminuit->mnexcm( "SET STRATEGY", args, 1, ierr );
+
+  // call MIGRAD
+  args[0] = 100000;   // maximum function calls
+  args[1] = 0.1;     // tolerance at minimum
+  m_tminuit->mnexcm( "MIGrad", args, 2, ierr );
+
+  args[0] = 100000;   // maximum function calls
+  m_tminuit->mnexcm( "IMProve", args, 1, ierr );
+
+  // add MINOS analysis ?
+  args[0] = 50000;
+  m_tminuit->mnexcm( "MINOs", args, 1, ierr );
+
+  m_tminuit->mnexcm( "SHOW COV", args, 0, ierr );
+  
+}
+
+Int_t TilesFit::SetParameter( Int_t ipar, const char *parname,
+                                            Double_t value, Double_t verr, Double_t vlow, Double_t vhigh )
+{
+   // set initial values for a parameter
+   Int_t ierr = 0;
+   m_tminuit->mnparm( ipar, parname, value, verr, vlow, vhigh, ierr );
+
+   return ierr;
+}
+
+Int_t TilesFit::GetParameter(Int_t parNo, Double_t& par, Double_t& err)
+{
+  return m_tminuit->GetParameter(parNo, par, err);
+
+}
+
+
+Double_t TilesFit::GetCovarianceMatrixElement( Int_t i, Int_t j )
+{
+   // return element i,j from the covariance matrix
+   Double_t fitCovMat[m_npars*m_npars];
+   m_tminuit->mnemat( fitCovMat, m_npars );
+
+   return fitCovMat[j + m_npars*i];
+}
+
+/*
+
+ a status integer indicating how good is the covariance
+   matrix:  0= not calculated at all
+   1= approximation only, not accurate
+   2= full matrix, but forced positive-definite
+   3= full accurate covariance matrix
+*/
+Int_t TilesFit::GetCovStatus()
+{
+  double fmin, fedm, errdef;
+  int p1, p2, p3;
+  m_tminuit->mnstat(fmin, fedm, errdef, p1, p2, p3);
+  return p3;
+}
+
+Double_t TilesFit::GetLogL()
+{
+  double fmin, fedm, errdef;
+  int p1, p2, p3;
+  m_tminuit->mnstat(fmin, fedm, errdef, p1, p2, p3);
+  return -fmin;
+}
+
+Double_t TilesFit::GetChiSquaredFromBins()
+{
+  // Note: this method is intended to DEBUG/TEST the GetLogLAsChiSquared() method !
+  double chiSq = 0.0;
+  
+  Int_t ipar = 0;
+  
+  Double_t Nsig, Nsig_err, tmp;
+  m_tminuit->GetParameter(ipar++, Nsig, Nsig_err);
+  
+  Double_t NbkgPerType[m_Nbgs];
+  for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+    //NbkgTot += fitPars[ipar];
+    m_tminuit->GetParameter(ipar++, NbkgPerType[bkgI], tmp);
+  }
+
+  Double_t effS_x[m_NbinsX];
+  Double_t effS_y[m_NbinsY];
+  Double_t effS_z[m_NbinsZ];
+
+  // signal efficiencies (the last fraction is computed from unitarity)
+  Double_t effSum = 0.0;
+  // start with PDF in direction 'x'
+  for (UInt_t binx=0; binx < m_NbinsX-1; binx++) {
+    m_tminuit->GetParameter(ipar++, effS_x[binx], tmp);
+    effSum += effS_x[binx];
+  }
+  effS_x[m_NbinsX-1] = 1.0 - effSum;
+  // start with PDF in direction 'y'
+  effSum = 0.0;
+  for (UInt_t biny=0; biny < m_NbinsY-1; biny++) {
+    m_tminuit->GetParameter(ipar++, effS_y[biny], tmp);
+    effSum += effS_y[biny];
+  }   
+  effS_y[m_NbinsY-1] = 1.0 - effSum;
+  // start with PDF in direction 'z'
+  effSum = 0.0;   
+  for (UInt_t binz=0; binz < m_NbinsZ-1; binz++) {
+    m_tminuit->GetParameter(ipar++, effS_z[binz], tmp);
+    effSum += effS_z[binz];
+  }  
+  effS_z[m_NbinsZ-1] = 1.0 - effSum;
+
+
+  // compute chi^2 
+  for (UInt_t binx=0; binx < m_NbinsX; binx++) {
+    for (UInt_t biny=0; biny < m_NbinsY; biny++) {
+      for (UInt_t binz=0; binz < m_NbinsZ; binz++) {
+	// add together multiple backgrounds:
+	Double_t NbkgEvts = 0.0;
+	for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+	  NbkgEvts += m_BgPDF[bkgI][binx][biny][binz] * NbkgPerType[bkgI] ;
+	}
+	Double_t Nexp = NbkgEvts + effS_x[binx]*effS_y[biny]*effS_z[binz] * Nsig;
+
+	if (m_Nobs[binx][biny][binz] > 0.) {
+	  chiSq += TMath::Power((m_Nobs[binx][biny][binz] - Nexp), 2) / m_Nobs[binx][biny][binz];
+	}
+      }
+    }
+  }
+  return chiSq;
+}
+
+
+
+
+Double_t TilesFit::GetLogLAsChiSquared()
+{
+  // exploit the fact that for large N (per bin) Gaussian ~= Poisson
+  // add all missing parts to Poisson (logL) term to arrive at the Chi^2 !!!
+
+  double fmin, fedm, errdef;
+  int p1, p2, p3;
+  m_tminuit->mnstat(fmin, fedm, errdef, p1, p2, p3);
+  double logL = -fmin;
+
+  if (m_statMode == PoissonStat) {
+    double xtra = 0.0;
+    // add the constant term which was dropped in minimization!
+    for (UInt_t binx=0; binx < m_NbinsX; binx++) {
+      for (UInt_t biny=0; biny < m_NbinsY; biny++) {
+	for (UInt_t binz=0; binz < m_NbinsZ; binz++) {
+	  if (m_Nobs[binx][biny][binz] > 0.) {
+	    logL -= TMath::LnGamma(m_Nobs[binx][biny][binz] + 1.0);  //log( TMath::Factorial( m_Nobs[ibin][jbin]
+	    xtra += log( TMath::Sqrt(2. * TMath::Pi() * m_Nobs[binx][biny][binz] ));
+	  }
+	}
+      }
+    }
+    logL += xtra;
+  }
+
+  return -2.0 * logL;
+}
+
+
+
+
+// TODO: correlation in 3D !
+Double_t TilesFit::GetRho()
+{
+  // init
+  Int_t ipar = 0;
+  Double_t Nsig, tmp;
+  m_tminuit->GetParameter(ipar++, Nsig, tmp);
+
+  Double_t NbkgPerType[m_Nbgs];
+  for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+    //NbkgTot += fitPars[ipar];
+    m_tminuit->GetParameter(ipar++, NbkgPerType[bkgI], tmp);
+  }
+
+  TH2F h("hTest","hTest",m_NbinsX, 0.5, m_NbinsX+0.5, m_NbinsY, 0.5, m_NbinsY+0.5);
+  // compute expected number of signal events per bin
+  for (UInt_t binx=0; binx < m_NbinsX; binx++) {
+    for (UInt_t biny=0; biny < m_NbinsY; biny++) {
+      for (UInt_t binz=0; binz < m_NbinsZ; binz++) {
+
+	// add together multiple backgrounds:
+	Double_t NbkgEvts = 0.0;
+	for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+	  NbkgEvts += m_BgPDF[bkgI][binx][biny][binz] * NbkgPerType[bkgI] ;
+	}
+	h.SetBinContent(binx+1, biny+1, m_Nobs[binx][biny][binz] - NbkgEvts );
+      }
+    }
+  }
+  return h.GetCorrelationFactor();
+}   
+
+// ----------------------------------------------------------------------------------------
+
+void TilesFit::ILHFCN( Int_t& /* npars */, Double_t* /* grad */,
+                               Double_t &f, Double_t* fitPars, Int_t /* iflag */ )
+{
+   // interface only
+   m_StaticThis->LHFCN( f, fitPars );
+}
+
+
+
+
+void TilesFit::LHFCN( Double_t &f, Double_t* fitPars )
+{
+  // Evaluate the minimisation function ----------------------------------------------------
+  //
+  //  Input parameters:
+  //    npars:   number of currently variable parameters
+  //             CAUTION: this is not (necessarily) the dimension of the fitPars vector !
+  //    fitPars: array of (constant and variable) parameters
+  //    iflag:   indicates what is to be calculated (see example below)
+  //    grad:    array of gradients
+  //
+  //  Output parameters:
+  //    f:       the calculated function value.
+  //    grad:    the (optional) vector of first derivatives).
+  // ---------------------------------------------------------------------------------------
+
+  // init
+  Int_t ipar = 0;
+  Double_t Nsig = fitPars[ipar++];
+  //  Double_t NbkgTot = 0.0;
+  Double_t NbkgPerType[m_Nbgs];
+  for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+    //NbkgTot += fitPars[ipar];
+    NbkgPerType[bkgI] = fitPars[ipar++];
+  }
+
+  //  Double_t Nexptot = Nsig + NbkgTot;
+
+  Double_t effS_x[m_NbinsX];
+  Double_t effS_y[m_NbinsY];
+  Double_t effS_z[m_NbinsZ];
+
+  // signal efficiencies (the last fraction is computed from unitarity)
+  Double_t effSum = 0.0;
+  // start with PDF in direction 'x'
+  for (UInt_t binx=0; binx < m_NbinsX-1; binx++) {
+    effS_x[binx] = fitPars[ipar++];
+    effSum += effS_x[binx];
+  }
+  effS_x[m_NbinsX-1] = 1.0 - effSum;
+  // start with PDF in direction 'y'
+  effSum = 0.0;
+  for (UInt_t biny=0; biny < m_NbinsY-1; biny++) {
+    effS_y[biny] = fitPars[ipar++];
+    effSum += effS_y[biny];
+  }   
+  effS_y[m_NbinsY-1] = 1.0 - effSum;
+  // start with PDF in direction 'z'
+  effSum = 0.0;   
+  for (UInt_t binz=0; binz < m_NbinsZ-1; binz++) {
+    effS_z[binz] = fitPars[ipar++];
+    effSum += effS_z[binz];
+  }  
+  effS_z[m_NbinsZ-1] = 1.0 - effSum;
+
+
+  // compute minus log-likelihood
+  Double_t logL = 0;
+  for (UInt_t binx=0; binx < m_NbinsX; binx++) {
+    for (UInt_t biny=0; biny < m_NbinsY; biny++) {
+      for (UInt_t binz=0; binz < m_NbinsZ; binz++) {
+
+	// add together multiple backgrounds:
+	Double_t NbkgEvts = 0.0;
+	for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+	  NbkgEvts += m_BgPDF[bkgI][binx][biny][binz] * NbkgPerType[bkgI] ;
+	}
+
+	Double_t Nexp = NbkgEvts + effS_x[binx]*effS_y[biny]*effS_z[binz] * Nsig;
+
+        if (m_statMode == GaussStat) {
+	  if (m_Nobs[binx][biny][binz] > 0) {
+	    logL -= 0.5*TMath::Power((Nexp - m_Nobs[binx][biny][binz])/TMath::Sqrt(m_Nobs[binx][biny][binz]),2);
+	  }
+	} else {
+	  if (Nexp > 0.) logL += m_Nobs[binx][biny][binz] * log(Nexp) - Nexp;
+	  else {          
+	    logL -= 1.e10; // make this very unlikely !!! WARNING removing this creates a bias !!!
+	    //cout << "Nexp < 0. !! in Tile ("<< binx << "," << biny << "," << binz") with Nexp value = " << Nexp << endl;
+	  }
+	}
+      }
+    }
+  }
+
+  // final poisson to constrain to total number of events
+  // Extended term is not needed!!! See http://cdsweb.cern.ch/record/1177160/comments
+  /*
+  if ( m_statMode == PoissonStat ) {
+    Double_t Nexptot = Nsig;
+    for (UInt_t bkgI=0; bkgI< m_Nbgs; bkgI++) {
+      Nexptot += NbkgPerType[bkgI];
+    }
+    if ( Nexptot > 0. ) logL += m_Nobstot*log(Nexptot) - Nexptot;
+    else                logL -= 1.e10;  // make this very unlikely !
+  }
+  */
+  f = -logL;
+
+}

@@ -92,7 +92,7 @@ START_MODULE
   
     #define FUNCTION damu
     START_FUNCTION(double)
-    DEPENDENCY(test_parent_I_parameters, ModelParameters)      // to be replaced with specialised macro (probably just a wrapper for DEPENDENCY which automatically appends "_parameters" to a model name and attached the type (ModelParameters)
+    ALLOW_MODELS(test_parent_I)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -102,7 +102,7 @@ START_MODULE
   
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    DEPENDENCY(NormalDist_I_parameters, ModelParameters)      // to be replaced with specialised macro (probably just a wrapper for DEPENDENCY which automatically appends "_parameters" to a model name and attached the type (ModelParameters)
+    ALLOW_MODELS(NormalDist_I, test_parent_I)
     #undef FUNCTION
 
   #undef CAPABILITY
