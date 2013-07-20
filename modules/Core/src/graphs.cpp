@@ -176,7 +176,7 @@ namespace GAMBIT
     {
       addFunctors(functorList, backendFunctorList);
       myIniFile = iniFile;
-      addLegs();
+      addAdhocNodes();
     }
 
     /// Main dependency resolution
@@ -332,12 +332,12 @@ namespace GAMBIT
     // Private functions of DependencyResolver
     //
 
-    /// Add alpha and omega legs to masterGraph
-    void DependencyResolver::addLegs()
+    // Add adhoc vertices to masterGraph
+    void DependencyResolver::addAdhocNodes()
     {
-      // Define alpha/omega vertices
+      // Define new vertices
       module_functor<double> * p_modfunc;
-      std::vector<std::string> parameters = myIniFile.getParameterList();
+      std::vector<std::string> parameters = myIniFile.getModelParameters("adhoc");
 
       // Input legs
       for (std::vector<std::string>::const_iterator it =
@@ -349,7 +349,7 @@ namespace GAMBIT
           ++it)
       {
         p_modfunc = new module_functor<double> (it->second, it->first +
-            "_CoreIn", it->first, "double", "Core");
+            "_adhoc", it->first, "double", "Core");
         boost::add_vertex(p_modfunc, masterGraph);
       }
     }

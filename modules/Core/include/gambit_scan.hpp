@@ -13,6 +13,7 @@
 ///  \author Christoph Weniger (c.weniger@uva.nl)
 ///  \date May 20 2013
 ///  \date June 03 2013
+///  \date July 2013
 ///
 ///
 ///  *********************************************
@@ -25,7 +26,6 @@
 #include <string>
 #include <functors.hpp>
 #include <graphs.hpp>
-#include <functors.hpp>
 
 namespace GAMBIT
 {
@@ -40,17 +40,15 @@ namespace GAMBIT
 			vector <double> upper_limits;
 			vector <double> lower_limits;
 			vector <std::string> keys;
-			vector <std::string> functions; // TODO: functions to scan over, this is scanner specific --> move to crapsampler
 			Graphs::DependencyResolver *dependencyResolver;
-			std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> functors; // Rename to parameterFunctorMap
+			std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>> parameterFunctorMap;
 			std::string name; // Sampler name
 			
 		public:
 			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name) 
 					: dependencyResolver(&a), name(name)
 			{
-				functions = iniFile.getValue<std::vector<std::string>>(name, "functions"); // TODO: Remove
-				
+        cout << "Setting up Gambit Scanner" << endl;
         // Loop over active models
 				for(std::map<std::string, primary_model_functor *>::iterator it = activemodelFunctorMap.begin(); it != activemodelFunctorMap.end(); it++) 
 				{
@@ -61,34 +59,64 @@ namespace GAMBIT
             // Constrcut map
             // MODEL::PARAMETER -> (PARAMETER, POINTER_TO_MODEL)
 						string name = it->first + string("::") + *it2;
-						functors[name].first = *it2;
-						functors[name].second = it->second;
+						parameterFunctorMap[name].first = *it2;
+						parameterFunctorMap[name].second = it->second;
 					}
 				}
-				
-        // Get model parameters from the inifile
-				keys = iniFile.getParameterList();
 
+        cout << "- Total number of model parameters: " << parameterFunctorMap.size() << endl;
+
+        // Get model parameters from the inifile
+			  vector <std::string> modelNames = iniFile.getModelNames();
+
+        // Set keys to MODEL::PARAMETER values, order like in the inifile
         // Set lower_limits, upper_limits
-        // Set keys to composite keys
-				lower_limits.resize(keys.size());
-				upper_limits.resize(keys.size());
+				lower_limits.resize(parameterFunctorMap.size());
+				upper_limits.resize(parameterFunctorMap.size());
+        int size = 0;
 				std::vector<double>::iterator it_l = lower_limits.begin(), it_u = upper_limits.begin();
-				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it_l, ++it_u)
-				{
-					std::pair<double, double> range = iniFile.getParameterEntry< std::pair<double, double> >(*it, "range");
-					std::string modelname = iniFile.getParameterEntry<std::string>(*it, "model");
-          // Replace short PARAMETER key by MODEL::PARAMETER key
-					*it = modelname + string("::") + *it;
-					if (range.first > range.second)
-					{
-						double temp = range.first;
-						range.first = range.second;
-						range.second = temp;
-					}
-					*it_l = range.first;
-					*it_u = range.second;
+        for (std::vector<std::string>::iterator it = modelNames.begin(); it != modelNames.end(); ++it)
+        {
+          vector <std::string> parameterNames = iniFile.getModelParameters(*it);
+          for (std::vector<std::string>::iterator it2 = parameterNames.begin(); it2 != parameterNames.end(); ++it2, ++it_l, ++it_u, ++size)
+          {
+            if (not iniFile.hasModelParameterEntry(*it, *it2, "range"))
+            {
+              cout << "ERROR: No scan range specified for parameter " << *it2 << " of model " << *it << endl;
+              exit(1);
+            }
+            std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(*it, *it2, "range");
+            // Is this parameter required by the selected models?
+            if ( parameterFunctorMap.find(*it + string("::") + *it2) == parameterFunctorMap.end() )
+            {
+              cout << "ERROR: " << *it2 << " not required for model " << *it << endl;
+              exit(1);
+            }
+            keys.push_back(*it + string("::") + *it2);
+            if (range.first > range.second)
+            {
+              double temp = range.first;
+              range.first = range.second;
+              range.second = temp;
+            }
+            *it_l = range.first;
+            *it_u = range.second;
+          }
 				}
+
+        // Check that all parameters are present in inifile
+        if ( size != parameterFunctorMap.size() )
+        {
+          cout << "ERROR: not all model parameters specified in inifile." << endl;
+          cout << "Required parameters:" << endl;
+          for (
+              std::unordered_map <std::string, std::pair<std::string, primary_model_functor *>>::iterator it = parameterFunctorMap.begin();
+              it != parameterFunctorMap.end(); ++it)
+          {
+              cout << it->first << endl;
+          }
+          exit(1);
+        }
 			}
 			
 			void setParameters (std::vector<double> &vec) 
@@ -96,9 +124,9 @@ namespace GAMBIT
 				std::vector<double>::iterator it2 = vec.begin();
 				for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it, ++it2)
         {
-          cout << "Setting variable " << functors[*it].first;
+          cout << "Setting variable " << parameterFunctorMap[*it].first;
           cout << " with " << *it2 << endl;
-					functors[*it].second->getcontentsPtr()->setValue(functors[*it].first, *it2);
+					parameterFunctorMap[*it].second->getcontentsPtr()->setValue(parameterFunctorMap[*it].first, *it2);
         }
 			}
 			
@@ -134,18 +162,15 @@ namespace GAMBIT
 			Gambit_Scanner *parent;
 			
 		public:
-			Scanner_Function_Base(Gambit_Scanner *a, int funcNum) : parent(a)
+			Scanner_Function_Base(Gambit_Scanner *a, std::string purpose) : parent(a)
 			{
-        // Find subset of vertices that match requested funcNum
+        // Find subset of vertices that match requested purpose
 				vertices = parent->dependencyResolver->getObsLikeOrder();
 				int size = 0;
 				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
 				{
-          cout << parent->functions[funcNum] << endl;
-					cout << parent->dependencyResolver->getIniEntry(*it)->purpose << endl;
-					if (parent->dependencyResolver->getIniEntry(*it)->purpose == parent->functions[funcNum])
+					if (parent->dependencyResolver->getIniEntry(*it)->purpose == purpose)
 					{
-            cout << parent->functions[funcNum] << endl;
 						*it2 = *it;
 						it2++;
 						size++;
@@ -161,7 +186,7 @@ namespace GAMBIT
 		class Scanner_Function : public Scanner_Function_Base
 		{
 		public:
-			Scanner_Function (Gambit_Scanner *a, int funcNum) : Scanner_Function_Base (a, funcNum) {}
+			Scanner_Function (Gambit_Scanner *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
 			
 			virtual output & operator () (input in)
 			{
@@ -174,7 +199,7 @@ namespace GAMBIT
 		class Scanner_Function <double, std::vector<double>> : public Scanner_Function_Base
 		{
 		public:
-			Scanner_Function (Gambit_Scanner *a, int funcNum) : Scanner_Function_Base (a, funcNum) {}
+			Scanner_Function (Gambit_Scanner *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
 			
 			virtual double operator () (std::vector<double> &in)
 			{

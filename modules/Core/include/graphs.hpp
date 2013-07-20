@@ -83,9 +83,8 @@ namespace GAMBIT
         void resetAll();
 
       private:
-        // Constructs input/output vertices from parameters and requested
-        // observables in inifile
-        void addLegs();
+        // Construct adhoc nodes from "adhoc" model specifications in inifile
+        void addAdhocNodes();
 
         // Adds list of functor pointers to master graph
         void addFunctors(std::vector<functor *>, std::vector<functor *>);
