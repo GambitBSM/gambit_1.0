@@ -79,7 +79,7 @@ START_MODULE
 
     #define FUNCTION exampleCharge          // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
-    //ALLOW_MODEL(test_parent_I)         // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
+    ALLOW_MODELS(MSSM, TWOHDM, UED)         // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -110,7 +110,7 @@ START_MODULE
       START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
       ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
       ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
-      //ACTIVATE_FOR_MODEL(MSSM)                             // Dependency counts when scanning the MSSM or one of its sub-models
+      ACTIVATE_FOR_MODEL(MSSM)                               // Dependency counts when scanning the MSSM or one of its sub-models
       #undef CONDITIONAL_DEPENDENCY
 
       #define BACKEND_REQ refex

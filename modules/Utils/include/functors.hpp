@@ -147,7 +147,6 @@ namespace GAMBIT
       }
 
       /// Getter for listing model-specific conditional dependencies
-      /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
         cout << "Error.  The model_conditional_dependencies method has not been defined in this class." << endl;
@@ -392,15 +391,15 @@ namespace GAMBIT
       /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
-        cout<<"List of all model conditional dependencies: "<<endl;
-        for (std::map<str, std::vector<sspair> >::iterator preit = myModelConditionalDependencies.begin() ; preit != myModelConditionalDependencies.end(); ++preit)
-        {
-          cout << "Model: " << preit->first << endl;
-          for (std::vector<sspair>::iterator it = (preit->second).begin() ; it != (preit->second).end(); ++it)
-          {
-            cout<<it->first<<"  "<<it->second<<endl;        
-          }
-        }
+        //cout<<"List of all model conditional dependencies: "<<endl;
+        //for (std::map<str, std::vector<sspair> >::iterator preit = myModelConditionalDependencies.begin() ; preit != myModelConditionalDependencies.end(); ++preit)
+        //{
+        //  cout << "Model: " << preit->first << endl;
+        //  for (std::vector<sspair>::iterator it = (preit->second).begin() ; it != (preit->second).end(); ++it)
+        //  {
+        //    cout<<it->first<<"  "<<it->second<<endl;        
+        //  }
+        //}
         if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
         {
           return myModelConditionalDependencies[model];
@@ -463,8 +462,20 @@ namespace GAMBIT
         dependency_map[key] = resolver;
       }
 
-      /// Add a model conditional dependency
+      /// Add a model conditional dependency for multiple models
       void setModelConditionalDependency
+       (str model, str dep, str dep_type, void(*resolver)(functor*))
+      {
+        // Split the model string and send each model to be registered
+        std::vector<str> models = delimiterSplit(model, ",");
+        for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
+        {
+          setModelConditionalDependencySingular(*it, dep, dep_type, resolver);
+        }
+      }
+
+      /// Add a model conditional dependency for a single model
+      void setModelConditionalDependencySingular
        (str model, str dep, str dep_type, void(*resolver)(functor*))
       { 
         sspair key (dep, dep_type);
@@ -588,13 +599,10 @@ namespace GAMBIT
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
       virtual void notifyOfModel(str model)
       {
-        cout<<"I am activating "<<this->name()<<" for model "<<model<<endl;
-
         //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
         std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
         for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
         {
-          cout<<"activating a dependency!"<<endl;
           myDependencies.push_back(*it);        
         }
       }
