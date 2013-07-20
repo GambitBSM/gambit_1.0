@@ -29,12 +29,12 @@
 #include <types_DarkBit.hpp>
 
 //PS This will go into the rollcall system eventually, when the darksusy backend is converted to the rollcall style
-#include "backend-darksusy.hpp"
-#ifdef IN_CORE
-  namespace GAMBIT { namespace DarkBit { GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
-#else
-  namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
-#endif
+// #include "backend-darksusy.hpp"
+// #ifdef IN_CORE
+//   namespace GAMBIT { namespace DarkBit { GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
+// #else
+//   namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
+// #endif
 
 #define MODULE DarkBit
 START_MODULE

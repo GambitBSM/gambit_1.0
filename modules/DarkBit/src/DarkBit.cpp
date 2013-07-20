@@ -27,8 +27,8 @@
 #include <DarkBit_rollcall.hpp>
 
 //PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
-#include "backend-darksusy.hpp"
-namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
+// #include "backend-darksusy.hpp"
+// namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
 
 
 namespace GAMBIT {

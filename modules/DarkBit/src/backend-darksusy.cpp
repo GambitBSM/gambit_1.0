@@ -20,6 +20,7 @@ namespace GAMBIT{
 		  if(pHandle){
 			  // GAMBIT_MSG_INFO("Succeeded in loading DarkSUSY");
         std::cout << "Succeeded in loading DarkSUSY" << std::endl;
+        std::cout << "(deprecated; used only in temporary TinyDarkBit) " << std::endl;
 			  _libState = true;
 		  } else {
         std::cout << "Failed loading DarkSUSY" << std::endl;
