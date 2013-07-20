@@ -287,6 +287,7 @@
       std::map<str, void(*)()> map_voids;                                      \
       std::map<str, bool(*)()> map_bools;                                      \
       std::map<str, bool(*)(str)> condit_bools;                                \
+      std::map<str, std::map<str, bool(*)()> >model_bools;                     \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
       /* All module observables/likelihoods, their dependencies, required      \
@@ -344,7 +345,7 @@
       /* Overloaded, non-templated version */                                  \
       bool needs_from_backend(str quant, str obs)                              \
       {                                                                        \
-        if (map_bools.find("BE_"+quant+obs) == map_bools.end()) {return false;}\
+        if (map_bools.find("BE_"+quant+obs) == map_bools.end()) return false;  \
         return (*map_bools["BE_"+quant+obs])();                                \
       }                                                                        \
                                                                                \
@@ -367,18 +368,18 @@
                                                                                \
       /* Module allows use of model MODEL_TAG when computing TAG */            \
       template <typename MODEL_TAG, typename TAG>                              \
-      bool allowed_model()                                                     \
-      /*FIXME do something smart to check of there are *no* entries */         \
+      bool explicitly_allowed_model()                                          \
       {                                                                        \
-        return false;                                                          \
+        return false;                                                           \
       }                                                                        \
                                                                                \
       /* Overloaded, non-templated version */                                  \
       bool allowed_model(str model, str obs)                                   \
       {                                                                        \
-        /*FIXME do something smart to check of there are *no* entries */       \
-        if (map_bools.find(model+obs) == map_bools.end()) { return false; }    \
-        return (*map_bools[model+obs])();                                      \
+        if (model_bools.find(obs) == model_bools.end()) return true;           \
+        if (model_bools[obs].find(model) == model_bools[obs].end())            \
+         return false;                                                         \
+        return (*model_bools[obs][model])();                                   \
       }                                                                        \
                                                                                \
       /* Report on observable/likelihood TAG */                                \
@@ -714,7 +715,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within the core.
-#define CORE_ALLOWED_MODEL(MODEL)                                                \
+#define CORE_ALLOWED_MODEL(MODEL)                                              \
                                                                                \
   namespace GAMBIT                                                             \
   {                                                                            \
@@ -724,6 +725,13 @@
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
+                                                                               \
+      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
+      template <>                                                              \
+      bool explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>()        \
+      {                                                                        \
+        return true;                                                           \
+      }                                                                        \
                                                                                \
       /* Create a pointer to the model parameter functor. To be filled by the  \
       dependency resolver during runtime. */                                   \
@@ -777,8 +785,8 @@
       template <>                                                              \
       void rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION> ()         \
       {                                                                        \
-        map_bools[STRINGIFY(CAT(MODEL,FUNCTION))] =                            \
-         &allowed_model<ModelTags::MODEL, Tags::FUNCTION>;                     \
+        model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =                   \
+         &explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>;          \
         iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
         Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
          STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \

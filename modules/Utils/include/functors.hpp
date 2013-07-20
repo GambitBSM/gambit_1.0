@@ -96,9 +96,6 @@ namespace GAMBIT
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
 
-      /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
-      bool needs_recalculating;
-
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()          
       { 
@@ -176,6 +173,16 @@ namespace GAMBIT
         exit(1);
       }
 
+      /// Test whether the functor is allowed to be used with a given model 
+      bool modelAllowed(str model)
+      {
+        
+      }
+
+
+      /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
+      bool needs_recalculating;
+
     protected:
 
       /// Internal storage of the function name.
@@ -192,6 +199,9 @@ namespace GAMBIT
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
+
+      /// List of allowed models
+      std::vector<str> allowedModels;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime()
@@ -272,7 +282,7 @@ namespace GAMBIT
           if(usePointer)
             myValue = *myPointer;
           else
-            this->myFunction(myValue);
+            this->myFunction(myValue); //Python++??
           clock_gettime(CLOCK_MONOTONIC, &tp);
           nsec += (double)tp.tv_nsec;
           sec += (double)tp.tv_sec;
@@ -755,7 +765,7 @@ namespace GAMBIT
         return myValue;
       }
 
-      /// 2) Alternative to operation (execute function return a pointer to value)
+      /// 2) Alternative to operation (execute function and return a pointer to value)
       safe_ptr<TYPE> valuePtr(ARGS... args)
       {
         if (this == NULL) functor::functor::failBigTime();

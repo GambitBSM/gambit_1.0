@@ -153,7 +153,7 @@ namespace GAMBIT
         labelWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
         void operator()(std::ostream& out, const VertexID& v) const
         {
-	        out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
+          out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
           out << "label=< ";
           out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->capability() << "</font><br/>";
           out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";

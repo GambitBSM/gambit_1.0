@@ -619,6 +619,11 @@ int main( int argc, const char* argv[] )
   cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << endl;
   cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << endl;
   cout << "I can do xsection " << ExampleBit_B::provides("xsection") << endl;
+  cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::allowed_model("MSSM", "xsection") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::MSSM, Tags::xsection>() << ")" << endl;
+  cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::allowed_model("CMSSM_I", "xsection") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::xsection>() << ")" << endl;
+  cout << "I can do charge " << ExampleBit_B::provides("charge") << endl;
+  cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::allowed_model("MSSM", "exampleCharge") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::MSSM, Tags::exampleCharge>() << ")" << endl;
+  cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::allowed_model("CMSSM_I", "exampleCharge") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::exampleCharge>() << ")" << endl;
   cout << "I can do id " << ExampleBit_B::provides("id") << endl;
   cout << "Core says: report on n_events!" << endl;
   cout << ExampleBit_B::name() << " says: ";
