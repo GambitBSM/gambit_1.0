@@ -788,6 +788,7 @@
         model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =                   \
          &explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>;          \
         iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
+        Functown::FUNCTION.setAllowedModel(STRINGIFY(MODEL));                  \
         Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
          STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \
          &resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>);               \
