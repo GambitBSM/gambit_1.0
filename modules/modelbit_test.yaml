@@ -53,6 +53,11 @@ sigma:
   function:     ""
   module:       ""
 
+- purpose:      Observable
+  capability:   nevents_postcuts
+  type:         ""
+  function:     ""
+  module:       ""
   
 - purpose:      Likelihood
   capability:   normaldist_loglike

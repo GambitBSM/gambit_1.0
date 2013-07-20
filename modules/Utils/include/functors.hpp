@@ -23,6 +23,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 July --> Added primary_model_functor class
+///                  --> Added "printers" library for functor print functions.
 ///
 ///  *********************************************
 
@@ -34,8 +35,10 @@
 #include <vector>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
+#include <printers.hpp>
 #include <time.h>
 #include <ModelParameters.hpp>
+#include <sstream>
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
@@ -177,6 +180,15 @@ namespace GAMBIT
       }
 
     protected:
+          
+      // Collection of print functions. Overloaded to deal with various types
+      // of functor contents.
+      // In the end we will want a variety of these, for outputting information
+      // to various kinds of output, i.e. databases etc.
+      
+      /// Print functor for std::cout
+      //template<TYPE>
+      virtual void print(std::ostream&) {}; // does nothing
 
       /// Internal storage of the function name.
       str myName;       
@@ -209,7 +221,7 @@ namespace GAMBIT
 
   // ================================================================
   /// Functor derived class for module functions with result type TYPE
-
+  
   template <typename TYPE>
   class module_functor : public functor
   {
@@ -584,6 +596,15 @@ namespace GAMBIT
         {
           myDependencies.push_back(*it);        
         }
+      }
+      
+      // Collection of print functions. Overloaded to deal with various types
+      // of functor contents.
+      // In the end we will want a variety of these, for outputting information
+      // to various kinds of output, i.e. databases etc.
+      virtual void print(std::ostream& os) const
+      {
+        printers::ostream<TYPE>(os, myValue);
       }
 
     protected:

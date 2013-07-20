@@ -110,6 +110,9 @@ void beispiel(const char* inifilename)
         // use it to set its parameters
         functorPtr->getcontentsPtr()->setValues(parametermaps[modelname]);
         
+        std::cout<<functorPtr->name()<<" ("<<functorPtr->origin()<<") : ";
+        functorPtr->print(std::cout);
+        std::cout<<std::endl;
         // Test setting an invalid value
         //functorPtr->getcontentsPtr()->setValue("Not defined!", 5.67);
     }

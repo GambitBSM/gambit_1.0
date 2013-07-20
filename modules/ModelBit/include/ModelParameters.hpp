@@ -93,6 +93,10 @@ namespace GAMBIT {
       return _values.at(inkey);
     }
     
+    virtual std::map<std::string, double> getValues() const {
+      return _values;
+    }
+    
     virtual const double & operator[](std::string const & inkey) const {
       assert_contains(inkey);
       return _values.at(inkey);
