@@ -51,6 +51,12 @@ namespace GAMBIT
     /// Has only the minimal properties required to properly act as the PARENT
     /// of a model.
     ///FIXME PS: why do we actually need a model base at all??
+    /// BF: Currently we need it for this lineage vector, which is used to create
+    /// lineageDB, and also because some PARENT needs to be defined for each model 
+    /// in order to create parentsDB. I don't know a way of treating the "no parent" 
+    /// special case differently inside the START_PARAMETERISATION macro, since 
+    /// I can't use "ifdef PARENT" or any such thing inside the macro. Maybe there 
+    /// is some dark voodoo magic that can be done using boost_preprocessor?
     namespace model_base
     {
         /// Model lineage
