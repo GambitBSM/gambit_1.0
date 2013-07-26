@@ -1,0 +1,22 @@
+GAMBIT HE COLLIDER TODO LIST
+============================
+
+* Py8 shower alpha_s -> 0.118
+
+* Parameterising strong subprocess cross-sections
+* Huge K-factor tails from Prospino?
+
+* Interpolate subprocess NLO cross-sections
+* SUSY subprocesses thread split generalization
+* Collate analyses for different subprocesses, with different k-factor weightings
+* Convert HEColliderMain to be able to run with/without Delphes/FastSim
+
+* Write more analysis codes!
+* Verification of ATLAS limits
+* Disabling Py8 model elements => properly populate the Event (direct and via Delphes/FastSim)
+
+
+* Py8 feedback
+- SUSY:all can't be partially undone... same for all process:all commands? Unlike particle decay config...
+- Copy construction of Pythia object?
+- Speeding up SLHA model initialization: perhaps we could multithread to speed this up?

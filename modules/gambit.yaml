@@ -8,39 +8,52 @@
 --- # Input parameters
 ########################
 
-m0:
-  range: [1, 3.5]
-  model: CMSSM_I
-  fixed: true
+CMSSM_I:
+  m0:
+    range: [1,2]
+    fixed: true
+  m1:
+    range: [1,2]
+    fixed: true
+  m2:
+    range: [1,2]
+    fixed: true
+  m3:
+    range: [1,2]
+    fixed: true
 
-m1:
-  range: [2, 4.5]
-  model: CMSSM_I
-  fixed: true
-
-m2:
-  range: [2, 4.5]
-  model: CMSSM_I
-  fixed: true
-
-m3:
-  range: [2, 4.5]
-  model: CMSSM_I
-  fixed: true
+# The "adhoc" model bypasses ModelBit and produces some model parameter nodes
+# on the fly. This can be used for testing purposes.
+adhoc:
+  m0:
+    range: [2, 4.5]
+    fixed: true
+  m1:
+    range: [2, 4.5]
+    fixed: true
+  m2:
+    range: [2, 4.5]
+    fixed: true
+  m3:
+    range: [2, 4.5]
+    fixed: true
 
 ###############################
 --- # Observables of interest
 ###############################
 
+# Uncomment to test DarkBit
 # - purpose:      Likelihood
 #   capability:   RD_oh2
-# 
+
+# Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
 - purpose:      Likelihood
   capability:   nevents_postcuts
   type:         ""
   function:     ""
   module:       ""
 
+# Uncomment to test TinyDarkBit
 - purpose:      Likelihood
   capability:   omega_DM
   type:         ""
@@ -70,22 +83,8 @@ m3:
 --- # Name/Value Section
 ##########################
 
-my_key: 12345
+# Some exemplary keys and subkeys
+my_key: 123
 another_key:
-  subkey1: 3.1415
-  subkey2: green
   subkey3:
-    subsubkey1: going
-    subsubkey2: deeper
-    
-model: CMSSM_I
-
-crapsampler:
-  functions:  [Likelihood]
-  point_number: 10000
-  output_file:  output
-
-model123:
-  model321: testCMSSM
-
-
+    subsubkey1: value2

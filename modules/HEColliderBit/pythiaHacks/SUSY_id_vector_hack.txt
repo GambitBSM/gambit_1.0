@@ -1,0 +1,10 @@
+So far, I have only changed the Settings.h and Settings.cc files.
+I have only added the ability to have a vector of integers as a 
+setting. This should have broken absolutely NOTHING in pythia.
+
+I should probably check that this hack has not broken anything
+before I continue..... CHECKED!
+
+The next step is to actually make SUSY:idA and SUSY:idB into
+vectors of ints instead of just single ints, and utilize this
+within ProcessContainer.

@@ -18,6 +18,9 @@
 //  [wrapper structure cloned from TinyDarkBit.cpp]
 //  2013 Jun
 //
+//  Christoph Weniger <c.weniger@uva.nl>
+//  July 2013
+//
 //  *********************************************
 
 #include <dlfcn.h>
@@ -27,8 +30,8 @@
 #include <DarkBit_rollcall.hpp>
 
 //PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
-#include "backend-darksusy.hpp"
-namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
+// #include "backend-darksusy.hpp"
+// namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
 
 
 namespace GAMBIT {
@@ -207,7 +210,7 @@ namespace GAMBIT {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-    void RD_eff_annrate_SUSY(double &result) 
+    void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
 //read out location and number of resonances and thresholds from RDspectrum
       GAMBIT::types::RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered::RD_spectrum$
@@ -256,6 +259,7 @@ namespace GAMBIT {
 
       std::cout << "!!! Remember to change return type in DarkBit_rollcall.hpp(2x!) and DarkBit.cpp !!!" << std::endl;
 
+      result = GET_BE_POINTER(RD_oh2_general::dsanwx, double&);
 
     } // function RD_eff_annrate_SUSY
 
@@ -345,9 +349,8 @@ namespace GAMBIT {
       }
 
 
-
 // tabulate invariant rate
-//      GET_BE_RESULT(RD_oh2_general::dsrdtab,*Dep::RD_eff_annrate,xstart);
+     GET_BE_RESULT(RD_oh2_general::dsrdtab, byVal(*Dep::RD_eff_annrate),xstart);
 
 // determine integration limit
       GET_BE_RESULT(RD_oh2_general::dsrdthlim);
@@ -355,18 +358,15 @@ namespace GAMBIT {
 // solve Boltzmann eqn
       double xend, yend, xf;
       int nfcn;
-      // GET_BE_RESULT(RD_oh2_general::dsrdeqn, 
-      //               GAMBIT::Backends::DarkSUSY::Functown::dsrdwintp.getFunctionPointer(),
-      //               byVal(xstart),xend,yend,xf,nfcn);
-
-
+      double(*fptr)(double&) = GET_BE_POINTER(RD_oh2_general::dsrdwintp, double&);
+      std::cout << "Starting dsrdeqn" << std::endl;
+      GET_BE_RESULT(RD_oh2_general::dsrdeqn, byVal(fptr),xstart,xend,yend,xf,nfcn);
 
       result = 0.70365e8*myrddof.fh[myrddof.nf]*mwimp*yend;
 
      }
 // HERE ENDS THE GIANT IF STATEMENT FOR USING BE=DS
 // SIMILAR FOR OTHER BEs...
-
 
      result=0.01;
      std::cout << "oh2 =" << result << std::endl;

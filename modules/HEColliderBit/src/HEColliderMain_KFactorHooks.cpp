@@ -77,7 +77,8 @@ public:
 
     // Does it need to be conditional? Presumably, I want the KFactors to 
     // apply for ALL events...
-    if (inEvent) return 1.;
+    // Torbjorn says, this is not necessary. Should scale both at init AND during run
+//    if (inEvent) return 1.;
 
     // Each process has a different KFactor... does something like this work?
     /// @todo TODO: this function has not been created yet....:

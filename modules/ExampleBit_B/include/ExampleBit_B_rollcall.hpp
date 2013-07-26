@@ -59,7 +59,7 @@
 
 #include <module_macros.hpp>
 
-typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp
+typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp or in local modulename/include/modulename_classes.hpp
 
 #define MODULE ExampleBit_B
 START_MODULE
@@ -79,7 +79,8 @@ START_MODULE
 
     #define FUNCTION exampleCharge          // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
-    //ALLOW_MODEL(test_parent_I)         // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
+    ALLOW_MODEL(NormalDist_I)
+    ALLOW_MODELS(MSSM_I, TWOHDM, UED)       // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -110,7 +111,7 @@ START_MODULE
       START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
       ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
       ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
-      //ACTIVATE_FOR_MODEL(MSSM)                             // Dependency counts when scanning the MSSM or one of its sub-models
+      ACTIVATE_FOR_MODEL(MSSM_I)                             // Dependency counts when scanning the MSSM or one of its sub-models
       #undef CONDITIONAL_DEPENDENCY
 
       #define BACKEND_REQ refex

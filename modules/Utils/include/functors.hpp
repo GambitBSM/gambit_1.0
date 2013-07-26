@@ -32,6 +32,7 @@
 #define __functors_hpp__
 
 #include <map>
+#include <set>
 #include <vector>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
@@ -39,6 +40,7 @@
 #include <time.h>
 #include <ModelParameters.hpp>
 #include <sstream>
+#include <model_functions.hpp>
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
@@ -63,15 +65,24 @@ namespace GAMBIT
 
       /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
+      /// @{
       virtual double getRuntimeAverage() { return 0; }
       virtual double getInvalidationRate() { return 0; }
       virtual void setFadeRate() {}
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
+      /// @}
 
-      // It may be safer to have the following things accessible 
+      // It may be safer to have some of the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
       // from within module functions
+
+      /// Setter for version
+      void setVersion(str ver) { if (this == NULL) failBigTime(); myVersion = ver; }
+      /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
+      void setStatus(int stat) { if (this == NULL) failBigTime(); myStatus = stat; }
+      /// Setter for purpose (relevant only for next-to-output functors)
+      void setPurpose(str purpose) { if (this == NULL) failBigTime(); myPurpose = purpose; }
 
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime(); return myName;       }
@@ -89,17 +100,6 @@ namespace GAMBIT
       sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
-      /// Setter for purpose (relevant only for next-to-output nodes)
-      void setPurpose(str purpose) { if (this == NULL) failBigTime(); this->myPurpose = purpose; }
-
-      /// Set method for version
-      void setVersion(str ver) { myVersion = ver; }
-
-      /// Set method for status (0 = disabled, 1 = available (default), 2 = active)
-      void setStatus(int stat) { myStatus = stat; }
-
-      /// Needs recalculating or not?  (Externally modifiable FIXME not sure if this should stay this way)
-      bool needs_recalculating;
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()          
@@ -149,7 +149,6 @@ namespace GAMBIT
       }
 
       /// Getter for listing model-specific conditional dependencies
-      /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
         cout << "Error.  The model_conditional_dependencies method has not been defined in this class." << endl;
@@ -179,6 +178,19 @@ namespace GAMBIT
         exit(1);
       }
 
+      /// Test whether the functor is allowed to be used with a given model 
+      bool modelAllowed(str model)
+      {
+        if (allowedModels.empty()) return true;
+        str parent = find_parent_model(model);
+        if (allowedModels.find(parent) != allowedModels.end()) return true;
+        return false;        
+      }
+
+      /// Add a model to the internal list of models for which this functor is allowed to be used.
+      void setAllowedModel(str model) { allowedModels.insert(model); }
+
+
     protected:
           
       // Collection of print functions. Overloaded to deal with various types
@@ -200,10 +212,16 @@ namespace GAMBIT
       str myOrigin;     
       /// Internal storage of the version of the module or backend to which the function belongs.
       str myVersion;    
-      /// myPurpose (relevant for output and next-to-output nodes)
+      /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
+
+      /// List of allowed models
+      std::set<str> allowedModels;
+
+      /// Needs recalculating or not?
+      bool needs_recalculating;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime()
@@ -214,6 +232,19 @@ namespace GAMBIT
           cout << "been invoked.  Please check your module function source code. " << endl;
           exit(1);
           /// FIXME \todo throw real error here                             
+      }
+
+      /// Try to find a parent model in the functor's allowedModels list
+      str find_parent_model(str model)
+      {
+        for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
+        {
+          if (model_is_registered(*it))
+          {
+            if (descendant_of(model, *it)) return *it;
+          } 
+        }    
+        return "";    
       }
 
   };
@@ -284,7 +315,7 @@ namespace GAMBIT
           if(usePointer)
             myValue = *myPointer;
           else
-            this->myFunction(myValue);
+            this->myFunction(myValue); //Python++??
           clock_gettime(CLOCK_MONOTONIC, &tp);
           nsec += (double)tp.tv_nsec;
           sec += (double)tp.tv_sec;
@@ -400,12 +431,12 @@ namespace GAMBIT
       }
 
       /// Getter for listing model-specific conditional dependencies
-      /// FIXME needs to use congruency relation to trigger on model descendents also
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
-        if (myModelConditionalDependencies.find(model) != myModelConditionalDependencies.end())
+        str parent = find_parent_model(model);
+        if (myModelConditionalDependencies.find(parent) != myModelConditionalDependencies.end())
         {
-          return myModelConditionalDependencies[model];
+          return myModelConditionalDependencies[parent];
         }
         else
         {
@@ -465,8 +496,20 @@ namespace GAMBIT
         dependency_map[key] = resolver;
       }
 
-      /// Add a model conditional dependency
+      /// Add a model conditional dependency for multiple models
       void setModelConditionalDependency
+       (str model, str dep, str dep_type, void(*resolver)(functor*))
+      {
+        // Split the model string and send each model to be registered
+        std::vector<str> models = delimiterSplit(model, ",");
+        for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
+        {
+          setModelConditionalDependencySingular(*it, dep, dep_type, resolver);
+        }
+      }
+
+      /// Add a model conditional dependency for a single model
+      void setModelConditionalDependencySingular
        (str model, str dep, str dep_type, void(*resolver)(functor*))
       { 
         sspair key (dep, dep_type);
@@ -575,6 +618,7 @@ namespace GAMBIT
             cout << "Backend capability " << key.first << " with type " << key.second << "." << endl;
             cout << "required by function "<< myName << " in " << myOrigin << " is not permitted " << endl;
             cout << "to use "<< proposal.first << ", version " << proposal.second << "." << endl;
+            exit(1);
             ///\todo FIXME throw a real error here
           } 
         }
@@ -583,6 +627,7 @@ namespace GAMBIT
           cout << "Error whilst attempting to resolve backend requirement:" << endl;
           cout << "Function "<< myName << " in " << myOrigin << " does not require " << endl;
           cout << "backend capability " << key.first << " with type " << key.second << "." << endl;
+          exit(1);
           ///\todo FIXME throw a real error here
         }        
       }
@@ -590,6 +635,15 @@ namespace GAMBIT
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
       virtual void notifyOfModel(str model)
       {
+        //Make sure this model is actually allowed to be used with this functor, otherwise die gracefully.
+        if (not modelAllowed(model))
+        {                                                                      
+          cout << "Error whilst attempting to notify functor of model:" << endl;
+          cout << "Function "<< myName << " in " << myOrigin << " cannot be used " << endl;
+          cout << "with model " << model << ".  Check module header or ini file for errors."<< endl;
+          exit(1);
+          ///\todo FIXME throw a real error here
+        }        
         //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
         std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
         for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
@@ -755,7 +809,7 @@ namespace GAMBIT
         return myValue;
       }
 
-      /// 2) Alternative to operation (execute function return a pointer to value)
+      /// 2) Alternative to operation (execute function and return a pointer to value)
       safe_ptr<TYPE> valuePtr(ARGS... args)
       {
         if (this == NULL) functor::functor::failBigTime();

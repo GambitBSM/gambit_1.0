@@ -41,7 +41,6 @@ START_MODULE
     #define FUNCTION nevents_dbl            // Name of an observable function: floating-point number of events in some hypothetical process
     START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
     DEPENDENCY(xsection, double)            // Dependencies: Number of events depends on cross-section
-    DEPENDENCY(charge, int)                 // and charge. 
     #undef FUNCTION
 
     #define FUNCTION nevents_int            // Name of an observable function: integral number of events in some hypothetical process
@@ -92,7 +91,13 @@ START_MODULE
   
     #define FUNCTION damu
     START_FUNCTION(double)
-    ALLOW_MODELS(test_parent_I)
+    ALLOW_MODELS(test_parent_I, NormalDist_I)
+
+      #define CONDITIONAL_DEPENDENCY xsection   // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
+      START_CONDITIONAL_DEPENDENCY(double)
+      ACTIVATE_FOR_MODELS(CMSSM_I)
+      #undef CONDITIONAL_DEPENDENCY
+
     #undef FUNCTION
 
   #undef CAPABILITY

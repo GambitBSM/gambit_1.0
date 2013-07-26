@@ -47,9 +47,10 @@ namespace GAMBIT                                                            \
       {                                                                     \
         pHandle = dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY);                 \
         if(not pHandle) { std::cout << dlerror() << std::endl; }            \
+        else std::cout << "Succeeded in loading " << LIBPATH << std::endl;  \
       }                                                                     \
                                                                             \
-      /*The code within the void function 'loadLibrary' is executed         \  
+      /*The code within the void function 'loadLibrary' is executed         \
         when we create the following instance of the 'ini_code' struct. */  \
       namespace ini                                                         \
       {                                                                     \

@@ -29,8 +29,8 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2012 Nov  
-///  \date 2013 Jan, Feb, Mar, Apr, May
-///  \date 2013-Foreverrrrr
+///  \date 2013 Jan -- July
+///  \date 2013 Foreverrrrr
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -95,6 +95,11 @@
 /// and backend requirements.
 /// @{
 
+///Simple alias for ALLOW_MODEL/S
+#define ALLOW_MODEL ALLOW_MODELS
+///Simple alias for ACTIVATE_FOR_MODEL/S
+#define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
+
 //  Redirect rollcall macros depending in whether this file is included from 
 //  the core or a module. 
 #ifdef IN_CORE  // This file has been inluded from the core
@@ -118,8 +123,9 @@
   #define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE)
 
   /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
-  /// specific model \em MODEL.
-  #define ALLOW_MODEL(MODEL)                                CORE_ALLOW_MODEL(MODEL)
+  /// specific model \em MODEL.  If this is absent, all models are allowed but no 
+  /// model parameters will be accessible from within the module funtion.
+  #define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
 
   /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
   /// a backend function to be available with capability \link BACKEND_REQ() 
@@ -143,17 +149,23 @@
   /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
   #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 
+  /// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
+  /// should be activated if the model being scanned matches one of the models passed 
+  /// as an argument.
+  #define ACTIVATE_FOR_MODELS(...)                          CORE_ACTIVATE_DEP_MODEL(#__VA_ARGS__)
+
 #else // This file has been inluded from a module; most rollcall macros can be ignored.
 
   #define START_MODULE                                      DUMMY
   #define START_CAPABILITY                                  DUMMY
   #define START_FUNCTION(TYPE)                              DUMMYARG(TYPE)
   #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
-  #define ALLOW_MODEL(MODEL)                                MODULE_ALLOW_MODEL(MODEL)
+  #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
   #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
   #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
   #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
   #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
+  #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
 
 #endif
 /// @}
@@ -166,16 +178,16 @@
 /// should be allowed, ALLOW_MODELS can be called multiple times.
 /// If ALLOW_MODELS is not present, all models are considered to be
 /// allowed.
-#define ALLOW_MODELS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8) ALLOW_MODEL(_9) ALLOW_MODEL(_10)
-#define ALLOW_MODELS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8) ALLOW_MODEL(_9) 
-#define ALLOW_MODELS_8(_1, _2, _3, _4, _5, _6, _7, _8)           ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7) ALLOW_MODEL(_8)
-#define ALLOW_MODELS_7(_1, _2, _3, _4, _5, _6, _7)               ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6) ALLOW_MODEL(_7)
-#define ALLOW_MODELS_6(_1, _2, _3, _4, _5, _6)                   ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5) ALLOW_MODEL(_6)
-#define ALLOW_MODELS_5(_1, _2, _3, _4, _5)                       ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) ALLOW_MODEL(_5)
-#define ALLOW_MODELS_4(_1, _2, _3, _4)                           ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) ALLOW_MODEL(_4) 
-#define ALLOW_MODELS_3(_1, _2, _3)                               ALLOW_MODEL(_1) ALLOW_MODEL(_2) ALLOW_MODEL(_3) 
-#define ALLOW_MODELS_2(_1, _2)                                   ALLOW_MODEL(_1) ALLOW_MODEL(_2)  
-#define ALLOW_MODELS_1(_1)                                       ALLOW_MODEL(_1) 
+#define ALLOW_MODELS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8) ALLOWED_MODEL(_9) ALLOWED_MODEL(_10)
+#define ALLOW_MODELS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8) ALLOWED_MODEL(_9) 
+#define ALLOW_MODELS_8(_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8)
+#define ALLOW_MODELS_7(_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7)
+#define ALLOW_MODELS_6(_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6)
+#define ALLOW_MODELS_5(_1, _2, _3, _4, _5)                       ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5)
+#define ALLOW_MODELS_4(_1, _2, _3, _4)                           ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) 
+#define ALLOW_MODELS_3(_1, _2, _3)                               ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) 
+#define ALLOW_MODELS_2(_1, _2)                                   ALLOWED_MODEL(_1) ALLOWED_MODEL(_2)  
+#define ALLOW_MODELS_1(_1)                                       ALLOWED_MODEL(_1) 
 #define ALLOW_MODELS(...)                                        VARARG(ALLOW_MODELS, __VA_ARGS__)
 
 
@@ -275,6 +287,7 @@
       std::map<str, void(*)()> map_voids;                                      \
       std::map<str, bool(*)()> map_bools;                                      \
       std::map<str, bool(*)(str)> condit_bools;                                \
+      std::map<str, std::map<str, bool(*)()> >model_bools;                     \
       GAMBIT::dict moduleDict;                                                 \
                                                                                \
       /* All module observables/likelihoods, their dependencies, required      \
@@ -301,18 +314,6 @@
       {                                                                        \
         if (map_bools.find(dep+obs) == map_bools.end()) { return false; }      \
         return (*map_bools[dep+obs])();                                        \
-      }                                                                        \
-                                                                               \
-      /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
-      depending on the backend and version used to meet requirment REQ_TAG. */ \
-      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
-      bool requires_conditional_on_backend(str ver) {return false; }           \
-                                                                               \
-      /* Overloaded version of templated function */                           \
-      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
-      bool requires_conditional_on_backend()                                   \
-      {                                                                        \
-        return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG,BE>("any"); \
       }                                                                        \
                                                                                \
       /* Additional overloaded, non-templated versions */                      \
@@ -344,8 +345,41 @@
       /* Overloaded, non-templated version */                                  \
       bool needs_from_backend(str quant, str obs)                              \
       {                                                                        \
-        if (map_bools.find("BE_"+quant+obs) == map_bools.end()) {return false;}\
+        if (map_bools.find("BE_"+quant+obs) == map_bools.end()) return false;  \
         return (*map_bools["BE_"+quant+obs])();                                \
+      }                                                                        \
+                                                                               \
+      /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
+      depending on the backend and version used to meet requirement REQ_TAG. */\
+      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
+      bool requires_conditional_on_backend(str ver) {return false; }           \
+                                                                               \
+      /* Overloaded version of templated function */                           \
+      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
+      bool requires_conditional_on_backend()                                   \
+      {                                                                        \
+        return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG,BE>("any"); \
+      }                                                                        \
+                                                                               \
+      /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
+      depending on the model being scanned.*/                                  \
+      template <typename DEP_TAG, typename TAG>                                \
+      bool requires_conditional_on_model(str model) {return false; }           \
+                                                                               \
+      /* Module allows use of model MODEL_TAG when computing TAG */            \
+      template <typename MODEL_TAG, typename TAG>                              \
+      bool explicitly_allowed_model()                                          \
+      {                                                                        \
+        return false;                                                           \
+      }                                                                        \
+                                                                               \
+      /* Overloaded, non-templated version */                                  \
+      bool allowed_model(str model, str obs)                                   \
+      {                                                                        \
+        if (model_bools.find(obs) == model_bools.end()) return true;           \
+        if (model_bools[obs].find(model) == model_bools[obs].end())            \
+         return false;                                                         \
+        return (*model_bools[obs][model])();                                   \
       }                                                                        \
                                                                                \
       /* Report on observable/likelihood TAG */                                \
@@ -419,6 +453,11 @@
       TAG, where dependency exists if TAG requires backend function BE_REQ,    \
       and BE_REQ is provided by backend BE.*/                                  \
       template <typename DEP_TAG, typename TAG, typename BE_REQ, typename BE>  \
+      void rt_register_conditional_dependency ()                               \
+      {                                                                        \
+        rt_register_conditional_dependency<DEP_TAG, TAG>();                    \
+      }                                                                        \
+      template <typename DEP_TAG, typename TAG>                                \
       void rt_register_conditional_dependency ()                               \
       {                                                                        \
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
@@ -676,7 +715,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within the core.
-#define CORE_ALLOW_MODEL(MODEL)                                                \
+#define CORE_ALLOWED_MODEL(MODEL)                                              \
                                                                                \
   namespace GAMBIT                                                             \
   {                                                                            \
@@ -686,6 +725,13 @@
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
+                                                                               \
+      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
+      template <>                                                              \
+      bool explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>()        \
+      {                                                                        \
+        return true;                                                           \
+      }                                                                        \
                                                                                \
       /* Create a pointer to the model parameter functor. To be filled by the  \
       dependency resolver during runtime. */                                   \
@@ -726,7 +772,7 @@
           cout<<params_functor->origin()<<"."<<endl;                           \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did!  Now set the pointers to the dependency result. */     \
+        else /* It did!  Now set the pointers to the model parameter result. */\
         {                                                                      \
           SafePointers::FUNCTION::Param::MODEL =                               \
            Parameters::FUNCTION::MODEL->valuePtr();                            \
@@ -734,23 +780,17 @@
                                                                                \
       }                                                                        \
                                                                                \
-      /* Indicate that FUNCTION requires the model parameters functor to have  \
-      be provided*/                                                            \
-      template <>                                                              \
-      bool requires<ModelTags::MODEL, Tags::FUNCTION>()                        \
-      {                                                                        \
-        return true;                                                           \
-      }                                                                        \
-                                                                               \
-      /* Set up the commands to be called at runtime to register dependency*/  \
+      /* Set up the commands to be called at runtime to register the           \
+      compatibility of the model with the functor */                           \
       template <>                                                              \
       void rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION> ()         \
       {                                                                        \
-        map_bools[STRINGIFY(CAT(MODEL,FUNCTION))] =                            \
-         &requires<ModelTags::MODEL, Tags::FUNCTION>;                          \
+        model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =                   \
+         &explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>;          \
         iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
-        Functown::FUNCTION.setDependency(                                      \
-            STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",               \
+        Functown::FUNCTION.setAllowedModel(STRINGIFY(MODEL));                  \
+        Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
+         STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \
          &resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>);               \
       }                                                                        \
                                                                                \
@@ -767,7 +807,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within a module.
-#define MODULE_ALLOW_MODEL(MODEL)                                              \
+#define MODULE_ALLOWED_MODEL(MODEL)                                              \
                                                                                \
   namespace GAMBIT                                                             \
   {                                                                            \
@@ -1095,6 +1135,58 @@
          BACKEND_REQ,_provided_by_,BACKEND)                                    \
          (&rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
          Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND>);               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+/// Redirection of ACTIVATE_DEP_MODEL(MODELSTRING) when invoked from within 
+/// the core.
+#define CORE_ACTIVATE_DEP_MODEL(MODELSTRING)                                   \
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have        \
+      been computed previously if one of the model in MODELSTRING is scanned.*/\
+      template <>                                                              \
+      bool requires_conditional_on_model<Tags::CONDITIONAL_DEPENDENCY,         \
+       Tags::FUNCTION> (str model)                                             \
+      {                                                                        \
+        typedef std::vector<str> vec;                                          \
+        vec models = delimiterSplit(MODELSTRING, ",");                         \
+        for (vec::iterator it = models.begin() ; it != models.end(); ++it)     \
+        {                                                                      \
+          if (*it == model) return true;                                         \
+        }                                                                      \
+        return false;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Set up the second set of commands to be called at runtime to register \
+      the conditional dependency. */                                           \
+      template <>                                                              \
+      void rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
+       Tags::FUNCTION> ()                                                      \
+      {                                                                        \
+        condit_bools[STRINGIFY(CAT(CONDITIONAL_DEPENDENCY,FUNCTION))] =        \
+         &requires_conditional_on_model<Tags::CONDITIONAL_DEPENDENCY,          \
+         Tags::FUNCTION>;                                                      \
+        Functown::FUNCTION.setModelConditionalDependency                       \
+         (MODELSTRING, STRINGIFY(CONDITIONAL_DEPENDENCY),                      \
+         iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],                          \
+         &resolve_dependency<Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);   \
+      }                                                                        \
+                                                                               \
+      /* Create the second conditional dependency initialisation object */     \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_4(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_models)     \
+         (&rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
+         Tags::FUNCTION>);                                                     \
       }                                                                        \
                                                                                \
     }                                                                          \
