@@ -30,6 +30,11 @@
 #include <util_classes.hpp>
 #include "dlfcn.h"
 
+#ifndef HAVE_MAC
+#define PHANDLE_DLMOPEN dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY)  
+#else
+#define PHANDLE_DLMOPEN dlopen(LIBPATH, RTLD_LAZY)  
+#endif
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
@@ -45,7 +50,8 @@ namespace GAMBIT                                                            \
                                                                             \
       void loadLibrary()                                                    \
       {                                                                     \
-        pHandle = dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY);                 \
+        /*pHandle = dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY);    */             \
+        pHandle = PHANDLE_DLMOPEN;                                          \
         if(not pHandle) { std::cout << dlerror() << std::endl; }            \
         else std::cout << "Succeeded in loading " << LIBPATH << std::endl;  \
       }                                                                     \

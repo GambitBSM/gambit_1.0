@@ -309,14 +309,18 @@ namespace GAMBIT
         {
           timespec tp;
           double nsec, sec;
+#ifndef HAVE_MAC
           clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
           nsec = (double)-tp.tv_nsec;
           sec = (double)-tp.tv_sec;
           if(usePointer)
             myValue = *myPointer;
           else
             this->myFunction(myValue); //Python++??
+#ifndef HAVE_MAC
           clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
           nsec += (double)tp.tv_nsec;
           sec += (double)tp.tv_sec;
           runtime = sec*1e9 + nsec;
