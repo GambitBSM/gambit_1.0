@@ -9,18 +9,28 @@
 ########################
 
 CMSSM_I:
-  m0:
+  A0:
     range: [1,2]
     fixed: true
-  m1:
+  M0:
     range: [1,2]
     fixed: true
-  m2:
+  M12:
     range: [1,2]
     fixed: true
-  m3:
+    same_as: CMSSM_I::M0
+  Mstop:
     range: [1,2]
     fixed: true
+    same_as: CMSSM_I::M12
+  sgnmu:
+    range: [1,2]
+    fixed: true
+    fixed_value: 1.5
+  tanb:
+    range: [1,2]
+    fixed: true
+  param_not_in_gambit:
 
 # The "adhoc" model bypasses ModelBit and produces some model parameter nodes
 # on the fly. This can be used for testing purposes.
@@ -88,3 +98,12 @@ my_key: 123
 another_key:
   subkey3:
     subsubkey1: value2
+
+enable_redirect: true
+
+redirect_output:
+   CMSSM_I:  test
+    
+crapsampler:
+  point_number: 3
+  output_file:  output

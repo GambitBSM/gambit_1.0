@@ -71,7 +71,10 @@ void beispiel(const char* inifilename)
 
   //Let's run the scanner!
   GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
-  scanner->Run();
+  cout << "keys = " << scanner->Keys() << endl;
+  cout << "phantom keys = " << scanner->PhantomKeys() << endl;
+  if(!scanner->printErrors())
+        scanner->Run();
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
@@ -108,9 +111,6 @@ void beispiel(const char* inifilename)
         // use it to set its parameters
         functorPtr->getcontentsPtr()->setValues(parametermaps[modelname]);
         
-        std::cout<<functorPtr->name()<<" ("<<functorPtr->origin()<<") : ";
-        functorPtr->print(std::cout);
-        std::cout<<std::endl;
         // Test setting an invalid value
         //functorPtr->getcontentsPtr()->setValue("Not defined!", 5.67);
     }
@@ -121,8 +121,11 @@ void beispiel(const char* inifilename)
 
 int main( int argc, const char* argv[] )
 {
-  const char* inifilename;
-  
+     const char* inifilename;
+         
+    std::streambuf *coutbuf = std::cout.rdbuf(); 
+    std::cout.rdbuf(coutbuf);
+   
   // Parse command line arguments
   if (argc < 2) { // Check the value of argc. If not enough parameters have been passed, inform user and exit.
     std::cout << "Error! No inifile specified!" << std::endl;
