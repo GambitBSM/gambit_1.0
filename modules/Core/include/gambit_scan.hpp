@@ -282,9 +282,9 @@ namespace GAMBIT
                                                 std::set <std::string> act_param_keys(paramkeys.begin(), paramkeys.end());
                                                 
                                                 mod_it->parameters.resize(parameterNames.size());
-                                                //lower_limits.reserve(lower_limits.size() + parameterNames.size());
-                                                //upper_limits.reserve(upper_limits.size() + parameterNames.size());
-                                                //keys.reserve(keys.size() + parameterNames.size());
+                                                lower_limits.reserve(lower_limits.size() + parameterNames.size());
+                                                upper_limits.reserve(upper_limits.size() + parameterNames.size());
+                                                keys.reserve(keys.size() + parameterNames.size());
                                                 
                                                 std::vector<Parameter *>::iterator p_it = mod_it->parameters.begin();
                                                 int psize = 0;

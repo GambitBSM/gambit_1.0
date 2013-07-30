@@ -102,7 +102,7 @@ another_key:
 enable_redirect: true
 
 redirect_output:
-   CMSSM_I:  test
+   CMSSM_I:  xterm
     
 crapsampler:
   point_number: 3
