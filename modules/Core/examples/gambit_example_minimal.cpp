@@ -74,8 +74,8 @@ void beispiel(const char* inifilename)
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   if(!scanner->printErrors())
-        Run_Crap_Sampler((void *)scanner);
         //scanner->Run();
+        Run_Crap_Sampler((void *)scanner);
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.

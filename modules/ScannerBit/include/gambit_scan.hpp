@@ -117,9 +117,7 @@ namespace GAMBIT
                                 dependencyResolver->resetAll();
                         }
 			
-			int Run()
-                        {
-                        }
+			int Run();
 			
 			friend class Scanner_Function_Base;
                         

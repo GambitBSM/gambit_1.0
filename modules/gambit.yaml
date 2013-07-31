@@ -99,6 +99,10 @@ another_key:
   subkey3:
     subsubkey1: value2
 
+scanner:
+  file_path: ScannerBit/build/crapsample.so
+  func_name: Run_Crap_Sampler
+    
 enable_redirect: true
 
 redirect_output:

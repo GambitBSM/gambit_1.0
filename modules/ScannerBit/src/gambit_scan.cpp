@@ -21,6 +21,7 @@
 //  *********************************************
 
 #include <gambit_scan.hpp>
+#include <dlfcn.h>
 
 namespace GAMBIT
 {
@@ -420,6 +421,36 @@ namespace GAMBIT
                         std::cout << "*******************************************" << std::endl;
 
                         return bool(flagTot);
+                }
+                
+                int Gambit_Scanner::Run()
+                {
+                        std::string file = iniFilePtr->getValue<std::string>("scanner", "file_path");
+                        std::string funcName = iniFilePtr->getValue<std::string>("scanner", "func_name");
+
+                        void *plugin = dlopen (file.c_str(), RTLD_LAZY);
+                        if (bool(plugin))
+                        {
+                                typedef int (*scanFuncType)(void *);
+                                scanFuncType func;
+                                func = (scanFuncType)dlsym (plugin, funcName.c_str());
+                                void *result = dlerror();
+                                
+                                if (result)
+                                {
+                                        cout << "Cannot find " << funcName << " in " << file << ":  " << result << endl;
+                                }
+                                else
+                                {
+                                        return func((void *)this);
+                                }
+                        }
+                        else
+                        {
+                                cout << "Cannot load " << file << ":  " << dlerror() << endl;
+                        }
+                        
+                        return -1;
                 }
                 
                 Gambit_Scanner::~Gambit_Scanner(){GAMBIT_SCANNER_EXIT = false;}
