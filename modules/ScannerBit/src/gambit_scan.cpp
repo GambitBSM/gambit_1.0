@@ -280,9 +280,9 @@ namespace GAMBIT
                                                                         
                                                                         k_it = key_map.find(pPtr);
                                                                         if (k_it == key_map.end())
-                                                                                key_map[pPtr] = it->first.first + std::string("::") + mod_it->name + std::string("::") + (*p_it)->Name();
+                                                                                key_map[pPtr] = it->first.first + std::string("::") + it->first.second + std::string("+") + mod_it->name + std::string("::") + (*p_it)->Name();
                                                                         else
-                                                                                k_it->second = it->first.first + std::string ("::") + k_it->second;
+                                                                                k_it->second = it->first.first + std::string ("::") + it->first.second + std::string("+") + k_it->second;
 
                                                                         break;
                                                                 }
@@ -302,16 +302,18 @@ namespace GAMBIT
                                 std::unordered_map <std::string, std::string> string_map;
                                 for (std::unordered_map <Parameter **, std::string>::iterator it = key_map.begin(); it != key_map.end(); ++it)
                                 {
-                                        int lastPos = it->second.rfind("::");
-                                        int pos = 0, posTemp = it->second.find("::");
+                                        //int lastPos = it->second.rfind("::");
+                                        //int pos = 0, posTemp = it->second.find("::");
                                         
-                                        while (posTemp != lastPos)
-                                        {
-                                                pos = posTemp;
-                                                posTemp = it->second.find("::", pos + 2);
-                                        }
+                                        //while (posTemp != lastPos)
+                                        //{
+                                        //        pos = posTemp;
+                                        //        posTemp = it->second.find("::", pos + 2);
+                                        //}
                                         
-                                        string_map[it->second.substr((pos == 0) ? 0: pos+2)] = it->second;
+                                        int pos = it->second.rfind("+");
+                                        
+                                        string_map[it->second.substr((pos == 0) ? 0: pos+1)] = it->second;
                                 }
                                 
                                 for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it)
