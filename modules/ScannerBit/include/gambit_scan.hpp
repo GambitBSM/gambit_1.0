@@ -54,21 +54,27 @@ namespace GAMBIT
                         std::map<std::string, primary_model_functor *> *activeMapPtr;
                         IniParser::IniFile *iniFilePtr;
                         std::vector<Scanner::Model> models;
-			std::string name; // Sampler name
+			//std::string name; // Sampler name
 			std::vector<double> old_input;
 			int defout;
 			bool hasXTerm;
                         unsigned char flag;
 			
 		public:
-			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name);
+			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile);
                         
-                        //print errors and return true is there are fatal errors.
+                        //print errors and return true if there are fatal errors.
                         bool printErrors();
 			
+                        IniParser::IniFile *getIniFile(){return iniFilePtr;}
+                        
 			std::vector<std::string> getKeys() const {return keys;}
 			
 			std::vector<std::string> getPhantomKeys() const {return phantom_keys;}
+			
+			std::vector<double> getUpperLimits() const {return upper_limits;}
+			
+			std::vector<double> getLowerLimits() const {return lower_limits;}
 			
 			void setParameters (std::vector<double> &vec) 
 			{
@@ -101,17 +107,19 @@ namespace GAMBIT
                                 return temp;
                         }
 			
-			const std::string getName() const 
-                        {
-                                return name;
-                        }
+			//const std::string getName() const 
+                        //{
+                        //        return name;
+                        //}
 			
 			void resetAll() 
                         {
                                 dependencyResolver->resetAll();
                         }
 			
-			virtual int Run() = 0;
+			int Run()
+                        {
+                        }
 			
 			friend class Scanner_Function_Base;
                         

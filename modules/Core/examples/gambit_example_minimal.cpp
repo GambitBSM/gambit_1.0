@@ -70,11 +70,12 @@ void beispiel(const char* inifilename)
   modelClaw.checkPrimaryModelFunctorUsage();
 
   //Let's run the scanner!
-  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
+  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::Scanner::Gambit_Scanner(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   if(!scanner->printErrors())
-        scanner->Run();
+        Run_Crap_Sampler((void *)scanner);
+        //scanner->Run();
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.

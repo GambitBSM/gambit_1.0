@@ -39,8 +39,8 @@ namespace GAMBIT
                         }
                 }
                 
-                Gambit_Scanner::Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile, std::string name) 
-                                : dependencyResolver(&a), activeMapPtr(&activemodelFunctorMap), iniFilePtr(&iniFile), name(name), flag(0x00)
+                Gambit_Scanner::Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile) 
+                                : dependencyResolver(&a), activeMapPtr(&activemodelFunctorMap), iniFilePtr(&iniFile), flag(0x00)
                 {
                         //do you have xterm?
                         hasXTerm = (system("which xterm") == 0) ? true : false;
