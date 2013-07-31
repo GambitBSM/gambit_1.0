@@ -71,8 +71,8 @@ void beispiel(const char* inifilename)
 
   //Let's run the scanner!
   GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::CrapSample(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
-  cout << "keys = " << scanner->Keys() << endl;
-  cout << "phantom keys = " << scanner->PhantomKeys() << endl;
+  cout << "keys = " << scanner->getKeys() << endl;
+  cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   if(!scanner->printErrors())
         scanner->Run();
 

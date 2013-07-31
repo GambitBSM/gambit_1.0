@@ -46,7 +46,7 @@ namespace GAMBIT
                         Parameter **it;
                         
                 public:
-                        DummyParameter(string name, Parameter **it) : name(name), it(it) {}
+                        DummyParameter(std::string name, Parameter **it) : name(name), it(it) {}
                         void InputParam (std::vector<double>::iterator &it){}
                         std::string Name() const {return name;}
                         Parameter **Ptr() const {return it;}
@@ -62,7 +62,7 @@ namespace GAMBIT
                         friend class MultiParameter;
                         
                 public:
-                        SingleParameter(primary_model_functor *functor, string name) : functor(functor), name(name) {}
+                        SingleParameter(primary_model_functor *functor, std::string name) : functor(functor), name(name) {}
                         void InputParam (std::vector<double>::iterator &it) {functor->getcontentsPtr()->setValue(name, *(it++));}
                         std::string Name() const {return name;}
                         const unsigned char ID() const {return singleParam;}
@@ -76,7 +76,7 @@ namespace GAMBIT
                         friend class FixedMultiParameter;
                         
                 public:
-                        FixedParameter(primary_model_functor *functor, string name, double value) : SingleParameter(functor, name), value(value) {}
+                        FixedParameter(primary_model_functor *functor, std::string name, double value) : SingleParameter(functor, name), value(value) {}
                         void InputParam (std::vector<double>::iterator &it) {functor->getcontentsPtr()->setValue(name, value);}
                         const unsigned char ID() const {return fixedParam;}
                 };
@@ -146,7 +146,7 @@ namespace GAMBIT
                 struct Model
                 {
                         std::string name;
-                        vector <Parameter*> parameters;
+                        std::vector <Parameter*> parameters;
                         int output;
                         unsigned char flag;
                         

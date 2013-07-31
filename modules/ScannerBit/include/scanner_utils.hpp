@@ -30,8 +30,6 @@ namespace GAMBIT
 {
         namespace Scanner
         {
-                bool GAMBIT_SCANNER_EXIT = true;
-                
                 const unsigned char missingParameter = 0x01;
                 const unsigned char missingModel = 0x02;
                 const unsigned char tooManyModels = 0x04;
@@ -46,26 +44,14 @@ namespace GAMBIT
                 const unsigned char multiParam = 0x08;
                 const unsigned char fixedMultiParam = 0x10;
                 
-                int defout;
-                
-                void gambitScannerExit(void)
-                { 
-                        if (GAMBIT_SCANNER_EXIT) 
-                        {
-                                dup2(defout, STDOUT_FILENO); 
-                                printf("Gambit has been terminated, please press enter to continue ... "); 
-                                getchar();}
-                                
-                        }
-                
-                FILE *LaunchLogWindow(string &file)
+                inline FILE *LaunchLogWindow(std::string &file)
                 {
                         char *name = tempnam(NULL, NULL);
                         mkfifo(name, 0777);
                         if(fork() == 0)
                         {
                                 //sprintf(cmd, "xterm -e cat %s", name);
-                                std::string cmd = string("xterm -T ") + file +  string(" -e cat ") + string(name);
+                                std::string cmd = std::string("xterm -T ") + file +  std::string(" -e cat ") + std::string(name);
                                 system(cmd.c_str());
                                 //exit(0);
                         }
