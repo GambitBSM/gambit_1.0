@@ -1,5 +1,5 @@
-#ifndef __gambit_logcore_hpp_
-#define __gambit_logcore_hpp_ 1
+#ifndef __gambit_logs_hpp_
+#define __gambit_logs_hpp_
 #include <string>
 #include <sstream>
 #include <limits.h>

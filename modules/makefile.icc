@@ -18,7 +18,7 @@ FFLAGS = -O3 -fPIC
 ######################################################
 # Explicit options for gambit building:
 # 
-# CoreBit/include/logcore.hpp:
+# CoreBit/include/logs.hpp:
 # hard disable (via macros) of low-level gambit debugging.
 # There are also in-code options, but this could potentially lead to
 # a speedup and smaller code. -1000 allows all log messages to be treated.
@@ -316,7 +316,7 @@ libfortran.so:
 # beb_tester from makefile.test_backend
 beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logcore.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logs.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(ALLINC) $(ALLSRC) 
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."

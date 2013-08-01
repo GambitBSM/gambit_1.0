@@ -1,5 +1,5 @@
-#include "logcore.hpp"
-#include "gambit_core.hpp"
+#include "logs.hpp"
+#include "exceptions.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -8,12 +8,29 @@
 #include <vector>
 #include <map>
 #include <stdlib.h>
-
+#include <signal.h>
 #include <cxxabi.h>
 #include <execinfo.h>
 #include <cstring>
+#include <boost/exception_ptr.hpp>
+
 
 namespace GAMBIT {
+
+  void exiter(int i){
+    std::cerr << std::endl;
+    if (i!=SIGHUP) {
+      std::cerr << "GAMBIT logs:: ---------------------------------------"<<std::endl;
+      std::cerr << "GAMBIT logs:: received signal "<<i << std::endl;
+      std::cerr << "GAMBIT logs:: note: for controlled termination use kill -1  "<<std::endl;
+      std::cerr << "GAMBIT logs:: ---------------------------------------"<<std::endl;
+    }
+    if (i==SIGHUP) {
+      // Controlled termination.
+      // Add other cleanups here if required.
+    }
+    GAMBIT_MSG_FATAL("received system signal "<<i );
+  }
 
   namespace logsetup {
 
@@ -46,7 +63,11 @@ namespace GAMBIT {
         level_to_filename[sDEBUG3]=_default_logfile();
         level_to_filename[sDEBUG4]=_default_logfile();
 
-        GAMBIT_core::init(); // request exit handler to be run at signals
+        // request exit handler to be run at signals
+        signal(SIGABRT, &exiter);
+        signal(SIGTERM, &exiter);
+        signal(SIGHUP, &exiter);
+        signal(SIGINT,  &exiter);
         atexit(doatexit); // register destruction of static
       }
       ~logcore_imp(){

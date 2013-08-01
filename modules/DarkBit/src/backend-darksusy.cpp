@@ -6,7 +6,6 @@
  */
 
 #include "backend-darksusy.hpp"
-// #include "logcore.hpp"
 #include <dlfcn.h>
 
 namespace GAMBIT{

@@ -1,27 +1,54 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  GAMBIT Core driver class.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott
+///  \date 2013 Aug
+///
+///  *********************************************
+
 #ifndef __gambit_core_hpp__
 #define __gambit_core_hpp__
-#include "logcore.hpp"
+
+#include "logs.hpp"
+#include "util_classes.hpp"
+
 
 namespace GAMBIT {
+ 
+  /// Master driver class for a GAMBIT scan.
+  class gambit_core
+  {
 
-  /*! \brief core sutup
-   *
-   * Usage: GAMBIT::GAMBIT_core::init();
-   *
-   * Effect: GAMBIT traps ctrl-c and some other signals and tries to
-   * close logfiles and other cleanups in such cases.
-   *
-   * \author Johan Lundberg
-   * \date 2011-08-19
-   */
-  class GAMBIT_core{
-  private:
-    GAMBIT_core(){}
-    ~GAMBIT_core(){}
-  public:
-    static void init();
-    static void exiter(int i);
+    public:
+
+      gambit_core(bool safe) : safe_mode_on(safe) {}
+
+      ~gambit_core(){}
+
+      bool safe_mode() { return safe_mode_on; }
+
+
+    private:
+
+      bool safe_mode_on;
+
   };
 
-}
+
+#ifdef IN_CORE
+  gambit_core Core(true);
+#else
+  extern gambit_core Core;
 #endif
+
+
+}
+
+#endif // defined __gambit_core_hpp__

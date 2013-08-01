@@ -1,5 +1,5 @@
 #include "backend.hpp"
-#include "logcore.hpp"
+#include "logs.hpp"
 
 
 namespace GAMBIT {

@@ -29,7 +29,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2012 Nov  
-///  \date 2013 Jan -- July
+///  \date 2013 Jan -- Aug
 ///  \date 2013 Foreverrrrr
 ///
 ///  \author Abram Krislock
@@ -45,13 +45,14 @@
 #define __module_macros_hpp__
 
 #include <map>
+
+#include <gambit_core.hpp>
 #include <graphs.hpp>
 #include <dictionary.hpp>
 #include <functors.hpp>
 #include <util_macros.hpp>
 #include <util_classes.hpp>
 #include <util_functions.hpp>
-#include <globals.hpp> // \todo FIXME inclusion of globals.hpp to be reversed once the core objects are better defined
 #include <boost/preprocessor/comparison/greater.hpp>
 
 
@@ -370,7 +371,7 @@
       template <typename MODEL_TAG, typename TAG>                              \
       bool explicitly_allowed_model()                                          \
       {                                                                        \
-        return false;                                                           \
+        return false;                                                          \
       }                                                                        \
                                                                                \
       /* Overloaded, non-templated version */                                  \
@@ -807,7 +808,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within a module.
-#define MODULE_ALLOWED_MODEL(MODEL)                                              \
+#define MODULE_ALLOWED_MODEL(MODEL)                                            \
                                                                                \
   namespace GAMBIT                                                             \
   {                                                                            \
@@ -945,7 +946,7 @@
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
             be_functor* myptr;                                                 \
-            if (GAMBIT::safe_mode)                                             \
+            if (GAMBIT::Core.safe_mode())                                              \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \
@@ -979,7 +980,7 @@
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
             be_functor* myptr;                                                 \
-            if (GAMBIT::safe_mode)                                             \
+            if (GAMBIT::Core.safe_mode())                                              \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \

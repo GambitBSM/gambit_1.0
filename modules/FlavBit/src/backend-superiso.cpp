@@ -4,7 +4,6 @@
  */
 
 #include "backend-superiso.hpp"
-// #include "logcore.hpp"
 #include <dlfcn.h>
 
 namespace GAMBIT{

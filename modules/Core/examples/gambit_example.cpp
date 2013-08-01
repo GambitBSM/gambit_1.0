@@ -39,7 +39,9 @@ ModelBasePtr make_a_model(bool do_cmssm){
 
 /// Indicates to the core macros that this is indeed the core compilation unit.
 #define  IN_CORE
-#include <logcore.hpp>
+
+#include "gambit_core.hpp"
+
 #include <graphs.hpp>
 #include <modelbit.hpp>
 #include <backend_rollcall.hpp>
@@ -47,7 +49,6 @@ ModelBasePtr make_a_model(bool do_cmssm){
 #include <model_rollcall.hpp>
 #include <exceptions.hpp>
 #include <map_extensions.hpp>
-#include <master_like.hpp>
 #include <yaml_parser.hpp>
 #include <gambit_scan.hpp>
 #include <crapsample.hpp>

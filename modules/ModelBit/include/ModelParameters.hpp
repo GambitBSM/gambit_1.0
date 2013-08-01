@@ -31,7 +31,7 @@
 #include <map>
 #include <iostream>
 #include <sstream>
-#include "logcore.hpp"
+#include "logs.hpp"
 
 namespace GAMBIT {
 
