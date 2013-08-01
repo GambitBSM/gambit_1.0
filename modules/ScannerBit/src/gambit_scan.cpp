@@ -202,103 +202,105 @@ namespace GAMBIT
                         {//are there "same_as" parameters?
                                 unsigned int oldSize = keys.size();
                                 std::unordered_map<Parameter **, std::string> key_map;
+                                std::unordered_map<std::string, std::unordered_map<std::string, std::vector<Parameter *>::iterator>> param_map;
+                               
+                                //make map (model_name, param_name) -> pointers
+                                for (std::vector<Scanner::Model>::iterator mod_it = models.begin(); mod_it != models.end(); ++mod_it)
+                                {//loop over models
+                                        for(std::vector<Parameter *>::iterator p_it = mod_it->parameters.begin(); p_it != mod_it->parameters.end(); ++p_it)
+                                        {//loop over parameters
+                                                param_map[mod_it->name][(*p_it)->Name()] = p_it;
+                                        }
+                                }
+                                
                                 for (std::vector<std::pair<std::pair<std::string, std::string>, std::pair<std::pair<int, int>, int>>>::iterator it = savedPtrs.begin(); it != savedPtrs.end(); ++it)
                                 {//loop over parameters in "same_as" to-do list
-                                        std::vector<Scanner::Model>::iterator mod_it;
-                                        for (mod_it = models.begin(); mod_it != models.end(); ++mod_it)
-                                        {//loop over models
-                                                if (mod_it->name == it->first.first)
-                                                {//is it this model?
-                                                        std::vector<Parameter *>::iterator p_it;
-                                                        for(p_it = mod_it->parameters.begin(); p_it != mod_it->parameters.end(); ++p_it)
-                                                        {//loop over parameters
-                                                                if(it->first.second == (*p_it)->Name())
-                                                                {//is it this parameter?
-                                                                        //this code "combines" the two parameters to be shared
-                                                                        Parameter **pPtr = &(*p_it);
-                                                                        Parameter **paramPtr = &models[it->second.first.first].parameters[it->second.first.second];
-                                                                        
-                                                                        while(bool((*pPtr)->ID()&dummyParam))
-                                                                        {
-                                                                                pPtr = (static_cast<DummyParameter *>(*pPtr))->Ptr();
-                                                                        }
-                                                                        
-                                                                        if (paramPtr == pPtr) 
-                                                                        {
-                                                                                flag |= cyclicSames;
-                                                                                break;
-                                                                        }
-                                                                        
-                                                                        if (bool((*pPtr)->ID()&dummyParam))
-                                                                        {
-                                                                                break;
-                                                                        }
-                                                                        else if (bool((*pPtr)->ID()&singleParam))
-                                                                        {
-                                                                                MultiParameter *temp = new MultiParameter(static_cast<SingleParameter *>(*pPtr));
-                                                                                delete (*pPtr);
-                                                                                *pPtr = temp;
-                                                                        }
-                                                                        else if (bool((*p_it)->ID()&fixedParam))
-                                                                        {
-                                                                                FixedMultiParameter *temp = new FixedMultiParameter(static_cast<FixedParameter *>(*pPtr));
-                                                                                delete (*pPtr);
-                                                                                *pPtr = temp;
-                                                                        }
-                                                                        
-                                                                        if (bool((*paramPtr)->ID()&singleParam))
-                                                                        {
-                                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<SingleParameter *>(*paramPtr));
-                                                                                upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
-                                                                                lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
-                                                                                phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
-                                                                                keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
-                                                                        }
-                                                                        else if (bool((*paramPtr)->ID()&fixedParam))
-                                                                        {
-                                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedParameter *>(*paramPtr));
-                                                                        }
-                                                                        else if (bool((*paramPtr)->ID()&multiParam))
-                                                                        {
-                                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<MultiParameter *>(*paramPtr));
-                                                                                upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
-                                                                                lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
-                                                                                phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
-                                                                                keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
-                                                                        }
-                                                                        else if (bool((*paramPtr)->ID()&fixedMultiParam))
-                                                                        {
-                                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedMultiParameter *>(*paramPtr));
-                                                                        }
-                                                                        
-                                                                        Parameter *temp = new DummyParameter((*paramPtr)->Name(), pPtr);
-                                                                        delete (*paramPtr);
-                                                                        (*paramPtr) = temp;
-                                                                        
-                                                                        std::unordered_map<Parameter**, std::string>::iterator k_it = key_map.find(paramPtr);
-                                                                        if (k_it != key_map.end())
-                                                                                key_map.erase(k_it);
-                                                                        
-                                                                        k_it = key_map.find(pPtr);
-                                                                        if (k_it == key_map.end())
-                                                                                key_map[pPtr] = it->first.first + std::string("::") + it->first.second + std::string("+") + mod_it->name + std::string("::") + (*p_it)->Name();
-                                                                        else
-                                                                                k_it->second = it->first.first + std::string ("::") + it->first.second + std::string("+") + k_it->second;
-
-                                                                        break;
-                                                                }
+                                        if (param_map.find(it->first.first) != param_map.end())
+                                        {
+                                                if (param_map[it->first.first].find(it->first.second) != param_map[it->first.first].end())
+                                                {
+                                                        //this code "combines" the two parameters to be shared
+                                                        Parameter **pPtr = &(*param_map[it->first.first][it->first.second]);
+                                                        Parameter **paramPtr = &models[it->second.first.first].parameters[it->second.first.second];
+                                                        
+                                                        while(bool((*pPtr)->ID()&dummyParam))
+                                                        {
+                                                                pPtr = (static_cast<DummyParameter *>(*pPtr))->Ptr();
                                                         }
                                                         
-                                                        if (p_it == mod_it->parameters.end())
-                                                                models[it->second.first.first].flag |= badSames;
-                                                        break;
+                                                        if (paramPtr == pPtr) 
+                                                        {
+                                                                flag |= cyclicSames;
+                                                                break;
+                                                        }
+                                                        
+                                                        if (bool((*pPtr)->ID()&dummyParam))
+                                                        {
+                                                                break;
+                                                        }
+                                                        else if (bool((*pPtr)->ID()&singleParam))
+                                                        {
+                                                                MultiParameter *temp = new MultiParameter(static_cast<SingleParameter *>(*pPtr));
+                                                                delete (*pPtr);
+                                                                *pPtr = temp;
+                                                        }
+                                                        else if (bool((*pPtr)->ID()&fixedParam))
+                                                        {
+                                                                FixedMultiParameter *temp = new FixedMultiParameter(static_cast<FixedParameter *>(*pPtr));
+                                                                delete (*pPtr);
+                                                                *pPtr = temp;
+                                                        }
+                                                        
+                                                        if (bool((*paramPtr)->ID()&singleParam))
+                                                        {
+                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<SingleParameter *>(*paramPtr));
+                                                                upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
+                                                                lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
+                                                                phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
+                                                                keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
+                                                        }
+                                                        else if (bool((*paramPtr)->ID()&fixedParam))
+                                                        {
+                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedParameter *>(*paramPtr));
+                                                        }
+                                                        else if (bool((*paramPtr)->ID()&multiParam))
+                                                        {
+                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<MultiParameter *>(*paramPtr));
+                                                                upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
+                                                                lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
+                                                                phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
+                                                                keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
+                                                        }
+                                                        else if (bool((*paramPtr)->ID()&fixedMultiParam))
+                                                        {
+                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedMultiParameter *>(*paramPtr));
+                                                        }
+                                                        
+                                                        Parameter *temp = new DummyParameter((*paramPtr)->Name(), pPtr);
+                                                        delete (*paramPtr);
+                                                        (*paramPtr) = temp;
+                                                        
+                                                        std::unordered_map<Parameter**, std::string>::iterator k_it = key_map.find(paramPtr);
+                                                        if (k_it != key_map.end())
+                                                                key_map.erase(k_it);
+                                                        
+                                                        k_it = key_map.find(pPtr);
+                                                        if (k_it == key_map.end())
+                                                                key_map[pPtr] = models[it->second.first.first].name + std::string ("::") + models[it->second.first.first].parameters[it->second.first.second]->Name() + std::string("+") + it->first.first + std::string("::") + it->first.second;
+                                                        else
+                                                                k_it->second = models[it->second.first.first].name + std::string ("::") + models[it->second.first.first].parameters[it->second.first.second]->Name() + std::string("+") + k_it->second;
+                                                }
+                                                else
+                                                {
+                                                        models[it->second.first.first].flag |= badSames;
                                                 }
                                         }
-                                        
-                                        if (mod_it == models.end())
+                                        else
+                                        {
                                                 models[it->second.first.first].flag |= badSames;
+                                        }
                                 }
-
+                                
                                 //update keys with new model info
                                 std::unordered_map <std::string, std::string> string_map;
                                 for (std::unordered_map <Parameter **, std::string>::iterator it = key_map.begin(); it != key_map.end(); ++it)
