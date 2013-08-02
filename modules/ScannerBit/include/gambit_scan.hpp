@@ -1,24 +1,26 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
-/// \file
-///  Master Likelihood container
+///  \file
+///
+///  Scanner method implementations.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 May, June, July
 //
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-///  \author Christoph Weniger (c.weniger@uva.nl)
-///  \date May 20 2013
-///  \date June 03 2013
-///  \date July 2013
-//
-///  \author Gregory Martinez (gregory.david.martinez@gmail.com)
-///  \date July 2013
-//
-//  *********************************************
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2013 July 2013
+///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Aug
+///
+///  *********************************************
 
 #ifndef __gambit_scan_hpp__
 #define __gambit_scan_hpp__
@@ -39,6 +41,10 @@
 #include <scanner_utils.hpp>
 #include <scanner_params.hpp>
 
+
+/// \todo FIXME PS: Greg, pls remove the explicit tabs in gambit_scan!!!
+
+
 namespace GAMBIT
 {
 	namespace Scanner
@@ -46,13 +52,13 @@ namespace GAMBIT
                 class Gambit_Scanner
 		{
 		protected:
+			const gambit_core *boundCore;
+                        const IniParser::IniFile *boundIniFile;
 			std::vector <double> upper_limits;
 			std::vector <double> lower_limits;
 			std::vector <std::string> keys;
                         std::vector <std::string> phantom_keys;
 			Graphs::DependencyResolver *dependencyResolver;
-                        std::map<std::string, primary_model_functor *> *activeMapPtr;
-                        IniParser::IniFile *iniFilePtr;
                         std::vector<Scanner::Model> models;
 			//std::string name; // Sampler name
 			std::vector<double> old_input;
@@ -61,12 +67,12 @@ namespace GAMBIT
                         unsigned char flag;
 			
 		public:
-			Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile);
+			Gambit_Scanner (const gambit_core&, const IniParser::IniFile&, Graphs::DependencyResolver&);
                         
                         //print errors and return true if there are fatal errors.
                         bool printErrors();
 			
-                        IniParser::IniFile *getIniFile(){return iniFilePtr;}
+                        const IniParser::IniFile *getIniFile() const {return boundIniFile;}
                         
 			std::vector<std::string> getKeys() const {return keys;}
 			

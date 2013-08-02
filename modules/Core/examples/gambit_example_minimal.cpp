@@ -37,10 +37,10 @@ void beispiel(const char* inifilename)
 {
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
-  cout << "Registered module functors [globalFunctorList.size()]: " <<
-    globalFunctorList.size() << endl;
-  cout << "Registered backend functors [globalBackendFunctorList.size()]: " <<
-    globalBackendFunctorList.size() << endl;
+  cout << "Registered module functors [Core.getModuleFunctors->size()]: " <<
+    Core.getModuleFunctors()->size() << endl;
+  cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
+    Core.getBackendFunctors()->size() << endl;
 
   // Read INI file
   IniParser::IniFile iniFile;
@@ -51,14 +51,13 @@ void beispiel(const char* inifilename)
   cout << "Your selected models are: " << selectedmodels << endl;
   
   // Initialise ModelFunctorClaw (for manipulating primary model functors)
-  ModelBit::ModelFunctorClaw modelClaw(globalPrimaryModelFunctorList);
+  ModelBit::ModelFunctorClaw modelClaw(Core);
   
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(globalFunctorList,
-      globalBackendFunctorList, iniFile);
+  Graphs::DependencyResolver dependencyResolver(Core, iniFile);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -70,7 +69,7 @@ void beispiel(const char* inifilename)
   modelClaw.checkPrimaryModelFunctorUsage();
 
   //Let's run the scanner!
-  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::Scanner::Gambit_Scanner(dependencyResolver, modelClaw.activeModelFunctors, iniFile);
+  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   if(!scanner->printErrors())
@@ -85,7 +84,7 @@ void beispiel(const char* inifilename)
 
   srand (time(NULL));    // initialize random seed
   
-  typedef std::map<std::string, primary_model_functor *>::iterator activemodel_it;
+  typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
   std::map<std::string, std::map<std::string, double>> parametermaps;
   std::string modelname;
   std::vector<std::string> paramkeys;
@@ -94,8 +93,10 @@ void beispiel(const char* inifilename)
   for (int i = 0; i<1000; i++)
   {
     // Set parameter values in active primary_model_parameter functors
-    for(activemodel_it it = modelClaw.activeModelFunctors.begin(); 
-        it != modelClaw.activeModelFunctors.end(); it++) 
+    for(activemodel_it 
+        it  = Core.getActiveModelFunctors()->begin(); 
+        it != Core.getActiveModelFunctors()->end();
+        it++) 
     {
         modelname = it->first;
         functorPtr= it->second;

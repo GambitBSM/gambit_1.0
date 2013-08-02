@@ -13,7 +13,7 @@
 //  Christoph Weniger (c.weniger@uva.nl)
 //  Apr, May, June, July 2013
 //  Pat Scott
-//  May 03 2013
+//  May 03 2013, Aug 1
 //
 //  *********************************************
 
@@ -27,8 +27,10 @@
 #include <vector>
 #include <map>
 #include <queue>
-#include <functors.hpp>
-#include <yaml_parser.hpp>
+
+#include "gambit_core.hpp"
+#include "functors.hpp"
+#include "yaml_parser.hpp"
 
 using namespace boost;
 
@@ -57,8 +59,7 @@ namespace GAMBIT
     {
       public:
         // Constructor, provide module and backend functor lists
-        DependencyResolver(std::vector<functor *>,
-            std::vector<functor *>, IniParser::IniFile);
+        DependencyResolver(const gambit_core&, const IniParser::IniFile&);
 
         // The dependency resolution
         void resolveNow();
@@ -87,7 +88,7 @@ namespace GAMBIT
         void addAdhocNodes();
 
         // Adds list of functor pointers to master graph
-        void addFunctors(std::vector<functor *>, std::vector<functor *>);
+        void addFunctors();
 
         // Resolution of individual module function dependencies
         std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
@@ -120,8 +121,11 @@ namespace GAMBIT
         inputMapType inputMap; // DEPRECATED
         // DEPRECATED
 
-        // List of backend functors
-        std::vector<functor *> myBackendFunctorList;
+        // Core to which this dependency resolver is bound
+        const gambit_core *boundCore;
+
+        // ini file to which this dependency resolver is bound
+        const IniParser::IniFile *boundIniFile;
 
         // *** Output Vertex Infos
         std::vector<OutputVertexInfo> outputVertexInfos;
@@ -132,8 +136,6 @@ namespace GAMBIT
         // *** Saved calling order for functions
         std::list<VertexID> function_order;
 
-        // *** Private copy of iniFile Object
-        IniParser::IniFile myIniFile;
     };
   }
 }

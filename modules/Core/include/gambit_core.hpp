@@ -16,9 +16,12 @@
 #ifndef __gambit_core_hpp__
 #define __gambit_core_hpp__
 
+#include <map>
+#include <vector>
+
 #include "logs.hpp"
 #include "util_classes.hpp"
-
+#include "functors.hpp"
 
 namespace GAMBIT {
  
@@ -26,18 +29,71 @@ namespace GAMBIT {
   class gambit_core
   {
 
-    public:
-
-      gambit_core(bool safe) : safe_mode_on(safe) {}
-
-      ~gambit_core(){}
-
-      bool safe_mode() { return safe_mode_on; }
-
-
     private:
 
+      /// Internal typedefs to keep things readable
+      /// @{
+      typedef std::vector<functor*> fVec;
+      typedef std::vector<primary_model_functor*> pmfVec;
+      typedef std::map<str, primary_model_functor*> pmfMap;
+      /// @}     
+
+      /// Internal indication of the safe mode status
       bool safe_mode_on;
+
+      /// List of all declared module functors
+      fVec functorList;
+
+      /// List of all declared backend functors
+      fVec backendFunctorList;
+
+      /// List of all declared primary model functors
+      pmfVec primaryModelFunctorList;
+
+      /// A map of all user-activated primary model functors
+      pmfMap activeModelFunctorList;
+
+    public:
+
+      /// Constructor, sets safe mode
+      gambit_core(bool safe) : safe_mode_on(safe) {}
+
+      /// Destructor
+      ~gambit_core(){}
+
+      /// Is the scan running in safe mode?
+      bool safe_mode() { return safe_mode_on; }
+
+      /// Add an new module functor to functorList
+      void registerModuleFunctor(functor &f) { functorList.push_back(&f); }
+
+      /// Add an new backend functor to backendFunctorList
+      void registerBackendFunctor(functor &f) { backendFunctorList.push_back(&f); }
+
+      /// Add an new primary model functor to primaryModelFunctorList
+      void registerPrimaryModelFunctor(primary_model_functor &f) 
+      {
+        registerModuleFunctor(f);
+        primaryModelFunctorList.push_back(&f); 
+      }
+
+      /// Add an entry to the map of activated primary model functors
+      void registerActiveModelFunctor(primary_model_functor &f) 
+      {
+        activeModelFunctorList[f.origin()] = &f;
+      }
+
+      /// Get a pointer to the list of module functors
+      const fVec* getModuleFunctors() const { return &functorList; } 
+
+      /// Get a pointer to the list of backend model functors
+      const fVec* getBackendFunctors() const { return &backendFunctorList; }
+
+      /// Get a pointer to the list of primary model functors
+      const pmfVec* getPrimaryModelFunctors() const { return &primaryModelFunctorList; }
+
+      /// Get a pointer to the map of all user-activated primary model functors
+      const pmfMap* getActiveModelFunctors() const { return &activeModelFunctorList; }
 
   };
 

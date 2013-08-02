@@ -59,10 +59,10 @@ void beispiel()
 {
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
-  cout << "Registered module functors [globalFunctorList.size()]: " <<
-    globalFunctorList.size() << endl;
-  cout << "Registered backend functors [globalBackendFunctorList.size()]: " <<
-    globalBackendFunctorList.size() << endl;
+  cout << "Registered module functors [Core.getModuleFunctors->size()]: " <<
+    Core.getModuleFunctors()->size() << endl;
+  cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
+    Core.getBackendFunctors()->size() << endl;
 
   // Read INI file
   IniParser::IniFile iniFile;
@@ -73,14 +73,13 @@ void beispiel()
   cout << "Your selected models are: " << selectedmodels << endl;
 
   // Initialise ModelFunctorClaw (for manipulating primary model functors)
-  ModelBit::ModelFunctorClaw modelClaw(globalPrimaryModelFunctorList);
+  ModelBit::ModelFunctorClaw modelClaw(Core);
   
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(globalFunctorList,
-      globalBackendFunctorList, iniFile);
+  Graphs::DependencyResolver dependencyResolver(Core, iniFile);
 
   // Log module function infos
   dependencyResolver.printFunctorList();

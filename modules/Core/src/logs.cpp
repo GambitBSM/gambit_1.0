@@ -379,29 +379,29 @@ namespace GAMBIT {
 /********************************************
  * example use of logging. enable this with gcc option -DLOGCORE_MAIN_ENABLE
  */
-int main(){
-  using namespace GAMBIT;
+//int main(){
+//  using namespace GAMBIT;
 
-  GAMBIT::setLogLevel(GAMBIT::sDEBUG);
+//  GAMBIT::setLogLevel(GAMBIT::sDEBUG);
 
-  GAMBIT_MSG_DEBUG(" entering a");
-  GAMBIT_MSG_WARNING(" WW 2") ;
-  GAMBIT_MSG_INFO(" leaving b");
+//  GAMBIT_MSG_DEBUG(" entering a");
+//  GAMBIT_MSG_WARNING(" WW 2") ;
+//  GAMBIT_MSG_INFO(" leaving b");
   //  GAMBIT::logsetup::setfile_range("_bbaaa",-10000,10000);
-  if(0)
-    GAMBIT_MSG_WARNING(" hello in d");
-  else
-    GAMBIT_MSG_WARNING(" hello in q") ;
+//  if(0)
+//    GAMBIT_MSG_WARNING(" hello in d");
+//  else
+//    GAMBIT_MSG_WARNING(" hello in q") ;
 
-  GAMBIT_MSG_DEBUG(" entering a");
+//  GAMBIT_MSG_DEBUG(" entering a");
 
-  GAMBIT_MSG_LOG(" exit c");
+//  GAMBIT_MSG_LOG(" exit c");
 
-  GAMBIT_MSG_WARNING(" hello in d");
-  GAMBIT_MSG_ERROR(" and something ");
-  GAMBIT_MSG_FATAL(" ... bad ");
+//  GAMBIT_MSG_WARNING(" hello in d");
+//  GAMBIT_MSG_ERROR(" and something ");
+//  GAMBIT_MSG_FATAL(" ... bad ");
 
-  return 0;
-}
+//  return 0;
+//}
 #endif
 #endif

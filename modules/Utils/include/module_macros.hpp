@@ -103,7 +103,7 @@
 
 //  Redirect rollcall macros depending in whether this file is included from 
 //  the core or a module. 
-#ifdef IN_CORE  // This file has been inluded from the core
+#ifdef IN_CORE  // This file has been included from the core
 
   /// Registers the current \link MODULE() MODULE\endlink.
   #define START_MODULE                                      CORE_START_MODULE
@@ -557,7 +557,7 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    GAMBIT::globalFunctorList.push_back(&Functown::FUNCTION);                  \
+    Core.registerModuleFunctor(Functown::FUNCTION);                            \
     map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;            \
     map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;                  \
     iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                             \
@@ -946,7 +946,7 @@
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
             be_functor* myptr;                                                 \
-            if (GAMBIT::Core.safe_mode())                                              \
+            if (Core.safe_mode())                                              \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \
@@ -980,7 +980,7 @@
           {                                                                    \
             typedef backend_functor<TYPE, ARGS...> be_functor;                 \
             be_functor* myptr;                                                 \
-            if (GAMBIT::Core.safe_mode())                                              \
+            if (Core.safe_mode())                                              \
             {                                                                  \
               myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
               if (myptr == 0)                                                  \

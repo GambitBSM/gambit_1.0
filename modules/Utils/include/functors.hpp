@@ -916,21 +916,6 @@ namespace GAMBIT
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
   
-
-
-// FIXME: This is probably not the best place to define global variables:
-#ifndef IN_CORE
-    extern
-#endif
-  std::vector<functor *> globalFunctorList;
-#ifndef IN_CORE
-    extern
-#endif
-  std::vector<functor *> globalBackendFunctorList;
-#ifndef IN_CORE
-    extern
-#endif
-  std::vector<primary_model_functor *> globalPrimaryModelFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */

@@ -1,24 +1,26 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
-/// \file
-///  Master Likelihood container
+///  \file
+///
+///  Scanner method implementations.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 May, June, July
 //
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-///  \author Christoph Weniger (c.weniger@uva.nl)
-///  \date May 20 2013
-///  \date June 03 2013
-///  \date July 2013
-//
-///  \author Gregory Martinez (gregory.david.martinez@gmail.com)
-///  \date July 2013
-//
-//  *********************************************
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2013 July 2013
+///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Aug
+///
+///  *********************************************
 
 #include <gambit_scan.hpp>
 #include <dlfcn.h>
@@ -40,8 +42,8 @@ namespace GAMBIT
                         }
                 }
                 
-                Gambit_Scanner::Gambit_Scanner (Graphs::DependencyResolver &a, std::map<std::string, primary_model_functor *> &activemodelFunctorMap, IniParser::IniFile &iniFile) 
-                                : dependencyResolver(&a), activeMapPtr(&activemodelFunctorMap), iniFilePtr(&iniFile), flag(0x00)
+                Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 
+                                : boundCore(&core), boundIniFile(&iniFile), dependencyResolver(&a), flag(0x00)
                 {
                         //do you have xterm?
                         hasXTerm = (system("which xterm") == 0) ? true : false;
@@ -74,8 +76,8 @@ namespace GAMBIT
                         std::vector<Scanner::Model>::iterator mod_it = models.begin();
                         for (std::vector<std::string>::iterator it = modelNames.begin(); it != modelNames.end(); ++it)
                         {//loop over iniFile models
-                                std::map<std::string, primary_model_functor *>::iterator act_it = activemodelFunctorMap.find(*it);
-                                if (act_it != activemodelFunctorMap.end())
+                                std::map<std::string, primary_model_functor *>::const_iterator act_it = boundCore->getActiveModelFunctors()->find(*it);
+                                if (act_it != boundCore->getActiveModelFunctors()->end())
                                 {//if model is in Gambit
                                         mod_it->name = *it;
                                         std::vector <std::string> parameterNames = iniFile.getModelParameters(*it);
@@ -194,7 +196,7 @@ namespace GAMBIT
                         if (msize != models.size())
                                 models.resize(msize);
                         
-                        if (activemodelFunctorMap.size() > models.size())
+                        if (boundCore->getActiveModelFunctors()->size() > models.size())
                                 flag |= missingModel;
                         
                         //if there are parameter that are the same as other parameters, this loop processes them
@@ -344,7 +346,10 @@ namespace GAMBIT
                         {
                                 std::cout << "\e[00;31mERROR:\e[00m  missing model in ini-file that's needed by Gambit.\n";
                                 std::set<std::string>s;
-                                for (std::map<std::string, primary_model_functor *>::iterator it = activeMapPtr->begin(); it != activeMapPtr->end(); ++it)
+                                for (std::map<std::string, primary_model_functor *>::const_iterator 
+                                    it  = boundCore->getActiveModelFunctors()->begin(); 
+                                    it != boundCore->getActiveModelFunctors()->end();
+                                    ++it)
                                 {
                                         s.insert(it->first);
                                 }
@@ -361,7 +366,7 @@ namespace GAMBIT
                         {
                                 std::cout << "\e[01;33mWARNING:\e[00m  There are more models defined in ini-file that are not required by Gambit.\n";
                                 std::set<std::string>s;
-                                std::vector <std::string> modelNames = iniFilePtr->getModelNames();
+                                std::vector <std::string> modelNames = boundIniFile->getModelNames();
                                 
                                 for (std::vector<Scanner::Model>::iterator it = models.begin(); it != models.end(); ++it)
                                 {
@@ -386,10 +391,11 @@ namespace GAMBIT
                                 if (bool(it->flag&missingParameter))
                                 {
                                         std::cout << "\e[00;31mERROR:\e[00m  Model " << it->name << " is missing parameter(s) in ini-file that's needed by Gambit.\n";
+                                        std::map<str, primary_model_functor*> activeModels = *boundCore->getActiveModelFunctors();
                                         std::vector<std::string> vec;
                                         it->InputNames(vec);
                                         std::set <std::string> s(vec.begin(), vec.end());
-                                        std::vector <std::string> paramkeys = (*activeMapPtr)[it->name]->getcontentsPtr()->getKeys();
+                                        std::vector <std::string> paramkeys = activeModels[it->name]->getcontentsPtr()->getKeys();
                                         cout << "parameter(s) missing:  [";
                                         for (std::vector <std::string>::iterator it2 = paramkeys.begin(); it2 != paramkeys.end(); ++it2)
                                         {
@@ -401,11 +407,11 @@ namespace GAMBIT
                                 }
                                 if (bool(it->flag&tooManyParamters))
                                 {
-                                        std::cout << "\e[01;33mWARNING:\e[00m  Model " << it->name << " has parameter(s) defined in ini-file that are not required by Gambit.\n";
-                                        
-                                        std::vector <std::string> paramkeys = (*activeMapPtr)[it->name]->getcontentsPtr()->getKeys();
+                                        std::cout << "\e[01;33mWARNING:\e[00m  Model " << it->name << " has parameter(s) defined in ini-file that are not required by Gambit.\n";             
+                                        std::map<str, primary_model_functor*> activeModels = *boundCore->getActiveModelFunctors();
+                                        std::vector <std::string> paramkeys = activeModels[it->name]->getcontentsPtr()->getKeys();
                                         std::set<std::string> s(paramkeys.begin(), paramkeys.end());
-                                        std::vector <std::string> parameterNames = iniFilePtr->getModelParameters(it->name);
+                                        std::vector <std::string> parameterNames = boundIniFile->getModelParameters(it->name);
                                         cout << "parameter(s) not required:  [";
                                         for (std::vector <std::string>::iterator it2 = parameterNames.begin(); it2 != parameterNames.end(); ++it2)
                                         {
@@ -427,8 +433,8 @@ namespace GAMBIT
                 
                 int Gambit_Scanner::Run()
                 {
-                        std::string file = iniFilePtr->getValue<std::string>("scanner", "file_path");
-                        std::string funcName = iniFilePtr->getValue<std::string>("scanner", "func_name");
+                        std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
+                        std::string funcName = boundIniFile->getValue<std::string>("scanner", "func_name");
 
                         void *plugin = dlopen (file.c_str(), RTLD_LAZY);
                         if (bool(plugin))
