@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "common_return_types.hpp"
-#include "logcore.hpp"
+#include "logs.hpp"
 
 namespace GAMBIT {
 

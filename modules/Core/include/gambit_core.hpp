@@ -1,27 +1,110 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  GAMBIT Core driver class.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott
+///  \date 2013 Aug
+///
+///  *********************************************
+
 #ifndef __gambit_core_hpp__
 #define __gambit_core_hpp__
-#include "logcore.hpp"
+
+#include <map>
+#include <vector>
+
+#include "logs.hpp"
+#include "util_classes.hpp"
+#include "functors.hpp"
 
 namespace GAMBIT {
+ 
+  /// Master driver class for a GAMBIT scan.
+  class gambit_core
+  {
 
-  /*! \brief core sutup
-   *
-   * Usage: GAMBIT::GAMBIT_core::init();
-   *
-   * Effect: GAMBIT traps ctrl-c and some other signals and tries to
-   * close logfiles and other cleanups in such cases.
-   *
-   * \author Johan Lundberg
-   * \date 2011-08-19
-   */
-  class GAMBIT_core{
-  private:
-    GAMBIT_core(){}
-    ~GAMBIT_core(){}
-  public:
-    static void init();
-    static void exiter(int i);
+    private:
+
+      /// Internal typedefs to keep things readable
+      /// @{
+      typedef std::vector<functor*> fVec;
+      typedef std::vector<primary_model_functor*> pmfVec;
+      typedef std::map<str, primary_model_functor*> pmfMap;
+      /// @}     
+
+      /// Internal indication of the safe mode status
+      bool safe_mode_on;
+
+      /// List of all declared module functors
+      fVec functorList;
+
+      /// List of all declared backend functors
+      fVec backendFunctorList;
+
+      /// List of all declared primary model functors
+      pmfVec primaryModelFunctorList;
+
+      /// A map of all user-activated primary model functors
+      pmfMap activeModelFunctorList;
+
+    public:
+
+      /// Constructor, sets safe mode
+      gambit_core(bool safe) : safe_mode_on(safe) {}
+
+      /// Destructor
+      ~gambit_core(){}
+
+      /// Is the scan running in safe mode?
+      bool safe_mode() { return safe_mode_on; }
+
+      /// Add an new module functor to functorList
+      void registerModuleFunctor(functor &f) { functorList.push_back(&f); }
+
+      /// Add an new backend functor to backendFunctorList
+      void registerBackendFunctor(functor &f) { backendFunctorList.push_back(&f); }
+
+      /// Add an new primary model functor to primaryModelFunctorList
+      void registerPrimaryModelFunctor(primary_model_functor &f) 
+      {
+        registerModuleFunctor(f);
+        primaryModelFunctorList.push_back(&f); 
+      }
+
+      /// Add an entry to the map of activated primary model functors
+      void registerActiveModelFunctor(primary_model_functor &f) 
+      {
+        activeModelFunctorList[f.origin()] = &f;
+      }
+
+      /// Get a pointer to the list of module functors
+      const fVec* getModuleFunctors() const { return &functorList; } 
+
+      /// Get a pointer to the list of backend model functors
+      const fVec* getBackendFunctors() const { return &backendFunctorList; }
+
+      /// Get a pointer to the list of primary model functors
+      const pmfVec* getPrimaryModelFunctors() const { return &primaryModelFunctorList; }
+
+      /// Get a pointer to the map of all user-activated primary model functors
+      const pmfMap* getActiveModelFunctors() const { return &activeModelFunctorList; }
+
   };
 
-}
+
+#ifdef IN_CORE
+  gambit_core Core(true);
+#else
+  extern gambit_core Core;
 #endif
+
+
+}
+
+#endif // defined __gambit_core_hpp__

@@ -18,6 +18,10 @@
 ///          (c.weniger@uva.nl)
 ///  \date 2013 June
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 July
+///
 ///  *********************************************
 
 #ifndef __BACKEND_MACROS_HPP__
@@ -113,8 +117,8 @@ namespace GAMBIT                                                            \
       {                                                                     \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME = reinterpret_cast<TYPE*>(pSym);                               \
-        GAMBIT::globalBackendFunctorList.push_back(&Functown::get##NAME);   \
-        GAMBIT::globalBackendFunctorList.push_back(&Functown::set##NAME);   \
+        Core.registerBackendFunctor(Functown::get##NAME);                   \
+        Core.registerBackendFunctor(Functown::set##NAME);                   \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \
@@ -181,7 +185,7 @@ namespace GAMBIT                                                            \
            it to pointer NAME. */                                           \
         NAME = reinterpret_cast<NAME##_type>(pSym);                         \
         Functown::NAME.updatePointer(NAME);                                 \
-        GAMBIT::globalBackendFunctorList.push_back(&Functown::NAME);        \
+        Core.registerBackendFunctor(Functown::NAME);                        \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \
@@ -237,7 +241,7 @@ namespace GAMBIT                                                            \
                                                                             \
       void CAT(constructFuncPointer_,NAME)()                                \
       {                                                                     \
-        GAMBIT::globalBackendFunctorList.push_back(&Functown::NAME);        \
+        Core.registerBackendFunctor(Functown::NAME);                        \
       }                                                                     \
                                                                             \
       namespace ini                                                         \

@@ -16,7 +16,7 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 July
+///  \date 2013 July, Aug
 ///
 ///  *********************************************
 
@@ -502,7 +502,7 @@
 /// Macro to create and register primary model functors. 
 ///
 /// Need this extra wrapper in order to register these special functors in the
-/// globalPrimaryModelFunctorList (no other functors are allowed here)         
+/// Core's primary model functor list (no other functors are allowed here)         
 #define MAKE_PRIMARY_MODEL_FUNCTOR                                             \
   MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(primary_parameters,ModelParameters,          \
     CAT_5(MODEL,_,PARAMETERISATION,_,parameters),                              \
@@ -547,13 +547,13 @@
      return Functown::FUNCTION();                                              \
   }                                                                            \
                                                                                \
-  /* Set up the commands to be called at runtime to register the function, now 
-     including registration of the functor in globalPrimaryModelFunctorList */ \
+  /* Set up the commands to be called at runtime to register the function,     \ 
+     including registering the functor with the primaryModelFunctorList in     \
+     the Core. */                                                              \
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    GAMBIT::globalFunctorList.push_back(&Functown::FUNCTION);                  \
-    GAMBIT::globalPrimaryModelFunctorList.push_back(&Functown::FUNCTION);      \
+    Core.registerPrimaryModelFunctor(Functown::FUNCTION);                      \
     map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;            \
     map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;                  \
     iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                             \

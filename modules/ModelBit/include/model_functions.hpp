@@ -85,7 +85,10 @@ namespace GAMBIT
     ///  Function pointer type
     typedef bool (*LineageFunction)(std::string);
 
-    #ifndef IN_CORE //FIXME PS: this is a bit hacky, we should try to do better
+    #ifndef IN_CORE //FIXME PS: this is a bit hacky, we should try to do better;
+                    //these should be moved into the modelClaw or a similar class
+                    // and made private members, then that class can just be 
+                    // instantiated under a single ifdef IN_CORE 
       extern std::set<str> allmodelnames;
     #else
       str tmp[] = {"model_base"};

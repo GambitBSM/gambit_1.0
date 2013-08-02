@@ -10,21 +10,19 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June, July 2013
+///  \date 2013 May, June, July
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 May, July
+///  \date 2013 May, July, Aug
 ///
 ///  *********************************************
 
-#include <vector>
-#include <functors.hpp>
-#include <graphs.hpp>
-#include <yaml_parser.hpp>
-#include "boost/format.hpp"
-// #include <regex>
+#include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
+// #include <regex>
+
+#include "graphs.hpp"
 
 #define OMEGA_VERTEXID 52314768
 
@@ -168,21 +166,18 @@ namespace GAMBIT
     //
 
     /// Constructor. 
-    /// Add module and backend functors to class internal lists.
-    DependencyResolver::DependencyResolver(
-        std::vector<functor *> functorList,
-        std::vector<functor *> backendFunctorList, 
-        IniParser::IniFile iniFile)
+    /// Add module functors to class internal list.
+    DependencyResolver::DependencyResolver(const gambit_core &core, const IniParser::IniFile &iniFile)
+     : boundCore(&core), boundIniFile(&iniFile)
     {
-      addFunctors(functorList, backendFunctorList);
-      myIniFile = iniFile;
+      addFunctors();
       addAdhocNodes();
     }
 
     /// Main dependency resolution
     void DependencyResolver::resolveNow()
     {
-      const IniParser::ObservablesType & observables = myIniFile.getObservables();
+      const IniParser::ObservablesType & observables = boundIniFile->getObservables();
       // (cap., typ) --> dep. vertex map
       std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
       std::pair<sspair, Graphs::VertexID> queueEntry;
@@ -216,35 +211,39 @@ namespace GAMBIT
       cout << endl << "Vertices registered in masterGraph" << endl;
       cout << "----------------------------------" << endl;
       cout << boost::format(formatString)%
-        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) {
+       "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
         cout << boost::format(formatString)%
-          ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
-          (*masterGraph[*vi]).name()%
-          (*masterGraph[*vi]).capability()%
-          (*masterGraph[*vi]).type()%
-          (*masterGraph[*vi]).purpose()%
-          (*masterGraph[*vi]).status()%
-          (*masterGraph[*vi]).dependencies().size()%
-          (*masterGraph[*vi]).backendreqs().size();
+         ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
+         (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).capability()%
+         (*masterGraph[*vi]).type()%
+         (*masterGraph[*vi]).purpose()%
+         (*masterGraph[*vi]).status()%
+         (*masterGraph[*vi]).dependencies().size()%
+         (*masterGraph[*vi]).backendreqs().size();
         i++;
-      };
+      }
       formatString = "%-25s %-25s %-45s %-25s\n";
       cout << endl << "Registered Backend vertices" << endl;
       cout <<         "---------------------------" << endl;
       cout << boost::format(formatString)%
-        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE";
-      for (std::vector<functor *>::iterator it = myBackendFunctorList.begin();
-          it != myBackendFunctorList.end(); ++it) {
+       "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE";
+      for (std::vector<functor *>::const_iterator 
+          it  = boundCore->getBackendFunctors()->begin();
+          it != boundCore->getBackendFunctors()->end();
+          ++it)
+      {
         cout << boost::format(formatString)%
-          ((*it)->origin() + " (" + (*it)->version() + ")") %
-          (*it)->name()%
-          (*it)->capability()%
-          (*it)->type();
+         ((*it)->origin() + " (" + (*it)->version() + ")") %
+         (*it)->name()%
+         (*it)->capability()%
+         (*it)->type();
         i++;
-      };
+      }
       // cout << "TOTAL: " << i << endl;
-    };
+    }
 
     /// New IO routines
     std::vector<VertexID> DependencyResolver::getObsLikeOrder()
@@ -337,10 +336,10 @@ namespace GAMBIT
     {
       // Define new vertices
       module_functor<double> * p_modfunc;
-      std::vector<std::string> parameters = myIniFile.getModelParameters("adhoc");
+      std::vector<str> parameters = boundIniFile->getModelParameters("adhoc");
 
       // Input legs
-      for (std::vector<std::string>::const_iterator it =
+      for (std::vector<str>::const_iterator it =
           parameters.begin(); it != parameters.end(); ++it)
       {
         inputMap[*it] = new double;
@@ -355,14 +354,13 @@ namespace GAMBIT
     }
 
     /// Add module and backend functors to class internal lists.
-    void DependencyResolver::addFunctors(
-        std::vector<functor *> functorList,
-        std::vector<functor *> backendFunctorList )
+    void DependencyResolver::addFunctors()
     {
       // - module functors go into masterGraph
-      // - backend functors go into myBackendFunctorList
-      for (std::vector<functor *>::iterator it = functorList.begin();
-          it != functorList.end(); ++it)
+      for (std::vector<functor *>::const_iterator 
+          it  = boundCore->getModuleFunctors()->begin();
+          it != boundCore->getModuleFunctors()->end();
+          ++it)
       {
         // Ben: Added check to ignore functors with status set to 0 (i.e. never
         // add them to the graph). If you don't want the value 0 to mean this,
@@ -373,7 +371,6 @@ namespace GAMBIT
           boost::add_vertex(*it, this->masterGraph);
         }
       }
-      this->myBackendFunctorList = backendFunctorList;
     }
 
     /// Resolve dependency
@@ -396,13 +393,13 @@ namespace GAMBIT
       // is stored in depEntry.
       if ( toVertex == OMEGA_VERTEXID)
       {
-        depEntry = findIniEntry(quantity, myIniFile.getObservables());
+        depEntry = findIniEntry(quantity, boundIniFile->getObservables());
         entryExists = true;
       }
       // for all other vertices use the auxiliaries entries
       else 
       {
-        auxEntry = findIniEntry(toVertex, myIniFile.getAuxiliaries());
+        auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries());
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 
@@ -612,7 +609,7 @@ namespace GAMBIT
       cout << "backend function resolution: " << endl;
 
       // Check whether vertex is mentioned in inifile
-      auxEntry = findIniEntry(vertex, myIniFile.getAuxiliaries());
+      auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries());
 
       // A loop over all requirements
       for (std::vector<sspair>::iterator it = reqs.begin();
@@ -630,8 +627,9 @@ namespace GAMBIT
 
         // Loop over all available backend vertices, and make a list of
         // functors that fulfill the backend dependency requirement
-        for (std::vector<functor *>::iterator itf =
-            myBackendFunctorList.begin(); itf != myBackendFunctorList.end();
+        for (std::vector<functor *>::const_iterator
+            itf  = boundCore->getBackendFunctors()->begin(); 
+            itf != boundCore->getBackendFunctors()->end();
             ++itf) 
         {
           // Without inifile entry, just match capabilities and types exactly

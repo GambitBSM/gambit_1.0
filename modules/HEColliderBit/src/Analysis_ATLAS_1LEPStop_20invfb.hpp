@@ -13,14 +13,15 @@
 
    Known features:
    a) Must run simulator with 75% b tagging efficiency and 2% mis-id rate
-   b) For now have nicked ATLAS MT2 code. Need to check status of this for public release.
+   b) For now have nicked ATLAS MT2 code. Need to check status of this for public release. The better option is to write a non-ROOT version later.
 */
 
 namespace GAMBIT {
 
 
   using namespace std;
-  
+
+  //A useful MT2 class for this module
   class MT2 {
     
   public:
@@ -53,7 +54,7 @@ namespace GAMBIT {
 
     // void init() {
     // }
-    MT2 MT2Helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, P4 metVec){
+    MT2 MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, P4 metVec){
 
       MT2 results;
       
@@ -69,8 +70,22 @@ namespace GAMBIT {
       //ATLAS use the two jets with highest MV1 weights
       //DELPHES does not have a continuous b weight
       //Thus must approximate using the two true b jets
-      Jet * trueBjet1; //need to assign this
-      Jet * trueBjet2; //nee to assign this
+      Jet * trueBjet1=0; //need to assign this
+      Jet * trueBjet2=0; //nee to assign this
+
+      for(Jet * tmpJet: jets){
+	if(tmpJet->getPdgId()==5){
+	  trueBjet1=jet;		     
+	  break;
+	}
+      }
+
+      for(Jet * tmpJet: jets){
+	if(tmpJet->getPdgId()==5 && tmpJet!=trueBjet1){
+	  trueBjet2=jet;		     
+	  break;
+	}
+      }
 
       TLorentzVector jet1B,jet2B;
       jet1B.SetPtEtaPhiE(trueBjet1->pT(),trueBjet1->eta(),trueBjet1->phi(),trueBjet1->E());
@@ -100,10 +115,10 @@ namespace GAMBIT {
       double mt2b = stuff2.ComputeNumeric();
       
       double aMT2_BM = min(mt2a,mt2b);
-      results.MT2tauB=aMT2_BM;
+      results.aMT2_BM=aMT2_BM;
       
       if (nJet > 3){
-        Jet * jet3;
+        Jet * jet3=0;
 	for(Jet * current: jets){
 	  if (current == trueBjet1)continue;
 	  if (current == trueBjet2)continue;
@@ -117,8 +132,6 @@ namespace GAMBIT {
 	results.MT2tauB=MT2tauB;
       }
       return results;
-      
-      
     }
 
 
@@ -268,10 +281,16 @@ namespace GAMBIT {
       bool passHadTop=false;
       if(mHadTop>130.&& mHadTop<205.)passHadTop=true;
       
-      //Do MT2 calculations
-      //ComputeMT2(jet1B+lepton,jet2B,MET,0.,80.)
-      TLorentzVector shit;
+      if(!passHadTop)return;
       
+      //Do MT2 calculations (note: do these last, since they are slowest)
+      MT2 mt2s = MT2helper(signalJets,signalElectrons,signalMuons,ptot);
+      double amt2 = mt2s.aMT2_BM;
+      double mt2tau = mt2s.MT2tauB;
+
+      //We're now ready to apply the cuts for each signal region
+      
+	
       return;
       
     }

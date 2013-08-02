@@ -8,7 +8,7 @@
 
 #include <cxxabi.h>
 #include <execinfo.h>
-#include "logcore.hpp"
+#include "logs.hpp"
 
 namespace GAMBIT{
 

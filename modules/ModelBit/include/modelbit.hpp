@@ -1,23 +1,31 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
 ///  Header for library of ModelBit provisions to 
 ///  the core.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Ben Farmer
-//  2013 July 17
-//
-//  *********************************************
+///  
+///  Duties:
+///    Activate primary_model_functors according 
+///    to the model(s) being scanned.
+///
+///  *********************************************
+///
+///  Authors
+///  =======
+///
+///  (add name and date if you modify)
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 July 17
+///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Aug
+///
+///  *********************************************
 
-// Duties:
-// * Activate primary_model_functors according to the model(s) being scanned
 
 #ifndef __modelbit_hpp__
 #define __modelbit_hpp__
@@ -26,7 +34,10 @@
 #include <boost/graph/topological_sort.hpp>
 #include <vector>
 #include <string>
-#include <functors.hpp>
+
+#include "gambit_core.hpp"
+#include "functors.hpp"
+#include "util_classes.hpp"
 
 namespace GAMBIT
 {
@@ -41,23 +52,25 @@ namespace GAMBIT
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
     
-    typedef std::map<std::string, std::vector<std::string>> map_of_vectors;
+    typedef std::map < str, std::vector<str> > map_of_vectors;
     
-    /// Modelbit object which performs initialisation and checking operations
-    /// on the global primary_model_functor list.
+    /// ModelBit object which performs initialisation and checking operations
+    /// on the Core's primary_model_functor list.
     class ModelFunctorClaw
     {
+
       public:
+
         /// Constructor
         ///
-        /// Hooks the "claw" into the global primary model functor list
-        ModelFunctorClaw (std::vector<primary_model_functor *> &);
+        /// Hooks the claw into a core
+        ModelFunctorClaw (gambit_core&);
         
         /// Model activation function
         ///
         /// Activates primary_model_functors according to the model(s) being 
         /// scanned
-        void activatePrimaryModels( const std::vector<std::string> &);
+        void activatePrimaryModels(const std::vector<str> &);
         
         /// Active model functor "usefulness" checker
         ///
@@ -67,24 +80,24 @@ namespace GAMBIT
         void checkPrimaryModelFunctorUsage();
         
         /// Add model functors (vertices) to model hierarchy graph
-        void addFunctorsToGraph (std::vector<primary_model_functor *> &);
+        void addFunctorsToGraph();
         
         /// Add edges (relationships) to model hierarchy graph
         void learnModelHierarchy (map_of_vectors &);
-        
-        
-        /// Member variable which stores the map of user-activated models
-        std::map<std::string, primary_model_functor *> activeModelFunctors;
 
+                
       private:
-        /// Private reference to the global functor list
-        std::vector<primary_model_functor *> &_globalPrimaryModelFunctors;
 
-        // *** The central boost graph object
+        /// Private pointer to the gambit_core object to which this claw is bound
+        gambit_core *boundCore;
+
+        /// The central boost graph object for the model hierarchy
         MasterGraphType modelGraph;
+
     };
  
   }
+
 }
 
 #endif

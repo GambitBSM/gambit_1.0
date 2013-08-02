@@ -1,6 +1,6 @@
 #include "backend-fherwig.hpp"
 #include "particle.hpp"
-#include "logcore.hpp"
+#include "logs.hpp"
 
 #include <dlfcn.h>     // Needed for dlopen
 

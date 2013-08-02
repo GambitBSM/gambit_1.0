@@ -1,28 +1,35 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-///  Library of ModelBit provisions to the core
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Library of ModelBit provisions to the core.
 ///  
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Ben Farmer
-//  2013 July 17
-//
-//  *********************************************
-
-// Duties:
-// * Activate primary_model_functors according to the model(s) being scanned
-// * Check whether all active primary_model_functors are actually used in the
-//   the dependency graph
-// * Create and track a graph of the model hierarchy, for both visualisation
-//   and for relationship checks (needed in order to activate conditional
-//   dependencies on models)
+///  Duties:
+///  * Activate primary_model_functors according to
+///    the model(s) being scanned
+///  * Check whether all active primary_model_functors
+///    are actually used in the the dependency graph
+///  * Create and track a graph of the model hierarchy,
+///    for both visualisation and for relationship 
+///    checks (needed in order to activate conditional
+///    dependencies on models)
+///
+///  *********************************************
+///
+///  Authors
+///  =======
+///
+///  (add name and date if you modify)
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 July 17
+///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Aug
+///
+///  *********************************************
 
 #include <modelbit.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -65,44 +72,45 @@ namespace GAMBIT
     /// ModelFunctorClaw function definitions
     /// 
     /// Modelbit object which performs initialisation and checking operations
-    /// on the global primary_model_functor list.
+    /// on the Core's primary_model_functor list.
     /// Also creates a graph of the model hierarchy for visualisation purposes.
 
     // Public functions and data members
     
     /// Constructor
     ///
-    /// Hooks the "claw" into the global primary model functor list
-    ModelFunctorClaw::ModelFunctorClaw (std::vector<primary_model_functor *> 
-                                                  &globalPrimaryModelFunctors)
-      : _globalPrimaryModelFunctors(globalPrimaryModelFunctors) 
+    /// Hooks the claw into a core
+    ModelFunctorClaw::ModelFunctorClaw (gambit_core &core)
+      : boundCore(&core) 
     {
       // Add all primary model functors to the model hierarchy graph
-      this->addFunctorsToGraph(_globalPrimaryModelFunctors);
+      this->addFunctorsToGraph();
     }
     
     /// Model activation function
     ///
     /// Activates primary_model_functors according to the model(s) being scanned
-    void ModelFunctorClaw::activatePrimaryModels ( 
-                                const std::vector<std::string> &selectedmodels )
+    void ModelFunctorClaw::activatePrimaryModels (const std::vector<str> &selectedmodels)
     { 
-      // Loop through functor list and activate functor if it matches a member
-      // of 'selectedmodels'.
-      for (std::vector<primary_model_functor *>::iterator it = 
-              _globalPrimaryModelFunctors.begin();
-          it != _globalPrimaryModelFunctors.end(); ++it)
+      // Loop through functor list and activate functor if it matches a member of 'selectedmodels'.
+      for (std::vector<primary_model_functor*>::const_iterator 
+          it  = boundCore->getPrimaryModelFunctors()->begin();
+          it != boundCore->getPrimaryModelFunctors()->end();
+          ++it)
       {
         // Check if this functor originates from one of the selected models
         if(std::find(selectedmodels.begin(), selectedmodels.end(), (*it)->origin()) 
-              != selectedmodels.end()) {
-            // If yes, activate this functor
-            (*it)->setStatus(1); // 1 means "available". Possibly switch this to 2 ("active").
-            // Initialise ModelParameters object it contains
-            (*it)->calculate();
-            // Add it to the activeModelFunctors map
-            activeModelFunctors[(*it)->origin()] = *it;
-        } else {
+              != selectedmodels.end())
+        {
+          // If yes, activate this functor
+          (*it)->setStatus(1); // 1 means "available". Possibly switch this to 2 ("active").
+          // Initialise ModelParameters object it contains
+          (*it)->calculate();
+          // Add it to the map of active primary model functors in the core
+          boundCore->registerActiveModelFunctor(**it);
+        } 
+        else
+        {
             // If no, deactivate this functor
             (*it)->setStatus(0);
         }
@@ -124,8 +132,8 @@ namespace GAMBIT
       // set to 2 ("active"). If not, it means that some of them were not
       // activated by the dependency resolver and thus are not used for 
       // computing anything.
-      for(activemodel_it it = activeModelFunctors.begin(); 
-                                      it != activeModelFunctors.end(); it++) 
+      for(activemodel_it it  = boundCore->getActiveModelFunctors()->begin(); 
+                         it != boundCore->getActiveModelFunctors()->end(); it++) 
       {
         modelname  = it->first;
         functorPtr = it->second;
@@ -155,20 +163,16 @@ off in the inifile or add a target which actually uses them."<<std::endl;
     } //end checkPrimaryModelFunctorUsage
 
     /// Add model functors to the modelGraph
-    void ModelFunctorClaw::addFunctorsToGraph(
-                    std::vector<primary_model_functor *> &functorList
-                    )
+    void ModelFunctorClaw::addFunctorsToGraph()
     {
-      // - model functors go into masterGraph
+      // - model functors go into modelGraph
       for (std::vector<primary_model_functor *>::const_iterator
-          it  = functorList.begin();
-          it != functorList.end(); ++it)
+          it  = boundCore->getPrimaryModelFunctors()->begin();
+          it != boundCore->getPrimaryModelFunctors()->end(); ++it)
       {
         //if ( (*it)->status() != 0 ) 
-        boost::add_vertex(*it, this->modelGraph);
-      
+        boost::add_vertex(*it, this->modelGraph);     
       }
-    
     }
     
     typedef std::map<std::string, VertexID>::iterator vertexIDmap_it;

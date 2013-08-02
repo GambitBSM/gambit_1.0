@@ -108,12 +108,12 @@ namespace GAMBIT
         //
         // Getters for private observable and auxiliaries entries
         //
-        const ObservablesType & getObservables()
+        const ObservablesType & getObservables() const
         {
           return observables;
         }
 
-        const ObservablesType & getAuxiliaries()
+        const ObservablesType & getAuxiliaries() const
         {
           return auxiliaries;
         }
@@ -121,27 +121,27 @@ namespace GAMBIT
         //
         // Getters for key/value section
         //
-        bool hasKey(std::string key)
+        bool hasKey(std::string key) const
         {
           return keyValuePairNode[key];
         }
 
-        bool hasKey(std::string s1, std::string s2)
+        bool hasKey(std::string s1, std::string s2) const
         {
           return keyValuePairNode[s1][s2];
         }
 
-        bool hasKey(std::string s1, std::string s2, std::string s3)
+        bool hasKey(std::string s1, std::string s2, std::string s3) const
         {
           return keyValuePairNode[s1][s2][s3];
         }
 
-        bool hasKey(std::string s1, std::string s2, std::string s3, std::string s4)
+        bool hasKey(std::string s1, std::string s2, std::string s3, std::string s4) const
         {
           return keyValuePairNode[s1][s2][s3][s4];
         }
 
-        template<typename TYPE> TYPE getValue(std::string key)
+        template<typename TYPE> TYPE getValue(std::string key) const
         {
           if (keyValuePairNode[key])
             return keyValuePairNode[key].as<TYPE>();
@@ -149,7 +149,7 @@ namespace GAMBIT
           exit(1);
         };
 
-        template<typename TYPE> TYPE getValue(std::string key, std::string subkey)
+        template<typename TYPE> TYPE getValue(std::string key, std::string subkey) const
         {
           if (keyValuePairNode[key][subkey])
             return keyValuePairNode[key][subkey].as<TYPE>();
@@ -158,7 +158,7 @@ namespace GAMBIT
           exit(1);
         };
 
-        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3)
+        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3) const
         {
           if (keyValuePairNode[s1][s2][s3])
             return keyValuePairNode[s1][s2][s3].as<TYPE>();
@@ -167,7 +167,7 @@ namespace GAMBIT
           exit(1);
         };
 
-        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4)
+        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4) const
         {
           if (keyValuePairNode[s1][s2][s3][s4])
             return keyValuePairNode[s1][s2][s3][s4].as<TYPE>();
@@ -180,7 +180,7 @@ namespace GAMBIT
         // Getters for model/parameter section
         //
         template<typename TYPE> TYPE getModelParameterEntry(std::string model,
-            std::string param, std::string key)
+            std::string param, std::string key) const
         {
           if (parametersNode[model][param][key])
             return parametersNode[model][param][key].as<TYPE>();
@@ -188,13 +188,13 @@ namespace GAMBIT
           exit(1);
         };
 
-        bool hasModelParameterEntry(std::string model, std::string param, std::string key)
+        bool hasModelParameterEntry(std::string model, std::string param, std::string key) const
         {
           return parametersNode[model][param][key];
         }
 
         // Return list of model names (without "adhoc" model!)
-        std::vector<std::string> getModelNames()
+        const std::vector<std::string> getModelNames() const
         {
           std::vector<std::string> result;
           for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
@@ -205,7 +205,7 @@ namespace GAMBIT
           return result;
         }
 
-        std::vector<std::string> getModelParameters(std::string model)
+        const std::vector<std::string> getModelParameters(std::string model) const
         {
           std::vector<std::string> result;
           if (parametersNode[model])

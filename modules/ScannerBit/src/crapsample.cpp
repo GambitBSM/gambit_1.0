@@ -1,7 +1,6 @@
 #ifndef CRAPSAMPLE_HPP
 #define CRAPSAMPLE_HPP
 
-#include <master_like.hpp>
 #include <vector>
 #include <string>
 #include <cmath>

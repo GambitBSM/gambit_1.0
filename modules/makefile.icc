@@ -18,7 +18,7 @@ FFLAGS = -O3 -fPIC
 ######################################################
 # Explicit options for gambit building:
 # 
-# CoreBit/include/logcore.hpp:
+# CoreBit/include/logs.hpp:
 # hard disable (via macros) of low-level gambit debugging.
 # There are also in-code options, but this could potentially lead to
 # a speedup and smaller code. -1000 allows all log messages to be treated.
@@ -209,6 +209,10 @@ $(MODELDIR)/build/%.o: $(MODELDIR)/src/%.c $(ALLINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
+	
 ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -293,9 +297,9 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
+gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
 	@echo ___________Linking $@:
@@ -312,7 +316,7 @@ libfortran.so:
 # beb_tester from makefile.test_backend
 beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logcore.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logs.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(ALLINC) $(ALLSRC) 
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."

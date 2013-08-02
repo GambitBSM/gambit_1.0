@@ -78,28 +78,28 @@ namespace GAMBIT
       // from within module functions
 
       /// Setter for version
-      void setVersion(str ver) { if (this == NULL) failBigTime(); myVersion = ver; }
+      void setVersion(str ver) { if (this == NULL) failBigTime("setVersion"); myVersion = ver; }
       /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
-      void setStatus(int stat) { if (this == NULL) failBigTime(); myStatus = stat; }
+      void setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
       /// Setter for purpose (relevant only for next-to-output functors)
-      void setPurpose(str purpose) { if (this == NULL) failBigTime(); myPurpose = purpose; }
+      void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
 
       /// Getter for the wrapped function's name
-      str name()        { if (this == NULL) failBigTime(); return myName;       }
+      str name()        { if (this == NULL) failBigTime("name"); return myName;       }
       /// Getter for the wrapped function's reported capability
-      str capability()  { if (this == NULL) failBigTime(); return myCapability; }
+      str capability()  { if (this == NULL) failBigTime("capability"); return myCapability; }
       /// Getter for the wrapped function's reported return type
-      str type()        { if (this == NULL) failBigTime(); return myType;       }
+      str type()        { if (this == NULL) failBigTime("type"); return myType;       }
       /// Getter for the wrapped function's origin (module or backend name)
-      str origin()      { if (this == NULL) failBigTime(); return myOrigin;     }
+      str origin()      { if (this == NULL) failBigTime("origin"); return myOrigin;     }
       /// Getter for the  version of the wrapped function's origin (module or backend)
-      str version()     { if (this == NULL) failBigTime(); return myVersion;    }
+      str version()     { if (this == NULL) failBigTime("version"); return myVersion;    }
       /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
-      int status()      { if (this == NULL) failBigTime(); return myStatus;     }
+      int status()      { if (this == NULL) failBigTime("status"); return myStatus;     }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
-      sspair quantity() { if (this == NULL) failBigTime(); return std::make_pair(myCapability, myType); }
+      sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
-      str purpose()     { if (this == NULL) failBigTime(); return myPurpose;    }
+      str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose;    }
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()          
@@ -224,12 +224,13 @@ namespace GAMBIT
       bool needs_recalculating;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
-      static void failBigTime()
+      static void failBigTime(str method)
       {
           cout << endl << "Error in module function!  Attempted to use a conditional " << endl;
           cout << "dependency that has not been activated, or a model parameter " << endl;
           cout << "that is not defined in the model for which this function has " << endl;
           cout << "been invoked.  Please check your module function source code. " << endl;
+          cout << "Method invoked: " << method << endl;
           exit(1);
           /// FIXME \todo throw real error here                             
       }
@@ -366,14 +367,14 @@ namespace GAMBIT
       /// Operation (return value)
       TYPE operator()() 
       { 
-        if (this == NULL) functor::failBigTime();
+        if (this == NULL) functor::failBigTime("operator()");
         return myValue;
       }
 
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr()
       {
-        if (this == NULL) functor::failBigTime();
+        if (this == NULL) functor::failBigTime("valuePtr");
         return safe_ptr<TYPE>(&myValue);
       }
 
@@ -808,7 +809,7 @@ namespace GAMBIT
       /// 2) Operation (execute function and return value) 
       TYPE operator()(ARGS... args) 
       { 
-        if (this == NULL) functor::failBigTime();
+        if (this == NULL) functor::failBigTime("operator()");
         if(this->needs_recalculating) { myValue = this->myFunction(args...); }
         return myValue;
       }
@@ -816,7 +817,7 @@ namespace GAMBIT
       /// 2) Alternative to operation (execute function and return a pointer to value)
       safe_ptr<TYPE> valuePtr(ARGS... args)
       {
-        if (this == NULL) functor::functor::failBigTime();
+        if (this == NULL) functor::functor::failBigTime("valuePtr");
         if(this->needs_recalculating) { myValue = this->myFunction(args...); }
         return safe_ptr<TYPE>(&myValue);
       }
@@ -858,7 +859,7 @@ namespace GAMBIT
       /// 2) Operation (execute function and return value) 
       void operator()(ARGS... args) 
       { 
-        if (this == NULL) functor::functor::failBigTime();
+        if (this == NULL) functor::functor::failBigTime("operator()");
         if(this->needs_recalculating) { this->myFunction(args...); }
       }
 
@@ -894,7 +895,7 @@ namespace GAMBIT
       /// ModelParameters objects)
       ModelParameters* getcontentsPtr()
       {
-        if (this == NULL) functor::failBigTime();
+        if (this == NULL) functor::failBigTime("getcontentsPtr");
         return &this->myValue;
       }
 
@@ -915,21 +916,6 @@ namespace GAMBIT
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
   
-
-
-// FIXME: This is probably not the best place to define global variables:
-#ifndef IN_CORE
-    extern
-#endif
-  std::vector<functor *> globalFunctorList;
-#ifndef IN_CORE
-    extern
-#endif
-  std::vector<functor *> globalBackendFunctorList;
-#ifndef IN_CORE
-    extern
-#endif
-  std::vector<primary_model_functor *> globalPrimaryModelFunctorList;
 }
 
 #endif /* defined(__functors_hpp__) */
