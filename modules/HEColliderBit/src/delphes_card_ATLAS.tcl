@@ -340,7 +340,7 @@ module Isolation ElectronIsolation {
 
   set DeltaRMax 0.2
 
-  set PTMin 0.5
+  set PTMin 1.0
 
   set PTRatioMax 0.1
 }
@@ -374,7 +374,7 @@ module AbsoluteIsolation MuonIsolation {
 
   set DeltaRMax 0.2
 
-  set PTMin 0.5
+  set PTMin 1.0
 
   set PTRatioMax 1.8
 }
@@ -477,12 +477,13 @@ module ConstituentFilter ConstituentFilter {
 ###########
 
 module BTaggingWithTruth BTagging {
+
   set PartonInputArray Delphes/partons
   set JetInputArray FastJetFinder/jets
 
   set BitNumber 0
 
-  set DeltaR 0.5
+  set DeltaR 0.4
 
   set PartonPTMin 1.0
 
@@ -493,11 +494,11 @@ module BTaggingWithTruth BTagging {
   # gluon's PDG code has the lowest priority
 
   # default efficiency formula (misidentification rate)
-  add EfficiencyFormula {0} {0.001}
+  add EfficiencyFormula {0} {0.02}
   # efficiency formula for c-jets (misidentification rate)
-  add EfficiencyFormula {4} {0.1}
+  add EfficiencyFormula {4} {0.02}
   # efficiency formula for b-jets
-  add EfficiencyFormula {5} {0.4}
+  add EfficiencyFormula {5} {0.7}
 }
 
 module TauTagging TauTagging {
