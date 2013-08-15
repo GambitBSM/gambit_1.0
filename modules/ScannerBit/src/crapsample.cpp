@@ -39,6 +39,8 @@ GAMBIT_SCANNER_MODULE (crapsample)
         REGISTER (int, point_number);
         REGISTER (std::string, output_file);
         REGISTER (GAMBIT::Scanner::gambitKeys, keys);
+        REGISTER (GAMBIT::Scanner::gambitUpperLimits, ulim);
+        REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim)
         REGISTER (GAMBIT::Scanner::Function_Base, like);
 
         double LogLikelihood(std::vector<double> &in)
@@ -49,6 +51,8 @@ GAMBIT_SCANNER_MODULE (crapsample)
         GAMBIT_SCANNER_MAIN (crapsample)
         {
                 std::vector<std::string> keys     = GET_VALUE(keys);
+                std::vector<double> upper_limits  = GET_VALUE(ulim);
+                std::vector<double> lower_limits  = GET_VALUE(llim);
                 std::string output_file           = GET_VALUE(output_file);
                 int N                             = GET_VALUE(point_number);
                 //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
@@ -56,8 +60,7 @@ GAMBIT_SCANNER_MODULE (crapsample)
                 
                 //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   "  << std::endl;
                 int ma = keys.size();
-                std::vector<double> upper_limits(ma, 1.0);
-                std::vector<double> lower_limits(ma, -1.0);
+                
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
@@ -68,16 +71,16 @@ GAMBIT_SCANNER_MODULE (crapsample)
                 for (int i = 0; i < ma; i++)
                         a[i] = gDev.Doub();
                 
-                chisq = (*LogLike)(a);
-                
                 std::cout << "Metropolis Hastings Algorthm Started" << std::endl; // << "tpoints = " << "\n\taccept ratio = " << std::endl;
+                
+                chisq = (*LogLike)(a);
                 
                 do
                 {
                         total++;
                         for (int i = 0; i < ma; i++)
                         {
-                        aNext[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
+                                aNext[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
                         }
 
                         chisqnext = (*LogLike)(aNext);
@@ -86,26 +89,62 @@ GAMBIT_SCANNER_MODULE (crapsample)
                         // if ((ans <= 0.0)||(-std::log(gDev.Doub()) >= ans))
                         if (true)
                         {
-                        out << mult << "   ";
-                        for (int k = 0; k < ma; k++)
-                        {
-                        out << a[k] << "   ";
-                        a[k] = aNext[k];
-                        }
-                        out << "   " << 2.0*chisq << std::endl;
-                        
-                        chisq = chisqnext;
-                        mult = 1;
-                        count++;
-                        // cout << "\033[2A\tpoints = " << count << "\n\taccept ratio = " << "               \033[15D" << (double)count/(double)total << endl;
-                        std::cout << "points = " << count << "; accept ratio = " << (double)count/(double)total << std::endl;
+                                out << mult << "   ";
+                                for (int k = 0; k < ma; k++)
+                                {
+                                        out << a[k] << "   ";
+                                        a[k] = aNext[k];
+                                }
+                                out << "   " << 2.0*chisq << std::endl;
+                                
+                                chisq = chisqnext;
+                                mult = 1;
+                                count++;
+                                // cout << "\033[2A\tpoints = " << count << "\n\taccept ratio = " << "               \033[15D" << (double)count/(double)total << endl;
+                                std::cout << "points = " << count << "; accept ratio = " << (double)count/(double)total << std::endl;
                         }
                         else
                         {
-                        mult++;
+                                mult++;
                         }
                 }
                 while(count < N);
+        }
+};
+
+GAMBIT_SCANNER_MODULE (loopsample)
+{
+        REGISTER (int, point_number);
+        REGISTER (std::string, output_file);
+        REGISTER (GAMBIT::Scanner::gambitKeys, keys);
+        REGISTER (GAMBIT::Scanner::gambitUpperLimits, ulim);
+        REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim)
+        REGISTER (GAMBIT::Scanner::Function_Base, like);
+        
+        GAMBIT_SCANNER_MAIN (loopsample)
+        {
+                std::vector<std::string> keys     = GET_VALUE(keys);
+                std::vector<double> upper_limits  = GET_VALUE(ulim);
+                std::vector<double> lower_limits  = GET_VALUE(llim);
+                std::string output_file           = GET_VALUE(output_file);
+                int N                             = GET_VALUE(point_number);
+                GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
+                
+                std::ofstream out(output_file.c_str());
+                int ma = keys.size();
+                std::vector<double> a(ma);
+                Ran gDev(0);
+                
+                cout << "entering loop sampler ..." << endl;
+                for (int k = 0; k < N; k++)
+                {
+                        for (int i = 0; i < ma; i++)
+                        {
+                                a[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
+                                out << a[i] << "   ";
+                        }
+                        out << (*LogLike)(a) << endl;
+                }
         }
 };
 

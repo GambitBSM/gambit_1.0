@@ -99,7 +99,45 @@ namespace GAMBIT
                         typedef void (*setValType)(std::string, gambitData &);                                                  
                         static setValType val(setValType &m){return 0;}                                                         
                         static type *ptr(gambitData &moduleData){return 0;}                                                     
-                };                                                                                                              
+                };        
+                
+                template <typename T> struct is_vector {static const bool value = false;};
+                template <typename T> struct is_vector <std::vector<T>> {static const bool value = true;};
+                
+                template <typename T>
+                typename enable_if<!is_vector<T>::value, void>::type convert(T **a, std::string &in)
+                {                      
+                        *a = new T;
+                        std::stringstream stuff;                                                                        
+                        stuff << in;                                                                                    
+                        stuff >> **a;   
+                }
+                
+                template <typename T>
+                typename enable_if<is_vector<T>::value, void>::type convert(T** a, std::string &in)
+                {
+                        *a = new T;
+                        std::stringstream stuff;
+                        stuff << in;
+                        typename T::value_type temp;
+                        while (stuff >> temp) (*a)->push_back(temp);
+                }
+                
+                template <>
+                void convert <std::vector<char>> (std::vector<char> **a, std::string &in)
+                {
+                        *a = new std::vector<char>(in.begin(), in.end());
+                }
+                
+                template<>
+                void convert <std::string> (std::string **a, std::string &in)
+                {
+                        *a = new std::string;
+                        **a = in;
+                }
+                
+                template<>
+                void convert <Function_Base> (Function_Base **a, std::string &in){}
         };
 };
 
@@ -131,10 +169,8 @@ namespace GAMBIT_Scanner_Module_Namespace                                       
                 }                                                                                                       \
                 static void setValue(std::string in, gambitData &moduleData)                                            \
                 {                                                                                                       \
-                        typename gt_type::subtype *a = new typename gt_type::subtype;                                   \
-                        std::stringstream stuff;                                                                        \
-                        stuff << in;                                                                                    \
-                        stuff >> *a;                                                                                    \
+                        typename gt_type::type *a = 0;                                                                      \
+                        GAMBIT::Scanner::convert<typename gt_type::type>(&a, in);                                        \
                         moduleData.valueMap[ #name ].second = (void *)a;                                                \
                 }                                                                                                       \
         };                                                                                                              \
