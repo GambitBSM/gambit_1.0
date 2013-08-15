@@ -170,6 +170,16 @@ void BTaggingWithTruth::Process()
 
   TIter itPartonArray(partonArray);
   
+  //MJW debugging
+  //Loop over parton array and print contents
+  cout << "NEW EVENT" << endl;
+  while((parton = static_cast<Candidate*>(itPartonArray.Next())))
+    {
+      pdgCode = TMath::Abs(parton->PID);
+      cout << "PARTON pdgCode " << pdgCode << " pT " << parton->Momentum.Pt() << " eta " << parton->Momentum.Eta() << endl;
+    }
+  
+  
   // loop over all input jets
   fItJetInputArray->Reset();
   while((jet = static_cast<Candidate*>(fItJetInputArray->Next())))
@@ -182,18 +192,22 @@ void BTaggingWithTruth::Process()
 
     // loop over all input partons
     itPartonArray.Reset();
+    bool foundB=false;
     while((parton = static_cast<Candidate*>(itPartonArray.Next())))
     {
       pdgCode = TMath::Abs(parton->PID);
+      
       if(pdgCode == 21) pdgCode = 0;
       if(jetMomentum.DeltaR(parton->Momentum) <= fDeltaR)
       {
         if(pdgCodeMax < pdgCode) pdgCodeMax = pdgCode;
+	if(abs(pdgCode)==5)foundB=true;
       }
+      
     }
     if(pdgCodeMax == 0) pdgCodeMax = 21;
     if(pdgCodeMax == -1) pdgCodeMax = 0;
-
+    if(foundB)cout << "FOUNDB" << endl;
     // find an efficency formula
     itEfficiencyMap = fEfficiencyMap.find(pdgCodeMax);
     if(itEfficiencyMap == fEfficiencyMap.end())
@@ -201,7 +215,7 @@ void BTaggingWithTruth::Process()
       itEfficiencyMap = fEfficiencyMap.find(0);
     }
     formula = itEfficiencyMap->second;
-
+    //cout << "pdg id code max" << pdgCodeMax << endl;
     // apply an efficency formula
     jet->BTag |= (gRandom->Uniform() <= formula->Eval(pt, eta)) << fBitNumber;
     // remember the PID of "pdgCodeMax" used to choose the efficiency formula

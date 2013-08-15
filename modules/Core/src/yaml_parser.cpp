@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <contrib/yaml-cpp-0.5.1/include/yaml-cpp/yaml.h>
+#include <yaml-cpp/yaml.h>
 #include <yaml_parser.hpp>
 
 namespace GAMBIT

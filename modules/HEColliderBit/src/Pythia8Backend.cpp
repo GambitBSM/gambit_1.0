@@ -37,7 +37,7 @@ namespace GAMBIT {
       _pythiaInstance->settings.flag("Init:showMultipartonInteractions", false);
       _pythiaInstance->settings.flag("Init:showChangedSettings", false);
       _pythiaInstance->settings.flag("Init:showChangedParticleData", false);
-      _pythiaInstance->settings.mode("Next:numberShowEvent", 0);
+      _pythiaInstance->settings.mode("Next:numberShowEvent", 10);
       _pythiaInstance->settings.mode("Next:numberShowInfo", 0);
       _pythiaInstance->settings.mode("Next:numberShowProcess", 0);
 

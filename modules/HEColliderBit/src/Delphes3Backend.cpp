@@ -93,6 +93,7 @@ namespace GAMBIT {
 
     void Delphes3Backend::convertInput(Pythia8::Event &event)
     {
+    
       for (int ip = 0; ip < event.size(); ++ip) {
         const Pythia8::Particle& p = event[ip];
         candidate = factory->NewCandidate();
@@ -102,9 +103,13 @@ namespace GAMBIT {
         candidate->PID = p.id();
         pdgCode = abs(candidate->PID);
 
-        candidate->Status = p.status();
-
+        //candidate->Status = p.status();
+	//MJW changed this because it may be confusing DELPHES
+	
+	candidate->Status=p.status();
+	
         pdgParticle = pdg->GetParticle(p.id());
+
         candidate->Charge = pdgParticle ? Int_t(pdgParticle->Charge()/3.0) : -999;
         candidate->Mass = pdgParticle ? pdgParticle->Mass() : -999.9;
 
@@ -114,14 +119,17 @@ namespace GAMBIT {
         /// @todo Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
         allParticleOutputArray->Add(candidate);
         if (!pdgParticle) continue;
-        if (p.isFinal()) {
+       
+	if (p.isFinal()) {
           stableParticleOutputArray->Add(candidate);
-        } else if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) {
+        } 
+	if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) {
           partonOutputArray->Add(candidate);
+
         }
       }
     }
-
+    
 
     // ReconstructedEvent is a boring class in the HEColliderBit namespace
     // See the DelphesGambit.hpp file for details
