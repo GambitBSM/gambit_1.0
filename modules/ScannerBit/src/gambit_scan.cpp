@@ -428,7 +428,7 @@ namespace GAMBIT
                         {
                                 std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
                                 std::string name = boundIniFile->getValue<std::string>("scanner", "module");
-                                void *plugin = dlopen (file.c_str(), RTLD_NOW | RTLD_GLOBAL);
+                                void *plugin = dlopen (file.c_str(), RTLD_NOW);
                                 if (bool(plugin))
                                 {
                                         std::string mainName;
