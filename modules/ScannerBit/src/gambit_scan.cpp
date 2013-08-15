@@ -431,17 +431,16 @@ namespace GAMBIT
                                 void *plugin = dlopen (file.c_str(), RTLD_NOW | RTLD_GLOBAL);
                                 if (bool(plugin))
                                 {
-                                        void *result;
+                                        std::string mainName;
                                         typedef void (*inputFuncType)(std::string, std::string);
                                         inputFuncType inputFunc = (inputFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setValue__")).c_str());
                                         typedef void (*inputFunctionType)(void *, std::string);
                                         inputFunctionType inputFunction = (inputFunctionType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setFunction__")).c_str());
-                                        typedef void (*keyFuncType)(std::vector<std::string> &, std::vector<std::string> &);
+                                        typedef void (*keyFuncType)(std::string &, std::vector<std::string> &, std::vector<std::string> &);
                                         keyFuncType keyFunc = (keyFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_getKeys__")).c_str());
                                         typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &);
                                         initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_moduleInit__")).c_str());
-                                        typedef void (*scanFuncType)();
-                                        scanFuncType func = (scanFuncType)dlsym (plugin, (std::string("__scanner_module_") + name + std::string("_main__")).c_str());
+                                        
                                         
                                         if (!bool(dlerror()))
                                         {
@@ -449,7 +448,7 @@ namespace GAMBIT
                                                 bool good = true;
                                                 initFunc(keys, upper_limits, lower_limits);
                                                 std::vector<std::string> iniKeys, funcKeys;
-                                                keyFunc(iniKeys, funcKeys);
+                                                keyFunc(mainName, iniKeys, funcKeys);
                                                 
                                                 //std::cout << name.c_str() << "   " << iniKeys << "   " << funcKeys << std::endl;
                                                 for (std::vector<std::string>::iterator it = iniKeys.begin(); it != iniKeys.end(); it++)
@@ -480,24 +479,36 @@ namespace GAMBIT
                                                         }
                                                 }
                                                 
-                                                result = dlerror();
-                                                
                                                 if (good)
                                                 {
-                                                        if (!printErrors()) 
-                                                                func();
+                                                        typedef void (*scanFuncType)();
+                                                        scanFuncType func = (scanFuncType)dlsym (plugin, (std::string("__scanner_module_") + mainName + std::string("_main__")).c_str());
+                                                        
+                                                        if (!bool(dlerror()))
+                                                        {
+                                                                if (!printErrors())
+                                                                {
+                                                                        func();
+                                                                }
+                                                        }
+                                                        else
+                                                        {
+                                                                std::stringstream ss;
+                                                                ss << "\e[00;31mERROR:\e[00m  Could not find main function in module \"" << name << "\".";
+                                                                printErrors(ss.str());
+                                                        }
                                                 }
                                                 else
                                                 {
                                                         std::stringstream ss;
-                                                        ss << "\e[00;31mERROR:\e[00m  Missing entries needed by scanner module " << name << ":  " << missingParams;
+                                                        ss << "\e[00;31mERROR:\e[00m  Missing entries needed by scanner module \"" << name << "\":  " << missingParams;
                                                         printErrors(ss.str());
                                                 }
                                         }
                                         else
                                         {
                                                 std::stringstream ss;
-                                                ss << "\e[00;31mERROR:\e[00m  Could not find module " << name << " in file " << file << ".";
+                                                ss << "\e[00;31mERROR:\e[00m  Could not find module \"" << name << "\" in file " << file << ".";
                                                 printErrors(ss.str());
                                         }
                                         dlclose(plugin);

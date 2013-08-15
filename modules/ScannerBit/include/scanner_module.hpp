@@ -32,6 +32,7 @@ namespace GAMBIT
                 struct gambitData
                 {
                         gambitData(){}
+                        std::string name;
                         std::vector<std::string> *key_ptr;
                         std::vector<double> *upper_ptr;
                         std::vector<double> *lower_ptr;
@@ -106,7 +107,12 @@ namespace GAMBIT
                         <GAMBIT_Scanner_Module_Namespace::key ## _TAG>::gt_type::type *>                                \
                         (GAMBIT_Scanner_Module_Namespace::moduleData.valueMap[ #key ].second))                          \
 
-#define GAMBIT_SCANNER_MAIN(name)  extern "C" void __scanner_module_ ## name ## _main__ ()
+#define GAMBIT_SCANNER_MAIN(name_in)                                                                                    \
+        struct name_in ## _TAG{};                                                                                       \
+        template<>                                                                                                      \
+        bool GAMBIT_Scanner_Module_Namespace::dummy<name_in ## _TAG>::reg                                               \
+                = (GAMBIT_Scanner_Module_Namespace::moduleData.name = #name_in, true);                                  \
+        extern "C" void __scanner_module_ ## name_in ## _main__ ()                                                      \
 
 #define REGISTER(type_in, name)                                                                                         \
 namespace GAMBIT_Scanner_Module_Namespace                                                                               \
@@ -176,9 +182,11 @@ namespace __scanner_module_ ## mod_name ## _namespace__                         
                         moduleData.valueMap[key].second = val;                                                          \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void __scanner_module_ ## mod_name ## _getKeys__(std::vector<std::string> &in,               \
+                extern "C" void __scanner_module_ ## mod_name ## _getKeys__(std::string &str,                           \
+                                                                                std::vector<std::string> &in,           \
                                                                                 std::vector<std::string> &in2)          \
                 {                                                                                                       \
+                        str = moduleData.name;                                                                          \
                         in.reserve(moduleData.valueMap.size());                                                         \
                         in2.reserve(moduleData.valueMap.size());                                                        \
                         std::map<std::string, std::pair<void (*)(std::string, gambitData &), void *>>::iterator it;     \
