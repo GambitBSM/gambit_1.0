@@ -70,7 +70,7 @@ namespace GAMBIT
 			Gambit_Scanner (const gambit_core&, const IniParser::IniFile&, Graphs::DependencyResolver&);
                         
                         //print errors and return true if there are fatal errors.
-                        bool printErrors();
+                        bool printErrors(std::string errorsin = "no errors");
 			
                         const IniParser::IniFile *getIniFile() const {return boundIniFile;}
                         

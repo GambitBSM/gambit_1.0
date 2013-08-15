@@ -29,7 +29,6 @@
 #include <map_extensions.hpp>
 #include <yaml_parser.hpp>
 #include <gambit_scan.hpp>
-#include <crapsample.hpp>
 
 using namespace GAMBIT;
 
@@ -72,12 +71,7 @@ void beispiel(const char* inifilename)
   GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
-  if(!scanner->printErrors())
-  {
-        scanner->Run();
-        //GAMBIT::Scanner::Scanner_Function LogLike((void *)scanner, "Likelihood");
-        //Run_Crap_Sampler((void *)(&LogLike), int(scanner->getUpperLimits().size()));
-  }
+  scanner->Run();
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
