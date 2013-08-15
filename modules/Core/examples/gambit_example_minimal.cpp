@@ -73,8 +73,11 @@ void beispiel(const char* inifilename)
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   if(!scanner->printErrors())
-        //scanner->Run();
-        Run_Crap_Sampler((void *)scanner);
+  {
+        scanner->Run();
+        //GAMBIT::Scanner::Scanner_Function LogLike((void *)scanner, "Likelihood");
+        //Run_Crap_Sampler((void *)(&LogLike), int(scanner->getUpperLimits().size()));
+  }
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.

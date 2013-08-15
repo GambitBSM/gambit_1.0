@@ -40,6 +40,7 @@ namespace GAMBIT
                                 printf("Gambit has been terminated, please press enter to continue ... "); 
                                 getchar();
                         }
+                        abort();
                 }
                 
                 Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 
@@ -48,7 +49,7 @@ namespace GAMBIT
                         //do you have xterm?
                         hasXTerm = (system("which xterm") == 0) ? true : false;
                         
-                        //saving std outut
+                        //saving std output
                         defout = dup(STDOUT_FILENO);
                         
                         bool redirect = false;
@@ -304,15 +305,6 @@ namespace GAMBIT
                                 std::unordered_map <std::string, std::string> string_map;
                                 for (std::unordered_map <Parameter **, std::string>::iterator it = key_map.begin(); it != key_map.end(); ++it)
                                 {
-                                        //int lastPos = it->second.rfind("::");
-                                        //int pos = 0, posTemp = it->second.find("::");
-                                        
-                                        //while (posTemp != lastPos)
-                                        //{
-                                        //        pos = posTemp;
-                                        //        posTemp = it->second.find("::", pos + 2);
-                                        //}
-                                        
                                         int pos = it->second.rfind("+");
                                         
                                         string_map[it->second.substr((pos == 0) ? 0: pos+1)] = it->second;
@@ -431,24 +423,57 @@ namespace GAMBIT
                 int Gambit_Scanner::Run()
                 {
                         std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
-                        std::string funcName = boundIniFile->getValue<std::string>("scanner", "func_name");
-
-                        void *plugin = dlopen (file.c_str(), RTLD_LAZY);
+                        void *plugin = dlopen (file.c_str(), RTLD_NOW | RTLD_GLOBAL);
                         if (bool(plugin))
                         {
-                                typedef int (*scanFuncType)(void *);
-                                scanFuncType func;
-                                func = (scanFuncType)dlsym (plugin, funcName.c_str());
-                                void *result = dlerror();
+                                void *result;
+                                typedef void (*inputFuncType)(std::string, std::string);
+                                inputFuncType inputFunc = (inputFuncType)dlsym(plugin, "setValue");
+                                typedef void (*inputFunctionType)(void *, std::string);
+                                inputFunctionType inputFunction = (inputFunctionType)dlsym(plugin, "setFunction");
+                                typedef void (*keyFuncType)(std::vector<std::string> &, std::vector<std::string> &);
+                                keyFuncType keyFunc = (keyFuncType)dlsym(plugin, "getKeys");
+                                typedef void (*nameFuncType)(std::string &, std::string &);
+                                nameFuncType nameFunc = (nameFuncType)dlsym(plugin, "getNames");
+                                typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &);
+                                initFuncType initFunc = (initFuncType)dlsym(plugin, "moduleInit");
+                                
+                                std::string name, func_name;
+                                nameFunc(name, func_name);
+                                
+                                typedef void (*scanFuncType)();
+                                scanFuncType func = (scanFuncType)dlsym (plugin, func_name.c_str());
+                                
+                                
+                                initFunc(keys, upper_limits, lower_limits);
+                                std::vector<std::string> iniKeys, funcKeys;
+                                keyFunc(iniKeys, funcKeys);
+                                
+                                //std::cout << name.c_str() << "   " << iniKeys << "   " << funcKeys << std::endl;
+                                for (std::vector<std::string>::iterator it = iniKeys.begin(); it != iniKeys.end(); it++)
+                                {
+                                        std::string value = boundIniFile->getValue<std::string>(name, *it);
+                                        inputFunc(value, *it);
+                                }
+
+                                for (std::vector<std::string>::iterator it = funcKeys.begin(); it != funcKeys.end(); it++)
+                                {
+                                        std::string value = boundIniFile->getValue<std::string>(name, *it);
+                                        inputFunction((void *) new GAMBIT::Scanner::Scanner_Function((void *)this, value), *it);
+                                }
+                                
+                                result = dlerror();
                                 
                                 if (result)
                                 {
-                                        cout << "Cannot find " << funcName << " in " << file << ":  " << result << endl;
+                                        cout << "Cannot find " << func_name << " in " << file << ":  " << result << endl;
                                 }
                                 else
                                 {
-                                        return func((void *)this);
+                                        func();
+                                        return 0;
                                 }
+                                dlclose(plugin);
                         }
                         else
                         {

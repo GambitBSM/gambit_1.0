@@ -47,23 +47,23 @@
 
 namespace GAMBIT
 {
-	namespace Scanner
-	{
+        namespace Scanner
+        {
                 class Gambit_Scanner
-		{
-		protected:
-			const gambit_core *boundCore;
+                {
+                protected:
+                        const gambit_core *boundCore;
                         const IniParser::IniFile *boundIniFile;
-			std::vector <double> upper_limits;
-			std::vector <double> lower_limits;
-			std::vector <std::string> keys;
+                        std::vector <double> upper_limits;
+                        std::vector <double> lower_limits;
+                        std::vector <std::string> keys;
                         std::vector <std::string> phantom_keys;
-			Graphs::DependencyResolver *dependencyResolver;
+                        Graphs::DependencyResolver *dependencyResolver;
                         std::vector<Scanner::Model> models;
 			//std::string name; // Sampler name
-			std::vector<double> old_input;
-			int defout;
-			bool hasXTerm;
+                        std::vector<double> old_input;
+                        int defout;
+                        bool hasXTerm;
                         unsigned char flag;
 			
 		public:
@@ -137,7 +137,7 @@ namespace GAMBIT
 			Gambit_Scanner *parent;
 			
 		public:
-			Scanner_Function_Base(Gambit_Scanner *a, std::string purpose) : parent(a)
+			Scanner_Function_Base(void *a, std::string purpose) : parent(static_cast<Gambit_Scanner *>(a))
 			{
                                 // Find subset of vertices that match requested purpose
 				vertices = parent->dependencyResolver->getObsLikeOrder();
@@ -154,26 +154,14 @@ namespace GAMBIT
 
 				vertices.resize(size);
 			}
+			
+			virtual double operator () (std::vector<double> &) = 0;
 		};
 		
-		template <class output, class input>
 		class Scanner_Function : public Scanner_Function_Base
 		{
 		public:
-			Scanner_Function (Gambit_Scanner *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
-			
-			virtual output & operator () (input in)
-			{
-				//Ben stuff
-				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-			}
-		};
-		
-		template <>
-		class Scanner_Function <double, std::vector<double>> : public Scanner_Function_Base
-		{
-		public:
-			Scanner_Function (Gambit_Scanner *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
+			Scanner_Function (void *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
 			
 			virtual double operator () (std::vector<double> &in)
 			{

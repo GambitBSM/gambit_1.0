@@ -6,9 +6,20 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
-#include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
-
+#include <map>
+#include <sstream>
+#include <scanner_module.hpp>
+                                                                                                                    \
+GAMBIT_SCANNER_MODULE(crapsample);
+        REGISTER(int, point_number);
+        REGISTER(std::string, output_file);
+        REGISTER(GAMBIT::Scanner::gambitKeys, keys);
+        REGISTER(GAMBIT::Scanner::Function_Base, like);
+              
+double LogLikelihood(std::vector<double> &in)
+{
+        return GET_VALUE(like)(in);
+}
 
 class Ran
 {
@@ -34,19 +45,21 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };
 
-extern "C" int Run_Crap_Sampler(void *ptr_in)
+GAMBIT_SCANNER_MAIN (crapsample)
 {
-      GAMBIT::Scanner::Gambit_Scanner *scanner = (GAMBIT::Scanner::Gambit_Scanner *)ptr_in;
-      GAMBIT::Scanner::Scanner_Function <double, std::vector <double>> LogLike(scanner, "Likelihood");
-      std::vector<double> upper_limits = scanner->getUpperLimits();
-      std::vector<double> lower_limits = scanner->getLowerLimits();
+      std::vector<std::string> keys     = GET_VALUE(keys);
+      std::string output_file           = GET_VALUE(output_file);
+      int N                             = GET_VALUE(point_number);
+      //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
+      double (*LogLike)(std::vector<double> &in) = LogLikelihood;
       
-      int N = scanner->getIniFile()->getValue<int>("crapsampler", "point_number");
-      std::string output_file = scanner->getIniFile()->getValue<std::string>("crapsampler", "output_file");
-      
+      //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   "  << std::endl;
+      int ma = keys.size();
+      std::vector<double> upper_limits(ma, 1.0);
+      std::vector<double> lower_limits(ma, -1.0);
       std::ofstream out(output_file.c_str());
       double ans, chisq, chisqnext;
-      int mult = 1, count = 0, total = 0, ma = upper_limits.size();
+      int mult = 1, count = 0, total = 0;
       std::vector<double> a(ma);
       std::vector<double> aNext(ma);
       Ran gDev(0);
@@ -54,7 +67,7 @@ extern "C" int Run_Crap_Sampler(void *ptr_in)
       for (int i = 0; i < ma; i++)
         a[i] = gDev.Doub();
       
-      chisq = LogLike(a);
+      chisq = (*LogLike)(a);
       
       std::cout << "Metropolis Hastings Algorthm Started" << std::endl; // << "tpoints = " << "\n\taccept ratio = " << std::endl;
       
@@ -66,7 +79,7 @@ extern "C" int Run_Crap_Sampler(void *ptr_in)
           aNext[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
         }
 
-        chisqnext = LogLike(aNext);
+        chisqnext = (*LogLike)(aNext);
 
         ans = chisqnext - chisq;
         // if ((ans <= 0.0)||(-std::log(gDev.Doub()) >= ans))
@@ -92,7 +105,6 @@ extern "C" int Run_Crap_Sampler(void *ptr_in)
         }
       }
       while(count < N);
-      return 0;
 }
 
 #endif
