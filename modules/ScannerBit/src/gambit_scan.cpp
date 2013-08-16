@@ -440,7 +440,8 @@ namespace GAMBIT
                                         keyFuncType keyFunc = (keyFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_getKeys__")).c_str());
                                         typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &);
                                         initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_moduleInit__")).c_str());
-                                        
+                                        typedef bool (*defFuncType)(std::string);
+                                        defFuncType defFunc = (defFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setDefault__")).c_str());
                                         
                                         if (!bool(dlerror()))
                                         {
@@ -458,7 +459,7 @@ namespace GAMBIT
                                                                 std::string value = boundIniFile->getValue<std::string>(name, *it);
                                                                 inputFunc(value, *it);
                                                         }
-                                                        else
+                                                        else if (!defFunc(*it))
                                                         {
                                                                 missingParams.push_back(*it);
                                                                 good = false;

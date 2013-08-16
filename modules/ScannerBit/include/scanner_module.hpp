@@ -37,6 +37,7 @@ namespace GAMBIT
                         std::vector<double> *upper_ptr;
                         std::vector<double> *lower_ptr;
                         std::map <std::string, std::pair<void (*)(std::string, gambitData &), void *>> valueMap;
+                        std::map <std::string, void *> defaultMap;
                         std::vector<void (*)(gambitData &)> initFuncs;
                 };
 
@@ -55,7 +56,6 @@ namespace GAMBIT
                 struct gt_type_def                                                                                              
                 {                                                                                                               
                         typedef T type;                                                                                         
-                        typedef T subtype;                                                                                      
                         typedef void (*setValType)(std::string, gambitData &);                                                  
                         static setValType val(setValType &m){return m;}                                                         
                         static type *ptr(gambitData &moduleData){return 0;}                                                     
@@ -65,7 +65,6 @@ namespace GAMBIT
                 struct gt_type_def<gambitKeys>                                                                                  
                 {                                                                                                               
                         typedef typename gambitKeys::type type;                                                                 
-                        typedef typename gambitKeys::type::value_type subtype;                                                  
                         typedef void (*setValType)(std::string, gambitData &);                                                  
                         static setValType val(setValType &m){return 0;}                                                         
                         static type *ptr(gambitData &moduleData){return moduleData.key_ptr;}                                    
@@ -75,7 +74,6 @@ namespace GAMBIT
                 struct gt_type_def<gambitUpperLimits>                                                                           
                 {                                                                                                               
                         typedef typename gambitUpperLimits::type type;                                                          
-                        typedef typename gambitUpperLimits::type::value_type subtype;                                           
                         typedef void (*setValType)(std::string, gambitData &);                                                  
                         static setValType val(setValType &m){return 0;}                                                         
                         static type *ptr(gambitData &moduleData){return moduleData.upper_ptr;}                                  
@@ -85,7 +83,6 @@ namespace GAMBIT
                 struct gt_type_def<gambitLowerLimits>                                                                           
                 {                                                                                                               
                         typedef typename gambitLowerLimits::type type;                                                          
-                        typedef typename gambitLowerLimits::type::value_type subtype;                                           
                         typedef void (*setValType)(std::string, gambitData &);                                                  
                         static setValType val(setValType &m){return 0;}                                                         
                         static type *ptr(gambitData &moduleData){return moduleData.lower_ptr;}                                  
@@ -95,7 +92,6 @@ namespace GAMBIT
                 struct gt_type_def<Function_Base>                                                                               
                 {                                                                                                               
                         typedef typename Function_Base::type type;                                                              
-                        typedef double subtype;                                                                                 
                         typedef void (*setValType)(std::string, gambitData &);                                                  
                         static setValType val(setValType &m){return 0;}                                                         
                         static type *ptr(gambitData &moduleData){return 0;}                                                     
@@ -152,6 +148,31 @@ namespace GAMBIT
                 = (GAMBIT_Scanner_Module_Namespace::moduleData.name = #name_in, true);                                  \
         extern "C" void __scanner_module_ ## name_in ## _main__ ()                                                      \
 
+#define SET_DEFAULT(val, name)                                                                                          \
+namespace GAMBIT_Scanner_Module_Namespace                                                                               \
+{                                                                                                                       \
+        namespace Default                                                                                               \
+        {                                                                                                               \
+                struct name ## _TAG{};                                                                                  \
+        };                                                                                                              \
+                                                                                                                        \
+        template <>                                                                                                     \
+        class interface<Default::name ## _TAG>                                                                          \
+        {                                                                                                               \
+                public:                                                                                                 \
+                typedef interface <name ## _TAG>::gt_type gt_type;                                                      \
+                static void setDefault(std::string key, gambitData &module)                                             \
+                {                                                                                                       \
+                        module.defaultMap[key] = new gt_type::type;                                                     \
+                        *static_cast <gt_type::type *> (module.defaultMap[key]) = val;                                  \
+                }                                                                                                       \
+        };                                                                                                              \
+                                                                                                                        \
+        template<>                                                                                                      \
+        bool dummy<Default::name ## _TAG>::reg                                                                          \
+                = (interface<Default::name ## _TAG>::setDefault( #name , moduleData), true);                            \
+};                                                                                                                      \
+        
 #define REGISTER(type_in, name)                                                                                         \
 namespace GAMBIT_Scanner_Module_Namespace                                                                               \
 {                                                                                                                       \
@@ -169,8 +190,8 @@ namespace GAMBIT_Scanner_Module_Namespace                                       
                 }                                                                                                       \
                 static void setValue(std::string in, gambitData &moduleData)                                            \
                 {                                                                                                       \
-                        typename gt_type::type *a = 0;                                                                      \
-                        GAMBIT::Scanner::convert<typename gt_type::type>(&a, in);                                        \
+                        typename gt_type::type *a = 0;                                                                  \
+                        GAMBIT::Scanner::convert<typename gt_type::type>(&a, in);                                       \
                         moduleData.valueMap[ #name ].second = (void *)a;                                                \
                 }                                                                                                       \
         };                                                                                                              \
@@ -192,7 +213,7 @@ namespace __scanner_module_ ## mod_name ## _namespace__                         
                 template <class T>                                                                                      \
                 struct dummy                                                                                            \
                 {                                                                                                       \
-                        static bool reg;                                                                                \
+                        static bool reg;                                                                        \
                 };                                                                                                      \
                                                                                                                         \
                 extern "C" void __scanner_module_ ## mod_name ## _moduleInit__(std::vector<std::string> &k,             \
@@ -216,6 +237,20 @@ namespace __scanner_module_ ## mod_name ## _namespace__                         
                 extern "C" void __scanner_module_ ## mod_name ## _setFunction__(void *val, std::string key)             \
                 {                                                                                                       \
                         moduleData.valueMap[key].second = val;                                                          \
+                }                                                                                                       \
+                                                                                                                        \
+                extern "C" bool __scanner_module_ ## mod_name ## _setDefault__(std::string key)                         \
+                {                                                                                                       \
+                        std::map<std::string, void *>::iterator it = moduleData.defaultMap.find(key);                   \
+                        if (it != moduleData.defaultMap.end())                                                          \
+                        {                                                                                               \
+                                moduleData.valueMap[key].second = it->second;                                           \
+                                return true;                                                                            \
+                        }                                                                                               \
+                        else                                                                                            \
+                        {                                                                                               \
+                                return false;                                                                           \
+                        }                                                                                               \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void __scanner_module_ ## mod_name ## _getKeys__(std::string &str,                           \

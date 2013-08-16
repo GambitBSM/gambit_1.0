@@ -42,6 +42,9 @@ GAMBIT_SCANNER_MODULE (crapsample)
         REGISTER (GAMBIT::Scanner::gambitUpperLimits, ulim);
         REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim)
         REGISTER (GAMBIT::Scanner::Function_Base, like);
+        
+        SET_DEFAULT(5, point_number);
+        SET_DEFAULT("output_default", output_file);
 
         double LogLikelihood(std::vector<double> &in)
         {
@@ -58,7 +61,7 @@ GAMBIT_SCANNER_MODULE (crapsample)
                 //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
                 double (*LogLike)(std::vector<double> &in) = LogLikelihood;
                 
-                //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   "  << std::endl;
+                std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   "  << std::endl;
                 int ma = keys.size();
                 
                 std::ofstream out(output_file.c_str());

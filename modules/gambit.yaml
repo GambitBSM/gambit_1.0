@@ -109,8 +109,8 @@ redirect_output:
    CMSSM_I:  xterm
     
 crapsample:
-  point_number: 3
-  output_file:  output
+  #point_number: 3
+  #output_file:  output
   like:  Likelihood
 
 loopsample:
