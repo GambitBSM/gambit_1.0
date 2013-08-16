@@ -50,10 +50,9 @@ namespace GAMBIT
                         mkfifo(name, 0777);
                         if(fork() == 0)
                         {
-                                //sprintf(cmd, "xterm -e cat %s", name);
                                 std::string cmd = std::string("xterm -T ") + file +  std::string(" -e cat ") + std::string(name);
                                 system(cmd.c_str());
-                                //exit(0);
+                                abort();
                         }
                         return fopen(name, "w");
                 }

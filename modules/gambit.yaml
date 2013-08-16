@@ -100,14 +100,20 @@ another_key:
     subsubkey1: value2
 
 scanner:
-  file_path: ScannerBit/build/crapsample.so
-  func_name: Run_Crap_Sampler
+  module:  loopsample
+  file_path:  ScannerBit/lib/libsample.so
     
 enable_redirect: true
 
 redirect_output:
    CMSSM_I:  xterm
     
-crapsampler:
+crapsample:
   point_number: 3
   output_file:  output
+  like:  Likelihood
+
+loopsample:
+  point_number: 3
+  output_file:  output
+  like:  Likelihood

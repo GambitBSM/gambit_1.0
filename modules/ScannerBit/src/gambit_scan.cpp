@@ -14,7 +14,7 @@
 //
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 July 2013
+///  \date 2013 July/August 2013
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
@@ -40,6 +40,7 @@ namespace GAMBIT
                                 printf("Gambit has been terminated, please press enter to continue ... "); 
                                 getchar();
                         }
+                        abort();
                 }
                 
                 Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 
@@ -48,7 +49,7 @@ namespace GAMBIT
                         //do you have xterm?
                         hasXTerm = (system("which xterm") == 0) ? true : false;
                         
-                        //saving std outut
+                        //saving std output
                         defout = dup(STDOUT_FILENO);
                         
                         bool redirect = false;
@@ -233,64 +234,61 @@ namespace GAMBIT
                                                         if (paramPtr == pPtr) 
                                                         {
                                                                 flag |= cyclicSames;
-                                                                break;
                                                         }
-                                                        
-                                                        if (bool((*pPtr)->ID()&dummyParam))
-                                                        {
-                                                                break;
-                                                        }
-                                                        else if (bool((*pPtr)->ID()&singleParam))
-                                                        {
-                                                                MultiParameter *temp = new MultiParameter(static_cast<SingleParameter *>(*pPtr));
-                                                                delete (*pPtr);
-                                                                *pPtr = temp;
-                                                        }
-                                                        else if (bool((*pPtr)->ID()&fixedParam))
-                                                        {
-                                                                FixedMultiParameter *temp = new FixedMultiParameter(static_cast<FixedParameter *>(*pPtr));
-                                                                delete (*pPtr);
-                                                                *pPtr = temp;
-                                                        }
-                                                        
-                                                        if (bool((*paramPtr)->ID()&singleParam))
-                                                        {
-                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<SingleParameter *>(*paramPtr));
-                                                                upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
-                                                                lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
-                                                                phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
-                                                                keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
-                                                        }
-                                                        else if (bool((*paramPtr)->ID()&fixedParam))
-                                                        {
-                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedParameter *>(*paramPtr));
-                                                        }
-                                                        else if (bool((*paramPtr)->ID()&multiParam))
-                                                        {
-                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<MultiParameter *>(*paramPtr));
-                                                                upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
-                                                                lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
-                                                                phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
-                                                                keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
-                                                        }
-                                                        else if (bool((*paramPtr)->ID()&fixedMultiParam))
-                                                        {
-                                                                (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedMultiParameter *>(*paramPtr));
-                                                        }
-                                                        
-                                                        Parameter *temp = new DummyParameter((*paramPtr)->Name(), pPtr);
-                                                        delete (*paramPtr);
-                                                        (*paramPtr) = temp;
-                                                        
-                                                        std::unordered_map<Parameter**, std::string>::iterator k_it = key_map.find(paramPtr);
-                                                        if (k_it != key_map.end())
-                                                                key_map.erase(k_it);
-                                                        
-                                                        k_it = key_map.find(pPtr);
-                                                        if (k_it == key_map.end())
-                                                                key_map[pPtr] = models[it->second.first.first].name + std::string ("::") + models[it->second.first.first].parameters[it->second.first.second]->Name() + std::string("+") + it->first.first + std::string("::") + it->first.second;
                                                         else
-                                                                k_it->second = models[it->second.first.first].name + std::string ("::") + models[it->second.first.first].parameters[it->second.first.second]->Name() + std::string("+") + k_it->second;
+                                                        {
+                                                                if (bool((*pPtr)->ID()&singleParam))
+                                                                {
+                                                                        MultiParameter *temp = new MultiParameter(static_cast<SingleParameter *>(*pPtr));
+                                                                        delete (*pPtr);
+                                                                        *pPtr = temp;
+                                                                }
+                                                                else if (bool((*pPtr)->ID()&fixedParam))
+                                                                {
+                                                                        FixedMultiParameter *temp = new FixedMultiParameter(static_cast<FixedParameter *>(*pPtr));
+                                                                        delete (*pPtr);
+                                                                        *pPtr = temp;
+                                                                }
+                                                                
+                                                                if (bool((*paramPtr)->ID()&singleParam))
+                                                                {
+                                                                        (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<SingleParameter *>(*paramPtr));
+                                                                        upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
+                                                                        lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
+                                                                        phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
+                                                                        keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
+                                                                }
+                                                                else if (bool((*paramPtr)->ID()&fixedParam))
+                                                                {
+                                                                        (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedParameter *>(*paramPtr));
+                                                                }
+                                                                else if (bool((*paramPtr)->ID()&multiParam))
+                                                                {
+                                                                        (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<MultiParameter *>(*paramPtr));
+                                                                        upper_limits.erase(upper_limits.begin() + it->second.second + upper_limits.size() - oldSize);
+                                                                        lower_limits.erase(lower_limits.begin() + it->second.second + lower_limits.size() - oldSize);
+                                                                        phantom_keys.push_back(*(keys.begin() + it->second.second + keys.size() - oldSize));
+                                                                        keys.erase(keys.begin() + it->second.second + keys.size() - oldSize);
+                                                                }
+                                                                else if (bool((*paramPtr)->ID()&fixedMultiParam))
+                                                                {
+                                                                        (static_cast<MultiParameter *>(*pPtr))->InputFunctor(static_cast<FixedMultiParameter *>(*paramPtr));
+                                                                }
+                                                                
+                                                                Parameter *temp = new DummyParameter((*paramPtr)->Name(), pPtr);
+                                                                delete (*paramPtr);
+                                                                (*paramPtr) = temp;
+                                                                
+                                                                std::unordered_map<Parameter**, std::string>::iterator k_it = key_map.find(paramPtr);
+                                                                if (k_it != key_map.end())
+                                                                        key_map.erase(k_it);
+                                                                
+                                                                k_it = key_map.find(pPtr);
+                                                                if (k_it == key_map.end())
+                                                                        key_map[pPtr] = models[it->second.first.first].name + std::string ("::") + models[it->second.first.first].parameters[it->second.first.second]->Name() + std::string("+") + it->first.first + std::string("::") + it->first.second;
+                                                                else
+                                                                        k_it->second = models[it->second.first.first].name + std::string ("::") + models[it->second.first.first].parameters[it->second.first.second]->Name() + std::string("+") + k_it->second;
+                                                        }
                                                 }
                                                 else
                                                 {
@@ -307,15 +305,6 @@ namespace GAMBIT
                                 std::unordered_map <std::string, std::string> string_map;
                                 for (std::unordered_map <Parameter **, std::string>::iterator it = key_map.begin(); it != key_map.end(); ++it)
                                 {
-                                        //int lastPos = it->second.rfind("::");
-                                        //int pos = 0, posTemp = it->second.find("::");
-                                        
-                                        //while (posTemp != lastPos)
-                                        //{
-                                        //        pos = posTemp;
-                                        //        posTemp = it->second.find("::", pos + 2);
-                                        //}
-                                        
                                         int pos = it->second.rfind("+");
                                         
                                         string_map[it->second.substr((pos == 0) ? 0: pos+1)] = it->second;
@@ -335,7 +324,7 @@ namespace GAMBIT
                 }
                 
                 //print errors and return true is there are fatal errors.
-                bool Gambit_Scanner::printErrors()
+                bool Gambit_Scanner::printErrors(std::string errorsin)
                 {
                         unsigned char flagTot = 0x00;
                         std::cout << "*******************************************\n";
@@ -424,6 +413,8 @@ namespace GAMBIT
                                         std::cout << "\e[01;33mWARNING:\e[00m  Model " << it->name << " has parameter(s) with no defined range in ini-file\n\n";
                                 if (bool(it->flag&badSames))
                                         std::cout << "\e[01;33mWARNING:\e[00m  same_as:  In model " << it->name << ", there is a least one parameter that points to an unknow parameter.\n\n";
+                                if (errorsin != "no errors")
+                                        std::cout << errorsin << "\n\n";
                         }
                         
                         std::cout << "*******************************************" << std::endl;
@@ -433,32 +424,104 @@ namespace GAMBIT
                 
                 int Gambit_Scanner::Run()
                 {
-                        std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
-                        std::string funcName = boundIniFile->getValue<std::string>("scanner", "func_name");
-
-                        void *plugin = dlopen (file.c_str(), RTLD_LAZY);
-                        if (bool(plugin))
+                        if (boundIniFile->hasKey("scanner", "file_path") && boundIniFile->hasKey("scanner", "file_path"))
                         {
-                                typedef int (*scanFuncType)(void *);
-                                scanFuncType func;
-                                func = (scanFuncType)dlsym (plugin, funcName.c_str());
-                                void *result = dlerror();
-                                
-                                if (result)
+                                std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
+                                std::string name = boundIniFile->getValue<std::string>("scanner", "module");
+                                void *plugin = dlopen (file.c_str(), RTLD_NOW | RTLD_GLOBAL);
+                                if (bool(plugin))
                                 {
-                                        cout << "Cannot find " << funcName << " in " << file << ":  " << result << endl;
+                                        std::string mainName;
+                                        typedef void (*inputFuncType)(std::string, std::string);
+                                        inputFuncType inputFunc = (inputFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setValue__")).c_str());
+                                        typedef void (*inputFunctionType)(void *, std::string);
+                                        inputFunctionType inputFunction = (inputFunctionType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setFunction__")).c_str());
+                                        typedef void (*keyFuncType)(std::string &, std::vector<std::string> &, std::vector<std::string> &);
+                                        keyFuncType keyFunc = (keyFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_getKeys__")).c_str());
+                                        typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &);
+                                        initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_moduleInit__")).c_str());
+                                        
+                                        
+                                        if (!bool(dlerror()))
+                                        {
+                                                std::vector<std::string> missingParams;
+                                                bool good = true;
+                                                initFunc(keys, upper_limits, lower_limits);
+                                                std::vector<std::string> iniKeys, funcKeys;
+                                                keyFunc(mainName, iniKeys, funcKeys);
+                                                
+                                                //std::cout << name.c_str() << "   " << iniKeys << "   " << funcKeys << std::endl;
+                                                for (std::vector<std::string>::iterator it = iniKeys.begin(); it != iniKeys.end(); it++)
+                                                {
+                                                        if (boundIniFile->hasKey(name, *it)) 
+                                                        {
+                                                                std::string value = boundIniFile->getValue<std::string>(name, *it);
+                                                                inputFunc(value, *it);
+                                                        }
+                                                        else
+                                                        {
+                                                                missingParams.push_back(*it);
+                                                                good = false;
+                                                        }
+                                                }
+
+                                                for (std::vector<std::string>::iterator it = funcKeys.begin(); it != funcKeys.end(); it++)
+                                                {
+                                                        if (boundIniFile->hasKey(name, *it)) 
+                                                        {
+                                                                std::string value = boundIniFile->getValue<std::string>(name, *it);
+                                                                inputFunction((void *) new GAMBIT::Scanner::Scanner_Function((void *)this, value), *it);
+                                                        }
+                                                        else
+                                                        {
+                                                                missingParams.push_back(*it);
+                                                                good = false;
+                                                        }
+                                                }
+                                                
+                                                if (good)
+                                                {
+                                                        typedef void (*scanFuncType)();
+                                                        scanFuncType func = (scanFuncType)dlsym (plugin, (std::string("__scanner_module_") + mainName + std::string("_main__")).c_str());
+                                                        
+                                                        if (!bool(dlerror()))
+                                                        {
+                                                                if (!printErrors())
+                                                                {
+                                                                        func();
+                                                                }
+                                                        }
+                                                        else
+                                                        {
+                                                                std::stringstream ss;
+                                                                ss << "\e[00;31mERROR:\e[00m  Could not find main function in module \"" << name << "\".";
+                                                                printErrors(ss.str());
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                        std::stringstream ss;
+                                                        ss << "\e[00;31mERROR:\e[00m  Missing entries needed by scanner module \"" << name << "\":  " << missingParams;
+                                                        printErrors(ss.str());
+                                                }
+                                        }
+                                        else
+                                        {
+                                                std::stringstream ss;
+                                                ss << "\e[00;31mERROR:\e[00m  Could not find module \"" << name << "\" in file " << file << ".";
+                                                printErrors(ss.str());
+                                        }
+                                        dlclose(plugin);
                                 }
                                 else
                                 {
-                                        return func((void *)this);
+                                        std::stringstream ss;
+                                        ss << "\e[00;31mERROR:\e[00m  Cannot load " << file << ":  " << dlerror();
+                                        printErrors(ss.str());
                                 }
                         }
-                        else
-                        {
-                                cout << "Cannot load " << file << ":  " << dlerror() << endl;
-                        }
                         
-                        return -1;
+                        return 0;
                 }
                 
                 Gambit_Scanner::~Gambit_Scanner(){GAMBIT_SCANNER_EXIT = false;}
