@@ -273,7 +273,7 @@ module Merger EFlowMerger {
 # add InputArray InputArray
   add InputArray Calorimeter/eflowTracks
   add InputArray Calorimeter/eflowTowers
-  add InputArray MuonMomentumSmearing/muons
+#  add InputArray MuonMomentumSmearing/muons
   set OutputArray eflow
 }
 
@@ -386,6 +386,7 @@ module AbsoluteIsolation MuonIsolation {
 module Merger MissingET {
 # add InputArray InputArray
   add InputArray EFlowMerger/eflow
+  add InputArray MuonIsolation/muons
   set MomentumOutputArray momentum
 }
 
