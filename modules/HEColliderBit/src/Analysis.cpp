@@ -1,6 +1,5 @@
 #include "Analysis.hpp"
 #include "Analysis_ATLAS0LEP.hpp"
-#include "Analysis_ATLAS0LEP_7TeV.hpp"
 #include "Analysis_ATLAS_1LEPStop_20invfb.hpp"
 #include "Analysis_Perf.hpp"
 #include <string>
@@ -15,8 +14,6 @@ namespace GAMBIT {
       return new Analysis_ATLAS0LEP();
     } else if (name == "PERF") {
       return new Analysis_Perf();
-    } else if (name == "ATLAS_0LEP_7TeV"){
-      return new Analysis_ATLAS0LEP_7TeV();
     } else if (name == "ATLAS_1LEPStop_20invfb"){
       return new Analysis_ATLAS_1LEPStop_20invfb();
     } else {

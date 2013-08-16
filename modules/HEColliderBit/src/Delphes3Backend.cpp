@@ -147,7 +147,7 @@ namespace GAMBIT {
 
       // Delphes particle arrays: Post-Detector Sim
       //    PHOTONS:
-      const TObjArray *arrayPhotons = modularDelphes->ImportArray("UniqueObjectFinder/photons");
+      const TObjArray *arrayPhotons = modularDelphes->ImportArray("PhotonIsolation/photons");
       TIter iteratorPhotons(arrayPhotons);
       iteratorPhotons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
@@ -160,7 +160,7 @@ namespace GAMBIT {
 
       // Delphes particle arrays: Post-Detector Sim
       //    ELECTRONS:
-      const TObjArray *arrayElectrons = modularDelphes->ImportArray("UniqueObjectFinder/electrons");
+      const TObjArray *arrayElectrons = modularDelphes->ImportArray("ElectronIsolation/electrons");
       TIter iteratorElectrons(arrayElectrons);
       iteratorElectrons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
@@ -172,7 +172,7 @@ namespace GAMBIT {
       }
 
       // Delphes particle arrays: Post-Detector Sim
-      //    MUONS:x
+      //    MUONS:
       const TObjArray *arrayMuons = modularDelphes->ImportArray("MuonIsolation/muons");
       TIter iteratorMuons(arrayMuons);
       iteratorMuons.Reset();
@@ -186,7 +186,7 @@ namespace GAMBIT {
 
       // Delphes particle arrays: Post-Detector Sim
       //    JETS and TAUS:
-      const TObjArray *arrayJets = modularDelphes->ImportArray("UniqueObjectFinder/jets");
+      const TObjArray *arrayJets = modularDelphes->ImportArray("FastJetFinder/jets");
       TIter iteratorJets(arrayJets);
       iteratorJets.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
