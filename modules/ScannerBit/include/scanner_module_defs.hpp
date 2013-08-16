@@ -59,8 +59,7 @@ namespace GAMBIT
                 template<class T>                                                                                               
                 struct gt_type_def                                                                                              
                 {                                                                                                               
-                        typedef T type;                                                                                         
-                        typedef void *(*setValType)(std::string, gambitData &);              
+                        typedef T type;                                                                                                    
                         static void *setValue(std::string in, gambitData &moduleData)                             
                         {                                                                                                       
                                 type *a = 0;                                                                  

@@ -39,12 +39,10 @@ namespace GAMBIT_Scanner_Module_Namespace                                       
                 }                                                                                                       \
         };                                                                                                              \
                                                                                                                         \
-        namespace MainReg                                                                                               \
+        namespace                                                                                                       \
         {                                                                                                               \
-                namespace                                                                                               \
-                {                                                                                                       \
-                        interface<MainTags::name_in> name_in (moduleData);                                              \
-                }                                                                                                       \
+                template <>                                                                                             \
+                interface <MainTags::name_in> reg_init <MainTags::name_in>::reg(moduleData);                            \
         };                                                                                                              \
 };                                                                                                                      \
 extern "C" void __scanner_module_ ## name_in ## _main__ ()                                                              \
@@ -69,12 +67,10 @@ namespace GAMBIT_Scanner_Module_Namespace                                       
                 }                                                                                                       \
         };                                                                                                              \
                                                                                                                         \
-        namespace DefaultReg                                                                                            \
+        namespace                                                                                                       \
         {                                                                                                               \
-                namespace                                                                                               \
-                {                                                                                                       \
-                        interface<DefaultTags::name> name (moduleData);                                                 \
-                }                                                                                                       \
+                template <>                                                                                             \
+                interface <DefaultTags::name> reg_init <DefaultTags::name>::reg(moduleData);                            \
         };                                                                                                              \
 };                                                                                                                      \
         
@@ -98,12 +94,10 @@ namespace GAMBIT_Scanner_Module_Namespace                                       
                 }                                                                                                       \
         };                                                                                                              \
                                                                                                                         \
-        namespace Reg                                                                                                   \
+        namespace                                                                                                       \
         {                                                                                                               \
-                namespace                                                                                               \
-                {                                                                                                       \
-                        interface <Tags::name> name (moduleData);                                                       \
-                }                                                                                                       \
+                template <>                                                                                             \
+                interface <Tags::name> reg_init <Tags::name>::reg(moduleData);                                          \
         };                                                                                                              \
 };                                                                                                                      \
 
@@ -117,6 +111,15 @@ namespace __scanner_module_ ## mod_name ## _namespace__                         
                                                                                                                         \
                 template <class T>                                                                                      \
                 class interface {};                                                                                     \
+                                                                                                                        \
+                namespace                                                                                               \
+                {                                                                                                       \
+                        template <class T>                                                                              \
+                        struct reg_init                                                                                 \
+                        {                                                                                               \
+                                static interface <T> reg;                                                               \
+                        };                                                                                              \
+                };                                                                                                      \
                                                                                                                         \
                 extern "C" void __scanner_module_ ## mod_name ## _moduleInit__(std::vector<std::string> &k,             \
                                                                                 std::vector<double> &u,                 \

@@ -53,11 +53,11 @@ GAMBIT_SCANNER_MODULE (crapsample)
 
         GAMBIT_SCANNER_MAIN (crapsample)
         {
-                std::vector<std::string> keys     = GET_VALUE(keys);
-                std::vector<double> upper_limits  = GET_VALUE(ulim);
-                std::vector<double> lower_limits  = GET_VALUE(llim);
-                std::string output_file           = GET_VALUE(output_file);
-                int N                             = GET_VALUE(point_number);
+                std::vector<std::string> &keys     = GET_VALUE(keys);
+                std::vector<double> &upper_limits  = GET_VALUE(ulim);
+                std::vector<double> &lower_limits  = GET_VALUE(llim);
+                std::string &output_file           = GET_VALUE(output_file);
+                int &N                             = GET_VALUE(point_number);
                 //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
                 double (*LogLike)(std::vector<double> &in) = LogLikelihood;
                 
@@ -126,12 +126,12 @@ GAMBIT_SCANNER_MODULE (loopsample)
         
         GAMBIT_SCANNER_MAIN (loopsample)
         {
-                std::vector<std::string> keys     = GET_VALUE(keys);
-                std::vector<double> upper_limits  = GET_VALUE(ulim);
-                std::vector<double> lower_limits  = GET_VALUE(llim);
-                std::string output_file           = GET_VALUE(output_file);
-                int N                             = GET_VALUE(point_number);
-                GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
+                std::vector<std::string> &keys     = GET_VALUE(keys);
+                std::vector<double> &upper_limits  = GET_VALUE(ulim);
+                std::vector<double> &lower_limits  = GET_VALUE(llim);
+                std::string &output_file           = GET_VALUE(output_file);
+                int &N                             = GET_VALUE(point_number);
+                auto *LogLike = &GET_VALUE(like);
                 
                 std::ofstream out(output_file.c_str());
                 int ma = keys.size();
