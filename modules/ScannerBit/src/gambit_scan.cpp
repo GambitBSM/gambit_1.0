@@ -431,14 +431,9 @@ namespace GAMBIT
                                 void *plugin = dlopen (file.c_str(), RTLD_NOW);
                                 if (bool(plugin))
                                 {
-                                        std::string mainName;
                                         typedef void (*inputFuncType)(std::string, std::string);
                                         inputFuncType inputFunc = (inputFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setValue__")).c_str());
-                                        typedef void (*inputFunctionType)(void *, std::string);
-                                        inputFunctionType inputFunction = (inputFunctionType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setFunction__")).c_str());
-                                        typedef void (*keyFuncType)(std::string &, std::vector<std::string> &, std::vector<std::string> &);
-                                        keyFuncType keyFunc = (keyFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_getKeys__")).c_str());
-                                        typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &);
+                                        typedef void (*initFuncType)(std::vector<std::string>, std::vector<double>, std::vector<double>, std::string &, std::vector<std::string> &, void *);
                                         initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_moduleInit__")).c_str());
                                         typedef bool (*defFuncType)(std::string);
                                         defFuncType defFunc = (defFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setDefault__")).c_str());
@@ -447,9 +442,10 @@ namespace GAMBIT
                                         {
                                                 std::vector<std::string> missingParams;
                                                 bool good = true;
-                                                initFunc(keys, upper_limits, lower_limits);
-                                                std::vector<std::string> iniKeys, funcKeys;
-                                                keyFunc(mainName, iniKeys, funcKeys);
+                                                Scanner_Function_Factory factory(this);
+                                                std::vector<std::string> iniKeys;
+                                                std::string mainName;
+                                                initFunc(keys, upper_limits, lower_limits, mainName, iniKeys, &factory);
                                                 
                                                 //std::cout << name.c_str() << "   " << iniKeys << "   " << funcKeys << std::endl;
                                                 for (std::vector<std::string>::iterator it = iniKeys.begin(); it != iniKeys.end(); it++)
@@ -460,20 +456,6 @@ namespace GAMBIT
                                                                 inputFunc(value, *it);
                                                         }
                                                         else if (!defFunc(*it))
-                                                        {
-                                                                missingParams.push_back(*it);
-                                                                good = false;
-                                                        }
-                                                }
-
-                                                for (std::vector<std::string>::iterator it = funcKeys.begin(); it != funcKeys.end(); it++)
-                                                {
-                                                        if (boundIniFile->hasKey(name, *it)) 
-                                                        {
-                                                                std::string value = boundIniFile->getValue<std::string>(name, *it);
-                                                                inputFunction((void *) new GAMBIT::Scanner::Scanner_Function((void *)this, value), *it);
-                                                        }
-                                                        else
                                                         {
                                                                 missingParams.push_back(*it);
                                                                 good = false;

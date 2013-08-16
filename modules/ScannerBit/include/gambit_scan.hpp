@@ -44,6 +44,7 @@
 
 /// \todo FIXME PS: Greg, pls remove the explicit tabs in gambit_scan!!!
 
+#define INPUT_SCANNER_FUNCTION(map, func) map[ #func ] = factory_template <func>::factory; 
 
 namespace GAMBIT
 {
@@ -184,6 +185,35 @@ namespace GAMBIT
 				return ret;
 			}
 		};
+                
+                template <class T>
+                struct factory_template
+                {
+                        static void *factory(void *a, std::string purpose){return new T(a, purpose);}
+                };
+                
+                class Scanner_Function_Factory_Base
+                {
+                public:
+                        virtual void * operator() (std::string, std::string) = 0;
+                };
+                
+                class Scanner_Function_Factory : public Scanner_Function_Factory_Base
+                {
+                private:
+                        Gambit_Scanner *parent;
+                        std::map<std::string, void *(*)(void *, std::string)> factoryMap;
+                public:
+                        Scanner_Function_Factory(Gambit_Scanner *parent) : parent (parent)
+                        {
+                                INPUT_SCANNER_FUNCTION (factoryMap, Scanner_Function);
+                        }
+                        
+                        void * operator() (std::string in, std::string purpose)
+                        {
+                                return (*factoryMap[in])(parent, purpose);
+                        }
+                };
 	};
 };
 
