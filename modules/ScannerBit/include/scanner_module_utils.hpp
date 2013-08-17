@@ -35,7 +35,6 @@ namespace GAMBIT
                 template <typename T>
                 typename enable_if<!is_vector<T>::value, void>::type convert(T **a, std::string &in)
                 {                      
-                        *a = new T;
                         std::stringstream stuff;                                                                        
                         stuff << in;                                                                                    
                         stuff >> **a;   
@@ -44,7 +43,6 @@ namespace GAMBIT
                 template <typename T>
                 typename enable_if<is_vector<T>::value, void>::type convert(T** a, std::string &in)
                 {
-                        *a = new T;
                         std::stringstream stuff;
                         stuff << in;
                         typename T::value_type temp;
@@ -54,13 +52,12 @@ namespace GAMBIT
                 template <>
                 void convert <std::vector<char>> (std::vector<char> **a, std::string &in)
                 {
-                        *a = new std::vector<char>(in.begin(), in.end());
+                        (*a)->insert((*a)->begin(), in.begin(), in.end());
                 }
                 
                 template<>
                 void convert <std::string> (std::string **a, std::string &in)
                 {
-                        *a = new std::string;
                         **a = in;
                 }      
         };

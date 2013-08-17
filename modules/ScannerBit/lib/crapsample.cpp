@@ -61,7 +61,7 @@ GAMBIT_SCANNER_MODULE (crapsample)
                 //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
                 double (*LogLike)(std::vector<double> &in) = LogLikelihood;
                 
-                //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   "  << std::endl;
+                //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   " << GET_VALUE(ulim)[0] << "   "  << std::endl;
                 int ma = keys.size();
                 
                 std::ofstream out(output_file.c_str());
@@ -121,8 +121,12 @@ GAMBIT_SCANNER_MODULE (loopsample)
         REGISTER (std::string, output_file);
         REGISTER (GAMBIT::Scanner::gambitKeys, keys);
         REGISTER (GAMBIT::Scanner::gambitUpperLimits, ulim);
-        REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim)
+        REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim);
         REGISTER (GAMBIT::Scanner::Function_Base, like);
+        
+        SET_DEFAULT(10, point_number);
+        SET_DEFAULT("default_output", output_file);
+        SET_DEFAULT("Likelihood", like);
         
         GAMBIT_SCANNER_MAIN (loopsample)
         {
@@ -131,14 +135,14 @@ GAMBIT_SCANNER_MODULE (loopsample)
                 std::vector<double> &lower_limits  = GET_VALUE(llim);
                 std::string &output_file           = GET_VALUE(output_file);
                 int &N                             = GET_VALUE(point_number);
-                auto *LogLike = &GET_VALUE(like);
+                auto *LogLike                      = &GET_VALUE(like);
                 
                 std::ofstream out(output_file.c_str());
                 int ma = keys.size();
                 std::vector<double> a(ma);
                 Ran gDev(0);
                 
-                cout << "entering loop sampler ..." << endl;
+                std::cout << "entering loop sampler.  \n\tOutputing to:  " << output_file << "\n\tnumber of points to calculate:  " << N << "\n\tFirst key is:  " << keys[0] << std::endl;
                 for (int k = 0; k < N; k++)
                 {
                         for (int i = 0; i < ma; i++)

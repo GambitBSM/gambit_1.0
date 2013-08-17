@@ -433,7 +433,7 @@ namespace GAMBIT
                                 {
                                         typedef void (*inputFuncType)(std::string, std::string);
                                         inputFuncType inputFunc = (inputFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setValue__")).c_str());
-                                        typedef void (*initFuncType)(std::vector<std::string>, std::vector<double>, std::vector<double>, std::string &, std::vector<std::string> &, void *);
+                                        typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &, std::string &, std::vector<std::string> &, void *);
                                         initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_moduleInit__")).c_str());
                                         typedef bool (*defFuncType)(std::string);
                                         defFuncType defFunc = (defFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setDefault__")).c_str());

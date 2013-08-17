@@ -33,16 +33,40 @@ namespace GAMBIT
                         virtual void * operator() (std::string, std::string) = 0;
                 };
                 
+                struct entryData
+                {
+                        void *value;
+                        virtual bool isEntry(){return true;};
+                        virtual void setValue(std::string in){};
+                        virtual void setValue(entryData &){};
+                        virtual ~entryData(){};
+                };
+                
                 struct gambitData
                 {
-                        gambitData(){}
                         std::string name;
                         Function_Factory_Base *factory;
-                        std::vector<std::string> key;
-                        std::vector<double> upper;
-                        std::vector<double> lower;
-                        std::map <std::string, std::pair<void *(*)(std::string, gambitData &), void *>> valueMap;
-                        std::map <std::string, void *> defaultMap;
+                        std::vector<std::string> *key;
+                        std::vector<double> *upper;
+                        std::vector<double> *lower;
+                        std::map <std::string, entryData *> valueMap;
+                        std::map <std::string, entryData *> defaultMap;
+                        std::vector <void (*)(gambitData &)> inits;
+                        
+                        gambitData(){}
+                        ~gambitData()
+                        {
+                                std::map <std::string, entryData *>::iterator it;
+                                for (it = valueMap.begin(); it != valueMap.end(); it++)
+                                {
+                                        delete it->second;
+                                }
+                                
+                                for (it = defaultMap.begin(); it != defaultMap.end(); it++)
+                                {
+                                        delete it->second;
+                                }
+                        }
                 };
 
                 struct gambitKeys{typedef std::vector<std::string> type;};                                                      
@@ -57,51 +81,65 @@ namespace GAMBIT
                 };
                 
                 template<class T>                                                                                               
-                struct gt_type_def                                                                                              
+                struct gt_type_def : public entryData                                                                                           
                 {                                                                                                               
-                        typedef T type;                                                                                                    
-                        static void *setValue(std::string in, gambitData &moduleData)                             
+                        typedef T type;   
+                        gt_type_def(gambitData &moduleData){value = new type;}
+                        void setValue(std::string in)                             
                         {                                                                                                       
-                                type *a = 0;                                                                  
-                                convert<type>(&a, in);                                       
-                                return (void *)a;                                                
-                        }                                              
-                        static type *ptr(gambitData &moduleData){return 0;}                                                     
+                                type *a = (type *)value;                                                                  
+                                convert<type>(&a, in);                                               
+                        }                     
+                        void setValue(entryData &in)
+                        {
+                                *((type *)value) = *((type *)in.value);
+                        }
+                        ~gt_type_def(){delete (type *)value;}                                                 
                 };                                                                                                             
                 
                 template<>                                                                                                      
-                struct gt_type_def<gambitKeys>                                                                                  
+                struct gt_type_def<gambitKeys> : public entryData                                                                                
                 {                                                                                                               
-                        typedef typename gambitKeys::type type;    
-                        static void *setValue(std::string in, gambitData &moduleData){}                                      
-                        static type *ptr(gambitData &moduleData){return &moduleData.key;}                                    
+                        typedef typename gambitKeys::type type;   
+                        gt_type_def(gambitData &moduleData){value = moduleData.key;}
+                        bool isEntry () {return false;}                        
                 };                                                                                                              
                                                                                                                                 
                 template<>                                                                                                      
-                struct gt_type_def<gambitUpperLimits>                                                                           
+                struct gt_type_def<gambitUpperLimits> : public entryData                                                                    
                 {                                                                                                               
                         typedef typename gambitUpperLimits::type type;
-                        static void *setValue(std::string in, gambitData &moduleData){}                                        
-                        static type *ptr(gambitData &moduleData){return &moduleData.upper;}                                  
+                        gt_type_def(gambitData &moduleData){value = moduleData.upper;}
+                        bool isEntry () {return false;}                 
                 };                                                                                                              
                                                                                                                                 
                 template<>                                                                                                      
-                struct gt_type_def<gambitLowerLimits>                                                                           
+                struct gt_type_def<gambitLowerLimits> : public entryData                                           
                 {                                                                                                               
                         typedef typename gambitLowerLimits::type type;
-                        static void *setValue(std::string in, gambitData &moduleData){}                                   
-                        static type *ptr(gambitData &moduleData){return &moduleData.lower;}                                  
+                        gt_type_def(gambitData &moduleData){value = moduleData.lower;}
+                        bool isEntry () {return false;}                
                 };
                 
                 template<>                                                                                                                                                                                                                                      
-                struct gt_type_def<Function_Base>                                                                               
-                {                                                                                                               
-                        typedef typename Function_Base::type type;                                                                     
-                        static void *setValue(std::string in, gambitData &moduleData)                             
+                struct gt_type_def<Function_Base> : public entryData                                                     
+                {                                                       
+                        Function_Factory_Base *factory;
+                        typedef typename Function_Base::type type; 
+                        gt_type_def(gambitData &moduleData){value = 0; factory = moduleData.factory;}
+                        void setValue(std::string in)                             
                         {                                                                                                                                             
-                                return (void *)(*moduleData.factory)("Scanner_Function", in);                                                
-                        }                      
-                        static type *ptr(gambitData &moduleData){return 0;}                                                     
+                                value = (void *)(*factory)("Scanner_Function", in);                                                
+                        }   
+                        void setValue(entryData &in)
+                        {
+                                if (in.value != 0)
+                                {
+                                        value = in.value;
+                                        in.value = 0;
+                                }
+                        }
+                        ~gt_type_def (){if (value != 0) delete (type *)value;}
                 };        
         };
 };
