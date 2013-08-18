@@ -56,7 +56,7 @@ namespace GAMBIT_Scanner_Module_Namespace                                       
                 interface <MainTags::name_in> reg_init <MainTags::name_in>::reg(moduleData);                            \
         };                                                                                                              \
 };                                                                                                                      \
-extern "C" void __scanner_module_ ## name_in ## _main__ ()                                                              \
+extern "C" void __scanner_module_main_ ## name_in ## __ ()                                                              \
 
 #define SET_DEFAULT(val, name)                                                                                          \
 namespace GAMBIT_Scanner_Module_Namespace                                                                               \
@@ -146,7 +146,7 @@ namespace __scanner_module_ ## mod_name ## _namespace__                         
                         };                                                                                              \
                 };                                                                                                      \
                                                                                                                         \
-                extern "C" void __scanner_module_ ## mod_name ## _moduleInit__(std::vector<std::string> &k,             \
+                extern "C" void __scanner_module_moduleInit_ ## mod_name ## __(std::vector<std::string> &k,             \
                                                                                 std::vector<double> &u,                 \
                                                                                 std::vector<double> &l,                 \
                                                                                 std::string &str,                       \
@@ -177,12 +177,12 @@ namespace __scanner_module_ ## mod_name ## _namespace__                         
                         }                                                                                               \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void __scanner_module_ ## mod_name ## _setValue__(std::string val, std::string key)          \
+                extern "C" void __scanner_module_setValue_ ## mod_name ## __(std::string val, std::string key)          \
                 {                                                                                                       \
-                        moduleData.valueMap[key]->setValue(val);           \
+                        moduleData.valueMap[key]->setValue(val);                                                        \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" bool __scanner_module_ ## mod_name ## _setDefault__(std::string key)                         \
+                extern "C" bool __scanner_module_setDefault_ ## mod_name ## __(std::string key)                         \
                 {                                                                                                       \
                         std::map<std::string, entryData *>::iterator it = moduleData.defaultMap.find(key);              \
                         if (it != moduleData.defaultMap.end())                                                          \

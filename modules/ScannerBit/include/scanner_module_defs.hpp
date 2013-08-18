@@ -31,6 +31,8 @@ namespace GAMBIT
                 {
                 public:
                         virtual void * operator() (std::string, std::string) = 0;
+                        virtual void remove(std::string, void *) = 0;
+                        virtual ~Function_Factory_Base(){}
                 };
                 
                 struct entryData
@@ -129,7 +131,7 @@ namespace GAMBIT
                         gt_type_def(gambitData &moduleData){value = 0; factory = moduleData.factory;}
                         void setValue(std::string in)                             
                         {                                                                                                                                             
-                                value = (void *)(*factory)("Scanner_Function", in);                                                
+                                value = (*factory)("Scanner_Function", in);                                                
                         }   
                         void setValue(entryData &in)
                         {
@@ -139,9 +141,11 @@ namespace GAMBIT
                                         in.value = 0;
                                 }
                         }
-                        ~gt_type_def (){if (value != 0) delete (type *)value;}
+                        ~gt_type_def (){if (value != 0) factory->remove("Scanner_Function", value);}
                 };        
         };
 };
+
+extern "C" void __scanner_modules_getModNames__ (void *in, unsigned char flag);
 
 #endif

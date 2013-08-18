@@ -44,7 +44,9 @@
 
 /// \todo FIXME PS: Greg, pls remove the explicit tabs in gambit_scan!!!
 
-#define INPUT_SCANNER_FUNCTION(map, func) map[ #func ] = factory_template <func>::factory; 
+#define INPUT_SCANNER_FUNCTION(map, func) \
+map[ #func ].first = factory_template <func>::factory; \
+map[ #func ].second = factory_template <func>::remove; \
 
 namespace GAMBIT
 {
@@ -157,6 +159,7 @@ namespace GAMBIT
 			}
 			
 			virtual double operator () (std::vector<double> &) = 0;
+                        virtual ~Scanner_Function_Base(){}
 		};
 		
 		class Scanner_Function : public Scanner_Function_Base
@@ -190,29 +193,32 @@ namespace GAMBIT
                 struct factory_template
                 {
                         static void *factory(void *a, std::string purpose){return new T(a, purpose);}
+                        static void remove(void *a){delete (T *)a;}
                 };
                 
-                class Scanner_Function_Factory_Base
-                {
-                public:
-                        virtual void * operator() (std::string, std::string) = 0;
-                };
-                
-                class Scanner_Function_Factory : public Scanner_Function_Factory_Base
+                class Scanner_Function_Factory
                 {
                 private:
                         Gambit_Scanner *parent;
-                        std::map<std::string, void *(*)(void *, std::string)> factoryMap;
+                        std::map<std::string, std::pair<void *(*)(void *, std::string), void (*)(void *)>> factoryMap;
+                       
                 public:
                         Scanner_Function_Factory(Gambit_Scanner *parent) : parent (parent)
                         {
                                 INPUT_SCANNER_FUNCTION (factoryMap, Scanner_Function);
                         }
                         
-                        void * operator() (std::string in, std::string purpose)
+                        virtual void * operator() (std::string in, std::string purpose)
                         {
-                                return (*factoryMap[in])(parent, purpose);
+                                return (*factoryMap[in].first)(parent, purpose);
                         }
+                        
+                        virtual void remove(std::string in, void *a)
+                        {
+                                (*factoryMap[in].second)(a);
+                        }
+                        
+                        virtual ~Scanner_Function_Factory(){}
                 };
 	};
 };

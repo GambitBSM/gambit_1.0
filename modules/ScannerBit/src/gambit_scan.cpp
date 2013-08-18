@@ -424,22 +424,74 @@ namespace GAMBIT
                 
                 int Gambit_Scanner::Run()
                 {
-                        if (boundIniFile->hasKey("scanner", "file_path") && boundIniFile->hasKey("scanner", "file_path"))
+                        if (boundIniFile->hasKey("scanner", "file_path"))
                         {
                                 std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
-                                std::string name = boundIniFile->getValue<std::string>("scanner", "module");
+                                std::string name;
+                                if (boundIniFile->hasKey("scanner", "module")) 
+                                {
+                                        name = boundIniFile->getValue<std::string>("scanner", "module");
+                                }
+                                else
+                                {
+                                        name = "";
+                                }
+                                
                                 void *plugin = dlopen (file.c_str(), RTLD_NOW);
                                 if (bool(plugin))
                                 {
-                                        typedef void (*inputFuncType)(std::string, std::string);
-                                        inputFuncType inputFunc = (inputFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setValue__")).c_str());
-                                        typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &, std::string &, std::vector<std::string> &, void *);
-                                        initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_moduleInit__")).c_str());
-                                        typedef bool (*defFuncType)(std::string);
-                                        defFuncType defFunc = (defFuncType)dlsym(plugin, (std::string("__scanner_module_") + name + std::string("_setDefault__")).c_str());
-                                        
-                                        if (!bool(dlerror()))
+                                        char *tempFile = tempnam(NULL, NULL);
+                                        system((std::string("nm ") + file + std::string(" | grep \"__scanner_module_moduleInit_\" >& ") + std::string(tempFile)).c_str());
+                                        std::ifstream in(tempFile);
+                                        std::vector<std::string> mod_names;
+                                        std::string str;
+                                        while(getline(in, str))
                                         {
+                                                int pos = str.find("__scanner_module_moduleInit_");
+                                                int posLast = str.rfind("__");
+                                                mod_names.push_back(str.substr(pos + 28, posLast - pos - 28));
+                                        }
+                                        in.close();
+                                        system("rm -f gambitScannerModuleSave.tmp");
+                                        
+                                        if (mod_names.size() > 0)
+                                        {
+                                                if (!vector_elem_check(mod_names, name))
+                                                {
+                                                        
+                                                        if (name !=  "")
+                                                                std::cout << "\n\e[01;33mWARNING:\e[00m  Module \"" << name << "\" is not in file \"" << file << "\".\n\n";
+                                                        else
+                                                                std::cout << "\n\e[01;33mWARNING:\e[00m  Module was not specified in ini-file.\n\n";
+                                                        
+                                                        std::cout << "Modules in \"" << file << "\" are:\n";
+                                                        for (int i = 0; i < mod_names.size(); i++)
+                                                        {
+                                                                std::cout << "\t" << i << ":  " << mod_names[i] << "\n";
+                                                        }
+                                                        std::cout << "\nPlease choose a module number:  " << std::flush;
+                                                        int iin;
+                                                        std::string str;
+                                                        std::getline(std::cin, str);
+                                                        std::istringstream ss(str);
+                                                        bool is_not_int = !(ss >> iin);
+                                                        while(iin < 0 || iin >= mod_names.size() || is_not_int)
+                                                        {
+                                                                std::cout << "\033[1APlease choose a module number:  " << bblank << std::flush;
+                                                                std::getline(std::cin, str);
+                                                                std::stringstream ss(str);
+                                                                is_not_int = !(ss >> iin);
+                                                        }
+                                                        name = mod_names[iin];
+                                                }
+                                                
+                                                typedef void (*inputFuncType)(std::string, std::string);
+                                                inputFuncType inputFunc = (inputFuncType)dlsym(plugin, (std::string("__scanner_module_setValue_") + name + std::string("__")).c_str());
+                                                typedef void (*initFuncType)(std::vector<std::string> &, std::vector<double> &, std::vector<double> &, std::string &, std::vector<std::string> &, void *);
+                                                initFuncType initFunc = (initFuncType)dlsym(plugin, (std::string("__scanner_module_moduleInit_") + name + std::string("__")).c_str());
+                                                typedef bool (*defFuncType)(std::string);
+                                                defFuncType defFunc = (defFuncType)dlsym(plugin, (std::string("__scanner_module_setDefault_") + name + std::string("__")).c_str());
+
                                                 std::vector<std::string> missingParams;
                                                 bool good = true;
                                                 Scanner_Function_Factory factory(this);
@@ -465,7 +517,7 @@ namespace GAMBIT
                                                 if (good)
                                                 {
                                                         typedef void (*scanFuncType)();
-                                                        scanFuncType func = (scanFuncType)dlsym (plugin, (std::string("__scanner_module_") + mainName + std::string("_main__")).c_str());
+                                                        scanFuncType func = (scanFuncType)dlsym (plugin, (std::string("__scanner_module_main_") + mainName + std::string("__")).c_str());
                                                         
                                                         if (!bool(dlerror()))
                                                         {
@@ -491,7 +543,7 @@ namespace GAMBIT
                                         else
                                         {
                                                 std::stringstream ss;
-                                                ss << "\e[00;31mERROR:\e[00m  Could not find module \"" << name << "\" in file " << file << ".";
+                                                ss << "\e[00;31mERROR:\e[00m  Could not any modules in file \"" << file << "\".";
                                                 printErrors(ss.str());
                                         }
                                         dlclose(plugin);
@@ -502,6 +554,12 @@ namespace GAMBIT
                                         ss << "\e[00;31mERROR:\e[00m  Cannot load " << file << ":  " << dlerror();
                                         printErrors(ss.str());
                                 }
+                        }
+                        else
+                        {
+                                std::stringstream ss;
+                                ss << "\e[00;31mERROR:\e[00m  Did not specify module library path." << std::endl;
+                                printErrors(ss.str());
                         }
                         
                         return 0;
