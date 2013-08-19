@@ -27,6 +27,7 @@ namespace GAMBIT
 {
         namespace Scanner
         {
+                /*Factory inported by ScannerBit*/
                 class Function_Factory_Base
                 {
                 public:
@@ -35,6 +36,7 @@ namespace GAMBIT
                         virtual ~Function_Factory_Base(){}
                 };
                 
+                /*Generic data entry type that holds all the */
                 struct entryData
                 {
                         void *value;
@@ -44,6 +46,7 @@ namespace GAMBIT
                         virtual ~entryData(){};
                 };
                 
+                /*Structure that contains all the data inputed by ScannerBit*/
                 struct gambitData
                 {
                         std::string name;
@@ -71,10 +74,12 @@ namespace GAMBIT
                         }
                 };
 
+                /*Specialized types*/
                 struct gambitKeys{typedef std::vector<std::string> type;};                                                      
                 struct gambitUpperLimits{typedef std::vector<double> type;};                                                    
                 struct gambitLowerLimits{typedef std::vector<double> type;};
                 
+                /*Generic Functor*/
                 class Function_Base
                 {
                 public:
@@ -82,6 +87,7 @@ namespace GAMBIT
                         virtual double operator () (std::vector<double> &) = 0;
                 };
                 
+                /*type def templated to help compiler keep track of types.*/
                 template<class T>                                                                                               
                 struct gt_type_def : public entryData                                                                                           
                 {                                                                                                               
@@ -145,7 +151,5 @@ namespace GAMBIT
                 };        
         };
 };
-
-extern "C" void __scanner_modules_getModNames__ (void *in, unsigned char flag);
 
 #endif
