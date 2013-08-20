@@ -47,9 +47,21 @@ int main() {
   pythiaInstance.readString("HadronLevel:all = on");
   
   pythiaInstance.readString("SUSY:all = on");
-  pythiaInstance.readString("SUSY:qqbar2chi0chi0 = off");
-  pythiaInstance.readString("SUSY:qqbar2chi+-chi0 = off");
-  pythiaInstance.readString("SUSY:qqbar2chi+chi- = off");
+  pythiaInstance.readString("SUSY:idA = 1");
+  // Time to test my Pythia process ID hack.
+  vector<int> susyIDs;
+  susyIDs.push_back(1000021);
+  susyIDs.push_back(1000001);
+  susyIDs.push_back(1000002);
+  susyIDs.push_back(1000003);
+  susyIDs.push_back(1000004);
+  susyIDs.push_back(2000001);
+  susyIDs.push_back(2000002);
+  susyIDs.push_back(2000003);
+  susyIDs.push_back(2000004);
+  // Using both idVectA and idVectB forces events with only gluinos or squarks.
+  pythiaInstance.settings.ivect("SUSY:idVectA", susyIDs);
+  pythiaInstance.settings.ivect("SUSY:idVectB", susyIDs);
   pythiaInstance.readString("SLHA:file = sps1aWithDecays.spc");
 
   pythiaInstance.init();
