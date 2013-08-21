@@ -14,11 +14,11 @@
 ///
 ///  *********************************************
 
-#ifndef SCANNER_MODULE_HPP
-#define SCANNER_MODULE_HPP
+#ifndef GAMBIT_MODULE_HPP
+#define GAMBIT_MODULE_HPP
 
-#include <scanner_module_utils.hpp>
-#include <scanner_module_defs.hpp>
-#include <scanner_module_macros.hpp>
+#include <gambit_module_utils.hpp>
+#include <gambit_module_defs.hpp>
+#include <gambit_module_macros.hpp>
 
 #endif

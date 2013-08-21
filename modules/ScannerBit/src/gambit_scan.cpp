@@ -23,7 +23,7 @@
 ///  *********************************************
 
 #include <gambit_scan.hpp>
-#include <dlfcn.h>
+#include <module_interface.hpp>
 
 namespace GAMBIT
 {
@@ -437,23 +437,19 @@ namespace GAMBIT
                                         name = "";
                                 }
                                 
-                                Scanner_Interface interface(file, name);
-                                errors = interface.printErrors();
-                                if (errors != "")
-                                {
-                                        printErrors(errors);
-                                        return -1;
-                                }
-                                
                                 Scanner_Function_Factory factory(this);
-                                interface.Init(keys, upper_limits, lower_limits, &factory, boundIniFile);
+                                std::vector<void *> input = {(void *)&keys, (void *)&upper_limits, (void *)&lower_limits};
+                                
+                                Module::Module_Interface<int ()> interface(file, name, boundIniFile, &input, &factory);
                                 errors = interface.printErrors();
+                                
                                 if (errors != "")
                                 {
                                         printErrors(errors);
                                         return -1;
                                 }
-                                interface.Run();
+
+                                interface.main();
                         }
                         else
                         {

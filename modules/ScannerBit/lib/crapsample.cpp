@@ -8,7 +8,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <scanner_module.hpp>
+#include <gambit_module.hpp>
   
 class Ran
 {
@@ -34,24 +34,23 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-GAMBIT_SCANNER_MODULE (crapsample)
+GAMBIT_MODULE (crapsample)
 {
-        REGISTER (int, point_number);
-        REGISTER (std::string, output_file);
-        REGISTER (GAMBIT::Scanner::gambitKeys, keys);
-        REGISTER (GAMBIT::Scanner::gambitUpperLimits, ulim);
-        REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim)
-        REGISTER (GAMBIT::Scanner::Function_Base, like);
-        
-        SET_DEFAULT(5, point_number);
-        SET_DEFAULT("output_default", output_file);
+        RETRIEVE (point_number, int, 5);
+        RETRIEVE (output_file, std::string, "output_default");
+        RETRIEVE (keys, GAMBIT::Scanner::gambitKeys);
+        RETRIEVE (ulim, GAMBIT::Scanner::gambitUpperLimits);
+        RETRIEVE (llim, GAMBIT::Scanner::gambitLowerLimits);
+        RETRIEVE (like, GAMBIT::Scanner::Function_Base);
 
         double LogLikelihood(std::vector<double> &in)
         {
                 return GET_VALUE(like)(in);
         }
 
-        GAMBIT_SCANNER_MAIN (crapsample)
+        LOAD_OBJECT(func, LogLikelihood, double (std::vector<double> &));
+        
+        int MODULE_MAIN (int a_in, int b)
         {
                 std::vector<std::string> &keys     = GET_VALUE(keys);
                 std::vector<double> &upper_limits  = GET_VALUE(ulim);
@@ -60,7 +59,6 @@ GAMBIT_SCANNER_MODULE (crapsample)
                 int &N                             = GET_VALUE(point_number);
                 //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
                 double (*LogLike)(std::vector<double> &in) = LogLikelihood;
-                
                 //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   " << GET_VALUE(ulim)[0] << "   "  << std::endl;
                 int ma = keys.size();
                 
@@ -112,23 +110,21 @@ GAMBIT_SCANNER_MODULE (crapsample)
                         }
                 }
                 while(count < N);
+                
+                return 0;
         }
 };
 
-GAMBIT_SCANNER_MODULE (loopsample)
+GAMBIT_MODULE (loopsample)
 {
-        REGISTER (int, point_number);
-        REGISTER (std::string, output_file);
-        REGISTER (GAMBIT::Scanner::gambitKeys, keys);
-        REGISTER (GAMBIT::Scanner::gambitUpperLimits, ulim);
-        REGISTER (GAMBIT::Scanner::gambitLowerLimits, llim);
-        REGISTER (GAMBIT::Scanner::Function_Base, like);
+        RETRIEVE (point_number, int, 10);
+        RETRIEVE (output_file, std::string, "default_output");
+        RETRIEVE (keys, GAMBIT::Scanner::gambitKeys);
+        RETRIEVE (ulim, GAMBIT::Scanner::gambitUpperLimits);
+        RETRIEVE (llim, GAMBIT::Scanner::gambitLowerLimits)
+        RETRIEVE (like, GAMBIT::Scanner::Function_Base, "Likelihood");
         
-        SET_DEFAULT(10, point_number);
-        SET_DEFAULT("default_output", output_file);
-        SET_DEFAULT("Likelihood", like);
-        
-        GAMBIT_SCANNER_MAIN (loopsample)
+        int MODULE_MAIN (void)
         {
                 std::vector<std::string> &keys     = GET_VALUE(keys);
                 std::vector<double> &upper_limits  = GET_VALUE(ulim);
@@ -136,12 +132,12 @@ GAMBIT_SCANNER_MODULE (loopsample)
                 std::string &output_file           = GET_VALUE(output_file);
                 int &N                             = GET_VALUE(point_number);
                 auto *LogLike                      = &GET_VALUE(like);
-                
+                typedef void (*func)(double a);
                 std::ofstream out(output_file.c_str());
                 int ma = keys.size();
                 std::vector<double> a(ma);
                 Ran gDev(0);
-                
+
                 std::cout << "entering loop sampler.  \n\tOutputing to:  " << output_file << "\n\tnumber of points to calculate:  " << N << "\n\tFirst key is:  " << keys[0] << std::endl;
                 for (int k = 0; k < N; k++)
                 {
@@ -152,6 +148,7 @@ GAMBIT_SCANNER_MODULE (loopsample)
                         }
                         out << (*LogLike)(a) << endl;
                 }
+                return 0;
         }
 };
 

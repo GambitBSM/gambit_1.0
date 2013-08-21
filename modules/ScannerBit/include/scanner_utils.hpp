@@ -44,10 +44,6 @@ namespace GAMBIT
                 const unsigned char multiParam = 0x08;
                 const unsigned char fixedMultiParam = 0x10;
                 
-                const std::string sblank = std::string("       \033[7D");
-                const std::string blank = std::string("               \033[15D");
-                const std::string bblank = std::string("                              \033[30D");
-                
                 inline FILE *LaunchLogWindow(std::string &file)
                 {
                         char *name = tempnam(NULL, NULL);
@@ -59,29 +55,6 @@ namespace GAMBIT
                                 abort();
                         }
                         return fopen(name, "w");
-                }
-                
-                inline bool vector_elem_check(std::vector<std::string> &vec, std::string elem)
-                {
-                        for (std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); it++)
-                        {
-                                if ((*it) == elem)
-                                {
-                                        return true;
-                                }
-                        }
-                        
-                        return false;
-                }
-                
-                inline void clearInputBuffer()
-                {
-                        char c;
-                        do 
-                        {
-                                c = getchar();
-                        } 
-                        while (c != '\n' && c != EOF);
                 }
         };
 };

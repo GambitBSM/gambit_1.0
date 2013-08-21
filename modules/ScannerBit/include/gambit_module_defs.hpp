@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef SCANNER_MODULE_DEFS_HPP
-#define SCANNER_MODULE_DEFS_HPP
+#ifndef GAMBIT_MODULE_DEFS_HPP
+#define GAMBIT_MODULE_DEFS_HPP
 
 #include <vector>
 #include <string>
@@ -27,6 +27,22 @@ namespace GAMBIT
 {
         namespace Scanner
         {
+                /*Specialized types*/
+                struct gambitKeys{typedef std::vector<std::string> type;};                                                      
+                struct gambitUpperLimits{typedef std::vector<double> type;};                                                    
+                struct gambitLowerLimits{typedef std::vector<double> type;};
+                
+                /*Generic Functor*/
+                class Function_Base
+                {
+                public:
+                        typedef Function_Base type;
+                        virtual double operator () (std::vector<double> &) = 0;
+                };
+        };
+        
+        namespace Module
+        {
                 /*Factory inported by ScannerBit*/
                 class Function_Factory_Base
                 {
@@ -34,6 +50,29 @@ namespace GAMBIT
                         virtual void * operator() (std::string, std::string) = 0;
                         virtual void remove(std::string, void *) = 0;
                         virtual ~Function_Factory_Base(){}
+                };
+                
+                struct factoryBase
+                {
+                        virtual void *operator()() = 0;
+                        virtual void remove(void *) = 0;
+                        virtual ~factoryBase(){}
+                };
+                
+                template <typename T>
+                struct funcFactory : factoryBase
+                {
+                        T *func;
+                        funcFactory (T *in) : func(in) {}
+                        void *operator()(){return *(void**)&func;}
+                        void remove(void * in){};
+                };
+                
+                template <typename T>
+                struct classFactory : factoryBase
+                {
+                        void *operator()(){return (void*) new T;}
+                        void remove(void *in){delete in;}
                 };
                 
                 /*Generic data entry type that holds all the */
@@ -51,14 +90,13 @@ namespace GAMBIT
                 {
                         std::string name;
                         Function_Factory_Base *factory;
-                        std::vector<std::string> *key;
-                        std::vector<double> *upper;
-                        std::vector<double> *lower;
+                        std::vector<void *> inputData;
                         std::map <std::string, entryData *> valueMap;
                         std::map <std::string, entryData *> defaultMap;
                         std::vector <void (*)(gambitData &)> inits;
+                        std::map<std::string, factoryBase *> outputFuncs;
                         
-                        gambitData(){}
+                        gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
                                 std::map <std::string, entryData *>::iterator it;
@@ -72,19 +110,6 @@ namespace GAMBIT
                                         delete it->second;
                                 }
                         }
-                };
-
-                /*Specialized types*/
-                struct gambitKeys{typedef std::vector<std::string> type;};                                                      
-                struct gambitUpperLimits{typedef std::vector<double> type;};                                                    
-                struct gambitLowerLimits{typedef std::vector<double> type;};
-                
-                /*Generic Functor*/
-                class Function_Base
-                {
-                public:
-                        typedef Function_Base type;
-                        virtual double operator () (std::vector<double> &) = 0;
                 };
                 
                 /*type def templated to help compiler keep track of types.*/
@@ -106,34 +131,34 @@ namespace GAMBIT
                 };                                                                                                             
                 
                 template<>                                                                                                      
-                struct gt_type_def<gambitKeys> : public entryData                                                                                
+                struct gt_type_def<Scanner::gambitKeys> : public entryData                                                                                
                 {                                                                                                               
-                        typedef typename gambitKeys::type type;   
-                        gt_type_def(gambitData &moduleData){value = moduleData.key;}
+                        typedef typename Scanner::gambitKeys::type type;   
+                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[0];}
                         bool isEntry () {return false;}                        
                 };                                                                                                              
                                                                                                                                 
                 template<>                                                                                                      
-                struct gt_type_def<gambitUpperLimits> : public entryData                                                                    
+                struct gt_type_def<Scanner::gambitUpperLimits> : public entryData                                                                    
                 {                                                                                                               
-                        typedef typename gambitUpperLimits::type type;
-                        gt_type_def(gambitData &moduleData){value = moduleData.upper;}
+                        typedef typename Scanner::gambitUpperLimits::type type;
+                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[1];}
                         bool isEntry () {return false;}                 
                 };                                                                                                              
                                                                                                                                 
                 template<>                                                                                                      
-                struct gt_type_def<gambitLowerLimits> : public entryData                                           
+                struct gt_type_def<Scanner::gambitLowerLimits> : public entryData                                           
                 {                                                                                                               
-                        typedef typename gambitLowerLimits::type type;
-                        gt_type_def(gambitData &moduleData){value = moduleData.lower;}
+                        typedef typename Scanner::gambitLowerLimits::type type;
+                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[2];}
                         bool isEntry () {return false;}                
                 };
                 
                 template<>                                                                                                                                                                                                                                      
-                struct gt_type_def<Function_Base> : public entryData                                                     
+                struct gt_type_def<Scanner::Function_Base> : public entryData                                                     
                 {                                                       
                         Function_Factory_Base *factory;
-                        typedef typename Function_Base::type type; 
+                        typedef typename Scanner::Function_Base::type type; 
                         gt_type_def(gambitData &moduleData){value = 0; factory = moduleData.factory;}
                         void setValue(std::string in)                             
                         {                                                                                                                                             
@@ -148,7 +173,7 @@ namespace GAMBIT
                                 }
                         }
                         ~gt_type_def (){if (value != 0) factory->remove("Scanner_Function", value);}
-                };        
+                };  
         };
 };
 

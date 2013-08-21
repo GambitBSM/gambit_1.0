@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef SCANNER_MODULE_UTILS_HPP
-#define SCANNER_MODULE_UTILS_HPP
+#ifndef GAMBIT_MODULE_UTILS_HPP
+#define GAMBIT_MODULE_UTILS_HPP
 
 #include <vector>
 #include <string>
@@ -27,7 +27,7 @@ using namespace std;
 
 namespace GAMBIT
 {
-        namespace Scanner
+        namespace Module
         {       
                 namespace
                 {
@@ -61,7 +61,7 @@ namespace GAMBIT
                         void convert <std::string> (std::string **a, std::string &in)
                         {
                                 **a = in;
-                        }  
+                        } 
                 };
         };
 };
