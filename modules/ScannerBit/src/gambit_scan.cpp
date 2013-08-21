@@ -450,6 +450,11 @@ namespace GAMBIT
                                 }
 
                                 interface.main();
+                                
+                                /* could do this ...
+                                 * double (*func)(std::vector<double> &)
+                                 * func = interface.getMember("func");
+                                 * some_value = func(some_vector); */
                         }
                         else
                         {

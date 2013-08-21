@@ -21,6 +21,12 @@
 #define PP_NARG_(...) PP_ARG_N(__VA_ARGS__)
 #define PP_ARG_N( _1, _2,N,...) N
 #define PP_RSEQ_N() 2,1,0
+#define PP_CAT(...) PP_CAT1(__VA_ARGS__)
+#define PP_CAT1(a, b) a ## b   
+
+#define RETRIEVE1(name, type_in) REGISTER(name, type_in)
+#define RETRIEVE2(name, type_in, val) REGISTER(name, type_in) SET_DEFAULT(name, val)
+#define RETRIEVE(name, ...) PP_CAT(RETRIEVE,  PP_NARG(__VA_ARGS__)) (name, __VA_ARGS__)
 
 /*Get the value associated with "key" that was defined in the ini-file*/
 #define GET_VALUE(key) (*static_cast                                                                                    \
@@ -74,7 +80,7 @@ namespace GAMBIT_Module_Namespace                                               
                 public:                                                                                                 \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
-                                moduleData.outputFuncs[#name] = new GAMBIT::Module::funcFactory <__VA_ARGS__>(obj);    \
+                                moduleData.outputFuncs[#name] = new GAMBIT::Module::funcFactory <__VA_ARGS__>(obj);     \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -102,7 +108,7 @@ namespace GAMBIT_Module_Namespace                                               
                 public:                                                                                                 \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
-                                moduleData.outputFuncs[moduleData.name] = new GAMBIT::Module::funcFactory              \
+                                moduleData.outputFuncs[moduleData.name] = new GAMBIT::Module::funcFactory               \
                                         <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);  \
                         }                                                                                               \
                 };                                                                                                      \
@@ -114,7 +120,7 @@ namespace GAMBIT_Module_Namespace                                               
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__)                                              \
 
 /*Set a defalut value for "name" if it is not specified in the ini-file*/
-#define SET_DEFAULT(val, name)                                                                                          \
+#define SET_DEFAULT(name, ...)                                                                                          \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace DefaultTags                                                                                           \
@@ -139,7 +145,7 @@ namespace GAMBIT_Module_Namespace                                               
                         {                                                                                               \
                                 module.defaultMap[ #name ] = new gt_type(module);                                       \
                                 std::stringstream ss;                                                                   \
-                                ss << val;                                                                              \
+                                ss << __VA_ARGS__;                                                                      \
                                 module.defaultMap[ #name ]->setValue(ss.str());                                         \
                         }                                                                                               \
                 };                                                                                                      \
@@ -150,7 +156,7 @@ namespace GAMBIT_Module_Namespace                                               
 };                                                                                                                      \
         
 /*Register a variable of type type_in with ScannerBit.  The variable is set by the keyword "name"*/
-#define REGISTER(type_in, name)                                                                                         \
+#define REGISTER(name, ...)                                                                                             \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace Tags                                                                                                  \
@@ -164,7 +170,7 @@ namespace GAMBIT_Module_Namespace                                               
                 class interface<Tags::name>                                                                             \
                 {                                                                                                       \
                 public:                                                                                                 \
-                        typedef GAMBIT::Module::gt_type_def<type_in> gt_type;                                          \
+                        typedef GAMBIT::Module::gt_type_def<__VA_ARGS__> gt_type;                                       \
                                                                                                                         \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
@@ -181,22 +187,16 @@ namespace GAMBIT_Module_Namespace                                               
                 interface <Tags::name> reg_init <Tags::name>::reg(moduleData);                                          \
         };                                                                                                              \
 };                                                                                                                      \
-                                                                                                                        
-#define PP_CAT(...) PP_CAT1(__VA_ARGS__)
-#define PP_CAT1(a, b) a ## b            
-
-#define RETRIEVE1(name, type_in) REGISTER(type_in, name)
-#define RETRIEVE2(name, type_in, val) REGISTER(type_in, name) SET_DEFAULT(val, name)
-#define RETRIEVE(name, ...) PP_CAT(RETRIEVE,  PP_NARG(__VA_ARGS__)) (name, __VA_ARGS__)
-
-/*Defines a ScannerBit module*/
+                                                                                                                                
+/*Defines a Gambit module*/
 #define GAMBIT_MODULE(mod_name)                                                                                         \
 namespace __gambit_module_ ## mod_name ##  _namespace__                                                                 \
 {                                                                                                                       \
+        using GAMBIT::Module::entry_type;                                                                               \
         namespace GAMBIT_Module_Namespace                                                                               \
         {                                                                                                               \
-                using GAMBIT::Module::gambitData;                                                                      \
-                using GAMBIT::Module::entryData;                                                                       \
+                using GAMBIT::Module::gambitData;                                                                       \
+                using GAMBIT::Module::entryData;                                                                        \
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
@@ -216,7 +216,7 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                 std::vector<std::string> &in,           \
                                                                                 void * fac)                             \
                 {                                                                                                       \
-                        moduleData.factory = (GAMBIT::Module::Function_Factory_Base *)fac;                             \
+                        moduleData.factory = (GAMBIT::Module::Function_Factory_Base *)fac;                              \
                         if (input != 0)                                                                                 \
                                 moduleData.inputData = *input;                                                          \
                                                                                                                         \

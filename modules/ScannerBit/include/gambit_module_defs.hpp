@@ -112,8 +112,15 @@ namespace GAMBIT
                         }
                 };
                 
+                template<typename T, int i = 0>
+                struct entry_type
+                {
+                        typedef T type;
+                        enum {value = i};
+                };
+                               
                 /*type def templated to help compiler keep track of types.*/
-                template<class T>                                                                                               
+                template<typename T>                                                                                               
                 struct gt_type_def : public entryData                                                                                           
                 {                                                                                                               
                         typedef T type;   
@@ -128,31 +135,15 @@ namespace GAMBIT
                                 *((type *)value) = *((type *)in.value);
                         }
                         ~gt_type_def(){delete (type *)value;}                                                 
-                };                                                                                                             
-                
-                template<>                                                                                                      
-                struct gt_type_def<Scanner::gambitKeys> : public entryData                                                                                
+                }; 
+                 
+                template<typename T, int i>                                                                                                      
+                struct gt_type_def<entry_type<T, i>> : public entryData                                                                                
                 {                                                                                                               
-                        typedef typename Scanner::gambitKeys::type type;   
-                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[0];}
+                        typedef typename entry_type<T, i>::type type;   
+                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[entry_type<T, i>::value];}
                         bool isEntry () {return false;}                        
-                };                                                                                                              
-                                                                                                                                
-                template<>                                                                                                      
-                struct gt_type_def<Scanner::gambitUpperLimits> : public entryData                                                                    
-                {                                                                                                               
-                        typedef typename Scanner::gambitUpperLimits::type type;
-                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[1];}
-                        bool isEntry () {return false;}                 
-                };                                                                                                              
-                                                                                                                                
-                template<>                                                                                                      
-                struct gt_type_def<Scanner::gambitLowerLimits> : public entryData                                           
-                {                                                                                                               
-                        typedef typename Scanner::gambitLowerLimits::type type;
-                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[2];}
-                        bool isEntry () {return false;}                
-                };
+                }; 
                 
                 template<>                                                                                                                                                                                                                                      
                 struct gt_type_def<Scanner::Function_Base> : public entryData                                                     

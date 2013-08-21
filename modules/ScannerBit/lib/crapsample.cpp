@@ -34,14 +34,19 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
+//using GAMBIT::Module::entry_type
+
 GAMBIT_MODULE (crapsample)
 {
-        RETRIEVE (point_number, int, 5);
-        RETRIEVE (output_file, std::string, "output_default");
-        RETRIEVE (keys, GAMBIT::Scanner::gambitKeys);
-        RETRIEVE (ulim, GAMBIT::Scanner::gambitUpperLimits);
-        RETRIEVE (llim, GAMBIT::Scanner::gambitLowerLimits);
-        RETRIEVE (like, GAMBIT::Scanner::Function_Base);
+        REGISTER (point_number, int);
+        REGISTER (output_file, std::string);
+        REGISTER (like, GAMBIT::Scanner::Function_Base);
+        REGISTER (keys, entry_type<std::vector<std::string>, 0>);
+        REGISTER (ulim, entry_type<std::vector<double>, 1>);
+        REGISTER (llim, entry_type<std::vector<double>, 2>);
+        
+        SET_DEFAULT(point_number, 5);
+        SET_DEFAULT(output_file, "output_default");
 
         double LogLikelihood(std::vector<double> &in)
         {
@@ -117,12 +122,16 @@ GAMBIT_MODULE (crapsample)
 
 GAMBIT_MODULE (loopsample)
 {
-        RETRIEVE (point_number, int, 10);
-        RETRIEVE (output_file, std::string, "default_output");
-        RETRIEVE (keys, GAMBIT::Scanner::gambitKeys);
-        RETRIEVE (ulim, GAMBIT::Scanner::gambitUpperLimits);
-        RETRIEVE (llim, GAMBIT::Scanner::gambitLowerLimits)
-        RETRIEVE (like, GAMBIT::Scanner::Function_Base, "Likelihood");
+        REGISTER (point_number, int);
+        REGISTER (output_file, std::string);
+        REGISTER (like, GAMBIT::Scanner::Function_Base);
+        REGISTER (keys, entry_type<std::vector<std::string>, 0>);
+        REGISTER (ulim, entry_type<std::vector<double>, 1>);
+        REGISTER (llim, entry_type<std::vector<double>, 2>);
+        
+        SET_DEFAULT(point_number, 10);
+        SET_DEFAULT(output_file, "default_output");
+        SET_DEFAULT(like, "Likelihood");
         
         int MODULE_MAIN (void)
         {
