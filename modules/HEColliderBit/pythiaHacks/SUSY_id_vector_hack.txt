@@ -34,3 +34,15 @@ NOTES:
     if !(2 in A) and !(2 in B) then skip
   Unless BOTH 1 and 2 are in A, in which case at least one must be in B:
     if !(1 in B) and !(2 in B) then skip
+
+
+TESTING RESULTS:
+
+- Turns out that Pythia's documentation is more than just documentation.
+  The Pythia Settings class reads all the names, ranges, and default
+  values for all of the settings FROM the documentation. Which is actually
+  kinda badass. However, this means that I have to add documentation for my 
+  SUSY:idVectA and SUSY:idVectB to the SUSYProcesses.xml file. I need to 
+  check Settings.cc and find another example of a vector setting in another
+  xml file to make sure I document it properly. Then, I can go back and 
+  check the standalone code.
