@@ -95,6 +95,18 @@ a specific subprocess can be selected. Again only the absolute sign is
 used, i.e. the summation over particle and antiparticle is retained.
 </modeopen>
 
+<ivect name="SUSY:idVectA" default="0" min="0">
+As for <code>SUSY:idA</code>, but as a vector of PDG codes. Thus, it selects only
+processes that contain the state corresponding to some PDG ID in this vector. 
+Note, to activate this, one must also set <code>SUSY:idA</code> equal to 1.
+</ivect>
+
+<ivect name="SUSY:idVectB" default="0" min="0">
+As for <code>SUSY:idVectA</code>, but requires that an additional particle
+with PDG code within the <code>SUSY:idVectB</code> vector. Note that this 
+assumes that <code>SUSY:idVectA</code> is already set up.
+</ivect>
+
 <modepick name="SUSY:sin2thetaWMode" default="2" min="1" max="3">
 The value of <ei>sin2(thetaW)</ei> should be taken from
 <option value="1">SM value, defined at <ei>M_Z</ei>, taken from
