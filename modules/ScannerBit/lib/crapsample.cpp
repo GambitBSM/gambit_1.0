@@ -68,7 +68,7 @@ GAMBIT_MODULE (crapsample)
         EXPORT_ABSTRACT(random, ran_export);                            //allows for "ran_export" class to be used by Gambit
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        int MODULE_MAIN (int input_int)
+        int MODULE_MAIN (void)
         {
                 std::vector<std::string> &keys     = GET_VALUE(keys);
                 std::vector<double> &upper_limits  = GET_VALUE(ulim);

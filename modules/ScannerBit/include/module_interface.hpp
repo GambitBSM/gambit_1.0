@@ -74,7 +74,8 @@ namespace GAMBIT
                         Module_Interface(std::string file, std::string name_in, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL, void *factory = NULL) : errors(""), open(true), name(name_in)
                         {
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
-                                char *tempFile = tempnam(NULL, NULL);
+                                system("touch gambit_temp_file");
+                                char *tempFile = "gambit_temp_file";//tempnam(NULL, NULL);
                                 system((std::string("nm ") + file + std::string(" | grep \"__gambit_module_moduleInit_\" >& ") + std::string(tempFile)).c_str());
                                 std::ifstream in(tempFile);
                                 std::string str;
@@ -84,6 +85,7 @@ namespace GAMBIT
                                         int posLast = str.rfind("__");
                                         mod_names.push_back(str.substr(pos + 27, posLast - pos - 27));
                                 }
+                                system("rm -f gambit_temp_file");
                                 in.close();
                                 
                                 if (bool(plugin))

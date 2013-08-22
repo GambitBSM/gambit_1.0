@@ -449,23 +449,26 @@ namespace GAMBIT
                                         return -1;
                                 }
 
-                                interface.main();
+                                //interface.main();
                                 
-                                /* could do this ...
-                                 * 
-                                 * let's use the "LogLikelihood" function from crapsample! ...
-                                 * 
-                                 * typedef double (*funcType)(std::vector<double> &)
-                                 * funcType func = (funcType) interface.getMember("func");
-                                 * some_value = func(some_vector); 
-                                 * 
-                                 * Or let's use the ran_export class from crapsample! ...
-                                 * 
-                                 * typedef class {virtual double Num()=0;} randomClass;
-                                 * ramdomClass *ptr = (randomClass *)interface.getMember("random");
-                                 * some_value = ptr->Num()
-                                 * interface.deleteMember(ptr); 
-                                 */
+                                  //could do this ...
+                                  
+                                  //let's use the "LogLikelihood" function from crapsample! ...
+                                  
+                                  //typedef double (*funcType)(std::vector<double> &)
+                                  //funcType func = (funcType) interface.getMember("temp");
+                                  //double some_value = func(some_vector); 
+                                  
+                                  //Or let's use the ran_export class from crapsample! ...
+                                  
+                                  typedef class {public: virtual double Num()=0;} randomClass;
+                                  randomClass *ptr = (randomClass *)interface.getMember("random");
+                                  double some_value = ptr->Num();
+                                  //interface.deleteMember(ptr); 
+                                  
+                                  int *ptrt = (int *)interface.getMember("random");
+                                  std::cout << "temp = " << some_value << "   " << (*ptrt) << std::endl;
+                                 
                         }
                         else
                         {

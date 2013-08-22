@@ -112,7 +112,7 @@ namespace GAMBIT_Module_Namespace                                               
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
                                 moduleData.outputFuncs[moduleData.name] = new GAMBIT::Module::funcFactory               \
-                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)&>(&__scanner_module_main__);\
+                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);\
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
