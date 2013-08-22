@@ -118,11 +118,6 @@ namespace GAMBIT
                                 return temp;
                         }
 			
-			//const std::string getName() const 
-                        //{
-                        //        return name;
-                        //}
-			
 			void resetAll() 
                         {
                                 dependencyResolver->resetAll();

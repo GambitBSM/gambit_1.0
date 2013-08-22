@@ -27,11 +27,6 @@ namespace GAMBIT
 {
         namespace Scanner
         {
-                /*Specialized types*/
-                struct gambitKeys{typedef std::vector<std::string> type;};                                                      
-                struct gambitUpperLimits{typedef std::vector<double> type;};                                                    
-                struct gambitLowerLimits{typedef std::vector<double> type;};
-                
                 /*Generic Functor*/
                 class Function_Base
                 {
@@ -72,7 +67,7 @@ namespace GAMBIT
                 struct classFactory : factoryBase
                 {
                         void *operator()(){return (void*) new T;}
-                        void remove(void *in){delete in;}
+                        void remove(void *in){delete (T *) in;}
                 };
                 
                 /*Generic data entry type that holds all the */
@@ -113,7 +108,7 @@ namespace GAMBIT
                 };
                 
                 template<typename T, int i = 0>
-                struct entry_type
+                struct gt_entry
                 {
                         typedef T type;
                         enum {value = i};
@@ -138,10 +133,10 @@ namespace GAMBIT
                 }; 
                  
                 template<typename T, int i>                                                                                                      
-                struct gt_type_def<entry_type<T, i>> : public entryData                                                                                
+                struct gt_type_def<gt_entry<T, i>> : public entryData                                                                                
                 {                                                                                                               
-                        typedef typename entry_type<T, i>::type type;   
-                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[entry_type<T, i>::value];}
+                        typedef typename gt_entry<T, i>::type type;   
+                        gt_type_def(gambitData &moduleData){value = moduleData.inputData[gt_entry<T, i>::value];}
                         bool isEntry () {return false;}                        
                 }; 
                 
@@ -165,6 +160,14 @@ namespace GAMBIT
                         }
                         ~gt_type_def (){if (value != 0) factory->remove("Scanner_Function", value);}
                 };  
+        };
+        
+        namespace Scanner
+        {
+                /*Specialized types*/
+                typedef GAMBIT::Module::gt_entry<std::vector<std::string>, 0> gambitKeys;                                                    
+                typedef GAMBIT::Module::gt_entry<std::vector<double>, 1> gambitUpperLimits;                                                    
+                typedef GAMBIT::Module::gt_entry<std::vector<double>, 2> gambitLowerLimits;
         };
 };
 

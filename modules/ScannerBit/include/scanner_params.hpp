@@ -35,7 +35,7 @@ namespace GAMBIT
                 public:
                         virtual void InputParam (std::vector<double>::iterator &it) = 0;
                         virtual std::string Name() const = 0;
-                        virtual const unsigned char ID() const = 0;
+                        virtual unsigned char ID() const = 0;
                 };
                 
                 //if the parameter is not to be calculated
@@ -50,7 +50,7 @@ namespace GAMBIT
                         void InputParam (std::vector<double>::iterator &it){}
                         std::string Name() const {return name;}
                         Parameter **Ptr() const {return it;}
-                        const unsigned char ID() const {return dummyParam;}
+                        unsigned char ID() const {return dummyParam;}
                 };
                 
                 //if the parameter is a normal single value parameter
@@ -65,7 +65,7 @@ namespace GAMBIT
                         SingleParameter(primary_model_functor *functor, std::string name) : functor(functor), name(name) {}
                         void InputParam (std::vector<double>::iterator &it) {functor->getcontentsPtr()->setValue(name, *(it++));}
                         std::string Name() const {return name;}
-                        const unsigned char ID() const {return singleParam;}
+                        unsigned char ID() const {return singleParam;}
                 };
                 
                 //if the parameter has a fixed value
@@ -78,7 +78,7 @@ namespace GAMBIT
                 public:
                         FixedParameter(primary_model_functor *functor, std::string name, double value) : SingleParameter(functor, name), value(value) {}
                         void InputParam (std::vector<double>::iterator &it) {functor->getcontentsPtr()->setValue(name, value);}
-                        const unsigned char ID() const {return fixedParam;}
+                        unsigned char ID() const {return fixedParam;}
                 };
                 
                 //if the parameter shares multiple different parameters
@@ -117,7 +117,7 @@ namespace GAMBIT
                         
                         std::string Name() const {return names[0];}
                         
-                        const unsigned char ID() const {return multiParam;}
+                        unsigned char ID() const {return multiParam;}
                 };
                 
                 //same as MultiParameter exept the value is fixed
@@ -138,7 +138,7 @@ namespace GAMBIT
                                 }
                         }
                         
-                        const unsigned char ID() const {return fixedMultiParam;}
+                        unsigned char ID() const {return fixedMultiParam;}
                 };
                 
                 //this is the structure associated with each model

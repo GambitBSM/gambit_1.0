@@ -16,7 +16,7 @@ class Ran
       unsigned long long int u, v, w;
       
     public:
-      Ran(unsigned long long int j) : v(4101842887655102017LL), w(1)
+      Ran(unsigned long long int j = 0) : v(4101842887655102017LL), w(1)
       {
         u = j ^ v; int64();
         v = u; int64(); int64();
@@ -34,39 +34,51 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-//using GAMBIT::Module::entry_type
+class ran_export : Ran
+{
+public:
+        ran_export() : Ran(0) {}
+        virtual double Num(){return Doub();}
+        virtual ~ran_export() {}
+};
 
 GAMBIT_MODULE (crapsample)
 {
-        REGISTER (point_number, int);
-        REGISTER (output_file, std::string);
-        REGISTER (like, GAMBIT::Scanner::Function_Base);
-        REGISTER (keys, entry_type<std::vector<std::string>, 0>);
-        REGISTER (ulim, entry_type<std::vector<double>, 1>);
-        REGISTER (llim, entry_type<std::vector<double>, 2>);
+        /*get inputs from ini-file and inputed vector*/
+        IMPORT (point_number, int);                                     //get "point_number" of type "int" from ini-file
+        IMPORT (output_file, std::string);                              //get "output_file" of type "std::string" from ini-file
+        IMPORT (like, GAMBIT::Scanner::Function_Base);                  //get scanner functor of purpose specified by "like:" in the ini-file
+        IMPORT (keys, gt_entry<std::vector<std::string>, 0>);           //gets the first input data of type "std::vector<std::string>"
+        IMPORT (ulim, gt_entry<std::vector<double>, 1>);                //gets the first input data of type "std::vector<std::string>"
+        IMPORT (llim, gt_entry<std::vector<double>, 2>);                //gets the first input data of type "std::vector<std::string>"
         
-        SET_DEFAULT(point_number, 5);
-        SET_DEFAULT(output_file, "output_default");
+        /*sets default values if not in ini-file.*/
+        SET_DEFAULT(point_number, 5);                                   //set default of "point_number" to 5
+        SET_DEFAULT(output_file, "output_default");                     //set default of "output_file" to "output_default"
 
+        int temp = 0;
         double LogLikelihood(std::vector<double> &in)
         {
                 return GET_VALUE(like)(in);
         }
 
-        LOAD_OBJECT(func, LogLikelihood, double (std::vector<double> &));
+        /*functions and classes that can be used by Gambit*/
+        EXPORT_OBJECT(func, LogLikelihood);                             //allows for "LogLikelihood" function to be used by Gambit
+        EXPORT_OBJECT(temp, temp);                                      //allows for "temp" integer to be used by Gambit
+        EXPORT_ABSTRACT(random, ran_export);                            //allows for "ran_export" class to be used by Gambit
         
-        int MODULE_MAIN (int a_in, int b)
+        /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
+        int MODULE_MAIN (int input_int)
         {
                 std::vector<std::string> &keys     = GET_VALUE(keys);
                 std::vector<double> &upper_limits  = GET_VALUE(ulim);
                 std::vector<double> &lower_limits  = GET_VALUE(llim);
                 std::string &output_file           = GET_VALUE(output_file);
                 int &N                             = GET_VALUE(point_number);
-                //GAMBIT::Scanner::Function_Base *LogLike = &GET_VALUE(like);
+                //auto *LogLike                      = &GET_VALUE(like);
                 double (*LogLike)(std::vector<double> &in) = LogLikelihood;
-                //std::cout << GET_VALUE(point_number) << "   " << GET_VALUE(output_file) << "   " << GET_VALUE(keys)[0] << "   " << GET_VALUE(ulim)[0] << "   "  << std::endl;
-                int ma = keys.size();
                 
+                int ma = keys.size();
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
@@ -122,12 +134,12 @@ GAMBIT_MODULE (crapsample)
 
 GAMBIT_MODULE (loopsample)
 {
-        REGISTER (point_number, int);
-        REGISTER (output_file, std::string);
-        REGISTER (like, GAMBIT::Scanner::Function_Base);
-        REGISTER (keys, entry_type<std::vector<std::string>, 0>);
-        REGISTER (ulim, entry_type<std::vector<double>, 1>);
-        REGISTER (llim, entry_type<std::vector<double>, 2>);
+        IMPORT (point_number, int);
+        IMPORT (output_file, std::string);
+        IMPORT (like, GAMBIT::Scanner::Function_Base);
+        IMPORT (keys, GAMBIT::Scanner::gambitKeys);
+        IMPORT (ulim, GAMBIT::Scanner::gambitUpperLimits);
+        IMPORT (llim, GAMBIT::Scanner::gambitLowerLimits);
         
         SET_DEFAULT(point_number, 10);
         SET_DEFAULT(output_file, "default_output");

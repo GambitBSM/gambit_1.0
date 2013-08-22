@@ -24,8 +24,8 @@
 #define PP_CAT(...) PP_CAT1(__VA_ARGS__)
 #define PP_CAT1(a, b) a ## b   
 
-#define RETRIEVE1(name, type_in) REGISTER(name, type_in)
-#define RETRIEVE2(name, type_in, val) REGISTER(name, type_in) SET_DEFAULT(name, val)
+#define RETRIEVE1(name, type_in) IMPORT(name, type_in)
+#define RETRIEVE2(name, type_in, val) IMPORT(name, type_in) SET_DEFAULT(name, val)
 #define RETRIEVE(name, ...) PP_CAT(RETRIEVE,  PP_NARG(__VA_ARGS__)) (name, __VA_ARGS__)
 
 /*Get the value associated with "key" that was defined in the ini-file*/
@@ -39,7 +39,8 @@
                         >                                                                                               \
                         (GAMBIT_Module_Namespace::moduleData.valueMap[ #key ]->value))                                  \
    
-#define LOAD_ABSTRACT(name, ...)                                                                                        \
+/*Allows Gambit to declar an object of type "..."*/
+#define EXPORT_ABSTRACT(name, ...)                                                                                      \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace LoadClassTags                                                                                         \
@@ -64,7 +65,8 @@ namespace GAMBIT_Module_Namespace                                               
         };                                                                                                              \
 };                                                                                                                      \
    
-#define LOAD_OBJECT(name, obj, ...)                                                                                     \
+/*Allows Gambit to use object "obj" of type "..."*/
+#define EXPORT_OBJECT(name, ...)                                                                                        \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace LoadFunctionTags                                                                                      \
@@ -80,7 +82,8 @@ namespace GAMBIT_Module_Namespace                                               
                 public:                                                                                                 \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
-                                moduleData.outputFuncs[#name] = new GAMBIT::Module::funcFactory <__VA_ARGS__>(obj);     \
+                                moduleData.outputFuncs[#name]                                                           \
+                                        = new GAMBIT::Module::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -109,7 +112,7 @@ namespace GAMBIT_Module_Namespace                                               
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
                                 moduleData.outputFuncs[moduleData.name] = new GAMBIT::Module::funcFactory               \
-                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);  \
+                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)&>(&__scanner_module_main__);\
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -155,8 +158,8 @@ namespace GAMBIT_Module_Namespace                                               
         };                                                                                                              \
 };                                                                                                                      \
         
-/*Register a variable of type type_in with ScannerBit.  The variable is set by the keyword "name"*/
-#define REGISTER(name, ...)                                                                                             \
+/*Gets a variable of type "type_in" from Gambit.  The variable is set by the keyword "name"*/
+#define IMPORT(name, ...)                                                                                               \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace Tags                                                                                                  \
@@ -192,7 +195,7 @@ namespace GAMBIT_Module_Namespace                                               
 #define GAMBIT_MODULE(mod_name)                                                                                         \
 namespace __gambit_module_ ## mod_name ##  _namespace__                                                                 \
 {                                                                                                                       \
-        using GAMBIT::Module::entry_type;                                                                               \
+        using GAMBIT::Module::gt_entry;                                                                                 \
         namespace GAMBIT_Module_Namespace                                                                               \
         {                                                                                                               \
                 using GAMBIT::Module::gambitData;                                                                       \
@@ -259,12 +262,16 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                                                         \
                 extern "C" void * __gambit_module_getMember_ ## mod_name ## __(std::string in)                          \
                 {                                                                                                       \
-                        return (*moduleData.outputFuncs[in])();                                                         \
+                        if (moduleData.outputFuncs.find(in) != moduleData.outputFuncs.end())                            \
+                                return (*moduleData.outputFuncs[in])();                                                 \
+                        else                                                                                            \
+                                return NULL;                                                                            \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void __gambit_module_rmMember_ ## mod_name ## __(void *ptr, std::string in)                  \
                 {                                                                                                       \
-                        return moduleData.outputFuncs[in]->remove(ptr);                                                 \
+                        if (moduleData.outputFuncs.find(in) != moduleData.outputFuncs.end())                            \
+                                moduleData.outputFuncs[in]->remove(ptr);                                                \
                 }                                                                                                       \
         };                                                                                                              \
 };                                                                                                                      \

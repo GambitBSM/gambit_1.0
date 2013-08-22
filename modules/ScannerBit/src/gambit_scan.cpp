@@ -452,9 +452,20 @@ namespace GAMBIT
                                 interface.main();
                                 
                                 /* could do this ...
-                                 * double (*func)(std::vector<double> &)
-                                 * func = interface.getMember("func");
-                                 * some_value = func(some_vector); */
+                                 * 
+                                 * let's use the "LogLikelihood" function from crapsample! ...
+                                 * 
+                                 * typedef double (*funcType)(std::vector<double> &)
+                                 * funcType func = (funcType) interface.getMember("func");
+                                 * some_value = func(some_vector); 
+                                 * 
+                                 * Or let's use the ran_export class from crapsample! ...
+                                 * 
+                                 * typedef class {virtual double Num()=0;} randomClass;
+                                 * ramdomClass *ptr = (randomClass *)interface.getMember("random");
+                                 * some_value = ptr->Num()
+                                 * interface.deleteMember(ptr); 
+                                 */
                         }
                         else
                         {
