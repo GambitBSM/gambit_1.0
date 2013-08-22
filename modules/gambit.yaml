@@ -100,7 +100,7 @@ another_key:
     subsubkey1: value2
 
 scanner:
-  #module:  loopsample
+  module:  crapsample
   file_path:  ScannerBit/lib/libsample.so
     
 enable_redirect: true

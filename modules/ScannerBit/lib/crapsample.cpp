@@ -56,7 +56,7 @@ GAMBIT_MODULE (crapsample)
         SET_DEFAULT(point_number, 5);                                   //set default of "point_number" to 5
         SET_DEFAULT(output_file, "output_default");                     //set default of "output_file" to "output_default"
 
-        int temp = 0;
+        int output_int = 1;
         double LogLikelihood(std::vector<double> &in)
         {
                 return GET_VALUE(like)(in);
@@ -64,7 +64,7 @@ GAMBIT_MODULE (crapsample)
 
         /*functions and classes that can be used by Gambit*/
         EXPORT_OBJECT(func, LogLikelihood);                             //allows for "LogLikelihood" function to be used by Gambit
-        EXPORT_OBJECT(temp, temp);                                      //allows for "temp" integer to be used by Gambit
+        EXPORT_OBJECT(temp, output_int);                                      //allows for "temp" integer to be used by Gambit
         EXPORT_ABSTRACT(random, ran_export);                            //allows for "ran_export" class to be used by Gambit
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/

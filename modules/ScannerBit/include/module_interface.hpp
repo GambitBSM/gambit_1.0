@@ -21,6 +21,7 @@ namespace GAMBIT
 {
         namespace Module
         {
+                const unsigned char FORCE = 0x01;
                 const std::string sblank = std::string("       \033[7D");
                 const std::string blank = std::string("               \033[15D");
                 const std::string bblank = std::string("                              \033[30D");          
@@ -61,7 +62,7 @@ namespace GAMBIT
                         typedef void (*initFuncType)(std::vector<void *> *, std::vector<std::string> &, void *);                              
                         typedef bool (*defFuncType)(std::string);
                         typedef void * (*getFuncType)(std::string);
-                        typedef void (*rmFuncType)(std::string);
+                        typedef void (*rmFuncType)(void *, std::string);
                         inputFuncType inputFunc;
                         initFuncType initFunc;
                         defFuncType defFunc;
@@ -73,9 +74,10 @@ namespace GAMBIT
                         
                         Module_Interface(std::string file, std::string name_in, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL, void *factory = NULL) : errors(""), open(true), name(name_in)
                         {
+                                unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
-                                system("touch gambit_temp_file");
-                                char *tempFile = "gambit_temp_file";//tempnam(NULL, NULL);
+                                char *tempFile = tempnam(NULL, NULL);
+                                std::ofstream("gambit_temp_file");
                                 system((std::string("nm ") + file + std::string(" | grep \"__gambit_module_moduleInit_\" >& ") + std::string(tempFile)).c_str());
                                 std::ifstream in(tempFile);
                                 std::string str;
@@ -85,14 +87,35 @@ namespace GAMBIT
                                         int posLast = str.rfind("__");
                                         mod_names.push_back(str.substr(pos + 27, posLast - pos - 27));
                                 }
-                                system("rm -f gambit_temp_file");
                                 in.close();
                                 
                                 if (bool(plugin))
                                 {
-                                        if (mod_names.size() > 0)
+                                        if (mod_names.size() == 0)
                                         {
-                                                if (!vector_elem_check(mod_names, name))
+                                                char con;
+                                                bool is_not_char;
+                                                std::cout << std::endl << std::endl;
+                                                do
+                                                {
+                                                        std::cout << "\e[00;31mERROR:\e[00m  Could not any modules in file \"" << file << "\".  "
+                                                        << "It could be that you are on Ben's computer.  If so, would you like to continue loading module \""
+                                                        << name << "\" (y/n)?  " << std::flush;
+                                                        std::getline(std::cin, str);
+                                                        std::istringstream ss(str);
+                                                        is_not_char = !(ss >> con);
+                                                }
+                                                while(!(con == 'y' || con == 'Y' || con == 'n' || con == 'N') || is_not_char);
+                                                
+                                                if (con == 'Y' || con == 'y')
+                                                        flag = FORCE;
+                                                else
+                                                        flag = 0x00;
+                                        }
+                                        
+                                        if (mod_names.size() > 0 || bool(flag&FORCE))
+                                        {
+                                                if (!vector_elem_check(mod_names, name) && !bool(flag&FORCE))
                                                 {
                                                         
                                                         if (name !=  "")

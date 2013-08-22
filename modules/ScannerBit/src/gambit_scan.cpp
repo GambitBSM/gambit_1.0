@@ -449,25 +449,25 @@ namespace GAMBIT
                                         return -1;
                                 }
 
-                                //interface.main();
+                                interface.main();
                                 
                                   //could do this ...
                                   
                                   //let's use the "LogLikelihood" function from crapsample! ...
-                                  
-                                  //typedef double (*funcType)(std::vector<double> &)
-                                  //funcType func = (funcType) interface.getMember("temp");
+                                  //std::vector<double> some_vector;
+                                  //typedef double (*funcType)(std::vector<double> &);
+                                  //funcType func = (funcType) interface.getMember("func");
                                   //double some_value = func(some_vector); 
                                   
                                   //Or let's use the ran_export class from crapsample! ...
                                   
-                                  typedef class {public: virtual double Num()=0;} randomClass;
-                                  randomClass *ptr = (randomClass *)interface.getMember("random");
-                                  double some_value = ptr->Num();
-                                  //interface.deleteMember(ptr); 
+                                  //typedef class {public: virtual double Num()=0;} randomClass;
+                                  //randomClass *ptr = (randomClass *)interface.getMember("random");
+                                  //double some_value2 = ptr->Num();
+                                  //interface.deleteMember((void *)ptr, "random"); 
                                   
-                                  int *ptrt = (int *)interface.getMember("random");
-                                  std::cout << "temp = " << some_value << "   " << (*ptrt) << std::endl;
+                                  //int *ptrt = (int *)interface.getMember("temp");
+                                  //std::cout << "temp = " << some_value2 << "   " << (*ptrt) << "   " << some_value << std::endl;
                                  
                         }
                         else
