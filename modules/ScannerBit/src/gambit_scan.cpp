@@ -466,7 +466,12 @@ namespace GAMBIT
                                   //double some_value2 = ptr->Num();
                                   //interface.deleteMember((void *)ptr, "random"); 
                                   
+                                  //or this get the interger ...
+                                
                                   //int *ptrt = (int *)interface.getMember("temp");
+                                  
+                                  //and output stuff
+                                
                                   //std::cout << "temp = " << some_value2 << "   " << (*ptrt) << "   " << some_value << std::endl;
                                  
                         }

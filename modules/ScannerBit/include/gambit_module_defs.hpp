@@ -104,6 +104,11 @@ namespace GAMBIT
                                 {
                                         delete it->second;
                                 }
+                                
+                                for (std::map<std::string, factoryBase *>::iterator it = outputFuncs.begin(); it != outputFuncs.end(); it++)
+                                {
+                                        delete it->second;
+                                }
                         }
                 };
                 

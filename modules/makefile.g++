@@ -301,7 +301,7 @@ gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUI
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
+gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so libsample.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 

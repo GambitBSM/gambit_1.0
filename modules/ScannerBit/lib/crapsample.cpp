@@ -49,8 +49,8 @@ GAMBIT_MODULE (crapsample)
         IMPORT (output_file, std::string);                              //get "output_file" of type "std::string" from ini-file
         IMPORT (like, GAMBIT::Scanner::Function_Base);                  //get scanner functor of purpose specified by "like:" in the ini-file
         IMPORT (keys, gt_entry<std::vector<std::string>, 0>);           //gets the first input data of type "std::vector<std::string>"
-        IMPORT (ulim, gt_entry<std::vector<double>, 1>);                //gets the first input data of type "std::vector<std::string>"
-        IMPORT (llim, gt_entry<std::vector<double>, 2>);                //gets the first input data of type "std::vector<std::string>"
+        IMPORT (ulim, gt_entry<std::vector<double>, 1>);                //gets the second input data of type "std::vector<double>"
+        IMPORT (llim, gt_entry<std::vector<double>, 2>);                //gets the third input data of type "std::vector<double>"
         
         /*sets default values if not in ini-file.*/
         SET_DEFAULT(point_number, 5);                                   //set default of "point_number" to 5
@@ -64,7 +64,7 @@ GAMBIT_MODULE (crapsample)
 
         /*functions and classes that can be used by Gambit*/
         EXPORT_OBJECT(func, LogLikelihood);                             //allows for "LogLikelihood" function to be used by Gambit
-        EXPORT_OBJECT(temp, output_int);                                      //allows for "temp" integer to be used by Gambit
+        EXPORT_OBJECT(temp, output_int);                                //allows for "output_int" integer to be used by Gambit
         EXPORT_ABSTRACT(random, ran_export);                            //allows for "ran_export" class to be used by Gambit
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/

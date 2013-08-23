@@ -98,7 +98,7 @@ namespace GAMBIT
                                                 std::cout << std::endl << std::endl;
                                                 do
                                                 {
-                                                        std::cout << "\e[00;31mERROR:\e[00m  Could not any modules in file \"" << file << "\".  "
+                                                        std::cout << "\e[00;31mERROR:\e[00m  Could not find any modules in file \"" << file << "\".  "
                                                         << "It could be that you are on Ben's computer.  If so, would you like to continue loading module \""
                                                         << name << "\" (y/n)?  " << std::flush;
                                                         std::getline(std::cin, str);
@@ -154,7 +154,7 @@ namespace GAMBIT
                                         else
                                         {
                                                 std::stringstream ss;
-                                                ss << "\e[00;31mERROR:\e[00m  Could not any modules in file \"" << file << "\".";
+                                                ss << "\e[00;31mERROR:\e[00m  Could not find any modules in file \"" << file << "\".";
                                                 errors = ss.str();
                                         }
                                 }

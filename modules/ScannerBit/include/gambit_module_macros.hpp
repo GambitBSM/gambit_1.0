@@ -54,7 +54,13 @@ namespace GAMBIT_Module_Namespace                                               
                 class interface <LoadClassTags::name>                                                                   \
                 {                                                                                                       \
                 public:                                                                                                 \
+                                                                                                                        \
                         interface(gambitData &moduleData)                                                               \
+                        {                                                                                               \
+                                moduleData.inits.push_back(interface <LoadClassTags::name>::init);                      \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(gambitData &moduleData)                                                        \
                         {                                                                                               \
                                 moduleData.outputFuncs[#name] = new GAMBIT::Module::classFactory<__VA_ARGS__>;          \
                         }                                                                                               \
@@ -80,7 +86,13 @@ namespace GAMBIT_Module_Namespace                                               
                 class interface <LoadFunctionTags::name>                                                                \
                 {                                                                                                       \
                 public:                                                                                                 \
+                                                                                                                        \
                         interface(gambitData &moduleData)                                                               \
+                        {                                                                                               \
+                                moduleData.inits.push_back(interface <LoadFunctionTags::name>::init);                   \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(gambitData &moduleData)                                                        \
                         {                                                                                               \
                                 moduleData.outputFuncs[#name]                                                           \
                                         = new GAMBIT::Module::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
@@ -109,10 +121,16 @@ namespace GAMBIT_Module_Namespace                                               
                 class interface <MainTags::main>                                                                        \
                 {                                                                                                       \
                 public:                                                                                                 \
+                                                                                                                        \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
+                                moduleData.inits.push_back(interface <MainTags::main>::init);                           \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(gambitData &moduleData)                                                        \
+                        {                                                                                               \
                                 moduleData.outputFuncs[moduleData.name] = new GAMBIT::Module::funcFactory               \
-                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);\
+                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);  \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
