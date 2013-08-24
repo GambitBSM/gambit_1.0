@@ -68,7 +68,7 @@ GAMBIT_MODULE (crapsample)
         EXPORT_ABSTRACT(random, ran_export);                            //allows for "ran_export" class to be used by Gambit
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        int MODULE_MAIN (void)
+        int MODULE_MAIN (int input_int)
         {
                 std::vector<std::string> &keys     = GET_VALUE(keys);
                 std::vector<double> &upper_limits  = GET_VALUE(ulim);
@@ -77,7 +77,7 @@ GAMBIT_MODULE (crapsample)
                 int &N                             = GET_VALUE(point_number);
                 //auto *LogLike                      = &GET_VALUE(like);
                 double (*LogLike)(std::vector<double> &in) = LogLikelihood;
-                
+
                 int ma = keys.size();
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
@@ -170,6 +170,44 @@ GAMBIT_MODULE (loopsample)
                         out << (*LogLike)(a) << endl;
                 }
                 return 0;
+        }
+};
+
+#include <class_loader.hpp>
+#include <test.h>
+
+GAMBIT_MODULE (classtest)
+{
+        
+        class testclass : public LoadedClass
+        {
+        private:
+                ran_testFake temp;
+        
+        public:
+                testclass() : LoadedClass("ran_test")
+                {
+                        addMember(new Member ("ran_test()"));
+                        addMember(new Member ("ran_test(double)"));
+                        addMember(new Member ("Num()"));
+                        addMember(new Member ("Num(double)"));
+                }
+                
+                void constructor(){members["ran_test()"]->func<void (void *)>()(&temp);}
+                void constructor(double in){members["ran_test(double)"]->func<void (void *, double)>()(&temp, in);}
+                double Num(){return members["Num()"]->func<double (void *)>()(&temp);}
+                double Num(double in){return members["Num(double)"]->func<double (void *, double)>()(&temp, in);}
+                double print(){return temp.print();}
+        };
+        
+        int MODULE_MAIN(void)
+        {
+                testclass testing;
+                testing.load("ScannerBit/lib/libtest.so");
+                cout << testing.printErrors() << endl;
+                testing.constructor(2.0);
+                cout << "double = " << testing.Num(2.0) << ", " << testing.print() << std::endl;
+                getchar();
         }
 };
 

@@ -25,28 +25,8 @@ using namespace std;
 
 namespace GAMBIT
 {
-        namespace Scanner
-        {
-                /*Generic Functor*/
-                class Function_Base
-                {
-                public:
-                        typedef Function_Base type;
-                        virtual double operator () (std::vector<double> &) = 0;
-                };
-        };
-        
         namespace Module
         {
-                /*Factory inported by ScannerBit*/
-                class Function_Factory_Base
-                {
-                public:
-                        virtual void * operator() (std::string, std::string) = 0;
-                        virtual void remove(std::string, void *) = 0;
-                        virtual ~Function_Factory_Base(){}
-                };
-                
                 struct factoryBase
                 {
                         virtual void *operator()() = 0;
@@ -84,7 +64,7 @@ namespace GAMBIT
                 struct gambitData
                 {
                         std::string name;
-                        Function_Factory_Base *factory;
+                        void *factory;
                         std::vector<void *> inputData;
                         std::map <std::string, entryData *> valueMap;
                         std::map <std::string, entryData *> defaultMap;
@@ -145,16 +125,48 @@ namespace GAMBIT
                         bool isEntry () {return false;}                        
                 }; 
                 
+                 
+        };
+        
+        /*ScannerBit specific stuff.*/
+        namespace Scanner
+        {
+                /*Specialized types*/
+                typedef GAMBIT::Module::gt_entry<std::vector<std::string>, 0> gambitKeys;                                                    
+                typedef GAMBIT::Module::gt_entry<std::vector<double>, 1> gambitUpperLimits;                                                    
+                typedef GAMBIT::Module::gt_entry<std::vector<double>, 2> gambitLowerLimits;
+                
+                /*Generic Functor*/
+                class Function_Base
+                {
+                public:
+                        typedef Function_Base type;
+                        virtual double operator () (std::vector<double> &) = 0;
+                };
+                
+                /*Factory inported by ScannerBit*/
+                class Function_Factory_Base
+                {
+                public:
+                        virtual void * operator() (std::string, std::string) = 0;
+                        virtual void remove(std::string, void *) = 0;
+                        virtual ~Function_Factory_Base(){}
+                };
+        };
+        
+        namespace Module
+        {
                 template<>                                                                                                                                                                                                                                      
                 struct gt_type_def<Scanner::Function_Base> : public entryData                                                     
                 {                                                       
-                        Function_Factory_Base *factory;
+                        Scanner::Function_Factory_Base *factory;
                         typedef typename Scanner::Function_Base::type type; 
-                        gt_type_def(gambitData &moduleData){value = 0; factory = moduleData.factory;}
+                        gt_type_def(gambitData &moduleData){value = 0; factory = (Scanner::Function_Factory_Base *)moduleData.factory;}
                         void setValue(std::string in)                             
                         {                                                                                                                                             
                                 value = (*factory)("Scanner_Function", in);                                                
                         }   
+                        
                         void setValue(entryData &in)
                         {
                                 if (in.value != 0)
@@ -163,16 +175,9 @@ namespace GAMBIT
                                         in.value = 0;
                                 }
                         }
+                        
                         ~gt_type_def (){if (value != 0) factory->remove("Scanner_Function", value);}
-                };  
-        };
-        
-        namespace Scanner
-        {
-                /*Specialized types*/
-                typedef GAMBIT::Module::gt_entry<std::vector<std::string>, 0> gambitKeys;                                                    
-                typedef GAMBIT::Module::gt_entry<std::vector<double>, 1> gambitUpperLimits;                                                    
-                typedef GAMBIT::Module::gt_entry<std::vector<double>, 2> gambitLowerLimits;
+                }; 
         };
 };
 

@@ -76,18 +76,26 @@ namespace GAMBIT
                         {
                                 unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
-                                char *tempFile = tempnam(NULL, NULL);
-                                std::ofstream("gambit_temp_file");
-                                system((std::string("nm ") + file + std::string(" | grep \"__gambit_module_moduleInit_\" >& ") + std::string(tempFile)).c_str());
-                                std::ifstream in(tempFile);
                                 std::string str;
-                                while(getline(in, str))
+                                
+                                if (FILE* f = popen((std::string("nm ") + file + std::string(" | grep \"__gambit_module_moduleInit_\"")).c_str(), "r"))
                                 {
-                                        int pos = str.find("__gambit_module_moduleInit_");
-                                        int posLast = str.rfind("__");
-                                        mod_names.push_back(str.substr(pos + 27, posLast - pos - 27));
+                                        char buffer[1024];
+                                        int n;
+                                        
+                                        while ((n = fread(buffer, 1, sizeof buffer, f)) > 0)
+                                        {
+                                                std::stringstream ss(std::string(buffer, n));
+                                                while(getline(ss, str))
+                                                {
+                                                        int pos = str.find("__gambit_module_moduleInit_");
+                                                        int posLast = str.rfind("__");
+                                                        mod_names.push_back(str.substr(pos + 27, posLast - pos - 27));
+                                                }
+                                        }
+                                        
+                                        pclose(f);
                                 }
-                                in.close();
                                 
                                 if (bool(plugin))
                                 {

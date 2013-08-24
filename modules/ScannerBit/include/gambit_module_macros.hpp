@@ -39,11 +39,11 @@
                         >                                                                                               \
                         (GAMBIT_Module_Namespace::moduleData.valueMap[ #key ]->value))                                  \
    
-/*Allows Gambit to declar an object of type "..."*/
+/*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
-        namespace LoadClassTags                                                                                         \
+        namespace LoadTags                                                                                              \
         {                                                                                                               \
                 struct name{};                                                                                          \
         };                                                                                                              \
@@ -51,13 +51,13 @@ namespace GAMBIT_Module_Namespace                                               
         namespace                                                                                                       \
         {                                                                                                               \
                 template<>                                                                                              \
-                class interface <LoadClassTags::name>                                                                   \
+                class interface <LoadTags::name>                                                                        \
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
-                                moduleData.inits.push_back(interface <LoadClassTags::name>::init);                      \
+                                moduleData.inits.push_back(interface <LoadTags::name>::init);                           \
                         }                                                                                               \
                                                                                                                         \
                         static void init(gambitData &moduleData)                                                        \
@@ -67,7 +67,7 @@ namespace GAMBIT_Module_Namespace                                               
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <LoadClassTags::name> reg_init <LoadClassTags::name>::reg(moduleData);                        \
+                interface <LoadTags::name> reg_init <LoadTags::name>::reg(moduleData);                                  \
         };                                                                                                              \
 };                                                                                                                      \
    
@@ -75,7 +75,7 @@ namespace GAMBIT_Module_Namespace                                               
 #define EXPORT_OBJECT(name, ...)                                                                                        \
 namespace GAMBIT_Module_Namespace                                                                                       \
 {                                                                                                                       \
-        namespace LoadFunctionTags                                                                                      \
+        namespace LoadTags                                                                                              \
         {                                                                                                               \
                 struct name{};                                                                                          \
         };                                                                                                              \
@@ -83,13 +83,13 @@ namespace GAMBIT_Module_Namespace                                               
         namespace                                                                                                       \
         {                                                                                                               \
                 template<>                                                                                              \
-                class interface <LoadFunctionTags::name>                                                                \
+                class interface <LoadTags::name>                                                                        \
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
-                                moduleData.inits.push_back(interface <LoadFunctionTags::name>::init);                   \
+                                moduleData.inits.push_back(interface <LoadTags::name>::init);                           \
                         }                                                                                               \
                                                                                                                         \
                         static void init(gambitData &moduleData)                                                        \
@@ -100,7 +100,7 @@ namespace GAMBIT_Module_Namespace                                               
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <LoadFunctionTags::name> reg_init <LoadFunctionTags::name>::reg(moduleData);                  \
+                interface <LoadTags::name> reg_init <LoadTags::name>::reg(moduleData);                                  \
         };                                                                                                              \
 };                                                                                                                      \
 
@@ -219,6 +219,11 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                 using GAMBIT::Module::gambitData;                                                                       \
                 using GAMBIT::Module::entryData;                                                                        \
                                                                                                                         \
+                namespace LoadTags                                                                                      \
+                {                                                                                                       \
+                        struct mod_name{};                                                                              \
+                };                                                                                                      \
+                                                                                                                        \
                 namespace                                                                                               \
                 {                                                                                                       \
                         gambitData moduleData(#mod_name);                                                               \
@@ -237,7 +242,7 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                 std::vector<std::string> &in,           \
                                                                                 void * fac)                             \
                 {                                                                                                       \
-                        moduleData.factory = (GAMBIT::Module::Function_Factory_Base *)fac;                              \
+                        moduleData.factory = fac;                              \
                         if (input != 0)                                                                                 \
                                 moduleData.inputData = *input;                                                          \
                                                                                                                         \
