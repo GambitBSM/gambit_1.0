@@ -19,7 +19,7 @@ public:
         ~ran_test(){}
 };
 
-class ranBaseFake
+class ranBase_no_constructor
 {
 private:
         double base;
@@ -27,8 +27,10 @@ public:
         double print(){return base;}
 };
 
-class ran_testFake : public ranBaseFake
+class ran_test_no_constructor : public ranBase_no_constructor
 {
 private:
         double stuff;
+        double Num(double in);
+        double Num();
 };

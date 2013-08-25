@@ -1,3 +1,19 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  a bunch of test modules
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+//
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2013 August 2013
+///
+///  *********************************************
+
 #ifndef CRAPSAMPLE_HPP
 #define CRAPSAMPLE_HPP
 
@@ -178,34 +194,64 @@ GAMBIT_MODULE (loopsample)
 
 GAMBIT_MODULE (classtest)
 {
+        /*
+         * This class dynamically loads the class "ran_test" from the library "ScannerBit/lib/libtest.so", 
+         * with member functions "{"ran_test()", "ran_test(double)", "Num()", "Num(double)"}".
+         * The internal function "Members" gets the address for a specific member function.
+         * gambit_cast casts this address to the appropriate function.  
+         * 
+         * Remember that c++ inherently adds a "void *" entry to every member function parameter entry.  
+         * This entry corresponds to the location of the declared or allocated data.  Where this entry 
+         * occurs in the input may be compiler specific.  On my compiler, it's apparantly the first entry.  
+         * Also, on my compiler, using "this" leads to some strange results.  
+         * 
+         * Also it's important to note that you may reuse the header files that were used to compile the 
+         * library (in this case, test.h).  But, you must remove any constructors or deconstructors from 
+         * those files (both prototypes and declared).  Although, the header file used to comppile the 
+         * library *does not* need to be modified.  Also remember that inline functions (with the exception 
+         * of virtual functions, consructors, deconstructors, and any function that you thought was inline 
+         * but the compiler decided not to make inline) cannot be loaded this way since they will not 
+         * appear on the link map (this also goes for expr functions in c++11).  But these functions usually 
+         * appear in the header, which means you can still use them, if you include the appropriate header.  
+         * Of course, this will not work if those inline functions call member functions.  In
+         * this case, you'll have to hack the inline code directly if you wish to use those functions
+         * directly.
+         */
         
         class testclass : public LoadedClass
         {
         private:
-                ran_testFake temp;
+                ran_test_no_constructor temp;
         
         public:
-                testclass() : LoadedClass("ran_test")
+                testclass() : LoadedClass("ScannerBit/lib/libtest.so", "ran_test", {"ran_test()", "ran_test(double)", "Num()", "Num(double)"})
                 {
-                        addMember(new Member ("ran_test()"));
-                        addMember(new Member ("ran_test(double)"));
-                        addMember(new Member ("Num()"));
-                        addMember(new Member ("Num(double)"));
+                        gambit_cast<void (void *)>(Member("ran_test()"))(&temp);
                 }
                 
-                void constructor(){members["ran_test()"]->func<void (void *)>()(&temp);}
-                void constructor(double in){members["ran_test(double)"]->func<void (void *, double)>()(&temp, in);}
-                double Num(){return members["Num()"]->func<double (void *)>()(&temp);}
-                double Num(double in){return members["Num(double)"]->func<double (void *, double)>()(&temp, in);}
+                testclass(double in) : LoadedClass("ScannerBit/lib/libtest.so", "ran_test", {"ran_test()", "ran_test(double)", "Num()", "Num(double)"})
+                {
+                        gambit_cast<void (void *, double)>(Member("ran_test(double)"))(&temp, in);
+                }
+                
+                double Num()
+                {
+                        return gambit_cast<double (void *)>(Member("Num()"))(&temp);
+                }
+                
+                double Num(double in)
+                {
+                        return gambit_cast<double (void *, double)>(Member("Num(double)"))(&temp, in);
+                }
+                
                 double print(){return temp.print();}
         };
         
         int MODULE_MAIN(void)
         {
-                testclass testing;
-                testing.load("ScannerBit/lib/libtest.so");
-                cout << testing.printErrors() << endl;
-                testing.constructor(2.0);
+                testclass testing(2.0);
+                //testing.load("ScannerBit/lib/libtest.so");
+                //cout << testing.printErrors() << endl;
                 cout << "double = " << testing.Num(2.0) << ", " << testing.print() << std::endl;
                 getchar();
         }
