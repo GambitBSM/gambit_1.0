@@ -14,9 +14,6 @@
 ///
 ///  *********************************************
 
-#ifndef CRAPSAMPLE_HPP
-#define CRAPSAMPLE_HPP
-
 #include <vector>
 #include <string>
 #include <cmath>
@@ -196,18 +193,22 @@ GAMBIT_MODULE (classtest)
 {
         /*
          * This class dynamically loads the class "ran_test" from the library "ScannerBit/lib/libtest.so", 
-         * with member functions "{"ran_test()", "ran_test(double)", "Num()", "Num(double)"}".
+         * with member functions "{"ran_test()", "ran_test(double)", "Num()", "Num(double), "~ran_test()""}".
          * The internal function "Members" gets the address for a specific member function.
          * gambit_cast casts this address to the appropriate function.  
          * 
          * Remember that c++ inherently adds a "void *" entry to every member function parameter entry.  
          * This entry corresponds to the location of the declared or allocated data.  Where this entry 
-         * occurs in the input may be compiler specific.  On my compiler, it's apparantly the first entry.  
-         * Also, on my compiler, using "this" leads to some strange results.  
+         * occurs in the input may be compiler specific.  On my compiler, it's apparantly the first entry.   
+         * 
+         * Alteratively, you can cast the dlsym output into a member function pointer instead of a regular
+         * function pointer.  This way, you don't have to explicitly specify the "void *" entry.  But, the 
+         * compiler *really* doesn't like this and can lead to some strange behavior.  The "member_cast"
+         * function will do this cast.
          * 
          * Also it's important to note that you may reuse the header files that were used to compile the 
          * library (in this case, test.h).  But, you must remove any constructors or deconstructors from 
-         * those files (both prototypes and declared).  Although, the header file used to comppile the 
+         * those files (both prototypes and declared).  Although, the header file used to compile the 
          * library *does not* need to be modified.  Also remember that inline functions (with the exception 
          * of virtual functions, consructors, deconstructors, and any function that you thought was inline 
          * but the compiler decided not to make inline) cannot be loaded this way since they will not 
@@ -218,33 +219,50 @@ GAMBIT_MODULE (classtest)
          * directly.
          */
         
-        class testclass : public LoadedClass
-        {
-        private:
-                ran_test_no_constructor temp;
+        /*The code below "rebuilds" the class "ran_test" with the functions specified.*/
         
+        LoadedClass load("ScannerBit/lib/libtest.so", "ran_test", {"ran_test()", "ran_test(double)", "Num()", "Num(double)", "~ran_test()"});
+        LoadedClass loadbase("ScannerBit/lib/libtest.so", "ranBase", {"baseNum(double)"});
+
+        class testclass : public ran_test_no_constructor
+        {
         public:
-                testclass() : LoadedClass("ScannerBit/lib/libtest.so", "ran_test", {"ran_test()", "ran_test(double)", "Num()", "Num(double)"})
+                testclass()
                 {
-                        gambit_cast<void (void *)>(Member("ran_test()"))(&temp);
+                        gambit_cast<void (void *)>(load.Member("ran_test()"))(this);
+                        //(this->*member_cast<void (ran_test_no_constructor::*)()>(load.Member("ran_test()")))();
                 }
                 
-                testclass(double in) : LoadedClass("ScannerBit/lib/libtest.so", "ran_test", {"ran_test()", "ran_test(double)", "Num()", "Num(double)"})
+                testclass(double in)
                 {
-                        gambit_cast<void (void *, double)>(Member("ran_test(double)"))(&temp, in);
+                        gambit_cast<void (void *, double)>(load.Member("ran_test(double)"))(this, in);
+                        //(this->*member_cast<void (ran_test_no_constructor::*)(double)>(load.Member("ran_test(double)")))(in);
                 }
+                
                 
                 double Num()
                 {
-                        return gambit_cast<double (void *)>(Member("Num()"))(&temp);
+                        return gambit_cast<double (void *)>(load.Member("Num()"))(this);
+                        //return (this->*member_cast<double (ran_test_no_constructor::*)()>(load.Member("Num()")))();
                 }
                 
                 double Num(double in)
                 {
-                        return gambit_cast<double (void *, double)>(Member("Num(double)"))(&temp, in);
+                        return gambit_cast<double (void *, double)>(load.Member("Num(double)"))(this, in);
+                        //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(load.Member("Num(double)")))(in);
                 }
                 
-                double print(){return temp.print();}
+                double baseNum(double in)
+                {
+                        return gambit_cast<double (void *, double)>(loadbase.Member("baseNum(double)"))(this, in);
+                        //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(loadbase.Member("baseNum(double)")))(in);
+                }
+                
+                ~testclass()
+                {
+                        gambit_cast<void (void *)>(load.Member("~ran_test()"))(this);
+                        //(this->*member_cast<void (ran_test_no_constructor::*)()>(load.Member("~ran_test()")))();
+                }
         };
         
         int MODULE_MAIN(void)
@@ -252,9 +270,7 @@ GAMBIT_MODULE (classtest)
                 testclass testing(2.0);
                 //testing.load("ScannerBit/lib/libtest.so");
                 //cout << testing.printErrors() << endl;
-                cout << "double = " << testing.Num(2.0) << ", " << testing.print() << std::endl;
+                cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << std::endl;
                 getchar();
         }
 };
-
-#endif
