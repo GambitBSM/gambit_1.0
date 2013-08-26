@@ -242,7 +242,7 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                 std::vector<std::string> &in,           \
                                                                                 void * fac)                             \
                 {                                                                                                       \
-                        moduleData.factory = fac;                              \
+                        moduleData.factory = fac;                                                                       \
                         if (input != 0)                                                                                 \
                                 moduleData.inputData = *input;                                                          \
                                                                                                                         \

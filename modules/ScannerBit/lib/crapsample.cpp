@@ -208,7 +208,7 @@ GAMBIT_MODULE (classtest)
          * 
          * Also it's important to note that you may reuse the header files that were used to compile the 
          * library (in this case, test.h).  But, you must remove any constructors or deconstructors from 
-         * those files (both prototypes and declared).  Although, the header file used to compile the 
+         * those files (*only* prototypes though!).  Although, the header file used to compile the 
          * library *does not* need to be modified.  Also remember that inline functions (with the exception 
          * of virtual functions, consructors, deconstructors, and any function that you thought was inline 
          * but the compiler decided not to make inline) cannot be loaded this way since they will not 
@@ -217,50 +217,71 @@ GAMBIT_MODULE (classtest)
          * Of course, this will not work if those inline functions call member functions.  In
          * this case, you'll have to hack the inline code directly if you wish to use those functions
          * directly.
+         * 
+         * Now if constructors are completey defined in the header, then they should not be removed.  But,
+         * if any member functions are used in them, then those functions need to be completely defined 
+         * by wrapping the dynamically linked version of that function.  And if the constructor calls a 
+         * base constructor, the same has to be done with it.  Also, it might be tempting to wrap all
+         * the imported member fucntions directly.  Do not do this either because a) importing every function
+         * defeats the purpose of dynamical loading and b) you might get in the situation that a base 
+         * constructor would be called twice -- once by the library code and once by the host code.  Same
+         * goes for templates.
          */
         
         /*The code below "rebuilds" the class "ran_test" with the functions specified.*/
         
-        LoadedClass load("ScannerBit/lib/libtest.so", "ran_test", {"ran_test()", "ran_test(double)", "Num()", "Num(double)", "~ran_test()"});
-        LoadedClass loadbase("ScannerBit/lib/libtest.so", "ranBase", {"baseNum(double)"});
-
+        LoadFunction load("ScannerBit/lib/libtest.so");
+        
+        /*
+         * Since I am rebuiding the "ran_test" class I am going to inherent the no constructor version of "ran_test".
+         * Then I am going to declare all the function that I want to use in "ran_test".  But, I do not need to declare
+         * all the functions that "ran_test" had, only the ones I want to use.  Each of these functions will wrap
+         * the corresponds dynamically linked function.  And if you want to use a base class function, simply wrap
+         * that one too.
+         */
+        
         class testclass : public ran_test_no_constructor
         {
         public:
                 testclass()
                 {
-                        gambit_cast<void (void *)>(load.Member("ran_test()"))(this);
-                        //(this->*member_cast<void (ran_test_no_constructor::*)()>(load.Member("ran_test()")))();
+                        static void *ptr = load.loadFunction("ran_test::ran_test()");
+                        gambit_cast<void (void *)>(ptr)(this);
+                        //(this->*member_cast<void (ran_test_no_constructor::*)()>(ptr))();
                 }
                 
                 testclass(double in)
                 {
-                        gambit_cast<void (void *, double)>(load.Member("ran_test(double)"))(this, in);
-                        //(this->*member_cast<void (ran_test_no_constructor::*)(double)>(load.Member("ran_test(double)")))(in);
+                        static void *ptr = load.loadFunction("ran_test::ran_test(double)");
+                        gambit_cast<void (void *, double)>(ptr)(this, in);
+                        //(this->*member_cast<void (ran_test_no_constructor::*)(double)>(ptr))(in);
                 }
-                
                 
                 double Num()
                 {
-                        return gambit_cast<double (void *)>(load.Member("Num()"))(this);
-                        //return (this->*member_cast<double (ran_test_no_constructor::*)()>(load.Member("Num()")))();
+                        static void *ptr = load.loadFunction("ran_test::Num()");
+                        return gambit_cast<double (void *)>(ptr)(this);
+                        //return (this->*member_cast<double (ran_test_no_constructor::*)()>(ptr))();
                 }
                 
                 double Num(double in)
                 {
-                        return gambit_cast<double (void *, double)>(load.Member("Num(double)"))(this, in);
-                        //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(load.Member("Num(double)")))(in);
+                        static void *ptr = load.loadFunction("ran_test::Num(double)");
+                        return gambit_cast<double (void *, double)>(ptr)(this, in);
+                        //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(ptr))(in);
                 }
                 
                 double baseNum(double in)
                 {
-                        return gambit_cast<double (void *, double)>(loadbase.Member("baseNum(double)"))(this, in);
+                        static void *ptr = load.loadFunction("ranBase::baseNum(double)");
+                        return gambit_cast<double (void *, double)>(ptr)(this, in);
                         //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(loadbase.Member("baseNum(double)")))(in);
                 }
                 
                 ~testclass()
                 {
-                        gambit_cast<void (void *)>(load.Member("~ran_test()"))(this);
+                        static void *ptr = load.loadFunction("ran_test::~ran_test()");
+                        gambit_cast<void (void *)>(ptr)(this);
                         //(this->*member_cast<void (ran_test_no_constructor::*)()>(load.Member("~ran_test()")))();
                 }
         };
@@ -268,8 +289,7 @@ GAMBIT_MODULE (classtest)
         int MODULE_MAIN(void)
         {
                 testclass testing(2.0);
-                //testing.load("ScannerBit/lib/libtest.so");
-                //cout << testing.printErrors() << endl;
+                
                 cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << std::endl;
                 getchar();
         }

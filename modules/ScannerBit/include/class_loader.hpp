@@ -30,13 +30,13 @@
  * compiler *really* doesn't like this and can lead to some strange behavior.  The "member_cast"
  * function will do this cast.
  * 
- * On linux, it may be possible to need the command line tools "nm" and "c++filt" with the use of
+ * On linux, it may be possible to not need the command line tools "nm" and "c++filt" with the use of
  * the "dlinfo()" function in "link.h" (symbols http://www.unix.com/man-page/all/3c/dlinfo/) and
  * the "abi::__cxa_demangle" in the header "cxxabi.h".
  * 
  * Also it's important to note that you may reuse the header files that were used to compile the 
  * library.  But, you must remove any constructors or deconstructors from those files 
- * (both prototypes and declared).  Although, the header file used to compile the 
+ * (*only* prototypes though! -- not declared ones).  Although, the header file used to compile the 
  * library *does not* need to be modified.  Also remember that inline functions (with the exception 
  * of virtual functions, consructors, deconstructors, and any function that you thought was inline 
  * but the compiler decided not to make inline) cannot be loaded this way since they will not 
@@ -45,6 +45,15 @@
  * Of course, this will not work if those inline functions call member functions.  In
  * this case, you'll have to hack the inline code directly if you wish to use those functions
  * directly.
+ * 
+ * Now if constructors are completey defined in the header, then they should not be removed.  But,
+ * if any member functions are used in them, then those functions need to be completely defined 
+ * by wrapping the dynamically linked version of that function.  And if the constructor calls a 
+ * base constructor, the same has to be done with it.  Also, it might be tempting to wrap all
+ * the imported member fucntions directly.  Do not do this either because a) importing every function
+ * defeats the purpose of dynamical loading and b) you might get in the situation that a base 
+ * constructor would be called twice -- once by the library code and once by the host code.  Same
+ * goes for templates.
  */
 
 #ifndef CLASS_LOADER_HPP
@@ -119,6 +128,43 @@ void *loadCxxFunction(const char * func_name, const char *file, void *plugin)
         
         return dlsym(plugin, str.c_str());
 }
+
+class LoadFunction
+{
+private:
+        void *plugin;
+        std::string file;
+        
+public:
+        LoadFunction(std::string filein) : file(filein)
+        {
+                plugin = dlopen (file.c_str(), RTLD_LAZY);
+                
+                if(!bool(plugin))
+                {
+                        std::cout << "\e[00;31mERROR:\e[00m  Cannot load " << file << ":  " << dlerror() << std::endl;
+                }
+        }
+        
+        void *loadFunction(std::string name)
+        {
+                void *ptr = loadCxxFunction(name.c_str(), file.c_str(), plugin);
+                if (ptr != 0)
+                {
+                        return ptr;
+                }
+                else
+                {
+                        std::cout << "\e[00;31mERROR:\e[00m  Could not load function \"" << name << "\" in library \"" << file << "\"." << std::endl;
+                        return 0;
+                }
+        }
+        
+        ~LoadFunction()
+        {
+                dlclose(plugin);
+        }
+};
 
 class LoadedClass
 {

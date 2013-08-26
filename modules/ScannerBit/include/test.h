@@ -4,7 +4,7 @@ class ranBase
 private:
         double base;
 public:
-        ranBase(double);
+        ranBase(double i);
         double baseNum(double);
 };
 
@@ -25,6 +25,7 @@ class ranBase_no_constructor
 private:
         double base;
 public:
+        //ranBase(double i);
         double baseNum(double);
         double print(){return base;}
 };
@@ -35,8 +36,8 @@ private:
 public:
         //ran_test_no_constructor();
         //ran_test_no_constructor(double);
-        //~ran_test_no_constructor();
         double stuff;
         double Num(double in);
         double Num();
+        //~ran_test_no_constructor();
 };
