@@ -438,7 +438,10 @@ namespace GAMBIT
                                 }
                                 
                                 Scanner_Function_Factory factory(this);
-                                std::vector<void *> input = {(void *)&keys, (void *)&upper_limits, (void *)&lower_limits};
+                                std::vector<void *> input(3);
+                                input[0] = (void *)&keys;
+                                input[1] = (void *)&upper_limits;
+                                input[2] = (void *)&lower_limits;
                                 
                                 Module::Module_Interface<int ()> interface(file, name, boundIniFile, &input, &factory);
                                 errors = interface.printErrors();

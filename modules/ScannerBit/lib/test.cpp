@@ -24,7 +24,7 @@ double ran_test::Num()
         return 0.0;
 }
 
-double ran_test::Num(double in)
+double ran_test::Num(const double in)
 {
         return stuff*in;
 }

@@ -274,6 +274,7 @@ GAMBIT_MODULE (classtest)
                         (this->*cast.value)(in);
                         //gambit_cast<void (void *, double)>(ptr)(this, in);
                 }
+                
                 double baseNum(double in)
                 {
                         static Cast<double (ranBase::*)(double)> cast(load.loadFunction("ranBase::baseNum(double)"));
@@ -296,6 +297,7 @@ GAMBIT_MODULE (classtest)
                         (this->*cast.value)(in);
                         //gambit_cast<void (void *, double)>(ptr)(this, in);
                 }
+                
                 double baseNum2(double in)
                 {
                         static Cast<double (ranBase2::*)(double)> cast(load.loadFunction("ranBase2::baseNum2(double)"));
