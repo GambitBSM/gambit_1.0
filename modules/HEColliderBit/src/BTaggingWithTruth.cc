@@ -170,17 +170,7 @@ void BTaggingWithTruth::Process()
 
   TIter itPartonArray(partonArray);
   
-  //MJW debugging
-  //Loop over parton array and print contents
-  cout << "NEW EVENT" << endl;
-  while((parton = static_cast<Candidate*>(itPartonArray.Next())))
-    {
-      pdgCode = TMath::Abs(parton->PID);
-      cout << "PARTON pdgCode " << pdgCode << " pT " << parton->Momentum.Pt() << " eta " << parton->Momentum.Eta() << endl;
-    }
-  
-  
-  // loop over all input jets
+   // loop over all input jets
   fItJetInputArray->Reset();
   while((jet = static_cast<Candidate*>(fItJetInputArray->Next())))
   {
