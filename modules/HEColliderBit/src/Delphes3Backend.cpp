@@ -165,8 +165,11 @@ namespace GAMBIT {
       iteratorElectrons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
+	
         recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                     momentum.E(), -sign(candidate->Charge) * PID::ELECTRON);
+
+	recoParticle->setM(0.000510998902);
         recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
@@ -180,6 +183,8 @@ namespace GAMBIT {
         const TLorentzVector &momentum = candidate->Momentum;
         recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                     momentum.E(), -sign(candidate->Charge) * PID::MUON);
+	recoParticle->setM(0.105658389);
+	
         recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
@@ -195,12 +200,16 @@ namespace GAMBIT {
           recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), -sign(candidate->Charge) * PID::TAU);
           recoParticle->setPrompt(true);
+	  recoParticle->setM(0.);
           event.addParticle(recoParticle);
-          continue;
+          //continue;
         }
-        recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E(), 
-                          candidate->PID, candidate->BTag);
-        event.addJet(recoJet);
+	else {
+	  recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E(), candidate->PID, candidate->BTag);
+	  recoJet->setM(0.);
+	 
+	  event.addJet(recoJet);
+	}
       }
     }
 

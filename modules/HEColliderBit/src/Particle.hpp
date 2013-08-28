@@ -76,6 +76,9 @@ namespace GAMBIT {
     const P4& mom() const { return _p4; }
     /// Set the 4 vector
     void setMom(const P4& p4) { _p4 = p4; }
+    
+    //Set the mass of the 4 vector
+    void setM(double mass) {_p4.setM(mass);}
 
     /// @name Convenience mapping of a few popular momentum properties
     //@{

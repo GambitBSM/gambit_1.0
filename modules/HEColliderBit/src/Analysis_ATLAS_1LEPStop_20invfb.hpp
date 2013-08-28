@@ -161,16 +161,19 @@ namespace GAMBIT {
       vector<Particle*> baselineElectrons;
       for (Particle* electron : event->electrons()) {
         if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
+	//cout << "Electron E " << electron->E() << endl;
       }
       vector<Particle*> baselineMuons;
       for (Particle* muon : event->muons()) {
         if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
+	//cout << "Muon E " << muon->E() << endl;
       }
 
       vector<Jet*> baselineJets;
       vector<Jet*> bJets;
       vector<Jet*> trueBJets; //for debugging
       for (Jet* jet : event->jets()) {
+	//cout << "jet E " << jet->E() << endl;
         if (jet->pT() > 20. && fabs(jet->eta()) < 10.0) baselineJets.push_back(jet); 
 	if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
 
@@ -309,9 +312,9 @@ namespace GAMBIT {
       if(mT>140.)cut_mTGt140=true;
       
       //Apply the basic preselection to save costly MT2 calculation
-      if(!(cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
+      if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
 
-      for(int j=0;j<NCUTS;j++){
+      /*for(int j=0;j<NCUTS;j++){
 	if(
 	   (j==0) || 
 
@@ -353,7 +356,7 @@ namespace GAMBIT {
 
 	   (j==18 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13 && cut_mTGt140) 
 	   )cutFlowVector[j]++;
-      }
+	   }*/
       
       //Do hadronic top reconstruction
       float mindR1=9999.;
@@ -369,8 +372,13 @@ namespace GAMBIT {
       for(int iJet=0;iJet<nJets;iJet++){
 	for(int jJet=0;jJet<nJets;jJet++){
 	  if(iJet != jJet){
-  	    if(signalJets[iJet]->mom().deltaR_eta(signalJets[jJet]->mom()) < mindR1 && (signalJets[iJet]->mom()+signalJets[jJet]->mom()).m() > 60.){
-	      mindR1 = signalJets[iJet]->mom().deltaR_eta(signalJets[jJet]->mom());
+	    TLorentzVector iJetVec;
+	    iJetVec.SetPtEtaPhiE(signalJets[iJet]->pT(),signalJets[iJet]->eta(),signalJets[iJet]->phi(),signalJets[iJet]->E());
+	    TLorentzVector jJetVec;
+	    jJetVec.SetPtEtaPhiE(signalJets[jJet]->pT(),signalJets[jJet]->eta(),signalJets[jJet]->phi(),signalJets[jJet]->E());
+	    cout << "JETMASS " << (iJetVec+jJetVec).M() << endl;
+  	    if(iJetVec.DeltaR(jJetVec) < mindR1 && (iJetVec+jJetVec).M() > 60.){
+	      mindR1 =iJetVec.DeltaR(jJetVec);
 	      index1 = iJet;
 	      index2 = jJet;
 	      whad   = true;
@@ -381,37 +389,53 @@ namespace GAMBIT {
       if(whad){
 	for(int kJet=0;kJet<nJets;kJet++){
 	  if(kJet !=index1 && kJet !=index2){
-	    if(signalJets[kJet]->mom().deltaR_eta( signalJets[index1]->mom() + signalJets[index2]->mom()) < mindR2 && (signalJets[index1]->mom()+signalJets[index2]->mom()+signalJets[kJet]->mom()).m() > 130.){
-	      mindR2=signalJets[kJet]->mom().deltaR_eta(signalJets[index1]->mom() + signalJets[index2]->mom());
+	    TLorentzVector kJetVec;
+	    kJetVec.SetPtEtaPhiE(signalJets[kJet]->pT(),signalJets[kJet]->eta(),signalJets[kJet]->phi(),signalJets[kJet]->E());
+	    TLorentzVector JetVec1;
+	    JetVec1.SetPtEtaPhiE(signalJets[index1]->pT(),signalJets[index1]->eta(),signalJets[index1]->phi(),signalJets[index1]->E());
+	    TLorentzVector JetVec2;
+	    JetVec2.SetPtEtaPhiE(signalJets[index2]->pT(),signalJets[index2]->eta(),signalJets[index2]->phi(),signalJets[index2]->E());
+	    
+	    if(kJetVec.DeltaR(JetVec1+JetVec2)<mindR2 && (JetVec1+JetVec2+kJetVec).M() > 130.){ 
+	      mindR2=kJetVec.DeltaR(JetVec1+JetVec2);
 	      index3=kJet;
 	      Thad=true;
 	    }
 	  }
 	}
       }
-      if(Thad)mHadTop = (signalJets[index1]->mom()+signalJets[index2]->mom()+signalJets[index3]->mom()).m();
+      if(Thad){
+	TLorentzVector JetVec1;
+	JetVec1.SetPtEtaPhiE(signalJets[index1]->pT(),signalJets[index1]->eta(),signalJets[index1]->phi(),signalJets[index1]->E());
+	TLorentzVector JetVec2;
+	JetVec2.SetPtEtaPhiE(signalJets[index2]->pT(),signalJets[index2]->eta(),signalJets[index2]->phi(),signalJets[index2]->E());
+	TLorentzVector JetVec3;
+	JetVec3.SetPtEtaPhiE(signalJets[index3]->pT(),signalJets[index3]->eta(),signalJets[index3]->phi(),signalJets[index3]->E());
+	mHadTop = (JetVec1+JetVec2+JetVec3).M();
+      }
       
       bool passHadTop=false;
-      if(mHadTop>130.&& mHadTop<205.)passHadTop=true;
+      cout << "mHADTOP " << mHadTop << endl;
+      if(mHadTop>130. && mHadTop<205.)passHadTop=true;
       
       if(passHadTop)cut_PassHadTop=true;
-    
+      
       //Do MT2 calculations (note: do these last, since they are slowest)
     
-      //MT2 mt2s = MT2helper(signalJets,signalElectrons,signalMuons,ptot);
+      MT2 mt2s = MT2helper(signalJets,signalElectrons,signalMuons,ptot);
     
-      //double amt2 = mt2s.aMT2_BM;
-      //double mt2tau = mt2s.MT2tauB;
+      double amt2 = mt2s.aMT2_BM;
+      double mt2tau = mt2s.MT2tauB;
     
-      double amt2=0;
-      double mt2tau=0;
+      //double amt2=0;
+      //double mt2tau=0;
 
 
       //We're now ready to apply the cuts for each signal region
       //_numTN1Shape_bin1, _numTN1Shape_bin2, _numTN1Shape_bin3,_numTN2, _numTN3, _numBC1, _numBC2, _numBC3;
 
       //Do the three bins of the TN1 shape fit
-      /*if(dphi_jetmet1>0.8 && 
+      if(dphi_jetmet1>0.8 && 
 	 dphi_jetmet2>0.8 &&
 	 mT>140. && //use tightest mT bin only for now
 	 metOverSqrtHT>5. &&
@@ -432,6 +456,26 @@ namespace GAMBIT {
 	 amt2>170. &&
 	 passHadTop &&
 	 bJets[0]->pT()>25.)_numTN2++;
+      
+      if(dphi_jetmet2>0.8 &&
+	 met>200. &&
+	 metOverSqrtHT>13. &&
+	 mT>140.)cout << "PASSPRESEL" << endl;
+
+      if(dphi_jetmet2>0.8 &&
+	 met>200. &&
+	 metOverSqrtHT>13. &&
+	 mT>140. &&
+	 bJets[0]->pT()>25. &&
+	 passHadTop)cout << "PASSEDHADTOP" << endl;
+
+      if(dphi_jetmet2>0.8 &&
+	 met>200. &&
+	 metOverSqrtHT>13. &&
+	 mT>140. &&
+	 bJets[0]->pT()>25. &&
+	 amt2>170.)cout << "PASSEDAMT2" << endl;
+
       
       //Do SRtN3      
       if(dphi_jetmet1>0.8 &&
@@ -475,7 +519,7 @@ namespace GAMBIT {
 	 nBjets >=2 &&
 	 bJets[0]->pT()>120.&&
 	 bJets[1]->pT()>90)_numBC3++;
-      */
+      
 
       return;
       
@@ -484,7 +528,7 @@ namespace GAMBIT {
     void finalize() {
       cout << "NUMEVENTS: " << _numTN1Shape_bin1 << " " << _numTN1Shape_bin2 << " " << _numTN1Shape_bin3 << " " << _numTN2 << " "  << _numTN3 << " " <<  _numBC1 << " " << _numBC2 << " " << _numBC3 << endl;
  
-      cout << "@@@ Electron cutflow for STtN2" << endl;
+      /*cout << "@@@ Electron cutflow for STtN2" << endl;
       cout << "@@@ No cuts " << cutFlowVector[0] << endl;
       cout << "@@@ Electron (= 1 signal) " << cutFlowVector[1] << endl;
       cout << "@@@ 4 jets (80, 60, 40, 25) " << cutFlowVector[2] << endl;
@@ -506,7 +550,7 @@ namespace GAMBIT {
       cout << "@@@ dPhiJet2 > 0.8 " << cutFlowVector[15] << endl;
       cout << "@@@ MET > 200 " << cutFlowVector[16] << endl;
       cout << "@@@ signficance > 13 " << cutFlowVector[17] << endl;
-      cout << "@@@ mT>140 " << cutFlowVector[18] << endl;
+      cout << "@@@ mT>140 " << cutFlowVector[18] << endl;*/
     }
 
 
