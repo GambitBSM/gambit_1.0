@@ -120,8 +120,13 @@ void *loadCxxFunction(const char * func_name, const char *file, void *plugin)
                 }
                
                 getline(ss, str);
-                int pos = str.find("_");
-                str = str.substr(pos + 1);
+                std::stringstream sss(str);
+                std::string temp;
+                while (sss >> temp) str = temp;
+#ifdef HAVE_MAC
+                str = str.substr(1);
+#endif
+                
                 
                 pclose(f);
         }

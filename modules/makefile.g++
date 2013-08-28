@@ -314,11 +314,11 @@ libfortran.so:
 	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o  
 	
 libsample.so:
-	$(CC) $(CFLAGS) -c $(SCANDIR)/lib/crapsample.cpp -o $(SCANDIR)/lib/crapsample.o
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/crapsample.cpp -o $(SCANDIR)/lib/crapsample.o
 	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/crapsample.o  
 
 libtest.so:
-	$(CC) $(CFLAGS) -c $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
 	
 # beb_tester from makefile.test_backend
