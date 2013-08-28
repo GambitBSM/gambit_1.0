@@ -132,7 +132,7 @@ void *loadCxxFunction(const char * func_name, const char *file, void *plugin)
         char buffer[1024];
         int n;
         FILE *f;
-        
+        std::cout << "loading " << func_name << std::endl;
         std::ostringstream ss;
         ss << "nm " << file << " | c++filt | grep \"" << func_name << "\"";
         if (f = popen(ss.str().c_str(), "r"))

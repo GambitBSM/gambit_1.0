@@ -176,6 +176,10 @@ namespace GAMBIT_Module_Namespace                                               
         };                                                                                                              \
 };                                                                                                                      \
         
+#define IMPORT_INIFILE(name, ...) IMPORT(name, __VA_ARGS__)
+
+#define IMPORT_GAMBIT(name, ...) IMPORT (name, gt_entry<__VA_ARGS__, name::value>)
+        
 /*Gets a variable of type "type_in" from Gambit.  The variable is set by the keyword "name"*/
 #define IMPORT(name, ...)                                                                                               \
 namespace GAMBIT_Module_Namespace                                                                                       \
