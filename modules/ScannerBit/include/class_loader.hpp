@@ -54,6 +54,30 @@
  * defeats the purpose of dynamical loading and b) you might get in the situation that a base 
  * constructor would be called twice -- once by the library code and once by the host code.  Same
  * goes for templates.
+ * 
+ * Update: I made the rebuilding of class safe now.  Now, you can safely load libraries if you follow these rules:
+         * 1) Every class get this additional constructor:  class_name(dummyStruct in)
+         * 2) Every member function prototype gets replaced by this:
+         *      ret_type func_name(... inputs ...)
+                {
+                        static Cast<ret_type (ranBase::*)(... inputs ...)> cast(load.loadFunction("class_name::func_name(... inputs ...)"));
+                        ret_type (this->*cast.value)(in);
+                }
+           3) Every constructor prototype gets replaced by
+                class_name(... inputs ...) : inherented_class_name(dummyStruct(0)), ...
+                {
+                        static Cast<void (class_name::*)(...inputs ...)> cast(load.loadFunction("class_name::class_name(... inputs ..."));
+                        (this->*cast.value)(in);
+                }
+           4) Every deconstructor prototype get replaced by
+                ~class_name(... inputs ...)
+                {
+                        static Cast<void (class_name::*)(...inputs ...)> cast(load.loadFunction("class_name::~class_name(... inputs ..."));
+                        if (load.safe(this)) (this->*cast.value)(in);
+                }
+           5) After a declaring a class object, you must:  "load.set(&object)"
+           6) Analagous replacement for normal function prototypes.
+           7) Fully declared functions are left alone.
  */
 
 #ifndef CLASS_LOADER_HPP
@@ -62,12 +86,26 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include <set>
 #include <string>
 #include <cstdio>
 #include <cstdlib>
 #include <dlfcn.h>
 #include <sstream>
 //#include <mach-o/dyld.h>
+
+struct dummyStruct{dummyStruct(int in){}};
+
+template <typename T>
+struct Cast
+{
+        union
+        {
+                T value;
+                void *ptr;
+        };
+        Cast(void *ptrin) {ptr = ptrin;}
+};
 
 template <typename T>
 T* gambit_cast(void *in)
@@ -139,6 +177,7 @@ class LoadFunction
 private:
         void *plugin;
         std::string file;
+        std::set<void *> ptrs;
         
 public:
         LoadFunction(std::string filein) : file(filein)
@@ -162,6 +201,27 @@ public:
                 {
                         std::cout << "\e[00;31mERROR:\e[00m  Could not load function \"" << name << "\" in library \"" << file << "\"." << std::endl;
                         return 0;
+                }
+        }
+        
+        bool safe(void *ptr)
+        {
+                if (ptrs.find(ptr) == ptrs.end())
+                {
+                        ptrs.insert(ptr);
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+        
+        void set(void *ptr)
+        {
+                if (ptrs.find(ptr) != ptrs.end())
+                {
+                        ptrs.erase(ptr);
                 }
         }
         

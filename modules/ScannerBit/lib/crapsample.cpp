@@ -226,6 +226,30 @@ GAMBIT_MODULE (classtest)
          * defeats the purpose of dynamical loading and b) you might get in the situation that a base 
          * constructor would be called twice -- once by the library code and once by the host code.  Same
          * goes for templates.
+         * 
+         * Update: I made the rebuilding of class safe now.  Now, you can safely load libraries if you follow these rules:
+         * 1) Every class get this additional constructor:  class_name(dummyStruct in)
+         * 2) Every member function prototype gets replaced by this:
+         *      ret_type func_name(... inputs ...)
+                {
+                        static Cast<ret_type (ranBase::*)(... inputs ...)> cast(load.loadFunction("class_name::func_name(... inputs ...)"));
+                        ret_type (this->*cast.value)(in);
+                }
+           3) Every constructor prototype gets replaced by
+                class_name(... inputs ...) : inherented_class_name(dummyStruct(0)), ...
+                {
+                        static Cast<void (class_name::*)(...inputs ...)> cast(load.loadFunction("class_name::class_name(... inputs ..."));
+                        (this->*cast.value)(in);
+                }
+           4) Every deconstructor prototype get replaced by
+                ~class_name(... inputs ...)
+                {
+                        static Cast<void (class_name::*)(...inputs ...)> cast(load.loadFunction("class_name::~class_name(... inputs ..."));
+                        if (load.safe(this)) (this->*cast.value)(in);
+                }
+           5) After a declaring a class object, you must:  "load.set(&object)"
+           6) Analagous replacement for normal function prototypes.
+           7) Fully declared functions are left alone.
          */
         
         /*The code below "rebuilds" the class "ran_test" with the functions specified.*/
@@ -233,69 +257,101 @@ GAMBIT_MODULE (classtest)
         LoadFunction load("ScannerBit/lib/libtest.so");
         
         /*
-         * Since I am rebuiding the "ran_test" class I am going to inherent the no constructor version of "ran_test".
-         * Then I am going to declare all the function that I want to use in "ran_test".  But, I do not need to declare
-         * all the functions that "ran_test" had, only the ones I want to use.  Each of these functions will wrap
-         * the corresponds dynamically linked function.  And if you want to use a base class function, simply wrap
-         * that one too.
+         * Rebuilding the "test.h" header classes.
          */
         
-        class testclass : public ran_test_no_constructor
+        class ranBase
         {
+        private:
+                double base;
+                
         public:
-                testclass()
+                ranBase(dummyStruct in){}
+                
+                ranBase(double in)
                 {
-                        static void *ptr = load.loadFunction("ran_test::ran_test()");
+                        static Cast<double (ranBase::*)(double)> cast(load.loadFunction("ranBase::ranBase(double)"));
+                        (this->*cast.value)(in);
+                        //gambit_cast<void (void *, double)>(ptr)(this, in);
+                }
+                double baseNum(double in)
+                {
+                        static Cast<double (ranBase::*)(double)> cast(load.loadFunction("ranBase::baseNum(double)"));
+                        return (this->*cast.value)(in);
+                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
+                }
+        };
+
+        class ranBase2
+        {
+        private:
+                double base2;
+                
+        public:
+                ranBase2(dummyStruct in){}
+                
+                ranBase2(double in)
+                {
+                        static Cast<double (ranBase2::*)(double)> cast(load.loadFunction("ranBase2::ranBase2(double)"));
+                        (this->*cast.value)(in);
+                        //gambit_cast<void (void *, double)>(ptr)(this, in);
+                }
+                double baseNum2(double in)
+                {
+                        static Cast<double (ranBase2::*)(double)> cast(load.loadFunction("ranBase2::baseNum2(double)"));
+                        return (this->*cast.value)(in);
+                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
+                }
+        };
+        
+        class ran_test : public ranBase, public ranBase2
+        {
+        private:
+                double stuff;
+                
+        public:
+                ran_test(dummyStruct in) : ranBase(dummyStruct(0)), ranBase2(dummyStruct(0)){}
+                
+                ran_test() : ranBase(dummyStruct(0)), ranBase2(dummyStruct(0))
+                {
+                        static Cast<double (ran_test::*)()> cast(load.loadFunction("ran_test::ran_test()"));
+                        (this->*cast.value)();
                         //gambit_cast<void (void *)>(ptr)(this);
-                        (this->*member_cast<void (ran_test_no_constructor::*)()>(ptr))();
                 }
                 
-                testclass(double in)
+                ran_test(double in) : ranBase(dummyStruct(0)), ranBase2(dummyStruct(0))
                 {
-                        static void *ptr = load.loadFunction("ran_test::ran_test(double)");
+                        static Cast<double (ran_test::*)(double)> cast(load.loadFunction("ran_test::ran_test(double)"));
+                        (this->*cast.value)(in);
                         //gambit_cast<void (void *, double)>(ptr)(this, in);
-                        (this->*member_cast<void (ran_test_no_constructor::*)(double)>(ptr))(in);
                 }
                 
                 double Num()
                 {
-                        static void *ptr = load.loadFunction("ran_test::Num()");
+                        static Cast<double (ran_test::*)()> cast(load.loadFunction("ran_test::Num()"));
+                        return (this->*cast.value)();
                         //return gambit_cast<double (void *)>(ptr)(this);
-                        return (this->*member_cast<double (ran_test_no_constructor::*)()>(ptr))();
                 }
                 
                 double Num(double in)
                 {
-                        static void *ptr = load.loadFunction("ran_test::Num(double)");
+                        static Cast<double (ran_test::*)(double)> cast(load.loadFunction("ran_test::Num(double)"));
+                        return (this->*cast.value)(in);
                         //return gambit_cast<double (void *, double)>(ptr)(this, in);
-                        return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(ptr))(in);
                 }
                 
-                double baseNum(double in)
+                ~ran_test()
                 {
-                        static void *ptr = load.loadFunction("ranBase::baseNum(double)");
-                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
-                        return (this->*member_cast<double (ranBase_no_constructor::*)(double)>(ptr))(in);
-                }
-                
-                double baseNum2(double in)
-                {
-                        static void *ptr = load.loadFunction("ranBase2::baseNum2(double)");
-                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
-                        return (this->*member_cast<double (ranBase2_no_constructor::*)(double)>(ptr))(in);
-                }
-                
-                ~testclass()
-                {
-                        static void *ptr = load.loadFunction("ran_test::~ran_test()");
+                        static Cast<double (ran_test::*)()> cast(load.loadFunction("ran_test::~ran_test()"));
+                        if (load.safe(this)) (this->*cast.value)();
                         //gambit_cast<void (void *)>(ptr)(this);
-                        (this->*member_cast<void (ran_test_no_constructor::*)()>(ptr))();
                 }
         };
         
         int MODULE_MAIN(void)
         {
-                testclass testing(2.0);
+                ran_test testing(2.0);
+                load.set(&testing);
                 
                 cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << ", " << testing.baseNum2(2.0) << std::endl;
                 getchar();
