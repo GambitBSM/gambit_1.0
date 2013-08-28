@@ -28,7 +28,7 @@
  * Alteratively, you can cast the dlsym output into a member function pointer instead of a regular
  * function pointer.  This way, you don't have to explicitly specify the "void *" entry.  But, the 
  * compiler *really* doesn't like this and can lead to some strange behavior.  The "member_cast"
- * function will do this cast.
+ * function will do this cast.  Note that for multiple inheritance, you must cast to a member pointer.
  * 
  * On linux, it may be possible to not need the command line tools "nm" and "c++filt" with the use of
  * the "dlinfo()" function in "link.h" (symbols http://www.unix.com/man-page/all/3c/dlinfo/) and

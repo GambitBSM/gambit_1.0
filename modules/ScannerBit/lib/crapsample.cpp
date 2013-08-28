@@ -204,7 +204,7 @@ GAMBIT_MODULE (classtest)
          * Alteratively, you can cast the dlsym output into a member function pointer instead of a regular
          * function pointer.  This way, you don't have to explicitly specify the "void *" entry.  But, the 
          * compiler *really* doesn't like this and can lead to some strange behavior.  The "member_cast"
-         * function will do this cast.
+         * function will do this cast.  Note that for multiple inheritance, you must cast to a member pointer.
          * 
          * Also it's important to note that you may reuse the header files that were used to compile the 
          * library (in this case, test.h).  But, you must remove any constructors or deconstructors from 
@@ -246,43 +246,50 @@ GAMBIT_MODULE (classtest)
                 testclass()
                 {
                         static void *ptr = load.loadFunction("ran_test::ran_test()");
-                        gambit_cast<void (void *)>(ptr)(this);
-                        //(this->*member_cast<void (ran_test_no_constructor::*)()>(ptr))();
+                        //gambit_cast<void (void *)>(ptr)(this);
+                        (this->*member_cast<void (ran_test_no_constructor::*)()>(ptr))();
                 }
                 
                 testclass(double in)
                 {
                         static void *ptr = load.loadFunction("ran_test::ran_test(double)");
-                        gambit_cast<void (void *, double)>(ptr)(this, in);
-                        //(this->*member_cast<void (ran_test_no_constructor::*)(double)>(ptr))(in);
+                        //gambit_cast<void (void *, double)>(ptr)(this, in);
+                        (this->*member_cast<void (ran_test_no_constructor::*)(double)>(ptr))(in);
                 }
                 
                 double Num()
                 {
                         static void *ptr = load.loadFunction("ran_test::Num()");
-                        return gambit_cast<double (void *)>(ptr)(this);
-                        //return (this->*member_cast<double (ran_test_no_constructor::*)()>(ptr))();
+                        //return gambit_cast<double (void *)>(ptr)(this);
+                        return (this->*member_cast<double (ran_test_no_constructor::*)()>(ptr))();
                 }
                 
                 double Num(double in)
                 {
                         static void *ptr = load.loadFunction("ran_test::Num(double)");
-                        return gambit_cast<double (void *, double)>(ptr)(this, in);
-                        //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(ptr))(in);
+                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
+                        return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(ptr))(in);
                 }
                 
                 double baseNum(double in)
                 {
                         static void *ptr = load.loadFunction("ranBase::baseNum(double)");
-                        return gambit_cast<double (void *, double)>(ptr)(this, in);
-                        //return (this->*member_cast<double (ran_test_no_constructor::*)(double)>(loadbase.Member("baseNum(double)")))(in);
+                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
+                        return (this->*member_cast<double (ranBase_no_constructor::*)(double)>(ptr))(in);
+                }
+                
+                double baseNum2(double in)
+                {
+                        static void *ptr = load.loadFunction("ranBase2::baseNum2(double)");
+                        //return gambit_cast<double (void *, double)>(ptr)(this, in);
+                        return (this->*member_cast<double (ranBase2_no_constructor::*)(double)>(ptr))(in);
                 }
                 
                 ~testclass()
                 {
                         static void *ptr = load.loadFunction("ran_test::~ran_test()");
-                        gambit_cast<void (void *)>(ptr)(this);
-                        //(this->*member_cast<void (ran_test_no_constructor::*)()>(load.Member("~ran_test()")))();
+                        //gambit_cast<void (void *)>(ptr)(this);
+                        (this->*member_cast<void (ran_test_no_constructor::*)()>(ptr))();
                 }
         };
         
@@ -290,7 +297,7 @@ GAMBIT_MODULE (classtest)
         {
                 testclass testing(2.0);
                 
-                cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << std::endl;
+                cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << ", " << testing.baseNum2(2.0) << std::endl;
                 getchar();
         }
 };

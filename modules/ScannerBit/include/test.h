@@ -8,7 +8,16 @@ public:
         double baseNum(double);
 };
 
-class ran_test : public ranBase
+class ranBase2
+{
+private:
+        double base2;
+public:
+        ranBase2(double i);
+        double baseNum2(double);
+};
+
+class ran_test : public ranBase2, public ranBase
 {
 private:
         double stuff;
@@ -30,7 +39,14 @@ public:
         double print(){return base;}
 };
 
-class ran_test_no_constructor : public ranBase_no_constructor
+class ranBase2_no_constructor
+{
+private:
+        double base;
+public:
+};
+
+class ran_test_no_constructor : public ranBase2_no_constructor, public ranBase_no_constructor
 {
 private:
 public:
