@@ -166,8 +166,8 @@ GAMBIT_MODULE (loopsample)
         int MODULE_MAIN (void)
         {
                 std::vector<std::string> &keys     = GET_VALUE(gambitKeys);
-                std::vector<double> &upper_limits  = GET_VALUE(ulim);
-                std::vector<double> &lower_limits  = GET_VALUE(llim);
+                std::vector<double> &upper_limits  = GET_VALUE(gambitUpperLimits);
+                std::vector<double> &lower_limits  = GET_VALUE(gambitLowerLimits);
                 std::string &output_file           = GET_VALUE(output_file);
                 int &N                             = GET_VALUE(point_number);
                 Function_Base *LogLike             = &GET_VALUE(like);
