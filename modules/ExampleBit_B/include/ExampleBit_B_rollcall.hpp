@@ -147,6 +147,15 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // Some likelihood of type double that depends on postcuts
+  #define CAPABILITY lnL_ExampleBitB
+    #define FUNCTION lnL_ExampleBitB
+    START_FUNCTION(double)
+    DEPENDENCY(nevents_postcuts, int)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
 #undef MODULE
 
 #endif // defined(__ExampleBit_B_rollcall_hpp__)

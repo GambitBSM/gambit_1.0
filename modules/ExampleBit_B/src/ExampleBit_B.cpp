@@ -88,6 +88,8 @@ namespace GAMBIT
 
     }
 
+    // Some dummy likelihood function that returns a double for the scanner
+    void lnL_ExampleBitB(double &result) { result = 0; }
   }
 
 }

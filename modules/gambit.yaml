@@ -58,15 +58,15 @@ adhoc:
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
 - purpose:      Likelihood
-  capability:   nevents_postcuts
-  type:         ""
+  capability:   lnL_ExampleBitB
+  type:         double
   function:     ""
   module:       ""
 
 # Uncomment to test TinyDarkBit
 - purpose:      Likelihood
   capability:   omega_DM
-  type:         ""
+  type:         double
   function:     ""
   module:       ""
 
@@ -106,11 +106,11 @@ scanner:
 enable_redirect: true
 
 redirect_output:
-   CMSSM_I:  xterm
+   CMSSM_I:  output
     
 crapsample:
-  #point_number: 3
-  #output_file:  output
+  point_number: 3
+  output_file:  output
   like:  Likelihood
 
 loopsample:
