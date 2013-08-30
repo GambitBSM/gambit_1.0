@@ -15,7 +15,7 @@
 //  //  (add name and date if you modify)
 //  //
 //  //  Abram Krislock
-//  //  2013 Apr 23
+//  //  2013 Apr 23, Aug 30
 //  //  Aldo Saavedra
 //  //  2013 June 14
 //  //
@@ -51,15 +51,19 @@ namespace GAMBIT {
     struct SubprocessGroup {
       SubprocessGroup()
         : xsec(-1) { }
-      SubprocessGroup(double xs, const vector<string>& procs)
-        : xsec(xs), processes(procs) { }
+      /// @todo pair<vector<int>> instead of two vector<int> inputs?
+      SubprocessGroup(double xs, const vector<int>& parts1, const vector<int>& parts2)
+        : xsec(xs), particlesInProcess1(parts1), particlesInProcess2(parts2) { }
       void add_analysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
       double xsec;
       //string name;
       // double nevents;
       /// @todo Calc effective lumi?
       /// @todo Add some metric of CPU cost per event for this process type?
-      vector<string> processes;
+      /// The processes are selected by the IDs of the particles which
+      /// must be in the process.
+      vector<int> particlesInProcess1;
+      vector<int> particlesInProcess2;
       vector<shared_ptr<Analysis>> analyses;
     };
 
@@ -73,6 +77,7 @@ int main()
   /// @todo Model info including SLHA will need to come from ModelBit
   const string slhaFileName = "sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
+  /// @note That means that the class loaders had better be working by then...
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
   const int NEVENTS = 10000;
 
@@ -92,9 +97,27 @@ int main()
   /// @note Hard-coded for now, so I can do *something*
   /// @todo Hard coding of nthread assignment calc: yuck, yuck, yuck! Generalise to containers of subprocesses
   map<string, GAMBIT::HEColliderBit::SubprocessGroup> sp_groups;
-  sp_groups["g~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
-  sp_groups["q~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
-  sp_groups["X~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+
+  /// @note The old SubprocessGroup constructor calls are commented out below the new inputs
+  /// @note Also, the new constructor calls exclude third generation squarks
+  sp_groups["g~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.4, 
+                    {{1000021}}, 
+                    {{1000021, 1000001, 1000002, 1000003, 1000004, 
+                      2000001, 2000002, 2000003, 2000004}});
+  //sp_groups["g~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
+
+  sp_groups["q~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.2, 
+                    {{1000001, 1000002, 1000003, 1000004, 
+                      2000001, 2000002, 2000003, 2000004}}, 
+                    {{1000001, 1000002, 1000003, 1000004, 
+                      2000001, 2000002, 2000003, 2000004}});
+  //sp_groups["q~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
+
+  sp_groups["X~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.02, 
+                    {{1000021, 1000001, 1000002, 1000003, 1000004, 
+                      2000001, 2000002, 2000003, 2000004}}, 
+                    {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
+  //sp_groups["X~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
 
   // Bind subprocesses to analysis pointers
   for (auto& sp_group : sp_groups)
@@ -115,7 +138,8 @@ int main()
   const int NUM_THREADS = omp_get_max_threads();
   cout << "Total #threads = " << NUM_THREADS << endl;
   const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
-  vector<GAMBIT::HEColliderBit::SubprocessGroup> thread_cfgs; thread_cfgs.reserve(NUM_THREADS);
+  vector<GAMBIT::HEColliderBit::SubprocessGroup> thread_cfgs;
+  thread_cfgs.reserve(NUM_THREADS);
   double total_xsec = 0;
   for (auto& sp_group : sp_groups) total_xsec += sp_group.second.xsec;
   for (auto& sp_group : sp_groups) {
@@ -131,8 +155,8 @@ int main()
     const int NTHREAD = omp_get_thread_num();
     myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(NTHREAD);
     myPythia->set("SLHA:file", slhaFileName);
-    for (const string& p : thread_cfgs[NTHREAD].processes)
-      myPythia->set(p, true);
+    myPythia->set("SUSY:idVectA", thread_cfgs[NTHREAD].particlesInProcess1);
+    myPythia->set("SUSY:idVectB", thread_cfgs[NTHREAD].particlesInProcess2);
 
     #ifdef ARCHIVE
     // Persistency config

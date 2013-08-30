@@ -1,0 +1,17 @@
+Pythia hack successful. The Pythia options "SUSY:idVectA" and
+"SUSY:idVectB" can now be passed in and used to finely control the
+process selection. As an example, I have modified Martin's standalone
+Pythia code "main41.cc" in the HEColliderBit/standalone directory.
+
+In order to set up the hack, you need to copy some files from the
+HEColliderBit/pythiaHacks directory:
+1) copy PythiaStdlib.h and Settings.h to
+/your/installation/of/pythia/include
+2) copy Settings.cc and ProcessContainer.cc to
+/your/installation/of/pythia/src
+3) sudo copy SUSYProcesses.xml to
+/your/installation/of/pythia/xmldoc
+4) Then, recompile Pythia.
+5) To test my hack, copy main41.cc to
+/your/installation/of/pythia/examples
+Then go to that directory, "make main41" and "./main41.exe"

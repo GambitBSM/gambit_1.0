@@ -41,6 +41,10 @@ namespace GAMBIT {
       _pythiaInstance->settings.mode("Next:numberShowInfo", 0);
       _pythiaInstance->settings.mode("Next:numberShowProcess", 0);
 
+      // Default to SUSY with precise subprocess control
+      _pythiaInstance->settings.flag("SUSY:all", true);
+      _pythiaInstance->settings.mode("SUSY:idA", 1);
+
       // Modelling elements
       _pythiaInstance->settings.flag("PartonLevel:MPI", false);
       _pythiaInstance->settings.flag("PartonLevel:FSR", false); //true);
