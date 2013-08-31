@@ -19,8 +19,10 @@
 
 #include <string>
 #include <iostream>
-#include <TEMP_ScannerBit_rollcall.hpp>
-#include <ModelParameters.hpp>
+
+#include "gambit_module_headers.hpp"
+#include "TEMP_ScannerBit_rollcall.hpp"
+#include "ModelParameters.hpp"
 
 namespace GAMBIT {
 

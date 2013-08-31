@@ -57,8 +57,6 @@
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
 
-#include <module_macros.hpp>
-
 typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp or in local modulename/include/modulename_classes.hpp
 
 #define MODULE ExampleBit_B

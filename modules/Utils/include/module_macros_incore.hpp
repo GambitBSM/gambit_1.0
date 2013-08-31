@@ -3,7 +3,8 @@
 ///  \file
 ///
 ///  Generic observable and likelihood function 
-///  macro definitions.
+///  macro definitions, for inclusion from the
+///  Core.
 ///
 ///
 ///  Note here that \link FUNCTION() FUNCTION 
@@ -41,203 +42,19 @@
 ///  \date 2013 Jan, Feb
 ///  *********************************************
 
-#ifndef __module_macros_hpp__
-#define __module_macros_hpp__
+#ifndef __module_macros_incore_hpp__
+#define __module_macros_incore_hpp__
 
 #include <map>
 
-#include <gambit_core.hpp>
-#include <graphs.hpp>
-#include <dictionary.hpp>
-#include <functors.hpp>
-#include <util_macros.hpp>
-#include <util_classes.hpp>
-#include <util_functions.hpp>
-#include <boost/preprocessor/comparison/greater.hpp>
-
-
-/// \name Dependency-retrieval and info macros
-/// These are used from within module function source code to obtain the actual
-/// calculated values of dependencies, and probe details of the specific
-/// module functions that have been connected by the dependency resolver in order
-/// to fulfill dependencies.
-/// @{
-
-/// Retrive the name of the function that fills \em DEP for the current function
-#define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
-/// Retrive the name of the module that provides the function that fills \em DEP for the current function
-#define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
-/// @}
-
-
-/// \name Backend-requirement-retrieval and info macros
-/// These are used from within module function source code to obtain the actual
-/// calculated values of backend requirement, and probe details of the specific
-/// backend functions that have been connected by the dependency resolver in order
-/// to fulfill backend requirements.
-/// @{
-
-/// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
-#define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
-/// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
-#define GET_BE_FUNCNAME(BE_REQ)    Backend_Reqs::CAT(BE_REQ,_baseptr)->name()
-/// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
-#define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
-/// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
-#define GET_BE_VERSION(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->version()
-/// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
-#define GET_BE_POINTER(BE_REQ, ...)  Backend_Reqs::CAT(BE_REQ,_get_function_ptr)<__VA_ARGS__>()
-/// @}
-
-
-/// \name Rollcall macros
-/// These are called from within rollcall headers in each module to 
-/// register module functions, their capabilities, return types, dependencies,
-/// and backend requirements.
-/// @{
-
-///Simple alias for ALLOW_MODEL/S
-#define ALLOW_MODEL ALLOW_MODELS
-///Simple alias for ACTIVATE_FOR_MODEL/S
-#define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
-
-//  Redirect rollcall macros depending in whether this file is included from 
-//  the core or a module. 
-#ifdef IN_CORE  // This file has been included from the core
-
-  /// Registers the current \link MODULE() MODULE\endlink.
-  #define START_MODULE                                      CORE_START_MODULE
-
-  /// Registers the current \link CAPABILITY() CAPABILITY\endlink of the current 
-  /// \link MODULE() MODULE\endlink.
-  #define START_CAPABILITY                                  CORE_START_CAPABILITY
-
-  /// Registers the current \link FUNCTION() FUNCTION\endlink of the current 
-  /// \link MODULE() MODULE\endlink as a provider
-  /// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
-  /// type \em TYPE.
-  #define START_FUNCTION(TYPE)                              CORE_START_FUNCTION(TYPE)
-
-  /// Indicate that the current \link FUNCTION() FUNCTION\endlink depends on the 
-  /// presence of another module function that can supply capability \em DEP, with
-  /// return type \em TYPE.
-  #define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE)
-
-  /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
-  /// specific model \em MODEL.  If this is absent, all models are allowed but no 
-  /// model parameters will be accessible from within the module funtion.
-  #define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
-
-  /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
-  /// a backend function to be available with capability \link BACKEND_REQ() 
-  /// BACKEND_REQ\endlink and return type \em TYPE.
-  #define START_BACKEND_REQ(TYPE)                           CORE_START_BACKEND_REQ(TYPE)
-
-  /// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
-  /// be provided by backend \em BACKEND.  Permitted versions are passed in
-  /// \em VERSTRING.
-  #define BE_OPTION(BACKEND,VERSTRING)                      CORE_BACKEND_OPTION(BACKEND,VERSTRING)
-
-  /// Indicate that the current \link FUNCTION() FUNCTION\endlink may depend on the 
-  /// presence of another module function that can supply capability 
-  /// \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink, with return type
-  /// \em TYPE.
-  #define START_CONDITIONAL_DEPENDENCY(TYPE)                CORE_START_CONDITIONAL_DEPENDENCY(TYPE)
-
-  /// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
-  /// should be activated if the backend requirement \em BACKEND_REQ of the current 
-  /// \link FUNCTION() FUNCTION\endlink is filled by a backend function from \em BACKEND.
-  /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
-  #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
-
-  /// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
-  /// should be activated if the model being scanned matches one of the models passed 
-  /// as an argument.
-  #define ACTIVATE_FOR_MODELS(...)                          CORE_ACTIVATE_DEP_MODEL(#__VA_ARGS__)
-
-#else // This file has been inluded from a module; most rollcall macros can be ignored.
-
-  #define START_MODULE                                      DUMMY
-  #define START_CAPABILITY                                  DUMMY
-  #define START_FUNCTION(TYPE)                              DUMMYARG(TYPE)
-  #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
-  #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
-  #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
-  #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
-  #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
-  #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
-  #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
-
-#endif
-/// @}
-
-
-/// \name Variadic redirection macro for ALLOW_MODELS([MODELS])
-/// Register that the current \link FUNCTION() FUNCTION\endlink may
-/// only be used with the listed models.  The current maximum number
-/// of models that can be indicated this way is 10; if more models
-/// should be allowed, ALLOW_MODELS can be called multiple times.
-/// If ALLOW_MODELS is not present, all models are considered to be
-/// allowed.
-#define ALLOW_MODELS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8) ALLOWED_MODEL(_9) ALLOWED_MODEL(_10)
-#define ALLOW_MODELS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8) ALLOWED_MODEL(_9) 
-#define ALLOW_MODELS_8(_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8)
-#define ALLOW_MODELS_7(_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7)
-#define ALLOW_MODELS_6(_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6)
-#define ALLOW_MODELS_5(_1, _2, _3, _4, _5)                       ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5)
-#define ALLOW_MODELS_4(_1, _2, _3, _4)                           ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) 
-#define ALLOW_MODELS_3(_1, _2, _3)                               ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) 
-#define ALLOW_MODELS_2(_1, _2)                                   ALLOWED_MODEL(_1) ALLOWED_MODEL(_2)  
-#define ALLOW_MODELS_1(_1)                                       ALLOWED_MODEL(_1) 
-#define ALLOW_MODELS(...)                                        VARARG(ALLOW_MODELS, __VA_ARGS__)
-
-
-/// \name Variadic redirection macros for BACKEND_OPTION(BACKEND, [VERSIONS])
-/// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
-/// be provided by backend \em BACKEND, versions \em [VERSIONS].  Permitted
-/// versions are passed as optional additional arguments; if no version 
-/// information is passed, all versions of \em BACKEND are considered valid.
-/// @{
-
-/// BACKEND_OPTION() called with no versions; allow any backend version
-#define BE_OPTION_0(_1)      BE_OPTION(_1, "any")
-/// BACKEND_OPTION() called with more than one argument; allow specified backend versions
-#define BE_OPTION_1(_1, ...) BE_OPTION(_1, #__VA_ARGS__)
-///  Redirects the BACKEND_OPTION(BACKEND, [VERSIONS]) macro to the 
-///  BE_OPTION(BACKEND, VERSTRING) macro according to whether it has been called with 
-///  version numbers or not (making the version number 'any' if it is omitted).
-#define BACKEND_OPTION(...)  CAT(BE_OPTION_, BOOST_PP_GREATER \
-                             (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
-/// @}
-
-
-/// \name Variadic redirection macros for ACTIVATE_FOR_BACKEND(BACKEND_REQ, BACKEND, [VERSIONS])
-/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
-/// should be activated if the backend requirement \em BACKEND_REQ of the current 
-/// \link FUNCTION() FUNCTION\endlink is filled by a backend function from \em BACKEND.
-/// The specific versions that this applies to are passed as optional additional arguments;
-/// if no version information is passed, all versions of \em BACKEND are considered to
-/// cause the \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink to become
-/// active.
-/// @{
-
-/// ACTIVATE_FOR_BACKEND() called with no versions; allow any backend version
-#define ACTIVATE_DEP_BE_0(_1, _2)      ACTIVATE_DEP_BE(_1, _2, "any")
-/// ACTIVATE_FOR_BACKEND() called with two arguments; allow specified backend versions
-#define ACTIVATE_DEP_BE_1(_1, _2, ...) ACTIVATE_DEP_BE(_1, _2, #__VA_ARGS__)
-/// Redirects the ACTIVATE_FOR_BACKEND(BACKEND_REQ, BACKEND, [VERSIONS]) macro to 
-/// the ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING) macro according to whether
-/// it has been called with version numbers or not (making the version number 'any' 
-/// if it is omitted).
-#define ACTIVATE_FOR_BACKEND(...)      CAT(ACTIVATE_DEP_BE_, BOOST_PP_GREATER   \
-                                       (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 2))\
-                                       (__VA_ARGS__)
-/// @}
-
+#include "graphs.hpp"
+#include "dictionary.hpp"
+#include "functors.hpp"
+#include "create_core.hpp"
+#include "module_macros_common.hpp"
 
 /// \name Tag-registration macros
 /// @{
-
 /// Add a regular tag to the current namespace
 #define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; };
 /// Add a backend tag to the current namespace
@@ -247,8 +64,67 @@
 /// @}
 
 
+/// \name Rollcall macros (redirection within the Core).
+/// These are called from within rollcall headers in each module to 
+/// register module functions, their capabilities, return types, dependencies,
+/// and backend requirements.
+/// @{
+
+/// Registers the current \link MODULE() MODULE\endlink.
+#define START_MODULE                                      CORE_START_MODULE
+
+/// Registers the current \link CAPABILITY() CAPABILITY\endlink of the current 
+/// \link MODULE() MODULE\endlink.
+#define START_CAPABILITY                                  CORE_START_CAPABILITY
+
+/// Registers the current \link FUNCTION() FUNCTION\endlink of the current 
+/// \link MODULE() MODULE\endlink as a provider
+/// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
+/// type \em TYPE.
+#define START_FUNCTION(TYPE)                              CORE_START_FUNCTION(TYPE)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink depends on the 
+/// presence of another module function that can supply capability \em DEP, with
+/// return type \em TYPE.
+#define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
+/// specific model \em MODEL.  If this is absent, all models are allowed but no 
+/// model parameters will be accessible from within the module funtion.
+#define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
+/// a backend function to be available with capability \link BACKEND_REQ() 
+/// BACKEND_REQ\endlink and return type \em TYPE.
+#define START_BACKEND_REQ(TYPE)                           CORE_START_BACKEND_REQ(TYPE)
+
+/// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
+/// be provided by backend \em BACKEND.  Permitted versions are passed in
+/// \em VERSTRING.
+#define BE_OPTION(BACKEND,VERSTRING)                      CORE_BACKEND_OPTION(BACKEND,VERSTRING)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink may depend on the 
+/// presence of another module function that can supply capability 
+/// \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink, with return type
+/// \em TYPE.
+#define START_CONDITIONAL_DEPENDENCY(TYPE)                CORE_START_CONDITIONAL_DEPENDENCY(TYPE)
+
+/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
+/// should be activated if the backend requirement \em BACKEND_REQ of the current 
+/// \link FUNCTION() FUNCTION\endlink is filled by a backend function from \em BACKEND.
+/// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
+#define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
+
+/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
+/// should be activated if the model being scanned matches one of the models passed 
+/// as an argument.
+#define ACTIVATE_FOR_MODELS(...)                          CORE_ACTIVATE_DEP_MODEL(#__VA_ARGS__)
+
+/// @}
+
+
 //  *******************************************************************************
-/// \name True rollcall macros
+/// \name Actual in-core rollcall macros
 /// These macros do the actual heavy lifting within the rollcall system.
 /// @{
 
@@ -681,40 +557,6 @@
   }                                                                            \
 
 
-/// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
-#define MODULE_DEPENDENCY(DEP, TYPE)                                           \
-                                                                               \
-  namespace GAMBIT                                                             \
-  {                                                                            \
-                                                                               \
-    namespace MODULE                                                           \
-    {                                                                          \
-                                                                               \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          extern module_functor<TYPE>* DEP;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace Dep { extern safe_ptr<TYPE> DEP; }                         \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-
-
 /// Redirection of ALLOW_MODEL when invoked from within the core.
 #define CORE_ALLOWED_MODEL(MODEL)                                              \
                                                                                \
@@ -807,40 +649,6 @@
   }                                                                            \
 
 
-/// Redirection of ALLOW_MODEL when invoked from within a module.
-#define MODULE_ALLOWED_MODEL(MODEL)                                            \
-                                                                               \
-  namespace GAMBIT                                                             \
-  {                                                                            \
-                                                                               \
-    namespace MODULE                                                           \
-    {                                                                          \
-                                                                               \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Parameters                                                     \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          extern module_functor<ModelParameters>* MODEL;                       \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace Param { extern safe_ptr<ModelParameters> MODEL; }          \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-
-
 /// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.
 #define CORE_START_BACKEND_REQ(TYPE)                                           \
                                                                                \
@@ -902,111 +710,6 @@
       {                                                                        \
         ini_code CAT_3(BACKEND_REQ,_backend_for_,FUNCTION)                     \
          (&rt_register_req<BETags::BACKEND_REQ,Tags::FUNCTION>);               \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-
-
-/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within a module.
-#define MODULE_START_BACKEND_REQ(TYPE)                                         \
-                                                                               \
-  namespace GAMBIT                                                             \
-  {                                                                            \
-                                                                               \
-    namespace MODULE                                                           \
-    {                                                                          \
-                                                                               \
-      namespace Backend_Reqs                                                   \
-      {                                                                        \
-                                                                               \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-                                                                               \
-          /* Declare a (base) pointer to the backend function functor.  To be  \
-          filled by the dependency resolver at runtime. */                     \
-          extern functor* CAT(BACKEND_REQ,_baseptr);                           \
-                                                                               \
-          /* Set up an empty alias for the backend requirement */              \
-          template<typename GENERIC_TYPE, typename... ARGS>                    \
-          GENERIC_TYPE BACKEND_REQ(ARGS ...args)                               \
-          {                                                                    \
-            cout<<"Incorrect return type implied for backend"<<endl;           \
-            cout<<"requirement BACKEND_REQ (function"<<endl;                   \
-            cout<<"FUNCTION, module MODULE). Exiting..."<<endl;                \
-            /** FIXME \todo Throw a real error here. */                        \
-          }                                                                    \
-                                                                               \
-          /* Set up a working alias that casts the (base) pointer to the       \
-          backend functor to the appropriate backend_functor type, and then    \
-          dereferences it to call the actual backend function. */              \
-          template<typename ...ARGS>                                           \
-          TYPE BACKEND_REQ(ARGS&& ...args)                                     \
-          {                                                                    \
-            typedef backend_functor<TYPE, ARGS...> be_functor;                 \
-            be_functor* myptr;                                                 \
-            if (Core.safe_mode())                                              \
-            {                                                                  \
-              myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
-              if (myptr == 0)                                                  \
-              {                                                                \
-                cout<<endl<<"Error: Null returned from dynamic cast in ";      \
-                cout<<"attempting to retrieve backend requirement"<<endl;      \
-                cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
-                cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
-                cout<<"). Probably you have passed arguments of the "<<endl;   \
-                cout<<"wrong type(s) when calling this function."<<endl;       \
-                cout<<"The return type of the backend function is supposed ";  \
-                cout<<"to be "<<STRINGIFY(TYPE)<<endl;                         \
-                /** FIXME \todo throw real error here */                       \
-              }                                                                \
-            }                                                                  \
-            else                                                               \
-            {                                                                  \
-              myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
-            }                                                                  \
-            BOOST_PP_IF(IS_TYPE(void,TYPE),,return)                            \
-             (*myptr)(std::forward<ARGS>(args)...);                            \
-                                                                               \
-          }                                                                    \
-                                                                               \
-          /* Set up a working alias that casts the (base) pointer to the       \
-          backend functor to the appropriate backend_functor type, and then    \
-          returns the underlying pointer to the actual backend function. */    \
-          template<typename ...ARGS>                                           \
-          /* Horrifically complicated syntax to return a function ptr */       \
-          TYPE(*CAT(BACKEND_REQ,_get_function_ptr)())(ARGS...)                 \
-          {                                                                    \
-            typedef backend_functor<TYPE, ARGS...> be_functor;                 \
-            be_functor* myptr;                                                 \
-            if (Core.safe_mode())                                              \
-            {                                                                  \
-              myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
-              if (myptr == 0)                                                  \
-              {                                                                \
-                cout<<endl<<"Error: Null returned from dynamic cast in ";      \
-                cout<<"attempting to retrieve underlying function pointer ";   \
-                cout<<endl<<"for backend requirement"<<endl;                   \
-                cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
-                cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
-                cout<<"). Probably you have passed arguments of the "<<endl;   \
-                cout<<"wrong type(s) when calling this function."<<endl;       \
-                cout<<"The return type of the backend function is supposed ";  \
-                cout<<"to be "<<STRINGIFY(TYPE)<<endl;                         \
-                /** FIXME \todo throw real error here */                       \
-              }                                                                \
-            }                                                                  \
-            else                                                               \
-            {                                                                  \
-              myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
-            }                                                                  \
-            return myptr->handoutFunctionPointer();                            \
-                                                                               \
-          }                                                                    \
-                                                                               \
-        }                                                                      \
-                                                                               \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1078,12 +781,6 @@
   }                                                                            \
 
                                                                                
-/// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
-/// a module.
-#define MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)                              \
-  MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE)                              \
-
-
 /// Redirection of ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING) when 
 /// invoked from within the core.
 #define CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)                  \
@@ -1196,5 +893,5 @@
 
 /// @}
 
-#endif // defined(__module_macros_hpp__) 
+#endif // defined __core_module_macros_incore_hpp__ 
 

@@ -23,8 +23,10 @@
 
 #include <string>
 #include <iostream>
-#include <ExampleBit_A_rollcall.hpp>
 #include <math.h>
+
+#include "gambit_module_headers.hpp"
+#include "ExampleBit_A_rollcall.hpp"
 
 namespace GAMBIT {
 

@@ -25,17 +25,18 @@
 
 #include <dlfcn.h>
 #include <iostream>
-#include <TinyDarkBit_rollcall.hpp>
-#include <types_DarkBit.hpp>
-#include <MSSM_classes.hpp> // Ben: your "DS_MSSMPAR" struct is now in this file (under ModelBit/include)
+
+#include "gambit_module_headers.hpp"
+#include "TinyDarkBit_rollcall.hpp"
+#include "types_DarkBit.hpp"
+#include "MSSM_classes.hpp" // Ben: your "DS_MSSMPAR" struct is now in this file (under ModelBit/include)
+
+#include "backend-darksusy.hpp"
+namespace GAMBIT { namespace TinyDarkBit { GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
 
 //PS This will go in some header file eventually
 // #include <dictionary.hpp>
 // namespace GAMBIT { extern dict masterDict; }
-
-//PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
-#include "backend-darksusy.hpp"
-namespace GAMBIT { namespace TinyDarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
 
 
 namespace GAMBIT {

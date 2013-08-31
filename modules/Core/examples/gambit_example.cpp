@@ -17,40 +17,14 @@
 ///  *********************************************
 
 
-// some specifics -- probably in time these will be replaced
-//#include "mssmX.hpp"
-//#include "RandomScanner.hpp"
-// model class - probably to be replaced too
-//#include "ModelParametersSusy.hpp"
-
-/* Ben: I have commented out all model-related stuff in the example (not much)
-since I am screwing with the related code at the moment. I will add something
-back in here that uses the new system shortly
-ModelBasePtr make_a_model(bool do_cmssm){
-  if (do_cmssm){
-    ModelParametersPtr tmp(new ModelParameters_CMSSM5);
-    return ModelBasePtr(new mssmX(tmp));
-  }else{
-    ModelParametersPtr tmp(new ModelParameters_pMSSM7);
-    return ModelBasePtr(new mssmX(tmp));
-  }
-}
-*/
-
-/// Indicates to the core macros that this is indeed the core compilation unit.
-#define  IN_CORE
-
-#include "gambit_core.hpp"
-
-#include <graphs.hpp>
-#include <modelbit.hpp>
-#include <backend_rollcall.hpp>
-#include <module_rollcall.hpp>
-#include <model_rollcall.hpp>
-#include <exceptions.hpp>
-#include <map_extensions.hpp>
-#include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
+#include "graphs.hpp"
+#include "exceptions.hpp"
+#include "map_extensions.hpp"
+#include "yaml_parser.hpp"
+#include "gambit_scan.hpp"
+#include "backend_rollcall.hpp"
+#include "module_rollcall.hpp"
+#include "model_rollcall.hpp"
 
 using namespace GAMBIT;
 
@@ -71,9 +45,6 @@ void beispiel()
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
 
-  // Initialise ModelFunctorClaw (for manipulating primary model functors)
-  ModelBit::ModelFunctorClaw modelClaw(Core);
-  
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
                                    
@@ -92,7 +63,7 @@ void beispiel()
   // Examples for getting information from the key/value section of the
   // inifile
   cout << iniFile.getValue<double>("my_key") << endl;
-  cout << iniFile.getValue<string>("another_key", "subkey3", "subsubkey1") << endl;
+  cout << iniFile.getValue<str>("another_key", "subkey3", "subsubkey1") << endl;
 
   // Examples for getting information from the parameter section
 
@@ -383,7 +354,7 @@ int main( int argc, const char* argv[] )
   
   // New way of checking congruency using global lineage database
   cout<<"Checking congruency of "<<models::CMSSM_I::name()<<" using database..."<<endl;
-  cout<<"lineage is:"<< models::lineageDB["CMSSM_I"] <<endl;
+  cout<<"lineage is:"<< modelClaw.get_lineage("CMSSM_I") <<endl;
   cout<<"is descendant of model_base?     :"<<strict_descendant_of("CMSSM_I","model_base")<<endl;
   cout<<"is descendant of MSSM_I?         :"<<strict_descendant_of("CMSSM_I","MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<strict_descendant_of("CMSSM_I","CMSSM_I")<<endl;
@@ -392,7 +363,7 @@ int main( int argc, const char* argv[] )
     
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<models::MSSM_I::name()<<" using database..."<<endl;
-  cout<<"descendants are:"<< models::descendantsDB["MSSM_I"] <<endl;
+  cout<<"descendants are:"<< modelClaw.get_descendants("MSSM_I") <<endl;
   cout<<"is ancestor of model_base?     :"<<strict_ancestor_of("MSSM_I","model_base")<<endl;
   cout<<"is ancestor of MSSM_I?         :"<<strict_ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of or == MSSM_I?   :"<<ancestor_of("MSSM_I","MSSM_I")<<endl;
@@ -720,125 +691,12 @@ int main( int argc, const char* argv[] )
   */
   
 
-  // Instantiate the ScannerBit module
-
-
-  // Instantiate the ModelBit module
-
-
-
-  // Read in the .gam file
-
-
-  // Resolve dependencies in observables and likelihoods.  Raise exception if dependency tree has closed loops.
-
-
-
-  // Gather pointers to requested observables and likelihoods
-
-
-
-  // Launch scanner
-
-
-
-
-
-  // From here is basically just legacy SUFit code, for inspiration/example purposes
-
-
-  //typedef std::vector<HandlerBase const*> HandlerCollection ;
-
-  // Modelparameters defines a state of a model. Some modelparameters may
-  // only work with some models, but that is up to the programmers of those classes.
-  // ModelParameters also has a well defined interface to the scanner (look at the code)
-  // so that they can inspect and update the actual numbers.
-
-
-  // A ModelBase is only a calculation environment
-  // which can be used by the 'Engines' to aid the calculations. For example it may
-  // be something which can be setup with a custom Lagrangian, or it can be almost
-  // empty (as in case om mssmX).
-  //
-  /*
-  bool do_cmssm=true;
-  ModelBasePtr aModel=make_a_model(do_cmssm);
-  ModelParametersPtr pars=aModel->getModelParameters();
-  if(do_cmssm){
-    pars->redefineValue("m0",   344,320,350) ;  // name, value, rangeow, rangehigh
-    pars->redefineValue("m1/2", 1000,1000,1100) ;
-    pars->redefineValue("A0",   0,-0,0) ;
-    pars->redefineValue("sgnmu",1,1,1) ;
-    pars->redefineValue("tanb", 10,10,15) ;
-  }else{
-    pars->redefineValue("mu",     340 ,300 , 751);
-    pars->redefineValue("m2",     650 ,600, 700);
-    pars->redefineValue("ma",     590  ,425 , 800);
-    pars->redefineValue("tanb",   7    ,2   , 10);
-    pars->redefineValue("mqtild", 2000 ,1800, 2200);
-    pars->redefineValue("at/m",   1    ,0.9   , 10);
-    pars->redefineValue("ab/m",   0.15 ,-0.1  , 10);
-  }
-  */
-
-  //typedef shared_ptr<Handler<double> > shared_dbl;
-
-  //shared_dbl vM20 = myDS.ds_mass("vM20",20); // ds_pid
-  //shared_dbl vM21 = myDS.ds_mass("vM21",21); // ds_pid
-
-  //shared_dbl vM22 = myDS.ds_mass("vM22",22); // ds_pid
-
-  //  shared_dbl vOmega=myDS.dsrdomega("vOmega");// using default opt
-  //shared_dbl vSigmaV=myDS.dssigmav("vSigmaV"); // using default option
-  //shared_dbl vSigmaV13=myDS.dssigmav("vSigmaV2",13);
-  // shared_dbl vPositron=myDS.dshaloyield("vPositron",5.2,51); //egev,yieldk
-  // shared_dbl vAntiProton=myDS.dshaloyield("vAntiProton", 10.3,54);//egev,yieldk
-  
+  // Logging example 
   try{
     GAMBIT_MSG_LOG("GAMBIT example");
-    //GAMBIT_MSG_LOG("example, given the initial model: vM20        " << (**vM20) );
-    //GAMBIT_MSG_LOG("example, given the initial model: vSigmaV     " << (**vSigmaV) );
-    /*  GAMBIT_MSG_LOG("example, given the initial model: vPositron " << (**vPositron) );
-        GAMBIT_MSG_LOG("example, given the initial model: ds_mass 0: " << (**vM) );
-        GAMBIT_MSG_LOG("example, given the initial model: vOmega: " << (**vOmega) );
-    */
   }catch( exceptions::GAMBIT_exception_base & e){
     GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   }
-
-  // Example 2: use the LLH provided by some Engine:
-  //ComparatorBasePtr mySillyLLH_1(new simpleHandleToComparator(vSigmaV)) ;
-  //ComparatorBasePtr mySillyLLH_2(new simpleHandleToComparator(vM20)) ;
-
-  // Example 4: a combined likelihood using the above:
-  // add other likelihood components:
-  //std::vector<ComparatorBasePtr > llh_in_vector;
-  //llh_in_vector.push_back(mySillyLLH_1);
-  //llh_in_vector.push_back(mySillyLLH_2);
-  //ComparatorBasePtr myLLHsummer(new LLHSumComparator(llh_in_vector));
-
-  //////////////////////
-  //
-  //   Scanner
-  //   --------
-  //
-  //   The scanner code is completely generic for any model. To know what to do
-  //   it is getting as arguments the model and the llh sum calculator (defined above)
-  //
-  //   From these two it can update the modelparameters and get the likelihood
-  //   Please look at the code of the scanner class above, it's easy to read.
-  //
-
-
-
-  //GAMBIT_MSG_LOG(endl<<"  ------------- running scanner ");
-  //RandomScanner myScanner(myLLHsummer,aModel);
-  // first one manual step:
-  //GAMBIT_MSG_LOG(endl<<"------------- first just one step ");
-  //myScanner.doScanStep();
-  //GAMBIT_MSG_LOG(endl<<"------------- more steps ");
-  //myScanner.runStepping(steps);
-  //GAMBIT_MSG_LOG(endl<<"---------------- MAIN ENDS HERE ");
 
   return 1;
 

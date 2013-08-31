@@ -16,15 +16,20 @@
 //  Ben Farmer
 //  2013 Jun 17
 //
+//  Pat Scott 
+//  2013 Aug
+//
 //  *********************************************
 
 #ifndef __model_rollcall_hpp__
 #define __model_rollcall_hpp__
 
-// Each header may define multiple related models; there is no need (so far)
-// to have a separate one for every model.
-#include "MSSM.hpp"
+// Include the model macro definitions
+#include "model_macros.hpp"
 
+// Include the individual models.
+// Each header may define multiple related models if desired.
+#include "MSSM.hpp"
       
 #endif /* defined(__model_rollcall_hpp__) */
 

@@ -35,10 +35,10 @@
 # ifndef __boost_fallbacks_hpp__
 # define __boost_fallbacks_hpp__
 
-#include<boost/version.hpp>
+#include <boost/version.hpp>
 
-#pragma message "BOOST_VERSION = " BOOST_VERSION
 #pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
+
 # if 0//GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
 #   include <boost/preprocessor/variadic/size.hpp>
 #   include <boost/preprocessor/tuple/to_seq.hpp>

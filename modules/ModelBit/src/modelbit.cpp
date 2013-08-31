@@ -31,9 +31,7 @@
 ///
 ///  *********************************************
 
-#include <modelbit.hpp>
-#include <boost/graph/graphviz.hpp>
-
+#include "modelbit.hpp"
 
 namespace GAMBIT
 {
@@ -46,10 +44,10 @@ namespace GAMBIT
     class labelWriter
     {
       private:
-        const MasterGraphType * myGraph;
+        const Graphs::MasterGraphType * myGraph;
       public:
-        labelWriter(const MasterGraphType * modelGraph) : myGraph(modelGraph) {};
-        void operator()(std::ostream& out, const VertexID& v) const
+        labelWriter(const Graphs::MasterGraphType * modelGraph) : myGraph(modelGraph) {};
+        void operator()(std::ostream& out, const Graphs::VertexID& v) const
         {
           if ( (*myGraph)[v]->status() == 2 )
           {
@@ -83,8 +81,8 @@ namespace GAMBIT
     ModelFunctorClaw::ModelFunctorClaw (gambit_core &core)
       : boundCore(&core) 
     {
-      // Add all primary model functors to the model hierarchy graph
-      this->addFunctorsToGraph();
+      // Initialise the set of model names with the model base
+      allmodelnames.insert("model_base");        
     }
     
     /// Model activation function
@@ -162,28 +160,17 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       
     } //end checkPrimaryModelFunctorUsage
 
-    /// Add model functors to the modelGraph
-    void ModelFunctorClaw::addFunctorsToGraph()
-    {
-      // - model functors go into modelGraph
-      for (std::vector<primary_model_functor *>::const_iterator
-          it  = boundCore->getPrimaryModelFunctors()->begin();
-          it != boundCore->getPrimaryModelFunctors()->end(); ++it)
-      {
-        //if ( (*it)->status() != 0 ) 
-        boost::add_vertex(*it, this->modelGraph);     
-      }
-    }
     
-    typedef std::map<std::string, VertexID>::iterator vertexIDmap_it;
-
     /// Figure out relationships between primary model functors    
-    void ModelFunctorClaw::learnModelHierarchy (map_of_vectors &parentsDB)
+    void ModelFunctorClaw::makeGraph()
     {
-      boost::graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
-      std::map<std::string, VertexID> vertexIDmap;
+      boost::graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      std::map<std::string, Graphs::VertexID> vertexIDmap;
       std::string model;
       
+      // Add all primary model functors to the model hierarchy graph
+      addFunctorsToGraph();
+
       // Loop over all vertices (models) in modelGraph and create a map from
       // model names to vertex IDs.
       for (boost::tie(vi, vi_end) = boost::vertices(modelGraph); 
@@ -193,21 +180,22 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       }
       
       // Loop over all vertices (models) in vertexIDmap, look up the 'parents' 
-      // of each one in parentsDB, and add an edge from parent to child in the
+      // of each one in myParentsDB, and add an edge from parent to child in the
       // model graph.
       //
+      typedef std::map<std::string, Graphs::VertexID>::iterator vertexIDmap_it;
       for (vertexIDmap_it vimap = vertexIDmap.begin(); 
               vimap != vertexIDmap.end(); vimap++) 
       {
         model = vimap->first;
         
         std::cout<<"parents:"<<std::endl;
-        std::cout<<model<<"; parents: "<<parentsDB[model]<<std::endl;;
+        std::cout<<model<<"; parents: "<<myParentsDB[model]<<std::endl;;
         
         // Loop through vector of parents of 'model'
         for(std::vector<std::string>::const_iterator 
-                    parent = parentsDB[model].begin(); 
-                    parent!= parentsDB[model].end(); parent++) 
+                    parent = myParentsDB[model].begin(); 
+                    parent!= myParentsDB[model].end(); parent++) 
         {
           if (*parent != "model_base") // This is not a real model!
           {
@@ -222,7 +210,86 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       std::ofstream outf("modelgraph.gv");
       write_graphviz(outf, modelGraph, labelWriter(&modelGraph)); 
       
-    } //end learnHierarchy
+    }
+
+
+    /// Add model functors to the modelGraph
+    void ModelFunctorClaw::addFunctorsToGraph()
+    {
+      // - model functors go into modelGraph
+      for (std::vector<primary_model_functor *>::const_iterator
+          it  = boundCore->getPrimaryModelFunctors()->begin();
+          it != boundCore->getPrimaryModelFunctors()->end(); ++it)
+      {
+        //if ( (*it)->status() != 0 ) 
+        boost::add_vertex(*it, modelGraph);     
+      }
+    }
+
+
+    /// Add a model to those recongnised by GAMBIT
+    void ModelFunctorClaw::add_model (const str &model)
+    {
+      allmodelnames.insert(model);
+    }  
+
+    /// Add parents to the parents database
+    void ModelFunctorClaw::add_parents (const str &model, const str &parent)
+    {
+      myParentsDB[model].push_back(parent); 
+    }          
+
+    /// Add lineage vector to the lineage database
+    void ModelFunctorClaw::add_lineage (const str &model, const std::vector<str> &lineage)
+    {
+      myLineageDB[model] = lineage;
+    }
+
+    /// Add model to the descendants and is-descendant-of databases
+    void ModelFunctorClaw::add_descendant (const str &model, const LineageFunction is_descendant_func)
+    {
+      myIsDescendantOfDB[model] = is_descendant_func;
+      for (std::set<str>::iterator parent = allmodelnames.begin(); parent != allmodelnames.end(); ++parent)               
+      {
+        // If this model descends from parent, add it to the parent's descendents vector                               
+        if (descended_from(model,*parent)) myDescendantsDB[*parent].push_back(model);
+      }                                                                    
+    }                                                                      
+
+    /// Indicate whether a model is recognised by GAMBIT or not
+    bool ModelFunctorClaw::model_exists (const str &model) 
+    {
+      return allmodelnames.find(model) != allmodelnames.end();
+    }
+
+    /// List all the models recognised by GAMBIT
+    void ModelFunctorClaw::list_models()
+    {
+      for (std::set<str>::iterator it = allmodelnames.begin(); it != allmodelnames.end(); ++it)
+      {
+        cout << *it << endl;
+      } 
+    }
+
+    /// Retrieve the lineage for a given model
+    std::vector<str> ModelFunctorClaw::get_lineage (const str &model)
+    {
+      return myLineageDB[model];
+    }
+
+
+    /// Retrieve the descendants for a given model
+    std::vector<str> ModelFunctorClaw::get_descendants (const str &model)
+    {
+      return myDescendantsDB[model];
+    }
+
+    /// Check if model 1 is descended from model 2
+    bool ModelFunctorClaw::descended_from (const str &model1, const str &model2) 
+    {
+      return myIsDescendantOfDB[model1](model2);
+    }
     
   }
+
 }

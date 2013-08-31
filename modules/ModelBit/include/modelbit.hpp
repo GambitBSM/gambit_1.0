@@ -30,13 +30,14 @@
 #ifndef __modelbit_hpp__
 #define __modelbit_hpp__
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
 #include <vector>
 #include <string>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/graphviz.hpp>
 
+#include "graphs.hpp"
 #include "gambit_core.hpp"
-#include "functors.hpp"
 #include "util_classes.hpp"
 
 namespace GAMBIT
@@ -44,20 +45,36 @@ namespace GAMBIT
 
   namespace ModelBit
   {
-  
-    using namespace boost;
-    
-    // Typedefs for central boost (model) graph
-    typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
-    typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
-    typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
-    
+     
     typedef std::map < str, std::vector<str> > map_of_vectors;
     
     /// ModelBit object which performs initialisation and checking operations
     /// on the Core's primary_model_functor list.
     class ModelFunctorClaw
     {
+
+      private:
+
+        /// Add model functors (vertices) to model hierarchy graph
+        void addFunctorsToGraph();
+        
+        /// Private pointer to the gambit_core object to which this claw is bound
+        gambit_core *boundCore;
+
+        /// The central boost graph object for the model hierarchy
+        Graphs::MasterGraphType modelGraph;
+
+        ///  Function pointer type
+        typedef bool (*LineageFunction)(std::string);
+
+        /// \name Private lineage/ancestry databases
+        /// @{
+        std::set<str> allmodelnames;
+        std::map<str, std::vector<str> > myParentsDB;
+        std::map<str, std::vector<str> > myLineageDB;
+        std::map<str, std::vector<str> > myDescendantsDB;
+        std::map<str, LineageFunction  > myIsDescendantOfDB;
+        /// @}
 
       public:
 
@@ -70,7 +87,7 @@ namespace GAMBIT
         ///
         /// Activates primary_model_functors according to the model(s) being 
         /// scanned
-        void activatePrimaryModels(const std::vector<str> &);
+        void activatePrimaryModels (const std::vector<str> &);
         
         /// Active model functor "usefulness" checker
         ///
@@ -79,20 +96,37 @@ namespace GAMBIT
         /// the user.
         void checkPrimaryModelFunctorUsage();
         
-        /// Add model functors (vertices) to model hierarchy graph
-        void addFunctorsToGraph();
-        
         /// Add edges (relationships) to model hierarchy graph
-        void learnModelHierarchy (map_of_vectors &);
+        void makeGraph();
 
-                
-      private:
+        /// Add a model to those recongnised by GAMBIT
+        void add_model (const str &);
 
-        /// Private pointer to the gambit_core object to which this claw is bound
-        gambit_core *boundCore;
+        /// Add parents to the parents database
+        void add_parents (const str &, const str &);
 
-        /// The central boost graph object for the model hierarchy
-        MasterGraphType modelGraph;
+        /// Add lineage vector to the lineage database
+        void add_lineage (const str &, const std::vector<str> &);
+
+        // FIXME PS: do we really need both 'lineage' and 'parents'??
+
+        /// Add model as a descendent to the descendants and is-descendant-of databases
+        void add_descendant (const str &, const LineageFunction);
+
+        /// Indicate whether a model is recognised by GAMBIT or not
+        bool model_exists (const str &); 
+
+        /// List all the models recognised by GAMBIT
+        void list_models();
+
+        /// Retrieve the lineage for a given model
+        std::vector<str> get_lineage (const str &);
+
+        /// Retrieve the descendants for a given model
+        std::vector<str> get_descendants (const str &);
+        
+        /// Check if model 1 is descended from model 2
+        bool descended_from (const str &, const str &);
 
     };
  

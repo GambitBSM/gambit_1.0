@@ -25,8 +25,6 @@
 #ifndef __TEMP_ScannerBit_rollcall_hpp__
 #define __TEMP_ScannerBit_rollcall_hpp__
 
-#include <module_macros.hpp>
-
 typedef std::map<std::string,double> parameters_map; //Cannot have commas in macro argument!
 
 #define MODULE TEMP_ScannerBit

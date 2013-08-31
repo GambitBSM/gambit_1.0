@@ -29,7 +29,6 @@
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
 
-#include <module_macros.hpp>
 #include <types_DarkBit.hpp>
 
 typedef double(*fptr_dd)(double&);

@@ -23,7 +23,8 @@
 #include "util_classes.hpp"
 #include "functors.hpp"
 
-namespace GAMBIT {
+namespace GAMBIT
+{
  
   /// Master driver class for a GAMBIT scan.
   class gambit_core
@@ -96,14 +97,6 @@ namespace GAMBIT {
       const pmfMap* getActiveModelFunctors() const { return &activeModelFunctorList; }
 
   };
-
-
-#ifdef IN_CORE
-  gambit_core Core(true);
-#else
-  extern gambit_core Core;
-#endif
-
 
 }
 

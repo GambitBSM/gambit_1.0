@@ -29,10 +29,12 @@
 
 #include <iostream>
 #include <string>
-#include <functors.hpp>
-#include <util_macros.hpp>
-#include <util_classes.hpp>
-#include "dlfcn.h"
+#include <dlfcn.h>
+
+#include "functors.hpp"
+#include "create_core.hpp"
+#include "util_macros.hpp"
+#include "util_classes.hpp"
 
 #ifndef HAVE_MAC
 #define PHANDLE_DLMOPEN dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY)  

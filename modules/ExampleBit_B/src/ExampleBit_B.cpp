@@ -23,7 +23,8 @@
 ///
 ///  *********************************************
 
-#include <ExampleBit_B_rollcall.hpp>
+#include "gambit_module_headers.hpp"
+#include "ExampleBit_B_rollcall.hpp"
 
 namespace GAMBIT
 {

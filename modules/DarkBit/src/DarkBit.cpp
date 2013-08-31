@@ -26,8 +26,10 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <algorithm>
-#include <types_DarkBit.hpp>
-#include <DarkBit_rollcall.hpp>
+
+#include "gambit_module_headers.hpp"
+#include "DarkBit_rollcall.hpp"
+#include "types_DarkBit.hpp"
 
 //PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
 // #include "backend-darksusy.hpp"

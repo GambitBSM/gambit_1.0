@@ -6,7 +6,6 @@
  *
 */
 
-#include <backend_macros.hpp>
 #include <common_return_types.hpp> //Contains definition of MSSMspecQ type.
 #include <MSSM_classes.hpp>
 

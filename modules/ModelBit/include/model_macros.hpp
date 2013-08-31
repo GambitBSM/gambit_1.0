@@ -25,18 +25,19 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost_fallbacks.hpp>
-#include <ModelParameters.hpp>
-#include <model_functions.hpp>
-#include <util_macros.hpp>
-//#include <util_functions.hpp>
-#include <util_classes.hpp>
-#include <module_macros.hpp>
+
+#include "ModelParameters.hpp"
+#include "model_functions.hpp"
+#include "util_macros.hpp"
+#include "util_classes.hpp"
+#include "module_macros_incore.hpp"
+#include "create_claw.hpp"
 
 
 // MACRO DEFINITIONS. 
 
 //  ****************************************************************************
-/// "Rollcall" macros. These are lifted straight from module_macros.hpp
+/// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
 /// but are modified here and there to suit the role of models.
 
 /// Note: Piggybacks off the CORE_START_MODULE_COMMON macro, since we need all the
@@ -73,7 +74,7 @@
         */                                                                     \
                                                                                \
         /* Basic machinery, same as for modules 
-           (macro from module_macros.hpp) */                                   \
+           (macro from module_macros_incore.hpp) */                            \
         CORE_START_MODULE_COMMON( CAT_3(MODEL,_,PARAMETERISATION) )            \
                                                                                \
         /* Model lineage                                                       
@@ -99,55 +100,40 @@
           return false;                                                        \
         }                                                                      \
                                                                                \
-        /* Runtime addition of lineage vector and is_descendant_of function to 
-           global databases */                                                 \
-        void rt_add_model_to_DB() {                                            \
-          allmodelnames.insert(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))); \
-          }                                                                    \
-                                                                               \
-        /* ///TODO: need to change this to allow multiple parents */           \
-        void rt_add_parents() {                                                \
-          parentsDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))].push_back(     \
-                                                          STRINGIFY(PARENT) ); \
-          }                                                                    \
-                                                                               \
-        void rt_add_lineage() {                                                \
-          lineageDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))] = lineage;     \
-          }                                                                    \
-                                                                               \
-        void rt_add_is_descendant_of() {                                       \
-          is_descendant_ofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))]       \
-                                                          = &is_descendant_of; \
-          }                                                                    \
-        /*Function to add this model to the 'descendants' vector for all of
-          the models it descends from. No new parent models can be added to 
-          the 'allmodelnames' set after this model is already defined so
-          we won't miss any. */                                                \
-        void rt_add_self_to_descendantsDB()                                    \
+        /* Runtime addition of model to GAMBIT (modelClaw) database */         \
+        void rt_add_model()                                                    \
         {                                                                      \
-          for (std::set<str>::iterator                                         \
-                modelthem = allmodelnames.begin();                             \
-                modelthem != allmodelnames.end(); ++modelthem)                 \
-          {                                                                    \
-            if ( is_descendant_ofDB[STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))]\
-                                                                (*modelthem) ) \
-            {                                                                  \
-              /* if we are a descendant of modelthem, add us to their      
-                'descendants' vectors. */                                      \
-              descendantsDB[*modelthem].push_back(                             \
-                                  STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))); \
-            }                                                                  \
-          }                                                                    \
+          modelClaw.add_model(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)));     \
+        }                                                                      \
                                                                                \
+        /* Runtime addition of model's parents to ModelClaw database */        \
+        /* ///TODO: need to change this to allow multiple parents */           \
+        void rt_add_parents()                                                  \
+        {                                                                      \
+          modelClaw.add_parents(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)),    \
+           STRINGIFY(PARENT));                                                 \
+        }                                                                      \
+                                                                               \
+        /* Runtime addition of model's lineage to ModelClaw database */        \
+        void rt_add_lineage()                                                  \
+        {                                                                      \
+          modelClaw.add_lineage(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)),    \
+           lineage);                                                           \
+        }                                                                      \
+                                                                               \
+        /* Runtime addition of model-as-a-descendant to ModelClaw databases */ \
+        void rt_add_descendant()                                               \
+        {                                                                      \
+          modelClaw.add_descendant(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)), \
+           &is_descendant_of);                                                 \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
         {                                                                      \
-          ini_code AddModel (&rt_add_model_to_DB);                             \
+          ini_code AddModel (&rt_add_model);                                   \
           ini_code AddParents (&rt_add_parents);                               \
           ini_code AddLineage (&rt_add_lineage);                               \
-          ini_code AddDescFunc (&rt_add_is_descendant_of);                     \
-          ini_code AddToDescendants (&rt_add_self_to_descendantsDB);           \
+          ini_code AddDescendant (&rt_add_descendant);                         \
         }                                                                      \
                                                                                \
         /* Model parameter names */                                            \
@@ -243,7 +229,7 @@
         /* Just the prototype here: defined a bit later on */                  \
         void PARAMETER (double &);                                             \
                                                                                \
-        /* Wrap it up in a functor (macro from module_macros.hpp) */           \
+        /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,\
                       CAT_3(MODEL,_,PARAMETERISATION))                         \
                                                                                \
@@ -364,7 +350,7 @@
         /* Register (prototype) the function */                                \
         void CAT_3(MODEL_X,_,parameters) (ModelParameters &);                  \
                                                                                \
-        /* Wrap it up in a functor (macro from module_macros.hpp) */           \
+        /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,              \
           CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION))         \
                                                                                \

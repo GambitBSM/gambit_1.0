@@ -16,19 +16,14 @@
 ///
 ///  *********************************************
 
-/// Indicates to the core macros that this is indeed the core compilation unit.
-#define  IN_CORE
-#include "gambit_core.hpp"
-
-#include <graphs.hpp>
-#include <modelbit.hpp>
-#include <backend_rollcall.hpp>
-#include <module_rollcall.hpp>
-#include <model_rollcall.hpp>
-#include <exceptions.hpp>
-#include <map_extensions.hpp>
-#include <yaml_parser.hpp>
-#include <gambit_scan.hpp>
+#include "graphs.hpp"
+#include "backend_rollcall.hpp"
+#include "module_rollcall.hpp"
+#include "model_rollcall.hpp"
+#include "exceptions.hpp"
+#include "map_extensions.hpp"
+#include "yaml_parser.hpp"
+#include "gambit_scan.hpp"
 
 using namespace GAMBIT;
 
@@ -48,10 +43,7 @@ void beispiel(const char* inifilename)
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
-  
-  // Initialise ModelFunctorClaw (for manipulating primary model functors)
-  ModelBit::ModelFunctorClaw modelClaw(Core);
-  
+    
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
                                    
@@ -75,7 +67,7 @@ void beispiel(const char* inifilename)
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
-  modelClaw.learnModelHierarchy(models::parentsDB);
+  modelClaw.makeGraph();
 
   // Run 100 times
 

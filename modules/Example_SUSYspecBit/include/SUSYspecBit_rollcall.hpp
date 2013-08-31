@@ -25,7 +25,6 @@
 #ifndef __SUSYspecBit_rollcall_hpp__
 #define __SUSYspecBit_rollcall_hpp__
 
-#include <module_macros.hpp>
 #include <common_return_types.hpp> // Contains definition of MSSMspecQ type.
 #include <MSSM_classes.hpp> 
 

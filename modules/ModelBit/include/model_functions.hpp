@@ -26,15 +26,11 @@
 #include <set>
 #include <vector>
 #include <string>
-#include <util_classes.hpp>
 
-typedef std::map<std::string,double> parameters_map; //Cannot have commas in macro argument!
+#include "util_classes.hpp"
 
 namespace GAMBIT
 {
-
-  /// Helper function to indicate whether a model is recognised by GAMBIT
-  bool model_is_registered(const str&);
 
   /// \name Short functions to allow tidy model congruency tests
   /// @{
@@ -43,6 +39,10 @@ namespace GAMBIT
   bool strict_descendant_of (const str&, const str&); 
   bool strict_ancestor_of (const str&, const str&); 
   /// @}
+
+  /// Short function to allow quick test of the existence of a model, without
+  /// knowledge of the modelClaw
+  bool model_is_registered (const str&);
 
   namespace models
   {  
@@ -78,45 +78,7 @@ namespace GAMBIT
           
     /// Helper function to test if a string matches a model recognised by GAMBIT
     void verify_model(const str &testname);
-     
-    /// \name Global Lineage/Ancestry databases
-    /// @{
-
-    ///  Function pointer type
-    typedef bool (*LineageFunction)(std::string);
-
-    #ifndef IN_CORE //FIXME PS: this is a bit hacky, we should try to do better;
-                    //these should be moved into the modelClaw or a similar class
-                    // and made private members, then that class can just be 
-                    // instantiated under a single ifdef IN_CORE 
-      extern std::set<str> allmodelnames;
-    #else
-      str tmp[] = {"model_base"};
-      std::set<str> allmodelnames(tmp, tmp + sizeof(tmp) / sizeof(tmp[0]));
-    #endif
-
-    #ifndef IN_CORE
-      extern
-    #endif
-      std::map<std::string, std::vector<std::string> > parentsDB;
-
-    #ifndef IN_CORE
-      extern
-    #endif
-      std::map<std::string, std::vector<std::string> > lineageDB;
-
-    #ifndef IN_CORE
-      extern
-    #endif
-      std::map<std::string, std::vector<std::string> > descendantsDB;
-
-    #ifndef IN_CORE
-      extern
-    #endif
-      std::map<std::string, LineageFunction> is_descendant_ofDB;
-
-    /// @}
-    
+         
   } //end namespace models
 
 } //end namespace GAMBIT

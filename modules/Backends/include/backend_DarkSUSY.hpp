@@ -11,8 +11,6 @@
  * Christoph Weniger July 2013
  */
 
-#include <backend_macros.hpp>
-
 /* Specify the path to the shared library along with a backend name. */
 
 #define LIBPATH      "libdarksusy.so"

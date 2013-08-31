@@ -10,8 +10,6 @@
  * Anders Kvellestad 2013-04-25
  */
 
-#include <backend_macros.hpp>
-
 /* Specify the path to the shared library along with a backend name. */
 
 #define LIBPATH      "Backends/lib/libfirst.so"

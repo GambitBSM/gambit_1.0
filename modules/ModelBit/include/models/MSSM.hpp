@@ -19,11 +19,6 @@
 #define __MSSM_hpp__
 
 #include <string>
-//#include "ModelParameters.hpp"
-//#include <ModelMacros.hpp>
-#include <model_macros.hpp>
-#include <util_classes.hpp>
-//#include <dictionary.hpp>  //need this for the 'dict' type.
 
 typedef std::map<std::string, double> parameterMap;
 

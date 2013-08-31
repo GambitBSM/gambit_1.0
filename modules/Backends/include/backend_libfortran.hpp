@@ -4,11 +4,6 @@
  * \author Anders Kvellestad
  */
 
-/* Hack to bypass core */
-#define IN_CORE
-
-#include <backend_macros.hpp>
-
 #define LIBPATH      "Backends/lib/libfortran.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME

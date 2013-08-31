@@ -15,34 +15,33 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 July
+///  \date 2013 July, Aug
 ///
 ///  *********************************************
 
-#include <model_functions.hpp>
-
-typedef std::map<std::string,double> parameters_map; //Cannot have commas in macro argument!
+#include "model_functions.hpp"
+#include "extern_claw.hpp"
 
 namespace GAMBIT
 {
 
-  /// Helper function to indicate whether a model is recognised by GAMBIT
-  bool model_is_registered(const str &model) 
+  /// "Existence" function
+  bool model_is_registered (const str &model)
   {
-    return models::allmodelnames.find(model) != models::allmodelnames.end();
+    return modelClaw.model_exists(model);
   }
 
   /// "Descendent of or equal to" function
   bool descendant_of (const str &model1, const str &model2) 
   {
-    return models::is_descendant_ofDB[model1](model2);
+    return modelClaw.descended_from(model1, model2);
   }
 
   /// "Ancestor of or equal to" function
   bool ancestor_of (const str &model1, const str &model2)
   {
     if (model2 == "model_base") return false; //FIXME this can be removed if model_base is gotten rid of
-    return models::is_descendant_ofDB[model2](model1);
+    return modelClaw.descended_from(model2, model1);
   }
 
   /// "Strict descendent of" function
@@ -70,7 +69,7 @@ namespace GAMBIT
       std::vector<str> newvec(basevec);
       newvec.push_back(newentry);
       return newvec;
-      }
+    }
     
     /// Similar to vecappend(); joins two vectors and returns the result
     std::vector<str> vecjoin(const std::vector<str>& bv1, 
@@ -96,14 +95,14 @@ namespace GAMBIT
       return newvec;
     }
         
-    /// Helper function to crash if a model is not recognised by GAMBIT
+    /// Helper function to crash gracefully if a model is not recognised by GAMBIT
     void verify_model(const str &model)
     {
-      if (not model_is_registered(model))
+      if (not modelClaw.model_exists(model))
       {
         cout<<"Error: model '"<<model<<"'<< is not in the GAMBIT database."<<endl;
         cout<<"Recognised models are: "<<endl;
-        for (std::set<str>::iterator it = allmodelnames.begin() ; it != allmodelnames.end(); ++it) cout<<*it<<endl;
+        modelClaw.list_models();
         exit(1);
         ///TODO: convert to proper GAMBIT error
       }
