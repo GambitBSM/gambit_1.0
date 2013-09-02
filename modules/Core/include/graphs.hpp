@@ -70,6 +70,9 @@ namespace GAMBIT
         // Pretty print backend functor information
         void printBackendFunctorList();
 
+        // Pretty print function evaluation order
+        void printFunctorEvalOrder();
+
         // New IO routines
         std::vector<VertexID> getObsLikeOrder();
 

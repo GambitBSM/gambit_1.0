@@ -168,6 +168,8 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       std::map<std::string, Graphs::VertexID> vertexIDmap;
       std::string model;
       
+      std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
+
       // Add all primary model functors to the model hierarchy graph
       addFunctorsToGraph();
 
@@ -176,7 +178,9 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       for (boost::tie(vi, vi_end) = boost::vertices(modelGraph); 
               vi != vi_end; ++vi) 
       {
-        vertexIDmap[(*modelGraph[*vi]).origin()] = *vi;
+        model = (*modelGraph[*vi]).origin();
+        vertexIDmap[model] = *vi;
+        std::cout<<"    Vertex added: "<<model<<std::endl;
       }
       
       // Loop over all vertices (models) in vertexIDmap, look up the 'parents' 
@@ -189,8 +193,7 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       {
         model = vimap->first;
         
-        std::cout<<"parents:"<<std::endl;
-        std::cout<<model<<"; parents: "<<myParentsDB[model]<<std::endl;;
+        //std::cout<<model<<"; parents: "<<myParentsDB[model]<<std::endl;;
         
         // Loop through vector of parents of 'model'
         for(std::vector<std::string>::const_iterator 
@@ -200,11 +203,12 @@ off in the inifile or add a target which actually uses them."<<std::endl;
           if (*parent != "model_base") // This is not a real model!
           {
             // Add edge between parent and child
-            std::cout<<model<<"; parent: "<<*parent<<std::endl;
             boost::add_edge(vertexIDmap[*parent], vertexIDmap[model], modelGraph);
+            std::cout<<"    Edge added: "<<model<<" ---> "<<*parent<<std::endl;
           }
         }
       }
+      std::cout<<std::endl;
       
       // Generate graphviz plot
       std::ofstream outf("modelgraph.gv");

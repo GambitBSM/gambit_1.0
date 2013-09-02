@@ -245,6 +245,35 @@ namespace GAMBIT
       // cout << "TOTAL: " << i << endl;
     }
 
+    /// Pretty print function evaluation order
+    //
+    // Running this lets us check the order of execution. Also helps
+    // to verify that we actually have pointers to all the required
+    // functors.
+    void DependencyResolver::printFunctorEvalOrder()
+    { 
+      // Get order of evaluation
+      std::vector<VertexID> order = getObsLikeOrder();
+
+      str formatString = "%-5s %-25s %-25s\n";
+      int i = 0;
+      cout << endl << "Initial functor evaluation order" << endl;
+      cout << "----------------------------------" << endl;
+      cout << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
+       
+      for (std::vector<VertexID>::const_iterator 
+                  vi  = order.begin(); 
+                  vi != order.end(); ++vi) 
+      {
+        cout << boost::format(formatString)%
+         i%
+         (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).origin();
+        i++;
+      }
+    
+    }
+
     /// New IO routines
     std::vector<VertexID> DependencyResolver::getObsLikeOrder()
     {

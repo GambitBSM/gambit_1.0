@@ -59,19 +59,21 @@ void beispiel(const char* inifilename)
   // Check that all requested models are used for at least one computation
   modelClaw.checkPrimaryModelFunctorUsage();
 
+  // Report the proposed (output) functor evaluation order
+  dependencyResolver.printFunctorEvalOrder();
+
+  // Create a graph of the available model hierarchy. Currently for 
+  // visualisation purposes only.
+  modelClaw.makeGraph();
+ 
   //Let's run the scanner!
   GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();
   
-  // Create a graph of the available model hierarchy. Currently for 
-  // visualisation purposes only.
-  modelClaw.makeGraph();
-
-  
   // Run 100 times
-
+  /*
   srand (time(NULL));    // initialize random seed
   
   typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
@@ -108,7 +110,7 @@ void beispiel(const char* inifilename)
     }
   
   }
-  
+  */
 }
 
 int main( int argc, const char* argv[] )
@@ -132,7 +134,10 @@ int main( int argc, const char* argv[] )
   }
   
   beispiel(inifilename);
-  
+ 
+  std::cout << "Gambit has finished successfully! Any errors following this message ";
+  std::cout << "are probably caused by cleanup problems, i.e in destructors etc."<<std::endl;
+   
   return 1;
 
 };
