@@ -40,7 +40,7 @@ namespace GAMBIT
                                 printf("Gambit has been terminated, please press enter to continue ... "); 
                                 getchar();
                         }
-                        abort();
+                        //abort();
                 }
                 
                 Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 

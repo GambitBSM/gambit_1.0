@@ -176,7 +176,7 @@ namespace GAMBIT
                                 }
                         }
                         
-                        ~gt_type_def (){}
+                        ~gt_type_def (){if (value != 0) factory->remove("Scanner_Function", value);}
                 }; 
         };
 };
