@@ -159,9 +159,9 @@ GAMBIT_MODULE (loopsample)
         IMPORT_GAMBIT (gambitUpperLimits, std::vector<double>);
         IMPORT_GAMBIT (gambitLowerLimits, std::vector<double>);
         
-        SET_DEFAULT(point_number, 10);
-        SET_DEFAULT(output_file, "default_output");
-        SET_DEFAULT(like, "Likelihood");
+        SET_DEFAULT (point_number, 10);
+        SET_DEFAULT (output_file, "default_output");
+        SET_DEFAULT (like, "Likelihood");
         
         int MODULE_MAIN (void)
         {

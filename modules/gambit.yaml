@@ -106,7 +106,7 @@ scanner:
 enable_redirect: true
 
 redirect_output:
-   CMSSM_I:  output
+   CMSSM_I:  xterm
     
 crapsample:
   point_number: 3
