@@ -43,6 +43,10 @@ BOOSTINC=$(BOOST)
 else
 BOOSTINC=./
 endif
+# Ben: added this because yaml build fails if BOOSTDIR is not defined
+BOOSTDIR=$(BOOSTINC)
+export BOOSTDIR
+
 CCEXTRA= -pipe -pg -std=c++0x 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \

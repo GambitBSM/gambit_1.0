@@ -64,11 +64,12 @@ void beispiel(const char* inifilename)
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();
-
+  
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
   modelClaw.makeGraph();
 
+  
   // Run 100 times
 
   srand (time(NULL));    // initialize random seed
@@ -107,7 +108,7 @@ void beispiel(const char* inifilename)
     }
   
   }
-
+  
 }
 
 int main( int argc, const char* argv[] )
