@@ -22,7 +22,7 @@
 #include "model_functions.hpp"
 #include "extern_claw.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
 
   /// "Existence" function
@@ -103,6 +103,6 @@ namespace GAMBIT
     }
   }
     
-} //end namespace GAMBIT
+} //end namespace Gambit
 
 

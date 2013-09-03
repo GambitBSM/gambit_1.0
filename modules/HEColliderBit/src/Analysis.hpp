@@ -4,7 +4,7 @@
 #include <cmath>
 
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   class Analysis {

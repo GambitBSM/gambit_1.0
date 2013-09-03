@@ -24,7 +24,7 @@
 #include "TEMP_ScannerBit_rollcall.hpp"
 #include "ModelParameters.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
   namespace TEMP_ScannerBit {
     
@@ -60,7 +60,7 @@ namespace GAMBIT {
       // e.g:
       /*
       // Get the ModelParameters functor for the chosen model from the core:
-      safe_ptr<ModelParameters> chosen_model = models::CMSSM_I::Functown::parameters.valuePtr();
+      safe_ptr<ModelParameters> chosen_model = Models::CMSSM_I::Functown::parameters.valuePtr();
       // Might need to run the calculate() function to make sure the parameter
       // keys have been initialised.
       std::vector<str> paramkeys = chosen_model->getKeys();

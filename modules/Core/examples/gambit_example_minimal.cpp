@@ -25,7 +25,7 @@
 #include "yaml_parser.hpp"
 #include "gambit_scan.hpp"
 
-using namespace GAMBIT;
+using namespace Gambit;
 
 void beispiel(const char* inifilename)
 {
@@ -67,7 +67,7 @@ void beispiel(const char* inifilename)
   modelClaw.makeGraph();
  
   //Let's run the scanner!
-  GAMBIT::Scanner::Gambit_Scanner *scanner = new GAMBIT::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();

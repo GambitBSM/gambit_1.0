@@ -11,7 +11,7 @@
 // #include "TCanvas.h"
 
 using namespace Pythia8;
-using namespace GAMBIT;
+using namespace Gambit;
 using namespace fastjet;
 using namespace std;
 
@@ -55,14 +55,14 @@ int main() {
 
   py.init();
 
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
+  Gambit::Analysis* ana = Gambit::mkAnalysis("ATLAS_0LEP");
   ana->init();
 
   for (size_t i = 0; i < 1000; ++i) {
     if (!py.next()) continue;
     cout << py.event.size() << endl;
     
-    GAMBIT::Event evt;
+    Gambit::Event evt;
     fillGambitEvent(py.event, evt);
     
     ana->analyze(evt);

@@ -28,7 +28,7 @@
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
   namespace ExampleBit_A {
 

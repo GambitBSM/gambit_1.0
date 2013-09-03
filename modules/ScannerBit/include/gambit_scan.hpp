@@ -50,7 +50,7 @@
 map[ #func ].first = factory_template <func>::factory; \
 map[ #func ].second = factory_template <func>::remove; \
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Scanner
         {

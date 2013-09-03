@@ -10,7 +10,7 @@
 #include "TCanvas.h"
 
 using namespace Pythia8;
-using namespace GAMBIT;
+using namespace Gambit;
 using namespace fastjet;
 using namespace std;
 

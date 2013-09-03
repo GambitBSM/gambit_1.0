@@ -62,7 +62,7 @@ GAMBIT_MODULE (crapsample)
         /*get inputs from ini-file and inputed vector*/
         IMPORT (point_number, int);                                     //get "point_number" of type "int" from ini-file
         IMPORT (output_file, std::string);                              //get "output_file" of type "std::string" from ini-file
-        IMPORT (like, GAMBIT::Scanner::Function_Base);                  //get scanner functor of purpose specified by "like:" in the ini-file
+        IMPORT (like, Gambit::Scanner::Function_Base);                  //get scanner functor of purpose specified by "like:" in the ini-file
         IMPORT (keys, gt_entry<std::vector<std::string>, 0>);           //gets the first input data of type "std::vector<std::string>"
         IMPORT (ulim, gt_entry<std::vector<double>, 1>);                //gets the second input data of type "std::vector<double>"
         IMPORT (llim, gt_entry<std::vector<double>, 2>);                //gets the third input data of type "std::vector<double>"
@@ -149,7 +149,7 @@ GAMBIT_MODULE (crapsample)
 
 GAMBIT_MODULE (loopsample)
 {
-        using namespace GAMBIT::Scanner;
+        using namespace Gambit::Scanner;
         
         IMPORT_INIFILE (point_number, int);
         IMPORT_INIFILE (output_file, std::string);

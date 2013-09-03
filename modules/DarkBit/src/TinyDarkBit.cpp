@@ -32,14 +32,14 @@
 #include "MSSM_classes.hpp" // Ben: your "DS_MSSMPAR" struct is now in this file (under ModelBit/include)
 
 #include "backend-darksusy.hpp"
-namespace GAMBIT { namespace TinyDarkBit { GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
+namespace Gambit { namespace TinyDarkBit { Gambit::Backend::DarkSUSY myDarkSUSY; } }
 
 //PS This will go in some header file eventually
 // #include <dictionary.hpp>
-// namespace GAMBIT { extern dict masterDict; }
+// namespace Gambit { extern dict masterDict; }
 
 
-namespace GAMBIT {
+namespace Gambit {
 
   namespace TinyDarkBit {
 
@@ -86,7 +86,7 @@ namespace GAMBIT {
       using namespace SafePointers::SLHA;
       result = *Dep::CMSSM_definition * 0.5;
     }
-    void Wstruct (GAMBIT::types::Wstruct &result)
+    void Wstruct (Gambit::types::Wstruct &result)
     {
       using namespace SafePointers::Wstruct;
       result.valA = *Dep::SLHA * 0.5;

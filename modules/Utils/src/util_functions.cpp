@@ -16,7 +16,7 @@
 
 #include <util_functions.hpp>
 
-namespace GAMBIT
+namespace Gambit
 {
 
   /// Split a string into a vector of strings using a delimiter,

@@ -29,7 +29,7 @@
 
 #include "util_classes.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
 
   /// \name Short functions to allow tidy model congruency tests
@@ -59,7 +59,7 @@ namespace GAMBIT
   /// Helper function to test if a string matches a model recognised by GAMBIT
   void verify_model(const str&);
 
-  namespace models
+  namespace Models
   {  
 
     namespace PARENT

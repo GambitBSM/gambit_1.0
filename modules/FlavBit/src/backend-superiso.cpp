@@ -6,7 +6,7 @@
 #include "backend-superiso.hpp"
 #include <dlfcn.h>
 
-namespace GAMBIT{
+namespace Gambit{
 
 	namespace Backend {
 
@@ -83,4 +83,4 @@ namespace GAMBIT{
 	  };
 
 	} // End of backend namespace
-} // End of GAMBIT namespace
+} // End of Gambit namespace

@@ -3,7 +3,7 @@
 
 #include "ModelParameters.hpp"
 
-namespace gambit{
+namespace Gambit{
   /*! \brief pMSSM7 parameter set.
    * Defined names: mu m2 ma tanb mqtild at/m ab/m
    *

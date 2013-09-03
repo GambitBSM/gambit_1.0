@@ -3,7 +3,7 @@
 
 #include "ModelBase.hpp"
 
-namespace gambit {
+namespace Gambit {
   /*! \brief Empty example model.
   //
   // mssmX class. Option nu_dimensions for mssm X may be 24,25, 100, etc..

@@ -21,7 +21,7 @@
 
 #include "modelbit.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
   ModelBit::ModelFunctorClaw modelClaw(Core);
 }

@@ -4,7 +4,7 @@
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   /// Simple jet class, encapsulating a momentum 4-vector and with some extra b-tag info

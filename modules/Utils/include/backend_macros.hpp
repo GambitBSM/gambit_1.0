@@ -44,7 +44,7 @@
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
-namespace GAMBIT                                                            \
+namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
@@ -71,14 +71,14 @@ namespace GAMBIT                                                            \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
-} /* end namespace GAMBIT */                                                \
+} /* end namespace Gambit */                                                \
 
 
 /// Macro for constructing pointers to library variables,
 /// defining simple 'get/set' functions and
 /// wrapping these functions in backend functors.
 #define BE_VARIABLE(NAME, TYPE, SYMBOLNAME)                                 \
-namespace GAMBIT                                                            \
+namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
@@ -98,7 +98,7 @@ namespace GAMBIT                                                            \
       namespace Functown                                                    \
       {                                                                     \
         auto get##NAME = makeBackendFunctor<TYPE>(                          \
-         GAMBIT::Backends::BACKENDNAME::get##NAME,                          \
+         Gambit::Backends::BACKENDNAME::get##NAME,                          \
          STRINGIFY(NAME),                                                   \
          STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ),           \
          STRINGIFY(TYPE),                                                   \
@@ -106,7 +106,7 @@ namespace GAMBIT                                                            \
          STRINGIFY(VERSION) );                                              \
                                                                             \
         auto set##NAME = makeBackendFunctor<void>(                          \
-         GAMBIT::Backends::BACKENDNAME::set##NAME,                          \
+         Gambit::Backends::BACKENDNAME::set##NAME,                          \
          STRINGIFY(NAME),                                                   \
          STRINGIFY( CAT(BACKENDNAME,_##set##NAME##_capability) ),           \
          "void",                                                            \
@@ -133,7 +133,7 @@ namespace GAMBIT                                                            \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
-} /* end namespace GAMBIT */                                                \
+} /* end namespace Gambit */                                                \
 
 
 /// \name Wrapping macros for backend-defined functions
@@ -155,7 +155,7 @@ namespace GAMBIT                                                            \
 #define BE_FUNCTION(...) VARARG(BE_FUNCTION, __VA_ARGS__)
 
 #define BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)      \
-namespace GAMBIT                                                            \
+namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
@@ -171,7 +171,7 @@ namespace GAMBIT                                                            \
       namespace Functown                                                    \
       {                                                                     \
         auto NAME = makeBackendFunctor<TYPE>(                               \
-         GAMBIT::Backends::BACKENDNAME::NAME,                               \
+         Gambit::Backends::BACKENDNAME::NAME,                               \
          STRINGIFY(NAME),                                                   \
          CAPABILITY,                                                        \
          STRINGIFY(TYPE),                                                   \
@@ -200,7 +200,7 @@ namespace GAMBIT                                                            \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
-} /* end namespace GAMBIT */                                                \
+} /* end namespace Gambit */                                                \
 /// @}
 
 
@@ -222,7 +222,7 @@ namespace GAMBIT                                                            \
 #define BE_CONV_FUNCTION(...) VARARG(BE_CONV_FUNCTION, __VA_ARGS__)
 
 #define BE_CONV_FUNCTION_IMPL(NAME, TYPE, CAPABILITY)                       \
-namespace GAMBIT                                                            \
+namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
@@ -233,7 +233,7 @@ namespace GAMBIT                                                            \
       namespace Functown                                                    \
       {                                                                     \
         auto NAME = makeBackendFunctor<TYPE>(                               \
-         GAMBIT::Backends::BACKENDNAME::NAME,                               \
+         Gambit::Backends::BACKENDNAME::NAME,                               \
          STRINGIFY(NAME),                                                   \
          CAPABILITY,                                                        \
          STRINGIFY(TYPE),                                                   \
@@ -253,7 +253,7 @@ namespace GAMBIT                                                            \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
-} /* end namespace GAMBIT */                                                \
+} /* end namespace Gambit */                                                \
 /// @}
 
 

@@ -101,7 +101,7 @@ parameters;
 #endif
 
 
-namespace GAMBIT {
+namespace Gambit {
 
 	using std::cout;
 	using std::endl; // SUFit logger does this?

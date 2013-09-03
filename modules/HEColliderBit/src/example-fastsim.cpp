@@ -8,13 +8,13 @@ int main () {
   sim.init(ACERDET);
 
   /// @todo This new'ing is silly... can we rework FastSim to use references?
-  GAMBIT::Particle* p = new GAMBIT::Particle(10.0, 10.0, 10.0, 17.320826, 13);
-  GAMBIT::Particle* p2 = new GAMBIT::Particle(10.0, 10.0, 10.0, 17.320826, 13);
+  Gambit::Particle* p = new Gambit::Particle(10.0, 10.0, 10.0, 17.320826, 13);
+  Gambit::Particle* p2 = new Gambit::Particle(10.0, 10.0, 10.0, 17.320826, 13);
 
   /// @todo Why not p->mom().m2() in the second case?
   cout << "p " << p->mom().p2() << ", " << p->mom().E2() - p->mom().p2() << endl;
 
-  vector<GAMBIT::Particle*> list;
+  vector<Gambit::Particle*> list;
   list.push_back(p);
   list.push_back(p2);
   sim.setMuons(list);

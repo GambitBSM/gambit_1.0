@@ -49,7 +49,7 @@
 // Initial runtime estimate
 #define FUNCTORS_RUNTIME_INIT 1000
 
-namespace GAMBIT
+namespace Gambit
 {
 
   // =====================================

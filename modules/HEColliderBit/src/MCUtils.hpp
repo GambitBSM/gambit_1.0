@@ -9,7 +9,7 @@
 #include "Py8Utils.hpp"
 
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   /// @name PID stuff

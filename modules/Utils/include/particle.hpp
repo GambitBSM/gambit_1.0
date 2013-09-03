@@ -8,7 +8,7 @@
 #include <cmath>
 
 
-namespace GAMBIT {
+namespace Gambit {
 	
 	using std::cout;
 	using std::endl; // logger does this?
@@ -111,6 +111,6 @@ namespace GAMBIT {
 	  
   } // Backend namespace ending
 
-} // GAMBIT namespace ending
+} // Gambit namespace ending
 
 #endif

@@ -11,7 +11,7 @@
 #include <yaml-cpp/yaml.h>
 #include <yaml_parser.hpp>
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace IniParser
   {

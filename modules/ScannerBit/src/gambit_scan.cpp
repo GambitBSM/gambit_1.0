@@ -25,7 +25,7 @@
 #include <gambit_scan.hpp>
 #include <module_interface.hpp>
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Scanner
         { 

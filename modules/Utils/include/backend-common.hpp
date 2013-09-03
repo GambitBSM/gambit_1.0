@@ -17,7 +17,7 @@
 #include <dlfcn.h>
 #include "FortranFunctor.h"
 
-namespace GAMBIT {
+namespace Gambit {
 
 	using std::cout;
 	using std::endl; // logger does this?

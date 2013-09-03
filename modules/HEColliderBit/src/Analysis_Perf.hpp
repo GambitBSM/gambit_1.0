@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   class Analysis_Perf : public Analysis {

@@ -131,7 +131,7 @@
 /// Redirection of \link START_MODULE() START_MODULE\endlink when invoked from 
 /// within the core.
 #define CORE_START_MODULE                                                      \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
@@ -165,7 +165,7 @@
       std::map<str, bool(*)()> map_bools;                                      \
       std::map<str, bool(*)(str)> condit_bools;                                \
       std::map<str, std::map<str, bool(*)()> >model_bools;                     \
-      GAMBIT::dict moduleDict;                                                 \
+      Gambit::dict moduleDict;                                                 \
                                                                                \
       /* All module observables/likelihoods, their dependencies, required      \
       quantities from backends, and their types, as strings */                 \
@@ -355,7 +355,7 @@
 /// invoked from within the core.
 #define CORE_START_CAPABILITY                                                  \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add CAPABILITY to the global set of things that can be calculated*/     \
@@ -376,7 +376,7 @@
 /// Redirection of START_FUNCTION(TYPE) when invoked from within the core.
 #define CORE_START_FUNCTION(TYPE)                                              \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
@@ -521,7 +521,7 @@
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE)                                             \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add DEP to global set of tags of recognised module capabilities/deps */ \
@@ -560,7 +560,7 @@
 /// Redirection of ALLOW_MODEL when invoked from within the core.
 #define CORE_ALLOWED_MODEL(MODEL)                                              \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add MODEL to global set of tags of recognised models */                 \
@@ -652,7 +652,7 @@
 /// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.
 #define CORE_START_BACKEND_REQ(TYPE)                                           \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add BACKEND_REQ to global set of recognised backend func tags */        \
@@ -721,7 +721,7 @@
 /// core.
 #define CORE_BACKEND_OPTION(BACKEND,VERSTRING)                                 \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add BACKEND to global set of recognised backend tags */                 \
@@ -753,7 +753,7 @@
 /// the core.
 #define CORE_START_CONDITIONAL_DEPENDENCY(TYPE)                                \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add DEP to global set of tags of recognised module capabilities/deps */ \
@@ -785,7 +785,7 @@
 /// invoked from within the core.
 #define CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)                  \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add BACKEND to global set of recognised backend tags */                 \
@@ -843,7 +843,7 @@
 /// the core.
 #define CORE_ACTIVATE_DEP_MODEL(MODELSTRING)                                   \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     namespace MODULE                                                           \

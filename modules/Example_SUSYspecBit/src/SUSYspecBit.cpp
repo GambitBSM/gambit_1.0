@@ -24,7 +24,7 @@
 #include "SUSYspecBit_rollcall.hpp"
 #include "MSSM_classes.hpp" // Contains definition of MSSMspecQ type.
 
-namespace GAMBIT {
+namespace Gambit {
 
   namespace SUSYspecBit {
     

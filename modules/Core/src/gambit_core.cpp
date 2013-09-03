@@ -16,7 +16,7 @@
 
 #include "gambit_core.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
 
 }

@@ -33,7 +33,7 @@
 #include <sstream>
 #include "logs.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
   class ModelParameters;
   typedef shared_ptr<ModelParameters> ModelParametersPtr;

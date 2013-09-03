@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <vector>
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   /// @name Numerical helpers

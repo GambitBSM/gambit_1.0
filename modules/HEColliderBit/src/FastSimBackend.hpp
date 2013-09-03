@@ -43,7 +43,7 @@
 #include "FastSim.hpp"
 
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace HEColliderBit
   {

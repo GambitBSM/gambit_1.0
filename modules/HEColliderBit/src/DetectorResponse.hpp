@@ -1,8 +1,8 @@
 #include "Particle.hpp"
 #include "TRandom.h"
 
-/// @todo Actually this whole file should be *in* namespace GAMBIT
-using namespace GAMBIT;
+/// @todo Actually this whole file should be *in* namespace Gambit
+using namespace Gambit;
 
 
 // the base class of the Detector Response

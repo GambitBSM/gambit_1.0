@@ -5,7 +5,7 @@
 #include "common_return_types.hpp"
 #include "logs.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
   /*! \brief virtual base class for model parameters.
   //

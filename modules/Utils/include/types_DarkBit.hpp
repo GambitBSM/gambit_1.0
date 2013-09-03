@@ -21,7 +21,7 @@
 #ifndef DARKBIT_TYPES
 #define DARKBIT_TYPES
 
-namespace GAMBIT{
+namespace Gambit{
   namespace types{
     // A simple example
     struct Wstruct

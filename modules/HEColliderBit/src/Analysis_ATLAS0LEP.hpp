@@ -8,7 +8,7 @@
 #include "TH1F.h"
 #endif
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   using namespace std;

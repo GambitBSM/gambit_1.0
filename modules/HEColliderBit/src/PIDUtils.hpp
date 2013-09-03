@@ -6,7 +6,7 @@
 #include "PIDCodes.hpp"
 #include "MathUtils.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
   namespace PID {
 
 

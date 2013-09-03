@@ -23,7 +23,7 @@
 #include <ModelParameters.hpp>
 #include <sstream>
 
-namespace GAMBIT
+namespace Gambit
 {
   /// Functor print function templates and specialisations
   ///

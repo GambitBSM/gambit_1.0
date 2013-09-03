@@ -53,7 +53,7 @@ struct hwevnt_type{
 BE_F_VARIABLE(HWEVNT, hwevnt, , hwevnt_type)
 
 
-namespace GAMBIT {
+namespace Gambit {
 	
 	using std::cout;
 	using std::endl; // logger does this?
@@ -118,6 +118,6 @@ namespace GAMBIT {
 	  
   } // Backend namespace ending
 
-} // GAMBIT namespace ending
+} // Gambit namespace ending
 
 #endif

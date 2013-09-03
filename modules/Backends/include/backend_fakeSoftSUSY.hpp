@@ -26,7 +26,7 @@
 
 /* LOAD_LIBRARY # Fake library so don't need this */
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace Backends
   {
@@ -60,7 +60,7 @@ namespace GAMBIT
       
     } /* end namespace BACKENDNAME */                                          
   } /* end namespace Backends */                                                
-} /* end namespace GAMBIT */                                                   
+} /* end namespace Gambit */                                                   
 
 
 /* Now register any convenience functions and wrap them in functors. 

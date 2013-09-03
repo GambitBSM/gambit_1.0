@@ -104,27 +104,27 @@ int main()
   int counter;
 
   // For event generation
-  GAMBIT::HEColliderBit::SLHAConfig* pythia8_input;
-  GAMBIT::HEColliderBit::Pythia8Backend* myPythia;
-  GAMBIT::HEColliderBit::Delphes3Backend* myDelphes;
-  myDelphes = new GAMBIT::HEColliderBit::Delphes3Backend(delphesConfigFile);
+  Gambit::HEColliderBit::SLHAConfig* pythia8_input;
+  Gambit::HEColliderBit::Pythia8Backend* myPythia;
+  Gambit::HEColliderBit::Delphes3Backend* myDelphes;
+  myDelphes = new Gambit::HEColliderBit::Delphes3Backend(delphesConfigFile);
 
   // For event storage
   Pythia8::Event genEvent;
-  GAMBIT::Event recoEvent;
+  Gambit::Event recoEvent;
 
   cout << "\n\n Testing parallelized HECollider simulation" << endl;
 
   /// @todo Generalise to a vector of (vector of) analyses, populated by names
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP_7TeV");
+  Gambit::Analysis* ana = Gambit::mkAnalysis("ATLAS_0LEP_7TeV");
 
   ana->init();
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE)
   {
     // Initialize the backends
-    pythia8_input = new GAMBIT::HEColliderBit::SLHAConfig(12345 + 17 * omp_get_thread_num(), slhaFileName);
-    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(*pythia8_input);
+    pythia8_input = new Gambit::HEColliderBit::SLHAConfig(12345 + 17 * omp_get_thread_num(), slhaFileName);
+    myPythia = new Gambit::HEColliderBit::Pythia8Backend(*pythia8_input);
 
     // For a reasonable output
     temp = "tester_thread"+boost::lexical_cast<string>(omp_get_thread_num())+".dat";

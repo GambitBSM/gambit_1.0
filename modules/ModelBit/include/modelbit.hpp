@@ -40,7 +40,7 @@
 #include "gambit_core.hpp"
 #include "util_classes.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
 
   namespace ModelBit

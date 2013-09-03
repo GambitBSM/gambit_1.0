@@ -15,7 +15,7 @@
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace IniParser
   {
@@ -49,7 +49,7 @@ namespace GAMBIT
 
 // Rules for inifile --> Structs mapping
 namespace YAML {
-  using namespace GAMBIT::IniParser::Types;
+  using namespace Gambit::IniParser::Types;
   template<> struct convert<Observable>
   {
     static bool decode(const Node& node, Observable& rhs)
@@ -90,7 +90,7 @@ namespace YAML {
   // };
 }
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace IniParser
   {

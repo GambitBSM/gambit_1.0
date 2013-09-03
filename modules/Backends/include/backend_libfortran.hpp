@@ -30,7 +30,7 @@ BE_FUNCTION(externalFunction, double, (int&), "externalfunction_", "externalFunc
 
 
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace Backends
   {
@@ -41,7 +41,7 @@ namespace GAMBIT
 
     } /* end namespace BACKENDNAME */                                          
   } /* end namespace Backends */                                                
-} /* end namespace GAMBIT */                                                   
+} /* end namespace Gambit */                                                   
 
 
 //BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")

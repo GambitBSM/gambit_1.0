@@ -6,7 +6,7 @@
 #include <boost/serialization/vector.hpp>
 #include <algorithm>
 
-namespace GAMBIT {
+namespace Gambit {
 
 
 

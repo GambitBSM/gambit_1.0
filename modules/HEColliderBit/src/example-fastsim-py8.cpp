@@ -10,7 +10,7 @@
 // GAMBIT
 #include "Particle.hpp"
 #include "FastSim.hpp"
-using namespace GAMBIT;
+using namespace Gambit;
 
 
 //////////////////////////////////////////////////

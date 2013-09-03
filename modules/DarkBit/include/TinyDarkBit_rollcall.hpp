@@ -60,7 +60,7 @@ START_MODULE
   #define CAPABILITY Wstruct
   START_CAPABILITY 
     #define FUNCTION Wstruct
-    START_FUNCTION(GAMBIT::types::Wstruct)
+    START_FUNCTION(Gambit::types::Wstruct)
     DEPENDENCY(SLHA, double) 
     #undef FUNCTION
   #undef CAPABILITY
@@ -88,7 +88,7 @@ START_MODULE
     #define FUNCTION omega_DM
     START_FUNCTION(double)
     DEPENDENCY(Weff, double)
-    DEPENDENCY(Wstruct, GAMBIT::types::Wstruct)
+    DEPENDENCY(Wstruct, Gambit::types::Wstruct)
     #undef FUNCTION
   #undef CAPABILITY
 

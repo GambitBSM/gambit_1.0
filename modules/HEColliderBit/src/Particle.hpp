@@ -4,7 +4,7 @@
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info

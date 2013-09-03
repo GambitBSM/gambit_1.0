@@ -45,7 +45,7 @@
 using namespace std;
 
 
-namespace GAMBIT {
+namespace Gambit {
   namespace HEColliderBit {
 
     struct SubprocessGroup {
@@ -82,12 +82,12 @@ int main()
   const int NEVENTS = 10000;
 
   // For event generation
-  GAMBIT::HEColliderBit::Pythia8Backend* myPythia;
-  GAMBIT::HEColliderBit::Delphes3Backend* myDelphes = new GAMBIT::HEColliderBit::Delphes3Backend(delphesConfigFile);
+  Gambit::HEColliderBit::Pythia8Backend* myPythia;
+  Gambit::HEColliderBit::Delphes3Backend* myDelphes = new Gambit::HEColliderBit::Delphes3Backend(delphesConfigFile);
 
   // For event storage
   Pythia8::Event genEvent;
-  GAMBIT::Event recoEvent;
+  Gambit::Event recoEvent;
 
   cout << endl << "Running parallelized HECollider simulation" << endl << endl;
 
@@ -96,32 +96,32 @@ int main()
   /// @todo Use fast lookup of interpolated NLO subprocess cross-sections to do this
   /// @note Hard-coded for now, so I can do *something*
   /// @todo Hard coding of nthread assignment calc: yuck, yuck, yuck! Generalise to containers of subprocesses
-  map<string, GAMBIT::HEColliderBit::SubprocessGroup> sp_groups;
+  map<string, Gambit::HEColliderBit::SubprocessGroup> sp_groups;
 
   /// @note The old SubprocessGroup constructor calls are commented out below the new inputs
   /// @note Also, the new constructor calls exclude third generation squarks
-  sp_groups["g~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.4, 
+  sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4, 
                     {{1000021}}, 
                     {{1000021, 1000001, 1000002, 1000003, 1000004, 
                       2000001, 2000002, 2000003, 2000004}});
-  //sp_groups["g~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
+  //sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
 
-  sp_groups["q~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.2, 
+  sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2, 
                     {{1000001, 1000002, 1000003, 1000004, 
                       2000001, 2000002, 2000003, 2000004}}, 
                     {{1000001, 1000002, 1000003, 1000004, 
                       2000001, 2000002, 2000003, 2000004}});
-  //sp_groups["q~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
+  //sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
 
-  sp_groups["X~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.02, 
+  sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02, 
                     {{1000021, 1000001, 1000002, 1000003, 1000004, 
                       2000001, 2000002, 2000003, 2000004}}, 
                     {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
-  //sp_groups["X~"] = GAMBIT::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+  //sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
 
   // Bind subprocesses to analysis pointers
   for (auto& sp_group : sp_groups)
-    sp_group.second.add_analysis(GAMBIT::mkAnalysis("ATLAS_0LEP"));
+    sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_0LEP"));
 
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
@@ -138,7 +138,7 @@ int main()
   const int NUM_THREADS = omp_get_max_threads();
   cout << "Total #threads = " << NUM_THREADS << endl;
   const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
-  vector<GAMBIT::HEColliderBit::SubprocessGroup> thread_cfgs;
+  vector<Gambit::HEColliderBit::SubprocessGroup> thread_cfgs;
   thread_cfgs.reserve(NUM_THREADS);
   double total_xsec = 0;
   for (auto& sp_group : sp_groups) total_xsec += sp_group.second.xsec;
@@ -153,7 +153,7 @@ int main()
   {
     // Py8 backend process configuration
     const int NTHREAD = omp_get_thread_num();
-    myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(NTHREAD);
+    myPythia = new Gambit::HEColliderBit::Pythia8Backend(NTHREAD);
     myPythia->set("SLHA:file", slhaFileName);
     myPythia->set("SUSY:idVectA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVectB", thread_cfgs[NTHREAD].particlesInProcess2);
@@ -179,7 +179,7 @@ int main()
         myDelphes->processEvent(genEvent, recoEvent);
       }
       // Run all attached analyses
-      for (shared_ptr<GAMBIT::Analysis> ana : thread_cfgs[NTHREAD].analyses)
+      for (shared_ptr<Gambit::Analysis> ana : thread_cfgs[NTHREAD].analyses)
         ana->analyze(recoEvent);
 
       #ifdef ARCHIVE

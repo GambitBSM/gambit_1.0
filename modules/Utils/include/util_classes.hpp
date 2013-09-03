@@ -29,7 +29,7 @@
 #include <string>
 #include <iostream>
 
-namespace GAMBIT
+namespace Gambit
 {
 
   /// Shorthand for a standard string

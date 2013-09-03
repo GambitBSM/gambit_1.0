@@ -32,7 +32,7 @@
 #include <graphs.hpp>
 #include <dlfcn.h>
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Module
         {

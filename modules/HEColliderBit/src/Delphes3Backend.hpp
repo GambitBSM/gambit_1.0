@@ -43,7 +43,7 @@
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace HEColliderBit
   {

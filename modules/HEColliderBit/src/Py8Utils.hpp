@@ -13,7 +13,7 @@
 #endif
 
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   /// @name Converters to/from Pythia8's native 4-vector
@@ -163,8 +163,8 @@ namespace GAMBIT {
 
 
 
-  /// Fill a GAMBIT::Event from a Pythia8 event
-  inline void fillGambitEvent(const Pythia8::Event& pevt, GAMBIT::Event& gevt) {
+  /// Fill a Gambit::Event from a Pythia8 event
+  inline void fillGambitEvent(const Pythia8::Event& pevt, Gambit::Event& gevt) {
     Pythia8::Vec4 ptot;
     std::vector<fastjet::PseudoJet> jetparticles;
     std::vector<fastjet::PseudoJet> bhadrons, taus;

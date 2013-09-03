@@ -65,14 +65,14 @@ BE_FUNCTION(dsanwx, double, (double&), "dsanwx_", "dsanwx")
 /* We have now created the following:
  *
  * - Function pointers
- * GAMBIT::Backends::LibFirst::initialize       type: void (*)(int)
- * GAMBIT::Backends::LibFirst::someFunction     type: void (*)()
- * GAMBIT::Backends::LibFirst::returnResult     type: double (*)()
+ * Gambit::Backends::LibFirst::initialize       type: void (*)(int)
+ * Gambit::Backends::LibFirst::someFunction     type: void (*)()
+ * Gambit::Backends::LibFirst::returnResult     type: double (*)()
  *
  * - Functors
- * GAMBIT::Backends::LibFirst::Functown::initialize       type: GAMBIT::backend_functor<void,int>
- * GAMBIT::Backends::LibFirst::Functown::someFunction     type: GAMBIT::backend_functor<void>
- * GAMBIT::Backends::LibFirst::Functown::returnResult     type: GAMBIT::backend_functor<double>  */
+ * Gambit::Backends::LibFirst::Functown::initialize       type: Gambit::backend_functor<void,int>
+ * Gambit::Backends::LibFirst::Functown::someFunction     type: Gambit::backend_functor<void>
+ * Gambit::Backends::LibFirst::Functown::returnResult     type: Gambit::backend_functor<double>  */
 
 
 /* Syntax for BE_VARIABLE:
@@ -98,16 +98,16 @@ BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_")
 /* We have now created the following:
  *
  * - Pointers
- * GAMBIT::Backends::LibFirst::SomeInt      type: int*
- * GAMBIT::Backends::LibFirst::SomeDouble   type: double*
+ * Gambit::Backends::LibFirst::SomeInt      type: int*
+ * Gambit::Backends::LibFirst::SomeDouble   type: double*
  *
  * - Functions
- * GAMBIT::Backends::LibFirst::getSomeInt   type: int ()    
- * GAMBIT::Backends::LibFirst::setSomeInt   type: void (int)
+ * Gambit::Backends::LibFirst::getSomeInt   type: int ()    
+ * Gambit::Backends::LibFirst::setSomeInt   type: void (int)
  *
  * - Functors
- * GAMBIT::Backends::LibFirst::Functown::getSomeInt   type: GAMBIT::backend_functor<int>
- * GAMBIT::Backends::LibFirst::Functown::setSomeInt   type: GAMBIT::backend_functor<void,int>  */
+ * Gambit::Backends::LibFirst::Functown::getSomeInt   type: Gambit::backend_functor<int>
+ * Gambit::Backends::LibFirst::Functown::setSomeInt   type: Gambit::backend_functor<void,int>  */
 
 
 /* At this point we have a minimal interface to the loaded library.
@@ -116,7 +116,7 @@ BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_")
  * registred/wrapped via the macro BE_CONV_FUNCTION (see below). */
 
 
-// namespace GAMBIT
+// namespace Gambit
 // {
 //   namespace Backends
 //   {
@@ -134,7 +134,7 @@ BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_")
 // 
 //     } /* end namespace BACKENDNAME */                                          
 //   } /* end namespace Backends */                                                
-// } /* end namespace GAMBIT */                                                   
+// } /* end namespace Gambit */                                                   
 
 
 /* Now register any convenience functions and wrap them in functors. 

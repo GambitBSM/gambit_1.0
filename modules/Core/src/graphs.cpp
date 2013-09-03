@@ -26,7 +26,7 @@
 
 #define OMEGA_VERTEXID 52314768
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace Graphs
   {

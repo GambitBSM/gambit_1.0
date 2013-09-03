@@ -20,7 +20,7 @@
 #ifndef __MSSM_classes_hpp__
 #define __MSSM_classes_hpp__
 
-namespace GAMBIT
+namespace Gambit
 {
   /* Moved to common_return_types
   /// A placeholder "MSSM" low-energy spectrum object. Defined at scale Q.

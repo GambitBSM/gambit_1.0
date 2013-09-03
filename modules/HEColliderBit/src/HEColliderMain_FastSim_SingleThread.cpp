@@ -45,27 +45,27 @@ int main()
   int counter;
 
   // For event generation
-  GAMBIT::HEColliderBit::cmndFileName *pythia8_input;
-  GAMBIT::HEColliderBit::Pythia8Backend *myPythia;
-  GAMBIT::HEColliderBit::FastSimBackend *myFastSim;
-  myFastSim = new GAMBIT::HEColliderBit::FastSimBackend(myDetector);
+  Gambit::HEColliderBit::cmndFileName *pythia8_input;
+  Gambit::HEColliderBit::Pythia8Backend *myPythia;
+  Gambit::HEColliderBit::FastSimBackend *myFastSim;
+  myFastSim = new Gambit::HEColliderBit::FastSimBackend(myDetector);
 
   // For event storage
   Pythia8::Event genEvent;
-  GAMBIT::Event recoEvent;
+  Gambit::Event recoEvent;
 
   cout<<"\n\n Now Testing HECollider FastSimulation:\n\n";
 
   /// @todo Generalise to a vector of analyses, populated by names
-//  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("ATLAS_0LEP");
-  GAMBIT::Analysis* ana = GAMBIT::mkAnalysis("PERF");
+//  Gambit::Analysis* ana = Gambit::mkAnalysis("ATLAS_0LEP");
+  Gambit::Analysis* ana = Gambit::mkAnalysis("PERF");
 
   // at the moment the ouptut file for the analysis is hardwired
   ana->init();
 
 
-  pythia8_input = new GAMBIT::HEColliderBit::cmndFileName(12345,"cmndpythia_zee.cmnd");
-  myPythia = new GAMBIT::HEColliderBit::Pythia8Backend(*pythia8_input);
+  pythia8_input = new Gambit::HEColliderBit::cmndFileName(12345,"cmndpythia_zee.cmnd");
+  myPythia = new Gambit::HEColliderBit::Pythia8Backend(*pythia8_input);
 
   // For a reasonable output
 

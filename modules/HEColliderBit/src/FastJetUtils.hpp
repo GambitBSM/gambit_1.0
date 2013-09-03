@@ -6,7 +6,7 @@
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   /// @name Converters to/from the Gambit 4-vector

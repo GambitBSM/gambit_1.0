@@ -12,7 +12,7 @@
  *       into the actual exception objects, by adding new member functions to the exception classes and
  *       setting the "what" internal string at construction (although it should have a class default).
  *
- * Declares the namespace GAMBIT::exceptions, defining methods as well the user macro:
+ * Declares the namespace Gambit::exceptions, defining methods as well the user macro:
  *
  * GAMBIT_THROW_EXCEPTION(e);
  *
@@ -24,7 +24,7 @@
  *
  * Example use:
  * \code
- * using namespace GAMBIT::exceptions;
+ * using namespace Gambit::exceptions;
  * GAMBIT_THROW_EXCEPTION(e_unphysical << i_text("mass is negative"));
  * \endcode
  *
@@ -32,11 +32,11 @@
  * adds various debug information to e before throwing.
  */
 #define GAMBIT_THROW_EXCEPTION(e) do{                                                             \
-    ::GAMBIT::exceptions::Compiletime_Cast_Test< ::GAMBIT::exceptions::GAMBIT_exception_base>(e); \
+    ::Gambit::exceptions::Compiletime_Cast_Test< ::Gambit::exceptions::GAMBIT_exception_base>(e); \
     BOOST_THROW_EXCEPTION(e) ; }while(0)
 
 
-namespace GAMBIT{
+namespace Gambit{
 
   /*! \brief GAMBIT exceptions
    *
@@ -123,7 +123,7 @@ namespace GAMBIT{
      *
      * Example use:
      * \code
-     * using namespace GAMBIT::exceptions;
+     * using namespace Gambit::exceptions;
      * GAMBIT_THROW_EXCEPTION(e_unphysical << i_trace_do() << i_text("mass is negative"));
      * \endcode
      */

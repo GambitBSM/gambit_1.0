@@ -20,7 +20,7 @@
 
 #include "modelbit.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
   extern ModelBit::ModelFunctorClaw modelClaw;
 }

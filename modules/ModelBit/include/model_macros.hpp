@@ -44,8 +44,8 @@
 /// same basic machinery this creates.
 // Removed for now
 //#define START_MODEL                                                          \
-  namespace GAMBIT {                                                           \
-    namespace models {                                                         \
+  namespace Gambit {                                                           \
+    namespace Models {                                                         \
       namespace MODEL {                                                        \
                                                                                \
         /* Model name */                                                       \
@@ -58,7 +58,7 @@
 
 #define START_PARAMETERISATION                                                 \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
@@ -66,7 +66,7 @@
     /*FIXME PS: there is some duplication here -- we only really need to use the one tag as follows: */ \
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL,_,PARAMETERISATION))        \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
                                                                                \
       namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
@@ -204,7 +204,7 @@
                                                                                \
   DEFINEPAR(PARAMETER)                                                         \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* lifted straight: need this or something similar?                        \
@@ -215,7 +215,7 @@
     ADD_TAG_IN_CURRENT_NAMESPACE(PARAMETER)                                    \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAPABILITY)                                   \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
                                                                                \
       namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
@@ -250,10 +250,10 @@
                                                                                \
   /* Define the actual parameter setting function, now that we have the
      functor and its dependency */                                             \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
                                                                                \
       namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
@@ -281,10 +281,10 @@
 // need them if a specific capability is wanted, which MAP_TO_CAPABILITY
 // still provides.
 #define DEFINEPAR(PARAMETER)                                                   \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
                                                                                \
       namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
@@ -350,14 +350,14 @@
 // define the function.
 #define INTERPRET_AS_X__BEGIN(MODEL_X)                                         \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add tags which specify MODEL_X's parameter object as a CAPABILITY of
        the current model */                                                    \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL_X,_,parameters))                  \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
                                                                                \
       namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
@@ -397,10 +397,10 @@
 // macro like this the compiler can't see what line the user's error occurs on.
 #define INTERPRET_AS_X__DEFINE(MODEL_X,FUNC)                                   \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
                                                                                \
       namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
@@ -425,7 +425,7 @@
             "at behest of model " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))   \
             <<endl;                                                            \
                                                                                \
-            target_parameters._definePars(models::MODEL_X::parameterkeys);     \
+            target_parameters._definePars(Models::MODEL_X::parameterkeys);     \
             CAT_3(MODEL_X,_,parameters_isinitialised) = true;                  \
           }                                                                    \
           /* Run user-supplied code (which must take target_parameters as an
@@ -469,17 +469,17 @@
 
 /// Need this piece BEFORE the user code (so that the Dependencies and
 /// Safepointers namespaces exist for use in their code)
-/// Make sure to put it inside the GAMBIT::models::MODULE namespace, and don't
+/// Make sure to put it inside the Gambit::Models::MODULE namespace, and don't
 /// forget to first ADD_TAG_IN_CURRENT_NAMESPACE(DEP) inside the GAMBIT
 /// namespace
 #define MODEL_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)                          \
                                                                                \
-  namespace GAMBIT {                                                           \
+  namespace Gambit {                                                           \
                                                                                \
     /* Add DEP to global set of tags of recognised module capabilities/deps */ \
     ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
                                                                                \
-    namespace models                                                           \
+    namespace Models                                                           \
     {                                                                          \
      namespace MODULE                                                          \
      {                                                                         \

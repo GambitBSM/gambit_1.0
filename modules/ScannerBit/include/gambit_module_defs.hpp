@@ -23,7 +23,7 @@
 
 using namespace std;
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Module
         {
@@ -132,9 +132,9 @@ namespace GAMBIT
         namespace Scanner
         {
                 /*Specialized types*/
-                typedef GAMBIT::Module::gt_entry<std::vector<std::string>, 0> gambitKeys;                                                    
-                typedef GAMBIT::Module::gt_entry<std::vector<double>, 1> gambitUpperLimits;                                                    
-                typedef GAMBIT::Module::gt_entry<std::vector<double>, 2> gambitLowerLimits;
+                typedef Gambit::Module::gt_entry<std::vector<std::string>, 0> gambitKeys;                                                    
+                typedef Gambit::Module::gt_entry<std::vector<double>, 1> gambitUpperLimits;                                                    
+                typedef Gambit::Module::gt_entry<std::vector<double>, 2> gambitLowerLimits;
                 
                 /*Generic Functor*/
                 class Function_Base

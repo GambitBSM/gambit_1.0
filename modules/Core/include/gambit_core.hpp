@@ -23,7 +23,7 @@
 #include "util_classes.hpp"
 #include "functors.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
  
   /// Master driver class for a GAMBIT scan.

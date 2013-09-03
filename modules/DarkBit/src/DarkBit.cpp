@@ -33,18 +33,18 @@
 
 //PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
 // #include "backend-darksusy.hpp"
-// namespace GAMBIT { namespace DarkBit { extern GAMBIT::Backend::DarkSUSY myDarkSUSY; } }
+// namespace Gambit { namespace DarkBit { extern Gambit::Backend::DarkSUSY myDarkSUSY; } }
 
 
-namespace GAMBIT {
+namespace Gambit {
 
   namespace DarkBit {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-    void RD_spectrum_SUSY(GAMBIT::types::RDspectype &result)
+    void RD_spectrum_SUSY(Gambit::types::RDspectype &result)
     {
-      GAMBIT::types::RDspectype myres;
+      Gambit::types::RDspectype myres;
       int copr[0];           // flag for which coannihilation processes to include
       double mcofr;          // maximal coannihilating particle mass
       int colist[26],lcolist; //potential coannihilating partilces
@@ -161,11 +161,11 @@ namespace GAMBIT {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-    void RD_thresholds_resonances_ordered(GAMBIT::types::RDrestype &result)
+    void RD_thresholds_resonances_ordered(Gambit::types::RDrestype &result)
     {
       using namespace SafePointers::RD_thresholds_resonances_ordered;
 //read out location and number of resonances and thresholds from RDspectrum
-      GAMBIT::types::RDspectype specres = *Dep::RD_spectrum;
+      Gambit::types::RDspectype specres = *Dep::RD_spectrum;
       result.n_res=specres.n_res;
       result.n_thr=specres.n_thr;
       for (int i=0; i<result.n_res; i++) {
@@ -215,7 +215,7 @@ namespace GAMBIT {
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
 //read out location and number of resonances and thresholds from RDspectrum
-      GAMBIT::types::RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered::RD_spectrum$
+      Gambit::types::RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered::RD_spectrum$
       double mwimp=specres.E_thr[0]/2;
 
 // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
@@ -275,7 +275,7 @@ namespace GAMBIT {
 
 //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       using namespace SafePointers::RD_oh2_general;
-      GAMBIT::types::RDrestype myres = *Dep::RD_thresholds_resonances;
+      Gambit::types::RDrestype myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.E_thr[0]/2;
 
       for (int i=0; i<myres.n_res; i++) {
@@ -381,7 +381,7 @@ namespace GAMBIT {
 //////////////////////////////////////////////////////////////////////////
     void RD_test_out(double &result)
     {
-//      GAMBIT::types::RDspectype specres = GET_DEP( RD_test_out::RD_spectrum);
+//      Gambit::types::RDspectype specres = GET_DEP( RD_test_out::RD_spectrum);
 
 //      std::cout << "mchi =" << specres.mass_co[0] << std::endl;
 //      std::cout << "dof chi =" << specres.dof_co[0] << std::endl;

@@ -24,9 +24,9 @@
 
 #include "Pythia.h"
 
-// #define PYTHIA8BACKEND_PRIVATE GAMBIT::HEColliderBit::Pythia8Backend::pythiaInstance,GAMBIT::HEColliderBit::Pythia8Backend::eventFailureError
+// #define PYTHIA8BACKEND_PRIVATE Gambit::HEColliderBit::Pythia8Backend::pythiaInstance,Gambit::HEColliderBit::Pythia8Backend::eventFailureError
 
-namespace GAMBIT {
+namespace Gambit {
   namespace HEColliderBit {
 
 

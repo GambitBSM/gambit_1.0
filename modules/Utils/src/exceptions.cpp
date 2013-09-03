@@ -10,7 +10,7 @@
 #include <execinfo.h>
 #include "logs.hpp"
 
-namespace GAMBIT{
+namespace Gambit{
 
   namespace exceptions{
 

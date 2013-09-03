@@ -46,7 +46,7 @@ typedef std::map<std::string, double> parameterMap;
   DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
   INTERPRET_AS_PARENT__BEGIN
   INTERPRET_AS_PARENT__DEFINE(MSSM_I_IAPfunc)
-  namespace GAMBIT{ namespace models{ namespace MSSM_I{
+  namespace Gambit{ namespace Models{ namespace MSSM_I{
   void MSSM_I_IAPfunc (ModelParameters &parentparams)
   {
       cout<<"Running interpret_as_parent calculations for MSSM_I -> test_parent_I ..."<<endl;
@@ -74,7 +74,7 @@ typedef std::map<std::string, double> parameterMap;
 // Fast way of defining a model. Wraps every parameter in a functor,
 // with the matched CAPABILITY given a name based on PARAMETER.
 // To avoid name clashes we have to give these really ugly names since all the
-// functor tags living in the global GAMBIT namespace need unique names. 
+// functor tags living in the global Gambit namespace need unique names. 
 // ( e.g. CMSSM_I_M0 )
 // If a parameter is to be matched to a "proper" capability then this needs to 
 // be specified using the long method.
@@ -101,7 +101,7 @@ typedef std::map<std::string, double> parameterMap;
   INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
   INTERPRET_AS_PARENT__DEFINE(CMSSM_I_IAPfunc)
   
-  namespace GAMBIT{ namespace models{ namespace CMSSM_I{
+  namespace Gambit{ namespace Models{ namespace CMSSM_I{
   void CMSSM_I_IAPfunc (ModelParameters &parentparams)
   {
     std::cout<<"Running interpret_as_parent calculations for CMSSM_I -> MSSM_I ..."<<std::endl;

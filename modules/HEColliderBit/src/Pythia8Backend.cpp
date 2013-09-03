@@ -20,7 +20,7 @@
 
 #include "Pythia8Backend.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
   namespace HEColliderBit {
 
 

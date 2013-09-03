@@ -19,7 +19,7 @@
 
 #include "gambit_core.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
   gambit_core Core(true);
 }

@@ -15,7 +15,7 @@ using std::endl;
 int main(int argc, char * argv[])
 {
 	// Get an object for the SuperIso generator
-	GAMBIT::Backend::SuperIso A;
+	Gambit::Backend::SuperIso A;
 	char SLHAname[]="example.lha";
 	
 	A.initialize();

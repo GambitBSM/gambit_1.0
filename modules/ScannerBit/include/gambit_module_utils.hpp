@@ -25,7 +25,7 @@
 
 using namespace std;
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Module
         {       

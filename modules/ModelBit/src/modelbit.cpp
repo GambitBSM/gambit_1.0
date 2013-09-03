@@ -33,7 +33,7 @@
 
 #include "modelbit.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
   typedef std::map<std::string, primary_model_functor *> activemodel_map;
   typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;

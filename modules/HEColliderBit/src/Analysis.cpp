@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   Analysis* mkAnalysis(const std::string& name) {

@@ -34,7 +34,7 @@
 
 using namespace boost;
 
-namespace GAMBIT
+namespace Gambit
 {
   namespace Graphs
   {

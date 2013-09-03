@@ -23,8 +23,8 @@
 #include "DetectorResponse.hpp"
 #include <vector>
 
-/// @todo Actually this whole file should be *in* namespace GAMBIT
-using namespace GAMBIT;
+/// @todo Actually this whole file should be *in* namespace Gambit
+using namespace Gambit;
 
 
 enum DetectorType { NOMINAL,ACERDET,FASTATLAS, FASTCMS, ATLAS2011, CMS2011};

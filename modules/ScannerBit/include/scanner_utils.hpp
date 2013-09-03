@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Scanner
         {

@@ -5,7 +5,7 @@
 #include "Uncopyable.hpp"
 #include "shared_ptr.hpp"
 
-namespace gambit {
+namespace Gambit {
   class ModelBase;
   typedef shared_ptr<ModelBase> ModelBasePtr;
 

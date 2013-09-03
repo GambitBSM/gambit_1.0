@@ -15,7 +15,7 @@
 #include <boost/exception_ptr.hpp>
 
 
-namespace GAMBIT {
+namespace Gambit {
 
   void exiter(int i){
     std::cerr << std::endl;
@@ -247,7 +247,7 @@ namespace GAMBIT {
      *  ./exeption.bin(_ZN5GAMBIT8logsetup10stacktraceEv+0x4c) [0x805c61a]
      *
      * into this string:
-     *  ./exeption.bin(GAMBIT::stacktrace()+0x4c) [0x805c61a]
+     *  ./exeption.bin(Gambit::stacktrace()+0x4c) [0x805c61a]
      *
      * \date 2011 Aug 23
      * \author Johan Lundberg
@@ -380,14 +380,14 @@ namespace GAMBIT {
  * example use of logging. enable this with gcc option -DLOGCORE_MAIN_ENABLE
  */
 //int main(){
-//  using namespace GAMBIT;
+//  using namespace Gambit;
 
-//  GAMBIT::setLogLevel(GAMBIT::sDEBUG);
+//  Gambit::setLogLevel(Gambit::sDEBUG);
 
 //  GAMBIT_MSG_DEBUG(" entering a");
 //  GAMBIT_MSG_WARNING(" WW 2") ;
 //  GAMBIT_MSG_INFO(" leaving b");
-  //  GAMBIT::logsetup::setfile_range("_bbaaa",-10000,10000);
+  //  Gambit::logsetup::setfile_range("_bbaaa",-10000,10000);
 //  if(0)
 //    GAMBIT_MSG_WARNING(" hello in d");
 //  else

@@ -15,7 +15,7 @@ using std::endl;
 int main(int argc, char * argv[])
 {
 	// Get an object for the Fortran DarkSUSY generator
-	GAMBIT::Backend::DarkSUSY A;
+	Gambit::Backend::DarkSUSY A;
 
 	A.initialize();
 
@@ -28,5 +28,5 @@ int main(int argc, char * argv[])
 	//cout << A.GetUserVariable<tags::HWBMCH>().part1 << endl;
 	//cout << A.GetUserVariable<tags::HWBMCH>().part2 << endl;
 	
-	// GAMBIT::Backend::FHerwig B = A.clone(1289161); 
+	// Gambit::Backend::FHerwig B = A.clone(1289161); 
 }

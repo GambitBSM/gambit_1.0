@@ -5,7 +5,7 @@
 #include "boost/tuple/tuple_comparison.hpp"
 #include "boost/tuple/tuple_io.hpp"
 
-namespace GAMBIT {
+namespace Gambit {
 
   using namespace boost::tuples; // required for get<> and opertors to work.
 

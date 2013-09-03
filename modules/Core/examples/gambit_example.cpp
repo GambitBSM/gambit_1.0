@@ -26,7 +26,7 @@
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 
-using namespace GAMBIT;
+using namespace Gambit;
 
 void beispiel()
 {
@@ -154,21 +154,21 @@ int main( int argc, const char* argv[] )
   // ---- Resolve dependencies --------------
   
   // CMSSM_I parameters dependency
-  models::CMSSM_I::Functown::primary_parameters.resolveDependency(
+  Models::CMSSM_I::Functown::primary_parameters.resolveDependency(
                                 &TEMP_ScannerBit::Functown::generate_parameters);
   
   // CMSSM_I interpret_as_parent dependencies
-  models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
-                                &models::CMSSM_I::Functown::primary_parameters);
-  models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
+  Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
+                                &Models::CMSSM_I::Functown::primary_parameters);
+  Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
                                 &ExampleBit_A::Functown::nevents_dbl);
   
   // MSSM_I interpret_as_parent dependency
   // Note that the MSSM_I_parameters come from the CMSSM_I functor, not from
   // the 'primary' functor in the MSSM_I namespace (this one would only be used
   // if MSSM_I was the model set for the run)
-  models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(
-                                &models::CMSSM_I::Functown::MSSM_I_parameters);
+  Models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(
+                                &Models::CMSSM_I::Functown::MSSM_I_parameters);
   
   // ---- begin run ---------------
   
@@ -176,15 +176,15 @@ int main( int argc, const char* argv[] )
   TEMP_ScannerBit::Functown::generate_parameters.calculate();
   
   // ModelBit: insert alpha_parameters into primary parameters functor
-  models::CMSSM_I::Functown::primary_parameters.calculate();
+  Models::CMSSM_I::Functown::primary_parameters.calculate();
   
   // Model parameters now ready for delivery to other functors
   // e.g. interpret_as_parent
   ExampleBit_A::Functown::nevents_dbl.calculate(); //interpret_as_parent depends
                                                    //on this result: run first.
-  models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
+  Models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
   // Go up another level:
-  models::MSSM_I::Functown::test_parent_I_parameters.calculate();
+  Models::MSSM_I::Functown::test_parent_I_parameters.calculate();
   
   // -------- check output ----------------------
   // To make sure things ran sensibly, lets see what happened:
@@ -202,11 +202,11 @@ int main( int argc, const char* argv[] )
       }
   cout<<"  ModelBit:"<<endl;
   cout<<"    CMSSM_I parameters:"<<endl;
-  models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
+  Models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
   cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
-  models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
+  Models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
   cout<<"    MSSM_I -> test_parent_I_parameters:"<<endl;
-  models::MSSM_I::Functown::test_parent_I_parameters.valuePtr()->print();
+  Models::MSSM_I::Functown::test_parent_I_parameters.valuePtr()->print();
   cout<<endl;
   //============== end toy sequence ============================================
     
@@ -217,16 +217,16 @@ int main( int argc, const char* argv[] )
 
   cout<<""<<endl;
   cout<<"Retrieving model names and lineages from their namespaces..."<<endl;
-  //cout<<"models::MSSM::name(): "<<models::MSSM::name()<<endl;
+  //cout<<"Models::MSSM::name(): "<<Models::MSSM::name()<<endl;
   // Models are no longer independent namespaces from parameterisations, they
   // simply combine together. So no more "name()" for just the base model.
-  cout<<"models::MSSM_I::name(): "<<models::MSSM_I::name()<<endl;
-  cout<<"models::MSSM_I::lineage: "<<models::MSSM_I::lineage<<endl;
+  cout<<"Models::MSSM_I::name(): "<<Models::MSSM_I::name()<<endl;
+  cout<<"Models::MSSM_I::lineage: "<<Models::MSSM_I::lineage<<endl;
 
-  cout<<"models::CMSSM_I::name(): "<<models::CMSSM_I::name()<<endl;
-  cout<<"models::CMSSM_I::lineage: "<<models::CMSSM_I::lineage<<endl;
-  cout<<"models::CMSSM_II::name(): "<<models::CMSSM_II::name()<<endl;
-  cout<<"models::CMSSM_II::lineage: "<<models::CMSSM_II::lineage<<endl;
+  cout<<"Models::CMSSM_I::name(): "<<Models::CMSSM_I::name()<<endl;
+  cout<<"Models::CMSSM_I::lineage: "<<Models::CMSSM_I::lineage<<endl;
+  cout<<"Models::CMSSM_II::name(): "<<Models::CMSSM_II::name()<<endl;
+  cout<<"Models::CMSSM_II::lineage: "<<Models::CMSSM_II::lineage<<endl;
 
   // So, every model parameterisation is now contained in a structure very
   // similar to a module, and every parameter is wrapped in a functor identical
@@ -235,12 +235,12 @@ int main( int argc, const char* argv[] )
   // because they are auto-generated case, with enough info to avoid name
   // clashes. Only explicitly specified capabilities will have a "normal" name.
   
-  cout << "My name is " << models::CMSSM_I::name() << endl;
-  cout << " I can calculate: " << endl << models::CMSSM_I::iCanDo << endl;
-  cout << " ...but I may need: " << endl << models::CMSSM_I::iMayNeed << endl;
+  cout << "My name is " << Models::CMSSM_I::name() << endl;
+  cout << " I can calculate: " << endl << Models::CMSSM_I::iCanDo << endl;
+  cout << " ...but I may need: " << endl << Models::CMSSM_I::iMayNeed << endl;
   cout << endl;
 
-  cout << "I can do Mstop " << models::CMSSM_I::provides("CMSSM_I_Mstop") << endl;
+  cout << "I can do Mstop " << Models::CMSSM_I::provides("CMSSM_I_Mstop") << endl;
 
   // Note: Tags::CAPABILITY is Tags::CMSSM_I_M0 (since this also goes into the global tags box)
   //       Tags::FUNCTION is Tags::M0 (local to module scope, so this name is ok)
@@ -253,40 +253,40 @@ int main( int argc, const char* argv[] )
   
   // FUNCTION == CAPABILITY in this case.
   cout << "Core says: report on Mstop!" << endl;
-  cout << "  " << models::CMSSM_I::name() << " says: ";
-  cout << "  "; models::CMSSM_I::report("Mstop");
-  if (models::CMSSM_I::provides("Mstop")) {
+  cout << "  " << Models::CMSSM_I::name() << " says: ";
+  cout << "  "; Models::CMSSM_I::report("Mstop");
+  if (Models::CMSSM_I::provides("Mstop")) {
     cout << "OK, so what is it then?" << endl;
-    typedef models::CMSSM_I::function_traits<Tags::Mstop>::type testType; //in this case the underlying type is double
+    typedef Models::CMSSM_I::function_traits<Tags::Mstop>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
-    testType Mstop = models::CMSSM_I::result<Tags::Mstop>() ;
-    cout << "  " << models::CMSSM_I::name() << " says: " << Mstop << " (tag-style)" <<endl ;
+    testType Mstop = Models::CMSSM_I::result<Tags::Mstop>() ;
+    cout << "  " << Models::CMSSM_I::name() << " says: " << Mstop << " (tag-style)" <<endl ;
     // Call the module function by its string name (could use TestType here too insead of double) 
-    double Mstop2 = models::CMSSM_I::result<double>("Mstop") ;
-    cout << "  " << models::CMSSM_I::name() << " says: " << Mstop << " (string-style)" <<endl ;
+    double Mstop2 = Models::CMSSM_I::result<double>("Mstop") ;
+    cout << "  " << Models::CMSSM_I::name() << " says: " << Mstop << " (string-style)" <<endl ;
     // Call the module function by its functor 
-    models::CMSSM_I::Functown::Mstop.calculate();
-    cout << "  " << models::CMSSM_I::name() << " says: " << models::CMSSM_I::Functown::Mstop() << " (functor-style)" <<endl ; 
+    Models::CMSSM_I::Functown::Mstop.calculate();
+    cout << "  " << Models::CMSSM_I::name() << " says: " << Models::CMSSM_I::Functown::Mstop() << " (functor-style)" <<endl ; 
   }
   
   /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
      can access the parameters this way now: */
   cout << "Core says: report on parameters!" << endl;
-  cout << "  " << models::CMSSM_I::name() << " says: ";
-  cout << "  "; models::CMSSM_I::report("parameters");
-  if (models::CMSSM_I::provides("CMSSM_I_parameters")) {
+  cout << "  " << Models::CMSSM_I::name() << " says: ";
+  cout << "  "; Models::CMSSM_I::report("parameters");
+  if (Models::CMSSM_I::provides("CMSSM_I_parameters")) {
     cout << "OK, so what is it then?" << endl;
-    typedef models::CMSSM_I::function_traits<Tags::primary_parameters>::type testType; //in this case the underlying type is ModelParameters
+    typedef Models::CMSSM_I::function_traits<Tags::primary_parameters>::type testType; //in this case the underlying type is ModelParameters
     // Call the module function by its tag
     // (creates a copy of the parameters object?)
     /*
-    testType* CMSSMIparameters = models::CMSSM::I::result<Tags::primary_parameters>;
+    testType* CMSSMIparameters = Models::CMSSM::I::result<Tags::primary_parameters>;
     // Extract parameters from the retrieved parameter object
-    cout << "  " << models::CMSSM::I::name() << " says: M0 = " << \
+    cout << "  " << Models::CMSSM::I::name() << " says: M0 = " << \
       CMSSMIparameters->getValue("M0")<< " (tag-style)" <<endl ;
-    cout << "  " << models::CMSSM::I::name() << " says: M12 = " << \
+    cout << "  " << Models::CMSSM::I::name() << " says: M12 = " << \
       CMSSMIparameters->getValue("M12")<< " (tag-style)" <<endl ;
-    cout << "  " << models::CMSSM::I::name() << " says: tanb = " << \
+    cout << "  " << Models::CMSSM::I::name() << " says: tanb = " << \
       CMSSMIparameters->getValue("tanB")<< " (tag-style)" <<endl ;
     */
     // Call the module function by its string name (could use TestType here too insead of double) 
@@ -298,19 +298,19 @@ int main( int argc, const char* argv[] )
     cout << endl ;
     // First, make sure the functor has "run" so that it has obtained its values
     // from the alpha_parameters map supplied by TEMP_ScannerBit.
-    models::CMSSM_I::Functown::primary_parameters.calculate(); //Already done, but doing it again won't hurt
+    Models::CMSSM_I::Functown::primary_parameters.calculate(); //Already done, but doing it again won't hurt
     
     // Next, grab a safe pointer to the model object
     // Cannot get the object using the () method because this *copies* the object
     // stored in "value".
-    safe_ptr<ModelParameters> CMSSMIsafeptr = models::CMSSM_I::Functown::primary_parameters.valuePtr();
+    safe_ptr<ModelParameters> CMSSMIsafeptr = Models::CMSSM_I::Functown::primary_parameters.valuePtr();
     
     // Now we can do stuff with the ModelParameters object!
-    cout << "  " << models::CMSSM_I::name() << " says: M0 = " << \
+    cout << "  " << Models::CMSSM_I::name() << " says: M0 = " << \
       CMSSMIsafeptr->getValue("M0")<< " (functor safe_ptr-style)" <<endl ;
-    cout << "  " << models::CMSSM_I::name() << " says: M12 = " << \
+    cout << "  " << Models::CMSSM_I::name() << " says: M12 = " << \
       CMSSMIsafeptr->getValue("M12")<< " (functor safe_ptr-style)" <<endl ;
-    cout << "  " << models::CMSSM_I::name() << " says: tanb = " << \
+    cout << "  " << Models::CMSSM_I::name() << " says: tanb = " << \
       CMSSMIsafeptr->getValue("tanb")<< " (functor safe_ptr-style)" <<endl ;
     cout<<"Dumping CMSSM::I parameters...";
     CMSSMIsafeptr->print();
@@ -320,7 +320,7 @@ int main( int argc, const char* argv[] )
     // via the dependency system (via alpha_parameters capability)
     /* NOTE: I added a new access method to the functors for this purpose. It
        is indeed for use by ScannerBit, not for general use by modules. */
-    /*ModelParameters* CMSSMIrawptr = models::CMSSM_I::Functown::primary_parameters.rawvaluePtr();
+    /*ModelParameters* CMSSMIrawptr = Models::CMSSM_I::Functown::primary_parameters.rawvaluePtr();
     std::vector<str> keys = CMSSMIsafeptr->getKeys();
   
     srand (time(NULL));    // initialize random seed
@@ -338,21 +338,21 @@ int main( int argc, const char* argv[] )
   // So far the tools we have for this use are:
   // function to check if a model is a descendant of, or is itself the, model
   // named in the argument.
-  //  models::MODEL::PARAMETERISATION::isdescendantof(str testmodel)
+  //  Models::MODEL::PARAMETERISATION::isdescendantof(str testmodel)
   
   cout<<endl;
   cout<<"Model congruency tests:"<<endl;
-  cout<<"Checking congruency of "<<models::CMSSM_I::name()<<"..."<<endl;
-  cout<<"lineage is:"<<models::CMSSM_I::lineage<<endl;
-  cout<<"is descendant of MSSM_I?         :"<<models::CMSSM_I::is_descendant_of("MSSM_I")<<endl;
-  cout<<"is descendant of CMSSM_I?        :"<<models::CMSSM_I::is_descendant_of("CMSSM_I")<<endl;
-  cout<<"is descendant of CMSSM_II?       :"<<models::CMSSM_I::is_descendant_of("CMSSM_II")<<endl;
-  cout<<"is descendant of DMHalo_base_I?  :"<<models::CMSSM_I::is_descendant_of("DMHalo_base_I")<<endl;
-  cout<<"is descendant of Gaussian_Halo_I?:"<<models::CMSSM_I::is_descendant_of("Gaussian_Halo_I")<<endl;
+  cout<<"Checking congruency of "<<Models::CMSSM_I::name()<<"..."<<endl;
+  cout<<"lineage is:"<<Models::CMSSM_I::lineage<<endl;
+  cout<<"is descendant of MSSM_I?         :"<<Models::CMSSM_I::is_descendant_of("MSSM_I")<<endl;
+  cout<<"is descendant of CMSSM_I?        :"<<Models::CMSSM_I::is_descendant_of("CMSSM_I")<<endl;
+  cout<<"is descendant of CMSSM_II?       :"<<Models::CMSSM_I::is_descendant_of("CMSSM_II")<<endl;
+  cout<<"is descendant of DMHalo_base_I?  :"<<Models::CMSSM_I::is_descendant_of("DMHalo_base_I")<<endl;
+  cout<<"is descendant of Gaussian_Halo_I?:"<<Models::CMSSM_I::is_descendant_of("Gaussian_Halo_I")<<endl;
   cout<<endl;
   
   // New way of checking congruency using global lineage database
-  cout<<"Checking congruency of "<<models::CMSSM_I::name()<<" using database..."<<endl;
+  cout<<"Checking congruency of "<<Models::CMSSM_I::name()<<" using database..."<<endl;
   cout<<"lineage is:"<< modelClaw.get_lineage("CMSSM_I") <<endl;
   cout<<"is descendant of MSSM_I?         :"<<strict_descendant_of("CMSSM_I","MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<strict_descendant_of("CMSSM_I","CMSSM_I")<<endl;
@@ -360,7 +360,7 @@ int main( int argc, const char* argv[] )
   cout<<"is descendant of CMSSM_II?       :"<<strict_descendant_of("CMSSM_I","CMSSM_II")<<endl;
     
   // Can now check ancestry using global 'descendants' database
-  cout<<"Finding descendants of "<<models::MSSM_I::name()<<" using database..."<<endl;
+  cout<<"Finding descendants of "<<Models::MSSM_I::name()<<" using database..."<<endl;
   cout<<"descendants are:"<< modelClaw.get_descendants("MSSM_I") <<endl;
   cout<<"is ancestor of MSSM_I?         :"<<strict_ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of or == MSSM_I?   :"<<ancestor_of("MSSM_I","MSSM_I")<<endl;
@@ -379,16 +379,16 @@ int main( int argc, const char* argv[] )
     // Check if dependencies are being registered and resolved correctly
     cout << "Tell me about my dependencies..."<<endl;
     std::vector<sspair> deps, deps2, deps3, reqs, permitted;
-    deps =  models::CMSSM_I::Functown::MSSM_I_parameters.dependencies();
+    deps =  Models::CMSSM_I::Functown::MSSM_I_parameters.dependencies();
     cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
-    reqs =  models::CMSSM_I::Functown::MSSM_I_parameters.backendreqs();
+    reqs =  Models::CMSSM_I::Functown::MSSM_I_parameters.backendreqs();
     //cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl; segfaults if no reqs?
     
     // Resolve dependency by hand
-    models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(\
-        &models::CMSSM_I::Functown::primary_parameters);
+    Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(\
+        &Models::CMSSM_I::Functown::primary_parameters);
     // Have now added an extra dependency, resolve this too:
-    models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(\
+    Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(\
         &ExampleBit_A::Functown::nevents_dbl);
     
     // Make sure nevents is computed first!
@@ -396,11 +396,11 @@ int main( int argc, const char* argv[] )
     
     // Compute the parent parameters
     cout<<"Ok use my parameters to compute the MSSM_I parameters."<<endl;
-    cout<<"models::CMSSM_I::Functown::MSSM_I_parameters.calculate()"<<endl; 
-    models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
+    cout<<"Models::CMSSM_I::Functown::MSSM_I_parameters.calculate()"<<endl; 
+    Models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
     // safe_ptr to parent parameters object
     safe_ptr<ModelParameters> CMSSMI_parent_safeptr = \
-                  models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr();
+                  Models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr();
     cout<<"Parent parameters:"<<endl;
     CMSSMI_parent_safeptr->print();
     // Currently cannot tell from a parameter object what model the parameters
@@ -419,14 +419,14 @@ int main( int argc, const char* argv[] )
   // Resolve dependency by hand
   // This time we get the MSSM_I parameters from the CMSSM_I interpret_as_parent
   // functor!!! Vital difference!
-  models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(\
-      &models::CMSSM_I::Functown::MSSM_I_parameters);
+  Models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(\
+      &Models::CMSSM_I::Functown::MSSM_I_parameters);
   // Compute the parent parameters
-  cout<<"models::MSSM_I::Functown::test_parent_I_parameters.calculate()"<<endl; 
-  models::MSSM_I::Functown::test_parent_I_parameters.calculate();
+  cout<<"Models::MSSM_I::Functown::test_parent_I_parameters.calculate()"<<endl; 
+  Models::MSSM_I::Functown::test_parent_I_parameters.calculate();
   // safe_ptr to parent parameters object
   safe_ptr<ModelParameters> MSSMI_parent_safeptr = \
-                models::MSSM_I::Functown::test_parent_I_parameters.valuePtr();
+                Models::MSSM_I::Functown::test_parent_I_parameters.valuePtr();
   cout<<"test_parent parameters:"<<endl;
   MSSMI_parent_safeptr->print();
   
@@ -482,13 +482,13 @@ int main( int argc, const char* argv[] )
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::awesomenessByAnders);
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample);
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&GAMBIT::Backends::LibFirst::Functown::byRefExample2);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::awesomenessByAnders);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample2);
   
   SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setSMpars);
   SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setsoftmasses);
-  SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&GAMBIT::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
+  SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&Gambit::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
   
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;

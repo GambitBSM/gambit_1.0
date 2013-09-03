@@ -31,17 +31,17 @@
 /*Get the value associated with "key" that was defined in the ini-file*/
 #define GET_VALUE(key) (*static_cast                                                                                    \
                         <                                                                                               \
-                                typename GAMBIT_Module_Namespace::interface                                             \
+                                typename Gambit_Module_Namespace::interface                                             \
                                 <                                                                                       \
-                                        GAMBIT_Module_Namespace::Tags::key                                              \
+                                        Gambit_Module_Namespace::Tags::key                                              \
                                 >                                                                                       \
                                 ::gt_type::type *                                                                       \
                         >                                                                                               \
-                        (GAMBIT_Module_Namespace::moduleData.valueMap[ #key ]->value))                                  \
+                        (Gambit_Module_Namespace::moduleData.valueMap[ #key ]->value))                                  \
    
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
-namespace GAMBIT_Module_Namespace                                                                                       \
+namespace Gambit_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace LoadTags                                                                                              \
         {                                                                                                               \
@@ -62,7 +62,7 @@ namespace GAMBIT_Module_Namespace                                               
                                                                                                                         \
                         static void init(gambitData &moduleData)                                                        \
                         {                                                                                               \
-                                moduleData.outputFuncs[#name] = new GAMBIT::Module::classFactory<__VA_ARGS__>;          \
+                                moduleData.outputFuncs[#name] = new Gambit::Module::classFactory<__VA_ARGS__>;          \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -73,7 +73,7 @@ namespace GAMBIT_Module_Namespace                                               
    
 /*Allows Gambit to use object "obj" of type "..."*/
 #define EXPORT_OBJECT(name, ...)                                                                                        \
-namespace GAMBIT_Module_Namespace                                                                                       \
+namespace Gambit_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace LoadTags                                                                                              \
         {                                                                                                               \
@@ -95,7 +95,7 @@ namespace GAMBIT_Module_Namespace                                               
                         static void init(gambitData &moduleData)                                                        \
                         {                                                                                               \
                                 moduleData.outputFuncs[#name]                                                           \
-                                        = new GAMBIT::Module::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
+                                        = new Gambit::Module::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -108,7 +108,7 @@ namespace GAMBIT_Module_Namespace                                               
 #define MODULE_MAIN(...)                                                                                                \
  __scanner_module_ret_val__;                                                                                            \
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__);                                             \
-namespace GAMBIT_Module_Namespace                                                                                       \
+namespace Gambit_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace MainTags                                                                                              \
         {                                                                                                               \
@@ -129,7 +129,7 @@ namespace GAMBIT_Module_Namespace                                               
                                                                                                                         \
                         static void init(gambitData &moduleData)                                                        \
                         {                                                                                               \
-                                moduleData.outputFuncs[moduleData.name] = new GAMBIT::Module::funcFactory               \
+                                moduleData.outputFuncs[moduleData.name] = new Gambit::Module::funcFactory               \
                                         <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);  \
                         }                                                                                               \
                 };                                                                                                      \
@@ -142,7 +142,7 @@ decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__)      
 
 /*Set a defalut value for "name" if it is not specified in the ini-file*/
 #define SET_DEFAULT(name, ...)                                                                                          \
-namespace GAMBIT_Module_Namespace                                                                                       \
+namespace Gambit_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace DefaultTags                                                                                           \
         {                                                                                                               \
@@ -182,7 +182,7 @@ namespace GAMBIT_Module_Namespace                                               
         
 /*Gets a variable of type "type_in" from Gambit.  The variable is set by the keyword "name"*/
 #define IMPORT(name, ...)                                                                                               \
-namespace GAMBIT_Module_Namespace                                                                                       \
+namespace Gambit_Module_Namespace                                                                                       \
 {                                                                                                                       \
         namespace Tags                                                                                                  \
         {                                                                                                               \
@@ -195,7 +195,7 @@ namespace GAMBIT_Module_Namespace                                               
                 class interface<Tags::name>                                                                             \
                 {                                                                                                       \
                 public:                                                                                                 \
-                        typedef GAMBIT::Module::gt_type_def<__VA_ARGS__> gt_type;                                       \
+                        typedef Gambit::Module::gt_type_def<__VA_ARGS__> gt_type;                                       \
                                                                                                                         \
                         interface(gambitData &moduleData)                                                               \
                         {                                                                                               \
@@ -217,11 +217,11 @@ namespace GAMBIT_Module_Namespace                                               
 #define GAMBIT_MODULE(mod_name)                                                                                         \
 namespace __gambit_module_ ## mod_name ##  _namespace__                                                                 \
 {                                                                                                                       \
-        using GAMBIT::Module::gt_entry;                                                                                 \
-        namespace GAMBIT_Module_Namespace                                                                               \
+        using Gambit::Module::gt_entry;                                                                                 \
+        namespace Gambit_Module_Namespace                                                                               \
         {                                                                                                               \
-                using GAMBIT::Module::gambitData;                                                                       \
-                using GAMBIT::Module::entryData;                                                                        \
+                using Gambit::Module::gambitData;                                                                       \
+                using Gambit::Module::entryData;                                                                        \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
                 {                                                                                                       \

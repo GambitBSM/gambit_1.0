@@ -2,9 +2,6 @@ TODO:
 * Support alternative ini format
 * Grouping backend requirements into blocks/groups
 * Allow conditional backend requirements (conditional on model only, not dependency)
-* Fix naming conventions
-  - GAMBIT->Gambit
-  - filenames (lowercase+underscore)
 * Experiment with automake and cmake for build
 * Implement exception handling/logging system
 * Create SLHA internal representation, plus hook up file reader/writer.
@@ -28,4 +25,7 @@ Recent decisions:
 Done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
 * Separate gambit_example.cpps
+* Fix naming conventions
+  - GAMBIT->Gambit
+  - filenames (lowercase+underscore)
 

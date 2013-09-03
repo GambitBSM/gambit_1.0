@@ -31,7 +31,7 @@ struct dsio_type{
 };
 BE_F_VARIABLE(DSIO, dsio, , dsio_type)
 
-namespace GAMBIT {
+namespace Gambit {
 
 	using std::cout;
 	using std::endl; // SUFit logger does this?

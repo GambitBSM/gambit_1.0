@@ -18,7 +18,7 @@
    b) For now have nicked ATLAS MT2 code. Need to check status of this for public release. The better option is to write a non-ROOT version later.
 */
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   using namespace std;

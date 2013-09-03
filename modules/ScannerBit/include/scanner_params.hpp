@@ -25,7 +25,7 @@
 #include <graphs.hpp>
 #include <scanner_utils.hpp>
 
-namespace GAMBIT
+namespace Gambit
 {
         namespace Scanner
         {

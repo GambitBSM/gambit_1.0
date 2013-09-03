@@ -11,7 +11,7 @@ int main(int argc, char * argv[])
 	// Program to test backend
 
 	// Get an object for the Fortran Herwig generator
-	GAMBIT::Backend::FHerwig A;
+	Gambit::Backend::FHerwig A;
 
 	A.setSeed(134991);
 
@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
 	}
 	
 	
-	GAMBIT::Backend::FHerwig B = A.clone(1289161); 
+	Gambit::Backend::FHerwig B = A.clone(1289161); 
 
 
 	// Event loop

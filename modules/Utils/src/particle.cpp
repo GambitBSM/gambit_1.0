@@ -2,7 +2,7 @@
 #include "logs.hpp"
 
 
-namespace GAMBIT {
+namespace Gambit {
 
   namespace Backend {
 
@@ -29,4 +29,4 @@ namespace GAMBIT {
 	  
   } // End of Backend namespace
 
-} // End of GAMBIT namespace
+} // End of Gambit namespace

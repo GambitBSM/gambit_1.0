@@ -95,7 +95,7 @@
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     namespace MODULE                                                           \
@@ -129,7 +129,7 @@
 /// Redirection of ALLOW_MODEL when invoked from within a module.
 #define MODULE_ALLOWED_MODEL(MODEL)                                            \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     namespace MODULE                                                           \
@@ -163,7 +163,7 @@
 /// Redirection of START_BACKEND_REQ(TYPE) when invoked from within a module.
 #define MODULE_START_BACKEND_REQ(TYPE)                                         \
                                                                                \
-  namespace GAMBIT                                                             \
+  namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     namespace MODULE                                                           \

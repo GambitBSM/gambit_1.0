@@ -20,7 +20,7 @@
 
 #include "gambit_core.hpp"
 
-namespace GAMBIT
+namespace Gambit
 {
   extern gambit_core Core;
 }

@@ -26,7 +26,7 @@
 #ifndef __common_return_types_hpp__
 #define __common_return_types_hpp__
 
-namespace GAMBIT
+namespace Gambit
 {
   /// Old SUfit types, I think only used in ModelParametersBase. Should clean
   /// these out.

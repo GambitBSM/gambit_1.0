@@ -22,7 +22,7 @@
 #define __map_extensions_hpp__
 
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   // Local stream alias
@@ -79,7 +79,7 @@ namespace GAMBIT {
   }
 
 
-} // end namespace GAMBIT
+} // end namespace Gambit
 
 #endif /* defined(__map_extensions_hpp__) */
 
