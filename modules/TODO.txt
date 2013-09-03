@@ -20,7 +20,6 @@ TODO:
 
 
 Recent decisions:
-* Separate gambit_example.cpps
 * Module specific types in module directories
   -> BUT common return types in 
      utils/include/common_return_types.hpp
@@ -28,4 +27,5 @@ Recent decisions:
 
 Done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
+* Separate gambit_example.cpps
 

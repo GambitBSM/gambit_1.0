@@ -344,7 +344,6 @@ int main( int argc, const char* argv[] )
   cout<<"Model congruency tests:"<<endl;
   cout<<"Checking congruency of "<<models::CMSSM_I::name()<<"..."<<endl;
   cout<<"lineage is:"<<models::CMSSM_I::lineage<<endl;
-  cout<<"is descendant of model_base?     :"<<models::CMSSM_I::is_descendant_of("model_base")<<endl;
   cout<<"is descendant of MSSM_I?         :"<<models::CMSSM_I::is_descendant_of("MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<models::CMSSM_I::is_descendant_of("CMSSM_I")<<endl;
   cout<<"is descendant of CMSSM_II?       :"<<models::CMSSM_I::is_descendant_of("CMSSM_II")<<endl;
@@ -355,7 +354,6 @@ int main( int argc, const char* argv[] )
   // New way of checking congruency using global lineage database
   cout<<"Checking congruency of "<<models::CMSSM_I::name()<<" using database..."<<endl;
   cout<<"lineage is:"<< modelClaw.get_lineage("CMSSM_I") <<endl;
-  cout<<"is descendant of model_base?     :"<<strict_descendant_of("CMSSM_I","model_base")<<endl;
   cout<<"is descendant of MSSM_I?         :"<<strict_descendant_of("CMSSM_I","MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<strict_descendant_of("CMSSM_I","CMSSM_I")<<endl;
   cout<<"is descendant of or == CMSSM_I?  :"<<descendant_of("CMSSM_I","CMSSM_I")<<endl;
@@ -364,7 +362,6 @@ int main( int argc, const char* argv[] )
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<models::MSSM_I::name()<<" using database..."<<endl;
   cout<<"descendants are:"<< modelClaw.get_descendants("MSSM_I") <<endl;
-  cout<<"is ancestor of model_base?     :"<<strict_ancestor_of("MSSM_I","model_base")<<endl;
   cout<<"is ancestor of MSSM_I?         :"<<strict_ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of or == MSSM_I?   :"<<ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of CMSSM_I?        :"<<strict_ancestor_of("MSSM_I","CMSSM_I")<<endl;

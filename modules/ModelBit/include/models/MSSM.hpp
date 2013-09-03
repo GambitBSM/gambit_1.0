@@ -12,6 +12,8 @@
 //
 //  Ben Farmer
 //  2013 May 01
+//  Pat Scott
+//  2013 Sep
 //
 //  *********************************************
 
@@ -22,34 +24,18 @@
 
 typedef std::map<std::string, double> parameterMap;
 
-// Note: the namespaces are all controlled by the macros now, so none appear
-// here! It is a similar deal to the module rollcall headers.
-  
-// In include/modelmacros.hpp we have defined the virtual bass class
-// "model_base". The NEW_CHILD_MODEL macro builds a new class with the 
-// specified name, which inherits from either model_base or a child of
-// model_base and automatically builds a function "lineage()" which will spit 
-// out a vector of strings containing the names of all its parents (and 
-// itself)
-
-// NEW FRAMEWORK
-
 #define MODEL test_parent
-#define PARENT model_base
   #define PARAMETERISATION I
   START_PARAMETERISATION
   DEFINEPARS(p1,p2,p3)
   #undef PARAMETERISATION
-#undef PARENT
 #undef MODEL
 
 #define MODEL NormalDist
-#define PARENT model_base
   #define PARAMETERISATION I
   START_PARAMETERISATION
   DEFINEPARS(mu,sigma)
   #undef PARAMETERISATION
-#undef PARENT
 #undef MODEL
 
 #define MODEL MSSM
@@ -161,12 +147,10 @@ typedef std::map<std::string, double> parameterMap;
 // Make second branch of model tree
 
 #define MODEL DMHalo_base
-#define PARENT model_base
   #define PARAMETERISATION I
   START_PARAMETERISATION
   DEFINEPARS(null)
   #undef PARAMETERISATION
-#undef PARENT
 #undef MODEL   
 
 #define MODEL Gaussian_Halo

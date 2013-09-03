@@ -27,7 +27,7 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Aug
+///  \date 2013 Aug, Sep
 ///
 ///  *********************************************
 
@@ -79,11 +79,7 @@ namespace GAMBIT
     ///
     /// Hooks the claw into a core
     ModelFunctorClaw::ModelFunctorClaw (gambit_core &core)
-      : boundCore(&core) 
-    {
-      // Initialise the set of model names with the model base
-      allmodelnames.insert("model_base");        
-    }
+      : boundCore(&core) {}
     
     /// Model activation function
     ///
@@ -193,19 +189,16 @@ off in the inifile or add a target which actually uses them."<<std::endl;
       {
         model = vimap->first;
         
-        //std::cout<<model<<"; parents: "<<myParentsDB[model]<<std::endl;;
+        std::cout<<model<<"; parents: "<<myParentsDB[model]<<std::endl;;
         
         // Loop through vector of parents of 'model'
         for(std::vector<std::string>::const_iterator 
                     parent = myParentsDB[model].begin(); 
                     parent!= myParentsDB[model].end(); parent++) 
         {
-          if (*parent != "model_base") // This is not a real model!
-          {
-            // Add edge between parent and child
-            boost::add_edge(vertexIDmap[*parent], vertexIDmap[model], modelGraph);
-            std::cout<<"    Edge added: "<<model<<" ---> "<<*parent<<std::endl;
-          }
+          // Add edge between parent and child
+          boost::add_edge(vertexIDmap[*parent], vertexIDmap[model], modelGraph);
+          std::cout<<"    Edge added: "<<model<<" ---> "<<*parent<<std::endl;
         }
       }
       std::cout<<std::endl;
@@ -240,7 +233,7 @@ off in the inifile or add a target which actually uses them."<<std::endl;
     /// Add parents to the parents database
     void ModelFunctorClaw::add_parents (const str &model, const str &parent)
     {
-      myParentsDB[model].push_back(parent); 
+      if (parent != "PARENT") myParentsDB[model].push_back(parent); 
     }          
 
     /// Add lineage vector to the lineage database

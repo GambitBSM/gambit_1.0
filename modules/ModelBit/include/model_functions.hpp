@@ -15,7 +15,7 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 July
+///  \date 2013 July, Aug
 ///
 ///  *********************************************
 
@@ -44,44 +44,33 @@ namespace GAMBIT
   /// knowledge of the modelClaw
   bool model_is_registered (const str&);
 
+  /// Function to help static initialisation of our const data member vectors.
+  /// Returns a copy of the vector with the string argument appended.
+  std::vector<str> vecappend(const std::vector<str>&, const str&);
+   
+  /// Similar to vecappend(); joins two vectors and returns the result
+  std::vector<str> vecjoin(const std::vector<str>&, const std::vector<str>&);
+      
+  /// As per vecjoin() but joins three vectors and returns the result.
+  std::vector<str> vecjoin3(const std::vector<str>&, 
+                            const std::vector<str>&,
+                            const std::vector<str>&); 
+          
+  /// Helper function to test if a string matches a model recognised by GAMBIT
+  void verify_model(const str&);
+
   namespace models
   {  
 
-    /// Base "model" for building new models (root of model inheritance tree).
-    /// Has only the minimal properties required to properly act as the PARENT
-    /// of a model.
-    ///FIXME PS: why do we actually need a model base at all??
-    /// BF: Currently we need it for this lineage vector, which is used to create
-    /// lineageDB, and also because some PARENT needs to be defined for each model 
-    /// in order to create parentsDB. I don't know a way of treating the "no parent" 
-    /// special case differently inside the START_PARAMETERISATION macro, since 
-    /// I can't use "ifdef PARENT" or any such thing inside the macro. Maybe there 
-    /// is some dark voodoo magic that can be done using boost_preprocessor?
-    namespace model_base
+    namespace PARENT
     {
-        /// Model lineage
-        const std::vector<str> lineage (1, "model_base");    
+      // Base lineage that all parentless models copy
+      const std::vector<str> lineage;
     }
-
-    /// Function to help static initialisation of our const data member vectors.
-    /// Returns a copy of the vector with the string argument appended.
-    std::vector<str> vecappend(const std::vector<str>& basevec,const str newentry);
-    
-    /// Similar to vecappend(); joins two vectors and returns the result
-    std::vector<str> vecjoin(const std::vector<str>& bv1, 
-                             const std::vector<str>& bv2);
-      
-    /// As per vecjoin() but joins three vectors and returns the result.
-    std::vector<str> vecjoin3(const std::vector<str>& bv1, 
-                              const std::vector<str>& bv2,
-                              const std::vector<str>& bv3); 
-          
-    /// Helper function to test if a string matches a model recognised by GAMBIT
-    void verify_model(const str &testname);
          
-  } //end namespace models
+  }
 
-} //end namespace GAMBIT
+}
 
 #endif /* defined(__model_functions_hpp__) */
 

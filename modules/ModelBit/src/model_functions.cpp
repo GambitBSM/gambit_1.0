@@ -15,7 +15,7 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 July, Aug
+///  \date 2013 July, Aug, Sep
 ///
 ///  *********************************************
 
@@ -40,7 +40,6 @@ namespace GAMBIT
   /// "Ancestor of or equal to" function
   bool ancestor_of (const str &model1, const str &model2)
   {
-    if (model2 == "model_base") return false; //FIXME this can be removed if model_base is gotten rid of
     return modelClaw.descended_from(model2, model1);
   }
 
@@ -58,58 +57,52 @@ namespace GAMBIT
     return ancestor_of(model1, model2);
   }
 
-
-  namespace models
+  /// Function to help static initialisation of our const data member vectors.
+  /// Returns a copy of the vector with the string argument appended.
+  std::vector<str> vecappend(const std::vector<str>& basevec, const str& newentry)
   {
-  
-    /// Function to help static initialisation of our const data member vectors.
-    /// Returns a copy of the vector with the string argument appended.
-    std::vector<str> vecappend(const std::vector<str>& basevec,const str newentry)
-    {
-      std::vector<str> newvec(basevec);
-      newvec.push_back(newentry);
-      return newvec;
-    }
+    std::vector<str> newvec(basevec);
+    newvec.push_back(newentry);
+    return newvec;
+  }
     
-    /// Similar to vecappend(); joins two vectors and returns the result
-    std::vector<str> vecjoin(const std::vector<str>& bv1, 
-                             const std::vector<str>& bv2) 
-    {
-      std::vector<str> newvec;
-      newvec.reserve( bv1.size() + bv2.size() );
-      newvec.insert( newvec.end(), bv1.begin(), bv1.end() );
-      newvec.insert( newvec.end(), bv2.begin(), bv2.end() );
-      return newvec;
-    }
+  /// Similar to vecappend(); joins two vectors and returns the result
+  std::vector<str> vecjoin(const std::vector<str>& bv1, 
+                           const std::vector<str>& bv2) 
+  {
+    std::vector<str> newvec;
+    newvec.reserve( bv1.size() + bv2.size() );
+    newvec.insert( newvec.end(), bv1.begin(), bv1.end() );
+    newvec.insert( newvec.end(), bv2.begin(), bv2.end() );
+    return newvec;
+  }
       
-    /// As per vecjoin() but joins three vectors and returns the result.
-    std::vector<str> vecjoin3(const std::vector<str>& bv1, 
-                              const std::vector<str>& bv2,
-                              const std::vector<str>& bv3) 
-    {
-      std::vector<str> newvec;
-      newvec.reserve( bv1.size() + bv2.size() + bv3.size() );
-      newvec.insert( newvec.end(), bv1.begin(), bv1.end() );
-      newvec.insert( newvec.end(), bv2.begin(), bv2.end() );
-      newvec.insert( newvec.end(), bv3.begin(), bv3.end() );
-      return newvec;
-    }
+  /// As per vecjoin() but joins three vectors and returns the result.
+  std::vector<str> vecjoin3(const std::vector<str>& bv1, 
+                            const std::vector<str>& bv2,
+                            const std::vector<str>& bv3) 
+  {
+    std::vector<str> newvec;
+    newvec.reserve( bv1.size() + bv2.size() + bv3.size() );
+    newvec.insert( newvec.end(), bv1.begin(), bv1.end() );
+    newvec.insert( newvec.end(), bv2.begin(), bv2.end() );
+    newvec.insert( newvec.end(), bv3.begin(), bv3.end() );
+    return newvec;
+  }
         
-    /// Helper function to crash gracefully if a model is not recognised by GAMBIT
-    void verify_model(const str &model)
+  /// Helper function to crash gracefully if a model is not recognised by GAMBIT
+  void verify_model(const str &model)
+  {
+    if (not modelClaw.model_exists(model))
     {
-      if (not modelClaw.model_exists(model))
-      {
-        cout<<"Error: model '"<<model<<"'<< is not in the GAMBIT database."<<endl;
-        cout<<"Recognised models are: "<<endl;
-        modelClaw.list_models();
-        exit(1);
-        ///TODO: convert to proper GAMBIT error
-      }
+      cout<<"Error: model '"<<model<<"'<< is not in the GAMBIT database."<<endl;
+      cout<<"Recognised models are: "<<endl;
+      modelClaw.list_models();
+      exit(1);
+      ///TODO: convert to proper GAMBIT error
     }
+  }
     
-  } //end namespace models
-
 } //end namespace GAMBIT
 
 

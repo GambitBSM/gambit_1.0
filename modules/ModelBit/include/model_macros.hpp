@@ -55,35 +55,33 @@
     }                                                                          \
   }                                                                            \
 
+
 #define START_PARAMETERISATION                                                 \
-  namespace GAMBIT {                                                           \
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT_5(MODEL,_,PARAMETERISATION,_,parameters)) \
     /*FIXME PS: there is some duplication here -- we only really need to use the one tag as follows: */ \
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL,_,PARAMETERISATION))        \
-    /* Begin setting up dependency of primary ModelParameters object on
-       alpha_parameters (capability supplied by ScannerBit) */                 \
-    /*BEGIN_ALPHAPARAMS_DEPENDENCY*/                                           \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
                                                                                \
-        /* Parameterisation name 
-        DON'T NEED THIS! Already created (as a function, name()) by 
-        CORE_START_MODULE_COMMON.
-        const str name = STRINGIFY(PARAMETERISATION);                        
-        */                                                                     \
+    namespace models                                                           \
+    {                                                                          \
+                                                                               \
+      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      {                                                                        \
                                                                                \
         /* Basic machinery, same as for modules 
            (macro from module_macros_incore.hpp) */                            \
         CORE_START_MODULE_COMMON( CAT_3(MODEL,_,PARAMETERISATION) )            \
                                                                                \
-        /* Model lineage                                                       
-           Note: each parameterisation is automatically marked as a child of 
-           the host model. They are treated internally as seperate models. 
+        /* Model lineage                                                       \  
+           Note: each parameterisation is automatically marked as a child of   \
+           the host model. They are treated internally as seperate models.     \
            Child models can indeed inherit directly from these if desired. */  \
-        const std::vector<str> lineage = \
-           vecappend(PARENT::lineage, \
-                        STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) );          \
+        const std::vector<str> lineage = vecappend(PARENT::lineage,            \
+         STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) );                         \
                                                                                \
         /* Congruency function (checks if this model is a descendent of the
            specified model (or is itself the specified model) ) 
@@ -203,8 +201,11 @@
   LINK_PARAMETER_TO_CAPABILITY(PARAMETER,CAPABILITY)                           \
 
 #define LINK_PARAMETER_TO_CAPABILITY(PARAMETER,CAPABILITY)                     \
+                                                                               \
   DEFINEPAR(PARAMETER)                                                         \
-  namespace GAMBIT {                                                           \
+                                                                               \
+  namespace GAMBIT                                                             \
+  {                                                                            \
                                                                                \
     /* lifted straight: need this or something similar?                        \
     /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
@@ -214,8 +215,11 @@
     ADD_TAG_IN_CURRENT_NAMESPACE(PARAMETER)                                    \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAPABILITY)                                   \
                                                                                \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
+    namespace models                                                           \
+    {                                                                          \
+                                                                               \
+      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      {                                                                        \
                                                                                \
         /* Indicate that this model::parameterisation can provide quantity 
            CAPABILITY */                                                       \
@@ -230,24 +234,31 @@
         void PARAMETER (double &);                                             \
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
-        MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,\
+        MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,                              \
                       CAT_3(MODEL,_,PARAMETERISATION))                         \
                                                                                \
       }                                                                        \
+                                                                               \
     }                                                                          \
+                                                                               \
   }                                                                            \
+                                                                               \
   /* Create dependency of PARAMETER functor on
      host model parameters object */                                           \
   MODEL_DEPENDENCY(CAT_5(MODEL,_,PARAMETERISATION,_,parameters),               \
-                   ModelParameters,                                            \
-                   CAT_3(MODEL,_,PARAMETERISATION),                            \
-                   PARAMETER                                                   \
-                  )                                                            \
+   ModelParameters, CAT_3(MODEL,_,PARAMETERISATION), PARAMETER)                \
+                                                                               \
   /* Define the actual parameter setting function, now that we have the
      functor and its dependency */                                             \
-  namespace GAMBIT {                                                           \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    namespace models                                                           \
+    {                                                                          \
+                                                                               \
+      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      {                                                                        \
+                                                                               \
         /* The wrapper function which extracts the value of PARAMETER from
            the parameter object. This is the analogue of a module function, 
            and is what will be wrapped in a functor for processing by the 
@@ -259,7 +270,9 @@
         }                                                                      \
                                                                                \
       }                                                                        \
+                                                                               \
     }                                                                          \
+                                                                               \
   }    
   
   
@@ -268,15 +281,21 @@
 // need them if a specific capability is wanted, which MAP_TO_CAPABILITY
 // still provides.
 #define DEFINEPAR(PARAMETER)                                                   \
-  namespace GAMBIT {                                                           \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
-        /* Add this parameter to the parameterkeys list (used later to 
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    namespace models                                                           \
+    {                                                                          \
+                                                                               \
+      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      {                                                                        \
+                                                                               \
+        /* Add this parameter to the parameterkeys list (used later to         \
            create the parameter object) */                                     \
         /*parameterkeys.push_back(STRINGIFY(PARAMETER));                    */ \
                                                                                \
-        /* Compiler doesn't like calling push_back yet it seems, so do it at 
-           initialisation time using this ini_code trick. Don't call this 
+        /* Compiler doesn't like calling push_back yet it seems, so do it at   \
+           initialisation time using this ini_code trick. Don't call this      \
            function ever again!*/                                              \
         void CAT(add,PARAMETER)() {                                            \
           parameterkeys.push_back(STRINGIFY(PARAMETER));                       \
@@ -288,7 +307,9 @@
         }                                                                      \
                                                                                \
       }                                                                        \
+                                                                               \
     }                                                                          \
+                                                                               \
   }                                                                            \
 
 
@@ -329,23 +350,27 @@
 // define the function.
 #define INTERPRET_AS_X__BEGIN(MODEL_X)                                         \
                                                                                \
-  namespace GAMBIT {                                                           \
+  namespace GAMBIT                                                             \
+  {                                                                            \
                                                                                \
     /* Add tags which specify MODEL_X's parameter object as a CAPABILITY of
        the current model */                                                    \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL_X,_,parameters))                  \
                                                                                \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
+    namespace models                                                           \
+    {                                                                          \
                                                                                \
-        /* Indicate that this model::parameterisation can provide quantity 
+      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      {                                                                        \
+                                                                               \
+        /* Indicate that this model::parameterisation can provide quantity     \
            MODEL_X_parameters */                                               \
         template <>                                                            \
         bool provides<Tags::CAT_3(MODEL_X,_,parameters)>() { return true; }    \
                                                                                \
-        /* The function which computes the MODEL_X_parameters object. This
-           is the analogue of a module function, and is what will be wrapped 
-           in a functor for processing by the core 
+        /* The function which computes the MODEL_X_parameters object. This     \
+           is the analogue of a module function, and is what will be wrapped   \
+           in a functor for processing by the core                             \
            Note: CODE must be enclosed in braces. */                           \
         /* Register (prototype) the function */                                \
         void CAT_3(MODEL_X,_,parameters) (ModelParameters &);                  \
@@ -355,19 +380,14 @@
           CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION))         \
                                                                                \
       }                                                                        \
+                                                                               \
     }                                                                          \
+                                                                               \
   }                                                                            \
+                                                                               \
   /* Automatically add a dependency on the host model's parameters */          \
   INTERPRET_AS_X__DEPENDENCY(MODEL_X,                                          \
-                              CAT_5(MODEL,_,PARAMETERISATION,_,parameters),    \
-                              ModelParameters                                  \
-                            )                                                  \
-  /* Automatically add dependencies on the individual host model parameter
-     functors                                                                  \
-  INTERPRET_AS_X__DEPENDENCY(MODEL_X,                                          \
-                              CAT_5(MODEL,_,PARAMETERISATION,_,parameters),    \
-                              ModelParameters                                  \
-                            )    */                                           
+   CAT_5(MODEL,_,PARAMETERISATION,_,parameters), ModelParameters)              \
   
   
 // Actually define the interpret_as_X function. Alternatively this could be
@@ -377,9 +397,14 @@
 // macro like this the compiler can't see what line the user's error occurs on.
 #define INTERPRET_AS_X__DEFINE(MODEL_X,FUNC)                                   \
                                                                                \
-  namespace GAMBIT {                                                           \
-    namespace models {                                                         \
-      namespace CAT_3(MODEL,_,PARAMETERISATION) {                              \
+  namespace GAMBIT                                                             \
+  {                                                                            \
+                                                                               \
+    namespace models                                                           \
+    {                                                                          \
+                                                                               \
+      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      {                                                                        \
                                                                                \
         /* Track whether MODEL_X_parameters functor has been initialised yet */\
         bool CAT_3(MODEL_X,_,parameters_isinitialised)(false);                 \
@@ -396,8 +421,8 @@
                parameters. We could rewrite this to get the parameterkeys via
                the dependency system if we like. Currently this won't compile
                if MODEL_X has not been defined prior to the current model. */  \
-            cout<<"Initialising " STRINGIFY(MODEL_X) " parameter object "\
-            "at behest of model " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) \
+            cout<<"Initialising " STRINGIFY(MODEL_X) " parameter object "      \
+            "at behest of model " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))   \
             <<endl;                                                            \
                                                                                \
             target_parameters._definePars(models::MODEL_X::parameterkeys);     \
@@ -408,8 +433,11 @@
           FUNC (target_parameters);                                            \
                                                                                \
         }                                                                      \
+                                                                               \
       }                                                                        \
+                                                                               \
     }                                                                          \
+                                                                               \
   }                                                                            \
 
 #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
@@ -417,8 +445,8 @@
       CAT_3(MODEL,_,PARAMETERISATION),\
       CAT_3(MODEL_X,_,parameters)                                              \
       )                                                                        \
-// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 
+// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 #define INTERPRET_AS_PARENT__BEGIN                                             \
   INTERPRET_AS_X__BEGIN(PARENT)                                                \
 
