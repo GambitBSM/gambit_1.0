@@ -13,6 +13,8 @@ TODO:
 * Create "little guys" (parameter mini-functors : e.g. *params::M0)
 * Create mini-core for module stand-alone releases
 * Add chained 'depends on parameter' to functor class
+* Fix naming conventions
+  - filenames (lowercase+underscore)
 
 
 
@@ -27,5 +29,4 @@ Done:
 * Separate gambit_example.cpps
 * Fix naming conventions
   - GAMBIT->Gambit
-  - filenames (lowercase+underscore)
 
