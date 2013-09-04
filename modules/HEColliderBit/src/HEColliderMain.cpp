@@ -58,6 +58,7 @@ namespace Gambit {
       double xsec;
       //string name;
       // double nevents;
+      // double kFactor;
       /// @todo Calc effective lumi?
       /// @todo Add some metric of CPU cost per event for this process type?
       /// The processes are selected by the IDs of the particles which
@@ -67,6 +68,32 @@ namespace Gambit {
       vector<shared_ptr<Analysis>> analyses;
     };
 
+    class KFactorHooks : public Pythia8:UserHooks {
+      /// @todo once KFactorContainer is created, need to pass it in here.
+      KFactorHooks() {}
+      ~KFactorHooks() {}
+
+      // To apply the KFactors directly within pythia, need to modify the
+      // cross sections:
+      virtual bool canModifySigma() {return true;}
+      virtual double multiplySigmaBy(const Pythia8:SigmaProcess* sigmaProcessPtr,
+            const Pythia8:PhaseSpace* phaseSpacePtr, bool inEvent)
+      {
+        // Get the process code:
+        int processCode = sigmaProcessPtr->code();
+
+        // Each process has a different KFactor... does something like this work?
+        /// @todo this function has not been created yet....:
+        // return magicKFactor->getKFactorMagically(processCode);
+        return 1.
+      }
+
+    private:
+      /// @todo this class has not been created yet....:
+      // KFactorContainer *magicKFactor;
+      /// @todo should it instead get this info from SubprocessGroup?
+      SubprocessGroup *subprocessGroup;
+    };
   }
 }
 
@@ -135,6 +162,17 @@ int main()
   ///
   /// @note Needs even more complexity when we want to run different analyses
   /// with high acceptances for low-xsec subprocesses.
+  //
+  // Abram's thoughts and brainstorming about these issues:
+  // 1) Negligible processes: A process is negligible when the cross-section times acceptance
+  //    is so low that it will automatically be dwarfed by the background. I guess that makes the
+  //    likelihood for that particular analysis 1.
+  // 2) Acceptances can never be > 1, so there ought to be a fairly simple formula to apply even 
+  //    for low-xsecs. For instance:
+  //      if (xsec * ideal_acceptance)[worst subprocess] < 0.01 (xsec * crappy_acceptance)[next-to-worst subprocess]
+  // 3) The question then becomes: can we somehow estimate a priori ideal_acceptance and crappy_acceptance?
+  //
+  //
   const int NUM_THREADS = omp_get_max_threads();
   cout << "Total #threads = " << NUM_THREADS << endl;
   const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_THREADS);
