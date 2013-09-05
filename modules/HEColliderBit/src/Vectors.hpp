@@ -143,51 +143,43 @@ namespace Gambit {
     }
 
     /// Make a vector from (px,py,pz) coordinates and the mass
-    static P4 mkXYZM(double px, double py, double pz, double m) {
-      P4 rtn;
-      rtn.setPM(px, py, pz, m);
-      return rtn;
+    static P4 mkXYZM(double px, double py, double pz, double mass) {
+      return P4().setPM(px, py, pz, mass);
     }
 
     /// Make a vector from (eta,phi,energy) coordinates and the mass
     static P4 mkEtaPhiME(double eta, double phi, double mass, double E) {
-      // eta = -log(tan( 0.5 * theta() ))
-      // -> theta = 2 atan(exp(-eta))
-      const double theta = 2 * atan(exp(-eta));
-      return P4::mkThetaPhiME(theta, phi, mass, E);
+      return P4().setEtaPhiME(eta, phi, mass, E);
+    }
+
+    /// Make a vector from (eta,phi,pT) coordinates and the mass
+    static P4 mkEtaPhiMPt(double eta, double phi, double mass, double pt) {
+      return P4().setEtaPhiMPt(eta, phi, mass, pt);
     }
 
     /// Make a vector from (y,phi,energy) coordinates and the mass
     static P4 mkRapPhiME(double y, double phi, double mass, double E) {
-      // y = 0.5 * (E+pz)/(E-pz)
-      // 2y(E-pz) = E + pz
-      // -> E = pz (2y + 1)/(2y - 1)
-      // -> pz = E (2y - 1)/(2y + 1)
-      const double pz = E * (2*y - 1) / (2*y + 1);
-      const double prho = sqrt(sqr(E) - sqr(mass) - sqr(pz));
-      assert(prho >= 0);
-      const double px = prho * cos(phi);
-      const double py = prho * sin(phi);
-      return P4(px, py, pz, E);
+      return P4().setRapPhiME(y, phi, mass, E);
+    }
+
+    /// Make a vector from (y,phi,pT) coordinates and the mass
+    static P4 mkRapPhiMPt(double y, double phi, double mass, double pt) {
+      return P4().setRapPhiMPt(y, phi, mass, pt);
     }
 
     /// Make a vector from (theta,phi,energy) coordinates and the mass
     static P4 mkThetaPhiME(double theta, double phi, double mass, double E) {
-      const double p = sqrt( sqr(E) - sqr(mass) );
-      const double pz = p * cos(theta);
-      const double prho = p * sin(theta);
-      const double px = prho * cos(phi);
-      const double py = prho * sin(phi);
-      return P4(px, py, pz, E);
+      return P4().setThetaPhiME(theta, phi, mass, E);
     }
 
-    /// Make a vector from (rho,phi,energy) coordinates and the mass
-    static P4 mkRhoPhiME(double prho, double phi, double mass, double E) {
-      assert(prho >= 0);
-      const double px = prho * cos(phi);
-      const double py = prho * sin(phi);
-      const double pz = sqrt(sqr(E) - sqr(mass) - sqr(prho));
-      return P4(px, py, pz, E);
+    /// Make a vector from (theta,phi,pT) coordinates and the mass
+    static P4 mkThetaPhiMPt(double theta, double phi, double mass, double pt) {
+      return P4().setThetaPhiMPt(theta, phi, mass, pt);
+    }
+
+    /// Make a vector from (pT,phi,energy) coordinates and the mass
+    static P4 mkPtPhiME(double pt, double phi, double mass, double E) {
+      return P4().setPtPhiME(pt, phi, mass, E);
     }
 
     //@}
@@ -197,22 +189,141 @@ namespace Gambit {
     //@{
 
     /// Set the px coordinate
-    void setPx(double px) { _x = px; }
-    /// Set the py coordinate
-    void setPy(double py) { _y = py; }
-    /// Set the pz coordinate
-    void setPz(double pz) { _z = pz; }
-    /// Set the mass
-    void setM(double m) { _m = m; }
-    /// Set the p coordinates and mass simultaneously
-    void setPM(double px, double py, double pz, double m) {
-      setPx(px); setPy(py); setPz(pz);
-      setM(m);
+    P4& setPx(double px) {
+      _x = px;
+      return *this;
     }
-    /// Set the p coordinates and energy simultaneously
-    void setPE(double px, double py, double pz, double E) {
+
+    /// Set the py coordinate
+    P4& setPy(double py) {
+      _y = py;
+      return *this;
+    }
+
+    /// Set the pz coordinate
+    P4& setPz(double pz) {
+      _z = pz;
+      return *this;
+    }
+
+    /// Set the mass
+    P4& setM(double mass) {
+      assert(mass >= 0);
+      _m = mass;
+      return *this;
+    }
+
+    /// Set the p coordinates and mass simultaneously
+    P4& setPM(double px, double py, double pz, double mass) {
+      assert(mass >= 0);
       setPx(px); setPy(py); setPz(pz);
-      setM(sqrt( sqr(E) - sqr(p()) ));
+      setM(mass);
+      return *this;
+    }
+
+    /// Set the p coordinates and energy simultaneously
+    P4& setPE(double px, double py, double pz, double E) {
+      assert(E >= 0);
+      setPx(px); setPy(py); setPz(pz);
+      const double mass = sqrt( sqr(E) - sqr(p()) );
+      setM(mass);
+      return *this;
+    }
+
+    /// Set the vector state from (eta,phi,energy) coordinates and the mass
+    P4& setEtaPhiME(double eta, double phi, double mass, double E) {
+      // eta = -ln(tan(theta/2))
+      // -> theta = 2 atan(exp(-eta))
+      assert(mass >= 0);
+      assert(E >= 0);
+      const double theta = 2 * atan(exp(-eta));
+      assert(theta >= 0 && theta <= M_PI);
+      setThetaPhiME(theta, phi, mass, E);
+      return *this;
+    }
+
+    /// Set the vector state from (eta,phi,pT) coordinates and the mass
+    P4& setEtaPhiMPt(double eta, double phi, double mass, double pt) {
+      // eta = -ln(tan(theta/2))
+      // -> theta = 2 atan(exp(-eta))
+      assert(mass >= 0);
+      assert(pt >= 0);
+      const double theta = 2 * atan(exp(-eta));
+      assert(theta >= 0 && theta <= M_PI);
+      const double p = pt / sin(theta);
+      const double E = sqrt( sqr(p) + sqr(mass) );
+      setThetaPhiME(theta, phi, mass, E);
+      return *this;
+    }
+
+    /// Set the vector state from (y,phi,energy) coordinates and the mass
+    P4& setRapPhiME(double y, double phi, double mass, double E) {
+      // y = 0.5 * ln((E+pz)/(E-pz))
+      // -> E = pt cosh(y)
+      // -> pz = pt sinh(y)
+      // -> pt = E / cosh(y)
+      assert(mass >= 0);
+      assert(E >= 0);
+      const double pt = E / cosh(y);
+      assert(pt >= 0);
+      const double pz = pt * sinh(y);
+      const double px = pt * cos(phi);
+      const double py = pt * sin(phi);
+      setPE(px, py, pz, E);
+      return *this;
+    }
+
+    /// Set the vector state from (y,phi,pT) coordinates and the mass
+    P4& setRapPhiMPt(double y, double phi, double mass, double pt) {
+      // y = 0.5 * ln((E+pz)/(E-pz))
+      // -> E = pt cosh(y)
+      assert(mass >= 0);
+      assert(pt >= 0);
+      const double E = pt * cosh(y);
+      assert(E >= 0);
+      setRapPhiME(y, phi, mass, E);
+      return *this;
+    }
+
+    /// Set the vector state from (theta,phi,energy) coordinates and the mass
+    P4& setThetaPhiME(double theta, double phi, double mass, double E) {
+      assert(theta >= 0 && theta <= M_PI);
+      assert(mass >= 0);
+      assert(E >= 0);
+      const double p = sqrt( sqr(E) - sqr(mass) );
+      const double pz = p * cos(theta);
+      const double pt = p * sin(theta);
+      assert(pt >= 0);
+      const double px = pt * cos(phi);
+      const double py = pt * sin(phi);
+      setPE(px, py, pz, E);
+      return *this;
+    }
+
+    /// Set the vector state from (theta,phi,pT) coordinates and the mass
+    P4& setThetaPhiMPt(double theta, double phi, double mass, double pt) {
+      assert(theta >= 0 && theta <= 2*M_PI);
+      assert(pt >= 0);
+      assert(mass >= 0);
+      const double p = pt / sin(theta);
+      const double px = pt * cos(phi);
+      const double py = pt * sin(phi);
+      const double pz = p * cos(theta);
+      const double E = sqrt( sqr(p) + sqr(mass) );
+      setPE(px, py, pz, E);
+      return *this;
+    }
+
+    /// Set the vector state from (pT,phi,energy) coordinates and the mass
+    P4& setPtPhiME(double pt, double phi, double mass, double E) {
+      assert(pt >= 0);
+      assert(mass >= 0);
+      assert(E >= 0);
+      const double px = pt * cos(phi);
+      const double py = pt * sin(phi);
+      const double pz = sqrt(sqr(E) - sqr(mass) - sqr(pt));
+      setPE(px, py, pz, E);
+      return *this;
     }
 
     //@}
