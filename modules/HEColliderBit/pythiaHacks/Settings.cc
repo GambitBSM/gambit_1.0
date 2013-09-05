@@ -796,6 +796,18 @@ vector<int> Settings::ivect(string keyIn) {
   return vector<int>(1, 0); 
 }
 
+size_t Settings::vectLength(string keyIn) {
+  if (isVect(keyIn)) return vects[toLower(keyIn)].valNow.size(); 
+  infoPtr->errorMsg("Error in Settings::vect: unknown key", keyIn);
+  return 0; 
+}
+
+size_t Settings::ivectLength(string keyIn) {
+  if (isIVect(keyIn)) return ivects[toLower(keyIn)].valNow.size(); 
+  infoPtr->errorMsg("Error in Settings::ivect: unknown key", keyIn);
+  return 0; 
+}
+
 string Settings::word(string keyIn) {
   if (isWord(keyIn)) return words[toLower(keyIn)].valNow; 
   infoPtr->errorMsg("Error in Settings::word: unknown key", keyIn);

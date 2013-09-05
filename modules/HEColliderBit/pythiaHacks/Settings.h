@@ -227,6 +227,8 @@ public:
   double parm(string keyIn);
   vector<double> vect(string keyIn);
   vector<int> ivect(string keyIn);
+  size_t vectLength(string keyIn);
+  size_t ivectLength(string keyIn);
   string word(string keyIn); 
 
   // Give back default value, with check that key exists. 
