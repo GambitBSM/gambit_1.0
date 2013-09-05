@@ -53,7 +53,7 @@ namespace Gambit {
     vector<int> cutFlowVector_alt;
     vector<int> cutFlowVector;
     vector<string> cutFlowVector_str;
-    int NCUTS=41;
+    int NCUTS;
 
     // Debug histos
   public:
@@ -61,7 +61,7 @@ namespace Gambit {
     Analysis_ATLAS_1LEPStop_20invfb() {
       _numTN1Shape_bin1 = 0; _numTN1Shape_bin2 = 0; _numTN1Shape_bin3 = 0;
       _numTN2 = 0; _numTN3 = 0; _numBC1 = 0;
-      _numBC2 = 0; _numBC3 = 0;
+      _numBC2 = 0; _numBC3 = 0; NCUTS = 41;
 
       for(int i=0;i<NCUTS;i++){
 	cutFlowVector.push_back(0);

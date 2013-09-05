@@ -68,7 +68,7 @@ namespace Gambit {
       vector<shared_ptr<Analysis>> analyses;
     };
 
-    class KFactorHooks : public Pythia8:UserHooks {
+    class KFactorHooks : public Pythia8::UserHooks {
       /// @todo once KFactorContainer is created, need to pass it in here.
       KFactorHooks() {}
       ~KFactorHooks() {}
@@ -76,8 +76,8 @@ namespace Gambit {
       // To apply the KFactors directly within pythia, need to modify the
       // cross sections:
       virtual bool canModifySigma() {return true;}
-      virtual double multiplySigmaBy(const Pythia8:SigmaProcess* sigmaProcessPtr,
-            const Pythia8:PhaseSpace* phaseSpacePtr, bool inEvent)
+      virtual double multiplySigmaBy(const Pythia8::SigmaProcess* sigmaProcessPtr,
+            const Pythia8::PhaseSpace* phaseSpacePtr, bool inEvent)
       {
         // Get the process code:
         int processCode = sigmaProcessPtr->code();
@@ -85,7 +85,7 @@ namespace Gambit {
         // Each process has a different KFactor... does something like this work?
         /// @todo this function has not been created yet....:
         // return magicKFactor->getKFactorMagically(processCode);
-        return 1.
+        return 1.;
       }
 
     private:

@@ -35,8 +35,12 @@ MT2FLAGS := mt2_bisect.o
 
 .PHONY = all clean
 
-all: example-py8-bsm example-py8-0lep example-delphes-py8 #example-fastsim example-fastsim-py8
+all: mt2_bisect example-py8-bsm example-py8-0lep example-delphes-py8 #example-fastsim example-fastsim-py8
 	@true
+
+# mt2 calculator
+mt2_bisect: mt2_bisect.cpp mt2_bisect.h
+	$(CXX) mt2_bisect.cpp -c -lm -o example-fastsim.o
 
 # The simplest example of fastsim
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
