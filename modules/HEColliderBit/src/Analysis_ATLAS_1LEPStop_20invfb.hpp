@@ -4,7 +4,6 @@
 #include <memory>
 #include "TLorentzVector.h"
 #include "TVector2.h"
-#include "MT2Calculator/ComputeMT2.h"
 #include <iomanip>
 #include "mt2_bisect.h"
 
