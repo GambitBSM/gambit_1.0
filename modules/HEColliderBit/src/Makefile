@@ -30,7 +30,7 @@ ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 BOOSTFLAGS := -I$(BOOST)
 BOOSTSERIALIZATION := -L$(BOOST)/stage/lib -lboost_serialization
 DELPHESFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external -L$(DELPHESDIR) -lDelphes MT2Calculator/libBinnedLik.so
-MT2FLAGS := MT2Calculator/libBinnedLik.so
+MT2FLAGS := mt2_bisect.o
 
 
 .PHONY = all clean

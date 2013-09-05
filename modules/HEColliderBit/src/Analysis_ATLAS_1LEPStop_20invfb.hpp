@@ -5,9 +5,14 @@
 #include "TLorentzVector.h"
 #include "TVector2.h"
 #include "MT2Calculator/ComputeMT2.h"
+#include <iomanip>
+#include "mt2_bisect.h"
 
 /* The ATLAS 1 lepton direct stop analysis (20fb^-1). 
-   Code by Martin White.
+
+based on: ATLAS-CONF-2013-037
+
+   Code by Martin White, Sky French.
    Known errors:
    a) The isolation is already applied in the simulation rather than after overlap removal
    b) The ATLAS analysis uses the two jets with the highest b tag weight for the MT2 calculation. This is impossible for us. Instead, we should use the two truth b jets. However, the b efficiency will be applied when preselecting events.
@@ -16,6 +21,8 @@
    Known features:
    a) Must run simulator with 75% b tagging efficiency and 2% mis-id rate
    b) For now have nicked ATLAS MT2 code. Need to check status of this for public release. The better option is to write a non-ROOT version later.
+   ===> STF: Now using mt2 bisect method from H. Cheng, Z. Han, arXiv:0810.5178 for mT2 calculation
+
 */
 
 namespace Gambit {
@@ -44,8 +51,10 @@ namespace Gambit {
     int _numTN1Shape_bin1, _numTN1Shape_bin2, _numTN1Shape_bin3,
       _numTN2, _numTN3, _numBC1, _numBC2,_numBC3;
 
+    vector<int> cutFlowVector_alt;
     vector<int> cutFlowVector;
-    int NCUTS=20;
+    vector<string> cutFlowVector_str;
+    int NCUTS=41;
 
     // Debug histos
   public:
@@ -57,6 +66,8 @@ namespace Gambit {
 
       for(int i=0;i<NCUTS;i++){
 	cutFlowVector.push_back(0);
+	cutFlowVector_str.push_back("");
+	cutFlowVector_alt.push_back(0);
       }
       
     }
@@ -122,12 +133,35 @@ namespace Gambit {
 
       TLorentzVector MET;
       MET.SetXYZM(metVec.px(),metVec.py(),0.,0.);
-
-      ComputeMT2 stuff(jet1B+lepton,jet2B,MET,0.,80.);
-      double mt2a  = stuff.ComputeNumeric();
       
-      ComputeMT2 stuff2(jet2B+lepton,jet1B,MET,0.,80.);
-      double mt2b = stuff2.ComputeNumeric();
+      TLorentzVector lepton_plus_jet1B;
+      TLorentzVector lepton_plus_jet2B;
+      
+      lepton_plus_jet1B = lepton+jet1B;
+      lepton_plus_jet2B = lepton+jet2B;
+      
+      double pa_a[3] = { 0, lepton_plus_jet1B.Px(), lepton_plus_jet1B.Py() };
+      double pb_a[3] = { 80, jet2B.Px(), jet2B.Py() };
+      double pmiss_a[3] = { 0, MET.Px(), MET.Py() };
+      double mn_a = 0.;
+
+      mt2_bisect::mt2 mt2_event_a;
+      
+      mt2_event_a.set_momenta(pa_a,pb_a,pmiss_a);
+      mt2_event_a.set_mn(mn_a);
+
+      double mt2a = mt2_event_a.get_mt2();
+      
+      double pa_b[3] = { 0, lepton_plus_jet2B.Px(), lepton_plus_jet2B.Py() };
+      double pb_b[3] = { 80, jet1B.Px(), jet1B.Py() };
+      double pmiss_b[3] = { 0, MET.Px(), MET.Py() };
+      double mn_b = 0.;
+
+      mt2_bisect::mt2 mt2_event_b;
+      
+      mt2_event_b.set_momenta(pa_b,pb_b,pmiss_b);
+      mt2_event_b.set_mn(mn_b);
+      double mt2b = mt2_event_b.get_mt2();
       
       double aMT2_BM = min(mt2a,mt2b);
       results.aMT2_BM=aMT2_BM;
@@ -140,10 +174,24 @@ namespace Gambit {
 	  jet3 = current;
 	  break;
 	}
+
         TLorentzVector jet3B;
 	jet3B.SetPtEtaPhiE(jet3->pT(),jet3->eta(),jet3->phi(),jet3->E());
-        ComputeMT2 stuff3(jet3B,lepton,MET,0.,0.);
-	double MT2tauB = stuff3.ComputeNumeric();
+	//	std::cout<<"jet 3 "<<jet3B.Px()<<" "<<jet3B.Py()<<std::endl;
+	
+	double pa_tau[3] = { 0, jet3B.Px(), jet3B.Py() };
+	double pb_tau[3] = { 0, lepton.Px(), lepton.Py() };
+	double pmiss_tau[3] = { 0, MET.Px(), MET.Py() };
+	double mn_tau = 0.;
+	
+	mt2_bisect::mt2 mt2_event_tau;
+	
+	mt2_event_tau.set_momenta(pa_tau,pb_tau,pmiss_tau);
+	mt2_event_tau.set_mn(mn_tau);
+	
+        //ComputeMT2 stuff3(jet3B,lepton,MET,0.,0.);
+	//double MT2tauB = stuff3.ComputeNumeric();
+	double MT2tauB = mt2_event_tau.get_mt2();//calcMT2(0,jet3B.Pt(),jet3B.Eta(),jet3B.Phi(),jet3B.E(),0,lepton.Pt(),lepton.Eta(),lepton.Phi(),lepton.E(),MET.Px(),MET.Py(),0);
 	results.MT2tauB=MT2tauB;
       }
       return results;
@@ -161,22 +209,18 @@ namespace Gambit {
       vector<Particle*> baselineElectrons;
       for (Particle* electron : event->electrons()) {
         if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
-	//cout << "Electron E " << electron->E() << endl;
       }
       vector<Particle*> baselineMuons;
       for (Particle* muon : event->muons()) {
         if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
-	//cout << "Muon E " << muon->E() << endl;
       }
 
       vector<Jet*> baselineJets;
       vector<Jet*> bJets;
       vector<Jet*> trueBJets; //for debugging
       for (Jet* jet : event->jets()) {
-	//cout << "jet E " << jet->E() << endl;
         if (jet->pT() > 20. && fabs(jet->eta()) < 10.0) baselineJets.push_back(jet); 
 	if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
-
       }
       
       // Overlap removal
@@ -285,80 +329,58 @@ namespace Gambit {
       for (Jet* jet : signalJets) {
 	if(jet->pT()>30.)meff += jet->pT();
       }
-      //Cutflow for SRtN2
+      //Cutflow flags
       bool cut_1SignalElectron=false;
       bool cut_1SignalMuon=false;
       bool cut_4jets=false;
       bool cut_Btag=false;
-      bool cut_METGt100=false;
       bool cut_sigGt5=false;
       bool cut_dPhiJet2=false;
+      bool cut_dPhiJet1=false;
+      bool cut_METGt275=false;
       bool cut_METGt200=false;
+      bool cut_METGt160=false;
+      bool cut_METGt150=false;
+      bool cut_METGt100=false;
       bool cut_sigGt13=false;
+      bool cut_sigGt11=false;
+      bool cut_sigGt8=false;
+      bool cut_sigGt7=false;
+      bool cut_mTGt120=false;
       bool cut_mTGt140=false;
+      bool cut_mTGt180=false;
+      bool cut_mTGt200=false;
       bool cut_PassHadTop=false;
-
+      bool cut_meffGt550=false;
+      bool cut_meffGt700=false;
 
       if(signalElectrons.size()==1 && electronsForVeto.size()==1 && muonsForVeto.size()==0)cut_1SignalElectron=true;
       if(signalMuons.size()==1 && muonsForVeto.size()==1 && electronsForVeto.size()==0)cut_1SignalMuon=true;
       
       if(passJetCut)cut_4jets=true;
       if(passBJetCut)cut_Btag=true;
-      if(met>100.)cut_METGt100=true;
-      if(metOverSqrtHT>5.)cut_sigGt5=true;
       if(dphi_jetmet2>0.8)cut_dPhiJet2=true;
+      if(dphi_jetmet1>0.8)cut_dPhiJet1=true;
+      if(met>100.)cut_METGt100=true;
+      if(met>150.)cut_METGt150=true;
+      if(met>160.)cut_METGt160=true;
       if(met>200.)cut_METGt200=true;
+      if(met>275.)cut_METGt275=true;
       if(metOverSqrtHT>13.)cut_sigGt13=true;
+      if(metOverSqrtHT>11.)cut_sigGt11=true;
+      if(metOverSqrtHT>8.)cut_sigGt8=true;
+      if(metOverSqrtHT>7.)cut_sigGt7=true;
+      if(metOverSqrtHT>5.)cut_sigGt5=true;
+      if(mT>120.)cut_mTGt120=true;
       if(mT>140.)cut_mTGt140=true;
-      
+      if(mT>180.)cut_mTGt180=true;
+      if(mT>200.)cut_mTGt200=true;
+      if(meff>500.)cut_meffGt550=true;
+      if(meff>700.)cut_meffGt700=true;
+
       //Apply the basic preselection to save costly MT2 calculation
-      if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
-
-      /*for(int j=0;j<NCUTS;j++){
-	if(
-	   (j==0) || 
-
-	   //Electron cutflow
-	   (j==1 && cut_1SignalElectron) ||
-	  
-	   (j==2 && cut_1SignalElectron && cut_4jets) ||
-
-	   (j==3 && cut_1SignalElectron && cut_4jets && cut_Btag) ||
-
-	   (j==4 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100) ||
-	  
-	   (j==5 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5) ||
-
-	   (j==6 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2) ||
-
-	   (j==7 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200) ||
-	   
-	   (j==8 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13) ||
-
-	   (j==9 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13 && cut_mTGt140) ||
-
-	   //Muon cutflow
-	   (j==10 && cut_1SignalMuon) ||
-	   
-	   (j==11 && cut_1SignalMuon && cut_4jets) ||
-	   
-	   (j==12 && cut_1SignalMuon && cut_4jets && cut_Btag) ||
-	   
-	   (j==13 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100) ||
-	  
-	   (j==14 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5) ||
-
-	   (j==15 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2) ||
-
-	   (j==16 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200) ||
-	   
-	   (j==17 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13) ||
-
-	   (j==18 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13 && cut_mTGt140) 
-	   )cutFlowVector[j]++;
-	   }*/
-      
-      //Do hadronic top reconstruction
+      //if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
+  //Do hadronic top reconstruction
       float mindR1=9999.;
       float mindR2=9999.;
       float index1=9999.;
@@ -376,7 +398,6 @@ namespace Gambit {
 	    iJetVec.SetPtEtaPhiE(signalJets[iJet]->pT(),signalJets[iJet]->eta(),signalJets[iJet]->phi(),signalJets[iJet]->E());
 	    TLorentzVector jJetVec;
 	    jJetVec.SetPtEtaPhiE(signalJets[jJet]->pT(),signalJets[jJet]->eta(),signalJets[jJet]->phi(),signalJets[jJet]->E());
-	    cout << "JETMASS " << (iJetVec+jJetVec).M() << endl;
   	    if(iJetVec.DeltaR(jJetVec) < mindR1 && (iJetVec+jJetVec).M() > 60.){
 	      mindR1 =iJetVec.DeltaR(jJetVec);
 	      index1 = iJet;
@@ -395,7 +416,6 @@ namespace Gambit {
 	    JetVec1.SetPtEtaPhiE(signalJets[index1]->pT(),signalJets[index1]->eta(),signalJets[index1]->phi(),signalJets[index1]->E());
 	    TLorentzVector JetVec2;
 	    JetVec2.SetPtEtaPhiE(signalJets[index2]->pT(),signalJets[index2]->eta(),signalJets[index2]->phi(),signalJets[index2]->E());
-	    
 	    if(kJetVec.DeltaR(JetVec1+JetVec2)<mindR2 && (JetVec1+JetVec2+kJetVec).M() > 130.){ 
 	      mindR2=kJetVec.DeltaR(JetVec1+JetVec2);
 	      index3=kJet;
@@ -415,7 +435,6 @@ namespace Gambit {
       }
       
       bool passHadTop=false;
-      cout << "mHADTOP " << mHadTop << endl;
       if(mHadTop>130. && mHadTop<205.)passHadTop=true;
       
       if(passHadTop)cut_PassHadTop=true;
@@ -427,10 +446,180 @@ namespace Gambit {
       double amt2 = mt2s.aMT2_BM;
       double mt2tau = mt2s.MT2tauB;
     
+      std::cout<<amt2<<" "<<mt2tau<<std::endl;
+      
+      if(cut_1SignalElectron && cut_4jets && cut_Btag) {
+	cutFlowVector_alt[0]++;
+	if(mHadTop<205.) {
+	  cutFlowVector_alt[1]++;
+	  if(cut_dPhiJet1) {
+	    cutFlowVector_alt[2]++;
+	    if(cut_mTGt180) {
+	      cutFlowVector_alt[3]++;
+	      if(cut_sigGt11) {
+		cutFlowVector_alt[4]++;
+		if(amt2>200.) {
+		  cutFlowVector_alt[5]++;
+		  if(mt2tau>120.) {
+		    cutFlowVector_alt[6]++;
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+      }
+	
       //double amt2=0;
       //double mt2tau=0;
 
+      cutFlowVector_str[0] = "No cuts ";
+      cutFlowVector_str[1] = "Electron (=1 signal) ";
+      cutFlowVector_str[2] = "4 jets (80, 60, 40, 25) ";
+      cutFlowVector_str[3] = ">=1 b. tag ";
+      cutFlowVector_str[4] = "ETmiss > 100 GeV [all SRs] ";
+      cutFlowVector_str[5] = "ETmiss / sqrt(HT) > 5 [all SRs] ";
+      cutFlowVector_str[6] = "dPhi(jet2,MET) > 0.8 [all SRs] ";
+      cutFlowVector_str[7] = "dPhi(jet1,MET) > 0.8 [not SRtN2] ";
+      cutFlowVector_str[8] = "ETmiss > 200 GeV (SRtN2) ";
+      cutFlowVector_str[9] = "ETmiss / sqrt(HT) > 13 (SRtN2) ";
+      cutFlowVector_str[10] = "mT > 140 GeV (SRtN2) ";
+      cutFlowVector_str[11] = "ETmiss > 275 GeV (SRtN3) ";
+      cutFlowVector_str[12] = "ETmiss / sqrt(HT) > 11 (SRtN3) ";
+      cutFlowVector_str[13] = "mT > 200 GeV (SRtN3) ";
+      cutFlowVector_str[14] = "ETmiss > 150 GeV (SRbC1-SRbC3) ";
+      cutFlowVector_str[15] = "ETmiss / sqrt(HT) > 7 (SRbC1-SRbC3) ";
+      cutFlowVector_str[16] = "mT > 120 GeV (SRbC1-SRbC3) ";
+      cutFlowVector_str[17] = "ETmiss > 160 GeV (SRbC2,SRbC3) ";
+      cutFlowVector_str[18] = "ETmiss / sqrt(HT) > 8 (SRbC2,SRbC3) ";
+      cutFlowVector_str[19] = "meff > 550 GeV (SRbC2) ";
+      cutFlowVector_str[20] = "meff > 700 GeV (SRbC3) ";
 
+      cutFlowVector_str[21] = "Muon (=1 signal) ";
+      cutFlowVector_str[22] = "4 jets (80, 60, 40, 25) ";
+      cutFlowVector_str[23] = ">=1 b. tag ";
+      cutFlowVector_str[24] = "ETmiss > 100 GeV [all SRs] ";
+      cutFlowVector_str[25] = "ETmiss / sqrt(HT) > 5 [all SRs] ";
+      cutFlowVector_str[26] = "dPhi(jet2,MET) > 0.8 [all SRs] ";
+      cutFlowVector_str[27] = "dPhi(jet1,MET) > 0.8 [not SRtN2] ";
+      cutFlowVector_str[28] = "ETmiss > 200 GeV (SRtN2) ";
+      cutFlowVector_str[29] = "ETmiss / sqrt(HT) > 13 (SRtN2) ";
+      cutFlowVector_str[30] = "mT > 140 GeV (SRtN2) ";
+      cutFlowVector_str[31] = "ETmiss > 275 GeV (SRtN3) ";
+      cutFlowVector_str[32] = "ETmiss / sqrt(HT) > 11 (SRtN3) ";
+      cutFlowVector_str[33] = "mT > 200 GeV (SRtN3) ";
+      cutFlowVector_str[34] = "ETmiss > 150 GeV (SRbC1-SRbC3) ";
+      cutFlowVector_str[35] = "ETmiss / sqrt(HT) > 7 (SRbC1-SRbC3) ";
+      cutFlowVector_str[36] = "mT > 120 GeV (SRbC1-SRbC3) ";
+      cutFlowVector_str[37] = "ETmiss > 160 GeV (SRbC2,SRbC3) ";
+      cutFlowVector_str[38] = "ETmiss / sqrt(HT) > 8 (SRbC2,SRbC3) ";
+      cutFlowVector_str[39] = "meff > 550 GeV (SRbC2) ";
+      cutFlowVector_str[40] = "meff > 700 GeV (SRbC3) ";
+
+    					       
+      for(int j=0;j<NCUTS;j++){
+	if(
+	   (j==0) || 
+
+	   //Electron cutflow
+	   (j==1 && cut_1SignalElectron) ||
+	  
+	   (j==2 && cut_1SignalElectron && cut_4jets) ||
+
+	   (j==3 && cut_1SignalElectron && cut_4jets && cut_Btag) ||
+
+	   (j==4 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100) ||
+	  
+	   (j==5 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5) ||
+
+	   (j==6 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2) ||
+
+	   (j==7 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1) ||
+	  
+	   //SRtN2 - no cut_dPhiJet1
+	   
+	   (j==8 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200) ||
+
+	   (j==9 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13) ||
+
+	   (j==10 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13 && cut_mTGt140) ||
+
+	   //SRtN3
+
+	   (j==11 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt275) ||
+	   
+	   (j==12 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11) ||
+
+	   (j==13 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11 && cut_mTGt200) ||
+
+	   //SRbC1 - SRbC3
+
+	   (j==14 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150) ||
+
+	   (j==15 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7) ||
+
+	   (j==16 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120) ||
+
+	   (j==17 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160) ||
+
+	   (j==18 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8) ||
+
+	   (j==19 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt550) ||
+
+	   (j==20 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt700) || 
+
+	   //Muon cutflow
+	   
+	   (j==21 && cut_1SignalMuon) ||
+	  
+	   (j==22 && cut_1SignalMuon && cut_4jets) ||
+
+	   (j==23 && cut_1SignalMuon && cut_4jets && cut_Btag) ||
+
+	   (j==24 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100) ||
+	  
+	   (j==25 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5) ||
+
+	   (j==26 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2) ||
+
+	   (j==27 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1) ||
+	  
+	   //SRtN2 - no cut_dPhiJet1
+	   
+	   (j==28 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200) ||
+
+	   (j==29 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13) ||
+
+	   (j==30 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2 && cut_METGt200 && cut_sigGt13 && cut_mTGt140) ||
+
+	   //SRtN3
+
+	   (j==31 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt275) ||
+	   
+	   (j==32 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11) ||
+
+	   (j==33 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11 && cut_mTGt200) ||
+
+	   //SRbC1 - SRbC3
+
+	   (j==34 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150) ||
+
+	   (j==35 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7) ||
+
+	   (j==36 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120) ||
+
+	   (j==37 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160) ||
+
+	   (j==38 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8) ||
+
+	   (j==39 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt550) ||
+
+	   (j==40 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt700) )
+	   
+
+	  cutFlowVector[j]++;
+      }
+      
       //We're now ready to apply the cuts for each signal region
       //_numTN1Shape_bin1, _numTN1Shape_bin2, _numTN1Shape_bin3,_numTN2, _numTN3, _numBC1, _numBC2, _numBC3;
 
@@ -442,115 +631,122 @@ namespace Gambit {
 	 passHadTop &&
 	 nBjets >= 1 &&
 	 bJets[0]->pT()>25.){
-	
 	if(met>100. && met<125.)_numTN1Shape_bin1++;
 	if(met>125. && met<150.)_numTN1Shape_bin2++;
 	if(met>150.)_numTN1Shape_bin3++;
       }
-
+      
+      //We're now ready to apply the cuts for each signal region
+      //_numTN1Shape_bin1, _numTN1Shape_bin2, _numTN1Shape_bin3,_numTN2, _numTN3, _numBC1, _numBC2, _numBC3;
+      
+      //Do the three bins of the TN1 shape fit
+      if(nBjets>=1) {
+	if(dphi_jetmet1>0.8 && 
+	   dphi_jetmet2>0.8 &&
+	   mT>140. && //use tightest mT bin only for now
+	   metOverSqrtHT>5. &&
+	   passHadTop &&
+	   nBjets >= 1 &&
+	   bJets[0]->pT()>25.){
+	  
+	  if(met>100. && met<125.)_numTN1Shape_bin1++;
+	  if(met>125. && met<150.)_numTN1Shape_bin2++;
+	  if(met>150.)_numTN1Shape_bin3++;
+	}
+      }
+      
       //Do SRtN2      
-      if(dphi_jetmet2>0.8 &&
-	 met>200. &&
-	 metOverSqrtHT>13. &&
-	 mT>140. &&
-	 amt2>170. &&
-	 passHadTop &&
-	 bJets[0]->pT()>25.)_numTN2++;
-      
-      if(dphi_jetmet2>0.8 &&
-	 met>200. &&
-	 metOverSqrtHT>13. &&
-	 mT>140.)cout << "PASSPRESEL" << endl;
+      if(nBjets>=1) {
+	if(dphi_jetmet2>0.8 &&
+	   met>200. &&
+	   metOverSqrtHT>13. &&
+	   mT>140. &&
+	   amt2>170. &&
+	   passHadTop &&
+	   bJets[0]->pT()>25.)_numTN2++;
+      }
 
-      if(dphi_jetmet2>0.8 &&
-	 met>200. &&
-	 metOverSqrtHT>13. &&
-	 mT>140. &&
-	 bJets[0]->pT()>25. &&
-	 passHadTop)cout << "PASSEDHADTOP" << endl;
-
-      if(dphi_jetmet2>0.8 &&
-	 met>200. &&
-	 metOverSqrtHT>13. &&
-	 mT>140. &&
-	 bJets[0]->pT()>25. &&
-	 amt2>170.)cout << "PASSEDAMT2" << endl;
-
-      
       //Do SRtN3      
-      if(dphi_jetmet1>0.8 &&
-	 dphi_jetmet2>0.8 &&
-	 met>275. &&
-	 metOverSqrtHT>11. &&
-	 mT>200. &&
-	 amt2>175. &&
-	 mt2tau>80. &&
-	 passHadTop &&
-	 bJets[0]->pT()>25.)_numTN3++;
+      if(nBjets>=1) {
+	if(dphi_jetmet1>0.8 &&
+	   dphi_jetmet2>0.8 &&
+	   met>275. &&
+	   metOverSqrtHT>11. &&
+	   mT>200. &&
+	   amt2>175. &&
+	   mt2tau>80. &&
+	   passHadTop &&
+	   bJets[0]->pT()>25.)_numTN3++;
+      }
 
       //Do SRbC1      
-      if(dphi_jetmet1>0.8 &&
-	 dphi_jetmet2>0.8 &&
-	 met>150. &&
-	 metOverSqrtHT>7. &&
-	 mT>120. &&
-	 bJets[0]->pT()>25.)_numBC1++;
+      if(nBjets>=1) {
+	if(dphi_jetmet1>0.8 &&
+	   dphi_jetmet2>0.8 &&
+	   met>150. &&
+	   metOverSqrtHT>7. &&
+	   mT>120. &&
+	   bJets[0]->pT()>25.)_numBC1++;
+      }
 
       //Do SRbC2      
-      if(dphi_jetmet1>0.8 &&
-	 dphi_jetmet2>0.8 &&
-	 met>160. &&
-	 metOverSqrtHT>8. &&
-	 mT>120. &&
-	 meff > 550. &&
-	 amt2>175. &&
-	 nBjets >=2 &&
-	 bJets[0]->pT()>100.&&
-	 bJets[1]->pT()>50)_numBC2++;
+      if(nBjets>=2) {
+	if(dphi_jetmet1>0.8 &&
+	   dphi_jetmet2>0.8 &&
+	   met>160. &&
+	   metOverSqrtHT>8. &&
+	   mT>120. &&
+	   meff > 550. &&
+	   amt2>175. &&
+	   nBjets >=2 &&
+	   bJets[0]->pT()>100.&&
+	   bJets[1]->pT()>50)_numBC2++;
+      }
 
       //Do SRbC3     
-      if(dphi_jetmet1>0.8 &&
-	 dphi_jetmet2>0.8 &&
-	 met>160. &&
-	 metOverSqrtHT>8. &&
-	 mT>120. &&
-	 meff > 700. &&
-	 amt2>200. &&
-	 nBjets >=2 &&
-	 bJets[0]->pT()>120.&&
-	 bJets[1]->pT()>90)_numBC3++;
-      
-
+      if(nBjets>=2) {
+	if(dphi_jetmet1>0.8 &&
+	   dphi_jetmet2>0.8 &&
+	   met>160. &&
+	   metOverSqrtHT>8. &&
+	   mT>120. &&
+	   meff > 700. &&
+	   amt2>200. &&
+	   nBjets >=2 &&
+	   bJets[0]->pT()>120.&&
+	   bJets[1]->pT()>90)_numBC3++;
+      }
+	
       return;
       
     }
       
     void finalize() {
-      cout << "NUMEVENTS: " << _numTN1Shape_bin1 << " " << _numTN1Shape_bin2 << " " << _numTN1Shape_bin3 << " " << _numTN2 << " "  << _numTN3 << " " <<  _numBC1 << " " << _numBC2 << " " << _numBC3 << endl;
- 
-      /*cout << "@@@ Electron cutflow for STtN2" << endl;
-      cout << "@@@ No cuts " << cutFlowVector[0] << endl;
-      cout << "@@@ Electron (= 1 signal) " << cutFlowVector[1] << endl;
-      cout << "@@@ 4 jets (80, 60, 40, 25) " << cutFlowVector[2] << endl;
-      cout << "@@@ at least 1 b-tag (4 lead. jets)" << cutFlowVector[3] << endl;
-      cout << "@@@ MET> 100 GeV " << cutFlowVector[4] << endl;
-      cout << "@@@ significance> 5 " << cutFlowVector[5] << endl;
-      cout << "@@@ dPhiJet2 > 0.8 " << cutFlowVector[6] << endl;
-      cout << "@@@ MET > 200 " << cutFlowVector[7] << endl;
-      cout << "@@@ signficance > 13 " << cutFlowVector[8] << endl;
-      cout << "@@@ mT>140 " << cutFlowVector[9] << endl;
 
-      cout << "@@@ Muon cutflow for STtN2" << endl;
-      cout << "@@@ No cuts " << cutFlowVector[0] << endl;
-      cout << "@@@ Muon (= 1 signal) " << cutFlowVector[10] << endl;
-      cout << "@@@ 4 jets (80, 60, 40, 25) " << cutFlowVector[11] << endl;
-      cout << "@@@ at least 1 b-tag (4 lead. jets)" << cutFlowVector[12] << endl;
-      cout << "@@@ MET> 100 GeV " << cutFlowVector[13] << endl;
-      cout << "@@@ significance> 5 " << cutFlowVector[14] << endl;
-      cout << "@@@ dPhiJet2 > 0.8 " << cutFlowVector[15] << endl;
-      cout << "@@@ MET > 200 " << cutFlowVector[16] << endl;
-      cout << "@@@ signficance > 13 " << cutFlowVector[17] << endl;
-      cout << "@@@ mT>140 " << cutFlowVector[18] << endl;*/
+      using namespace std;
+
+      double scale_to = 100000.0;
+      double trigger_cleaning_eff = 0.85;
+      
+      cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+      cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
+      cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
+      cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
+      cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+
+      std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
+      for(int j=0; j<NCUTS; j++) {
+	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
+      }
+      cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+      cout << "BONUS amt2/mt2tau check - needs stop 700, LSP 1 "<<std::endl;
+      cout << "up to and incl. b-tag (1413) " << cutFlowVector_alt[0] << " " << cutFlowVector_alt[0]*1413/cutFlowVector_alt[0] << endl;
+      cout << "top cut (839) " << cutFlowVector_alt[1]<<  " " << cutFlowVector_alt[1]*1413/cutFlowVector_alt[0] <<endl;
+      cout << "dPhi1 cut (734) " << cutFlowVector_alt[2] <<  " " << cutFlowVector_alt[2]*1413/cutFlowVector_alt[0] <<endl;
+      cout << "mT > 180 (527) " << cutFlowVector_alt[3] <<  " " << cutFlowVector_alt[3]*1413/cutFlowVector_alt[0] <<endl;
+      cout << "MET sig > 11 (438) " << cutFlowVector_alt[4] << " " << cutFlowVector_alt[4]*1413/cutFlowVector_alt[0] << endl;
+      cout << "amT2 > 200 (318) " << cutFlowVector_alt[5] <<  " " << cutFlowVector_alt[5]*1413/cutFlowVector_alt[0] <<endl;
+      cout << "mT2tau > 120 (298) " <<cutFlowVector_alt[6] <<  " " << cutFlowVector_alt[6]*1413/cutFlowVector_alt[0] <<endl;
     }
 
 
@@ -559,8 +755,8 @@ namespace Gambit {
       return 1.0;
     }
     
-    
-    };
-    
-
-  }
+ 
+     
+      
+};
+}
