@@ -40,7 +40,7 @@ all: mt2_bisect example-py8-bsm example-py8-0lep example-delphes-py8 #example-fa
 
 # mt2 calculator
 mt2_bisect: mt2_bisect.cpp mt2_bisect.h
-	$(CXX) mt2_bisect.cpp -c -lm -o example-fastsim.o
+	$(CXX) mt2_bisect.cpp -c -lm -o mt2_bisect.o
 
 # The simplest example of fastsim
 example-fastsim: DetectorResponse.cpp FastSim.cpp example-fastsim.cpp $(HEADERS)
@@ -59,7 +59,7 @@ example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 OPTFLAGS := -DQUIET -DARCHIVE #-DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
 	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
-      -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
+      -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) $(MT2FLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
 
 example-stop-py8: HEColliderMain_StopExample.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS_1LEPStop_20invfb.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
 	$(CXX) HEColliderMain_StopExample.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
