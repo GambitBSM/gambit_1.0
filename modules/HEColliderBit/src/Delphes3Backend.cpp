@@ -200,13 +200,13 @@ namespace Gambit {
           recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
                                       momentum.E(), -sign(candidate->Charge) * PID::TAU);
           recoParticle->setPrompt(true);
-	  recoParticle->setM(0.);
+	  recoParticle->setM(0.000001);
           event.addParticle(recoParticle);
           //continue;
         }
 	else {
 	  recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E(), candidate->PID, candidate->BTag);
-	  recoJet->setM(0.);
+	  recoJet->setM(0.000001);
 	 
 	  event.addJet(recoJet);
 	}

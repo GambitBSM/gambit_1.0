@@ -145,6 +145,7 @@ int main()
   //                  2000001, 2000002, 2000003, 2000004}}, 
   //                {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
   //sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+  std::cout << "In stop example " << endl;
   sp_groups["t~"] = Gambit::HEColliderBit::SubprocessGroup(1,{{1000006}},{{ 1000006}});
   // Bind subprocesses to analysis pointers
   for (auto& sp_group : sp_groups)
@@ -193,6 +194,8 @@ int main()
     const int NTHREAD = omp_get_thread_num();
     myPythia = new Gambit::HEColliderBit::Pythia8Backend(NTHREAD);
     myPythia->set("SLHA:file", slhaFileName);
+    //std::cout << "Particle" << thread_cfgs[NTHREAD].particlesInProcess1 << endl;
+
     myPythia->set("SUSY:idVectA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVectB", thread_cfgs[NTHREAD].particlesInProcess2);
 
