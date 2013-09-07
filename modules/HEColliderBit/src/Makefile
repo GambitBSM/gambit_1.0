@@ -35,7 +35,7 @@ MT2FLAGS := mt2_bisect.o
 
 .PHONY = all clean
 
-all: mt2_bisect example-py8-bsm example-py8-0lep example-delphes-py8 #example-fastsim example-fastsim-py8
+all: mt2_bisect example-py8-bsm example-py8-0lep example-delphes-py8 example-MJW-stop #example-fastsim example-fastsim-py8
 	@true
 
 # mt2 calculator
@@ -60,6 +60,10 @@ OPTFLAGS := -DQUIET -DARCHIVE #-DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
 	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
       -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) $(MT2FLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
+
+example-MJW-stop: HEColliderMain-StopMJW.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
+	$(CXX) HEColliderMain-StopMJW.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
+      -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) $(MT2FLAGS) -lEG $(OPTFLAGS) -o example-MJW-stop
 
 example-stop-py8: HEColliderMain_StopExample.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS_1LEPStop_20invfb.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
 	$(CXX) HEColliderMain_StopExample.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
