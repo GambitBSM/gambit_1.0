@@ -65,10 +65,6 @@ example-MJW-stop: HEColliderMain-StopMJW.cpp Delphes3Backend.cpp Pythia8Backend.
 	$(CXX) HEColliderMain-StopMJW.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
       -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) $(MT2FLAGS) -lEG $(OPTFLAGS) -o example-MJW-stop
 
-example-stop-py8: HEColliderMain_StopExample.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS_1LEPStop_20invfb.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
-	$(CXX) HEColliderMain_StopExample.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
-      -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-stop-py8
-
 AbsoluteIsolation_dict.cc: AbsoluteIsolation.h
 	@echo "Generating dictionary ..."
 	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
