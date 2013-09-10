@@ -152,8 +152,8 @@ namespace Gambit {
       iteratorPhotons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
-                                    momentum.E(), PID::PHOTON);
+        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), 
+                                    PID::PHOTON);
         recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
@@ -165,11 +165,8 @@ namespace Gambit {
       iteratorElectrons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-	
-        recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
-                                    momentum.E(), -sign(candidate->Charge) * PID::ELECTRON);
-
-	recoParticle->setM(0.000510998902);
+        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902), 
+                                    -sign(candidate->Charge) * PID::ELECTRON);
         recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
@@ -181,10 +178,8 @@ namespace Gambit {
       iteratorMuons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
-                                    momentum.E(), -sign(candidate->Charge) * PID::MUON);
-	recoParticle->setM(0.105658389);
-	
+        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389), 
+                                    -sign(candidate->Charge) * PID::MUON);
         recoParticle->setPrompt(true);
         event.addParticle(recoParticle);
       }
@@ -197,19 +192,17 @@ namespace Gambit {
       while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
         if (candidate->TauTag) {
-          recoParticle = new Particle(momentum.Px(), momentum.Py(), momentum.Pz(),
-                                      momentum.E(), -sign(candidate->Charge) * PID::TAU);
+          recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001), 
+                                      -sign(candidate->Charge) * PID::TAU);
           recoParticle->setPrompt(true);
-	  recoParticle->setM(0.000001);
           event.addParticle(recoParticle);
           //continue;
         }
-	else {
-	  recoJet = new Jet(momentum.Px(), momentum.Py(), momentum.Pz(), momentum.E(), candidate->PID, candidate->BTag);
-	  recoJet->setM(0.000001);
-	 
-	  event.addJet(recoJet);
-	}
+        else {
+          recoJet = new Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001), 
+                            candidate->PID, candidate->BTag);
+          event.addJet(recoJet);
+        }
       }
     }
 

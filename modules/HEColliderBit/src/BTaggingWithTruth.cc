@@ -197,7 +197,8 @@ void BTaggingWithTruth::Process()
     }
     if(pdgCodeMax == 0) pdgCodeMax = 21;
     if(pdgCodeMax == -1) pdgCodeMax = 0;
-    if(foundB)cout << "FOUNDB" << endl;
+    // debugging:
+    //if(foundB)cout << "FOUNDB" << endl;
     // find an efficency formula
     itEfficiencyMap = fEfficiencyMap.find(pdgCodeMax);
     if(itEfficiencyMap == fEfficiencyMap.end())

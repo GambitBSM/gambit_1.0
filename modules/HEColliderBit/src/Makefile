@@ -56,7 +56,7 @@ example-py8-bsm: example-py8-bsm.cpp $(HEADERS)
 example-py8-0lep: example-py8-0lep.cpp Analysis_ATLAS0LEP.hpp Analysis.cpp
 	$(CXX) example-py8-0lep.cpp Analysis.cpp Analysis_Perf.cpp $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) $(MT2FLAGS) -o example-py8-0lep
 
-OPTFLAGS := -DQUIET -DARCHIVE #-DMKHISTOS
+OPTFLAGS := -DQUIET #-DARCHIVE #-DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis_ATLAS0LEP.hpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc
 	$(CXX) HEColliderMain.cpp Delphes3Backend.cpp Pythia8Backend.cpp Analysis.cpp Analysis_Perf.cpp AbsoluteIsolation.cc AbsoluteIsolation_dict.cc BTaggingWithTruth.cc BTaggingWithTruth_dict.cc \
       -fopenmp $(CXXFLAGS) $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) $(MT2FLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
