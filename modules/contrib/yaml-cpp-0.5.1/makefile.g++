@@ -5,7 +5,7 @@
 # Tested only for g++
 
 CC=g++
-CFLAGS= -Wall -g -O3 -Iinclude -I$(BOOSTDIR)
+CFLAGS= -Wall -g -O3 -Iinclude -I$(BOOST)
 SRC:=$(wildcard src/*.cpp) 
 SRCCONT:=$(wildcard src/contrib/*.cpp)
 LIBS:=$(addprefix build/,$(notdir $(patsubst %.cpp,%.o,$(SRC))))
