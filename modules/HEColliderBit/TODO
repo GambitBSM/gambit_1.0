@@ -15,8 +15,10 @@ GAMBIT HE COLLIDER TODO LIST
 * Verification of ATLAS limits
 * Disabling Py8 model elements => properly populate the Event (direct and via Delphes/FastSim)
 
+* Cleanup collider code... Once class loading is ready, all our code should really be hooked up to Gambit.
+- in the meantime, make a Gambit module skeleton ready for our code to hook into
+- see if hooking up with Gambit is possible without class loading
+
 
 * Py8 feedback
-- SUSY:all can't be partially undone... same for all process:all commands? Unlike particle decay config...
-- Copy construction of Pythia object?
 - Speeding up SLHA model initialization: perhaps we could multithread to speed this up?
