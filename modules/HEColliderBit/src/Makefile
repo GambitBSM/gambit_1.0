@@ -1,11 +1,16 @@
-#PY8DIR := $(HOME)/heplocal
-#FJDIR := $(HOME)/heplocal
-#DELPHESDIR := $(HOME)/heplocal
+#PYTHIA8 := $(HOME)/heplocal
+#DELPHES := $(HOME)/heplocal
+#BOOST := $(HOME)/heplocal
 #You can set your own xxxDIR variables in your .bashrc
-PY8DIR := $(PYTHIA8DIR)
-FJDIR := $(FASTJETDIR)
-DELPHESDIR := $(DELPSDIR)
+ifndef PYTHIA8
+PYTHIA8 := $(PYTHIA8DIR)
+endif
+ifndef DELPHES
+DELPHES := $(DELPSDIR)
+endif
+ifndef BOOST
 BOOST := $(BOOSTDIR)
+endif
 
 # TODO: Check that all these variables are defined
 
@@ -22,14 +27,14 @@ HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)
 # TODO: pythia8-config isn't standard yet, so also allow a fallback
 PY8FLAGS := $(shell pythia8-config --cxxflags --libs 2> /dev/null)
 ifndef PY8FLAGS
-PY8FLAGS := -I$(PY8DIR)/include -L$(PY8DIR)/lib -L$(PY8DIR)/lib/archive -lpythia8 -llhapdfdummy
+PY8FLAGS := -I$(PYTHIA8)/include -L$(PYTHIA8)/lib -L$(PYTHIA8)/lib/archive -lpythia8 -llhapdfdummy
 endif
 
 FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
 ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 BOOSTFLAGS := -I$(BOOST)
 BOOSTSERIALIZATION := -L$(BOOST)/stage/lib -lboost_serialization
-DELPHESFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external -L$(DELPHESDIR) -lDelphes 
+DELPHESFLAGS := -I$(DELPHES) -I$(DELPHES)/external -L$(DELPHES) -lDelphes 
 MT2FLAGS := mt2_bisect.o
 
 
@@ -67,11 +72,11 @@ example-MJW-stop: HEColliderMain-StopMJW.cpp Delphes3Backend.cpp Pythia8Backend.
 
 AbsoluteIsolation_dict.cc: AbsoluteIsolation.h
 	@echo "Generating dictionary ..."
-	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
+	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
 
 BTaggingWithTruth_dict.cc: BTaggingWithTruth.h
 	@echo "Generating dictionary ..."
-	@rootcint -f BTaggingWithTruth_dict.cc -c -I$(DELPHESDIR) -I$(DELPHESDIR)/external BTaggingWithTruth.h BTaggingWithTruthLinkDef.h
+	@rootcint -f BTaggingWithTruth_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external BTaggingWithTruth.h BTaggingWithTruthLinkDef.h
 
 clean:
 	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.cc *_dict.h
