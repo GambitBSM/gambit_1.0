@@ -24,6 +24,7 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 July --> Added primary_model_functor class
 ///                  --> Added "printers" library for functor print functions.
+///  \date 2013 Sep
 ///
 ///  *********************************************
 
@@ -190,18 +191,20 @@ namespace Gambit
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
-
-    protected:
-          
       // Collection of print functions. Overloaded to deal with various types
       // of functor contents.
       // In the end we will want a variety of these, for outputting information
       // to various kinds of output, i.e. databases etc.
-      
+ 
       /// Print functor for std::cout
-      //template<TYPE>
-      virtual void print(std::ostream&) {}; // does nothing
+      virtual void print(std::ostream&,bool) const 
+      {
+         std::cout<<"Warning, this is the functor base class print function! This should not be used; print function should be redefined in daughter functor classes. If this is running there is a problem somewhere... (from functor "<<myName<<")"<<std::endl;
+      }
 
+
+    protected:
+          
       /// Internal storage of the function name.
       str myName;       
       /// Internal storage of exactly what the function calculates.
@@ -661,9 +664,12 @@ namespace Gambit
       // of functor contents.
       // In the end we will want a variety of these, for outputting information
       // to various kinds of output, i.e. databases etc.
-      virtual void print(std::ostream& os) const
+      // 'verbose' argument is optional; default is "not verbose"
+      virtual void print(std::ostream& os, bool verbose = 0) const
       {
+        if (verbose) {std::cout<<"Printing 'myValue' for functor "<<myName<<"..."<<std::endl;}
         printers::ostream<TYPE>(os, myValue);
+        if (verbose) {std::cout<<std::endl;}
       }
 
     protected:

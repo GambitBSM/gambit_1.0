@@ -42,6 +42,8 @@ ifdef BOOST
 BOOSTINC=$(BOOST)
 else
 BOOSTINC=./
+BOOST=./
+export BOOST
 endif
 
 CCEXTRA=-Wextra -pipe -g -pg -std=c++0x

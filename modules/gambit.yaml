@@ -100,10 +100,10 @@ another_key:
     subsubkey1: value2
 
 scanner:
-  #module:  crapsample
+  module:  crapsample
   file_path:  ScannerBit/lib/libsample.so
     
-enable_redirect: true
+enable_redirect: false
 
 redirect_output:
    CMSSM_I:  xterm

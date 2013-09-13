@@ -16,6 +16,10 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, July, Aug
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu)
+///  \date 2013 Sep
+///
 ///  *********************************************
 
 #include <boost/format.hpp>
@@ -321,6 +325,9 @@ namespace Gambit
       order = getSortedParentVertices(vertex, masterGraph, function_order);
       for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it) {
         masterGraph[*it]->calculate();
+        // TODO: Need to deal with different options for output
+        // Print output (currently only to std::cout)
+        masterGraph[*it]->print(std::cout,1); //int argument is verbosity flag. Omit for standard minimal output (or set to 0).
       }
     }
 
