@@ -164,7 +164,7 @@ ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(
 
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
-DarkBit/build/backend-darksusy.o FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
+FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
 TEMP_ScannerBit/build/TEMP_ScannerBit.o\
 DarkBit/build/DarkBit.o\
