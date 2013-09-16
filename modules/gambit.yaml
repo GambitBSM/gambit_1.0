@@ -63,14 +63,6 @@ adhoc:
   function:     ""
   module:       ""
 
-# Uncomment to test TinyDarkBit
-- purpose:      Likelihood
-  capability:   omega_DM
-  type:         double
-  function:     ""
-  module:       ""
-
-
 #########################
 --- # Auxiliary entries
 #########################
