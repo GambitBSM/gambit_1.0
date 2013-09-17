@@ -46,7 +46,12 @@ void beispiel(const char* inifilename)
     
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
-                                   
+  
+  // (Temporary: for Christoph)
+  // Retrieve a list of activated models (should be identical to 'selectedmodels')
+  cout << "The following models have been activated:";
+  cout << modelClaw.get_activemodels() << endl;
+                                 
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(Core, iniFile);
 
