@@ -10,7 +10,7 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June, July
+///  \date 2013 May, June, July, September
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
@@ -24,11 +24,14 @@
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
+#include <extern_claw.hpp>
 // #include <regex>
 
 #include "graphs.hpp"
 
-#define OMEGA_VERTEXID 52314768
+// This vertex ID is reserved for nodes that correspond to
+// likelihoods/observables/etc
+#define OMEGA_VERTEXID 52314768 
 
 namespace Gambit
 {
@@ -508,7 +511,7 @@ namespace Gambit
         if ( toVertex != OMEGA_VERTEXID )
         {
           cout << quantity.first << " (" << quantity.second << ")" << endl;
-          cout << "required by: ";
+          cout << "Required by: ";
           cout << (*masterGraph[toVertex]).capability() << " (";
           cout << (*masterGraph[toVertex]).type() << ") [";
           cout << (*masterGraph[toVertex]).name() << ", ";
@@ -517,14 +520,14 @@ namespace Gambit
         else
         {
           cout << quantity.first << " (" << quantity.second << ")" << endl;
-          cout << "required by: Core" << endl;
+          cout << "Required by: Core" << endl;
         }
 
         // Resolve dependency
         std::tie(iniEntry, auxEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
-        cout << "resolved by: [";
+        cout << "Resolved by: [";
         cout << (*masterGraph[fromVertex]).name() << ", ";
         cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
 
@@ -544,9 +547,13 @@ namespace Gambit
 
         // Is fromVertex already activated?
         if ( (*masterGraph[fromVertex]).status() != 2 ) {
+          std::vector<str> modelList = modelClaw.get_activemodels();
           cout << "Adding new module function to dependency tree..." << endl;
-          masterGraph[fromVertex]->notifyOfModel("CMSSM_I");      //FIXME testing code only!!
-          masterGraph[fromVertex]->notifyOfModel("NormalDist_I"); //FIXME testing code only!!
+          for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+          {
+            masterGraph[fromVertex]->notifyOfModel(*it);
+            cout << "Activating for model: " << *it << endl;
+          }
           resolveVertexBackend(fromVertex);
           fillParQueue(&parQueue, fromVertex);
         }
@@ -565,9 +572,9 @@ namespace Gambit
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
       if (vec.size() > 0)
-        cout << "adding module function dependencies to resolution queue:" << endl;
+        cout << "Adding module function dependencies to resolution queue:" << endl;
       else
-        cout << "no further module function dependencies." << endl;
+        cout << "No further module function dependencies." << endl;
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         cout << (*it).first << " (" << (*it).second << ")" << endl;
@@ -642,7 +649,7 @@ namespace Gambit
       std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
       if (reqs.size() == 0) // nothing to do --> return
         return;
-      cout << "backend function resolution: " << endl;
+      cout << "Backend function resolution: " << endl;
 
       // Check whether vertex is mentioned in inifile
       auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries());
@@ -693,7 +700,7 @@ namespace Gambit
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
-        cout << "resolved by: [" << (*vertexCandidates[0]).name();
+        cout << "Resolved by: [" << (*vertexCandidates[0]).name();
         cout << ", " << (*vertexCandidates[0]).origin() << " (";
         cout << (*vertexCandidates[0]).version() << ")]" << endl;
       }
