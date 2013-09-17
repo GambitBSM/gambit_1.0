@@ -31,10 +31,6 @@
 #include "DarkBit_rollcall.hpp"
 #include "types_DarkBit.hpp"
 
-//PS This will go into the rollcall system eventually or a header, when we work out how to specify backends
-// #include "backend-darksusy.hpp"
-// namespace Gambit { namespace DarkBit { extern Gambit::Backend::DarkSUSY myDarkSUSY; } }
-
 
 namespace Gambit {
 
@@ -290,6 +286,7 @@ namespace Gambit {
 
 // this tells DS which DOF parameterization should be used
 // NB: this only needs to be done once -- how to do that in c++? (cf use of data staement in FORTRAN)
+      // GET_BE_RESULT(RD_oh2_general::dsrdset, "dof", 3, "3", 1);
       GET_BE_RESULT(RD_oh2_general::dsrdinit);
 // the following replaces the broken(?) dsrdcom -- should be fixed with higher DS versions
       DS_RDPARS myrdpars;

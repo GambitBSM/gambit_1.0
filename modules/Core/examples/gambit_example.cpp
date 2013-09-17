@@ -438,47 +438,6 @@ int main( int argc, const char* argv[] )
   // ****************
 
   
-  // ****************
-  // TinyDarkBit code START
-  // ****************
-
-  // Test it
-  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
-
-  // Some basic TinyDarkBit functionality
-  cout << "*** Start Dark ***" << endl;
-  cout << "My name is " << TinyDarkBit::name() << endl;
-  cout << " I can calculate: " << endl << TinyDarkBit::iCanDo << endl;
-  cout << " ...but I may need: " << endl << TinyDarkBit::iMayNeed << endl;
-  //cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << endl;
-  cout << "*** End Dark ***" << endl << endl;
-
-  // DarkSUSY initialization
-  // TinyDarkBit::Functown::initDS.calculate();
-
-  // Run calculate() in correct order by hand and print results
-  TinyDarkBit::Functown::CMSSM_definition.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  TinyDarkBit::Functown::SLHA.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  TinyDarkBit::Functown::Weff.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  TinyDarkBit::Functown::Wstruct.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  TinyDarkBit::Functown::omega_DM.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
-
-  // ********************
-  // TinyDarkBit code END
-  // ********************
-
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
