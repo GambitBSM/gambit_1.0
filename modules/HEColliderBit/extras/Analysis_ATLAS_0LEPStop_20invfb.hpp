@@ -23,25 +23,12 @@ based on: ATLAS-CONF-2013-024
 
 */
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   using namespace std;
 
-  //A useful MT2 class for this module
-  class MT2 {
-    
-  public:
-    MT2(){
-      MT2tauB=0;
-      aMT2_BM=0;
-    }
-    
-    double MT2tauB;
-    double aMT2_BM;
-  };
-    
-    
+     
   class Analysis_ATLAS_0LEPStop_20invfb : public Analysis {
   private:
     
@@ -56,7 +43,7 @@ namespace GAMBIT {
     // Debug histos
   
   public:
-
+    
     Analysis_ATLAS_0LEPStop_20invfb() {
       
       _numSR1 = 0 ; _numSR2 = 0; _numSR3 = 0;
@@ -68,132 +55,6 @@ namespace GAMBIT {
       }
       
     }
-
-
-    // void init() {
-    // }
-    MT2 MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, P4 metVec){
-
-      MT2 results;
-      
-      bool passmu = false;
-      if(muons.size()==1)passmu=true;
-
-      bool passel = false;
-      if(electrons.size()==1)passel=true;
-
-      int nJet = jets.size();
-      if(nJet < 2)return results;
-
-      //ATLAS use the two jets with highest MV1 weights
-      //DELPHES does not have a continuous b weight
-      //Thus must approximate using the two true b jets
-      Jet * trueBjet1=0; //need to assign this
-      Jet * trueBjet2=0; //nee to assign this
-
-      int nTrueBJets=0;
-      for(Jet * tmpJet: jets){
-	if(tmpJet->getPdgId()==5){
-	  trueBjet1=tmpJet;		     
-	  nTrueBJets++;
-	  break;
-	}
-      }
-       
-      for(Jet * tmpJet: jets){
-	if(tmpJet->getPdgId()==5 && tmpJet!=trueBjet1){
-	  trueBjet2=tmpJet;		     
-	  nTrueBJets++;
-	  break;
-	}
-      }
-
-      if(nTrueBJets<2)return results;
-
-      TLorentzVector jet1B,jet2B;
-      jet1B.SetPtEtaPhiE(trueBjet1->pT(),trueBjet1->eta(),trueBjet1->phi(),trueBjet1->E());
-      jet2B.SetPtEtaPhiE(trueBjet2->pT(),trueBjet2->eta(),trueBjet2->phi(),trueBjet2->E());
-     
-      P4 leptontmp;
-      float leptonmass = 0;
-      if(passel){
-	leptonmass = 0.510998910; //MeV
-	leptontmp = electrons[0]->mom();
-      }
-      else if(passmu){
-	leptonmass =  105.658367; // MeV
-        leptontmp = muons[0]->mom();
-      }
-
-      TLorentzVector lepton;
-      lepton.SetPtEtaPhiM(leptontmp.pT(),leptontmp.eta(),leptontmp.phi(),leptonmass/1000.);
-
-      TLorentzVector MET;
-      MET.SetXYZM(metVec.px(),metVec.py(),0.,0.);
-      
-      TLorentzVector lepton_plus_jet1B;
-      TLorentzVector lepton_plus_jet2B;
-      
-      lepton_plus_jet1B = lepton+jet1B;
-      lepton_plus_jet2B = lepton+jet2B;
-      
-      double pa_a[3] = { 0, lepton_plus_jet1B.Px(), lepton_plus_jet1B.Py() };
-      double pb_a[3] = { 0, jet2B.Px(), jet2B.Py() };
-      double pmiss_a[3] = { 0, MET.Px(), MET.Py() };
-      double mn_a = 80.;
-
-      mt2_bisect::mt2 mt2_event_a;
-      
-      mt2_event_a.set_momenta(pa_a,pb_a,pmiss_a);
-      mt2_event_a.set_mn(mn_a);
-
-      double mt2a = mt2_event_a.get_mt2();
-      
-      double pa_b[3] = { 0, lepton_plus_jet1B.Px(), lepton_plus_jet1B.Py() };
-      double pb_b[3] = { 0, jet2B.Px(), jet2B.Py() };
-      double pmiss_b[3] = { 0, MET.Px(), MET.Py() };
-      double mn_b = 80.;
-
-      mt2_bisect::mt2 mt2_event_b;
-      
-      mt2_event_b.set_momenta(pa_b,pb_b,pmiss_b);
-      mt2_event_b.set_mn(mn_b);
-      double mt2b = mt2_event_b.get_mt2();
-      
-      double aMT2_BM = min(mt2a,mt2b);
-      results.aMT2_BM=aMT2_BM;
-      
-      if (nJet > 3){
-        Jet * jet3=0;
-	for(Jet * current: jets){
-	  if (current == trueBjet1)continue;
-	  if (current == trueBjet2)continue;
-	  jet3 = current;
-	  break;
-	}
-
-        TLorentzVector jet3B;
-	jet3B.SetPtEtaPhiE(jet3->pT(),jet3->eta(),jet3->phi(),jet3->E());
-	//	std::cout<<"jet 3 "<<jet3B.Px()<<" "<<jet3B.Py()<<std::endl;
-	
-	double pa_tau[3] = { 0, jet3B.Px(), jet3B.Py() };
-	double pb_tau[3] = { 0, lepton.Px(), lepton.Py() };
-	double pmiss_tau[3] = { 0, MET.Px(), MET.Py() };
-	double mn_tau = 0.;
-	
-	mt2_bisect::mt2 mt2_event_tau;
-	
-	mt2_event_tau.set_momenta(pa_tau,pb_tau,pmiss_tau);
-	mt2_event_tau.set_mn(mn_tau);
-	
-        //ComputeMT2 stuff3(jet3B,lepton,MET,0.,0.);
-	//double MT2tauB = stuff3.ComputeNumeric();
-	double MT2tauB = mt2_event_tau.get_mt2();//calcMT2(0,jet3B.Pt(),jet3B.Eta(),jet3B.Phi(),jet3B.E(),0,lepton.Pt(),lepton.Eta(),lepton.Phi(),lepton.E(),MET.Px(),MET.Py(),0);
-	results.MT2tauB=MT2tauB;
-      }
-      return results;
-    }
-
 
     void analyze(const Event* event) {
 
@@ -557,6 +418,10 @@ namespace GAMBIT {
 	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
       }
       cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+
+      cout << "RESULTS 0LEP " << _numSR1 << " " <<  _numSR2 << " " << _numSR3 << endl;
+
+
     }
 
 

@@ -176,7 +176,7 @@ void AbsoluteIsolation::Process()
     sumPT = sumPT - rho*fDeltaRMax*fDeltaRMax*TMath::Pi();
 
     //ratio = sumPT/candidateMomentum.Pt();
-    cout << "sumPT " << sumPT << endl;
+    //cout << "sumPT " << sumPT << endl;
     if(sumPT > fPTRatioMax) continue;
     
     fOutputArray->Add(candidate);

@@ -20,7 +20,7 @@ based on: arXiv:1308.2631
 
 */
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   using namespace std;
@@ -313,6 +313,10 @@ namespace GAMBIT {
 	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
       }
       cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+      
+      cout << "RESULTS 2B " << _numSRA << " "  << _numSRB << " " << _numSRA15 << " " <<  _numSRA20 << " " <<  _numSRA25 << " " << _numSRA30 << " " <<  _numSRA35 << endl; 
+
+
     }
 
 
