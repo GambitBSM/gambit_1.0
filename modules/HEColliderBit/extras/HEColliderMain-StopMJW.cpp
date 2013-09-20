@@ -106,7 +106,7 @@ int main()
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   /// @note That means that the class loaders had better be working by then...
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
-  const int NEVENTS = 10000;
+  const int NEVENTS = 100000;
 
   // For event generation
   Gambit::HEColliderBit::Pythia8Backend* myPythia;
@@ -151,7 +151,8 @@ int main()
   for (auto& sp_group : sp_groups){
     sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_0LEPStop_20invfb"));
     sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_1LEPStop_20invfb"));
-    
+    sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_2LEPStop_20invfb"));
+    sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_2bStop_20invfb"));
   }
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
@@ -252,7 +253,9 @@ int main()
 
   for (auto& sp_group : sp_groups) {
     cout << "Finalizing " << sp_group.first << endl;
-    sp_group.second.analyses[0]->finalize();
+    for(int analysis=0;analysis<sp_group.second.analyses.size();analysis++)
+      sp_group.second.analyses[analysis]->finalize();
+    //sp_group.second.analyses[0]->finalize();
   }
   /// @todo Combine results from each subprocess with appropriate target NLO xsecs applied
   //cout << "LIKELIHOOD = " << ana->likelihood() << endl;
