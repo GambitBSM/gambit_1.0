@@ -29,6 +29,7 @@
 #include <queue>
 
 #include "gambit_core.hpp"
+#include "printers.hpp"
 #include "functors.hpp"
 #include "yaml_parser.hpp"
 
@@ -59,7 +60,7 @@ namespace Gambit
     {
       public:
         // Constructor, provide module and backend functor lists
-        DependencyResolver(const gambit_core&, const IniParser::IniFile&);
+        DependencyResolver(const gambit_core&, const IniParser::IniFile&, printers::BasePrinter&);
 
         // The dependency resolution
         void resolveNow();
@@ -129,6 +130,9 @@ namespace Gambit
 
         // ini file to which this dependency resolver is bound
         const IniParser::IniFile *boundIniFile;
+
+        // Printer object to which this dependency resolver is bound
+        printers::BasePrinter *boundPrinter;
 
         // *** Output Vertex Infos
         std::vector<OutputVertexInfo> outputVertexInfos;

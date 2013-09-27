@@ -28,6 +28,7 @@
 // #include <regex>
 
 #include "graphs.hpp"
+#include "printers.hpp"
 
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc
@@ -174,8 +175,10 @@ namespace Gambit
 
     /// Constructor. 
     /// Add module functors to class internal list.
-    DependencyResolver::DependencyResolver(const gambit_core &core, const IniParser::IniFile &iniFile)
-     : boundCore(&core), boundIniFile(&iniFile)
+    DependencyResolver::DependencyResolver(const gambit_core &core, 
+                                           const IniParser::IniFile &iniFile, 
+                                           printers::BasePrinter &printer)
+     : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer)
     {
       addFunctors();
       addAdhocNodes();
@@ -330,7 +333,8 @@ namespace Gambit
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
-        masterGraph[*it]->print(std::cout,1); //int argument is verbosity flag. Omit for standard minimal output (or set to 0).
+        // Ben: may want to do this call elsewhere; I added it here for testing.
+        masterGraph[*it]->print(boundPrinter);
       }
     }
 

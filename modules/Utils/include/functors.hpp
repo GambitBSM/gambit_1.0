@@ -23,8 +23,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 July --> Added primary_model_functor class
-///                  --> Added "printers" library for functor print functions.
-///  \date 2013 Sep
+///  \date 2013 Sep  --> Added functor print functions
 ///
 ///  *********************************************
 
@@ -50,10 +49,10 @@
 // Initial runtime estimate
 #define FUNCTORS_RUNTIME_INIT 1000
 
+
 namespace Gambit
 {
 
-  // =====================================
   /// Function wrapper (functor) base class
 
   class functor
@@ -191,15 +190,10 @@ namespace Gambit
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
-      // Collection of print functions. Overloaded to deal with various types
-      // of functor contents.
-      // In the end we will want a variety of these, for outputting information
-      // to various kinds of output, i.e. databases etc.
- 
-      /// Print functor for std::cout
-      virtual void print(std::ostream&,bool) const 
+      // Print function
+      virtual void print(printers::BasePrinter* printer)
       {
-         std::cout<<"Warning, this is the functor base class print function! This should not be used; print function should be redefined in daughter functor classes. If this is running there is a problem somewhere... (from functor "<<myName<<")"<<std::endl;
+         std::cout<<"Warning, this is the functor base class print function! This should not be used; print function should be redefined in daughter functor classes. If this is running there is a problem somewhere... (from functor "<<myName<<std::endl;
       }
 
 
@@ -659,17 +653,12 @@ namespace Gambit
           myDependencies.push_back(*it);        
         }
       }
-      
-      // Collection of print functions. Overloaded to deal with various types
-      // of functor contents.
-      // In the end we will want a variety of these, for outputting information
-      // to various kinds of output, i.e. databases etc.
-      // 'verbose' argument is optional; default is "not verbose"
-      virtual void print(std::ostream& os, bool verbose = 0) const
+            
+      /// Printer function
+      // It occurs to me that there is no longer any reason this shouldn't just be in the base functor class, except that that class has no "myValue" data member. Thoughts?
+      virtual void print(printers::BasePrinter* printer)
       {
-        if (verbose) {std::cout<<"Printing 'myValue' for functor "<<myName<<"..."<<std::endl;}
-        printers::ostream<TYPE>(os, myValue);
-        if (verbose) {std::cout<<std::endl;}
+        printer->print(this->myValue);
       }
 
     protected:
@@ -921,7 +910,7 @@ namespace Gambit
   { 
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
-  
+
 }
 
 #endif /* defined(__functors_hpp__) */

@@ -47,9 +47,12 @@ void beispiel()
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
+
+  // Set up a printer object
+  printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core, iniFile);
+  Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
