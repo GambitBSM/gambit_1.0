@@ -1,22 +1,63 @@
-#PYTHIA8 := $(HOME)/heplocal
-#DELPHES := $(HOME)/heplocal
-#BOOST := $(HOME)/heplocal
-#You can set your own xxxDIR variables in your .bashrc
+## You can set these xxxDIR variables in your .bashrc if needed
+
 ifndef PYTHIA8
-PYTHIA8 := $(PYTHIA8DIR)
+  PYTHIA8 := $(PYTHIA8DIR)
+  ifndef PYTHIA8
+    PYTHIA8 := $(PY8DIR)
+  endif
 endif
-ifndef DELPHES
-DELPHES := $(DELPSDIR)
-endif
-ifndef BOOST
-BOOST := $(BOOSTDIR)
+ifdef PYTHIA8
+  $(info Pythia8 path = $(PYTHIA8))
+else
+  $(warning $$PYTHIA8DIR or $$PY8DIR variable not defined)
 endif
 
-# TODO: Check that all these variables are defined
+ifndef DELPHES
+  DELPHES := $(DELPHESDIR)
+  ifndef DELPHES
+    DELPHES := $(DELPSDIR)
+  endif
+endif
+ifdef DELPHES
+  $(info Delphes path = $(DELPHES))
+else
+  $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+endif
+
+ifndef BOOST
+  BOOST := $(BOOSTDIR)
+endif
+ifdef BOOST
+  $(info Boost path = $(BOOST))
+else
+  $(warning $$BOOSTDIR variable not defined)
+endif
+
+
+###################
+## Compiler choices and flags
 
 CXX := g++
 
 CXXFLAGS := -std=c++0x -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+
+# TODO: pythia8-config isn't standard yet, so also allow a fallback
+PY8FLAGS := $(shell pythia8-config --cxxflags --libs 2> /dev/null)
+ifndef PY8FLAGS
+PY8FLAGS := -I$(PYTHIA8)/include -L$(PYTHIA8)/lib -L$(PYTHIA8)/lib/archive -lpythia8 -llhapdfdummy
+endif
+$(info Pythia version = $(shell cat `pythia8-config --xmldoc`/Version.xml | grep versionNumber | cut -d'"' -f4))
+
+FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
+ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
+BOOSTFLAGS := -I$(BOOST)
+BOOSTSERIALIZATION := -L$(BOOST)/stage/lib -lboost_serialization
+DELPHESFLAGS := -I$(DELPHES) -I$(DELPHES)/external -L$(DELPHES) -lDelphes
+MT2FLAGS := mt2_bisect.o
+
+
+###################
+## Other useful variables for make rules
 
 UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
 DELPHESHEADERS := Delphes3Backend.hpp
@@ -24,19 +65,9 @@ ALDODETHEADERS := DetectorResponse.hpp FastSim.hpp
 PY8HEADERS := Py8Utils.hpp  Pythia8Backend.hpp
 HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)
 
-# TODO: pythia8-config isn't standard yet, so also allow a fallback
-PY8FLAGS := $(shell pythia8-config --cxxflags --libs 2> /dev/null)
-ifndef PY8FLAGS
-PY8FLAGS := -I$(PYTHIA8)/include -L$(PYTHIA8)/lib -L$(PYTHIA8)/lib/archive -lpythia8 -llhapdfdummy
-endif
 
-FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
-ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
-BOOSTFLAGS := -I$(BOOST)
-BOOSTSERIALIZATION := -L$(BOOST)/stage/lib -lboost_serialization
-DELPHESFLAGS := -I$(DELPHES) -I$(DELPHES)/external -L$(DELPHES) -lDelphes 
-MT2FLAGS := mt2_bisect.o
-
+###################
+## make rule definitions
 
 .PHONY = all clean
 
