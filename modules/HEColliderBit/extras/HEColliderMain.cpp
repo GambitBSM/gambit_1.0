@@ -195,8 +195,8 @@ int main()
     const int NTHREAD = omp_get_thread_num();
     myPythia = new Gambit::HEColliderBit::Pythia8Backend(NTHREAD);
     myPythia->set("SLHA:file", slhaFileName);
-    myPythia->set("SUSY:idVectA", thread_cfgs[NTHREAD].particlesInProcess1);
-    myPythia->set("SUSY:idVectB", thread_cfgs[NTHREAD].particlesInProcess2);
+    myPythia->set("SUSY:idVecA", thread_cfgs[NTHREAD].particlesInProcess1);
+    myPythia->set("SUSY:idVecB", thread_cfgs[NTHREAD].particlesInProcess2);
 
     // Run persistency configuration
     #ifdef ARCHIVE
