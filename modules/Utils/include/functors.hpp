@@ -63,6 +63,10 @@ namespace Gambit
       /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
 
+      // It may be safer to have some of the following things accessible 
+      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
+      // from within module functions
+
       /// Interfaces for runtime optimization
       /// Needs to be implemented by daughters
       /// @{
@@ -73,10 +77,6 @@ namespace Gambit
       virtual void reset() {}
       /// @}
 
-      // It may be safer to have some of the following things accessible 
-      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
-      // from within module functions
-
       /// Setter for version
       void setVersion(str ver) { if (this == NULL) failBigTime("setVersion"); myVersion = ver; }
       /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
@@ -85,21 +85,28 @@ namespace Gambit
       void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
 
       /// Getter for the wrapped function's name
-      str name()        { if (this == NULL) failBigTime("name"); return myName;       }
+      str name()        { if (this == NULL) failBigTime("name"); return myName; }
       /// Getter for the wrapped function's reported capability
       str capability()  { if (this == NULL) failBigTime("capability"); return myCapability; }
       /// Getter for the wrapped function's reported return type
-      str type()        { if (this == NULL) failBigTime("type"); return myType;       }
+      str type()        { if (this == NULL) failBigTime("type"); return myType; }
       /// Getter for the wrapped function's origin (module or backend name)
-      str origin()      { if (this == NULL) failBigTime("origin"); return myOrigin;     }
-      /// Getter for the  version of the wrapped function's origin (module or backend)
-      str version()     { if (this == NULL) failBigTime("version"); return myVersion;    }
+      str origin()      { if (this == NULL) failBigTime("origin"); return myOrigin; }
+      /// Getter for the version of the wrapped function's origin (module or backend)
+      str version()     { if (this == NULL) failBigTime("version"); return myVersion; }
       /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
-      int status()      { if (this == NULL) failBigTime("status"); return myStatus;     }
+      int status()      { if (this == NULL) failBigTime("status"); return myStatus; }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
-      str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose;    }
+      str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+
+      /// Getter for revealing the required capability of the wrapped function's loop manager
+      virtual str loopManagerCapability()
+      {
+        cout << "Error.  The loopManagerCapability method has not been defined in this class." << endl;
+        exit(1);
+      }
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()          
@@ -157,6 +164,13 @@ namespace Gambit
         return empty;
       }
 
+      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
+      virtual void setNestedList (std::vector<functor*> newNestList)
+      { 
+        cout << "Error.  The setNestedList method has not been defined in this class." << endl;
+        exit(1);
+      } 
+
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor)
       {
@@ -193,7 +207,11 @@ namespace Gambit
       // Print function
       virtual void print(printers::BasePrinter* printer)
       {
-         std::cout<<"Warning, this is the functor base class print function! This should not be used; print function should be redefined in daughter functor classes. If this is running there is a problem somewhere... (from functor "<<myName<<std::endl;
+         std::cout<<"Warning, this is the functor base class "
+          << "print function! This should not be used; print "
+          << "function should be redefined in daughter functo"
+          << "r classes. If this is running there is a proble"
+          << "m somewhere... (from functor "<<myName<<std::endl;
       }
 
 
@@ -211,6 +229,8 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
+      /// Capability of a function that mangages a loop that this function can run inside of.
+      str myLoopManager;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
 
@@ -270,6 +290,8 @@ namespace Gambit
         myType          = result_type;
         myOrigin        = origin_name;
         myStatus        = 1;
+        myCurrentIteration = 0;
+        myLoopManager = "none";
         needs_recalculating = true;
         usePointer = false;
         runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
@@ -292,6 +314,8 @@ namespace Gambit
         myType          = result_type;
         myOrigin        = origin_name;
         myStatus        = 1;
+        myCurrentIteration = 0;
+        myLoopManager = "none";
         needs_recalculating = true;
         usePointer = true;
         runtime_average = FUNCTORS_RUNTIME_INIT;
@@ -374,6 +398,30 @@ namespace Gambit
         if (this == NULL) functor::failBigTime("valuePtr");
         return safe_ptr<TYPE>(&myValue);
       }
+
+      /// Execute a single iteration in the loop managed by this functor.
+      void iterate(int iteration)
+      {
+        if (not myNestedFunctorList.empty())
+        {
+          myCurrentIteration = iteration;
+          for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
+           it != myNestedFunctorList.end(); ++it) (*it)->calculate();
+        }
+      } 
+
+      /// Return a safe pointer to the iteration number in the loop managed by this functor.
+      safe_ptr<int> iterationPtr() 
+      {
+        if (this == NULL) functor::failBigTime("iterationPtr");
+        return safe_ptr<int>(&myCurrentIteration); 
+      }
+
+      /// Specify the capability required of a manager functor, for it to run this functor nested in a loop.
+      virtual void setLoopManager(str manager) { myLoopManager = manager; }
+
+      /// Getter for revealing the required capability of the wrapped function's loop manager
+      virtual str loopManager() { if (this == NULL) failBigTime("loopManager"); return myLoopManager; }
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()                  { return myDependencies; }
@@ -568,6 +616,12 @@ namespace Gambit
         permitted_map[key].push_back(vector_entry);       
       }
 
+      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
+      virtual void setNestedList (std::vector<functor*> &newNestedList)
+      { 
+        myNestedFunctorList = newNestedList;
+      } 
+
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor)
       {
@@ -686,6 +740,12 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
+
+      /// Vector of functors that have been set up to run nested within this one.
+      std::vector<functor*> myNestedFunctorList;
+
+      /// Counter for iterations of nested functor loop.
+      int myCurrentIteration;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;

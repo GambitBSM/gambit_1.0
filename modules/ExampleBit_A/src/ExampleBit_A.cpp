@@ -23,17 +23,26 @@
 
 #include <string>
 #include <iostream>
+#include <random>
+#include <chrono>
 #include <math.h>
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
-namespace Gambit {
 
-  namespace ExampleBit_A {
+namespace Gambit
+{
+
+  namespace ExampleBit_A
+  {
 
     // Some local module codes and declarations
     double count = 3.5;
+    int accumulatedCounts = 0;
+    std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
+    unsigned newseed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 twistor(newseed);
     double some_other_function(int &input)
     {
       std::cout << "  This is some_other_function, invoked with argument " << input << std::endl;
@@ -122,6 +131,52 @@ namespace Gambit {
       
       result = loglTotal;
     }  
+
+    // Some example functions for using loops within the dependency structure 
+
+    // Run a fake 'event loop' 
+    void eventLoopManager(int &result)
+    {
+      using namespace SafePointers::eventLoopManager;
+      int nEvents = 20;         // Number of times to run the loop
+      for(unsigned long i = 1; i <= nEvents; i++)
+      {
+        cout << "This is iteration " << i << " of " << nEvents << " being run by eventLoopManager." << endl;
+        Loop::executeIteration(i);
+      }
+      result = 0; // Maybe we want to add some code to allow void-type module functions for just this sort of case...
+    }
+
+    // Produces a random floating-point 'event count' between 0 and 5.
+    void exampleEventGen(double &result)
+    {
+      using namespace SafePointers::exampleEventGen;
+      if (*Loop::iteration == 0) // In the first iteration of a loop
+      {
+        newseed = std::chrono::system_clock::now().time_since_epoch().count();
+        twistor.seed(newseed);   // Re-seed the random number generator
+      }
+      result = random_0to5(twistor);  // Generate and return the random number
+    }
+
+    // Rounds an event count to the nearest integer
+    void exampleCut(int &result)
+    {
+      using namespace SafePointers::exampleCut;
+      result = (int) *Dep::event;
+    }
+
+    void eventAccumulator(int &result)
+    {
+      // Adds an integral event count to a total number of accumulated events.
+      using namespace SafePointers::eventAccumulator;
+      if (*Loop::iteration == 0) // In the first iteration of a loop
+      {
+        accumulatedCounts = 0;   // Zero the total accumulated counts
+      }
+      accumulatedCounts += *Dep::event;  // Add the latest event count to the total
+      result = accumulatedCounts;        // Return the current total
+    }
 
   }
 

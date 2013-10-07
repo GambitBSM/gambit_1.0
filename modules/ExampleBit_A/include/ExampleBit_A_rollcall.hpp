@@ -33,6 +33,46 @@ typedef double(*fptr)(int&);                // A typedef used later in this file
 #define MODULE ExampleBit_A
 START_MODULE
 
+
+  #define CAPABILITY event
+  START_CAPABILITY
+  
+    #define FUNCTION exampleEventGen
+    START_FUNCTION(double)
+    LOOP_MANAGER(eventLoopManagement)
+    #undef FUNCTION
+
+    #define FUNCTION exampleCut
+    START_FUNCTION(int)
+    LOOP_MANAGER(eventLoopManagement)
+    DEPENDENCY(event, double)
+    #undef FUNCTION
+    
+  #undef CAPABILITY
+
+
+  #define CAPABILITY eventAccumulation
+  START_CAPABILITY
+
+    #define FUNCTION eventAccumulator
+    START_FUNCTION(int)
+    LOOP_MANAGER(eventLoopManagement)
+    DEPENDENCY(event, int)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY eventLoopManagement
+  START_CAPABILITY
+
+    #define FUNCTION eventLoopManager
+    START_FUNCTION(int)
+    #undef FUNCTION
+
+  #undef CAPABILITY  
+
+
   #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more 
   START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
 
@@ -55,6 +95,7 @@ START_MODULE
     #define FUNCTION nevents_like           // Likelihood: Likelihood of seeing number of events 
     START_FUNCTION(double)                  // Function calculates the nevents_like likelihood as a double precision variable                  
     DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events       
+    DEPENDENCY(eventAccumulation, int)      // Depends on the accumulated events that pass the make-believe cuts in the make-believe event loop
     #undef FUNCTION
 
   #undef CAPABILITY

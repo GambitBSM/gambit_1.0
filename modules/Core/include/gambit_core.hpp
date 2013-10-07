@@ -45,6 +45,9 @@ namespace Gambit
       /// List of all declared module functors
       fVec functorList;
 
+      /// List of all module functors that are declared as nested (i.e. require loop managers)
+      fVec nestedFunctorList;
+ 
       /// List of all declared backend functors
       fVec backendFunctorList;
 
@@ -68,6 +71,9 @@ namespace Gambit
       /// Add an new module functor to functorList
       void registerModuleFunctor(functor &f) { functorList.push_back(&f); }
 
+      /// Add an new module functor to nestFunctorList
+      void registerNestedModuleFunctor(functor &f) { nestedFunctorList.push_back(&f); }
+
       /// Add an new backend functor to backendFunctorList
       void registerBackendFunctor(functor &f) { backendFunctorList.push_back(&f); }
 
@@ -86,6 +92,9 @@ namespace Gambit
 
       /// Get a pointer to the list of module functors
       const fVec* getModuleFunctors() const { return &functorList; } 
+
+      /// Get a pointer to the list of nested module functors
+      const fVec* getNestedModuleFunctors() const { return &nestedFunctorList; } 
 
       /// Get a pointer to the list of backend model functors
       const fVec* getBackendFunctors() const { return &backendFunctorList; }

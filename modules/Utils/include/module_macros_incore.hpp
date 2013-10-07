@@ -83,6 +83,12 @@
 /// type \em TYPE.
 #define START_FUNCTION(TYPE)                              CORE_START_FUNCTION(TYPE)
 
+/// Indicates that the current \link FUNCTION() FUNCTION\endlink of the current 
+/// \link MODULE() MODULE\endlink must be managed by another function (in the same
+/// module or another) that calls it from within a loop.  That other function must
+/// provide capability \em LOOPMAN. 
+#define LOOP_MANAGER(LOOPMAN)                             CORE_LOOP_MANAGER(LOOPMAN)                                  
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink depends on the 
 /// presence of another module function that can supply capability \em DEP, with
 /// return type \em TYPE.
@@ -318,6 +324,14 @@
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
                                                                                \
+      /* Runtime registration function for nesting requirements of             \
+      observable/likelihood function TAG*/                                     \
+      template <typename TAG>                                                  \
+      void rt_register_function_nesting ()                                     \
+      {                                                                        \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
+      }                                                                        \
+                                                                               \
       /* Runtime registration function for dependency DEP_TAG of function TAG*/\
       template <typename DEP_TAG, typename TAG>                                \
       void rt_register_dependency ()                                           \
@@ -445,7 +459,37 @@
   {                                                                            \
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
-  
+
+
+/// Redirection of LOOP_MANAGER(LOOPMAN) when invoked from within the core.
+#define CORE_LOOP_MANAGER(LOOPMAN)                                             \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the runtime commands that register the fact that this FUNCTION \
+      requires it be run inside a loop manager with capability LOOPMAN. */     \
+      template <>                                                              \
+      void rt_register_function_nesting<Tags::FUNCTION> ()                     \
+      {                                                                        \
+        Core.registerNestedModuleFunctor(Functown::FUNCTION);                  \
+        Functown::FUNCTION.setLoopManager(STRINGIFY(LOOPMAN));                 \
+      }                                                                        \
+                                                                               \
+      /* Create the corresponding initialisation object */                     \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT(FUNCTION,_nesting)                                        \
+         (&rt_register_function_nesting<Tags::FUNCTION>);                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
 
 /// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
@@ -859,7 +903,7 @@
         vec models = delimiterSplit(MODELSTRING, ",");                         \
         for (vec::iterator it = models.begin() ; it != models.end(); ++it)     \
         {                                                                      \
-          if (*it == model) return true;                                         \
+          if (*it == model) return true;                                       \
         }                                                                      \
         return false;                                                          \
       }                                                                        \

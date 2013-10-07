@@ -76,8 +76,9 @@
 // Redirect the rollcall macros to their in-module variants
 #define START_MODULE                                      DUMMY
 #define START_CAPABILITY                                  DUMMY
-#define START_FUNCTION(TYPE)                              DUMMYARG(TYPE)
+#define START_FUNCTION(TYPE)                              MODULE_START_FUNCTION(TYPE)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
+#define LOOP_MANAGER(LOOPMAN)                             DUMMYARG(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
 #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
@@ -91,6 +92,45 @@
 //  *******************************************************************************
 /// \name In-module rollcall macros
 /// @{
+
+/// Redirection of START_FUNCTION(TYPE) when invoked from within a module.
+#define MODULE_START_FUNCTION(TYPE)                                            \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Let the module source know that this functor is declared by the core, \
+      and set up a helper function to call its iterate method. */              \
+      namespace Functown                                                       \
+      {                                                                        \
+        extern module_functor<TYPE> FUNCTION;                                  \
+        void CAT(FUNCTION,_iterate)(int iteration)                             \
+        {                                                                      \
+          FUNCTION.iterate(iteration);                                         \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Create pointers to the iteration number and the single iteration of   \
+      the loop that can be executed by this functor. */                        \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Loop                                                       \
+          {                                                                    \
+            safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
+            void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate); \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \
