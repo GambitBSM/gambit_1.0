@@ -88,9 +88,6 @@ namespace Gambit
         void resetAll();
 
       private:
-        // Construct adhoc nodes from "adhoc" model specifications in inifile
-        void addAdhocNodes();
-
         // Adds list of functor pointers to master graph
         void addFunctors();
 
@@ -120,10 +117,6 @@ namespace Gambit
         //
         // Private data members
         //
-
-        // WILL BECOME OBSOLETE WITH MODEL PARAMETERS
-        inputMapType inputMap; // DEPRECATED
-        // DEPRECATED
 
         // Core to which this dependency resolver is bound
         const gambit_core *boundCore;

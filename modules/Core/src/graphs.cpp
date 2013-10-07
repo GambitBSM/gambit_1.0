@@ -181,7 +181,6 @@ namespace Gambit
      : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer)
     {
       addFunctors();
-      addAdhocNodes();
     }
 
     /// Main dependency resolution
@@ -373,28 +372,6 @@ namespace Gambit
     //
     // Private functions of DependencyResolver
     //
-
-    // Add adhoc vertices to masterGraph
-    void DependencyResolver::addAdhocNodes()
-    {
-      // Define new vertices
-      module_functor<double> * p_modfunc;
-      std::vector<str> parameters = boundIniFile->getModelParameters("adhoc");
-
-      // Input legs
-      for (std::vector<str>::const_iterator it =
-          parameters.begin(); it != parameters.end(); ++it)
-      {
-        inputMap[*it] = new double;
-      }
-      for (inputMapType::iterator it = inputMap.begin(); it != inputMap.end();
-          ++it)
-      {
-        p_modfunc = new module_functor<double> (it->second, it->first +
-            "_adhoc", it->first, "double", "Core");
-        boost::add_vertex(p_modfunc, masterGraph);
-      }
-    }
 
     /// Add module and backend functors to class internal lists.
     void DependencyResolver::addFunctors()

@@ -63,7 +63,6 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-IExampleBit_B/include \
 	-IDarkBit/include \
 	-IExample_SUSYspecBit/include \
-	-ITEMP_ScannerBit/include \
 	-IFlavBit/include \
 	-I$(YAMLDIR)/include
 
@@ -156,10 +155,6 @@ EXSUSYSPECINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/inc
 EXSUSYSPECSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
 EXSUSYSPECLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXSUSYSPECSRC)))))
 
-TMPSCANBITINC:=$(wildcard TEMP_ScannerBit/include/*hpp) $(wildcard TEMP_ScannerBit/include/*h)
-TMPSCANBITSRC:=$(wildcard TEMP_ScannerBit/src/*cpp) $(wildcard TEMP_ScannerBit/src/*c)
-TMPSCANBITLIBS:=$(addprefix TEMP_ScannerBit/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXAMPLE_BSRC)))))
-
 ALLINC = $(COREINC) $(MODELINC) $(UTILSINC) $(BACKENDINC) $(SCANINC) $(DARKINC) $(FLAVINC) $(HECOLLIDERINC) $(EXAMPLE_AINC) $(EXAMPLE_BINC) $(TMPSCANBITINC)
 ALLSRC = $(CORESRC) $(MODELSRC) $(UTILSSRC) $(BACKENDSRC) $(SCANSRC) $(DARKSRC) $(FLAVSRC) $(HECOLLIDERSRC) $(EXAMPLE_ASRC) $(EXAMPLE_BSRC) $(TMPSCANBITSRC)
 ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(FLAVLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) $(TMPSCANBITLIBS)
@@ -168,7 +163,6 @@ ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
-TEMP_ScannerBit/build/TEMP_ScannerBit.o\
 DarkBit/build/DarkBit.o\
 $(YAMLDIR)/yaml-cpp.a
 
@@ -273,18 +267,6 @@ Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c $(EXSUSYSPECINC) $(UT
 	$(CC) $(CFLAGS) -c $< -o $@
 
 Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-
-TEMP_ScannerBit/build/%.o: TEMP_ScannerBit/src/%.cpp $(TMPSCANBITINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-TEMP_ScannerBit/build/%.o: TEMP_ScannerBit/src/%.c $(TMPSCANBITINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-TEMP_ScannerBit/build/%.o: TEMP_ScannerBit/src/%.f $(TMPSCANBITINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 

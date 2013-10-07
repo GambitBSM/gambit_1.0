@@ -149,6 +149,7 @@ int main( int argc, const char* argv[] )
   // * Models are really just modules with special contents.
 
 
+  // PS: Commented this example out as I removed TEMP_ScannerBit, so it won't work.
   // =======Demo of complete toy sequence.================
   //
   // Model selected by user is CMSSM_I
@@ -157,60 +158,60 @@ int main( int argc, const char* argv[] )
   // ---- Resolve dependencies --------------
   
   // CMSSM_I parameters dependency
-  Models::CMSSM_I::Functown::primary_parameters.resolveDependency(
-                                &TEMP_ScannerBit::Functown::generate_parameters);
+  //Models::CMSSM_I::Functown::primary_parameters.resolveDependency(
+  //                              &TEMP_ScannerBit::Functown::generate_parameters);
   
   // CMSSM_I interpret_as_parent dependencies
-  Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
-                                &Models::CMSSM_I::Functown::primary_parameters);
-  Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
-                                &ExampleBit_A::Functown::nevents_dbl);
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
+  //                              &Models::CMSSM_I::Functown::primary_parameters);
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
+  //                              &ExampleBit_A::Functown::nevents_dbl);
   
   // MSSM_I interpret_as_parent dependency
   // Note that the MSSM_I_parameters come from the CMSSM_I functor, not from
   // the 'primary' functor in the MSSM_I namespace (this one would only be used
   // if MSSM_I was the model set for the run)
-  Models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(
-                                &Models::CMSSM_I::Functown::MSSM_I_parameters);
+  //Models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(
+  //                              &Models::CMSSM_I::Functown::MSSM_I_parameters);
   
   // ---- begin run ---------------
   
   // ScannerBit: creates alpha_parameters
-  TEMP_ScannerBit::Functown::generate_parameters.calculate();
+  //TEMP_ScannerBit::Functown::generate_parameters.calculate();
   
   // ModelBit: insert alpha_parameters into primary parameters functor
-  Models::CMSSM_I::Functown::primary_parameters.calculate();
+  //Models::CMSSM_I::Functown::primary_parameters.calculate();
   
   // Model parameters now ready for delivery to other functors
   // e.g. interpret_as_parent
-  ExampleBit_A::Functown::nevents_dbl.calculate(); //interpret_as_parent depends
+  //ExampleBit_A::Functown::nevents_dbl.calculate(); //interpret_as_parent depends
                                                    //on this result: run first.
-  Models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
   // Go up another level:
-  Models::MSSM_I::Functown::test_parent_I_parameters.calculate();
+  //Models::MSSM_I::Functown::test_parent_I_parameters.calculate();
   
   // -------- check output ----------------------
   // To make sure things ran sensibly, lets see what happened:
-  cout<<endl;
-  cout<<"Results from toy run sequence:"<<endl;
+  //cout<<endl;
+  //cout<<"Results from toy run sequence:"<<endl;
   
-  cout<<"  TEMP_ScannerBit:"<<endl;
-  cout<<"    alpha_parameters:"<<endl;
-  std::map<std::string,double> alphapars = TEMP_ScannerBit::Functown::generate_parameters();
-  typedef std::map<std::string,double>::iterator it_type;
-      for(it_type it = alphapars.begin();it != alphapars.end(); it++) {
+  //cout<<"  TEMP_ScannerBit:"<<endl;
+  //cout<<"    alpha_parameters:"<<endl;
+  //std::map<std::string,double> alphapars = TEMP_ScannerBit::Functown::generate_parameters();
+  //typedef std::map<std::string,double>::iterator it_type;
+  //    for(it_type it = alphapars.begin();it != alphapars.end(); it++) {
         // iterator->first = key
         // iterator->second = value
-        cout<<"      "<<it->first<<" = "<<it->second<<endl;
-      }
-  cout<<"  ModelBit:"<<endl;
-  cout<<"    CMSSM_I parameters:"<<endl;
-  Models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
-  cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
-  Models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
-  cout<<"    MSSM_I -> test_parent_I_parameters:"<<endl;
-  Models::MSSM_I::Functown::test_parent_I_parameters.valuePtr()->print();
-  cout<<endl;
+  //      cout<<"      "<<it->first<<" = "<<it->second<<endl;
+  //    }
+  //cout<<"  ModelBit:"<<endl;
+  //cout<<"    CMSSM_I parameters:"<<endl;
+  //Models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
+  //cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
+  //cout<<"    MSSM_I -> test_parent_I_parameters:"<<endl;
+  //Models::MSSM_I::Functown::test_parent_I_parameters.valuePtr()->print();
+  //cout<<endl;
   //============== end toy sequence ============================================
     
     

@@ -293,35 +293,10 @@ namespace Gambit
         myCurrentIteration = 0;
         myLoopManager = "none";
         needs_recalculating = true;
-        usePointer = false;
         runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
         runtime         = FUNCTORS_RUNTIME_INIT;
         pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
         fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
-      }
-
-      /// Overloading Constructor
-      // CW: Should be removed again once proper module parameters work
-      module_functor(TYPE * outputPointer,
-                            str func_name,
-                            str func_capability,
-                            str result_type,
-                            str origin_name)
-      {
-        myPointer       = outputPointer;
-        myName          = func_name;
-        myCapability    = func_capability;
-        myType          = result_type;
-        myOrigin        = origin_name;
-        myStatus        = 1;
-        myCurrentIteration = 0;
-        myLoopManager = "none";
-        needs_recalculating = true;
-        usePointer = true;
-        runtime_average = FUNCTORS_RUNTIME_INIT;
-        runtime         = FUNCTORS_RUNTIME_INIT;
-        pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
-        fadeRate        = FUNCTORS_FADE_RATE;
       }
 
       /// Calculate method (using either function or pointer)
@@ -336,10 +311,7 @@ namespace Gambit
 #endif
           nsec = (double)-tp.tv_nsec;
           sec = (double)-tp.tv_sec;
-          if(usePointer)
-            myValue = *myPointer;
-          else
-            this->myFunction(myValue); //Python++??
+          this->myFunction(myValue);
 #ifndef HAVE_MAC
           clock_gettime(CLOCK_MONOTONIC, &tp);
 #endif
@@ -720,14 +692,8 @@ namespace Gambit
       /// Internal storage of function value
       TYPE myValue;
 
-      /// Internal storage of function pointer (if usePointer == false)
+      /// Internal storage of function pointer
       void (*myFunction)(TYPE &);
-
-      /// Internal storage of value pointer (if usePointer == true)
-      TYPE * myPointer;
-
-      /// myValue either determined by myFunction (false) or myPointer (true)
-      bool usePointer;
 
       /// Current runtime in ns
       double runtime;
