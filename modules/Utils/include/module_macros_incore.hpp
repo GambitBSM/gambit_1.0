@@ -476,7 +476,7 @@
       void rt_register_function_nesting<Tags::FUNCTION> ()                     \
       {                                                                        \
         Core.registerNestedModuleFunctor(Functown::FUNCTION);                  \
-        Functown::FUNCTION.setLoopManager(STRINGIFY(LOOPMAN));                 \
+        Functown::FUNCTION.setLoopManagerCapability(STRINGIFY(LOOPMAN));       \
       }                                                                        \
                                                                                \
       /* Create the corresponding initialisation object */                     \

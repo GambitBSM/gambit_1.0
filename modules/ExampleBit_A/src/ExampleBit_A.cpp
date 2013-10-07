@@ -63,7 +63,7 @@ namespace Gambit
     // Module functions
     void nevents_dbl  (double &result)    { result = count++; }
     void nevents_int  (int    &result)    { result = (int) (*SafePointers::nevents_int::Dep::nevents); }
-    void nevents_like (double &result)    { result = 1.5; }
+    void nevents_like (double &result)    { result = 2.0 * (*SafePointers::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
     void function_pointer_retriever( double(*&result)(int&) )
     {
@@ -157,6 +157,7 @@ namespace Gambit
         twistor.seed(newseed);   // Re-seed the random number generator
       }
       result = random_0to5(twistor);  // Generate and return the random number
+      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
     }
 
     // Rounds an event count to the nearest integer
@@ -164,6 +165,7 @@ namespace Gambit
     {
       using namespace SafePointers::exampleCut;
       result = (int) *Dep::event;
+      cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
     }
 
     void eventAccumulator(int &result)
@@ -176,6 +178,7 @@ namespace Gambit
       }
       accumulatedCounts += *Dep::event;  // Add the latest event count to the total
       result = accumulatedCounts;        // Return the current total
+      cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
     }
 
   }

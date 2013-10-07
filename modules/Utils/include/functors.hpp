@@ -68,7 +68,7 @@ namespace Gambit
       // from within module functions
 
       /// Interfaces for runtime optimization
-      /// Needs to be implemented by daughters
+      /// Need to be implemented by daughters
       /// @{
       virtual double getRuntimeAverage() { return 0; }
       virtual double getInvalidationRate() { return 0; }
@@ -170,6 +170,13 @@ namespace Gambit
         cout << "Error.  The setNestedList method has not been defined in this class." << endl;
         exit(1);
       } 
+
+      /// Set the iteration number in a loop in which this functor runs
+      virtual void setIteration (int iteration)
+      { 
+        cout << "Error.  The setIteration method has not been defined in this class." << endl;
+        exit(1);
+      }
 
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor)
@@ -376,29 +383,34 @@ namespace Gambit
       {
         if (not myNestedFunctorList.empty())
         {
-          myCurrentIteration = iteration;
           for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
-           it != myNestedFunctorList.end(); ++it) (*it)->calculate();
+           it != myNestedFunctorList.end(); ++it) 
+          {
+            (*it)->reset();                   // Reset the nested functor so that it recalculates.
+            (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
+            (*it)->calculate();               // Set the nested functor off.
+          }
         }
       } 
 
-      /// Return a safe pointer to the iteration number in the loop managed by this functor.
-      safe_ptr<int> iterationPtr() 
+      /// Setter for setting the iteration number in the loop in which this functor runs
+      virtual void setIteration (int iteration) { myCurrentIteration = iteration; }
+      /// Return a safe pointer to the iteration number in the loop in which this functor runs.
+      virtual safe_ptr<int> iterationPtr() 
       {
         if (this == NULL) functor::failBigTime("iterationPtr");
         return safe_ptr<int>(&myCurrentIteration); 
       }
 
-      /// Specify the capability required of a manager functor, for it to run this functor nested in a loop.
-      virtual void setLoopManager(str manager) { myLoopManager = manager; }
-
+      /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
+      virtual void setLoopManagerCapability (str manager) { myLoopManager = manager; }
       /// Getter for revealing the required capability of the wrapped function's loop manager
-      virtual str loopManager() { if (this == NULL) failBigTime("loopManager"); return myLoopManager; }
+      virtual str loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManager; }
 
       /// Getter for listing currently activated dependencies
-      virtual std::vector<sspair> dependencies()                  { return myDependencies; }
+      virtual std::vector<sspair> dependencies() { return myDependencies; }
       /// Getter for listing backend requirements
-      virtual std::vector<sspair> backendreqs()                   { return myBackendReqs; }
+      virtual std::vector<sspair> backendreqs() { return myBackendReqs; }
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair quant) 
       { 

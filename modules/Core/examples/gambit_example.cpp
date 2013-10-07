@@ -452,7 +452,7 @@ int main( int argc, const char* argv[] )
   SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setSMpars);
   SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setsoftmasses);
   SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&Gambit::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
-  
+
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
@@ -473,22 +473,22 @@ int main( int argc, const char* argv[] )
   cout << "I can do xsection " << ExampleBit_A::provides("xsection") << endl;
   cout << "I can do id " << ExampleBit_A::provides("id") << endl;
 
-  cout << "Core says: report on n_events_like!" << endl;
-  cout << "  " << ExampleBit_A::name() << " says: ";
-  cout << "  "; ExampleBit_A::report("nevents_like");
-  if (ExampleBit_A::provides("nevents_like")) {
-    cout << "OK, so what is it then?" << endl;
-    typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
+  //cout << "Core says: report on n_events_like!" << endl;
+  //cout << "  " << ExampleBit_A::name() << " says: ";
+  //cout << "  "; ExampleBit_A::report("nevents_like");
+  //if (ExampleBit_A::provides("nevents_like")) {
+  //  cout << "OK, so what is it then?" << endl;
+  //  typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
-    testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
-    cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<endl ;
+  //  testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
+  //  cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<endl ;
     // Call the module function by its string name (could use TestType here too insead of double) 
-    double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
-    cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<endl ;
+  //  double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
+  //  cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<endl ;
     // Call the module function by its functor 
-    ExampleBit_A::Functown::nevents_like.calculate();
-    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<endl ; 
-  }
+  //  ExampleBit_A::Functown::nevents_like.calculate();
+  //  cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<endl ; 
+  //}
   
 
   cout << "Core says: report on n_events_postcuts!" << endl;
@@ -611,7 +611,39 @@ int main( int argc, const char* argv[] )
 
   cout <<  endl;
  
+  // ****************
+  // Example rollcall-loops test code
+  // ****************
  
+  cout<<endl;
+  cout<<"***********************"<<endl;
+  cout<<"Rollcall-loops example:"<<endl;
+  cout<<"***********************"<<endl;
+  cout<<endl;
+
+  // Necessary by-hand dependency resolution for the loop example.
+  ExampleBit_A::Functown::exampleCut.resolveDependency(&ExampleBit_A::Functown::exampleEventGen);
+  ExampleBit_A::Functown::eventAccumulator.resolveDependency(&ExampleBit_A::Functown::exampleCut);
+  ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::eventAccumulator);
+  
+  // Necessary by-hand nested-functor-list resolution for the loop example.
+  std::vector<functor*> loopFunctors;
+  loopFunctors.push_back(&ExampleBit_A::Functown::exampleEventGen);
+  loopFunctors.push_back(&ExampleBit_A::Functown::exampleCut);
+  loopFunctors.push_back(&ExampleBit_A::Functown::eventAccumulator);
+  ExampleBit_A::Functown::eventLoopManager.setNestedList(loopFunctors);
+
+  ExampleBit_A::Functown::eventLoopManager.calculate();
+  ExampleBit_A::Functown::nevents_like.calculate();
+  cout<<"Result from nevents_like is: "<<ExampleBit_A::Functown::nevents_like()<<endl;
+
+  cout<<endl;
+  cout<<"***********************"<<endl;
+  cout<<"End rollcall-loops.    "<<endl;
+  cout<<"***********************"<<endl;
+  cout<<endl;
+
   // ****************
   // Example_SUSYspecBit test code
   // ****************
