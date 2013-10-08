@@ -20,6 +20,10 @@
 //  2013 May 01
 //  2013 Jun 17
 //
+//  Pat Scott
+//  2013 Oct
+//  Wow, this file is horrific -- we might want to think about just rewriting it sometime...
+//
 //  *********************************************
 
 
@@ -97,6 +101,10 @@ namespace Gambit {
       return _values;
     }
     
+    virtual const std::map<std::string, double>* getValuesPtr() const {
+      return &_values;
+    }
+
     virtual const double & operator[](std::string const & inkey) const {
       assert_contains(inkey);
       return _values.at(inkey);

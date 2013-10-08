@@ -693,7 +693,6 @@ namespace Gambit
       }
             
       /// Printer function
-      // It occurs to me that there is no longer any reason this shouldn't just be in the base functor class, except that that class has no "myValue" data member. Thoughts?
       virtual void print(printers::BasePrinter* printer)
       {
         printer->print(this->myValue);

@@ -42,10 +42,20 @@ namespace Gambit
     }
 
     // Module functions
-    void xsection         (double &result) { result = 5.e10; }
     void exampleCharge    (int    &result) { result = 1; }
     void identity         (str    &result) { result = "rabbiton"; }
     void nevents          (int    &result) { result = 2; }
+    void xsection         (double &result) 
+    { 
+      using namespace SafePointers::xsection;
+      cout << endl;
+      cout << "In ExampleBit_B, function xsection" << endl;
+      cout << "  Printing parameter values:" << endl;
+      cout << "  M0: "  << *Param["M0"] << endl;
+      cout << "  M12: " << *Param["M12"] << endl;
+      cout << "  A0: "  << *Param["A0"] << endl;
+      result = 5.e10; 
+    }
     void nevents_postcuts (int    &result)          
     {
       using namespace SafePointers::nevents_postcuts;

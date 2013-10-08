@@ -77,16 +77,21 @@ namespace Gambit
     void damu (double &result)
     {
       using namespace SafePointers::damu;
-      // Put these in a map or some such automatically?
-      double p1 = Param::test_parent_I->getValue("p1");
-      double p2 = Param::test_parent_I->getValue("p2");
-      double p3 = Param::test_parent_I->getValue("p3");
-      
+      //Old way (still works, but no longer the canonical method):
+      // double p1 = Model::test_parent_I->getValue("p1");
+      // Model::test_parent_I->print();
+      //and so on...     
+      //The reason I made the ModelParameters object still
+      //available in SafePointers::<functionname>::Model::<modelname>
+      //is that the authors of module functions may want to
+      //do something more advanced with it than just read off the
+      //parameter values.
+
       std::cout << "In ExampleBit_A, function damu" << std::endl;
-      std::cout << "  test_parent_parameters resolved successfully!" << std::endl;
-      std::cout << "  Printing values:" << std::endl;
-      Param::test_parent_I->print();
-      
+      std::cout << "  Printing parameter values:" << std::endl;
+      std::cout << "p1: " << *Param["p1"] << std::endl;
+      std::cout << "p2: " << *Param["p2"] << std::endl;
+      std::cout << "p3: " << *Param["p3"] << std::endl;
     }
     
     // Helper function: not wrapped in rollcall header
@@ -100,14 +105,8 @@ namespace Gambit
     // normal distribution (with hard-coded "observations")
     void normaldist_loglike (double &result)
     {
-      using namespace SafePointers::normaldist_loglike;
-      const ModelParameters &p = *Param::NormalDist_I;
-      double mu    = p["mu"];
-      double sigma = p["sigma"];
-      
-      //double muTrue = 20;   // Actually these are irrelevant since I just
-      //double sigmaTrue = 3; // made up the data rather than sampling.
-      
+      using namespace SafePointers::normaldist_loglike;      
+
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard
       // deviation be as follows (this is our data):
@@ -125,8 +124,8 @@ namespace Gambit
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)
       {
-        //std::cout<<samples[i]<<mu<<sigma<<std::endl;
-        loglTotal += logf(samples[i], mu, sigma);
+        //std::cout<<samples[i]<<*Param["mu"]<<*Param["sigma"]<<std::endl;
+        loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
       }
       
       result = loglTotal;

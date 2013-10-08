@@ -67,6 +67,7 @@ START_MODULE
 
     #define FUNCTION xsection               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+    ALLOW_MODELS(CMSSM_I,NormalDist_I)
     #undef FUNCTION
 
   #undef CAPABILITY

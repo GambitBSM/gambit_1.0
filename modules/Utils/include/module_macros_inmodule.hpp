@@ -124,6 +124,7 @@
             safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
             void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate); \
           }                                                                    \
+          extern std::map<str, safe_ptr<double> > Param;                       \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -175,7 +176,7 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Create a pointer to the dependency functor. To be filled by the       \
+      /* Create a pointer to the model functor. To be filled by the            \
       dependency resolver during runtime. */                                   \
       namespace Parameters                                                     \
       {                                                                        \
@@ -185,13 +186,13 @@
         }                                                                      \
       }                                                                        \
                                                                                \
-      /* Create a safe pointer to the dependency result. To be filled          \
+      /* Create a safe pointer to the model parameters result. To be filled    \
       automatically at runtime when the dependency is resolved. */             \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Param { extern safe_ptr<ModelParameters> MODEL; }          \
+          namespace Model {extern safe_ptr<ModelParameters> MODEL; }           \
         }                                                                      \
       }                                                                        \
                                                                                \
