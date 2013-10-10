@@ -23,17 +23,26 @@
 
 #include <string>
 #include <iostream>
+#include <random>
+#include <chrono>
 #include <math.h>
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
-namespace Gambit {
 
-  namespace ExampleBit_A {
+namespace Gambit
+{
+
+  namespace ExampleBit_A
+  {
 
     // Some local module codes and declarations
     double count = 3.5;
+    int accumulatedCounts = 0;
+    std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
+    unsigned newseed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 twistor(newseed);
     double some_other_function(int &input)
     {
       std::cout << "  This is some_other_function, invoked with argument " << input << std::endl;
@@ -54,7 +63,7 @@ namespace Gambit {
     // Module functions
     void nevents_dbl  (double &result)    { result = count++; }
     void nevents_int  (int    &result)    { result = (int) (*SafePointers::nevents_int::Dep::nevents); }
-    void nevents_like (double &result)    { result = 1.5; }
+    void nevents_like (double &result)    { result = 2.0 * (*SafePointers::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
     void function_pointer_retriever( double(*&result)(int&) )
     {
@@ -68,16 +77,21 @@ namespace Gambit {
     void damu (double &result)
     {
       using namespace SafePointers::damu;
-      // Put these in a map or some such automatically?
-      double p1 = Param::test_parent_I->getValue("p1");
-      double p2 = Param::test_parent_I->getValue("p2");
-      double p3 = Param::test_parent_I->getValue("p3");
-      
+      //Old way (still works, but no longer the canonical method):
+      // double p1 = Model::test_parent_I->getValue("p1");
+      // Model::test_parent_I->print();
+      //and so on...     
+      //The reason I made the ModelParameters object still
+      //available in SafePointers::<functionname>::Model::<modelname>
+      //is that the authors of module functions may want to
+      //do something more advanced with it than just read off the
+      //parameter values.
+
       std::cout << "In ExampleBit_A, function damu" << std::endl;
-      std::cout << "  test_parent_parameters resolved successfully!" << std::endl;
-      std::cout << "  Printing values:" << std::endl;
-      Param::test_parent_I->print();
-      
+      std::cout << "  Printing parameter values:" << std::endl;
+      std::cout << "p1: " << *Param["p1"] << std::endl;
+      std::cout << "p2: " << *Param["p2"] << std::endl;
+      std::cout << "p3: " << *Param["p3"] << std::endl;
     }
     
     // Helper function: not wrapped in rollcall header
@@ -91,14 +105,8 @@ namespace Gambit {
     // normal distribution (with hard-coded "observations")
     void normaldist_loglike (double &result)
     {
-      using namespace SafePointers::normaldist_loglike;
-      const ModelParameters &p = *Param::NormalDist_I;
-      double mu    = p["mu"];
-      double sigma = p["sigma"];
-      
-      //double muTrue = 20;   // Actually these are irrelevant since I just
-      //double sigmaTrue = 3; // made up the data rather than sampling.
-      
+      using namespace SafePointers::normaldist_loglike;      
+
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard
       // deviation be as follows (this is our data):
@@ -116,12 +124,61 @@ namespace Gambit {
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)
       {
-        //std::cout<<samples[i]<<mu<<sigma<<std::endl;
-        loglTotal += logf(samples[i], mu, sigma);
+        //std::cout<<samples[i]<<*Param["mu"]<<*Param["sigma"]<<std::endl;
+        loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
       }
       
       result = loglTotal;
     }  
+
+    // Some example functions for using loops within the dependency structure 
+
+    // Run a fake 'event loop' 
+    void eventLoopManager(int &result)
+    {
+      using namespace SafePointers::eventLoopManager;
+      int nEvents = 20;         // Number of times to run the loop
+      for(unsigned long i = 1; i <= nEvents; i++)
+      {
+        cout << "This is iteration " << i << " of " << nEvents << " being run by eventLoopManager." << endl;
+        Loop::executeIteration(i);
+      }
+      result = 0; // Maybe we want to add some code to allow void-type module functions for just this sort of case...
+    }
+
+    // Produces a random floating-point 'event count' between 0 and 5.
+    void exampleEventGen(double &result)
+    {
+      using namespace SafePointers::exampleEventGen;
+      if (*Loop::iteration == 0) // In the first iteration of a loop
+      {
+        newseed = std::chrono::system_clock::now().time_since_epoch().count();
+        twistor.seed(newseed);   // Re-seed the random number generator
+      }
+      result = random_0to5(twistor);  // Generate and return the random number
+      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+    }
+
+    // Rounds an event count to the nearest integer
+    void exampleCut(int &result)
+    {
+      using namespace SafePointers::exampleCut;
+      result = (int) *Dep::event;
+      cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
+    }
+
+    void eventAccumulator(int &result)
+    {
+      // Adds an integral event count to a total number of accumulated events.
+      using namespace SafePointers::eventAccumulator;
+      if (*Loop::iteration == 0) // In the first iteration of a loop
+      {
+        accumulatedCounts = 0;   // Zero the total accumulated counts
+      }
+      accumulatedCounts += *Dep::event;  // Add the latest event count to the total
+      result = accumulatedCounts;        // Return the current total
+      cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+    }
 
   }
 

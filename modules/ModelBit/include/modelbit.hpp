@@ -64,8 +64,11 @@ namespace Gambit
         /// The central boost graph object for the model hierarchy
         Graphs::MasterGraphType modelGraph;
 
-        ///  Function pointer type
+        /// Function pointer type
         typedef bool (*LineageFunction)(std::string);
+
+        /// Internal record of the active models
+        std::vector<str> activemodels;         
 
         /// \name Private lineage/ancestry databases
         /// @{
@@ -87,7 +90,7 @@ namespace Gambit
         ///
         /// Activates primary_model_functors according to the model(s) being 
         /// scanned
-        void activatePrimaryModels (const std::vector<str> &);
+        void activatePrimaryModels (std::vector<str>);
         
         /// Active model functor "usefulness" checker
         ///
@@ -118,6 +121,9 @@ namespace Gambit
 
         /// List all the models recognised by GAMBIT
         void list_models();
+
+        /// Return vector of the active models;
+        std::vector<str> get_activemodels();
 
         /// Retrieve the lineage for a given model
         std::vector<str> get_lineage (const str &);

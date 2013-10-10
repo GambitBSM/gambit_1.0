@@ -63,14 +63,6 @@ adhoc:
   function:     ""
   module:       ""
 
-# Uncomment to test TinyDarkBit
-- purpose:      Likelihood
-  capability:   omega_DM
-  type:         double
-  function:     ""
-  module:       ""
-
-
 #########################
 --- # Auxiliary entries
 #########################
@@ -100,10 +92,10 @@ another_key:
     subsubkey1: value2
 
 scanner:
-  #module:  crapsample
+  module:  crapsample
   file_path:  ScannerBit/lib/libsample.so
     
-enable_redirect: true
+enable_redirect: false
 
 redirect_output:
    CMSSM_I:  xterm

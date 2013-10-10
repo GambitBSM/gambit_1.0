@@ -445,7 +445,7 @@ namespace Gambit {
       double amt2 = mt2s.aMT2_BM;
       double mt2tau = mt2s.MT2tauB;
     
-      std::cout<<amt2<<" "<<mt2tau<<std::endl;
+      //std::cout<<amt2<<" "<<mt2tau<<std::endl;
       
       if(cut_1SignalElectron && cut_4jets && cut_Btag) {
 	cutFlowVector_alt[0]++;
@@ -746,6 +746,9 @@ namespace Gambit {
       cout << "MET sig > 11 (438) " << cutFlowVector_alt[4] << " " << cutFlowVector_alt[4]*1413/cutFlowVector_alt[0] << endl;
       cout << "amT2 > 200 (318) " << cutFlowVector_alt[5] <<  " " << cutFlowVector_alt[5]*1413/cutFlowVector_alt[0] <<endl;
       cout << "mT2tau > 120 (298) " <<cutFlowVector_alt[6] <<  " " << cutFlowVector_alt[6]*1413/cutFlowVector_alt[0] <<endl;
+
+      cout << "RESULTS 1LEP " << _numTN1Shape_bin1 << " " <<  _numTN1Shape_bin2 << " " << _numTN1Shape_bin3 << " " << _numTN2 << " " <<  _numTN3 << " " << _numBC1 << " " << _numBC2 << " " << _numBC3 << endl;
+
     }
 
 

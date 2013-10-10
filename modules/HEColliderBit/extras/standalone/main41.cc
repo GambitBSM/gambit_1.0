@@ -11,17 +11,17 @@
 // WARNING: typically one needs 25 MB/100 events at the LHC.
 // Therefore large event samples may be impractical.
 
-#include "Pythia.h"
-#include "HepMCInterface.h"
+#include "Pythia8/Pythia.h"
+#include "Pythia8/Pythia8ToHepMC.h"
 #include "HepMC/GenEvent.h"
 #include "HepMC/IO_GenEvent.h"
 
-using namespace Pythia8; 
+using namespace Pythia8;
 
 int main() {
 
-  // Interface for conversion from Pythia8::Event to HepMC event. 
-  HepMC::I_Pythia8 ToHepMC;
+  // Interface for conversion from Pythia8::Event to HepMC event.
+  HepMC::Pythia8ToHepMC ToHepMC;
 
   // Specify file where HepMC events will be stored.
   HepMC::IO_GenEvent ascii_io("hepmcout41.dat", std::ios::out);
@@ -45,7 +45,7 @@ int main() {
   pythiaInstance.readString("PartonLevel:MPI = off");
   pythiaInstance.readString("PartonLevel:FSR = on");
   pythiaInstance.readString("HadronLevel:all = on");
-  
+
   pythiaInstance.readString("SUSY:all = on");
   pythiaInstance.readString("SUSY:idA = 1");
   // Time to test my Pythia process ID hack.
@@ -60,8 +60,8 @@ int main() {
   susyIDs.push_back(2000003);
   susyIDs.push_back(2000004);
   // Using both idVectA and idVectB forces events with only gluinos or squarks.
-  pythiaInstance.settings.ivect("SUSY:idVectA", susyIDs);
-  pythiaInstance.settings.ivect("SUSY:idVectB", susyIDs);
+  pythiaInstance.settings.mvec("SUSY:idVecA", susyIDs);
+  pythiaInstance.settings.mvec("SUSY:idVecB", susyIDs);
   pythiaInstance.readString("SLHA:file = sps1aWithDecays.spc");
 
   pythiaInstance.init();
@@ -75,14 +75,14 @@ int main() {
 
     // Find number of all final charged particles and fill histogram.
     //int nCharged = 0;
-    //for (int i = 0; i < pythia.event.size(); ++i) 
-    //if (pythia.event[i].isFinal() && pythia.event[i].isCharged()) 
-    //  ++nCharged; 
+    //for (int i = 0; i < pythia.event.size(); ++i)
+    //if (pythia.event[i].isFinal() && pythia.event[i].isCharged())
+    //  ++nCharged;
     //mult.fill( nCharged );
 
     // Construct new empty HepMC event and fill it.
     // Units will be as chosen for HepMC build, but can be changed
-    // by arguments, e.g. GenEvt( HepMC::Units::GEV, HepMC::Units::MM)  
+    // by arguments, e.g. GenEvt( HepMC::Units::GEV, HepMC::Units::MM)
     HepMC::GenEvent* hepmcevt = new HepMC::GenEvent();
     ToHepMC.fill_next_event( pythiaInstance, hepmcevt );
 
@@ -90,10 +90,10 @@ int main() {
     ascii_io << hepmcevt;
     delete hepmcevt;
 
-  // End of event loop. Statistics. Histogram. 
+  // End of event loop. Statistics. Histogram.
   }
   pythiaInstance.stat();
-  
+
 
   // Done.
   return 0;

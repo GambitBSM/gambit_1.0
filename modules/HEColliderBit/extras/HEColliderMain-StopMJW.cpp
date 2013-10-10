@@ -102,11 +102,11 @@ int main()
 {
   // Basic setup
   /// @todo Model info including SLHA will need to come from ModelBit
-  const string slhaFileName = "sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
+  const string slhaFileName = "susy_simpl_models_Tt_T250_L1.slha"; //"mhmodBenchmark.slha";
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   /// @note That means that the class loaders had better be working by then...
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
-  const int NEVENTS = 10000;
+  const int NEVENTS = 100000;
 
   // For event generation
   Gambit::HEColliderBit::Pythia8Backend* myPythia;
@@ -148,9 +148,12 @@ int main()
   std::cout << "In stop example " << endl;
   sp_groups["t~"] = Gambit::HEColliderBit::SubprocessGroup(1,{{1000006}},{{ 1000006}});
   // Bind subprocesses to analysis pointers
-  for (auto& sp_group : sp_groups)
+  for (auto& sp_group : sp_groups){
+    sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_0LEPStop_20invfb"));
     sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_1LEPStop_20invfb"));
-
+    sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_2LEPStop_20invfb"));
+    sp_group.second.add_analysis(Gambit::mkAnalysis("ATLAS_2bStop_20invfb"));
+  }
   /// @todo Normalize / make sure that all cores are used and no extras / ensure that time isn't
   /// wasted on negligible processes but equally that processes just below the integer ncore threshold
   /// don't get accidentally missed.
@@ -198,6 +201,11 @@ int main()
 
     myPythia->set("SUSY:idVectA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVectB", thread_cfgs[NTHREAD].particlesInProcess2);
+    
+    //MJW custom code to force stop decay processes
+    //myPythia->set("1000006:onPosIfAny = 1000024");
+    //myPythia->set("1000006:onNegIfAny = 1000022");
+    
 
     #ifdef ARCHIVE
     // Persistency config
@@ -214,6 +222,12 @@ int main()
     for (counter = 0; counter < num_events_per_thread; counter++) {
       genEvent.clear();
       recoEvent.clear();
+      //MJW custom code to force stop decays
+      myPythia->set("1000006:oneChannel = 2 1 101 1000022 6");
+      myPythia->set("1000006:addChannel = 3 1 101 1000024 5");
+
+      //myPythia->set("1000006:mayDecay = on");
+
       myPythia->nextEvent(genEvent);
       #pragma omp critical
       {
@@ -239,7 +253,9 @@ int main()
 
   for (auto& sp_group : sp_groups) {
     cout << "Finalizing " << sp_group.first << endl;
-    sp_group.second.analyses[0]->finalize();
+    for(int analysis=0;analysis<sp_group.second.analyses.size();analysis++)
+      sp_group.second.analyses[analysis]->finalize();
+    //sp_group.second.analyses[0]->finalize();
   }
   /// @todo Combine results from each subprocess with appropriate target NLO xsecs applied
   //cout << "LIKELIHOOD = " << ana->likelihood() << endl;

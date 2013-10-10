@@ -2,7 +2,7 @@
 #include "MCUtils.hpp"
 
 // External
-#include "Pythia.h"
+#include "Pythia8/Pythia.h"
 #include "fastjet/ClusterSequence.hh"
 #include "boost/lexical_cast.hpp"
 #include "omp.h"

@@ -37,10 +37,8 @@
 // Create all the modules
 #include "ExampleBit_A_rollcall.hpp"
 #include "ExampleBit_B_rollcall.hpp"
-#include "TinyDarkBit_rollcall.hpp"
 #include "DarkBit_rollcall.hpp"
 #include "SUSYspecBit_rollcall.hpp"
-#include "TEMP_ScannerBit_rollcall.hpp"
 
 #endif /* defined(__module_rollcall__) */
 

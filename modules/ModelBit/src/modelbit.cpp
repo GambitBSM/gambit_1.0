@@ -84,8 +84,11 @@ namespace Gambit
     /// Model activation function
     ///
     /// Activates primary_model_functors according to the model(s) being scanned
-    void ModelFunctorClaw::activatePrimaryModels (const std::vector<str> &selectedmodels)
-    { 
+    void ModelFunctorClaw::activatePrimaryModels (std::vector<str> selectedmodels)
+    {
+      // Iterator to elements of 'selectedmodels'
+      std::vector<str>::iterator el;      
+
       // Loop through functor list and activate functor if it matches a member of 'selectedmodels'.
       for (std::vector<primary_model_functor*>::const_iterator 
           it  = boundCore->getPrimaryModelFunctors()->begin();
@@ -93,8 +96,8 @@ namespace Gambit
           ++it)
       {
         // Check if this functor originates from one of the selected models
-        if(std::find(selectedmodels.begin(), selectedmodels.end(), (*it)->origin()) 
-              != selectedmodels.end())
+        el = std::find(selectedmodels.begin(), selectedmodels.end(), (*it)->origin());
+        if(el != selectedmodels.end())
         {
           // If yes, activate this functor
           (*it)->setStatus(1); // 1 means "available". Possibly switch this to 2 ("active").
@@ -102,6 +105,10 @@ namespace Gambit
           (*it)->calculate();
           // Add it to the map of active primary model functors in the core
           boundCore->registerActiveModelFunctor(**it);
+          // Add it to the internal list of active models
+          activemodels.push_back(*el);
+          // Remove it from the input 'selectedmodels' list
+          selectedmodels.erase(el);
         } 
         else
         {
@@ -110,8 +117,30 @@ namespace Gambit
         }
       }
 
+      // Check that all requested models have been activated
+      if( selectedmodels.size() != 0 )
+      {
+        // Report error
+        /// TODO: Change to proper gambit error
+        std::cout<<"Error! Some of the requested models could not be activated for ";
+        std::cout<<"scanning! Probably they have not been defined, or you spelled ";
+        std::cout<<"their name wrong in the ini file."<<std::endl;
+        std::cout<<"Un-activatable models:"<<std::endl;
+        for (std::vector<str>::iterator 
+             m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
+        {
+          std::cout<<"  "<<(*m)<<std::endl;
+        }
+        exit (EXIT_FAILURE);
+      }
     }
-    
+   
+    /// Retrieve the internally stored vector of activated models
+    std::vector<str> ModelFunctorClaw::get_activemodels()   
+    {
+      return activemodels;
+    } 
+
     /// Active model functor "usefulness" checker
     ///
     /// Checks that all the active primary model functors are actually used for

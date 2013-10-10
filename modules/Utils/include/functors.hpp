@@ -23,7 +23,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 July --> Added primary_model_functor class
-///                  --> Added "printers" library for functor print functions.
+///  \date 2013 Sep  --> Added functor print functions
 ///
 ///  *********************************************
 
@@ -49,10 +49,10 @@
 // Initial runtime estimate
 #define FUNCTORS_RUNTIME_INIT 1000
 
+
 namespace Gambit
 {
 
-  // =====================================
   /// Function wrapper (functor) base class
 
   class functor
@@ -63,8 +63,12 @@ namespace Gambit
       /// Empty virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {}
 
+      // It may be safer to have some of the following things accessible 
+      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
+      // from within module functions
+
       /// Interfaces for runtime optimization
-      /// Needs to be implemented by daughters
+      /// Need to be implemented by daughters
       /// @{
       virtual double getRuntimeAverage() { return 0; }
       virtual double getInvalidationRate() { return 0; }
@@ -72,10 +76,6 @@ namespace Gambit
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
       /// @}
-
-      // It may be safer to have some of the following things accessible 
-      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
-      // from within module functions
 
       /// Setter for version
       void setVersion(str ver) { if (this == NULL) failBigTime("setVersion"); myVersion = ver; }
@@ -85,21 +85,28 @@ namespace Gambit
       void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
 
       /// Getter for the wrapped function's name
-      str name()        { if (this == NULL) failBigTime("name"); return myName;       }
+      str name()        { if (this == NULL) failBigTime("name"); return myName; }
       /// Getter for the wrapped function's reported capability
       str capability()  { if (this == NULL) failBigTime("capability"); return myCapability; }
       /// Getter for the wrapped function's reported return type
-      str type()        { if (this == NULL) failBigTime("type"); return myType;       }
+      str type()        { if (this == NULL) failBigTime("type"); return myType; }
       /// Getter for the wrapped function's origin (module or backend name)
-      str origin()      { if (this == NULL) failBigTime("origin"); return myOrigin;     }
-      /// Getter for the  version of the wrapped function's origin (module or backend)
-      str version()     { if (this == NULL) failBigTime("version"); return myVersion;    }
+      str origin()      { if (this == NULL) failBigTime("origin"); return myOrigin; }
+      /// Getter for the version of the wrapped function's origin (module or backend)
+      str version()     { if (this == NULL) failBigTime("version"); return myVersion; }
       /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
-      int status()      { if (this == NULL) failBigTime("status"); return myStatus;     }
+      int status()      { if (this == NULL) failBigTime("status"); return myStatus; }
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
-      str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose;    }
+      str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+
+      /// Getter for revealing the required capability of the wrapped function's loop manager
+      virtual str loopManagerCapability()
+      {
+        cout << "Error.  The loopManagerCapability method has not been defined in this class." << endl;
+        exit(1);
+      }
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies()          
@@ -157,6 +164,20 @@ namespace Gambit
         return empty;
       }
 
+      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
+      virtual void setNestedList (std::vector<functor*> newNestList)
+      { 
+        cout << "Error.  The setNestedList method has not been defined in this class." << endl;
+        exit(1);
+      } 
+
+      /// Set the iteration number in a loop in which this functor runs
+      virtual void setIteration (int iteration)
+      { 
+        cout << "Error.  The setIteration method has not been defined in this class." << endl;
+        exit(1);
+      }
+
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor)
       {
@@ -190,18 +211,19 @@ namespace Gambit
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
+      // Print function
+      virtual void print(printers::BasePrinter* printer)
+      {
+         std::cout<<"Warning, this is the functor base class "
+          << "print function! This should not be used; print "
+          << "function should be redefined in daughter functo"
+          << "r classes. If this is running there is a proble"
+          << "m somewhere... (from functor "<<myName<<std::endl;
+      }
+
 
     protected:
           
-      // Collection of print functions. Overloaded to deal with various types
-      // of functor contents.
-      // In the end we will want a variety of these, for outputting information
-      // to various kinds of output, i.e. databases etc.
-      
-      /// Print functor for std::cout
-      //template<TYPE>
-      virtual void print(std::ostream&) {}; // does nothing
-
       /// Internal storage of the function name.
       str myName;       
       /// Internal storage of exactly what the function calculates.
@@ -214,6 +236,8 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
+      /// Capability of a function that mangages a loop that this function can run inside of.
+      str myLoopManager;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
 
@@ -273,34 +297,13 @@ namespace Gambit
         myType          = result_type;
         myOrigin        = origin_name;
         myStatus        = 1;
+        myCurrentIteration = 0;
+        myLoopManager = "none";
         needs_recalculating = true;
-        usePointer = false;
         runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
         runtime         = FUNCTORS_RUNTIME_INIT;
         pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
         fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
-      }
-
-      /// Overloading Constructor
-      // CW: Should be removed again once proper module parameters work
-      module_functor(TYPE * outputPointer,
-                            str func_name,
-                            str func_capability,
-                            str result_type,
-                            str origin_name)
-      {
-        myPointer       = outputPointer;
-        myName          = func_name;
-        myCapability    = func_capability;
-        myType          = result_type;
-        myOrigin        = origin_name;
-        myStatus        = 1;
-        needs_recalculating = true;
-        usePointer = true;
-        runtime_average = FUNCTORS_RUNTIME_INIT;
-        runtime         = FUNCTORS_RUNTIME_INIT;
-        pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
-        fadeRate        = FUNCTORS_FADE_RATE;
       }
 
       /// Calculate method (using either function or pointer)
@@ -315,10 +318,7 @@ namespace Gambit
 #endif
           nsec = (double)-tp.tv_nsec;
           sec = (double)-tp.tv_sec;
-          if(usePointer)
-            myValue = *myPointer;
-          else
-            this->myFunction(myValue); //Python++??
+          this->myFunction(myValue);
 #ifndef HAVE_MAC
           clock_gettime(CLOCK_MONOTONIC, &tp);
 #endif
@@ -378,10 +378,39 @@ namespace Gambit
         return safe_ptr<TYPE>(&myValue);
       }
 
+      /// Execute a single iteration in the loop managed by this functor.
+      void iterate(int iteration)
+      {
+        if (not myNestedFunctorList.empty())
+        {
+          for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
+           it != myNestedFunctorList.end(); ++it) 
+          {
+            (*it)->reset();                   // Reset the nested functor so that it recalculates.
+            (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
+            (*it)->calculate();               // Set the nested functor off.
+          }
+        }
+      } 
+
+      /// Setter for setting the iteration number in the loop in which this functor runs
+      virtual void setIteration (int iteration) { myCurrentIteration = iteration; }
+      /// Return a safe pointer to the iteration number in the loop in which this functor runs.
+      virtual safe_ptr<int> iterationPtr() 
+      {
+        if (this == NULL) functor::failBigTime("iterationPtr");
+        return safe_ptr<int>(&myCurrentIteration); 
+      }
+
+      /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
+      virtual void setLoopManagerCapability (str manager) { myLoopManager = manager; }
+      /// Getter for revealing the required capability of the wrapped function's loop manager
+      virtual str loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManager; }
+
       /// Getter for listing currently activated dependencies
-      virtual std::vector<sspair> dependencies()                  { return myDependencies; }
+      virtual std::vector<sspair> dependencies() { return myDependencies; }
       /// Getter for listing backend requirements
-      virtual std::vector<sspair> backendreqs()                   { return myBackendReqs; }
+      virtual std::vector<sspair> backendreqs() { return myBackendReqs; }
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair quant) 
       { 
@@ -571,6 +600,12 @@ namespace Gambit
         permitted_map[key].push_back(vector_entry);       
       }
 
+      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
+      virtual void setNestedList (std::vector<functor*> &newNestedList)
+      { 
+        myNestedFunctorList = newNestedList;
+      } 
+
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor)
       {
@@ -656,14 +691,11 @@ namespace Gambit
           myDependencies.push_back(*it);        
         }
       }
-      
-      // Collection of print functions. Overloaded to deal with various types
-      // of functor contents.
-      // In the end we will want a variety of these, for outputting information
-      // to various kinds of output, i.e. databases etc.
-      virtual void print(std::ostream& os) const
+            
+      /// Printer function
+      virtual void print(printers::BasePrinter* printer)
       {
-        printers::ostream<TYPE>(os, myValue);
+        printer->print(this->myValue);
       }
 
     protected:
@@ -671,14 +703,8 @@ namespace Gambit
       /// Internal storage of function value
       TYPE myValue;
 
-      /// Internal storage of function pointer (if usePointer == false)
+      /// Internal storage of function pointer
       void (*myFunction)(TYPE &);
-
-      /// Internal storage of value pointer (if usePointer == true)
-      TYPE * myPointer;
-
-      /// myValue either determined by myFunction (false) or myPointer (true)
-      bool usePointer;
 
       /// Current runtime in ns
       double runtime;
@@ -691,6 +717,12 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
+
+      /// Vector of functors that have been set up to run nested within this one.
+      std::vector<functor*> myNestedFunctorList;
+
+      /// Counter for iterations of nested functor loop.
+      int myCurrentIteration;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
@@ -915,7 +947,7 @@ namespace Gambit
   { 
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }
-  
+
 }
 
 #endif /* defined(__functors_hpp__) */

@@ -83,6 +83,12 @@
 /// type \em TYPE.
 #define START_FUNCTION(TYPE)                              CORE_START_FUNCTION(TYPE)
 
+/// Indicates that the current \link FUNCTION() FUNCTION\endlink of the current 
+/// \link MODULE() MODULE\endlink must be managed by another function (in the same
+/// module or another) that calls it from within a loop.  That other function must
+/// provide capability \em LOOPMAN. 
+#define LOOP_MANAGER(LOOPMAN)                             CORE_LOOP_MANAGER(LOOPMAN)                                  
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink depends on the 
 /// presence of another module function that can supply capability \em DEP, with
 /// return type \em TYPE.
@@ -318,6 +324,14 @@
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
                                                                                \
+      /* Runtime registration function for nesting requirements of             \
+      observable/likelihood function TAG*/                                     \
+      template <typename TAG>                                                  \
+      void rt_register_function_nesting ()                                     \
+      {                                                                        \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
+      }                                                                        \
+                                                                               \
       /* Runtime registration function for dependency DEP_TAG of function TAG*/\
       template <typename DEP_TAG, typename TAG>                                \
       void rt_register_dependency ()                                           \
@@ -445,7 +459,47 @@
   {                                                                            \
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
-  
+                                                                               \
+  /* Create a map to hold pointers to all the model parameters accessible to   \
+  this functor. */                                                             \
+  namespace SafePointers                                                       \
+  {                                                                            \
+    namespace FUNCTION                                                         \
+    {                                                                          \
+      std::map<str, safe_ptr<const double> > Param;                            \
+    }                                                                          \
+  }                                                                            \
+
+
+/// Redirection of LOOP_MANAGER(LOOPMAN) when invoked from within the core.
+#define CORE_LOOP_MANAGER(LOOPMAN)                                             \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the runtime commands that register the fact that this FUNCTION \
+      requires it be run inside a loop manager with capability LOOPMAN. */     \
+      template <>                                                              \
+      void rt_register_function_nesting<Tags::FUNCTION> ()                     \
+      {                                                                        \
+        Core.registerNestedModuleFunctor(Functown::FUNCTION);                  \
+        Functown::FUNCTION.setLoopManagerCapability(STRINGIFY(LOOPMAN));       \
+      }                                                                        \
+                                                                               \
+      /* Create the corresponding initialisation object */                     \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT(FUNCTION,_nesting)                                        \
+         (&rt_register_function_nesting<Tags::FUNCTION>);                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
 
 /// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
@@ -569,7 +623,7 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
+      /* Indicate that FUNCTION can be used with MODEL */                      \
       template <>                                                              \
       bool explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>()        \
       {                                                                        \
@@ -586,13 +640,13 @@
         }                                                                      \
       }                                                                        \
                                                                                \
-      /* Create a safe pointer to the dependency result. To be filled          \
+      /* Create a safe pointer to the model parameter values. To be filled     \
       automatically at runtime when the dependency is resolved. */             \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Param { safe_ptr<ModelParameters> MODEL; }                 \
+          namespace Model { safe_ptr<ModelParameters> MODEL; }                 \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -610,17 +664,42 @@
         {                                                                      \
           cout<<"Error: Null returned from dynamic cast in "<< endl;           \
           cout<<"MODULE::resolve_dependency, for model"<< endl;                \
-          cout<<"MODEL of function FUNCTION.  Attempt was to "<< endl;         \
+          cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;       \
           cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;        \
           cout<<params_functor->origin()<<"."<<endl;                           \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did!  Now set the pointers to the model parameter result. */\
+        else /* It did! */                                                     \
         {                                                                      \
-          SafePointers::FUNCTION::Param::MODEL =                               \
+          /* Set the pointer to the model parameter result. */                 \
+          SafePointers::FUNCTION::Model::MODEL =                               \
            Parameters::FUNCTION::MODEL->valuePtr();                            \
+          /* Get a pointer to the parameter map provided by this MODEL */      \
+          const std::map<str,double>* parameterMap =                           \
+           SafePointers::FUNCTION::Model::MODEL->getValuesPtr();               \
+          /* Use that to add the parameters provided by this MODEL to the map  \
+          of safe pointers to model parameters. */                             \
+          for (std::map<str,double>::const_iterator it = parameterMap->begin();\
+           it != parameterMap->end(); ++it)                                    \
+          {                                                                    \
+            if (SafePointers::FUNCTION::Param.find(it->first) ==               \
+                SafePointers::FUNCTION::Param.end())                           \
+            { /* Add a safe pointer to the value of this parameter to the map*/\
+              SafePointers::FUNCTION::Param[it->first] =                       \
+               safe_ptr<const double>(&(parameterMap->at(it->first)));         \
+            }                                                                  \
+            else                                                               \
+            { /* This parameter already exists in the map! Fail. */            \
+              cout<<"Error in MODULE::resolve_dependency, for model"<< endl;   \
+              cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;   \
+              cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;    \
+              cout<<params_functor->origin()<<"."<<endl;                       \
+              cout<<"You have tried to scan two models simultaneously"<< endl; \
+              cout<<"that have one or more parameters in common. "<< endl;     \
+              cout<<"Problem parameter: "<<it->first<<endl;                    \
+            }                                                                  \
+          }                                                                    \
         }                                                                      \
-                                                                               \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register the           \
@@ -859,7 +938,7 @@
         vec models = delimiterSplit(MODELSTRING, ",");                         \
         for (vec::iterator it = models.begin() ; it != models.end(); ++it)     \
         {                                                                      \
-          if (*it == model) return true;                                         \
+          if (*it == model) return true;                                       \
         }                                                                      \
         return false;                                                          \
       }                                                                        \

@@ -22,16 +22,16 @@ based on: ATLAS-CONF-2013-048
 
 */
 
-namespace GAMBIT {
+namespace Gambit {
 
 
   using namespace std;
 
   //A useful MT2 class for this module
-  class MT2 {
+  class MT2_2l {
     
   public:
-    MT2(){
+    MT2_2l(){
       MT2ll=0;
       MT2bb=0;
     }
@@ -68,9 +68,9 @@ namespace GAMBIT {
       
     }
 
-    MT2 MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, vector<Particle *>leptons, P4 metVec){
+    MT2_2l MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, vector<Particle *>leptons, P4 metVec){
 
-      MT2 results;
+      MT2_2l results;
 
       if(muons.size()+electrons.size()<2) return results;
 
@@ -248,7 +248,7 @@ namespace GAMBIT {
       bool isdphi=false;
       bool isdphib=false;
 
-      MT2 mt2s;
+      MT2_2l mt2s;
       
       if(nLeptons==2) mt2s = MT2helper(signalJets,signalElectrons,signalMuons,signalLeptons,ptot);
 
@@ -622,6 +622,9 @@ namespace GAMBIT {
 	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[3] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[3] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[3] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[3]<< "%" << endl;
       }
       cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+
+      cout << "RESULTS 2LEP " << _numSRM90SF << " " << _numSRM100SF << " " << _numSRM110SF << " " << _numSRM120SF << " " << _numSRM90DF << " " << _numSRM100DF << " " << _numSRM110DF << " " << _numSRM120DF << endl;
+
     }
 
 

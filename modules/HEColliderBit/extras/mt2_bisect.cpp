@@ -237,7 +237,7 @@ void mt2::mt2_massless()
       if(foundhigh==0) 
       {
        
-	cout<<"Deltasq_high not found at event " << nevt <<endl;
+	//cout<<"Deltasq_high not found at event " << nevt <<endl;
         
        
          mt2_b = (double)sqrt(Deltasq_low+mnsq);

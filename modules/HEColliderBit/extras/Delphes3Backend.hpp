@@ -36,8 +36,8 @@
 #include "TParticlePDG.h"
 #include "TLorentzVector.h"
 
-#include "Pythia.h"
 #include "Event.hpp"
+#include "Py8Utils.hpp"
 #include "modules/Delphes.h"
 #include "classes/DelphesClasses.h"
 #include "classes/DelphesFactory.h"

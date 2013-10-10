@@ -47,9 +47,12 @@ void beispiel()
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
+
+  // Set up a printer object
+  printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core, iniFile);
+  Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -146,6 +149,7 @@ int main( int argc, const char* argv[] )
   // * Models are really just modules with special contents.
 
 
+  // PS: Commented this example out as I removed TEMP_ScannerBit, so it won't work.
   // =======Demo of complete toy sequence.================
   //
   // Model selected by user is CMSSM_I
@@ -154,60 +158,60 @@ int main( int argc, const char* argv[] )
   // ---- Resolve dependencies --------------
   
   // CMSSM_I parameters dependency
-  Models::CMSSM_I::Functown::primary_parameters.resolveDependency(
-                                &TEMP_ScannerBit::Functown::generate_parameters);
+  //Models::CMSSM_I::Functown::primary_parameters.resolveDependency(
+  //                              &TEMP_ScannerBit::Functown::generate_parameters);
   
   // CMSSM_I interpret_as_parent dependencies
-  Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
-                                &Models::CMSSM_I::Functown::primary_parameters);
-  Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
-                                &ExampleBit_A::Functown::nevents_dbl);
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
+  //                              &Models::CMSSM_I::Functown::primary_parameters);
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(
+  //                              &ExampleBit_A::Functown::nevents_dbl);
   
   // MSSM_I interpret_as_parent dependency
   // Note that the MSSM_I_parameters come from the CMSSM_I functor, not from
   // the 'primary' functor in the MSSM_I namespace (this one would only be used
   // if MSSM_I was the model set for the run)
-  Models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(
-                                &Models::CMSSM_I::Functown::MSSM_I_parameters);
+  //Models::MSSM_I::Functown::test_parent_I_parameters.resolveDependency(
+  //                              &Models::CMSSM_I::Functown::MSSM_I_parameters);
   
   // ---- begin run ---------------
   
   // ScannerBit: creates alpha_parameters
-  TEMP_ScannerBit::Functown::generate_parameters.calculate();
+  //TEMP_ScannerBit::Functown::generate_parameters.calculate();
   
   // ModelBit: insert alpha_parameters into primary parameters functor
-  Models::CMSSM_I::Functown::primary_parameters.calculate();
+  //Models::CMSSM_I::Functown::primary_parameters.calculate();
   
   // Model parameters now ready for delivery to other functors
   // e.g. interpret_as_parent
-  ExampleBit_A::Functown::nevents_dbl.calculate(); //interpret_as_parent depends
+  //ExampleBit_A::Functown::nevents_dbl.calculate(); //interpret_as_parent depends
                                                    //on this result: run first.
-  Models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.calculate();
   // Go up another level:
-  Models::MSSM_I::Functown::test_parent_I_parameters.calculate();
+  //Models::MSSM_I::Functown::test_parent_I_parameters.calculate();
   
   // -------- check output ----------------------
   // To make sure things ran sensibly, lets see what happened:
-  cout<<endl;
-  cout<<"Results from toy run sequence:"<<endl;
+  //cout<<endl;
+  //cout<<"Results from toy run sequence:"<<endl;
   
-  cout<<"  TEMP_ScannerBit:"<<endl;
-  cout<<"    alpha_parameters:"<<endl;
-  std::map<std::string,double> alphapars = TEMP_ScannerBit::Functown::generate_parameters();
-  typedef std::map<std::string,double>::iterator it_type;
-      for(it_type it = alphapars.begin();it != alphapars.end(); it++) {
+  //cout<<"  TEMP_ScannerBit:"<<endl;
+  //cout<<"    alpha_parameters:"<<endl;
+  //std::map<std::string,double> alphapars = TEMP_ScannerBit::Functown::generate_parameters();
+  //typedef std::map<std::string,double>::iterator it_type;
+  //    for(it_type it = alphapars.begin();it != alphapars.end(); it++) {
         // iterator->first = key
         // iterator->second = value
-        cout<<"      "<<it->first<<" = "<<it->second<<endl;
-      }
-  cout<<"  ModelBit:"<<endl;
-  cout<<"    CMSSM_I parameters:"<<endl;
-  Models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
-  cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
-  Models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
-  cout<<"    MSSM_I -> test_parent_I_parameters:"<<endl;
-  Models::MSSM_I::Functown::test_parent_I_parameters.valuePtr()->print();
-  cout<<endl;
+  //      cout<<"      "<<it->first<<" = "<<it->second<<endl;
+  //    }
+  //cout<<"  ModelBit:"<<endl;
+  //cout<<"    CMSSM_I parameters:"<<endl;
+  //Models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
+  //cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
+  //Models::CMSSM_I::Functown::MSSM_I_parameters.valuePtr()->print();
+  //cout<<"    MSSM_I -> test_parent_I_parameters:"<<endl;
+  //Models::MSSM_I::Functown::test_parent_I_parameters.valuePtr()->print();
+  //cout<<endl;
   //============== end toy sequence ============================================
     
     
@@ -438,47 +442,6 @@ int main( int argc, const char* argv[] )
   // ****************
 
   
-  // ****************
-  // TinyDarkBit code START
-  // ****************
-
-  // Test it
-  cout << "Testing dependency resolution using TinyDarkBit:" << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
-
-  // Some basic TinyDarkBit functionality
-  cout << "*** Start Dark ***" << endl;
-  cout << "My name is " << TinyDarkBit::name() << endl;
-  cout << " I can calculate: " << endl << TinyDarkBit::iCanDo << endl;
-  cout << " ...but I may need: " << endl << TinyDarkBit::iMayNeed << endl;
-  //cout << "TinyDarkBit says: omega_DM is " << TinyDarkBit::result<double>("omega_DM") << endl;
-  cout << "*** End Dark ***" << endl << endl;
-
-  // DarkSUSY initialization
-  // TinyDarkBit::Functown::initDS.calculate();
-
-  // Run calculate() in correct order by hand and print results
-  TinyDarkBit::Functown::CMSSM_definition.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::CMSSM_definition() << endl ;
-  TinyDarkBit::Functown::SLHA.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::SLHA() << endl ;
-  TinyDarkBit::Functown::Weff.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Weff() << endl ;
-  TinyDarkBit::Functown::Wstruct.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valA << endl ;
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::Wstruct().valB << endl ;
-  TinyDarkBit::Functown::omega_DM.calculate();
-  cout << "  " << TinyDarkBit::name() << " says: " << TinyDarkBit::Functown::omega_DM() << endl ;
-
-  // ********************
-  // TinyDarkBit code END
-  // ********************
-
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
@@ -489,7 +452,7 @@ int main( int argc, const char* argv[] )
   SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setSMpars);
   SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setsoftmasses);
   SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&Gambit::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
-  
+
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
@@ -510,22 +473,22 @@ int main( int argc, const char* argv[] )
   cout << "I can do xsection " << ExampleBit_A::provides("xsection") << endl;
   cout << "I can do id " << ExampleBit_A::provides("id") << endl;
 
-  cout << "Core says: report on n_events_like!" << endl;
-  cout << "  " << ExampleBit_A::name() << " says: ";
-  cout << "  "; ExampleBit_A::report("nevents_like");
-  if (ExampleBit_A::provides("nevents_like")) {
-    cout << "OK, so what is it then?" << endl;
-    typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
+  //cout << "Core says: report on n_events_like!" << endl;
+  //cout << "  " << ExampleBit_A::name() << " says: ";
+  //cout << "  "; ExampleBit_A::report("nevents_like");
+  //if (ExampleBit_A::provides("nevents_like")) {
+  //  cout << "OK, so what is it then?" << endl;
+  //  typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
     // Call the module function by its tag  
-    testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
-    cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<endl ;
+  //  testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
+  //  cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<endl ;
     // Call the module function by its string name (could use TestType here too insead of double) 
-    double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
-    cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<endl ;
+  //  double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
+  //  cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<endl ;
     // Call the module function by its functor 
-    ExampleBit_A::Functown::nevents_like.calculate();
-    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<endl ; 
-  }
+  //  ExampleBit_A::Functown::nevents_like.calculate();
+  //  cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<endl ; 
+  //}
   
 
   cout << "Core says: report on n_events_postcuts!" << endl;
@@ -648,7 +611,39 @@ int main( int argc, const char* argv[] )
 
   cout <<  endl;
  
+  // ****************
+  // Example rollcall-loops test code
+  // ****************
  
+  cout<<endl;
+  cout<<"***********************"<<endl;
+  cout<<"Rollcall-loops example:"<<endl;
+  cout<<"***********************"<<endl;
+  cout<<endl;
+
+  // Necessary by-hand dependency resolution for the loop example.
+  ExampleBit_A::Functown::exampleCut.resolveDependency(&ExampleBit_A::Functown::exampleEventGen);
+  ExampleBit_A::Functown::eventAccumulator.resolveDependency(&ExampleBit_A::Functown::exampleCut);
+  ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::eventAccumulator);
+  
+  // Necessary by-hand nested-functor-list resolution for the loop example.
+  std::vector<functor*> loopFunctors;
+  loopFunctors.push_back(&ExampleBit_A::Functown::exampleEventGen);
+  loopFunctors.push_back(&ExampleBit_A::Functown::exampleCut);
+  loopFunctors.push_back(&ExampleBit_A::Functown::eventAccumulator);
+  ExampleBit_A::Functown::eventLoopManager.setNestedList(loopFunctors);
+
+  ExampleBit_A::Functown::eventLoopManager.calculate();
+  ExampleBit_A::Functown::nevents_like.calculate();
+  cout<<"Result from nevents_like is: "<<ExampleBit_A::Functown::nevents_like()<<endl;
+
+  cout<<endl;
+  cout<<"***********************"<<endl;
+  cout<<"End rollcall-loops.    "<<endl;
+  cout<<"***********************"<<endl;
+  cout<<endl;
+
   // ****************
   // Example_SUSYspecBit test code
   // ****************

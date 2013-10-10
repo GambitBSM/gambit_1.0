@@ -40,7 +40,7 @@ START_MODULE
     DEPENDENCY(MSSMsoftmasses, MSSMsoftmassesQ) // Dependency: needs MSSM soft masses
       #define BACKEND_REQ BEgenMSSMspectrum // BEgenMSSMspectrum must be obtained from an external (backend) code, with
       START_BACKEND_REQ(MSSMspecQ)          // type MSSMspecQ.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-      BACKEND_OPTION(fakeSoftSUSY, 1.0)     // Specify that backend fakeSoftSUSY v1.0 is permitted to provide the CMSSMspectrum.
+      BACKEND_OPTION(FakeSoftSUSY, 1.0)     // Specify that backend FakeSoftSUSY v1.0 is permitted to provide the CMSSMspectrum.
       #undef BACKEND_REQ                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
        
     #undef FUNCTION
@@ -52,7 +52,7 @@ START_MODULE
     DEPENDENCY(CMSSMparameters, CMSSMpars)  // Dependency: needs CMSSM parameters
       #define BACKEND_REQ BECMSSMspectrum   // BECMSSMspectrum must be obtained from an external (backend) code, with
       START_BACKEND_REQ(MSSMspecQ)          // type MSSMspecQ.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-      BACKEND_OPTION(fakeSoftSUSY, 1.0)     // Specify that backend fakeSoftSUSY v1.0 is permitted to provide the CMSSMspectrum.
+      BACKEND_OPTION(FakeSoftSUSY, 1.0)     // Specify that backend FakeSoftSUSY v1.0 is permitted to provide the CMSSMspectrum.
       #undef BACKEND_REQ                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
        
     #undef FUNCTION

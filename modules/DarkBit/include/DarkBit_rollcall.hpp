@@ -41,7 +41,8 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_spectrum_SUSY
       START_FUNCTION(Gambit::types::RDspectype)
-      DEPENDENCY(dssusy, int)
+      // DEPENDENCY(dssusy, int) 
+      // CW: Is this some placeholder initialization?
       #define BACKEND_REQ DarkSUSY_getmspctm_capability
         START_BACKEND_REQ(DS_MSPCTM)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -88,6 +89,10 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_thresholds_resonances, Gambit::types::RDrestype)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
+      #define BACKEND_REQ dsrdset
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
       #define BACKEND_REQ dsrdinit
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)

@@ -1,17 +1,14 @@
-Pythia hack successful. The Pythia options "SUSY:idVectA" and
-"SUSY:idVectB" can now be passed in and used to finely control the
-process selection. As an example, I have modified Martin's standalone
-Pythia code "main41.cc" in the HEColliderBit/standalone directory.
+Pythia8 hacks
+-------------
 
-In order to set up the hack, you need to copy some files from the
-HEColliderBit/pythiaHacks directory:
-1) copy PythiaStdlib.h and Settings.h to
-/your/installation/of/pythia/include
-2) copy Settings.cc and ProcessContainer.cc to
-/your/installation/of/pythia/src
-3) sudo copy SUSYProcesses.xml to
-/your/installation/of/pythia/xmldoc
-4) Then, recompile Pythia.
-5) To test my hack, copy main41.cc to
-/your/installation/of/pythia/examples
+The original (successful) hacks were for Pythia 8.176 or so. Equivalents have
+now been officially released (although a bit modified) in Pythia 8.180, so no
+hacks are now needed. 8.180 also adds several improvements to SUSY modelling,
+notably gluino-neutralino processes, so we'd better upgrade for physics reasons,
+too.
+
+The Pythia options "SUSY:idVecA" and "SUSY:idVecB" can now be passed in and used
+to finely control the process selection. As an example, Abram has modified
+Martin's standalone Pythia code "main41.cc" in the HEColliderBit/standalone
+directory. To test this, copy main41.cc to /your/builddir/of/pythia/examples.
 Then go to that directory, "make main41" and "./main41.exe"
