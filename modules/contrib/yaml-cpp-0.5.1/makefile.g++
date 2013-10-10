@@ -4,6 +4,7 @@
 #
 # Tested only for g++
 
+BOOST=/home/gmartine/boost_1_51_0
 CC=g++
 CFLAGS= -Wall -g -O3 -Iinclude -I$(BOOST)
 SRC:=$(wildcard src/*.cpp) 

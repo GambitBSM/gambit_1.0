@@ -65,32 +65,32 @@ namespace Gambit
                         std::vector <std::string> phantom_keys;
                         Graphs::DependencyResolver *dependencyResolver;
                         std::vector<Scanner::Model> models;
-			//std::string name; // Sampler name
+                        //std::string name; // Sampler name
                         std::vector<double> old_input;
                         int defout;
                         bool hasXTerm;
                         unsigned char flag;
 			
-		public:
-			Gambit_Scanner (const gambit_core&, const IniParser::IniFile&, Graphs::DependencyResolver&);
+                public:
+                        Gambit_Scanner (const gambit_core&, const IniParser::IniFile&, Graphs::DependencyResolver&);
                         
                         //print errors and return true if there are fatal errors.
                         bool printErrors(std::string errorsin = "no errors");
-			
+                        
                         const IniParser::IniFile *getIniFile() const {return boundIniFile;}
                         
-			std::vector<std::string> getKeys() const {return keys;}
+                        std::vector<std::string> getKeys() const {return keys;}
 			
-			std::vector<std::string> getPhantomKeys() const {return phantom_keys;}
+                        std::vector<std::string> getPhantomKeys() const {return phantom_keys;}
 			
-			std::vector<double> getUpperLimits() const {return upper_limits;}
+                        std::vector<double> getUpperLimits() const {return upper_limits;}
 			
-			std::vector<double> getLowerLimits() const {return lower_limits;}
+                        std::vector<double> getLowerLimits() const {return lower_limits;}
 			
-			void setParameters (std::vector<double> &vec) 
-			{
+                        void setParameters (std::vector<double> &vec) 
+                        {
                                 std::vector<double>::iterator vec_it = vec.begin();
-				for (std::vector<Model>::iterator it = models.begin(); it != models.end(); ++it)
+                                for (std::vector<Model>::iterator it = models.begin(); it != models.end(); ++it)
                                 {
                                         dup2(it->output, STDOUT_FILENO);
 
@@ -103,14 +103,14 @@ namespace Gambit
                                  dup2(defout, STDOUT_FILENO);
                         }
 			
-			void calcObsLike(Graphs::VertexID &it) 
+                        void calcObsLike(Graphs::VertexID &it) 
                         {
                                 dup2(models[0].output, STDOUT_FILENO);
                                 dependencyResolver->calcObsLike(it);
                                 dup2(defout, STDOUT_FILENO);
                         }
 
-			double getObsLike(Graphs::VertexID &it) 
+                        double getObsLike(Graphs::VertexID &it) 
                         {
                                 dup2(models[0].output, STDOUT_FILENO);
                                 double temp = dependencyResolver->getObsLike(it);
@@ -118,46 +118,46 @@ namespace Gambit
                                 return temp;
                         }
 			
-			void resetAll() 
+                        void resetAll() 
                         {
                                 dependencyResolver->resetAll();
                         }
+
+                        int Run();
 			
-			int Run();
-			
-			friend class Scanner_Function_Base;
+                        friend class Scanner_Function_Base;
                         
                         ~Gambit_Scanner();
-		};
+                };
 		
-		class Scanner_Function_Base
-		{
-		protected:
-			std::vector<Graphs::VertexID> vertices;
-			Gambit_Scanner *parent;
+                class Scanner_Function_Base
+                {
+                protected:
+                        std::vector<Graphs::VertexID> vertices;
+                        Gambit_Scanner *parent;
 			
-		public:
-			Scanner_Function_Base(void *a, std::string purpose) : parent(static_cast<Gambit_Scanner *>(a))
-			{
+                public:
+                        Scanner_Function_Base(void *a, std::string purpose) : parent(static_cast<Gambit_Scanner *>(a))
+                        {
                                 // Find subset of vertices that match requested purpose
-				vertices = parent->dependencyResolver->getObsLikeOrder();
-				int size = 0;
-				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
-				{
-					if (parent->dependencyResolver->getIniEntry(*it)->purpose == purpose)
-					{
-						*it2 = *it;
-						it2++;
-						size++;
-					}
-				}
+                                vertices = parent->dependencyResolver->getObsLikeOrder();
+                                int size = 0;
+                                for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
+                                {
+                                        if (parent->dependencyResolver->getIniEntry(*it)->purpose == purpose)
+                                        {
+                                                *it2 = *it;
+                                                it2++;
+                                                size++;
+                                        }
+                                }
 
-				vertices.resize(size);
-			}
+                                vertices.resize(size);
+                        }
 			
-			virtual double operator () (std::vector<double> &) = 0;
+                        virtual double operator () (std::vector<double> &) = 0;
                         virtual ~Scanner_Function_Base(){}
-		};
+                };
 		
 		class Scanner_Function : public Scanner_Function_Base
 		{

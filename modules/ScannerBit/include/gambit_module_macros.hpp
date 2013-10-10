@@ -14,31 +14,11 @@
 ///
 ///  *********************************************
 
-#ifndef GAMBIT_MODULE_MACROS_HPP
-#define GAMBIT_MODULE_MACROS_HPP
+#ifndef SCANNER_MODULE_MACROS_HPP
+#define SCANNER_MODULE_MACROS_HPP
 
-#define PP_NARG(...) PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
-#define PP_NARG_(...) PP_ARG_N(__VA_ARGS__)
-#define PP_ARG_N( _1, _2,N,...) N
-#define PP_RSEQ_N() 2,1,0
-#define PP_CAT(...) PP_CAT1(__VA_ARGS__)
-#define PP_CAT1(a, b) a ## b   
+#define VERSION(...) Gambit_Module_Namespace::moduleData.version = #__VA_ARGS__ ;
 
-#define RETRIEVE1(name, type_in) IMPORT(name, type_in)
-#define RETRIEVE2(name, type_in, val) IMPORT(name, type_in) SET_DEFAULT(name, val)
-#define RETRIEVE(name, ...) PP_CAT(RETRIEVE,  PP_NARG(__VA_ARGS__)) (name, __VA_ARGS__)
-
-/*Get the value associated with "key" that was defined in the ini-file*/
-#define GET_VALUE(key) (*static_cast                                                                                    \
-                        <                                                                                               \
-                                typename Gambit_Module_Namespace::interface                                             \
-                                <                                                                                       \
-                                        Gambit_Module_Namespace::Tags::key                                              \
-                                >                                                                                       \
-                                ::gt_type::type *                                                                       \
-                        >                                                                                               \
-                        (Gambit_Module_Namespace::moduleData.valueMap[ #key ]->value))                                  \
-   
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
 namespace Gambit_Module_Namespace                                                                                       \
@@ -139,89 +119,14 @@ namespace Gambit_Module_Namespace                                               
         };                                                                                                              \
 };                                                                                                                      \
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__)                                              \
-
-/*Set a defalut value for "name" if it is not specified in the ini-file*/
-#define SET_DEFAULT(name, ...)                                                                                          \
-namespace Gambit_Module_Namespace                                                                                       \
-{                                                                                                                       \
-        namespace DefaultTags                                                                                           \
-        {                                                                                                               \
-                struct name{};                                                                                          \
-        };                                                                                                              \
-                                                                                                                        \
-        namespace                                                                                                       \
-        {                                                                                                               \
-                template <>                                                                                             \
-                class interface<DefaultTags::name>                                                                      \
-                {                                                                                                       \
-                        public:                                                                                         \
-                        typedef interface <Tags::name>::gt_type gt_type;                                                \
-                                                                                                                        \
-                        interface(gambitData &moduleData)                                                               \
-                        {                                                                                               \
-                                moduleData.inits.push_back(interface <DefaultTags::name>::init);                        \
-                        }                                                                                               \
-                                                                                                                        \
-                        static void init(gambitData &module)                                                            \
-                        {                                                                                               \
-                                module.defaultMap[ #name ] = new gt_type(module);                                       \
-                                std::stringstream ss;                                                                   \
-                                ss << __VA_ARGS__;                                                                      \
-                                module.defaultMap[ #name ]->setValue(ss.str());                                         \
-                        }                                                                                               \
-                };                                                                                                      \
-                                                                                                                        \
-                template <>                                                                                             \
-                interface <DefaultTags::name> reg_init <DefaultTags::name>::reg(moduleData);                            \
-        };                                                                                                              \
-};                                                                                                                      \
-        
-#define IMPORT_INIFILE(name, ...) IMPORT(name, __VA_ARGS__)
-
-#define IMPORT_GAMBIT(name, ...) IMPORT (name, gt_entry<__VA_ARGS__, name::value>)
-        
-/*Gets a variable of type "type_in" from Gambit.  The variable is set by the keyword "name"*/
-#define IMPORT(name, ...)                                                                                               \
-namespace Gambit_Module_Namespace                                                                                       \
-{                                                                                                                       \
-        namespace Tags                                                                                                  \
-        {                                                                                                               \
-                struct name{};                                                                                          \
-        };                                                                                                              \
-                                                                                                                        \
-        namespace                                                                                                       \
-        {                                                                                                               \
-                template <>                                                                                             \
-                class interface<Tags::name>                                                                             \
-                {                                                                                                       \
-                public:                                                                                                 \
-                        typedef Gambit::Module::gt_type_def<__VA_ARGS__> gt_type;                                       \
-                                                                                                                        \
-                        interface(gambitData &moduleData)                                                               \
-                        {                                                                                               \
-                                moduleData.inits.push_back(interface <Tags::name>::init);                               \
-                        }                                                                                               \
-                                                                                                                        \
-                        static void init(gambitData &moduleData)                                                        \
-                        {                                                                                               \
-                                moduleData.valueMap[ #name ] = new gt_type(moduleData);                                 \
-                        }                                                                                               \
-                };                                                                                                      \
-                                                                                                                        \
-                template <>                                                                                             \
-                interface <Tags::name> reg_init <Tags::name>::reg(moduleData);                                          \
-        };                                                                                                              \
-};                                                                                                                      \
                                                                                                                                 
 /*Defines a Gambit module*/
-#define GAMBIT_MODULE(mod_name)                                                                                         \
+#define SCANNER_MODULE(mod_name)                                                                                         \
 namespace __gambit_module_ ## mod_name ##  _namespace__                                                                 \
 {                                                                                                                       \
-        using Gambit::Module::gt_entry;                                                                                 \
         namespace Gambit_Module_Namespace                                                                               \
         {                                                                                                               \
                 using Gambit::Module::gambitData;                                                                       \
-                using Gambit::Module::entryData;                                                                        \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
                 {                                                                                                       \
@@ -230,7 +135,7 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
-                        gambitData moduleData(#mod_name);                                                               \
+                        gambitData moduleData( #mod_name );                                                             \
                                                                                                                         \
                         template <class T>                                                                              \
                         class interface {};                                                                             \
@@ -242,11 +147,9 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                         };                                                                                              \
                 };                                                                                                      \
                                                                                                                         \
-                extern "C" void __gambit_module_moduleInit_ ## mod_name ## __(std::vector<void *> *input,               \
-                                                                                std::vector<std::string> &in,           \
-                                                                                void * fac)                             \
+                extern "C" void __gambit_module_moduleInit_ ## mod_name ## __(std::vector<void *> *input, void * ini)   \
                 {                                                                                                       \
-                        moduleData.factory = fac;                                                                       \
+                        moduleData.iniFile = (Gambit::Module::IniFileInterface*)ini;                                    \
                         if (input != 0)                                                                                 \
                                 moduleData.inputData = *input;                                                          \
                                                                                                                         \
@@ -256,41 +159,14 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                 (*iit)(moduleData);                                                                     \
                         }                                                                                               \
                         moduleData.inits.clear();                                                                       \
-                                                                                                                        \
-                        in.reserve(moduleData.valueMap.size());                                                         \
-                        std::map <std::string, entryData *>::iterator it;                                               \
-                        for (it = moduleData.valueMap.begin(); it != moduleData.valueMap.end(); it++)                   \
-                        {                                                                                               \
-                                if (it->second->isEntry())                                                              \
-                                {                                                                                       \
-                                        in.push_back(it->first);                                                        \
-                                }                                                                                       \
-                        }                                                                                               \
-                }                                                                                                       \
-                                                                                                                        \
-                extern "C" void __gambit_module_setValue_ ## mod_name ## __(std::string val, std::string key)           \
-                {                                                                                                       \
-                        moduleData.valueMap[key]->setValue(val);                                                        \
-                }                                                                                                       \
-                                                                                                                        \
-                extern "C" bool __gambit_module_setDefault_ ## mod_name ## __(std::string key)                          \
-                {                                                                                                       \
-                        std::map<std::string, entryData *>::iterator it = moduleData.defaultMap.find(key);              \
-                        if (it != moduleData.defaultMap.end())                                                          \
-                        {                                                                                               \
-                                moduleData.valueMap[key]->setValue(*it->second);                                        \
-                                return true;                                                                            \
-                        }                                                                                               \
-                        else                                                                                            \
-                        {                                                                                               \
-                                return false;                                                                           \
-                        }                                                                                               \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void * __gambit_module_getMember_ ## mod_name ## __(std::string in)                          \
                 {                                                                                                       \
                         if (moduleData.outputFuncs.find(in) != moduleData.outputFuncs.end())                            \
+                        {                                                                                               \
                                 return (*moduleData.outputFuncs[in])();                                                 \
+                        }                                                                                               \
                         else                                                                                            \
                                 return NULL;                                                                            \
                 }                                                                                                       \
@@ -301,6 +177,46 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                 moduleData.outputFuncs[in]->remove(ptr);                                                \
                 }                                                                                                       \
         };                                                                                                              \
+                                                                                                                        \
+        template <typename T>                                                                                           \
+        T get_inifile_value(std::string in)                                                                             \
+        {                                                                                                               \
+                if (Gambit_Module_Namespace::moduleData.iniFile->hasKey(#mod_name, in))                                 \
+                {                                                                                                       \
+                        std::string temp = Gambit_Module_Namespace::moduleData.iniFile->getValue(#mod_name, in);        \
+                        T ret;                                                                                          \
+                        Gambit::Module::convert<T>(ret, temp);                                                          \
+                        return ret;                                                                                     \
+                }                                                                                                       \
+                else                                                                                                    \
+                {                                                                                                       \
+                        std::cout << "\e[00;31mERROR:\e[00m  Missing iniFile entry needed by plugin \""                 \
+                                        << Gambit_Module_Namespace::moduleData.name << "\":  " << in << std::endl;      \
+                        exit(-1);                                                                                       \
+                }                                                                                                       \
+        };                                                                                                              \
+                                                                                                                        \
+        template <typename T>                                                                                           \
+        T get_inifile_value(std::string in, T defaults)                                                                 \
+        {                                                                                                               \
+                if (Gambit_Module_Namespace::moduleData.iniFile->hasKey(#mod_name, in))                                 \
+                {                                                                                                       \
+                        std::string temp = Gambit_Module_Namespace::moduleData.iniFile->getValue(#mod_name, in);        \
+                        T ret;                                                                                          \
+                        Gambit::Module::convert<T>(ret, temp);                                                          \
+                        return ret;                                                                                     \
+                }                                                                                                       \
+                else                                                                                                    \
+                {                                                                                                       \
+                        return defaults;                                                                                \
+                }                                                                                                       \
+        };                                                                                                              \
+                                                                                                                        \
+        template <typename T>                                                                                           \
+        T &get_input_value(int i)                                                                                       \
+        {                                                                                                               \
+                return *static_cast<T*>(Gambit_Module_Namespace::moduleData.inputData[i]);                              \
+        }                                                                                                               \
 };                                                                                                                      \
 namespace __gambit_module_ ## mod_name ## _namespace__                                                                  \
 

@@ -64,6 +64,19 @@ namespace Gambit
                         while (c != '\n' && c != EOF);
                 }
                 
+                class IniFileInterface
+                {
+                private:
+                        const IniParser::IniFile *boundIniFile;
+                        
+                public:
+                        IniFileInterface(const IniParser::IniFile *boundIniFile) : boundIniFile(boundIniFile) {}
+                        
+                        virtual bool hasKey(std::string name, std::string in) {return boundIniFile->hasKey(name, in);}
+                        
+                        virtual std::string getValue(std::string name, std::string in) {return boundIniFile->getValue<std::string>(name, in);}
+                };
+                
                 template <typename T>
                 class Module_Interface
                 {
@@ -73,21 +86,18 @@ namespace Gambit
                         std::string errors;
                         std::string name;
                         std::vector<std::string> mod_names;
-                        typedef void (*inputFuncType)(std::string, std::string);
-                        typedef void (*initFuncType)(std::vector<void *> *, std::vector<std::string> &, void *);                              
-                        typedef bool (*defFuncType)(std::string);
+                        IniFileInterface iniFileInterface;
+                        typedef void (*initFuncType)(std::vector<void *> *, void *);                              
                         typedef void * (*getFuncType)(std::string);
                         typedef void (*rmFuncType)(void *, std::string);
-                        inputFuncType inputFunc;
                         initFuncType initFunc;
-                        defFuncType defFunc;
                         getFuncType getFunc;
                         rmFuncType rmFunc;
                         
                 public:
                         T* main;
                         
-                        Module_Interface(std::string file, std::string name_in, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL, void *factory = NULL) : errors(""), open(true), name(name_in)
+                        Module_Interface(std::string file, std::string name_in, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL) : iniFileInterface(boundIniFile), errors(""), open(true), name(name_in)
                         {
                                 unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
@@ -166,13 +176,19 @@ namespace Gambit
                                                         name = mod_names[iin];
                                                 }
                                         
-                                                inputFunc = (inputFuncType)dlsym(plugin, (std::string("__gambit_module_setValue_") + name + std::string("__")).c_str());
                                                 initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_module_moduleInit_") + name + std::string("__")).c_str());
-                                                defFunc = (defFuncType)dlsym(plugin, (std::string("__gambit_module_setDefault_") + name + std::string("__")).c_str());
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_module_getMember_") + name + std::string("__")).c_str());
                                                 rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_module_rmMember_") + name + std::string("__")).c_str());
+
+                                                initFunc(input, (void *)(&iniFileInterface));
+                                                main = (T *)getFunc(name);
                                                 
-                                                init(input, factory, boundIniFile);
+                                                if (main == 0)
+                                                {
+                                                        std::stringstream ss;
+                                                        ss << "\e[00;31mERROR:\e[00m  Could not find main function in module \"" << name << "\".";
+                                                        errors = ss.str();
+                                                }
                                         }
                                         else
                                         {
@@ -187,49 +203,6 @@ namespace Gambit
                                         ss << "\e[00;31mERROR:\e[00m  Cannot load " << file << ":  " << dlerror();
                                         errors = ss.str();
                                         open = false;
-                                }
-                        }
-                        
-                        void init(std::vector<void*> *input, void *factory, const IniParser::IniFile *boundIniFile)
-                        {
-                                bool good = true;
-                                std::vector<std::string> missingParams;
-                                std::vector<std::string> iniKeys;
-                                initFunc(input, iniKeys, factory);
-                                
-                                if(boundIniFile != NULL)
-                                {
-                                        for (std::vector<std::string>::iterator it = iniKeys.begin(); it != iniKeys.end(); it++)
-                                        {
-                                                if (boundIniFile->hasKey(name, *it)) 
-                                                {
-                                                        std::string value = boundIniFile->getValue<std::string>(name, *it);
-                                                        inputFunc(value, *it);
-                                                }
-                                                else if (!defFunc(*it))
-                                                {
-                                                        missingParams.push_back(*it);
-                                                        good = false;
-                                                }
-                                        }
-                                }
-                                
-                                if (good)
-                                {
-                                        main = (T *)getFunc(name);
-                                        
-                                        if (main == 0)
-                                        {
-                                                std::stringstream ss;
-                                                ss << "\e[00;31mERROR:\e[00m  Could not find main function in module \"" << name << "\".";
-                                                errors = ss.str();
-                                        }
-                                }
-                                else
-                                {
-                                        std::stringstream ss;
-                                        ss << "\e[00;31mERROR:\e[00m  Missing entries needed by scanner module \"" << name << "\":  " << missingParams;
-                                        errors = ss.str();
                                 }
                         }
                         

@@ -35,32 +35,32 @@ namespace Gambit
                         template <typename T> struct is_vector <std::vector<T>> {static const bool value = true;};
                         
                         template <typename T>
-                        typename enable_if<!is_vector<T>::value, void>::type convert(T **a, std::string &in)
+                        typename enable_if<!is_vector<T>::value, void>::type convert(T &a, std::string &in)
                         {                      
                                 std::stringstream stuff;                                                                        
                                 stuff << in;                                                                                    
-                                stuff >> **a;   
+                                stuff >> a;   
                         }
                         
                         template <typename T>
-                        typename enable_if<is_vector<T>::value, void>::type convert(T** a, std::string &in)
+                        typename enable_if<is_vector<T>::value, void>::type convert(T &a, std::string &in)
                         {
                                 std::stringstream stuff;
                                 stuff << in;
                                 typename T::value_type temp;
-                                while (stuff >> temp) (*a)->push_back(temp);
+                                while (stuff >> temp) a.push_back(temp);
                         }
                         
                         template <>
-                        void convert <std::vector<char>> (std::vector<char> **a, std::string &in)
+                        void convert <std::vector<char>> (std::vector<char> &a, std::string &in)
                         {
-                                (*a)->insert((*a)->begin(), in.begin(), in.end());
+                                a.insert(a.begin(), in.begin(), in.end());
                         }
                         
                         template<>
-                        void convert <std::string> (std::string **a, std::string &in)
+                        void convert <std::string> (std::string &a, std::string &in)
                         {
-                                **a = in;
+                                a = in;
                         } 
                 };
         };

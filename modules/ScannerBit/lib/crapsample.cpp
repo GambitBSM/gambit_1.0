@@ -49,49 +49,21 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-class ran_export : Ran
+SCANNER_MODULE (crapsample)
 {
-public:
-        ran_export() : Ran(0) {}
-        virtual double Num(){return Doub();}
-        virtual ~ran_export() {}
-};
-
-GAMBIT_MODULE (crapsample)
-{
-        /*get inputs from ini-file and inputed vector*/
-        IMPORT (point_number, int);                                     //get "point_number" of type "int" from ini-file
-        IMPORT (output_file, std::string);                              //get "output_file" of type "std::string" from ini-file
-        IMPORT (like, Gambit::Scanner::Function_Base);                  //get scanner functor of purpose specified by "like:" in the ini-file
-        IMPORT (keys, gt_entry<std::vector<std::string>, 0>);           //gets the first input data of type "std::vector<std::string>"
-        IMPORT (ulim, gt_entry<std::vector<double>, 1>);                //gets the second input data of type "std::vector<double>"
-        IMPORT (llim, gt_entry<std::vector<double>, 2>);                //gets the third input data of type "std::vector<double>"
+        //VERSION(1.0-beta); //should work, buy my compiler is messed up
         
-        /*sets default values if not in ini-file.*/
-        SET_DEFAULT(point_number, 5);                                   //set default of "point_number" to 5
-        SET_DEFAULT(output_file, "output_default");                     //set default of "output_file" to "output_default"
-
-        int output_int = 1;
-        double LogLikelihood(std::vector<double> &in)
-        {
-                return GET_VALUE(like)(in);
-        }
-
-        /*functions and classes that can be used by Gambit*/
-        EXPORT_OBJECT(func, LogLikelihood);                             //allows for "LogLikelihood" function to be used by Gambit
-        EXPORT_OBJECT(temp, output_int);                                //allows for "output_int" integer to be used by Gambit
-        EXPORT_ABSTRACT(random, ran_export);                            //allows for "ran_export" class to be used by Gambit
+        using namespace Gambit::Scanner;
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
         int MODULE_MAIN (int input_int)
         {
-                std::vector<std::string> &keys     = GET_VALUE(keys);
-                std::vector<double> &upper_limits  = GET_VALUE(ulim);
-                std::vector<double> &lower_limits  = GET_VALUE(llim);
-                std::string &output_file           = GET_VALUE(output_file);
-                int &N                             = GET_VALUE(point_number);
-                //auto *LogLike                      = &GET_VALUE(like);
-                double (*LogLike)(std::vector<double> &in) = LogLikelihood;
+                std::vector<std::string> &keys     = GETKEYS();
+                std::vector<double> &upper_limits  = GETUPPERLIMITS();
+                std::vector<double> &lower_limits  = GETLOWERLIMITS();
+                std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
+                int N                              = get_inifile_value<int>("point_number", 10);
+                Function_Base *LogLike             = GETFUNCTOR("Scanner_Function", "Likelihood");
 
                 int ma = keys.size();
                 std::ofstream out(output_file.c_str());
@@ -147,30 +119,19 @@ GAMBIT_MODULE (crapsample)
         }
 };
 
-GAMBIT_MODULE (loopsample)
+SCANNER_MODULE (loopsample)
 {
         using namespace Gambit::Scanner;
         
-        IMPORT_INIFILE (point_number, int);
-        IMPORT_INIFILE (output_file, std::string);
-        IMPORT_INIFILE (like, Function_Base);
-        
-        IMPORT_GAMBIT (gambitKeys, std::vector<std::string>);
-        IMPORT_GAMBIT (gambitUpperLimits, std::vector<double>);
-        IMPORT_GAMBIT (gambitLowerLimits, std::vector<double>);
-        
-        SET_DEFAULT (point_number, 10);
-        SET_DEFAULT (output_file, "default_output");
-        SET_DEFAULT (like, "Likelihood");
-        
-        int MODULE_MAIN (void)
+        int MODULE_MAIN ()
         {
-                std::vector<std::string> &keys     = GET_VALUE(gambitKeys);
-                std::vector<double> &upper_limits  = GET_VALUE(gambitUpperLimits);
-                std::vector<double> &lower_limits  = GET_VALUE(gambitLowerLimits);
-                std::string &output_file           = GET_VALUE(output_file);
-                int &N                             = GET_VALUE(point_number);
-                Function_Base *LogLike             = &GET_VALUE(like);
+                std::cout << "fuck" << std::endl; getchar();
+                std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
+                std::vector<double> &upper_limits  = get_input_value<std::vector<double>>(1);
+                std::vector<double> &lower_limits  = get_input_value<std::vector<double>>(2);
+                std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
+                int N                              = get_inifile_value<int>("point_number", 10);
+                Function_Base *LogLike             = (Function_Base *)(get_input_value<Function_Factory_Base>(3))("Scanner_Function", get_inifile_value<std::string>("like"));
                 typedef void (*func)(double a);
                 std::ofstream out(output_file.c_str());
                 int ma = keys.size();
@@ -189,11 +150,13 @@ GAMBIT_MODULE (loopsample)
                 }
                 return 0;
         }
+        
+        extern "C" void fuck(){__scanner_module_main__();}
 };
 
 #include <test-recon.h>
 
-GAMBIT_MODULE (classtest)
+SCANNER_MODULE (classtest)
 {        
         int MODULE_MAIN(void)
         {
