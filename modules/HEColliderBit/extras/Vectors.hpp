@@ -4,6 +4,7 @@
 #include <boost/serialization/access.hpp>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
@@ -71,10 +72,15 @@ namespace Gambit {
   /// with the exception that the data member storage is specifically based on
   /// (px, py, pz, m) rather than (px, py, pz, E). This means that there are (or
   /// at least should) never be numerical precision problems due to calculations
-  /// like m^2 = E^2 - p^2 when p^2 >> m^2: m^2 is always well-defined and the
-  /// "symmetric" calculation is the numerically safe E^2 = p^2 + m^2. This
-  /// restricts usage to on-shell vectors... which as far as I'm aware is not
-  /// really a restriction in practice, but please let me know if it is!
+  /// like m^2 = E^2 - p^2 when p^2 >> m^2. In this form, m^2 is always
+  /// well-defined and the "equivalent" calculation is the numerically safe E^2
+  /// = p^2 + m^2.
+  ///
+  /// This design restricts usage to on-shell vectors... which as far as I'm
+  /// aware is not really a restriction in practice, at last not for physical
+  /// particles, but please let me know if it is! (Off-shell vectors require a
+  /// 5th component so the spatial and time components can be inconsistent with
+  /// the mass.)
   ///
   class P4 {
   private:
@@ -95,6 +101,7 @@ namespace Gambit {
     //@{
     double _x, _y, _z, _m;
     //@}
+
 
   public:
 
@@ -231,9 +238,10 @@ namespace Gambit {
     }
 
     /// Set the vector state from (eta,phi,energy) coordinates and the mass
+    ///
+    /// eta = -ln(tan(theta/2))
+    /// -> theta = 2 atan(exp(-eta))
     P4& setEtaPhiME(double eta, double phi, double mass, double E) {
-      // eta = -ln(tan(theta/2))
-      // -> theta = 2 atan(exp(-eta))
       assert(mass >= 0);
       assert(E >= 0);
       const double theta = 2 * atan(exp(-eta));
@@ -243,9 +251,10 @@ namespace Gambit {
     }
 
     /// Set the vector state from (eta,phi,pT) coordinates and the mass
+    ///
+    /// eta = -ln(tan(theta/2))
+    /// -> theta = 2 atan(exp(-eta))
     P4& setEtaPhiMPt(double eta, double phi, double mass, double pt) {
-      // eta = -ln(tan(theta/2))
-      // -> theta = 2 atan(exp(-eta))
       assert(mass >= 0);
       assert(pt >= 0);
       const double theta = 2 * atan(exp(-eta));
@@ -257,16 +266,20 @@ namespace Gambit {
     }
 
     /// Set the vector state from (y,phi,energy) coordinates and the mass
+    ///
+    /// y = 0.5 * ln((E+pz)/(E-pz))
+    /// -> (E^2 - pz^2) exp(2y) = (E+pz)^2
+    ///  & (E^2 - pz^2) exp(-2y) = (E-pz)^2
+    /// -> E = sqrt(pt^2 + m^2) cosh(y)
+    /// -> pz = sqrt(pt^2 + m^2) sinh(y)
+    /// -> sqrt(pt^2 + m^2) = E / cosh(y)
     P4& setRapPhiME(double y, double phi, double mass, double E) {
-      // y = 0.5 * ln((E+pz)/(E-pz))
-      // -> E = pt cosh(y)
-      // -> pz = pt sinh(y)
-      // -> pt = E / cosh(y)
       assert(mass >= 0);
       assert(E >= 0);
-      const double pt = E / cosh(y);
+      const double sqrt_pt2_m2 = E / cosh(y);
+      const double pt = sqrt( sqr(sqrt_pt2_m2) - sqr(mass) );
       assert(pt >= 0);
-      const double pz = pt * sinh(y);
+      const double pz = sqrt_pt2_m2 * sinh(y);
       const double px = pt * cos(phi);
       const double py = pt * sin(phi);
       setPE(px, py, pz, E);
@@ -274,18 +287,23 @@ namespace Gambit {
     }
 
     /// Set the vector state from (y,phi,pT) coordinates and the mass
+    ///
+    /// y = 0.5 * ln((E+pz)/(E-pz))
+    /// -> E = sqrt(pt^2 + m^2) cosh(y)  [see above]
     P4& setRapPhiMPt(double y, double phi, double mass, double pt) {
-      // y = 0.5 * ln((E+pz)/(E-pz))
-      // -> E = pt cosh(y)
       assert(mass >= 0);
       assert(pt >= 0);
-      const double E = pt * cosh(y);
+      const double E = sqrt( sqr(pt) + sqr(mass) ) * cosh(y);
       assert(E >= 0);
       setRapPhiME(y, phi, mass, E);
       return *this;
     }
 
     /// Set the vector state from (theta,phi,energy) coordinates and the mass
+    ///
+    /// p = sqrt(E^2 - mass^2)
+    /// pz = p cos(theta)
+    /// pt = p sin(theta)
     P4& setThetaPhiME(double theta, double phi, double mass, double E) {
       assert(theta >= 0 && theta <= M_PI);
       assert(mass >= 0);
@@ -301,6 +319,10 @@ namespace Gambit {
     }
 
     /// Set the vector state from (theta,phi,pT) coordinates and the mass
+    ///
+    /// p = pt / sin(theta)
+    /// pz = p cos(theta)
+    /// E = sqrt(p^2 + mass^2)
     P4& setThetaPhiMPt(double theta, double phi, double mass, double pt) {
       assert(theta >= 0 && theta <= 2*M_PI);
       assert(pt >= 0);
@@ -315,6 +337,8 @@ namespace Gambit {
     }
 
     /// Set the vector state from (pT,phi,energy) coordinates and the mass
+    ///
+    /// pz = sqrt(E^2 - mass^2 - pt^2)
     P4& setPtPhiME(double pt, double phi, double mass, double E) {
       assert(pt >= 0);
       assert(mass >= 0);
