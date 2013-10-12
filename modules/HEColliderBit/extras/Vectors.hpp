@@ -146,7 +146,7 @@ namespace Gambit {
 
     /// Make a vector from (px,py,pz,E) coordinates
     static P4 mkXYZE(double px, double py, double pz, double E) {
-      return P4(px, py, pz, E);
+      return P4().setPE(px, py, pz, E);
     }
 
     /// Make a vector from (px,py,pz) coordinates and the mass
@@ -227,6 +227,10 @@ namespace Gambit {
       setM(mass);
       return *this;
     }
+    /// Alias for setPM
+    P4& setXYZM(double px, double py, double pz, double mass) {
+      return setPM(px, py, pz, mass);
+    }
 
     /// Set the p coordinates and energy simultaneously
     P4& setPE(double px, double py, double pz, double E) {
@@ -235,6 +239,10 @@ namespace Gambit {
       const double mass = sqrt( sqr(E) - sqr(p()) );
       setM(mass);
       return *this;
+    }
+    /// Alias for setPE
+    P4& setXYZE(double px, double py, double pz, double E) {
+      return setPE(px, py, pz, E);
     }
 
     /// Set the vector state from (eta,phi,energy) coordinates and the mass
@@ -428,7 +436,7 @@ namespace Gambit {
 
     /// @name Self-modifying operators
     //@{
-    P4& operator - () { _x = -_x; _y = -_y; _z = -_z; return *this; }
+    P4  operator - () const { P4 rtn; return rtn.setPM(-_x, -_y, -_z, _m); } //< Not self-modifying...
     P4& operator += (const P4& v) { double e = E() + v.E(); _x += v.px(); _y += v.py(); _z += v.pz(); _m = sqrt( sqr(e) - p2() ); return *this; }
     P4& operator -= (const P4& v) { double e = E() - v.E(); _x -= v.px(); _y -= v.py(); _z -= v.pz(); _m = sqrt( sqr(e) - p2() ); return *this; }
     P4& operator *= (double a) { _x *= a; _y *= a; _z *= a; _m *= a; return *this; }
