@@ -610,39 +610,42 @@ int main( int argc, const char* argv[] )
   }
 
   cout <<  endl;
+
+  // CW: The loop manager can be tested by running gambit_example and setting
+  // nevents_like as observable in gambit.yaml
  
-  // ****************
-  // Example rollcall-loops test code
-  // ****************
+  // // ****************
+  // // Example rollcall-loops test code
+  // // ****************
  
-  cout<<endl;
-  cout<<"***********************"<<endl;
-  cout<<"Rollcall-loops example:"<<endl;
-  cout<<"***********************"<<endl;
-  cout<<endl;
+  // cout<<endl;
+  // cout<<"***********************"<<endl;
+  // cout<<"Rollcall-loops example:"<<endl;
+  // cout<<"***********************"<<endl;
+  // cout<<endl;
 
-  // Necessary by-hand dependency resolution for the loop example.
-  ExampleBit_A::Functown::exampleCut.resolveDependency(&ExampleBit_A::Functown::exampleEventGen);
-  ExampleBit_A::Functown::eventAccumulator.resolveDependency(&ExampleBit_A::Functown::exampleCut);
-  ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
-  ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::eventAccumulator);
-  
-  // Necessary by-hand nested-functor-list resolution for the loop example.
-  std::vector<functor*> loopFunctors;
-  loopFunctors.push_back(&ExampleBit_A::Functown::exampleEventGen);
-  loopFunctors.push_back(&ExampleBit_A::Functown::exampleCut);
-  loopFunctors.push_back(&ExampleBit_A::Functown::eventAccumulator);
-  ExampleBit_A::Functown::eventLoopManager.setNestedList(loopFunctors);
+  // // Necessary by-hand dependency resolution for the loop example.
+  // ExampleBit_A::Functown::exampleCut.resolveDependency(&ExampleBit_A::Functown::exampleEventGen);
+  // ExampleBit_A::Functown::eventAccumulator.resolveDependency(&ExampleBit_A::Functown::exampleCut);
+  // ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
+  // ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::eventAccumulator);
+  // 
+  // // Necessary by-hand nested-functor-list resolution for the loop example.
+  // std::vector<functor*> loopFunctors;
+  // loopFunctors.push_back(&ExampleBit_A::Functown::exampleEventGen);
+  // loopFunctors.push_back(&ExampleBit_A::Functown::exampleCut);
+  // loopFunctors.push_back(&ExampleBit_A::Functown::eventAccumulator);
+  // ExampleBit_A::Functown::eventLoopManager.setNestedList(loopFunctors);
 
-  ExampleBit_A::Functown::eventLoopManager.calculate();
-  ExampleBit_A::Functown::nevents_like.calculate();
-  cout<<"Result from nevents_like is: "<<ExampleBit_A::Functown::nevents_like()<<endl;
+  // ExampleBit_A::Functown::eventLoopManager.calculate();
+  // ExampleBit_A::Functown::nevents_like.calculate();
+  // cout<<"Result from nevents_like is: "<<ExampleBit_A::Functown::nevents_like()<<endl;
 
-  cout<<endl;
-  cout<<"***********************"<<endl;
-  cout<<"End rollcall-loops.    "<<endl;
-  cout<<"***********************"<<endl;
-  cout<<endl;
+  // cout<<endl;
+  // cout<<"***********************"<<endl;
+  // cout<<"End rollcall-loops.    "<<endl;
+  // cout<<"***********************"<<endl;
+  // cout<<endl;
 
   // ****************
   // Example_SUSYspecBit test code

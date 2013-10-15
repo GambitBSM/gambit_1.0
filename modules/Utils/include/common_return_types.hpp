@@ -54,6 +54,8 @@ namespace Gambit
     // ...etc...
   };
 
+  // Return type of all loop managers
+  typedef int loopInt;
 }
 
 #endif //__common_return_types_hpp__

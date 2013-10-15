@@ -63,6 +63,11 @@ adhoc:
   function:     ""
   module:       ""
 
+# Test loop manager
+- purpose:      Likelihood
+  capability:   nevents_like
+  type:         double
+
 #########################
 --- # Auxiliary entries
 #########################

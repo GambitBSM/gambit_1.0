@@ -136,6 +136,9 @@ namespace Gambit
         // *** Saved calling order for functions
         std::list<VertexID> function_order;
 
+        // Temporary map for loop manager -> list of nested functions
+        std::map<VertexID, std::set<VertexID>> loopManagerMap;
+
     };
   }
 }
