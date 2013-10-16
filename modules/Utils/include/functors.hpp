@@ -165,7 +165,7 @@ namespace Gambit
       }
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
-      virtual void setNestedList (std::vector<functor*> newNestList)
+      virtual void setNestedList (std::vector<functor*> &newNestList)
       { 
         cout << "Error.  The setNestedList method has not been defined in this class." << endl;
         exit(1);

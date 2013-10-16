@@ -55,6 +55,21 @@ namespace Gambit
       const IniParser::ObservableType * iniEntry;
     };
 
+    // Information in parameter queue
+    struct QueueEntry
+    {
+      QueueEntry() {}
+      QueueEntry(sspair a, Graphs::VertexID b, int c)
+      {
+        first = a;
+        second = b;
+        third = c;
+      }
+      sspair first;
+      Graphs::VertexID second;
+      int third;
+    };
+
     // Main dependency resolver
     class DependencyResolver
     {
@@ -96,10 +111,10 @@ namespace Gambit
           resolveDependency(Graphs::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree
-        void generateTree(std::queue<std::pair<sspair, Graphs::VertexID> > parQueue);
+        void generateTree(std::queue<QueueEntry> parQueue);
 
         // Helper functions/arrays
-        void fillParQueue(std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
+        void fillParQueue(std::queue<QueueEntry> *parQueue,
             Graphs::VertexID vertex);
 
         // Topological sort
@@ -135,6 +150,9 @@ namespace Gambit
 
         // *** Saved calling order for functions
         std::list<VertexID> function_order;
+
+        // Temporary map for loop manager -> list of nested functions
+        std::map<VertexID, std::set<VertexID>> loopManagerMap;
 
     };
   }

@@ -33,6 +33,8 @@
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc
 #define OMEGA_VERTEXID 52314768 
+#define NORMAL_DEPENDENCY 1
+#define LOOP_MANAGER_DEPENDENCY 2
 
 namespace Gambit
 {
@@ -60,11 +62,10 @@ namespace Gambit
       return myVertexList;
     }
 
-    // Get sorted list (according to topological sort result))
-    std::vector<VertexID> getSortedParentVertices(const VertexID & vertex, const
-        Graphs::MasterGraphType & graph, std::list<VertexID> topoOrder)
+    // Sort given list of vertices (according to topological sort result)
+    std::vector<VertexID> sortVertices(const std::set<VertexID> & set,
+        std::list<VertexID> topoOrder)
     {
-      std::set<VertexID> set = getParentVertices(vertex, graph);
       std::vector<VertexID> result;
       for(std::list<VertexID>::iterator it = topoOrder.begin(); it != topoOrder.end(); it++)
       {
@@ -72,6 +73,14 @@ namespace Gambit
           result.push_back(*it);
       }
       return result;
+    }
+
+    // Get sorted list of parent vertices
+    std::vector<VertexID> getSortedParentVertices(const VertexID & vertex, const
+        Graphs::MasterGraphType & graph, std::list<VertexID> topoOrder)
+    {
+      std::set<VertexID> set = getParentVertices(vertex, graph);
+      return sortVertices(set, topoOrder);
     }
 
     // Return time estimate for set of nodes
@@ -188,8 +197,8 @@ namespace Gambit
     {
       const IniParser::ObservablesType & observables = boundIniFile->getObservables();
       // (cap., typ) --> dep. vertex map
-      std::queue<std::pair<sspair, Graphs::VertexID> > parQueue;
-      std::pair<sspair, Graphs::VertexID> queueEntry;
+      std::queue<QueueEntry> parQueue;
+      QueueEntry queueEntry;
 
       cout << endl << "Target likelihoods/observables" << endl;
       cout <<         "------------------------------" << endl;
@@ -205,6 +214,23 @@ namespace Gambit
       }
       generateTree(parQueue);
       function_order = run_topological_sort();
+
+      // Set nested functions in activated loop managers
+      for (std::map<VertexID, std::set<VertexID>>::iterator it =
+          loopManagerMap.begin(); it != loopManagerMap.end(); ++it)
+      {
+        // Topologically sorted list of vertex IDs of functions nested within
+        // given loop manager
+        std::vector<VertexID> vertexList = sortVertices(it->second, function_order);
+        // Map this on topologically sorted list of functor pointers...
+        std::vector<functor*> functorList;
+        for (std::vector<VertexID>::iterator jt = vertexList.begin(); jt != vertexList.end(); ++jt)
+        {
+          functorList.push_back(masterGraph[*jt]);
+        }
+        // ...and store into loop manager functor
+        masterGraph[it->first]->setNestedList(functorList);
+      }
 
       // Generate graphviz plot
       std::ofstream outf("graph.gv");
@@ -462,7 +488,7 @@ namespace Gambit
 
     /// Set up dependency tree
     void DependencyResolver::generateTree(
-        std::queue<std::pair<sspair, Graphs::VertexID> > parQueue)
+        std::queue<QueueEntry> parQueue)
     {
       OutputVertexInfo outInfo;
       Graphs::VertexID fromVertex, toVertex;
@@ -478,6 +504,7 @@ namespace Gambit
       const IniParser::ObservableType * auxEntry; 
       bool ok;
       sspair quantity;
+      int dependency_type;
 
       cout << endl << "Dependency resolution" << endl;
       cout <<         "---------------------" << endl;
@@ -487,6 +514,7 @@ namespace Gambit
         // Retrieve capability, type and vertex ID of dependency of interest
         quantity = parQueue.front().first;
         toVertex = parQueue.front().second;
+        dependency_type = parQueue.front().third;
 
         // Print information
         if ( toVertex != OMEGA_VERTEXID )
@@ -515,7 +543,25 @@ namespace Gambit
         if ( toVertex != OMEGA_VERTEXID)
         {
           // Resolve dependency on functor level...
-          (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
+          //
+          // In case the fromVertex is a loop manager, store nested function
+          // temporarily in loopManagerMap
+          if (dependency_type == LOOP_MANAGER_DEPENDENCY)
+          {
+            std::set<Graphs::VertexID> v;
+            if (loopManagerMap.count(fromVertex) == 1)
+            {
+              v = loopManagerMap[fromVertex];
+            }
+            v.insert(toVertex);
+            loopManagerMap[fromVertex] = v;
+          }
+          // Default is to resovle dependency on functor level of toVertex
+          else
+          {
+            (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
+          }
+          // 
           // ...and on masterGraph level.
           tie(edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
         }
@@ -547,7 +593,7 @@ namespace Gambit
 
     /// Push module function dependencies on parameter queue
     void DependencyResolver::fillParQueue(
-        std::queue<std::pair<sspair, Graphs::VertexID> > *parQueue,
+        std::queue<QueueEntry> *parQueue,
         Graphs::VertexID vertex) 
     {
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
@@ -559,7 +605,16 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         cout << (*it).first << " (" << (*it).second << ")" << endl;
-        (*parQueue).push(*(new std::pair<sspair, Graphs::VertexID> (*it, vertex)));
+        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY)));
+      }
+      // Digest capability of loop manager (if defined)
+      str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
+      if (loopManagerCapability != "none")
+      {
+        cout << "Adding module function loop manager to resolution queue:" << endl;
+        cout << loopManagerCapability << " ()" << endl;
+        (*parQueue).push(*(new QueueEntry (*(new sspair
+                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY)));
       }
     }
 
