@@ -7,9 +7,25 @@
 
 export
 
+# Ben: temporary ugly variables needed to link to multinest and include headers
+# We need these unless multinest gets installed somewhere that the various paths can find it. It does not do this by default
+# Currently Multinest must be built seperately, and gambit informed of its location via the below variables.
+# Gambit should build regardless of whether you have multinest or not.
+# To build the multinest-ScannerBit interface module, run "make -f makefile.g++ multinest"
+# Currently tested only with MultiNest_v3.3
+# (I have added this version of multinest to the 'extras' directory)
+# MULTINESTINC should be a path containing "multinest.h"
+# MULTINESTLIBDIR should be a path containing "libmultinest.so"
+MULTINESTINC = /usr/local/includes
+MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib
+# Also need to add this path to LD_LIBRARY_PATH so that the multinest library can be located at runtime. Or else we have to make sure it gets installed properly into say /usr/local/lib or some such.
+# UPDATE: To avoid messing up the shell environment, turns out we can compile the runtime path for shared libraries into our executables using the -rpath option. Doing this in LNFLAGS just below.
+# Another option would be to wrap the gambit executables in shell scripts which set local enironment variables appropriately before actually running gambit.
+
 CC = g++ 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g
+LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
+
 CFLAGS = -O3 -Wall -g
 
 FC = gfortran
@@ -64,9 +80,10 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 	-IDarkBit/include \
 	-IExample_SUSYspecBit/include \
 	-IFlavBit/include \
-	-I$(YAMLDIR)/include
+	-I$(YAMLDIR)/include \
+        -I$(MULTINESTINC)
 
-COMMONLIBS = -lm
+COMMONLIBS = -lm 
 
 # beb_tester from makefile.test_backend
 TARGETS = gambit_example beb_tester gambit_example_minimal
@@ -282,13 +299,12 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
+gambit_example: $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so 
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
-
+	$(LN) $(LNFLAGS) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ 
 gambit_example_minimal: $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so libsample.so libtest.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(LNFLAGS) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ 
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
@@ -305,7 +321,12 @@ libsample.so:
 libtest.so:
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
-	
+
+#libmultinest_interface.so:
+multinest:
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/multinest.cpp -o $(SCANDIR)/lib/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
+	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/lib/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
+
 # beb_tester from makefile.test_backend
 beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
 	@echo ___________Linking $@:
