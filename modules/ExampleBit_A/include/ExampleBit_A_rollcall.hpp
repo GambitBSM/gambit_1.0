@@ -65,7 +65,7 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION eventLoopManager
-    START_FUNCTION(loopInt)
+    START_FUNCTION(int)
     #undef FUNCTION
 
   #undef CAPABILITY  
