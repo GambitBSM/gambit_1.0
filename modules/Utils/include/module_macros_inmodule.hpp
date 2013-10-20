@@ -32,6 +32,7 @@
 #include "extern_core.hpp"
 #include "util_macros.hpp"
 #include "module_macros_common.hpp"
+#include <boost/preprocessor/control/if.hpp>
 
 /// \name Dependency-retrieval and info macros
 /// These are used from within module function source code to obtain the actual
@@ -76,9 +77,9 @@
 // Redirect the rollcall macros to their in-module variants
 #define START_MODULE                                      DUMMY
 #define START_CAPABILITY                                  DUMMY
-#define START_FUNCTION(TYPE)                              MODULE_START_FUNCTION(TYPE)
+#define DECLARE_FUNCTION(TYPE, CAN_MANAGE)                MODULE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
-#define LOOP_MANAGER(LOOPMAN)                             DUMMYARG(LOOPMAN)                                  
+#define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            DUMMYARG(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
 #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
@@ -93,8 +94,9 @@
 /// \name In-module rollcall macros
 /// @{
 
-/// Redirection of START_FUNCTION(TYPE) when invoked from within a module.
-#define MODULE_START_FUNCTION(TYPE)                                            \
+/// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
+/// from within a module core.
+#define MODULE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)                              \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -103,14 +105,17 @@
     {                                                                          \
                                                                                \
       /* Let the module source know that this functor is declared by the core, \
-      and set up a helper function to call its iterate method. */              \
+      and set up a helper function to call its iterate method if it is able to \
+      manage loops. */                                                         \
       namespace Functown                                                       \
       {                                                                        \
         extern module_functor<TYPE> FUNCTION;                                  \
-        void CAT(FUNCTION,_iterate)(int iteration)                             \
-        {                                                                      \
-          FUNCTION.iterate(iteration);                                         \
-        }                                                                      \
+        BOOST_PP_IIF(CAN_MANAGE,                                               \
+          void CAT(FUNCTION,_iterate)(int iteration)                           \
+          {                                                                    \
+            FUNCTION.iterate(iteration);                                       \
+          }                                                                    \
+        ,)                                                                     \
       }                                                                        \
                                                                                \
       /* Create pointers to the iteration number and the single iteration of   \
@@ -119,12 +124,14 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
+          extern std::map<str, safe_ptr<double> > Param;                       \
           namespace Loop                                                       \
           {                                                                    \
             safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
-            void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate); \
+            BOOST_PP_IIF(CAN_MANAGE,                                           \
+              void (*executeIteration)(int)= &Functown::CAT(FUNCTION,_iterate);\
+            ,)                                                                 \
           }                                                                    \
-          extern std::map<str, safe_ptr<double> > Param;                       \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -158,7 +165,8 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Dep { extern safe_ptr<TYPE> DEP; }                         \
+          BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                    \
+           namespace Dep { extern safe_ptr<TYPE> DEP; } )                      \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -258,7 +266,7 @@
             {                                                                  \
               myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
             }                                                                  \
-            BOOST_PP_IF(IS_TYPE(void,TYPE),,return)                            \
+            BOOST_PP_IIF(IS_TYPE(void,TYPE),,return)                           \
              (*myptr)(std::forward<ARGS>(args)...);                            \
                                                                                \
           }                                                                    \

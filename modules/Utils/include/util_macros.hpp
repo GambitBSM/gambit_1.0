@@ -6,23 +6,26 @@
 ///
 ///  *********************************************
 ///
-///  Authors (add name and date if you modify):
+///  Authors: 
+///  <!-- add name and date if you modify -->
 ///   
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr
+///  \date 2013 Apr, Oct
 ///
 ///  *********************************************
 
 #ifndef __util_macros_hpp__
 #define __util_macros_hpp__
 
-#include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
 #include <boost_fallbacks.hpp>
  
+/// \name Compile-time error macro.
+#define FAIL(x) static_assert(false,"GAMBIT precompiler error: " x);
+
 /// \name Dummy macros
 /// Dummy macros that expand to nothing.
 /// @{
@@ -63,7 +66,7 @@
 #define double_double 1)(1
 #define bool_bool     1)(1
 #define char_char     1)(1
-#define IS_TYPE(COMPTYPE,TYPE) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT3(COMPTYPE,_,TYPE))),2)
+#define IS_TYPE(COMPTYPE,TYPE) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT_3(COMPTYPE,_,TYPE))),2)
 /// @}
 
 /// \name Variadic macro expanders
@@ -82,6 +85,46 @@
 #define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
+/// \name Bottom-level definition-checking macros
+/// Generic macros that can be used from within other macros
+/// to test whether or not some other macro is defined.
+/// To count as "defined" for the purposes of these macros, there
+/// must exist a macro definition of the following form:
+/// \code
+/// #define DEFINED_FOO ()
+/// \endcode 
+/// If this definition exists, DEFINED(FOO) will return 1.  It is up to 
+/// you to actually create a matching macro FOO when you create DEFINED_FOO,
+/// and then do something with the information that DEFINED provides about 
+/// the existence of DEFINED_FOO (and presumably also FOO).
+///
+/// Typically these macros would be used to switch behaviour on a flag
+/// passed to a macro.  See \link START_FUNCTION() START_FUNCTION \endlink
+/// in module_macros_common.hpp for a detailed worked example.
+/// @{
+#define CHECK_N(x, n, ...) n
+#define CHECK(...) CHECK_N(__VA_ARGS__, 0)
+#define PROBE(x) x, 1                                                             
+#define DEFINED_PROBE(NAME)            DEFINED_PROBE_PROXY( DEFINED_##NAME )      // concatenate DEFINED_ prefix with function name
+#define DEFINED_PROBE_PROXY(...)       DEFINED_PROBE_PRIMITIVE(__VA_ARGS__)       // expand arguments
+#define DEFINED_PROBE_PRIMITIVE(x)     DEFINED_PROBE_COMBINE_ x                   // collapse again
+#define DEFINED_PROBE_COMBINE_(...)    PROBE(X)   
+/// Returns 1 or 0 depending on whether a corresponding DEFINED_<NAME> () macro has been #defined or not. 
+#define DEFINED(NAME)                  CHECK(DEFINED_PROBE(NAME))
+/// @}
+
+/// \name High-level definition-checking macros.
+/// These are just nice wrappers around \link DEFINED() DEFINED\endlink for specific logical cases.
+/// @{
+
+/// Do ACTION if NAME is defined.
+#define IF_DEFINED(NAME,ACTION)        BOOST_PP_IF(DEFINED(NAME), ACTION, )
+/// Do ACTION if NAME is undefined.
+#define IF_NOT_DEFINED(NAME,ACTION)    BOOST_PP_IF(DEFINED(NAME), , ACTION)
+/// Do IF if NAME is defined, otherwise do ELSE.
+#define SWITCH_DEFINED(NAME,IF,ELSE)   BOOST_PP_IF(DEFINED(NAME), IF, ELSE)
 /// @}
 
 #endif //defined __util_macros_hpp__

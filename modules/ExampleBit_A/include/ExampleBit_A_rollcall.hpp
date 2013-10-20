@@ -28,21 +28,31 @@
 
 typedef double(*fptr)(int&);                // A typedef used later in this file; could instead be placed in Utils/include/util_classes.hpp
 
+
 #define MODULE ExampleBit_A
 START_MODULE
 
+
+  #define CAPABILITY eventLoopManagement
+  START_CAPABILITY
+
+    #define FUNCTION eventLoopManager       // Module functions that have been designed to manage loops over other module functions need to 
+    START_FUNCTION(void, CAN_MANAGE_LOOPS)  // be declared with the optional CAN_MANAGE_LOOPS flag.  When this flag is absent, or if the
+    #undef FUNCTION                         // flag CANNOT_MANAGE_LOOPS is given instead, GAMBIT assumes that the function should not 
+                                            // be allowed to manage loops.  Functions cannot have void result types unless they CAN_MANAGE_LOOPS. 
+  #undef CAPABILITY                         
 
   #define CAPABILITY event
   START_CAPABILITY
   
     #define FUNCTION exampleEventGen
     START_FUNCTION(double)
-    LOOP_MANAGER(eventLoopManagement)
-    #undef FUNCTION
-
+    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement) // Declares that the module function can only run inside a loop, and that the loop
+    #undef FUNCTION                                    // must be managed by another module function that has CAPABILITY eventLoopManagement
+                                                       // (and has been declared as a potential manager with the flag CAN_MANAGE_LOOPS).
     #define FUNCTION exampleCut
     START_FUNCTION(int)
-    LOOP_MANAGER(eventLoopManagement)
+    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
     DEPENDENCY(event, double)
     #undef FUNCTION
     
@@ -53,22 +63,13 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION eventAccumulator
-    START_FUNCTION(int)
-    LOOP_MANAGER(eventLoopManagement)
+    START_FUNCTION(int, CANNOT_MANAGE_LOOPS)
+    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement) 
     DEPENDENCY(event, int)
     #undef FUNCTION
 
   #undef CAPABILITY
 
-
-  #define CAPABILITY eventLoopManagement
-  START_CAPABILITY
-
-    #define FUNCTION eventLoopManager
-    START_FUNCTION(int)
-    #undef FUNCTION
-
-  #undef CAPABILITY  
 
 
   #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more 

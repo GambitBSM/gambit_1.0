@@ -19,15 +19,32 @@
 #ifndef __module_macros_common_hpp__
 #define __module_macros_common_hpp__
 
-
 #include "util_macros.hpp"
+#include <string>
 #include <boost/preprocessor/comparison/greater.hpp>
+
+
+/// \name Variadic redirection macro for START_FUNCTION(TYPE,[CAN_MANAGE_LOOPS/CANNOT_MANAGE_LOOPS])
+/// Registers the current \link FUNCTION() FUNCTION\endlink of the current 
+/// \link MODULE() MODULE\endlink as a provider
+/// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
+/// type \em TYPE.  Allows this function to manage loops if the optional 
+/// second argument CAN_MANAGE_LOOPS is given; otherwise, if CANNOT_MANAGE_LOOPS is given
+/// instead, or no second argument is given, the function is prohibited from managing loops.
+#define START_FUNCTION_CAN_MANAGE_LOOPS(TYPE)                    DECLARE_FUNCTION(TYPE,1)
+#define START_FUNCTION_CANNOT_MANAGE_LOOPS(TYPE)                 DECLARE_FUNCTION(TYPE,0)
+#define START_FUNCTION_(TYPE)                                    FAIL("Unrecognised flag in argument 2 of START_FUNCTION; should be CAN_MANAGE_LOOPS, CANNOT_MANAGE_LOOPS, or absent.")
+#define DEFINED_START_FUNCTION_CAN_MANAGE_LOOPS ()               // Tells the IF_DEFINED macro that this function is indeed defined.
+#define DEFINED_START_FUNCTION_CANNOT_MANAGE_LOOPS ()            // Tells the IF_DEFINED macro that this function is indeed defined.
+#define START_FUNCTION_2(_1, _2)                                 CAT(START_FUNCTION_,IF_DEFINED(START_FUNCTION_##_2,_2))(_1)  
+#define START_FUNCTION_1(_1)                                     START_FUNCTION_CANNOT_MANAGE_LOOPS(_1) 
+#define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
+
 
 ///Simple alias for ALLOW_MODEL/S
 #define ALLOW_MODEL ALLOW_MODELS
 ///Simple alias for ACTIVATE_FOR_MODEL/S
 #define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
-
 
 /// \name Variadic redirection macro for ALLOW_MODELS([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may

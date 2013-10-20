@@ -134,16 +134,15 @@ namespace Gambit
     // Some example functions for using loops within the dependency structure 
 
     // Run a fake 'event loop' 
-    void eventLoopManager(int &result)
+    void eventLoopManager()
     {
       using namespace SafePointers::eventLoopManager;
-      int nEvents = 20;         // Number of times to run the loop
+      unsigned int nEvents = 20;         // Number of times to run the loop
       for(unsigned long i = 1; i <= nEvents; i++)
       {
         cout << "This is iteration " << i << " of " << nEvents << " being run by eventLoopManager." << endl;
-        Loop::executeIteration(i);
+        Loop::executeIteration(i); // This is actually a (member) function pointer, so *Loop::executeIteration(i) works fine too.
       }
-      result = 0; // Maybe we want to add some code to allow void-type module functions for just this sort of case...
     }
 
     // Produces a random floating-point 'event count' between 0 and 5.

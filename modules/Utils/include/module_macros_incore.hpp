@@ -52,6 +52,8 @@
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "module_macros_common.hpp"
+#include <boost/preprocessor/logical/bitand.hpp>
+#include <boost/preprocessor/logical/compl.hpp>
 
 /// \name Tag-registration macros
 /// @{
@@ -81,13 +83,13 @@
 /// \link MODULE() MODULE\endlink as a provider
 /// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
 /// type \em TYPE.
-#define START_FUNCTION(TYPE)                              CORE_START_FUNCTION(TYPE)
+#define DECLARE_FUNCTION(TYPE, CAN_MANAGE)                CORE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)
 
 /// Indicates that the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink must be managed by another function (in the same
 /// module or another) that calls it from within a loop.  That other function must
 /// provide capability \em LOOPMAN. 
-#define LOOP_MANAGER(LOOPMAN)                             CORE_LOOP_MANAGER(LOOPMAN)                                  
+#define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink depends on the 
 /// presence of another module function that can supply capability \em DEP, with
@@ -387,11 +389,19 @@
   }                                                                            \
 
 
-/// Redirection of START_FUNCTION(TYPE) when invoked from within the core.
-#define CORE_START_FUNCTION(TYPE)                                              \
+/// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
+/// from within the core.
+#define CORE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)                                \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
+                                                                               \
+    /* Fail if a void-type function is declared, unless it can manage loops.*/ \
+    BOOST_PP_IIF(                                                              \
+     BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_COMPL(CAN_MANAGE)),          \
+     FAIL("Module functions cannot have void results, unless they can manage " \
+          "loops (which is declared by adding CAN_MANAGE_LOOPS as the second " \
+          "argument of START_FUNCTION)."),)                                    \
                                                                                \
     /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
     ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                     \
@@ -399,17 +409,21 @@
     namespace MODULE                                                           \
     {                                                                          \
       /* Register (prototype) the function */                                  \
-      void FUNCTION (TYPE &);                                                  \
+      BOOST_PP_IIF(IS_TYPE(void,TYPE),                                         \
+        void FUNCTION();                                                       \
+      ,                                                                        \
+        void FUNCTION (TYPE &);                                                \
+      )                                                                        \
                                                                                \
       /* Wrap it in a functor */                                               \
-      MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,MODULE)                            \
+      MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,MODULE,CAN_MANAGE)                 \
     }                                                                          \
                                                                                \
   }                                                                            \
 
 
 /// Main parts of the functor creation
-#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN)                          \
+#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)               \
   /* Set up an auxilary method to report stuff to the core about the           \
   function.  Not actually sure what this would                                 \
   be used for at this stage. */                                                \
@@ -440,7 +454,7 @@
   function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
   {                                                                            \
      Functown::FUNCTION.calculate();                                           \
-     return Functown::FUNCTION();                                              \
+     BOOST_PP_IIF(IS_TYPE(void,TYPE),,return Functown::FUNCTION();)            \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function*/    \
@@ -448,6 +462,7 @@
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
     Core.registerModuleFunctor(Functown::FUNCTION);                            \
+    BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
     map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;            \
     map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;                  \
     iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                             \
@@ -471,8 +486,9 @@
   }                                                                            \
 
 
-/// Redirection of LOOP_MANAGER(LOOPMAN) when invoked from within the core.
-#define CORE_LOOP_MANAGER(LOOPMAN)                                             \
+/// Redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
+/// within the core.
+#define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -529,7 +545,7 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Dep { safe_ptr<TYPE> DEP; }                                \
+          BOOST_PP_IIF(IS_TYPE(void,TYPE),,namespace Dep {safe_ptr<TYPE> DEP;})\
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -553,8 +569,9 @@
         }                                                                      \
         else /* It did!  Now set the pointer to the dependency result. */      \
         {                                                                      \
+         BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
           SafePointers::FUNCTION::Dep::DEP =                                   \
-           Dependencies::FUNCTION::DEP->valuePtr();                            \
+           Dependencies::FUNCTION::DEP->valuePtr(); )                          \
         }                                                                      \
                                                                                \
       }                                                                        \

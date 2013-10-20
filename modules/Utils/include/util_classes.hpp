@@ -132,11 +132,30 @@ namespace Gambit
     int nco,nres,kcoann[1000];
   };
 
-  struct DS_RDPTH
+  struct DS_RDPTH//_bare
   {
     int nth,incth[1000];
     double pth[1000];
   };
+
+//PS: some proto-reindexing example code, to be built on in the future...
+//  struct DSRDPTH 
+//  {
+//    FIRST_REINDEXES_SECOND(DS_RDPTH,DS_RDPTH_bare)
+//    reindexed_array<int> REINDEX(nth), REINDEX(incth,2,1001)
+//    reindexed_array<double> REINDEX(pth,1000)                
+//  }
+
+//  Equivalent to:
+//  struct DS_RDPTH
+//  {
+//    typedef DS_RDPTH_internal fortranPart
+//    fortranPart myFortranPart
+//    void DS_RDPTH(fortranPart* fortranPartPtr) : myFortranPart(*fortranPartPtr) {}
+//    reindexed_array<int> nth(myFortranPart.nth), incth(myFortranPart.incth,2,1001);
+//    reindexed_array<double> pth(myFortranPart.pth,1,1000);
+//  };
+
 
   struct DS_RDDOF
   {

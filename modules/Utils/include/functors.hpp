@@ -101,6 +101,13 @@ namespace Gambit
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
 
+      /// Getter for revealing whether this is permitted to be a manager functor
+      virtual bool canBeLoopManager()
+      {
+        cout << "Error.  The canBeLoopManager method has not been defined in this class." << endl;
+        exit(1);
+      }
+
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability()
       {
@@ -214,11 +221,9 @@ namespace Gambit
       // Print function
       virtual void print(printers::BasePrinter* printer)
       {
-         std::cout<<"Warning, this is the functor base class "
-          << "print function! This should not be used; print "
-          << "function should be redefined in daughter functo"
-          << "r classes. If this is running there is a proble"
-          << "m somewhere... (from functor "<<myName<<std::endl;
+         std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
+          << "function should be redefined in daughter functor classes. If this is running there is a problem "
+          << "somewhere... (from functor "<<myName<<")"<<std::endl;
       }
 
 
@@ -236,8 +241,6 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
-      /// Capability of a function that mangages a loop that this function can run inside of.
-      str myLoopManager;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
 
@@ -276,22 +279,19 @@ namespace Gambit
 
 
   // ================================================================
-  /// Functor derived class for module functions with result type TYPE
+  /// Functor derived class for module functions
   
-  template <typename TYPE>
-  class module_functor : public functor
+  class module_functor_common : public functor
   {
 
     public:
 
       /// Constructor
-      module_functor(void (*inputFunction)(TYPE &),
-                            str func_name,
+      module_functor_common(str func_name,
                             str func_capability,
                             str result_type,
                             str origin_name)
       {
-        myFunction      = inputFunction;
         myName          = func_name;
         myCapability    = func_capability;
         myType          = result_type;
@@ -299,39 +299,12 @@ namespace Gambit
         myStatus        = 1;
         myCurrentIteration = 0;
         myLoopManager = "none";
+        iCanManageLoops = false;
         needs_recalculating = true;
         runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
         runtime         = FUNCTORS_RUNTIME_INIT;
         pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
         fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
-      }
-
-      /// Calculate method (using either function or pointer)
-      void calculate()
-      {
-        if(needs_recalculating)
-        {
-          timespec tp;
-          double nsec, sec;
-#ifndef HAVE_MAC
-          clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-          nsec = (double)-tp.tv_nsec;
-          sec = (double)-tp.tv_sec;
-          this->myFunction(myValue);
-#ifndef HAVE_MAC
-          clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-          nsec += (double)tp.tv_nsec;
-          sec += (double)tp.tv_sec;
-          runtime = sec*1e9 + nsec;
-          needs_recalculating = false;
-          runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
-          pInvalidation = pInvalidation*(1-fadeRate) +
-            fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-          cout << "Runtime " << myName << ": " << runtime << " ns (" <<
-            runtime_average << " ns)" << endl;
-        }
       }
 
       // Getter for averaged runtime
@@ -364,20 +337,6 @@ namespace Gambit
         fadeRate = new_rate;
       }
 
-      /// Operation (return value)
-      TYPE operator()() 
-      { 
-        if (this == NULL) functor::failBigTime("operator()");
-        return myValue;
-      }
-
-      /// Alternative to operation (returns a safe pointer to value)
-      safe_ptr<TYPE> valuePtr()
-      {
-        if (this == NULL) functor::failBigTime("valuePtr");
-        return safe_ptr<TYPE>(&myValue);
-      }
-
       /// Execute a single iteration in the loop managed by this functor.
       void iterate(int iteration)
       {
@@ -401,6 +360,11 @@ namespace Gambit
         if (this == NULL) functor::failBigTime("iterationPtr");
         return safe_ptr<int>(&myCurrentIteration); 
       }
+
+      /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
+      virtual void setCanBeLoopManager (bool canManage) { iCanManageLoops = canManage; }
+      /// Getter for revealing whether this is permitted to be a manager functor
+      virtual bool canBeLoopManager() { if (this == NULL) failBigTime("canBeLoopManager"); return iCanManageLoops; }
 
       /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
       virtual void setLoopManagerCapability (str manager) { myLoopManager = manager; }
@@ -603,7 +567,17 @@ namespace Gambit
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList)
       { 
-        myNestedFunctorList = newNestedList;
+        if (iCanManageLoops) 
+        {
+          myNestedFunctorList = newNestedList;
+        }
+        else
+        {
+          cout << "Error: this module functor is not permitted to manage" << endl;
+          cout << "loops, so you cannot set its nested functor list. " << endl; 
+          cout << "This is " << this->name() << " in " << this->origin() << "." << endl;
+          ///\todo FIXME throw a real error here
+        }
       } 
 
       /// Resolve a dependency using a pointer to another functor object
@@ -692,19 +666,7 @@ namespace Gambit
         }
       }
             
-      /// Printer function
-      virtual void print(printers::BasePrinter* printer)
-      {
-        printer->print(this->myValue);
-      }
-
     protected:
-
-      /// Internal storage of function value
-      TYPE myValue;
-
-      /// Internal storage of function pointer
-      void (*myFunction)(TYPE &);
 
       /// Current runtime in ns
       double runtime;
@@ -717,6 +679,12 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
+
+      /// Flag indicating whether this function can manage a loop over other functions
+      bool iCanManageLoops;
+
+      /// Capability of a function that mangages a loop that this function can run inside of.
+      str myLoopManager;
 
       /// Vector of functors that have been set up to run nested within this one.
       std::vector<functor*> myNestedFunctorList;
@@ -748,6 +716,136 @@ namespace Gambit
 
       /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
       std::map< sspair, std::vector<sspair> > permitted_map;
+
+  };
+
+
+  /// Actual module functor type for all but TYPE=void
+  template <typename TYPE>
+  class module_functor : public module_functor_common
+  {
+
+    public:
+
+      /// Constructor
+      module_functor(void (*inputFunction)(TYPE &),
+                            str func_name,
+                            str func_capability,
+                            str result_type,
+                            str origin_name)
+      : module_functor_common(func_name, func_capability, result_type, origin_name)
+      {
+        myFunction = inputFunction;
+      }
+
+      /// Calculate method
+      void calculate()
+      {
+        if(this->needs_recalculating)
+        {
+          timespec tp;
+          double nsec, sec;
+#ifndef HAVE_MAC
+          clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
+          nsec = (double)-tp.tv_nsec;
+          sec = (double)-tp.tv_sec;
+          myFunction(myValue);
+#ifndef HAVE_MAC
+          clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
+          nsec += (double)tp.tv_nsec;
+          sec += (double)tp.tv_sec;
+          this->runtime = sec*1e9 + nsec;
+          this->needs_recalculating = false;
+          this->runtime_average = this->runtime_average*(1-this->fadeRate) + this->fadeRate*this->runtime;
+          this->pInvalidation = this->pInvalidation*(1-this->fadeRate) +
+            this->fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
+          cout << "Runtime " << this->myName << ": " << this->runtime << " ns (" <<
+            this->runtime_average << " ns)" << endl;
+        }
+      }
+
+      /// Operation (return value)
+      TYPE operator()() 
+      { 
+        if (this == NULL) functor::failBigTime("operator()");
+        return myValue;
+      }
+
+      /// Alternative to operation (returns a safe pointer to value)
+      safe_ptr<TYPE> valuePtr()
+      {
+        if (this == NULL) functor::failBigTime("valuePtr");
+        return safe_ptr<TYPE>(&myValue);
+      }
+
+      /// Printer function
+      virtual void print(printers::BasePrinter* printer)
+      {
+        printer->print(this->myValue);
+      }
+
+    protected:
+
+      /// Internal storage of function pointer
+      void (*myFunction)(TYPE &);
+
+      /// Internal storage of function value
+      TYPE myValue;
+
+  };
+
+
+  /// Actual module functor type for TYPE=void
+  class module_functor<void> : public module_functor_common
+  {
+
+    public:
+
+      /// Constructor
+      module_functor(void (*inputFunction)(),
+                            str func_name,
+                            str func_capability,
+                            str result_type,
+                            str origin_name)
+      : module_functor_common(func_name, func_capability, result_type, origin_name)
+      {
+        myFunction = inputFunction;
+      }
+
+      /// Calculate method
+      void calculate()
+      {
+        if(this->needs_recalculating)
+        {
+          timespec tp;
+          double nsec, sec;
+#ifndef HAVE_MAC
+          clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
+          nsec = (double)-tp.tv_nsec;
+          sec = (double)-tp.tv_sec;
+          this->myFunction();
+#ifndef HAVE_MAC
+          clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
+          nsec += (double)tp.tv_nsec;
+          sec += (double)tp.tv_sec;
+          this->runtime = sec*1e9 + nsec;
+          this->needs_recalculating = false;
+          this->runtime_average = this->runtime_average*(1-this->fadeRate) + this->fadeRate*this->runtime;
+          this->pInvalidation = this->pInvalidation*(1-this->fadeRate) +
+            this->fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
+          cout << "Runtime " << this->myName << ": " << this->runtime << " ns (" <<
+            this->runtime_average << " ns)" << endl;
+        }
+      }
+
+    protected:
+
+      /// Internal storage of function pointer
+      void (*myFunction)();
 
   };
 

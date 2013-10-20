@@ -136,6 +136,68 @@ namespace Gambit                                                            \
 } /* end namespace Gambit */                                                \
 
 
+/// Draft version of new macro for constructing pointers to library variables,
+/// to work with reindexing.  Not at all finished, just ignore this for now...
+#define BE_VARIABLE_DRAFT(NAME, TYPE, SYMBOLNAME, FFLAG)                    \
+/*ASSERT(FFLAG == FORTRAN_STRUCTURE)*/                                      \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace Backends                                                        \
+  {                                                                         \
+    namespace BACKENDNAME                                                   \
+    {                                                                       \
+                                                                            \
+      TYPE::fortranPart * NAME##fortranPartPtr;                             \
+                                                                            \
+      /* Construct 'get' function */                                        \
+      TYPE get##NAME() { return TYPE(NAME##fortranPartPtr); }               \
+                                                                            \
+      /* Construct 'set' function */                                        \
+      void set##NAME(TYPE a) { *NAME##fortranPartPtr = a.myFortranPart; }   \
+                                                                            \
+                                                                            \
+      /* Create functor objects */                                          \
+      namespace Functown                                                    \
+      {                                                                     \
+        auto get##NAME = makeBackendFunctor<TYPE>(                          \
+         Gambit::Backends::BACKENDNAME::get##NAME,                          \
+         STRINGIFY(NAME),                                                   \
+         STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ),           \
+         STRINGIFY(TYPE),                                                   \
+         STRINGIFY(BACKENDNAME),                                            \
+         STRINGIFY(VERSION) );                                              \
+                                                                            \
+        auto set##NAME = makeBackendFunctor<void>(                          \
+         Gambit::Backends::BACKENDNAME::set##NAME,                          \
+         STRINGIFY(NAME),                                                   \
+         STRINGIFY( CAT(BACKENDNAME,_##set##NAME##_capability) ),           \
+         "void",                                                            \
+         STRINGIFY(BACKENDNAME),                                            \
+         STRINGIFY(VERSION) );                                              \
+                                                                            \
+      } /* end namespace Functown */                                        \
+                                                                            \
+      void CAT(constructVarPointer_,NAME)()                                 \
+      {                                                                     \
+        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
+        NAME##fortranPartPtr = reinterpret_cast<TYPE::fortranPart*>(pSym);  \
+        Core.registerBackendFunctor(Functown::get##NAME);                   \
+        Core.registerBackendFunctor(Functown::set##NAME);                   \
+      }                                                                     \
+                                                                            \
+      /* The code within the void function 'constructVarPointer_NAME'       \
+         is executed when we create the following instance of               \
+         the 'ini_code' struct. */                                          \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code NAME(&CAT(constructVarPointer_,NAME));                     \
+      }                                                                     \
+                                                                            \
+    } /* end namespace BACKENDNAME */                                       \
+  } /* end namespace Backends */                                            \
+} /* end namespace Gambit */                                                \
+
+
 /// \name Wrapping macros for backend-defined functions
 ///
 /// BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY) is the

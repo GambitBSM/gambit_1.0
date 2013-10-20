@@ -235,7 +235,7 @@
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,                              \
-                      CAT_3(MODEL,_,PARAMETERISATION))                         \
+                      CAT_3(MODEL,_,PARAMETERISATION),0)                       \
                                                                                \
       }                                                                        \
                                                                                \
@@ -377,7 +377,7 @@
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,              \
-          CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION))         \
+          CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION),0)       \
                                                                                \
       }                                                                        \
                                                                                \
