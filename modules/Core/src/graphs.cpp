@@ -548,6 +548,13 @@ namespace Gambit
           // temporarily in loopManagerMap
           if (dependency_type == LOOP_MANAGER_DEPENDENCY)
           {
+            // Check whether fromVertex is allowed to manage loops
+            if (not masterGraph[fromVertex]->canBeLoopManager())
+            {
+              cout << "ERROR: Trying to resolve dependency on loop manager" << endl;
+              cout << "with module function that is not declared as loop manager." << endl;
+              exit(1); //FIXME: Throw real error here
+            }
             std::set<Graphs::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
             {

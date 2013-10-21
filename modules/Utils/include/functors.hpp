@@ -798,6 +798,7 @@ namespace Gambit
 
 
   /// Actual module functor type for TYPE=void
+  template <>
   class module_functor<void> : public module_functor_common
   {
 
