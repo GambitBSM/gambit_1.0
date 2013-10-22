@@ -1,0 +1,22 @@
+Towards Next Generation Global Fits Including LHC Simulations
+
+In spite of all of our expectations, both theoretically and observationally,
+that the Standard Model of particle physics is incomplete, we have yet to have
+discovered any new particles beyond the Standard Model (BSM). A recent methodology
+for studying such BSMs is via global fits and statistical inferencing.
+Using global fits, one can see the viable remaining parameter space of a given
+BSM. However, current global fit tools and frameworks may not be general
+enough for general BSMs. It is time for a new generation of global fitting
+tools which can handle any BSM as well as properly include even complicated
+and/or slow likelihoods, such as those from LHC observations.
+
+
+Notes:
+
+- Is this correct? ... Yes.
+  For strong production, NLO cross sections should be larger than LO cross
+  sections. Thus, with a proper cross section calculation, we would get more
+  events, which would then make our points more excluded. Thus, using only 
+  the LO cross sections is in any case conservative wrt exclusion.
+  For weak production, my understanding is that the cross section calculators
+  don't really exist.
