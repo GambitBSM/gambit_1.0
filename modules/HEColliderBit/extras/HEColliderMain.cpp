@@ -129,6 +129,7 @@ int main() {
   /// @todo Hard coding of nthread assignment calc: yuck, yuck, yuck! Generalise to containers of subprocesses
   map<string, SubprocessGroup> sp_groups;
 
+  // Gluino processes
   /// @note The old SubprocessGroup constructor calls are commented out below the new inputs
   /// @note Also, the new constructor calls exclude third generation squarks
   sp_groups["g~"] = SubprocessGroup(0.4, //< xsec estimate
@@ -137,6 +138,7 @@ int main() {
                       2000001, 2000002, 2000003, 2000004}});
   //sp_groups["g~"] = SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
 
+  // Squark processes
   sp_groups["q~"] = SubprocessGroup(0.2, //< xsec estimate
                     {{1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}},
@@ -144,16 +146,25 @@ int main() {
                       2000001, 2000002, 2000003, 2000004}});
   //sp_groups["q~"] = SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
 
+  // Gaugino processes
   sp_groups["X~"] = SubprocessGroup(0.02, //< xsec estimate
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}},
                     {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
   //sp_groups["X~"] = SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
 
+  // Stop processes
+  //sp_groups["t~"] = SubprocessGroup(1, {{1000006}},{{ 1000006}});
+
   // Bind subprocesses to analysis pointers
   for (auto& sp_group : sp_groups) {
     sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEP") );
+    // sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
+    // sp_group.second.add_analysis( mkAnalysis("ATLAS_1LEPStop_20invfb") );
+    // sp_group.second.add_analysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
+    // sp_group.second.add_analysis( mkAnalysis("ATLAS_2bStop_20invfb") );
   }
+
 
   /// @note Needs more complexity when we want to run different analyses with
   /// high acceptances for low-xsec subprocesses.

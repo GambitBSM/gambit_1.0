@@ -127,22 +127,22 @@ int main()
 
   /// @note The old SubprocessGroup constructor calls are commented out below the new inputs
   /// @note Also, the new constructor calls exclude third generation squarks
-  //sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4, 
-  //                {{1000021}}, 
-  //                {{1000021, 1000001, 1000002, 1000003, 1000004, 
+  //sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4,
+  //                {{1000021}},
+  //                {{1000021, 1000001, 1000002, 1000003, 1000004,
   //                  2000001, 2000002, 2000003, 2000004}});
   //sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
 
-  //sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2, 
-  //                {{1000001, 1000002, 1000003, 1000004, 
-  //                  2000001, 2000002, 2000003, 2000004}}, 
-  //                {{1000001, 1000002, 1000003, 1000004, 
+  //sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2,
+  //                {{1000001, 1000002, 1000003, 1000004,
+  //                  2000001, 2000002, 2000003, 2000004}},
+  //                {{1000001, 1000002, 1000003, 1000004,
   //                  2000001, 2000002, 2000003, 2000004}});
   //sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
 
-  //sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02, 
-  //                {{1000021, 1000001, 1000002, 1000003, 1000004, 
-  //                  2000001, 2000002, 2000003, 2000004}}, 
+  //sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02,
+  //                {{1000021, 1000001, 1000002, 1000003, 1000004,
+  //                  2000001, 2000002, 2000003, 2000004}},
   //                {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
   //sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
   std::cout << "In stop example " << endl;
@@ -171,7 +171,7 @@ int main()
   // 1) Negligible processes: A process is negligible when the cross-section times acceptance
   //    is so low that it will automatically be dwarfed by the background. I guess that makes the
   //    likelihood for that particular analysis 1.
-  // 2) Acceptances can never be > 1, so there ought to be a fairly simple formula to apply even 
+  // 2) Acceptances can never be > 1, so there ought to be a fairly simple formula to apply even
   //    for low-xsecs. For instance:
   //      if (xsec * ideal_acceptance)[worst subprocess] < 0.01 (xsec * crappy_acceptance)[next-to-worst subprocess]
   // 3) The question then becomes: can we somehow estimate a priori ideal_acceptance and crappy_acceptance?
@@ -201,11 +201,11 @@ int main()
 
     myPythia->set("SUSY:idVectA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVectB", thread_cfgs[NTHREAD].particlesInProcess2);
-    
+
     //MJW custom code to force stop decay processes
     //myPythia->set("1000006:onPosIfAny = 1000024");
     //myPythia->set("1000006:onNegIfAny = 1000022");
-    
+
 
     #ifdef ARCHIVE
     // Persistency config
@@ -253,8 +253,8 @@ int main()
 
   for (auto& sp_group : sp_groups) {
     cout << "Finalizing " << sp_group.first << endl;
-    for(int analysis=0;analysis<sp_group.second.analyses.size();analysis++)
-      sp_group.second.analyses[analysis]->finalize();
+    for (size_t ia = 0; ia < sp_group.second.analyses.size(); ++ia)
+      sp_group.second.analyses[ia]->finalize();
     //sp_group.second.analyses[0]->finalize();
   }
   /// @todo Combine results from each subprocess with appropriate target NLO xsecs applied
