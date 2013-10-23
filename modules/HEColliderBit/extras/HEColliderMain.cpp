@@ -19,7 +19,7 @@
 //  //  Aldo Saavedra
 //  //  2013 June 14
 //  //  Andy Buckley
-//  //  2013 July 20, Oct 04
+//  //  2013 July 20, Oct 04, Oct 20
 //  //
 //  //  ********************************************
 //
@@ -53,15 +53,12 @@ namespace Gambit {
     struct SubprocessGroup {
       SubprocessGroup()
         : xsec(-1), nevts(-1) { }
-      /// @todo pair<vector<int>> instead of two vector<int> inputs?
       SubprocessGroup(double xs, const vector<int>& parts1, const vector<int>& parts2)
         : xsec(xs), nevts(-1), particlesInProcess1(parts1), particlesInProcess2(parts2) { }
       void add_analysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
       double xsec;
       // string name; // or int id = 1000*sp_type + sp_instance
       int nevts;
-      // double kFactor;
-      /// @todo Calc effective lumi?
       /// @todo Add some metric of CPU cost per event for this process type?
       /// The processes are selected by the IDs of the particles which
       /// must be in the process.
@@ -130,20 +127,20 @@ int main()
 
   /// @note The old SubprocessGroup constructor calls are commented out below the new inputs
   /// @note Also, the new constructor calls exclude third generation squarks
-  sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4,
+  sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4, //< xsec estimate
                     {{1000021}},
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}});
   //sp_groups["g~"] = Gambit::HEColliderBit::SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
 
-  sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2,
+  sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2, //< xsec estimate
                     {{1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}},
                     {{1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}});
   //sp_groups["q~"] = Gambit::HEColliderBit::SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
 
-  sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02,
+  sp_groups["X~"] = Gambit::HEColliderBit::SubprocessGroup(0.02, //< xsec estimate
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}},
                     {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
@@ -165,7 +162,6 @@ int main()
   //    for low-xsecs. For instance:
   //      if (xsec * ideal_acceptance)[worst subprocess] < 0.01 (xsec * crappy_acceptance)[next-to-worst subprocess]
   // 3) The question then becomes: can we somehow estimate a priori ideal_acceptance and crappy_acceptance?
-  //
   //
   const int NUM_CORES = omp_get_max_threads();
   const int num_events_per_thread = (int) ceil(NEVENTS / (double) NUM_CORES);
@@ -237,6 +233,10 @@ int main()
       #endif
     } // end event loop
 
+    // Record the (LO) cross-section
+    /// @todo Set this on the Analysis objects
+    thread_cfgs[NTHREAD].xsec = myPythia->xsec();
+
     // Print out final run details
     #pragma omp critical
     {
@@ -256,12 +256,12 @@ int main()
   // #pragma omp parallel for
   for (auto& spg : sp_groups) {
     cout << "Finalizing " << spg.first << endl;
-    spg.second.analyses[0]->finalize();
+    /// @todo Combine analysis acceptances for each subprocess via NLO xsecs -> likelihood measure
+    for (auto& a : spg.second.analyses) a->finalize();
   }
 
-
-  /// @todo Combine results from each subprocess + K-factors -> likelihood measure
-  //cout << "LIKELIHOOD = " << ana->likelihood() << endl;
+  // Calculate likelihood
+  //cout << "LIKELIHOOD = " << a->likelihood() << endl;
 
   delete myDelphes;
   return 0;

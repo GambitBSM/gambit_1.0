@@ -28,6 +28,8 @@ namespace Gambit {
     /// Finalize: scale by number of input events, etc.
     virtual void finalize() {  }
 
+    /// @todo Need a way to combine multiple analyses with different (xsec) weights
+
     /// Return the log_e likelihood (at the end of the run)
     virtual double logLikelihood() = 0;
 

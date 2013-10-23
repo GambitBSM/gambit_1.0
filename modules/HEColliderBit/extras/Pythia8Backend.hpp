@@ -33,13 +33,19 @@ namespace Gambit {
     class Pythia8Backend {
     public:
 
+      /// Constructor with a random number seed argument
       Pythia8Backend(int seed);
 
+      /// Destructor
+      /// @todo Use a smart ptr and eliminate the need for a destructor?
       ~Pythia8Backend() {
         delete _pythiaInstance;
       }
 
+
+      /// @name Parameter setting functions
       /// @todo Throw an exception if already initialized
+      //@{
       void set(const std::string& key, int val) { _pythiaInstance->settings.mode(key, val); }
       void set(const std::string& key, bool val) { _pythiaInstance->settings.flag(key, val); }
       void set(const std::string& key, double val) { _pythiaInstance->settings.parm(key, val); }
@@ -47,11 +53,27 @@ namespace Gambit {
       void set(const std::string& key, vector<double> val) { _pythiaInstance->settings.pvec(key, val); }
       void set(const std::string& key, vector<int> val) { _pythiaInstance->settings.mvec(key, val); }
       void set(const std::string& command) { _pythiaInstance->readString(command); }
+      //@}
 
+
+      /// Make the next event and fill it into the supplied object
       void nextEvent(Pythia8::Event& event);
 
+
+      /// @name Get the number of events requested / errors permitted in a run
+      //@{
       int nEvents() { return _pythiaInstance->mode("Main:numberOfEvents"); }
       int nAborts() { return _pythiaInstance->mode("Main:timesAllowErrors"); }
+      //@}
+
+
+      /// @name Cross-section and error in mb
+      /// @todo convert to pb or similar? What will our std xsec unit be (in HEColliderBit or GAMBIT as a whole)?
+      //@{
+      int xsec() { return _pythiaInstance->info.sigmaGen(); }
+      int xsecErr() { return _pythiaInstance->mode("Main:timesAllowErrors"); }
+      //@}
+
 
     private:
 
@@ -62,8 +84,11 @@ namespace Gambit {
         }
       };
 
+
+      /// Initialization flag
       bool _initialized;
 
+      /// @todo Smart ptr?
       Pythia8::Pythia* _pythiaInstance;
 
       /// @todo Rollcall?
