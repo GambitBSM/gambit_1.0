@@ -52,17 +52,17 @@ namespace Gambit {
 
     /// Copy constructor
     Particle(const Particle& p)
-      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.isPrompt()) {  }
+      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()) {  }
 
     /// Copy constructor from a pointer
     Particle(const Particle* p)
-      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->isPrompt()) {  }
+      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()) {  }
 
     /// Copy assignment operator
     Particle& operator=(const Particle& p) {
       _p4 = p.mom();
       _pdgId = p.pid();
-      _prompt = p.isPrompt();
+      _prompt = p.is_prompt();
       return *this;
     }
 
@@ -75,10 +75,10 @@ namespace Gambit {
     /// Get the 4 vector
     const P4& mom() const { return _p4; }
     /// Set the 4 vector
-    void setMom(const P4& p4) { _p4 = p4; }
-    
+    void set_mom(const P4& p4) { _p4 = p4; }
+
     //Set the mass of the 4 vector
-    void setM(double mass) {_p4.setM(mass);}
+    void set_mass(double mass) {_p4.setM(mass);}
 
     /// @name Convenience mapping of a few popular momentum properties
     //@{
@@ -97,9 +97,9 @@ namespace Gambit {
     //@{
 
     /// Is this particle connected to the hard process or from a hadron/tau decay?
-    bool isPrompt() const { return _prompt; }
+    bool is_prompt() const { return _prompt; }
     /// Set promptness
-    void setPrompt(bool isprompt=true) { _prompt = isprompt; }
+    void set_prompt(bool isprompt=true) { _prompt = isprompt; }
 
     //@}
 
@@ -110,7 +110,7 @@ namespace Gambit {
     /// Get PDG ID code
     int pid() const { return _pdgId; }
     /// Set PDG ID code
-    void setPid(int pid) { _pdgId = pid; }
+    void set_pid(int pid) { _pdgId = pid; }
 
     //@}
 

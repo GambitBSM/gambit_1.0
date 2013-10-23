@@ -67,7 +67,7 @@ namespace Gambit {
     /// Constructor from a list of Particles
     Event(const std::vector<Particle*>& ps) {
       clear();
-      addParticles(ps);
+      add_particles(ps);
     }
 
     /// Destructor (cleans up all passed Particles and calculated Jets)
@@ -104,8 +104,8 @@ namespace Gambit {
     /// @todo Clarify ownership/lifetimes -- owned by outside code, or *to be cleaned up by the event on deletion*? THE LATTER
     /// @todo What about taus and Bs?
     /// @todo "Lock" at some point so that jet finding etc. only get done once
-    void addParticle(Particle* p) {
-      if (p->isPrompt()) {
+    void add_particle(Particle* p) {
+      if (p->is_prompt()) {
         if (p->pid() == 22) _photons.push_back(p);
         if (abs(p->pid()) == 11) _electrons.push_back(p);
         if (abs(p->pid()) == 13) _muons.push_back(p);
@@ -117,8 +117,8 @@ namespace Gambit {
 
     /// Add a collection of final state particles to the event
     /// @todo Should be vector<const Particle*>?
-    void addParticles(const std::vector<Particle*>& ps) {
-      for (size_t i = 0; i < ps.size(); ++i) addParticle(ps[i]);
+    void add_particles(const std::vector<Particle*>& ps) {
+      for (size_t i = 0; i < ps.size(); ++i) add_particle(ps[i]);
     }
 
 
@@ -224,20 +224,20 @@ namespace Gambit {
     /// @brief Get the missing energy vector
     ///
     /// Not _necessarily_ the sum over momenta of final state invisibles
-    const P4& missingMom() const {
+    const P4& missingmom() const {
       return _pmiss;
     }
 
     /// @brief Set the missing energy vector
     ///
     /// Not _necessarily_ the sum over momenta of final state invisibles
-    void setMissingMom(const P4& pmiss) {
+    void set_missingmom(const P4& pmiss) {
       _pmiss = pmiss;
     }
 
     /// Get the missing ET in GeV
     double met() const {
-      return missingMom().pT();
+      return missingmom().pT();
     }
 
     //@}

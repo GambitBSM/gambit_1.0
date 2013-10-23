@@ -9,8 +9,6 @@
 #endif
 
 namespace Gambit {
-
-
   using namespace std;
 
 
@@ -51,41 +49,11 @@ namespace Gambit {
     }
 
 
-    // void init() {
-    // }
-
-
-    double SmallestdPhi(std::vector<Jet *> jets,double phi_met)
-    {
-      if (jets.size()<2) return(999);
-      double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
-      double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
-      double dphi3 = 999;
-      if (jets.size() > 2 && jets[2]->pT() > 40.)
-        dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
-      double min1 = std::min(dphi1, dphi2);
-      return std::min(min1, dphi3);
-    }
-
-    double SmallestRemainingdPhi(const std::vector<Jet *> jets,double phi_met)
-    {
-      double remainingDPhi = 999;
-      double dphiMin = 999;
-      for (size_t i = 0; i < jets.size(); i++) {
-        if (i > 2 && jets[i]->pT() > 40.) { //< @todo Just start the loop at i = 3?
-          remainingDPhi = std::acos(std::cos((jets[i]->phi() - phi_met)));
-          dphiMin = std::min(remainingDPhi, dphiMin);
-        }
-      }
-      return dphiMin;
-    }
-
-
     void analyze(const Event* event) {
       Analysis::analyze(event);
 
       // Missing energy
-      P4 ptot = event->missingMom();
+      P4 ptot = event->missingmom();
       double met = event->met();
 
       // Now define vectors of baseline objects
@@ -269,16 +237,15 @@ namespace Gambit {
     }
 
 
-    virtual Analysis& operator += (const Analysis& a) {
-      const double weight = (xsec() > 0) ? a.xsecPerEvent() / xsecPerEvent() : 1;
-      addXsec(a.xsec(), a.xsecErr());
+    void add(const Analysis& a) {
       const Analysis_ATLAS0LEP& aa = dynamic_cast<const Analysis_ATLAS0LEP&>(a);
+      add_xsec(a.xsec(), a.xsec_err());
       #define ADD(NAME) NAME += weight * aa.NAME
+      const double weight = (xsec() > 0) ? a.xsec_per_event() / xsec_per_event() : 1;
       ADD(_numAT); ADD(_numAM); ADD(_numAL);
       ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM); ADD(_numCL);
       ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
       #undef ADD
-      return *this;
     }
 
 
@@ -294,9 +261,36 @@ namespace Gambit {
     }
 
 
-    double logLikelihood() {
+    double loglikelihood() {
       /// @todo Implement!
-      return 1.0;
+      return 0;
+    }
+
+
+    ///////////////////
+
+
+    double SmallestdPhi(std::vector<Jet*> jets,double phi_met) {
+      if (jets.size()<2) return(999);
+      double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
+      double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
+      double dphi3 = 999;
+      if (jets.size() > 2 && jets[2]->pT() > 40.)
+        dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
+      double min1 = std::min(dphi1, dphi2);
+      return std::min(min1, dphi3);
+    }
+
+    double SmallestRemainingdPhi(const std::vector<Jet *> jets,double phi_met) {
+      double remainingDPhi = 999;
+      double dphiMin = 999;
+      for (size_t i = 0; i < jets.size(); i++) {
+        if (i > 2 && jets[i]->pT() > 40.) { //< @todo Just start the loop at i = 3?
+          remainingDPhi = std::acos(std::cos((jets[i]->phi() - phi_met)));
+          dphiMin = std::min(remainingDPhi, dphiMin);
+        }
+      }
+      return dphiMin;
     }
 
 

@@ -10,7 +10,7 @@ namespace Gambit {
   public:
 
     /// Constructor
-    Analysis() : _ntot(0), _xsec(-1), _xsecErr(-1) { }
+    Analysis() : _ntot(0), _xsec(-1), _xsecerr(-1) { }
 
     /// Virtual destructor (needed for correct deletion of inherited classes)
     virtual ~Analysis() { init(); }
@@ -40,65 +40,58 @@ namespace Gambit {
     //@}
 
 
+
+
+    /// @name Cross-section and event number info    //@{
+
     /// Return the total number of events seen so far
-    double numEvents() const { return _ntot; }
-
-
-    /// @name Cross-section operations
-    //@{
-
+    double num_events() const { return _ntot; }
     /// Return the cross-section (in pb)
     double xsec() const { return _xsec; }
     /// Return the cross-section error (in pb)
-    double xsecErr() const { return _xsec; }
+    double xsec_err() const { return _xsec; }
     /// Return the cross-section relative error
-    double xsecRelErr() const { return xsec() > 0 ? xsecErr()/xsec() : -1; }
-    /// Set the cross-section and error
-    void setXsec(double xs, double xserr) { _xsec = xs; _xsecErr = xserr; }
-    /// Add a cross-section and error
-    void addXsec(double xs, double xserr) {
-      assert(xs > 0 && xserr > 0);
-      if (xsec() <= 0) {
-        setXsec(xs, xserr);
-      } else {
-        _xsec += xs;
-        _xsecErr = sqrt(sqr(xsecErr()) + sqr(xserr));
-      }
-    }
-    /// Combine the provided cross-section with the existing one, assuming uncorrelated errors
-    /// @todo Assumes equal stats at the moment: that breaks immediately. Include some 1/(rel)error weighting?
-    void combineXsec(double xs, double xserr) {
-      assert(xs > 0 && xserr > 0);
-      if (xsec() <= 0) {
-        setXsec(xs, xserr);
-      } else {
-        _xsec = _xsec/2.0 + xs/2.0;
-        _xsecErr = sqrt(sqr(xsecErr()) + sqr(xserr)) / 2.0;
-      }
-    }
+    double xsec_relerr() const { return xsec() > 0 ? xsec_err()/xsec() : -1; }
     /// Return the cross-section per event seen (in pb)
-    double xsecPerEvent() const { return (xsec() > 0) ? xsec()/numEvents() : -1; }
+    double xsec_per_event() const { return (xsec() > 0) ? xsec()/num_events() : -1; }
+    /// Set the cross-section and its error
+    void set_xsec(double xs, double xserr) { _xsec = xs; _xsecerr = xserr; }
 
     //@}
 
 
-    /// An operator to do (xsec-weighted) combination of analysis runs
-    /// @todo Put some implementation in the base class, e.g. checking ana names
-    /// @todo Use an explicit name rather than operator +=?
-    virtual Analysis& operator += (const Analysis& a) { return *this; } //= 0;
+    /// @name Analysis combination operations
+    //@{
+
+    /// An operator to do xsec-weighted combination of analysis runs
+    /// @note We don't use operator += because it's awkward with pointer l/rvalues
+    /// @todo Put some real implementation in the base class, e.g. checking ana names
+    virtual void add(const Analysis& a) { } //= 0;
+
+    /// Add a cross-section and error
+    void add_xsec(double xs, double xserr);
+
+    /// Combine the provided cross-section with the existing one of the same type, assuming uncorrelated errors
+    /// @todo Assumes equal stats at the moment: that breaks immediately. Include some 1/(rel)error weighting?
+    void improve_xsec(double xs, double xserr);
+
+    //@}
 
 
+    /// @name Likelihood functions
+    //@{
     /// Return the log_e likelihood (at the end of the run)
-    virtual double logLikelihood() = 0;
+    virtual double loglikelihood() = 0;
     /// Return the likelihood (at the end of the run, via logLikelihood)
-    virtual double likelihood() { return std::exp(logLikelihood()); }
+    virtual double likelihood() { return std::exp(loglikelihood()); }
+    //@}
 
 
   private:
 
     /// Number of events and cross-section internal variables
     /// @note C++11 default value syntax
-    double _ntot, _xsec, _xsecErr;
+    double _ntot, _xsec, _xsecerr;
 
   };
 

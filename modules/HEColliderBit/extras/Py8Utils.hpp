@@ -182,8 +182,8 @@ namespace Gambit {
       if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
         taus.push_back(vec4_to_pseudojet(p.p()));
         Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
-        gp->setPrompt();
-        gevt.addParticle(gp); // Will be automatically categorised
+        gp->set_prompt();
+        gevt.add_particle(gp); // Will be automatically categorised
       }
     }
 
@@ -201,8 +201,8 @@ namespace Gambit {
 
       if (prompt) {
         Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
-        gp->setPrompt();
-        gevt.addParticle(gp); // Will be automatically categorised
+        gp->set_prompt();
+        gevt.add_particle(gp); // Will be automatically categorised
       } else {
         // Choose jet constituents (should include neutrinos?)
         /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
@@ -233,7 +233,7 @@ namespace Gambit {
     }
 
     // MET (not equal to sum of prompt invisibles)
-    gevt.setMissingMom(-vec4_to_p4(ptot));
+    gevt.set_missingmom(-vec4_to_p4(ptot));
   }
 
 

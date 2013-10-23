@@ -248,9 +248,11 @@ int main() {
       #endif
     } // end event loop
 
-    // Record the (LO) cross-section
-    /// @todo Set this on the Analysis objects
+    // Record the (LO) cross-section on the analysis
+    /// @todo Combine same-process xsecs on the SP group, then set on the analyses before adding SPs?
     thread_cfgs[NTHREAD].xsec = myPythia->xsec();
+    for (shared_ptr<Gambit::Analysis> ana : thread_cfgs[NTHREAD].analyses)
+      ana->combineXsec(myPythia->xsec(), myPythia->xsecErr());
 
     // Print out final run details
     #pragma omp critical
@@ -265,18 +267,32 @@ int main() {
   } // end omp parallel block
 
 
+  /// Combine analysis acceptances from each subprocess
+  map<string, shared_ptr<Analysis>> anas;
+  for (auto& spg : sp_groups) {
+    for (auto& a : spg.second.analyses) {
+      const string aname = typeid(a).name();
+      if (anas.find(aname) == anas.end()) {
+        anas[aname] = a;
+      } else {
+        anas[aname] += a;
+      }
+    }
+  }
+
   // Finalize each process group
   /// @todo Parallelize... but OpenMP and vector iteration don't play well
   // omp_set_num_threads(sp_groups.size());
   // #pragma omp parallel for
-  for (auto& spg : sp_groups) {
-    cout << "Finalizing " << spg.first << endl;
-    /// @todo Combine analysis acceptances for each subprocess via NLO xsecs -> likelihood measure
-    for (auto& a : spg.second.analyses) a->finalize();
+  // for (auto& spg : sp_groups) {
+  //   cout << "Finalizing " << spg.first << endl;
+  //   for (auto& a : spg.second.analyses) a->finalize();
+  // }
+  for (auto& a : anas) {
+    cout << "Finalizing " << a.first << endl;
+    a.second->finalize();
+    cout << "LIKELIHOOD = " << a->likelihood() << endl;
   }
-
-  // Calculate likelihood
-  //cout << "LIKELIHOOD = " << a->likelihood() << endl;
 
   delete myDelphes;
   return 0;
