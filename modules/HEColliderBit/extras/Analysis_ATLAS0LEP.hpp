@@ -82,6 +82,8 @@ namespace Gambit {
 
 
     void analyze(const Event* event) {
+      Analysis::analyze(event);
+
       // Missing energy
       P4 ptot = event->missingMom();
       double met = event->met();
@@ -264,6 +266,19 @@ namespace Gambit {
            << " MEFF " << meff_incl
            << " METPHI " << ptot.phi() << endl;
       #endif
+    }
+
+
+    virtual Analysis& operator += (const Analysis& a) {
+      const double weight = (xsec() > 0) ? a.xsecPerEvent() / xsecPerEvent() : 1;
+      addXsec(a.xsec(), a.xsecErr());
+      const Analysis_ATLAS0LEP& aa = dynamic_cast<const Analysis_ATLAS0LEP&>(a);
+      #define ADD(NAME) NAME += weight * aa.NAME
+      ADD(_numAT); ADD(_numAM); ADD(_numAL);
+      ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM); ADD(_numCL);
+      ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
+      #undef ADD
+      return *this;
     }
 
 

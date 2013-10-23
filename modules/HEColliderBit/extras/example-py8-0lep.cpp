@@ -3,7 +3,7 @@
 #include "Analysis.hpp"
 
 // External
-#include "Pythia.h"
+#include "Pythia/Pythia.h"
 #include "fastjet/ClusterSequence.hh"
 // #include "boost/lexical_cast.hpp"
 // #include "omp.h"
@@ -61,13 +61,13 @@ int main() {
   for (size_t i = 0; i < 1000; ++i) {
     if (!py.next()) continue;
     cout << py.event.size() << endl;
-    
+
     Gambit::Event evt;
     fillGambitEvent(py.event, evt);
-    
+
     ana->analyze(evt);
   }
   ana->finalize();
-  
+
   return 0;
 }

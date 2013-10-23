@@ -67,11 +67,11 @@ namespace Gambit {
       //@}
 
 
-      /// @name Cross-section and error in mb
-      /// @todo convert to pb or similar? What will our std xsec unit be (in HEColliderBit or GAMBIT as a whole)?
+      /// @name Cross-section and error in pb
+      /// @todo What will our std xsec unit be (in HEColliderBit or GAMBIT as a whole)?
       //@{
-      int xsec() { return _pythiaInstance->info.sigmaGen(); }
-      int xsecErr() { return _pythiaInstance->mode("Main:timesAllowErrors"); }
+      int xsec() { return _pythiaInstance->info.sigmaGen() * 1e9; }
+      int xsecErr() { return _pythiaInstance->info.sigmaErr() * 1e9; }
       //@}
 
 

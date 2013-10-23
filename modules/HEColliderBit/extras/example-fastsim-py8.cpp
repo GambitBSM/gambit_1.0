@@ -1,5 +1,5 @@
 // Pythia8
-#include "Pythia.h"
+#include "Pythia/Pythia.h"
 
 // ROOT
 #include "TH1.h"
