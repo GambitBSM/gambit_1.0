@@ -9,7 +9,6 @@
 namespace Gambit {
 
 
-
   /// Simple event class, separating into various classes of particle
   class Event {
   private:
