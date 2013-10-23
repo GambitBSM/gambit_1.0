@@ -1,6 +1,6 @@
 #include "MCUtils.h"
 
-#include "Pythia/Pythia.h"
+#include "Pythia8/Pythia.h"
 #include "fastjet/ClusterSequence.hh"
 #include "boost/lexical_cast.hpp"
 #include "omp.h"
