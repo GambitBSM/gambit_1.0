@@ -221,11 +221,12 @@ namespace Gambit {
 
 // Interface to ScannerBit
 
-SCANNER_MODULE (multinest)
+SCANNER_PLUGIN (multinest)
 {
+        VERSION(1.0-beta);
         using namespace Gambit::Scanner;
 
-        int MODULE_MAIN ()
+        int PLUGIN_MAIN ()
         {
                 std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
                 std::vector<double> &upper_limits  = get_input_value<std::vector<double>>(1);
