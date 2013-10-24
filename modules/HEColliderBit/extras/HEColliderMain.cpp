@@ -252,7 +252,7 @@ int main() {
     /// @todo Combine same-process xsecs on the SP group, then set on the analyses before adding SPs?
     thread_cfgs[NTHREAD].xsec = myPythia->xsec();
     for (shared_ptr<Gambit::Analysis> ana : thread_cfgs[NTHREAD].analyses)
-      ana->combineXsec(myPythia->xsec(), myPythia->xsecErr());
+      ana->improve_xsec(myPythia->xsec(), myPythia->xsecErr());
 
     // Print out final run details
     #pragma omp critical
@@ -275,23 +275,19 @@ int main() {
       if (anas.find(aname) == anas.end()) {
         anas[aname] = a;
       } else {
-        anas[aname] += a;
+        anas[aname]->add(*a);
       }
     }
   }
 
   // Finalize each process group
-  /// @todo Parallelize... but OpenMP and vector iteration don't play well
-  // omp_set_num_threads(sp_groups.size());
+  /// @todo Parallelize... but OpenMP and range iteration don't play well
+  // omp_set_num_threads(anas.size());
   // #pragma omp parallel for
-  // for (auto& spg : sp_groups) {
-  //   cout << "Finalizing " << spg.first << endl;
-  //   for (auto& a : spg.second.analyses) a->finalize();
-  // }
   for (auto& a : anas) {
     cout << "Finalizing " << a.first << endl;
     a.second->finalize();
-    cout << "LIKELIHOOD = " << a->likelihood() << endl;
+    cout << a.first << ": log likelihood = " << a.second->loglikelihood() << endl;
   }
 
   delete myDelphes;

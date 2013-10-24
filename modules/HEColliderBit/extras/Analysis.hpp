@@ -24,7 +24,7 @@ namespace Gambit {
     virtual void init() {  }
 
     /// Analyze the event (accessed by reference)
-    virtual void analyze(const Event& e) { analyze(&e); }
+    void analyze(const Event& e) { analyze(&e); }
 
     /// Analyze the event (accessed by pointer)
     /// @todo Call init() automatically on first call to analyze()? -- requires a bit of indirection: not worth it?
@@ -65,8 +65,11 @@ namespace Gambit {
 
     /// An operator to do xsec-weighted combination of analysis runs
     /// @note We don't use operator += because it's awkward with pointer l/rvalues
-    /// @todo Put some real implementation in the base class, e.g. checking ana names
-    virtual void add(const Analysis& a) { } //= 0;
+    /// @todo Put some real implementation in the base class, e.g. checking
+    ///       ana name consistency... or make it pure virtual (once anas are updated).
+    virtual void add(const Analysis* a) { } //= 0;
+    /// Reference-based version of add()
+    void add(const Analysis& a) { add(&a); }
 
     /// Add a cross-section and error
     void add_xsec(double xs, double xserr);

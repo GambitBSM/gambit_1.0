@@ -240,8 +240,8 @@ namespace Gambit {
     void add(const Analysis& a) {
       const Analysis_ATLAS0LEP& aa = dynamic_cast<const Analysis_ATLAS0LEP&>(a);
       add_xsec(a.xsec(), a.xsec_err());
-      #define ADD(NAME) NAME += weight * aa.NAME
       const double weight = (xsec() > 0) ? a.xsec_per_event() / xsec_per_event() : 1;
+      #define ADD(NAME) NAME += weight * aa.NAME
       ADD(_numAT); ADD(_numAM); ADD(_numAL);
       ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM); ADD(_numCL);
       ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
