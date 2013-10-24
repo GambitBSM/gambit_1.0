@@ -34,7 +34,8 @@
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "util_macros.hpp"
-#include "util_classes.hpp"
+#include "util_types.hpp"
+#include "shared_types.hpp"
 
 #ifndef HAVE_MAC
 #define PHANDLE_DLMOPEN dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY)  

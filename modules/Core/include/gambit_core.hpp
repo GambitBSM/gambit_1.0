@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "logs.hpp"
-#include "util_classes.hpp"
+#include "util_types.hpp"
 #include "functors.hpp"
 
 namespace Gambit

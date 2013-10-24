@@ -22,8 +22,6 @@
 
 #include <string>
 
-typedef std::map<std::string, double> parameterMap;
-
 #define MODEL test_parent
   #define PARAMETERISATION I
   START_PARAMETERISATION

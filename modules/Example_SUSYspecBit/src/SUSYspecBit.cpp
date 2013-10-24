@@ -22,7 +22,6 @@
 
 #include "gambit_module_headers.hpp"
 #include "SUSYspecBit_rollcall.hpp"
-#include "MSSM_classes.hpp" // Contains definition of MSSMspecQ type.
 
 namespace Gambit {
 

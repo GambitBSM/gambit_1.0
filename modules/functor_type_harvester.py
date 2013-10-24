@@ -15,10 +15,6 @@
 #  'print' functions in the base printer class
 #  (see Utils/include/printers.hpp)  
 #
-#  I started writing a bash/perl version of
-#  this script, but python is easier to get
-#  it working.
-#
 #*********************************************
 #
 #  Authors (add name and date if you modify):
@@ -27,9 +23,14 @@
 #          (ben.farmer@gmail.com)
 #    \date 2013 Sep 
 #
+#  \author Pat Scott 
+#          (patscott@physics.mcgill.ca)
+#    \date 2013 Oct 
+#
 #*********************************************
 import os
 import re
+import datetime
 
 # Harvest header filename from an include statement
 def addifheader(line,headerset):
@@ -39,13 +40,6 @@ def addifheader(line,headerset):
         split2 = re.split('"|<|>',splitline[1])
         headerset.add(split2[1])
 
-# Harvest typedef statement
-def addiftypedef(line,typedefset):
-    splitline = line.split()
-    if len(splitline)>1 and splitline[0]=="typedef":
-        # Just keep the whole line
-        typedefset.add(line)
-
 # Harvest type from a START_FUNCTION macro call
 def addiffunctormacro(line,typeset):
     splitline = re.split('\(|\)|,',line)
@@ -54,16 +48,21 @@ def addiffunctormacro(line,typeset):
 
 
 # List of headers NOT to search (things we know are not module rollcall headers, but are included in module_rollcall.hpp)
-exclude=set(["module_macros_incore.hpp"])
+exclude_header=set(["module_macros_incore.hpp"])
+# List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
+exclude_type=set(["void"])
 
 # Harvest the list of rollcall headers to be searched
+# FIXME this should be made recursive, in case someone
+# has so many rollcall definitions they put them in
+# multiple files
 headers=set()
 with open("Core/include/module_rollcall.hpp") as f:
     for line in f.readlines():
         addifheader(line,headers)        
 
 # Remove excluded headers from the set
-headers.difference_update(exclude)
+headers.difference_update(exclude_header)
 
 # Determine the paths of the harvested headers    
 fullheaders=[]
@@ -76,28 +75,16 @@ for header in headers:
                 fullheaders+=[os.path.join(root,name)]
     
 # Search through headers and look for macro calls which create 'module_functor's     
-includes=set()
-typedefs=set()
-types=set(["Gambit::ModelParameters"]) #Manually add this one to avoid scanning through modelbit
+types=set(["ModelParameters"]) #Manually add this one to avoid scanning through modelbit
 for header in fullheaders:
     with open(header) as f:
         print "Scanning header {0}".format(header)
         for line in f.readlines():
-            # Check for headers we need to include (for type definitions)
-            addifheader(line,includes)
-            # Check for typedefs we need to reproduce
-            addiftypedef(line,typedefs)
             # Check for calls to functor creation macros, and harvest the types used.
             addiffunctormacro(line,types)
 
-
-print "\nHeaders to be included in 'all_functor_types.hpp':"
-for inc in includes:
-    print '   ',inc
-
-print "\nTypedef statements harvested from headers:"
-for t in typedefs:
-    print '   ',t
+# Remove excluded types from the set
+types.difference_update(exclude_type)
 
 print "\nTypes harvested from headers:"
 for t in types:
@@ -119,25 +106,20 @@ towrite = "\
 ///  headers registered in module_rollcall.hpp    \n\
 ///                                               \n\
 ///  *********************************************\n\
+///                                               \n\
+///  Authors (add name and date if you modify):   \n\
+///                                               \n\
+///  \\author The GAMBIT Collaboration            \n\
+///  \date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\
+///                                               \n\
+///  *********************************************\n\
                                                   \n\
 #ifndef __all_functor_types_hpp__                 \n\
 #define __all_functor_types_hpp__                 \n\
                                                   \n\
-// Automatically generated include statements      \n\
-// (contain definitions of types: harvested from   \n\
-// rollcall headers)                               \n\
-\n"
-for inc in includes:
-    towrite+='#include "{0}" \n'.format(inc)
-towrite+="\n\
-// Automatically generated typedef statements         \n\
-// (cloned without modification from rollcall headers)\n\
-\n"
-for typedef in typedefs:
-    towrite+='{0}'.format(typedef)
-towrite += "\n\
+#include \"types_rollcall.hpp\"                   \n\
+                                                  \n\
 // Automatically generated preprocessor sequence of types \n\
-\n\
 #define PRINTABLE_TYPES "
 for t in types:
     towrite+='({0})'.format(t)

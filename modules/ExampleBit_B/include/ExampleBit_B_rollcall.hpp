@@ -11,6 +11,11 @@
 ///  Add to this if you want to add an observable
 ///  or likelihood to this module.
 ///
+///  Don't put typedefs or other type definitions
+///  in this file; see 
+///  Core/include/types_rollcall.hpp for further
+///  instructions on how to add new types.
+///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -56,8 +61,6 @@
 
 #ifndef __ExampleBit_B_rollcall_hpp__
 #define __ExampleBit_B_rollcall_hpp__
-
-typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp or in local modulename/include/modulename_classes.hpp
 
 #define MODULE ExampleBit_B
 START_MODULE

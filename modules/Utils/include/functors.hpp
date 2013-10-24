@@ -34,13 +34,13 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <util_classes.hpp>
-#include <util_functions.hpp>
-#include <printers.hpp>
 #include <time.h>
-#include <ModelParameters.hpp>
 #include <sstream>
-#include <model_functions.hpp>
+#include "util_types.hpp"
+#include "util_functions.hpp"
+#include "printers.hpp"
+#include "model_types.hpp"
+#include "model_functions.hpp"
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
