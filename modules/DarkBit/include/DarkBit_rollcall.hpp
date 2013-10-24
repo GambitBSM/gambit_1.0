@@ -29,9 +29,6 @@
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
 
-#include <types_DarkBit.hpp>
-
-typedef double(*fptr_dd)(double&);
 
 #define MODULE DarkBit
 START_MODULE
@@ -40,7 +37,7 @@ START_MODULE
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
     #define FUNCTION RD_spectrum_SUSY
-      START_FUNCTION(Gambit::types::RDspectype)
+      START_FUNCTION(RDspectype)
       // DEPENDENCY(dssusy, int) 
       // CW: Is this some placeholder initialization?
       #define BACKEND_REQ DarkSUSY_getmspctm_capability
@@ -66,8 +63,8 @@ START_MODULE
   #define CAPABILITY RD_thresholds_resonances
   START_CAPABILITY 
     #define FUNCTION RD_thresholds_resonances_ordered
-      START_FUNCTION(Gambit::types::RDrestype)
-      DEPENDENCY(RD_spectrum, Gambit::types::RDspectype)
+      START_FUNCTION(RDrestype)
+      DEPENDENCY(RD_spectrum, RDspectype)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -75,7 +72,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
-      DEPENDENCY(RD_spectrum, Gambit::types::RDspectype)
+      DEPENDENCY(RD_spectrum, RDspectype)
       #define BACKEND_REQ DarkSUSY_setrdmgev_capability
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -87,7 +84,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_oh2_general
       START_FUNCTION(double)
-      DEPENDENCY(RD_thresholds_resonances, Gambit::types::RDrestype)
+      DEPENDENCY(RD_thresholds_resonances, RDrestype)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
       #define BACKEND_REQ dsrdset
         START_BACKEND_REQ(void)
@@ -157,7 +154,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_test_out
       START_FUNCTION(double)
-      DEPENDENCY(RD_thresholds_resonances, Gambit::types::RDrestype)
+      DEPENDENCY(RD_thresholds_resonances, RDrestype)
     #undef FUNCTION
   #undef CAPABILITY
 

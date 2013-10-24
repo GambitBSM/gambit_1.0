@@ -1,29 +1,33 @@
-//  *********************************************
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
 ///
-///  Common class definitions for MSSM related
-///  observables, part. the (roughly SLHA format)
-///  low energy spectrum.
+///  Definitions of container classes
+///  for the fakeSoftSUSY backend.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///  
 ///  \author Ben Farmer  
 ///          (benjamin.farmer@monash.edu)
-///  \date 2013 Jul
+///  \date 2013 Jun
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Oct
 ///
 ///  *********************************************
 
-#ifndef __MSSM_classes_hpp__
-#define __MSSM_classes_hpp__
+
+#ifndef __fakeSoftSUSY_types_hpp__
+#define __fakeSoftSUSY_types_hpp__
 
 namespace Gambit
 {
-  /* Moved to common_return_types
-  /// A placeholder "MSSM" low-energy spectrum object. Defined at scale Q.
+
+  /// SLHA format placeholder "MSSM" low-energy spectrum object. 
+  /// Defined at scale Q.
   struct MSSMspecQ
   {
     // Probably this will follow the SLHA format, so we'll have the "blocks"
@@ -42,29 +46,7 @@ namespace Gambit
     struct BLOCK_STOPMIX {} STOPMIX;
     // ...etc...
   };
-  */
-  
-  // Placeholder type for SM parameters. Will be used all over GAMBIT so will
-  // need to think hard about how this works (different energy scales,
-  // renormalisation schemese etc, automatic conversion?)
-  struct SMpars
-  {
-    double alphaem;
-    double alphas;
-    double mZ;
-    double mtop;
-    // ...etc...
-  };
-  
-  // Placeholder for CMSSM parameters object
-  struct CMSSMpars
-  {
-    double m0;
-    double m12;
-    // ...etc...
-  };
-  
-  
+
   // Placeholder type for MSSM soft SUSY breaking parameters. Will be used a 
   // lot by models which simply specify these directly, e.g. pMSSM style.
   struct MSSMsoftmassesQ
@@ -94,5 +76,4 @@ namespace Gambit
 
 }
 
-#endif //ifndef __MSSM_classes_hpp__
-
+#endif // defined __fakeSoftSUSY_types_hpp__

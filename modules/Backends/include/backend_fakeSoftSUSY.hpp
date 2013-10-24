@@ -6,9 +6,6 @@
  *
 */
 
-#include <common_return_types.hpp> //Contains definition of MSSMspecQ type.
-#include <MSSM_classes.hpp>
-
 /* Specify the path to the shared library along with a backend name. */
 
 /* #define LIBPATH      "Backends/lib/softsusy-3.3.8/.libs/libsoft.so" */
