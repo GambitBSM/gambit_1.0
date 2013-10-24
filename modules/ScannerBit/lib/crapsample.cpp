@@ -49,14 +49,14 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-SCANNER_MODULE (crapsample)
+SCANNER_PLUGIN (crapsample)
 {
-        //VERSION(1.0-beta); //should work, buy my compiler is messed up
+        VERSION(1.0-beta);
         
         using namespace Gambit::Scanner;
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        int MODULE_MAIN (int input_int)
+        int PLUGIN_MAIN (int input_int)
         {
                 std::vector<std::string> &keys     = GETKEYS();
                 std::vector<double> &upper_limits  = GETUPPERLIMITS();
@@ -119,13 +119,12 @@ SCANNER_MODULE (crapsample)
         }
 };
 
-SCANNER_MODULE (loopsample)
+SCANNER_PLUGIN (loopsample)
 {
         using namespace Gambit::Scanner;
         
-        int MODULE_MAIN ()
+        int PLUGIN_MAIN ()
         {
-                std::cout << "fuck" << std::endl; getchar();
                 std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
                 std::vector<double> &upper_limits  = get_input_value<std::vector<double>>(1);
                 std::vector<double> &lower_limits  = get_input_value<std::vector<double>>(2);
@@ -156,9 +155,9 @@ SCANNER_MODULE (loopsample)
 
 #include <test-recon.h>
 
-SCANNER_MODULE (classtest)
+SCANNER_PLUGIN (classtest)
 {        
-        int MODULE_MAIN(void)
+        int PLUGIN_MAIN(void)
         {
                 ran_test testing(2.0);
                 load.set(&testing);

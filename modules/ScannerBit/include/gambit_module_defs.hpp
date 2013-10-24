@@ -66,7 +66,7 @@ namespace Gambit
                         std::vector <void (*)(gambitData &)> inits;
                         std::map<std::string, factoryBase *> outputFuncs;
                         
-                        gambitData(std::string name) : name(name) {std::cout << "name = "<< name << std::endl;}
+                        gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
                                 for (std::map<std::string, factoryBase *>::iterator it = outputFuncs.begin(); it != outputFuncs.end(); it++)
