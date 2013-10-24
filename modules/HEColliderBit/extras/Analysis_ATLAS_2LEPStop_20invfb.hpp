@@ -296,7 +296,7 @@ namespace Gambit {
 
       //Common preselection for all signal regions
       bool passJetCut=false;
-      bool passBJetCut=false;
+      //bool passBJetCut=false;
       
       if(nJets>=2){
         if(signalJets[0]->pT() > 100.
@@ -304,7 +304,7 @@ namespace Gambit {
 
         for(int j=0; j<nJets; j++) {
           for(int k=j+1; k<nJets; k++) {
-            if(signalJets[j]->isBJet() && signalJets[k]->isBJet()) passBJetCut=true;
+            //if(signalJets[j]->isBJet() && signalJets[k]->isBJet()) passBJetCut=true;
           }
         }
       }
@@ -400,21 +400,21 @@ namespace Gambit {
       //if(nJets>2)dphi_jetmet3=std::acos(std::cos(signalJets.at(2)->phi()-ptot.phi()));
 
       //Calculate dphi(b,met) for the closest b-jet in phi to MET
-      float dphi_bjetmet=9999.;
-      float minphi =9999.;
+      //float dphi_bjetmet=9999.;
+      /*float minphi =9999.;
       int whichb=0;
       for(int j=0; j<nJets; j++) {
         if(signalJets[j]->isBJet()) {
           if(fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())))<minphi) {
             minphi = fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())));
-            dphi_bjetmet = minphi;
+            //dphi_bjetmet = minphi;
             whichb=j;
           }
         }
-      }
+	}*/
 
-      float mT_bjetmet = 0;
-      if(passBJetCut) mT_bjetmet = sqrt(2*signalJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet)));
+      //float mT_bjetmet = 0;
+      //if(passBJetCut) mT_bjetmet = sqrt(2*signalJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet)));
 
       //bool cut_tau=true;
       //Tau Veto
@@ -423,8 +423,8 @@ namespace Gambit {
       //  cut_tau=false;
       //}
       //Calculate met/sqrt(HT) (use four leading jets only)
-      float HT=0;
-      if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
+      //float HT=0;
+      //if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
       
       //Calculate mT
       P4 lepVec;
@@ -450,7 +450,7 @@ namespace Gambit {
       bool cut_2leptons_mumu=false;
       bool cut_2leptons_base=false;
       bool cut_2leptons=false;
-      bool cut_mTbjetmetGt175=false;
+      //bool cut_mTbjetmetGt175=false;
       //bool cut_ElectronVeto=false;
       //bool cut_MuonVeto=false;
       bool cut_2jets=false;
@@ -482,7 +482,7 @@ namespace Gambit {
       if(signalElectrons.size()==1 && signalMuons.size()==1) cut_2leptons_emu=true;
       if(signalElectrons.size()==0 && signalMuons.size()==2) cut_2leptons_mumu=true;
 
-      if(mT_bjetmet>175.)cut_mTbjetmetGt175=true;
+      //if(mT_bjetmet>175.)cut_mTbjetmetGt175=true;
       //if(electronsForVeto.size()==0)cut_ElectronVeto=true;
       //if(muonsForVeto.size()==0)cut_MuonVeto=true;
       if(passJetCut)cut_2jets=true;
