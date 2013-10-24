@@ -281,7 +281,7 @@ namespace Gambit {
       //Common preselection for all signal regions
       bool passJetCut=false;
       bool passBJetCut=false;
-      bool passTrueBJetCut=false;// For debugging
+      
       if(nJets>=4){
         if(signalJets[0]->pT() > 80.
            && signalJets[1]->pT() > 60.

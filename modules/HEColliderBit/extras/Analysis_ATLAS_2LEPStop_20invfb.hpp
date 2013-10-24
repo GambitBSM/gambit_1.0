@@ -238,7 +238,6 @@ namespace Gambit {
       int nElectrons = signalElectrons.size();
       int nMuons = signalMuons.size();
       int nJets = signalJets.size();
-      int nBjets = bJets.size();
       int nLeptons = signalLeptons.size();
 
       bool isOS=false;
@@ -298,7 +297,7 @@ namespace Gambit {
       //Common preselection for all signal regions
       bool passJetCut=false;
       bool passBJetCut=false;
-      bool passTrueBJetCut=false;// For debugging
+      
       if(nJets>=2){
         if(signalJets[0]->pT() > 100.
            && signalJets[1]->pT() > 50.)passJetCut=true;
@@ -324,7 +323,7 @@ namespace Gambit {
       TLorentzVector jet5;
       TLorentzVector jet6;
       if(nJets>=6) {
-        int j1 = 0 ; int j2 = 0; int j3 = 0; int j4 = 0; int j5 = 0; int j6 = 0;
+        int j1 = 0 ; int j2 = 0; int j3 = 0; int j4 = 0; int j5 = 0; //int j6 = 0;
         for(int k=0; k<nJets; k++) {
           for(int l=0; l<nJets; l++) {
             if(k!=l) {
@@ -370,7 +369,7 @@ namespace Gambit {
           if(p!=j1 && p!=j2 && p!=j3 && p!=j4 && p!=j5) {
             jet6.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
             if(jet6.DeltaR(W2)<mindphi_w2j6) {
-              j6 = p;
+              //j6 = p;
               mindphi_w2j6 = jet6.DeltaR(W2);
               T2 = W2+jet6;
             }
@@ -393,12 +392,12 @@ namespace Gambit {
       //cout << "leptonsForVeto size" << leptonsForVeto.size() << endl;
 
       //Calculate dphi(jet,met) for the three leading jets
-      float dphi_jetmet1=9999;
-      if(nJets>0)dphi_jetmet1=std::acos(std::cos(signalJets.at(0)->phi()-ptot.phi()));
-      float dphi_jetmet2=9999;
-      if(nJets>1)dphi_jetmet2=std::acos(std::cos(signalJets.at(1)->phi()-ptot.phi()));
-      float dphi_jetmet3=9999;
-      if(nJets>2)dphi_jetmet3=std::acos(std::cos(signalJets.at(2)->phi()-ptot.phi()));
+      //float dphi_jetmet1=9999;
+      //if(nJets>0)dphi_jetmet1=std::acos(std::cos(signalJets.at(0)->phi()-ptot.phi()));
+      //float dphi_jetmet2=9999;
+      //if(nJets>1)dphi_jetmet2=std::acos(std::cos(signalJets.at(1)->phi()-ptot.phi()));
+      //float dphi_jetmet3=9999;
+      //if(nJets>2)dphi_jetmet3=std::acos(std::cos(signalJets.at(2)->phi()-ptot.phi()));
 
       //Calculate dphi(b,met) for the closest b-jet in phi to MET
       float dphi_bjetmet=9999.;
@@ -417,17 +416,16 @@ namespace Gambit {
       float mT_bjetmet = 0;
       if(passBJetCut) mT_bjetmet = sqrt(2*signalJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet)));
 
-      bool cut_tau=true;
+      //bool cut_tau=true;
       //Tau Veto
-      for (int j=0; j<nJets; j++) {
-        if(!signalJets[j]->isBJet() && std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
-          cut_tau=false;
-      }
+      //for (int j=0; j<nJets; j++) {
+      //if(!signalJets[j]->isBJet() && std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
+      //  cut_tau=false;
+      //}
       //Calculate met/sqrt(HT) (use four leading jets only)
       float HT=0;
       if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
-      float metOverSqrtHT=met/sqrt(HT);
-
+      
       //Calculate mT
       P4 lepVec;
       if(nElectrons==1)lepVec=signalElectrons[0]->mom();
@@ -437,7 +435,7 @@ namespace Gambit {
       //float mT = sqrt(2.*lepVec.pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
       //This is the ATLAS definition of dphi for this analysis
       //Note that it gives different answers to our dphi function (given above)
-      float mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
+      //float mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
 
       //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
       float meff = met + lepVec.pT();
@@ -445,28 +443,28 @@ namespace Gambit {
         if(jet->pT()>30.)meff += jet->pT();
       }
       //Cutflow flags
-      bool cut_mjjj0=false;
-      bool cut_mjjj1=false;
+      //bool cut_mjjj0=false;
+      //bool cut_mjjj1=false;
       bool cut_2leptons_ee=false;
       bool cut_2leptons_emu=false;
       bool cut_2leptons_mumu=false;
       bool cut_2leptons_base=false;
       bool cut_2leptons=false;
       bool cut_mTbjetmetGt175=false;
-      bool cut_ElectronVeto=false;
-      bool cut_MuonVeto=false;
+      //bool cut_ElectronVeto=false;
+      //bool cut_MuonVeto=false;
       bool cut_2jets=false;
-      bool cut_Btag=false;
-      bool cut_dPhiJet3=false;
-      bool cut_dPhiJet2=false;
-      bool cut_dPhiJet1=false;
-      bool cut_METGt130=false;
-      bool cut_METGt150=false;
-      bool cut_METGt200=false;
-      bool cut_METGt250=false;
-      bool cut_METGt300=false;
-      bool cut_METGt350=false;
-      bool cut_dPhiJets=false;
+      //bool cut_Btag=false;
+      //bool cut_dPhiJet3=false;
+      //bool cut_dPhiJet2=false;
+      //bool cut_dPhiJet1=false;
+      //bool cut_METGt130=false;
+      //bool cut_METGt150=false;
+      //bool cut_METGt200=false;
+      //bool cut_METGt250=false;
+      //bool cut_METGt300=false;
+      //bool cut_METGt350=false;
+      //bool cut_dPhiJets=false;
       bool cut_MT290=false;
       bool cut_MT2100=false;
       bool cut_MT2110=false;
@@ -485,24 +483,24 @@ namespace Gambit {
       if(signalElectrons.size()==0 && signalMuons.size()==2) cut_2leptons_mumu=true;
 
       if(mT_bjetmet>175.)cut_mTbjetmetGt175=true;
-      if(electronsForVeto.size()==0)cut_ElectronVeto=true;
-      if(muonsForVeto.size()==0)cut_MuonVeto=true;
+      //if(electronsForVeto.size()==0)cut_ElectronVeto=true;
+      //if(muonsForVeto.size()==0)cut_MuonVeto=true;
       if(passJetCut)cut_2jets=true;
-      if(passBJetCut)cut_Btag=true;
-      if(dphi_jetmet3>3.14/fabs(5.0))cut_dPhiJet3=true;
-      if(dphi_jetmet2>3.14/fabs(5.0))cut_dPhiJet2=true;
-      if(dphi_jetmet1>3.14/fabs(5.0))cut_dPhiJet1=true;
-      if(cut_dPhiJet1 && cut_dPhiJet2 && cut_dPhiJet3)cut_dPhiJets=true;
-      if(met>130.)cut_METGt130=true;
-      if(met>150.)cut_METGt150=true;
-      if(met>200.)cut_METGt200=true;
-      if(met>250.)cut_METGt250=true;
-      if(met>300.)cut_METGt300=true;
-      if(met>350.)cut_METGt350=true;
-      if(nJets>=6) {
-        if(mjjj0.M()<270 && mjjj0.M()>80) cut_mjjj0=true;
-        if(mjjj1.M()<270 && mjjj1.M()>80) cut_mjjj1=true;
-      }
+      //if(passBJetCut)cut_Btag=true;
+      //if(dphi_jetmet3>3.14/fabs(5.0))cut_dPhiJet3=true;
+      //if(dphi_jetmet2>3.14/fabs(5.0))cut_dPhiJet2=true;
+      //if(dphi_jetmet1>3.14/fabs(5.0))cut_dPhiJet1=true;
+      //if(cut_dPhiJet1 && cut_dPhiJet2 && cut_dPhiJet3)cut_dPhiJets=true;
+      //if(met>130.)cut_METGt130=true;
+      //if(met>150.)cut_METGt150=true;
+      //if(met>200.)cut_METGt200=true;
+      //if(met>250.)cut_METGt250=true;
+      //if(met>300.)cut_METGt300=true;
+      //if(met>350.)cut_METGt350=true;
+      //if(nJets>=6) {
+      //if(mjjj0.M()<270 && mjjj0.M()>80) cut_mjjj0=true;
+      //if(mjjj1.M()<270 && mjjj1.M()>80) cut_mjjj1=true;
+      //}
 
       cutFlowVector_str[0] = "No cuts ";
       cutFlowVector_str[1] = "2 Baseline Leptons ";
