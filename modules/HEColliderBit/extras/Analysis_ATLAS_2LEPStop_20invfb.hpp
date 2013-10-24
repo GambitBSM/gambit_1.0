@@ -27,15 +27,9 @@ namespace Gambit {
 
   using namespace std;
 
-  //A useful MT2 class for this module
-  class MT2_2l {
-
-  public:
-    MT2_2l(){
-      MT2ll=0;
-      MT2bb=0;
-    }
-
+  // A useful MT2 struct for this module
+  struct MT2_2l {
+    MT2_2l() : MT2ll(0), MT2bb(0) { }
     double MT2ll;
     double MT2bb;
   };
@@ -56,28 +50,27 @@ namespace Gambit {
 
   public:
 
-    Analysis_ATLAS_2LEPStop_20invfb() {
-
-      _numSRM90SF =0;  _numSRM100SF= 0; _numSRM110SF= 0; _numSRM120SF= 0; _numSRM90DF= 0; _numSRM100DF= 0; _numSRM110DF= 0; _numSRM120DF;
-
-      for(int i=0;i<NCUTS;i++){
+    Analysis_ATLAS_2LEPStop_20invfb()
+      : _numSRM90SF(0), _numSRM100SF(0), _numSRM110SF(0), _numSRM120SF(0),
+        _numSRM90DF(0), _numSRM100DF(0), _numSRM110DF(0), _numSRM120DF(0)
+    {
+      for (int i=0; i<NCUTS; i++) {
         cutFlowVector.push_back(0);
         cutFlowVector_str.push_back("");
         cutFlowVector_alt.push_back(0);
       }
-
     }
 
-    MT2_2l MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, vector<Particle *>leptons, P4 metVec){
 
+    MT2_2l MT2helper(vector<Jet*> jets, vector<Particle*> electrons, vector<Particle*> muons, vector<Particle*> leptons, P4 metVec) {
       MT2_2l results;
 
-      if(muons.size()+electrons.size()<2) return results;
+      if (muons.size()+electrons.size()<2) return results;
 
       //DELPHES does not have a continuous b weight
       //Thus must approximate using the two true b jets
-      Jet * trueBjet1=0; //need to assign this
-      Jet * trueBjet2=0; //nee to assign this
+      Jet* trueBjet1=0; //need to assign this
+      Jet* trueBjet2=0; //nee to assign this
 
       int nTrueBJets=0;
       for(Jet * tmpJet: jets){
@@ -247,15 +240,11 @@ namespace Gambit {
       bool isdphi=false;
       bool isdphib=false;
 
-      MT2_2l mt2s;
-
-      if(nLeptons==2) mt2s = MT2helper(signalJets,signalElectrons,signalMuons,signalLeptons,ptot);
-
-      double mt2ll = 0; double mt2bb = 0;
-
-      if(nLeptons==2) {
+      double mt2ll(0);//, mt2bb(0);
+      if (nLeptons == 2) {
+        MT2_2l mt2s = MT2helper(signalJets, signalElectrons, signalMuons, signalLeptons, ptot);
         mt2ll = mt2s.MT2ll;
-        mt2bb = mt2s.MT2bb;
+        //mt2bb = mt2s.MT2bb;
       }
 
       TLorentzVector lep1; TLorentzVector lep2;
@@ -263,7 +252,7 @@ namespace Gambit {
       TLorentzVector metvec;
       metvec.SetPtEtaPhiE(ptot.pT(),ptot.eta(),ptot.phi(),ptot.E());
 
-      if(nLeptons==2) {
+      if (nLeptons==2) {
 
         if(((signalLeptons.at(0)->pid()<0 && signalLeptons.at(1)->pid()>0) || (signalLeptons.at(0)->pid()>0 && signalLeptons.at(1)->pid()<0))) isOS=true;
 
@@ -297,7 +286,7 @@ namespace Gambit {
       //Common preselection for all signal regions
       bool passJetCut=false;
       //bool passBJetCut=false;
-      
+
       if(nJets>=2){
         if(signalJets[0]->pT() > 100.
            && signalJets[1]->pT() > 50.)passJetCut=true;
@@ -425,7 +414,7 @@ namespace Gambit {
       //Calculate met/sqrt(HT) (use four leading jets only)
       //float HT=0;
       //if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
-      
+
       //Calculate mT
       P4 lepVec;
       if(nElectrons==1)lepVec=signalElectrons[0]->mom();
