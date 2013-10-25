@@ -281,7 +281,7 @@ namespace Gambit {
       //Common preselection for all signal regions
       bool passJetCut=false;
       bool passBJetCut=false;
-      bool passTrueBJetCut=false;// For debugging
+      
       if(nJets>=4){
         if(signalJets[0]->pT() > 80.
            && signalJets[1]->pT() > 60.
@@ -345,7 +345,7 @@ namespace Gambit {
       bool cut_mTGt140=false;
       bool cut_mTGt180=false;
       bool cut_mTGt200=false;
-      bool cut_PassHadTop=false;
+      //bool cut_PassHadTop=false;
       bool cut_meffGt550=false;
       bool cut_meffGt700=false;
 
@@ -432,7 +432,7 @@ namespace Gambit {
       bool passHadTop=false;
       if(mHadTop>130. && mHadTop<205.)passHadTop=true;
 
-      if(passHadTop)cut_PassHadTop=true;
+      //if(passHadTop)cut_PassHadTop=true;
 
       //Do MT2 calculations (note: do these last, since they are slowest)
 

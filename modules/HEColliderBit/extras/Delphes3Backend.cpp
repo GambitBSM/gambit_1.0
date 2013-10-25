@@ -93,7 +93,7 @@ namespace Gambit {
 
     void Delphes3Backend::convertInput(Pythia8::Event &event)
     {
-    
+
       for (int ip = 0; ip < event.size(); ++ip) {
         const Pythia8::Particle& p = event[ip];
         candidate = factory->NewCandidate();
@@ -105,9 +105,9 @@ namespace Gambit {
 
         //candidate->Status = p.status();
 	//MJW changed this because it may be confusing DELPHES
-	
+
 	candidate->Status=p.status();
-	
+
         pdgParticle = pdg->GetParticle(p.id());
 
         candidate->Charge = pdgParticle ? Int_t(pdgParticle->Charge()/3.0) : -999;
@@ -119,17 +119,17 @@ namespace Gambit {
         /// @todo Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
         allParticleOutputArray->Add(candidate);
         if (!pdgParticle) continue;
-       
+
 	if (p.isFinal()) {
           stableParticleOutputArray->Add(candidate);
-        } 
+        }
 	if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) {
           partonOutputArray->Add(candidate);
 
         }
       }
     }
-    
+
 
     // ReconstructedEvent is a boring class in the HEColliderBit namespace
     // See the DelphesGambit.hpp file for details
@@ -142,7 +142,7 @@ namespace Gambit {
       const TObjArray *arrayMissingET = modularDelphes->ImportArray("MissingET/momentum");
       if ((candidate = static_cast<Candidate*>(arrayMissingET->At(0)))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        event.setMissingMom(P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
+        event.set_missingmom(P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -152,10 +152,10 @@ namespace Gambit {
       iteratorPhotons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), 
+        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.),
                                     PID::PHOTON);
-        recoParticle->setPrompt(true);
-        event.addParticle(recoParticle);
+        recoParticle->set_prompt(true);
+        event.add_particle(recoParticle);
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -165,10 +165,10 @@ namespace Gambit {
       iteratorElectrons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902), 
+        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
                                     -sign(candidate->Charge) * PID::ELECTRON);
-        recoParticle->setPrompt(true);
-        event.addParticle(recoParticle);
+        recoParticle->set_prompt(true);
+        event.add_particle(recoParticle);
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -178,10 +178,10 @@ namespace Gambit {
       iteratorMuons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389), 
+        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
                                     -sign(candidate->Charge) * PID::MUON);
-        recoParticle->setPrompt(true);
-        event.addParticle(recoParticle);
+        recoParticle->set_prompt(true);
+        event.add_particle(recoParticle);
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -192,14 +192,14 @@ namespace Gambit {
       while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
         if (candidate->TauTag) {
-          recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001), 
+          recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
                                       -sign(candidate->Charge) * PID::TAU);
-          recoParticle->setPrompt(true);
-          event.addParticle(recoParticle);
+          recoParticle->set_prompt(true);
+          event.add_particle(recoParticle);
           //continue;
         }
         else {
-          recoJet = new Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001), 
+          recoJet = new Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
                             candidate->PID, candidate->BTag);
           event.addJet(recoJet);
         }

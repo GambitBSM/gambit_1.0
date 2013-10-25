@@ -26,12 +26,12 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost_fallbacks.hpp>
 
-#include "ModelParameters.hpp"
-#include "model_functions.hpp"
 #include "util_macros.hpp"
-#include "util_classes.hpp"
+#include "util_types.hpp"
+#include "types_rollcall.hpp"
 #include "module_macros_incore.hpp"
 #include "create_claw.hpp"
+#include "model_functions.hpp"
 
 
 // MACRO DEFINITIONS. 

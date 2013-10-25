@@ -3,6 +3,9 @@ GAMBIT HE COLLIDER TODO LIST
 
 * Py8 shower alpha_s -> 0.118
 
+* Reorganise the Makefile to build more intermediate .o files to speed up compilation
+
+* Do the same-process xsec aggregation on SubprocessGroup rather than in Analysis
 
 * Parameterising strong subprocess cross-sections
 * Huge K-factor tails from Prospino?
@@ -21,8 +24,11 @@ GAMBIT HE COLLIDER TODO LIST
   analyses, then we can 'neglect' the subprocess. Thus, we don't bother to simulate it,
   simply set the likelihood for those analyses = 1.
 * Collate analyses for different subprocesses, with different k-factor weightings
-* Convert HEColliderMain to be able to run with/without Delphes/FastSim
 
+* Convert HEColliderMain to be able to run with/without Delphes/FastSim
+   Put safety checking into the direct P8->Event code, re. P4 mass safety. No
+   -ve masses, please! Hopefully not an issue, but maybe Py8 has a way to get
+   the 4-vec mass other than via E2-p2.
 
 * Write more analysis codes!
 * Verification of ATLAS limits
@@ -32,7 +38,3 @@ GAMBIT HE COLLIDER TODO LIST
 * Cleanup collider code... Once class loading is ready, all our code should really be hooked up to Gambit.
 - in the meantime, make a Gambit module skeleton ready for our code to hook into
 - see if hooking up with Gambit is possible without class loading
-
-
-* Py8 feedback
-- Speeding up SLHA model initialization: perhaps we could multithread to speed this up?

@@ -46,14 +46,15 @@
 #define __module_macros_incore_hpp__
 
 #include <map>
+#include <boost/preprocessor/logical/bitand.hpp>
+#include <boost/preprocessor/logical/compl.hpp>
 
 #include "graphs.hpp"
 #include "dictionary.hpp"
 #include "functors.hpp"
 #include "create_core.hpp"
+#include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
-#include <boost/preprocessor/logical/bitand.hpp>
-#include <boost/preprocessor/logical/compl.hpp>
 
 /// \name Tag-registration macros
 /// @{

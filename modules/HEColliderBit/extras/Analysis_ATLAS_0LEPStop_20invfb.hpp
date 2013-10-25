@@ -140,14 +140,13 @@ namespace Gambit {
       int nElectrons = signalElectrons.size();
       int nMuons = signalMuons.size();
       int nJets = signalJets.size();
-      int nBjets = bJets.size();
-
+      
       //if(leptonsForVeto.size()>0 && leptonsForVeto[0]->pT()>25.)cout << "Leptons size " << leptonsForVeto.size() << " muons " << nMuons << " electrons " << nElectrons << endl;
 
       //Common preselection for all signal regions
       bool passJetCut=false;
       bool passBJetCut=false;
-      bool passTrueBJetCut=false;// For debugging
+     
       if(nJets>=6){
 	if(signalJets[0]->pT() > 80.
 	   && signalJets[1]->pT() > 80.
@@ -177,7 +176,7 @@ namespace Gambit {
       TLorentzVector jet5;
       TLorentzVector jet6;
       if(nJets>=6) {
-	int j1 = 0 ; int j2 = 0; int j3 = 0; int j4 = 0; int j5 = 0; int j6 = 0;
+	int j1 = 0 ; int j2 = 0; int j3 = 0; int j4 = 0; int j5 = 0; //int j6 = 0;
 	for(int k=0; k<nJets; k++) {
 	  for(int l=0; l<nJets; l++) {
 	    if(k!=l) {
@@ -223,7 +222,7 @@ namespace Gambit {
 	  if(p!=j1 && p!=j2 && p!=j3 && p!=j4 && p!=j5) {
 	    jet6.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
 	    if(jet6.DeltaR(W2)<mindphi_w2j6) {
-	      j6 = p;
+	      //j6 = p;
 	      mindphi_w2j6 = jet6.DeltaR(W2);
 	      T2 = W2+jet6;
 	    }
@@ -277,10 +276,9 @@ namespace Gambit {
 	  cut_tau=false;
       }
       //Calculate met/sqrt(HT) (use four leading jets only)
-      float HT=0;
-      if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
-      float metOverSqrtHT=met/sqrt(HT);
-
+      //float HT=0;
+      //if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
+     
       //Calculate mT
       P4 lepVec;
       if(nElectrons==1)lepVec=signalElectrons[0]->mom();
@@ -290,7 +288,7 @@ namespace Gambit {
       //float mT = sqrt(2.*lepVec.pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
       //This is the ATLAS definition of dphi for this analysis
       //Note that it gives different answers to our dphi function (given above)
-      float mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
+      //float mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
 
       //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
       float meff = met + lepVec.pT();

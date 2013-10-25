@@ -17,7 +17,31 @@
 #ifndef SCANNER_MODULE_MACROS_HPP
 #define SCANNER_MODULE_MACROS_HPP
 
-#define VERSION(...) Gambit_Module_Namespace::moduleData.version = #__VA_ARGS__ ;
+#define VERSION(...)                                                                                                    \
+namespace Gambit_Module_Namespace                                                                                       \
+{                                                                                                                       \
+        namespace VersionTags                                                                                           \
+        {                                                                                                               \
+                struct version{};                                                                                       \
+        };                                                                                                              \
+                                                                                                                        \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <VersionTags::version>                                                                        \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(gambitData &moduleData)                                                               \
+                        {                                                                                               \
+                                moduleData.version = #__VA_ARGS__;                                                      \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <VersionTags::version> reg_init <VersionTags::version>::reg(moduleData);                                  \
+        };                                                                                                              \
+};   
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
@@ -85,7 +109,7 @@ namespace Gambit_Module_Namespace                                               
 };                                                                                                                      \
 
 /*Declared the "main" for the module.  This is function that will be ran by module interface*/
-#define MODULE_MAIN(...)                                                                                                \
+#define PLUGIN_MAIN(...)                                                                                                \
  __scanner_module_ret_val__;                                                                                            \
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__);                                             \
 namespace Gambit_Module_Namespace                                                                                       \
@@ -121,7 +145,7 @@ namespace Gambit_Module_Namespace                                               
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__)                                              \
                                                                                                                                 
 /*Defines a Gambit module*/
-#define SCANNER_MODULE(mod_name)                                                                                         \
+#define SCANNER_PLUGIN(mod_name)                                                                                         \
 namespace __gambit_module_ ## mod_name ##  _namespace__                                                                 \
 {                                                                                                                       \
         namespace Gambit_Module_Namespace                                                                               \

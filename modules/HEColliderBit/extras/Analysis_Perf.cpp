@@ -1,7 +1,7 @@
-#include "Analysis_Perf.hpp"
-
 // Written by A Saavedra 19-06-2013 to test the FastSim module
 // Last modified 20/06/2013
+
+#include "Analysis_Perf.hpp"
 
 #include <vector>
 #include <algorithm>

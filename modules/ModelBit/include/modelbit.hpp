@@ -38,7 +38,7 @@
 
 #include "graphs.hpp"
 #include "gambit_core.hpp"
-#include "util_classes.hpp"
+#include "util_types.hpp"
 
 namespace Gambit
 {

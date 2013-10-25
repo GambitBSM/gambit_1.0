@@ -27,7 +27,7 @@
 #include <vector>
 #include <string>
 
-#include "util_classes.hpp"
+#include "util_types.hpp"
 
 namespace Gambit
 {

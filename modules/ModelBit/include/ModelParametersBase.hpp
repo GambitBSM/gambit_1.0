@@ -1,10 +1,6 @@
 #ifndef gambit_ModelParametersBase_hpp
 #define gambit_ModelParametersBase_hpp 1
 
-#include <vector>
-#include "common_return_types.hpp"
-#include "logs.hpp"
-
 namespace Gambit {
 
   /*! \brief virtual base class for model parameters.
@@ -16,7 +12,7 @@ namespace Gambit {
   */
   class ModelParametersBase {
   public:
-    u_longlong getVersion() const {
+    unsigned long long getVersion() const {
       return _paramversion ;
     }
     //ModelParametersBase():_paramversion(1) {GAMBIT_MSG_DEBUG("hi.");}
@@ -33,7 +29,7 @@ namespace Gambit {
     virtual ~ModelParametersBase(){}  
     void updateVersion(){ _paramversion++;}
   private:
-    u_longlong _paramversion;
+    unsigned long long _paramversion;
   };
 }
 

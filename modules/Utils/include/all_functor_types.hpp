@@ -11,29 +11,20 @@
 ///  headers registered in module_rollcall.hpp    
 ///                                               
 ///  *********************************************
+///                                               
+///  Authors (add name and date if you modify):   
+///                                               
+///  \author The GAMBIT Collaboration            
+///  \date 11:28PM on October 23, 2013
+///                                               
+///  *********************************************
                                                   
 #ifndef __all_functor_types_hpp__                 
 #define __all_functor_types_hpp__                 
                                                   
-// Automatically generated include statements      
-// (contain definitions of types: harvested from   
-// rollcall headers)                               
-
-#include "MSSM_classes.hpp" 
-#include "types_DarkBit.hpp" 
-#include "ModelParameters.hpp" 
-#include "common_return_types.hpp" 
-
-// Automatically generated typedef statements         
-// (cloned without modification from rollcall headers)
-
-typedef std::map<std::string,double> parameters_map; //Cannot have commas in macro argument!
-typedef double(*fptr)(int&);                // A typedef used later in this file; could instead be placed in Utils/include/util_classes.hpp
-typedef double(*fptr_dd)(double&);
-typedef double(*fptr)(int&);                // A typedef used later in this file; should normally be placed in Utils/include/util_classes.hpp or in local modulename/include/modulename_classes.hpp
-
+#include "types_rollcall.hpp"                   
+                                                  
 // Automatically generated preprocessor sequence of types 
-
-#define PRINTABLE_TYPES (fptr)(parameters_map)(SMpars)(Gambit::types::RDspectype)(std::string)(int)(double)(MSSMsoftmassesQ)(CMSSMpars)(MSSMspecQ)(fptr_dd)(Gambit::ModelParameters)(Gambit::types::RDrestype)
+#define PRINTABLE_TYPES (fptr)(SMpars)(std::string)(fptr_dd)(RDspectype)(MSSMsoftmassesQ)(int)(CMSSMpars)(MSSMspecQ)(ModelParameters)(double)(RDrestype)
 
 #endif // defined __all_functor_types_hpp__

@@ -22,7 +22,7 @@
 //
 //  Pat Scott
 //  2013 Oct
-//  Wow, this file is horrific -- we might want to think about just rewriting it sometime...
+//  Wow, this file is horrific -- we might want to think about rewriting it sometime...
 //
 //  *********************************************
 
@@ -38,6 +38,9 @@
 #include "logs.hpp"
 
 namespace Gambit {
+
+  // Model parameter map type; used by all models
+  typedef std::map<std::string, double> parameterMap;
 
   class ModelParameters;
   typedef shared_ptr<ModelParameters> ModelParametersPtr;

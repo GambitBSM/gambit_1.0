@@ -28,8 +28,8 @@
 #include <algorithm>
 
 #include "gambit_module_headers.hpp"
+#include "DarkBit_types.hpp"
 #include "DarkBit_rollcall.hpp"
-#include "types_DarkBit.hpp"
 
 
 namespace Gambit {
@@ -38,9 +38,9 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-    void RD_spectrum_SUSY(Gambit::types::RDspectype &result)
+    void RD_spectrum_SUSY(RDspectype &result)
     {
-      Gambit::types::RDspectype myres;
+      RDspectype myres;
       int copr[0];           // flag for which coannihilation processes to include
       double mcofr;          // maximal coannihilating particle mass
       int colist[26],lcolist; //potential coannihilating partilces
@@ -157,11 +157,11 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-    void RD_thresholds_resonances_ordered(Gambit::types::RDrestype &result)
+    void RD_thresholds_resonances_ordered(RDrestype &result)
     {
       using namespace SafePointers::RD_thresholds_resonances_ordered;
 //read out location and number of resonances and thresholds from RDspectrum
-      Gambit::types::RDspectype specres = *Dep::RD_spectrum;
+      RDspectype specres = *Dep::RD_spectrum;
       result.n_res=specres.n_res;
       result.n_thr=specres.n_thr;
       for (int i=0; i<result.n_res; i++) {
@@ -211,7 +211,7 @@ namespace Gambit {
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
 //read out location and number of resonances and thresholds from RDspectrum
-      Gambit::types::RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered::RD_spectrum$
+      RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered::RD_spectrum$
       double mwimp=specres.E_thr[0]/2;
 
 // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
@@ -271,7 +271,7 @@ namespace Gambit {
 
 //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       using namespace SafePointers::RD_oh2_general;
-      Gambit::types::RDrestype myres = *Dep::RD_thresholds_resonances;
+      RDrestype myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.E_thr[0]/2;
 
       for (int i=0; i<myres.n_res; i++) {
@@ -378,7 +378,7 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_test_out(double &result)
     {
-//      Gambit::types::RDspectype specres = GET_DEP( RD_test_out::RD_spectrum);
+//      RDspectype specres = GET_DEP( RD_test_out::RD_spectrum);
 
 //      std::cout << "mchi =" << specres.mass_co[0] << std::endl;
 //      std::cout << "dof chi =" << specres.dof_co[0] << std::endl;
