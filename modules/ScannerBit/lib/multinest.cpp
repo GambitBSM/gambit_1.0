@@ -25,6 +25,7 @@
 #include <map>
 #include <sstream>
 #include <gambit_module.hpp>
+#include "priors.hpp"
 #include <typeinfo>
 #include <cxxabi.h>
 #include "multinest.h"
@@ -34,45 +35,6 @@
 
 namespace Gambit {
    
-   namespace Priors {
-
-      // Virtual base class for priors
-      class BasePrior
-      {
-         public:
-            virtual std::vector<double> transform(std::vector<double>) = 0;
-      };
-
-      // Temporary proxy for prior functions
-      // My proposal is to have a collection of classes like this floating around in Utils, or ModelBit or some such.
-      class FlatPrior: public BasePrior
-      {
-         public:
-      
-            // Constructor
-            FlatPrior(std::vector<std::pair<double,double>> ranges) : my_ranges(ranges) { }
-      
-            // Transformation from unit hypercube to my_ranges
-            std::vector<double> transform(std::vector<double> unitpars)
-            {
-               double lower;
-               double upper;
-               std::vector<double> transformedpars(my_ranges.size());
-               for (int i = 0; i < my_ranges.size(); i++)
-               {
-                  lower = my_ranges[i].first;
-                  upper = my_ranges[i].second;
-                  transformedpars[i] = lower + (upper - lower)*unitpars[i];
-               }
-               return transformedpars;
-            }
-            
-         private:
-            // Ranges for parameters
-            std::vector<std::pair<double,double>> my_ranges;
-      };
-   } // end namespace Priors
-
    namespace MultiNest {
 
       // Class to connect multinest log-likelihood function and ScannerBit likelihood function
@@ -270,18 +232,49 @@ SCANNER_MODULE (multinest)
         							// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
         
-
                 // Create object to transform from unit hypercube to physical parameters
+                //for (int i = 0; i < ndims; i++)
+                //{
+                //   ranges.push_back(std::make_pair(lower_limits[i],upper_limits[i]));
+                //}
+                //::Gambit::Priors::FlatPrior flatprior(ranges);
+
+                // Demo construction of composite prior
+                // use Log prior for first two parameters, and Flat prior for the rest
+                typedef std::vector<std::pair<::Gambit::Priors::BasePrior*,std::vector<int>>> priorlist_type;
+                typedef std::vector<std::pair<::Gambit::Priors::BasePrior*,std::vector<int>>>::iterator priorlist_type_it;
+                priorlist_type priorlist;
                 for (int i = 0; i < ndims; i++)
                 {
-                   ranges.push_back(std::make_pair(lower_limits[i],upper_limits[i]));
+                   if (i<2)
+                   {
+                      // Add a log prior to the priors list
+                      priorlist.push_back(
+                         std::make_pair(
+                           new ::Gambit::Priors::LogPrior(lower_limits[i],upper_limits[i]),
+                           std::vector<int> indices(1,i)
+                           )
+                         )
+                   }
+                   else
+                   {
+                       // Add a flat prior to the priors list
+                       priorlist.push_back(
+                         std::make_pair(
+                           new ::Gambit::Priors::FlatPrior(lower_limits[i],upper_limits[i]),
+                           std::vector<int> indices(1,i)
+                           )
+                         )  
+                   }
                 }
-                ::Gambit::Priors::FlatPrior flatprior(ranges);
+                // The downside of this method is that we have to delete the individual prior objects ourselves later on.
+                ::Gambit::Priors::CompositePrior prior(priorlist);
+
 
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
-                // NOTE TO SELF: Can't full function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
-                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, flatprior, ndims);
+                // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
+                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims);
        
                 // Stick a pointer to the wrapper object into "context" so it can be retrieved by the callback functions
                 context = &loglwrapper;
@@ -292,6 +285,12 @@ SCANNER_MODULE (multinest)
                 std::cout << "Multinest finished!" << std::endl;
                 // Do some cleanup or something.
 
+                // Delete prior objects that we allocated with 'new'
+                for (priorlist_type_it it=priorlist.begin(); it!=priorlist.end(); it++)
+                {
+                  delete (it->first);
+                }
+     
                 return 0;
 
         }  //end module_main
