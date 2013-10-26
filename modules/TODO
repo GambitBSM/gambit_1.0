@@ -14,6 +14,7 @@ Ongoing:
 * General review of legacy code -> cull obsolete stuff
 * Convert comments to Doxygen
 * Create mini-core for module stand-alone releases
+* Resolve residual issues with passing strings to fortran backends
 * Implement standalone compilation of physics modules
 * Implement scan-level and point-level initialisation functions, in both backends and modules
 * Add chained 'depends on parameter' to functor class (PS: Although I wrote it, I don't remember what this means - can anyone enlighten me??)
