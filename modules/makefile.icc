@@ -294,7 +294,7 @@ gambit_example_minimal: $(FUNCTOR_TYPES)  $(COREDIR)/build/gambit_example_minima
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(ROLLCALL_HEADERS)
-	python functor_type_harvester.py
+	python $(COREDIR)/scripts/functor_type_harvester.py
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
@@ -317,7 +317,7 @@ beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UT
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logs.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
 
-$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(ALLINC) $(ALLSRC) 
+$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO $(ALLINC) $(ALLSRC) 
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
 	@ln -s $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
 	@echo "Documentation found in $@"
