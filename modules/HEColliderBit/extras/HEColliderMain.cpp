@@ -148,10 +148,10 @@ int main() {
 
   // Gaugino processes
   // ~ sp_groups["X~"] = SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
-  // sp_groups["X~"] = SubprocessGroup(0.02, //< xsec estimate
-  //                   {{1000021, 1000001, 1000002, 1000003, 1000004,
-  //                              2000001, 2000002, 2000003, 2000004}},
-  //                   {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
+  sp_groups["X~"] = SubprocessGroup(0.02, //< xsec estimate
+                    {{1000021, 1000001, 1000002, 1000003, 1000004,
+                               2000001, 2000002, 2000003, 2000004}},
+                    {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
 
   // Stop processes
   //sp_groups["t~"] = SubprocessGroup(1, {{1000006}},{{ 1000006}});
@@ -206,30 +206,9 @@ int main() {
     // Py8 backend process configuration
     const int NTHREAD = omp_get_thread_num();
     myPythia = new Pythia8Backend(NTHREAD);
-    // Basic config
-    myPythia->set("Beams:eCM", 8000);
-    myPythia->set("Print:quiet", true);
-    myPythia->set("SLHA:verbose", 0);
-    // myPythia->set("Main:numberOfEvents", 1000);
-    // myPythia->set("Main:timesAllowErrors", 1000);
-    // myPythia->set("Init:showProcesses", false);
-    // myPythia->set("Init:showMultipartonInteractions", false);
-    // myPythia->set("Init:showChangedSettings", false);
-    // myPythia->set("Init:showChangedParticleData", false);
-    // myPythia->set("Next:numberShowEvent", 0);
-    // myPythia->set("Next:numberShowInfo", 0);
-    // myPythia->set("Next:numberShowProcess", 0);
-    myPythia->set("Random:setSeed", true);
-    myPythia->set("Random:seed", 12345 + 17 * omp_get_thread_num());
-    // SUSY config
     myPythia->set("SLHA:file", slhaFileName);
     myPythia->set("SUSY:idVecA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVecB", thread_cfgs[NTHREAD].particlesInProcess2);
-    // Level of simulation detail
-    myPythia->set("PartonLevel:MPI", false);
-    // myPythia->set("PartonLevel:ISR", false);
-    // myPythia->set("PartonLevel:FSR", false);
-    // myPythia->set("HadronLevel:all", false);
 
     // Configure the persistency system
     #ifdef ARCHIVE

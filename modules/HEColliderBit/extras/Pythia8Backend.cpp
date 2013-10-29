@@ -33,13 +33,15 @@ namespace Gambit {
       set("Beams:eCM", 8000);
       set("Main:numberOfEvents", 1000);
       set("Main:timesAllowErrors", 1000);
-      set("Init:showProcesses", true);
-      set("Init:showMultipartonInteractions", false);
-      set("Init:showChangedSettings", false);
-      set("Init:showChangedParticleData", false);
-      set("Next:numberShowEvent", 10);
-      set("Next:numberShowInfo", 0);
-      set("Next:numberShowProcess", 0);
+      set("Print:quiet", true);
+      set("SLHA:verbose", 0);
+      // set("Init:showProcesses", true);
+      // set("Init:showMultipartonInteractions", false);
+      // set("Init:showChangedSettings", false);
+      // set("Init:showChangedParticleData", false);
+      // set("Next:numberShowEvent", 10);
+      // set("Next:numberShowInfo", 0);
+      // set("Next:numberShowProcess", 0);
 
       // Default to SUSY with precise subprocess control
       // set("SUSY:all", true);
@@ -47,8 +49,9 @@ namespace Gambit {
 
       // Modelling elements
       set("PartonLevel:MPI", false);
-      set("PartonLevel:FSR", false); //true);
-      set("HadronLevel:all", false); //true);
+      // set("PartonLevel:ISR", false);
+      // set("PartonLevel:FSR", false);
+      // set("HadronLevel:all", false);
 
       // Random seed setup
       set("Random:setSeed", true);
