@@ -15,7 +15,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2012 Nov 
-///  \date 2013 Jan, Feb
+///  \date 2013 Jan, Feb, Oct
 ///
 ///  \author Christoph Weniger
 ///          (christoph.weniger@gmail.com)
@@ -45,6 +45,8 @@ namespace Gambit
     void exampleCharge    (int    &result) { result = 1; }
     void identity         (str    &result) { result = "rabbiton"; }
     void nevents          (int    &result) { result = 2; }
+    void lnL_ExampleBitB  (double &result) { result = 0; }   // Some dummy double likelihood function for the scanner
+
     void xsection         (double &result) 
     { 
       using namespace SafePointers::xsection;
@@ -56,6 +58,7 @@ namespace Gambit
       cout << "  A0: "  << *Param["A0"] << endl;
       result = 5.e10; 
     }
+
     void nevents_postcuts (int    &result)          
     {
       using namespace SafePointers::nevents_postcuts;
@@ -95,23 +98,10 @@ namespace Gambit
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
-      //GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
-
+      GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
     }
 
-    // Some dummy likelihood function that returns a double for the scanner
-    void lnL_ExampleBitB(double &result) { result = 0; }
   }
 
 }
-
-      //Master plan for making parameter values available (define ModelA as the model being scanned):
-      //1.  Each module function gets assigned implicit conditional dependencies by the VALID_MODEL() macro, on modelParameters_{X,Y,...}, where X, Y and ... are the models declared as VALID_MODELs.  (Pat)
-      //2.  The dependency resolver uses the model congruency operation to poll all candidate functions for compatibility with modelA, by testing isCongruent(modelA, X), isCongruent(modelA, Y), etc.  (Ben to write congruency function, Christoph to use it in dependency resolver.)
-      //3.  The dependency resolver activates the relevant dependencies upon the modelParameters_{X,Y,...} capabilities according to what model is being scanned.  This means that every candidate function that has as a VALID_MODEL either ModelA or one of its ancestor, will have exactly one dependency on modelParameters_something activated, corresponding to the specific ancestor of ModelA that the function has declared as VALID.  (Christoph)
-      //4.  ModelParameters_modelA dependencies are automatically filled by a functor created for this pupose from the outset.  This is the single-functor equivalnet of of the alpha nodes. (Christoph I guess?)
-      //5.  The dependency resolver fills other modelParameters_ancestors capabilities using interpret_as_parent functions of the models down the hierarchy from the one required, until modelA is reached. (Ben to write to write the model functions, Christoph to use them.)
-      //6.  Macros automatically create additional helper functors (alpha nodes per Christoph's terminology) and pointers to the actual parameter values in the dependent modelParameters functors at init.  The pointers get placed in Gambit::Module::function_name::parameter_name and are then available for use from within module functions.  The pointers are not bare pointers, but instances of the new GAMBIT-issue safe pointer, which foils attempts to use it when it is NULL or to use it to write to the address it points to.  (Pat)
-      //7.  Macros also also automatically create safe pointers to dependency values (Pat; this is implemented already).
-
 
