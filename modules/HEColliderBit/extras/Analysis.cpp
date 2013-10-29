@@ -14,7 +14,7 @@ namespace Gambit {
 
 
   Analysis* mkAnalysis(const std::string& name) {
-    // TODO: stringify and change PERF -> Perf in user code
+    // TODO: stringify
     #define IF_X_RTN_CREATEX(A) if (name == "ATLAS_0LEP") return create_Analysis_ ## A();
 
     if (name == "ATLAS_0LEP") {
@@ -27,7 +27,7 @@ namespace Gambit {
       return create_Analysis_ATLAS_2bStop_20invfb();
     } else if (name == "ATLAS_2LEPStop_20invfb") {
       return create_Analysis_ATLAS_2LEPStop_20invfb();
-    } else if (name == "PERF") {
+    } else if (name == "Perf") {
       return create_Analysis_Perf();
     } else {
       throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
