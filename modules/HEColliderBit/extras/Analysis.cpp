@@ -1,5 +1,5 @@
 #include "Analysis.hpp"
-#include "Analysis_ATLAS0LEP.hpp"
+// #include "Analysis_ATLAS_0LEP_XXinvfb.hpp"
 #include "Analysis_ATLAS_0LEPStop_20invfb.hpp"
 #include "Analysis_ATLAS_1LEPStop_20invfb.hpp"
 #include "Analysis_ATLAS_2bStop_20invfb.hpp"
@@ -8,20 +8,22 @@
 #include <string>
 #include <stdexcept>
 
-
 namespace Gambit {
+
+  // Fwd declarations
+  Analysis* create_Analysis_ATLAS_0LEP();
 
 
   Analysis* mkAnalysis(const std::string& name) {
     if (name == "ATLAS_0LEP") {
-      return new Analysis_ATLAS0LEP();
-    } else if (name == "ATLAS_0LEPStop_20invfb"){
+      return create_Analysis_ATLAS_0LEP();
+    } else if (name == "ATLAS_0LEPStop_20invfb") {
       return new Analysis_ATLAS_0LEPStop_20invfb();
-    } else if (name == "ATLAS_1LEPStop_20invfb"){
+    } else if (name == "ATLAS_1LEPStop_20invfb") {
       return new Analysis_ATLAS_1LEPStop_20invfb();
-    } else if (name == "ATLAS_2bStop_20invfb"){
+    } else if (name == "ATLAS_2bStop_20invfb") {
       return new Analysis_ATLAS_2bStop_20invfb();
-    } else if (name == "ATLAS_2LEPStop_20invfb"){
+    } else if (name == "ATLAS_2LEPStop_20invfb") {
       return new Analysis_ATLAS_2LEPStop_20invfb();
     } else if (name == "PERF") {
       return new Analysis_Perf();

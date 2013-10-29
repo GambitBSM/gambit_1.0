@@ -12,7 +12,7 @@ namespace Gambit {
   using namespace std;
 
 
-  class Analysis_ATLAS0LEP : public Analysis {
+  class Analysis_ATLAS_0LEP : public Analysis {
   private:
 
     // Numbers passing cuts
@@ -28,7 +28,7 @@ namespace Gambit {
 
   public:
 
-    Analysis_ATLAS0LEP() {
+    Analysis_ATLAS_0LEP() {
       _numAT = 0; _numAM = 0; _numAL = 0;
       _numBT = 0; _numBM = 0;
       _numCT = 0; _numCM = 0; _numCL = 0;
@@ -36,7 +36,7 @@ namespace Gambit {
       _numET = 0; _numEM = 0; _numEL = 0;
 
       #ifdef MKHISTOS
-      _f.reset( new TFile("Analysis_ATLAS0LEP_debug.root", "RECREATE") );
+      _f.reset( new TFile("Analysis_ATLAS_0LEP_debug.root", "RECREATE") );
       _njets.reset( new TH1F("njets", "Num jets", 21, -0.5, 20.5) );
       _nelecs.reset( new TH1F("nelecs", "Num electrons", 6, -0.5, 5.5) );
       _nmuons.reset( new TH1F("nmuons", "Num muons", 6, -0.5, 5.5) );
@@ -237,11 +237,11 @@ namespace Gambit {
     }
 
 
-    void add(const Analysis& a) {
-      const Analysis_ATLAS0LEP& aa = dynamic_cast<const Analysis_ATLAS0LEP&>(a);
-      add_xsec(a.xsec(), a.xsec_err());
-      const double weight = (xsec() > 0) ? a.xsec_per_event() / xsec_per_event() : 1;
-      #define ADD(NAME) NAME += weight * aa.NAME
+    void add(const Analysis* a) {
+      const Analysis_ATLAS_0LEP* aa = dynamic_cast<const Analysis_ATLAS_0LEP*>(a);
+      add_xsec(aa->xsec(), aa->xsec_err());
+      const double weight = (xsec() > 0) ? aa->xsec_per_event() / xsec_per_event() : 1;
+      #define ADD(NAME) NAME += weight * aa->NAME
       ADD(_numAT); ADD(_numAM); ADD(_numAL);
       ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM); ADD(_numCL);
       ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
@@ -295,6 +295,11 @@ namespace Gambit {
 
 
   };
+
+
+
+  // Factory fn
+  Analysis* create_Analysis_ATLAS_0LEP() { return new Analysis_ATLAS_0LEP(); }
 
 
 }
