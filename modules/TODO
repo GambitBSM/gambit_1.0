@@ -24,6 +24,7 @@ Ongoing:
   - filenames (lowercase+underscore)
 * Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
 * Make dependency resolver more model-aware; at the moment it apparently cannot choose between two otherwise-valid functor options for filling a dependency, based only on the model being scanned.
+* Modify model checks in dependency resolver so that all observables are parsed and their dependencies resolved before concluding that some model is not used for anything, and throwing an error (put FlavBit test obervables first in gambit.yaml to see this error)
 * Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions.
 * Tracking of config files -> lists in module/backend rollcall headers
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
