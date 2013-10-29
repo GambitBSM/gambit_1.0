@@ -41,13 +41,8 @@ CXX := g++
 
 CXXFLAGS := -std=c++0x -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
 
-# TODO: pythia8-config isn't standard yet, so also allow a fallback
-PY8FLAGS := $(shell pythia8-config --cxxflags --libs 2> /dev/null)
-ifndef PY8FLAGS
-PY8FLAGS := -I$(PYTHIA8)/include -L$(PYTHIA8)/lib -L$(PYTHIA8)/lib/archive -lpythia8 -llhapdfdummy
-endif
 $(info Pythia version = $(shell cat `pythia8-config --xmldoc`/Version.xml | grep versionNumber | cut -d'"' -f4))
-
+PY8FLAGS := $(shell pythia8-config --cxxflags --libs 2> /dev/null)
 FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
 ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
 DELPHESFLAGS := -I$(DELPHES) -I$(DELPHES)/external -L$(DELPHES) -lDelphes
