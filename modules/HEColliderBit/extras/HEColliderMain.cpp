@@ -19,7 +19,7 @@
 //  //  Aldo Saavedra
 //  //  2013 June 14
 //  //  Andy Buckley
-//  //  2013 July 20, Oct 04, Oct 20
+//  //  2013 July 20, Oct 04, Oct 20, Oct 25
 //  //
 //  //  ********************************************
 //
@@ -68,6 +68,7 @@ namespace Gambit {
     };
 
 
+    /// @todo Should be a struct (i.e. public by default)?
     class KFactorHooks : public Pythia8::UserHooks {
       /// @todo once KFactorContainer is created, need to pass it in here.
       KFactorHooks() {}
@@ -120,7 +121,7 @@ int main() {
   Pythia8::Event genEvent;
   Gambit::Event recoEvent;
 
-  cout << endl << "Running parallelized HECollider simulation" << endl << endl;
+  cout << endl << "Running parallelized HECollider simulation" << endl;
 
   // Subprocess group setup
   // Decide how many events of each subprocess group to use, split according to number of threads
@@ -130,28 +131,27 @@ int main() {
   map<string, SubprocessGroup> sp_groups;
 
   // Gluino processes
-  /// @note The old SubprocessGroup constructor calls are commented out below the new inputs
-  /// @note Also, the new constructor calls exclude third generation squarks
+  // ~ sp_groups["g~"] = SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
+  /// @note The new constructor calls exclude third generation squarks
   sp_groups["g~"] = SubprocessGroup(0.4, //< xsec estimate
                     {{1000021}},
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
-                      2000001, 2000002, 2000003, 2000004}});
-  //sp_groups["g~"] = SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
+                               2000001, 2000002, 2000003, 2000004}});
 
   // Squark processes
+  // ~ sp_groups["q~"] = SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
   sp_groups["q~"] = SubprocessGroup(0.2, //< xsec estimate
                     {{1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}},
                     {{1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}});
-  //sp_groups["q~"] = SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
 
   // Gaugino processes
-  sp_groups["X~"] = SubprocessGroup(0.02, //< xsec estimate
-                    {{1000021, 1000001, 1000002, 1000003, 1000004,
-                      2000001, 2000002, 2000003, 2000004}},
-                    {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
-  //sp_groups["X~"] = SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+  // ~ sp_groups["X~"] = SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
+  // sp_groups["X~"] = SubprocessGroup(0.02, //< xsec estimate
+  //                   {{1000021, 1000001, 1000002, 1000003, 1000004,
+  //                              2000001, 2000002, 2000003, 2000004}},
+  //                   {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
 
   // Stop processes
   //sp_groups["t~"] = SubprocessGroup(1, {{1000006}},{{ 1000006}});
@@ -185,9 +185,10 @@ int main() {
   double total_xsec = 0;
   for (const auto& sp_group : sp_groups) total_xsec += sp_group.second.xsec;
   for (auto& sp_group : sp_groups) {
+    int sp_group_num_threads = (int) floor(NUM_CORES * sp_group.second.xsec / total_xsec);
+    if (sp_group_num_threads == 0) sp_group_num_threads = 1;
     /// @todo Need to be able to discard negligible processes... defined how? (see above)
-    const int sp_group_num_threads = (int) ceil(NUM_CORES * sp_group.second.xsec / total_xsec);
-    cout << sp_group.first << " #threads = " << sp_group_num_threads << endl;
+    cout << sp_group.first << " processes => " << sp_group_num_threads << " threads" << endl;
     for (int i = 0; i < sp_group_num_threads; ++i) {
       thread_cfgs.push_back(sp_group.second);
       thread_cfgs.back().nevts = num_events_per_thread;
@@ -198,18 +199,39 @@ int main() {
   if (NUM_THREADS > NUM_CORES)
     cerr << "WARNING: more Pythia instances are needed than there are CPUs. HEColliderBit will run SLOW." << endl;
   omp_set_num_threads(NUM_THREADS);
-  cout << " Total target number of events = " << NEVENTS << endl;
+  cout << "Total target number of events = " << NEVENTS << endl;
 
   #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE) num_threads(NUM_THREADS)
   {
     // Py8 backend process configuration
     const int NTHREAD = omp_get_thread_num();
     myPythia = new Pythia8Backend(NTHREAD);
+    // Basic config
+    myPythia->set("Beams:eCM", 8000);
+    myPythia->set("Print:quiet", true);
+    myPythia->set("SLHA:verbose", 0);
+    // myPythia->set("Main:numberOfEvents", 1000);
+    // myPythia->set("Main:timesAllowErrors", 1000);
+    // myPythia->set("Init:showProcesses", false);
+    // myPythia->set("Init:showMultipartonInteractions", false);
+    // myPythia->set("Init:showChangedSettings", false);
+    // myPythia->set("Init:showChangedParticleData", false);
+    // myPythia->set("Next:numberShowEvent", 0);
+    // myPythia->set("Next:numberShowInfo", 0);
+    // myPythia->set("Next:numberShowProcess", 0);
+    myPythia->set("Random:setSeed", true);
+    myPythia->set("Random:seed", 12345 + 17 * omp_get_thread_num());
+    // SUSY config
     myPythia->set("SLHA:file", slhaFileName);
     myPythia->set("SUSY:idVecA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVecB", thread_cfgs[NTHREAD].particlesInProcess2);
+    // Level of simulation detail
+    myPythia->set("PartonLevel:MPI", false);
+    // myPythia->set("PartonLevel:ISR", false);
+    // myPythia->set("PartonLevel:FSR", false);
+    // myPythia->set("HadronLevel:all", false);
 
-    // Run persistency configuration
+    // Configure the persistency system
     #ifdef ARCHIVE
     ofstream outFile("tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat");
     boost::archive::text_oarchive outArchive(outFile);
@@ -217,10 +239,7 @@ int main() {
 
     // Print out some run details
     /// @note We might want more CPU-heavy processes to run fewer events.
-    #pragma omp critical
-    {
-      cout << " Target number of events for thread #" << NTHREAD << " = " << thread_cfgs[NTHREAD].nevts << endl;
-    }
+    cout << " Target number of events for thread #" << NTHREAD << " = " << thread_cfgs[NTHREAD].nevts << endl;
 
     // Run the event loop
     int counter = 0;
