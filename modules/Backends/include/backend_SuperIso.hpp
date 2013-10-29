@@ -39,7 +39,7 @@ LOAD_LIBRARY
  * (e.g. "LibFirst_initialize_capability")  */
 
 BE_FUNCTION(bsgamma_calculator, double, (char[]), "bsgamma_calculator", "bsgamma_calculator")
-BE_FUNCTION(Li2, double, (double), "Li2")
+BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 

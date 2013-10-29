@@ -71,6 +71,11 @@ namespace Gambit
       result = GET_BE_POINTER(function_pointer_retriever::externalFunction, int&);
       //or a pointer to a local C++ funtion
       //result = &some_other_function;
+
+      //int myarg = 15;
+      //double myres = GET_BE_RESULT(function_pointer_retriever::externalFunction, myarg);
+      //cout << "My result is: " << myres << endl; 
+
     }
 
     // Example of interacting with models

@@ -95,7 +95,7 @@ namespace Gambit
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
-      GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
+      //GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
 
     }
 

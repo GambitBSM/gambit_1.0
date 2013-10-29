@@ -68,6 +68,10 @@ adhoc:
   capability:   nevents_like
   type:         double
 
+# Uncomment to test FlavBit
+#- purpose:      Likelihood
+#  capability:   SI_bsgamma
+
 #########################
 --- # Auxiliary entries
 #########################
