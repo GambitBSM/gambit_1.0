@@ -64,8 +64,9 @@ ALDODETHEADERS := DetectorResponse.hpp FastSim.hpp
 PY8HEADERS := Py8Utils.hpp  Pythia8Backend.hpp
 HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)
 
-ANAOBJS := Analysis_Perf.o Analysis_ATLAS_0LEP_XXinvfb.o Analysis.o
-PY8OBJS :=  Pythia8Backend.o
+ANAOBJS := Analysis_ATLAS_0LEPStop_20invfb.o Analysis_ATLAS_0LEP_XXinvfb.o Analysis_ATLAS_1LEPStop_20invfb.o \
+           Analysis_ATLAS_2bStop_20invfb.o Analysis_ATLAS_2LEPStop_20invfb.o Analysis_Perf.o Analysis.o
+PY8OBJS := Pythia8Backend.o
 FASTSIMOBJS :=  FastSimBackend.o FastSim.o DetectorResponse.o
 DELPHESOBJS := Delphes3Backend.o AbsoluteIsolation.o AbsoluteIsolation_dict.o BTaggingWithTruth.o BTaggingWithTruth_dict.o
 MT2OBJS := mt2_bisect.o

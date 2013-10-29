@@ -127,7 +127,7 @@ namespace Gambit {
 
       // Calculate common variables and cuts first
       int nJets = signalJets.size();
-      
+
       //Jet cuts for each SR
       bool passSRAJetCut=false;
       bool passSRBJetCut=false;
@@ -322,8 +322,10 @@ namespace Gambit {
       return 0;
     }
 
-
-
-
   };
+
+
+  DEFINE_ANAFACTORY(Analysis_ATLAS_2bStop_20invfb)
+
+
 }

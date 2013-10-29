@@ -1,31 +1,34 @@
 #include "Analysis.hpp"
-#include "Analysis_ATLAS_0LEPStop_20invfb.hpp"
-#include "Analysis_ATLAS_1LEPStop_20invfb.hpp"
-#include "Analysis_ATLAS_2bStop_20invfb.hpp"
-#include "Analysis_ATLAS_2LEPStop_20invfb.hpp"
-#include "Analysis_Perf.hpp"
 #include <string>
 #include <stdexcept>
 
 namespace Gambit {
 
   // Fwd declarations
+  DECLARE_ANAFACTORY(Analysis_Perf);
   DECLARE_ANAFACTORY(Analysis_ATLAS_0LEP);
+  DECLARE_ANAFACTORY(Analysis_ATLAS_0LEPStop_20invfb);
+  DECLARE_ANAFACTORY(Analysis_ATLAS_1LEPStop_20invfb);
+  DECLARE_ANAFACTORY(Analysis_ATLAS_2bStop_20invfb);
+  DECLARE_ANAFACTORY(Analysis_ATLAS_2LEPStop_20invfb);
 
 
   Analysis* mkAnalysis(const std::string& name) {
+    // TODO: stringify and change PERF -> Perf in user code
+    #define IF_X_RTN_CREATEX(A) if (name == "ATLAS_0LEP") return create_Analysis_ ## A();
+
     if (name == "ATLAS_0LEP") {
       return create_Analysis_ATLAS_0LEP();
     } else if (name == "ATLAS_0LEPStop_20invfb") {
-      return new Analysis_ATLAS_0LEPStop_20invfb();
+      return create_Analysis_ATLAS_0LEPStop_20invfb();
     } else if (name == "ATLAS_1LEPStop_20invfb") {
-      return new Analysis_ATLAS_1LEPStop_20invfb();
+      return create_Analysis_ATLAS_1LEPStop_20invfb();
     } else if (name == "ATLAS_2bStop_20invfb") {
-      return new Analysis_ATLAS_2bStop_20invfb();
+      return create_Analysis_ATLAS_2bStop_20invfb();
     } else if (name == "ATLAS_2LEPStop_20invfb") {
-      return new Analysis_ATLAS_2LEPStop_20invfb();
+      return create_Analysis_ATLAS_2LEPStop_20invfb();
     } else if (name == "PERF") {
-      return new Analysis_Perf();
+      return create_Analysis_Perf();
     } else {
       throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
     }
