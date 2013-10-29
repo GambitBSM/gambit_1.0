@@ -1,5 +1,4 @@
 #include "Analysis.hpp"
-// #include "Analysis_ATLAS_0LEP_XXinvfb.hpp"
 #include "Analysis_ATLAS_0LEPStop_20invfb.hpp"
 #include "Analysis_ATLAS_1LEPStop_20invfb.hpp"
 #include "Analysis_ATLAS_2bStop_20invfb.hpp"
@@ -11,7 +10,7 @@
 namespace Gambit {
 
   // Fwd declarations
-  Analysis* create_Analysis_ATLAS_0LEP();
+  DECLARE_ANAFACTORY(Analysis_ATLAS_0LEP);
 
 
   Analysis* mkAnalysis(const std::string& name) {

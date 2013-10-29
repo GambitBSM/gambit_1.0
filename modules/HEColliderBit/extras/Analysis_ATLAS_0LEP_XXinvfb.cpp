@@ -299,7 +299,7 @@ namespace Gambit {
 
 
   // Factory fn
-  Analysis* create_Analysis_ATLAS_0LEP() { return new Analysis_ATLAS_0LEP(); }
+  DEFINE_ANAFACTORY(Analysis_ATLAS_0LEP)
 
 
 }
