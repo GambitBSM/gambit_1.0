@@ -59,10 +59,10 @@ Ongoing:
     Would allow even closer alignment to structure of modules, increase macro
     reuse. Models would then be almost exactly the same as modules, just with
     special kinds of capabilities and dependencies. Not sure if this is
-    worthwhile, quite a few special features currently remain.      
+    worthwhile, quite a few special features currently remain.
 
 * **Create function in ModelBit to check that all the user-request models are actually used by the dependency resolver.**
- 
+
   If not, throw an error to say that they are wasting their CPU time with the unused parameters.
 
 
@@ -73,7 +73,7 @@ Ongoing:
 
 
 * **Create boost graph to display model hierarchy (and maybe even replace the lineage/ancestry database)**
-  
+
   Is this already done?
 
 Done:
@@ -112,6 +112,8 @@ HE Collider
    Put safety checking into the direct P8->Event code, re. P4 mass safety. No
    -ve masses, please! Hopefully not an issue, but maybe Py8 has a way to get
    the 4-vec mass other than via E2-p2.
+
+* Standardise the namespaces used (and using'd)
 
 * Write more analysis codes!
 * Verification of ATLAS limits
