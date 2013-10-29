@@ -623,6 +623,7 @@ namespace Gambit {
   };
 
 
-  DEFINE_ANAFACTORY(Analysis_ATLAS_2LEPStop_20invfb)
+  DEFINE_ANAFACTORY(ATLAS_2LEPStop_20invfb)
+
 
 }

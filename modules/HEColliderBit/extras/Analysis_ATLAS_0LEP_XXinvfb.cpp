@@ -12,6 +12,7 @@ namespace Gambit {
   using namespace std;
 
 
+  /// Rename as Analysis_ATLAS_0LEP_XXinvfb when lumi known
   class Analysis_ATLAS_0LEP : public Analysis {
   private:
 
@@ -299,7 +300,7 @@ namespace Gambit {
 
 
   // Factory fn
-  DEFINE_ANAFACTORY(Analysis_ATLAS_0LEP)
+  DEFINE_ANAFACTORY(ATLAS_0LEP)
 
 
 }

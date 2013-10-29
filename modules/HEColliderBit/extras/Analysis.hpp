@@ -7,8 +7,8 @@ namespace Gambit {
 
 
   // Macros for analysis factory fns
-  #define DECLARE_ANAFACTORY(A) Analysis* create_ ## A()
-  #define DEFINE_ANAFACTORY(A) Analysis* create_ ## A() { return new A(); }
+  #define DECLARE_ANAFACTORY(A) Analysis* create_Analysis_ ## A()
+  #define DEFINE_ANAFACTORY(A) Analysis* create_Analysis_ ## A() { return new Analysis_ ## A(); }
 
 
 

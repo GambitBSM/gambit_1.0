@@ -5,12 +5,12 @@
 namespace Gambit {
 
   // Fwd declarations
-  DECLARE_ANAFACTORY(Analysis_Perf);
-  DECLARE_ANAFACTORY(Analysis_ATLAS_0LEP);
-  DECLARE_ANAFACTORY(Analysis_ATLAS_0LEPStop_20invfb);
-  DECLARE_ANAFACTORY(Analysis_ATLAS_1LEPStop_20invfb);
-  DECLARE_ANAFACTORY(Analysis_ATLAS_2bStop_20invfb);
-  DECLARE_ANAFACTORY(Analysis_ATLAS_2LEPStop_20invfb);
+  DECLARE_ANAFACTORY(Perf);
+  DECLARE_ANAFACTORY(ATLAS_0LEP);
+  DECLARE_ANAFACTORY(ATLAS_0LEPStop_20invfb);
+  DECLARE_ANAFACTORY(ATLAS_1LEPStop_20invfb);
+  DECLARE_ANAFACTORY(ATLAS_2bStop_20invfb);
+  DECLARE_ANAFACTORY(ATLAS_2LEPStop_20invfb);
 
 
   Analysis* mkAnalysis(const std::string& name) {
