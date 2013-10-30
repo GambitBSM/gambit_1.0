@@ -111,7 +111,7 @@ int main() {
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   /// @note That means that the class loaders had better be working by then...
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
-  const int NEVENTS = 1000;//0;
+  const int NEVENTS = 2000;
 
   // For event generation
   Pythia8Backend* myPythia;
@@ -264,7 +264,7 @@ int main() {
   map<string, shared_ptr<Analysis>> anas;
   for (auto& spg : sp_groups) {
     for (auto& a : spg.second.analyses) {
-      const string aname = typeid(a).name();
+      const string aname = typeid(*a).name();
       if (anas.find(aname) == anas.end()) {
         anas[aname] = a;
       } else {
