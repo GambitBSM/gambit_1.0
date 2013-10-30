@@ -39,6 +39,8 @@ namespace Gambit {
 
   /// Add the provided other-process cross-section to the existing one, assuming uncorrelated errors
   void Analysis::add_xsec(double xs, double xserr) {
+    stringstream msg;
+    msg << "Adding xsecs: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
     if (xs > 0) {
       if (xsec() <= 0) {
         set_xsec(xs, xserr);
@@ -47,6 +49,8 @@ namespace Gambit {
         _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr));
       }
     }
+    msg << " => " << xsec() << " +- " << xsec_err();
+    cout << msg.str() << endl;
   }
 
 
