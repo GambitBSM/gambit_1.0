@@ -16,7 +16,8 @@ namespace Gambit {
   public:
 
     /// Constructor
-    Analysis() : _ntot(0), _xsec(-1), _xsecerr(-1) { }
+    Analysis() : name(""), //< To be set in derived analysis classes
+                 _ntot(0), _xsec(-1), _xsecerr(-1) {  }
 
     /// Virtual destructor (needed for correct deletion of inherited classes)
     virtual ~Analysis() { init(); }
@@ -93,6 +94,10 @@ namespace Gambit {
     /// Return the likelihood (at the end of the run, via logLikelihood)
     virtual double likelihood() { return std::exp(loglikelihood()); }
     //@}
+
+
+    /// Analysis name (normally the class name, without the Analysis_ prefix)
+    std::string name;
 
 
   private:

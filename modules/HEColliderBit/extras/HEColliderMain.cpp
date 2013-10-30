@@ -264,7 +264,7 @@ int main() {
   map<string, shared_ptr<Analysis>> anas;
   for (auto& spg : sp_groups) {
     for (auto& a : spg.second.analyses) {
-      const string aname = typeid(*a).name();
+      const string aname = (!a->name.empty()) ? a->name : typeid(*a).name();
       if (anas.find(aname) == anas.end()) {
         anas[aname] = a;
       } else {
