@@ -111,7 +111,7 @@ int main() {
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   /// @note That means that the class loaders had better be working by then...
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
-  const int NEVENTS = 10000;
+  const int NEVENTS = 1000;//0;
 
   // For event generation
   Pythia8Backend* myPythia;
@@ -127,19 +127,15 @@ int main() {
   // Decide how many events of each subprocess group to use, split according to number of threads
   /// @todo Use fast lookup of interpolated NLO subprocess cross-sections to do this
   /// @note Hard-coded for now, so I can do *something*
-  /// @todo Hard coding of nthread assignment calc: yuck, yuck, yuck! Generalise to containers of subprocesses
   map<string, SubprocessGroup> sp_groups;
 
   // Gluino processes
-  // ~ sp_groups["g~"] = SubprocessGroup(0.4, {{"SUSY:gg2gluinogluino", "SUSY:qqbar2gluinogluino", "SUSY:qg2squarkgluino"}});
-  /// @note The new constructor calls exclude third generation squarks
   sp_groups["g~"] = SubprocessGroup(0.4, //< xsec estimate
                     {{1000021}},
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                                2000001, 2000002, 2000003, 2000004}});
 
   // Squark processes
-  // ~ sp_groups["q~"] = SubprocessGroup(0.2, {{"SUSY:gg2squarkantisquark", "SUSY:qqbar2squarkantisquark", "SUSY:qq2squarksquark"}});
   sp_groups["q~"] = SubprocessGroup(0.2, //< xsec estimate
                     {{1000001, 1000002, 1000003, 1000004,
                       2000001, 2000002, 2000003, 2000004}},
@@ -147,14 +143,13 @@ int main() {
                       2000001, 2000002, 2000003, 2000004}});
 
   // Gaugino processes
-  // ~ sp_groups["X~"] = SubprocessGroup(0.02, {{"SUSY:qg2chi0squark", "SUSY:qg2chi+-squark", "SUSY:qqbar2chi0gluino", "SUSY:qqbar2chi+-gluino"}});
   sp_groups["X~"] = SubprocessGroup(0.02, //< xsec estimate
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                                2000001, 2000002, 2000003, 2000004}},
                     {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
 
   // Stop processes
-  //sp_groups["t~"] = SubprocessGroup(1, {{1000006}},{{ 1000006}});
+  // sp_groups["t~"] = SubprocessGroup(1, {{1000006}},{{ 1000006}});
 
   // Bind subprocesses to analysis pointers
   for (auto& sp_group : sp_groups) {

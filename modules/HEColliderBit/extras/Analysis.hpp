@@ -77,11 +77,10 @@ namespace Gambit {
     /// Reference-based version of add()
     void add(const Analysis& a) { add(&a); }
 
-    /// Add a cross-section and error
+    /// Add cross-sections and errors for two different process types
     void add_xsec(double xs, double xserr);
 
     /// Combine the provided cross-section with the existing one of the same type, assuming uncorrelated errors
-    /// @todo Assumes equal stats at the moment: that breaks immediately. Include some 1/(rel)error weighting?
     void improve_xsec(double xs, double xserr);
 
     //@}

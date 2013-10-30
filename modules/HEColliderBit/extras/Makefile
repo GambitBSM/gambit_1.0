@@ -75,7 +75,7 @@ all: mt2_bisect example-py8-bsm example-py8-0lep example-delphes-py8 example-MJW
 	@true
 
 %.o : %.cpp $(HEADERS)
-	$(CXX) -c $< $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) $(DELPHESFLAGS) -o $@
+	$(CXX) -c $< $(CXXFLAGS) -DQUIET -fopenmp $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) $(DELPHESFLAGS) -o $@
 %.o : %.cc $(HEADERS)
 	$(CXX) -c $< $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS) $(ROOTFLAGS) $(DELPHESFLAGS) -o $@
 mt2_bisect: mt2_bisect.cpp mt2_bisect.h

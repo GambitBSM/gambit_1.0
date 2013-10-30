@@ -1,6 +1,7 @@
 #include "Analysis.hpp"
 #include <string>
 #include <stdexcept>
+using namespace std;
 
 namespace Gambit {
 
@@ -36,8 +37,9 @@ namespace Gambit {
   }
 
 
+  /// Add the provided other-process cross-section to the existing one, assuming uncorrelated errors
   void Analysis::add_xsec(double xs, double xserr) {
-    assert(xs > 0 && xserr > 0);
+    assert(xs >= 0 && xserr >= 0);
     if (xsec() <= 0) {
       set_xsec(xs, xserr);
     } else {
@@ -46,16 +48,19 @@ namespace Gambit {
     }
   }
 
-  /// Combine the provided cross-section with the existing one, assuming uncorrelated errors
-  /// @todo Assumes equal stats at the moment: that breaks immediately. Include some 1/(rel)error weighting?
+
+  /// Combine the provided same-process cross-section with the existing one, assuming uncorrelated errors
+  /// @todo Assumes equal stats at the moment: that breaks in >2 instance aggregation. Include some 1/(rel)error weighting?
   void Analysis::improve_xsec(double xs, double xserr) {
-    assert(xs > 0 && xserr > 0);
+    cout << "Improving xsec: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr << endl;
+    assert(xs >= 0 && xserr >= 0);
     if (xsec() <= 0) {
       set_xsec(xs, xserr);
     } else {
       _xsec = _xsec/2.0 + xs/2.0;
       _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr)) / 2.0;
     }
+    cout << "             => " << xsec() << " +- " << xsec_err() << endl;
   }
 
 
