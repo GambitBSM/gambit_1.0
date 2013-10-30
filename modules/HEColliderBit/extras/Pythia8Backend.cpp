@@ -44,7 +44,7 @@ namespace Gambit {
       // set("Next:numberShowProcess", 0);
 
       // Default to SUSY with precise subprocess control
-      // set("SUSY:all", true);
+      set("SUSY:all", true);
       // set("SUSY:idA", 1);
 
       // Modelling elements
