@@ -40,25 +40,28 @@ namespace Gambit
     {
 
       char name[50];
-      double x=1.;
+      //double x=1.;
       
       sprintf(name,"example.lha");
 
       printf("test FlavBit\n");
+      //printf("name=%s\n",name);
        
-       cout << "My backend requirement of Li2 has been filled by " << 
-       GET_BE_FUNCNAME(SI_bsgamma::Li2) << " from " <<
-       GET_BE_PACKAGE(SI_bsgamma::Li2) << ", v" << 
-       GET_BE_VERSION(SI_bsgamma::Li2) << "." << endl;
-      cout << "Its value is: ";
+      /*cout << "My backend requirement of bsgamma_calculator has been filled by " << 
+      GET_BE_FUNCNAME(SI_bsgamma::bsgamma_calculator) << " from " <<
+      GET_BE_PACKAGE(SI_bsgamma::bsgamma_calculator) << ", v" << 
+      GET_BE_VERSION(SI_bsgamma::bsgamma_calculator) << "." << endl;
+      cout << "Its value is: ";*/
 
-      printf("%.5e\n",GET_BE_RESULT(SI_bsgamma::Li2, 1.));
+      //printf("%.5e\n",GET_BE_RESULT(SI_bsgamma::Li2, byVal(x)));
      
-
-
-      result = GET_BE_RESULT(SI_bsgamma::bsgamma_calculator, name);
+      //printf("%d\n",GET_BE_RESULT(SI_bsgamma::test_file, byVal(name)));
+     
+      //printf("%d\n",GET_BE_RESULT(SI_bsgamma::test_slha, byVal(name)));
       
-      printf("%.5e\n",result);
+      result = GET_BE_RESULT(SI_bsgamma::bsgamma_calculator, byVal(name));
+      
+      printf("BR(b->s gamma)=%.3e\n",result);
 
     }
     

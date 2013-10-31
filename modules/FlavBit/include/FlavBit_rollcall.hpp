@@ -64,15 +64,23 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_bsgamma                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-     #define BACKEND_REQ bsgamma_calculator
+      #define BACKEND_REQ bsgamma_calculator
         START_BACKEND_REQ(double)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
-     #define BACKEND_REQ Li2
+      #define BACKEND_REQ Li2
         START_BACKEND_REQ(double)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
-    #undef FUNCTION
+      #define BACKEND_REQ test_file
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ test_slha
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+   #undef FUNCTION
   #undef CAPABILITY
 #undef MODULE
 

@@ -40,6 +40,8 @@ LOAD_LIBRARY
 
 BE_FUNCTION(bsgamma_calculator, double, (char[]), "bsgamma_calculator", "bsgamma_calculator")
 BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
+BE_FUNCTION(test_file, int, (char*), "test_file", "test_file")
+BE_FUNCTION(test_slha, int, (char[]), "test_slha", "test_slha")
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 

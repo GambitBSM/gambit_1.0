@@ -69,12 +69,12 @@ CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
 COMMONLIBS = -lm
 
 # beb_tester from makefile.test_backend
-TARGETS = gambit_example beb_tester gambit_example_minimal gambit_example_flavbit
+TARGETS = gambit_example beb_tester gambit_example_minimal
 
-default: mh gambit_example gambit_example_minimal gambit_example_flavbit
+default: mh gambit_example gambit_example_minimal
 .PHONY: default
 
-all: mh gambit_example beb_tester gambit_example_minimal gambit_example_flavbit doxygen
+all: mh gambit_example beb_tester gambit_example_minimal doxygen
 .PHONY: all
 
 clean: 
@@ -292,10 +292,6 @@ gambit_example: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example.o $(CORELIBS) $
 gambit_example_minimal: $(FUNCTOR_TYPES)  $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so libsample.so libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
-
-gambit_example_flavbit: $(FUNCTOR_TYPES)  $(COREDIR)/build/gambit_example_flavbit.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC)
-	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example_flavbit.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(ROLLCALL_HEADERS)
 	python $(COREDIR)/scripts/functor_type_harvester.py
