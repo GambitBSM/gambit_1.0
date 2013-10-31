@@ -232,7 +232,7 @@ int main() {
       }
 
       // Run all analyses attached to the thread
-      for (shared_ptr<Gambit::Analysis> ana : thread_cfgs[NTHREAD].analyses)
+      for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses)
         ana->analyze(recoEvent);
 
       // Archive the recoEvent to file if persistency is enabled
@@ -244,14 +244,14 @@ int main() {
     // Record the (LO) cross-section on the analysis
     /// @todo Combine same-process xsecs on the SP group, then set on the analyses before adding SPs?
     thread_cfgs[NTHREAD].xsec = myPythia->xsec();
-    for (shared_ptr<Gambit::Analysis> ana : thread_cfgs[NTHREAD].analyses)
+    for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses) {
+      cout << "Py8 xsec = " << myPythia->xsec() << " +- " << myPythia->xsecErr() << endl;
       ana->improve_xsec(myPythia->xsec(), myPythia->xsecErr());
+      /// @todo Getting stupid values from Py8...
+    }
 
     // Print out final run details
-    #pragma omp critical
-    {
-      cout << "Thread #" << NTHREAD << " has run " << counter << " events" << endl;
-    }
+    cout << "Thread #" << NTHREAD << " has run " << counter << " events" << endl;
 
     #ifdef ARCHIVE
     outFile.close();

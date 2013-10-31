@@ -17,7 +17,7 @@ namespace Gambit {
   private:
 
     // Numbers passing cuts
-    int _numAT, _numAM, _numAL, _numBT, _numBM,
+    double _numAT, _numAM, _numAL, _numBT, _numBM,
       _numCT, _numCM, _numCL, _numD, _numET, _numEM, _numEL;
 
     // Debug histos
@@ -155,9 +155,9 @@ namespace Gambit {
           dPhiMin2j = SmallestdPhi(signalJets,ptot.phi());
           meff2j = met + signalJets[0]->pT() + signalJets[1]->pT();
           if (leptonCut && metCut && dPhiMin2j>0.4) {
-            if (met/meff2j>0.3 && meff_incl>1900.) _numAT++;
-            if (met/meff2j>0.4 && meff_incl>1300.) _numAM++;
-            if (met/meff2j>0.4 && meff_incl>1000.) _numAL++;
+            if (met/meff2j>0.3 && meff_incl>1900.) _numAT += 1;
+            if (met/meff2j>0.4 && meff_incl>1300.) _numAM += 1;
+            if (met/meff2j>0.4 && meff_incl>1000.) _numAL += 1;
           }
           #ifdef MKHISTOS
           if (leptonCut) {
@@ -180,8 +180,8 @@ namespace Gambit {
           float dPhiMin3j = SmallestdPhi(signalJets,ptot.phi());
           float meff3j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT();
           if (leptonCut && metCut && dPhiMin3j > 0.4) {
-            if (met/meff3j>0.25 && meff_incl>1900.) _numBT++;
-            if (met/meff3j>0.3 && meff_incl>1300.) _numBM++;
+            if (met/meff3j>0.25 && meff_incl>1900.) _numBT += 1;
+            if (met/meff3j>0.3 && meff_incl>1300.) _numBM += 1;
           }
         }
       }
@@ -193,9 +193,9 @@ namespace Gambit {
           float dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
           float meff4j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT();
           if (leptonCut && metCut && dPhiMin4 > 0.4 && dPhiMin2 > 0.2) {
-            if (met/meff4j>0.25 && meff_incl>1900.) _numCT++;
-            if (met/meff4j>0.3 && meff_incl>1300.) _numCM++;
-            if (met/meff4j>0.3 && meff_incl>1000.) _numCL++;
+            if (met/meff4j>0.25 && meff_incl>1900.) _numCT += 1;
+            if (met/meff4j>0.3 && meff_incl>1300.) _numCM += 1;
+            if (met/meff4j>0.3 && meff_incl>1000.) _numCL += 1;
           }
         }
       }
@@ -207,7 +207,7 @@ namespace Gambit {
           float dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
           float meff5j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT();
           if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
-            if (met/meff5j>0.15 && meff_incl>1700.) _numD++;
+            if (met/meff5j>0.15 && meff_incl>1700.) _numD += 1;
           }
         }
       }
@@ -219,9 +219,9 @@ namespace Gambit {
           float dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
           float meff6j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT() + signalJets.at(5)->pT();
           if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
-            if (met/meff6j>0.15 && meff_incl>1400.) _numET++;
-            if (met/meff6j>0.25 && meff_incl>1300.) _numEM++;
-            if (met/meff6j>0.30 && meff_incl>1000.) _numEL++;
+            if (met/meff6j>0.15 && meff_incl>1400.) _numET += 1;
+            if (met/meff6j>0.25 && meff_incl>1300.) _numEM += 1;
+            if (met/meff6j>0.30 && meff_incl>1000.) _numEL += 1;
           }
         }
       }
@@ -242,12 +242,14 @@ namespace Gambit {
     void add(const Analysis* a) {
       const Analysis_ATLAS_0LEP* aa = dynamic_cast<const Analysis_ATLAS_0LEP*>(a);
       add_xsec(aa->xsec(), aa->xsec_err());
+      // double tmp = _numAT;
       const double weight = (xsec() > 0) ? aa->xsec_per_event() / xsec_per_event() : 1;
       #define ADD(NAME) NAME += weight * aa->NAME
       ADD(_numAT); ADD(_numAM); ADD(_numAL);
       ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM); ADD(_numCL);
       ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
       #undef ADD
+      // cout << tmp << " -> " << _numAT << endl;
     }
 
 

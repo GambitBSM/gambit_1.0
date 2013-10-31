@@ -39,28 +39,36 @@ namespace Gambit {
 
   /// Add the provided other-process cross-section to the existing one, assuming uncorrelated errors
   void Analysis::add_xsec(double xs, double xserr) {
-    assert(xs >= 0 && xserr >= 0);
-    if (xsec() <= 0) {
-      set_xsec(xs, xserr);
-    } else {
-      _xsec += xs;
-      _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr));
+    stringstream msg;
+    msg << "Adding xsecs: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
+    if (xs > 0) {
+      if (xsec() <= 0) {
+        set_xsec(xs, xserr);
+      } else {
+        _xsec += xs;
+        _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr));
+      }
     }
+    msg << " => " << xsec() << " +- " << xsec_err();
+    cout << msg.str() << endl;
   }
 
 
   /// Combine the provided same-process cross-section with the existing one, assuming uncorrelated errors
   /// @todo Assumes equal stats at the moment: that breaks in >2 instance aggregation. Include some 1/(rel)error weighting?
   void Analysis::improve_xsec(double xs, double xserr) {
-    cout << "Improving xsec: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr << endl;
-    assert(xs >= 0 && xserr >= 0);
-    if (xsec() <= 0) {
-      set_xsec(xs, xserr);
-    } else {
-      _xsec = _xsec/2.0 + xs/2.0;
-      _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr)) / 2.0;
+    stringstream msg;
+    msg << "Improving xsec: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
+    if (xs > 0) {
+      if (xsec() <= 0) {
+        set_xsec(xs, xserr);
+      } else {
+        _xsec = _xsec/2.0 + xs/2.0;
+        _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr)) / 2.0;
+      }
     }
-    cout << "             => " << xsec() << " +- " << xsec_err() << endl;
+    msg << " => " << xsec() << " +- " << xsec_err();
+    cout << msg.str() << endl;
   }
 
 
