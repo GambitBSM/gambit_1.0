@@ -138,10 +138,12 @@ namespace Gambit
     {
       using namespace SafePointers::eventLoopManager;
       unsigned int nEvents = 20;         // Number of times to run the loop
-      for(unsigned long i = 1; i <= nEvents; i++)
+      int ci = 0;                        // Index of the OpenMP 'chunk' of a loop in which a given loop iteration occurs
+      int mt = 2;                        // Maximum OpenMP threads permitted to be launched by nested functions
+      for(unsigned long it = 1; it <= nEvents; it++)
       {
-        cout << "This is iteration " << i << " of " << nEvents << " being run by eventLoopManager." << endl;
-        Loop::executeIteration(i); // This is actually a (member) function pointer, so *Loop::executeIteration(i) works fine too.
+        cout << "This is iteration " << it << " of " << nEvents << " being run by eventLoopManager." << endl;
+        Loop::executeIteration(ci, it, mt);   // This is a (member) function pointer, so *Loop::executeIteration(i) works fine too.
       }
     }
 
@@ -155,7 +157,9 @@ namespace Gambit
         twistor.seed(newseed);   // Re-seed the random number generator
       }
       result = random_0to5(twistor);  // Generate and return the random number
-      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<" of chunk ";
+      cout<<*Loop::chunk_index<<", with maximum threads "<<*Loop::max_threads<<"."<<endl;
+
     }
 
     // Rounds an event count to the nearest integer

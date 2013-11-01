@@ -620,8 +620,10 @@ namespace Gambit {
       return 0;
     }
 
-
-
-
   };
+
+
+  DEFINE_ANAFACTORY(ATLAS_2LEPStop_20invfb)
+
+
 }

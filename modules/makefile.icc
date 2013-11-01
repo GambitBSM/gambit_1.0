@@ -9,7 +9,7 @@ export
 
 CC = icc 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt -lboost_thread
 CFLAGS = -O3 -Wall -g
 
 FC = ifort
@@ -164,7 +164,7 @@ FUNCTOR_TYPES = $(UTILSDIR)/include/all_functor_types.hpp
 
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
-FlavBit/build/backend-superiso.o $(UTILSDIR)/build/rngs.o \
+FlavBit/build/FlavBit.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
 DarkBit/build/DarkBit.o\
 $(YAMLDIR)/yaml-cpp.a
@@ -287,14 +287,14 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
 
 gambit_example: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(LNFLAGS) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ 
 
-gambit_example_minimal: $(FUNCTOR_TYPES)  $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so libsample.so libtest.so
+gambit_example_minimal: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so libsample.so libtest.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(LNFLAGS) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ 
 
 $(FUNCTOR_TYPES): $(ROLLCALL_HEADERS)
-	python functor_type_harvester.py
+	python $(COREDIR)/scripts/functor_type_harvester.py
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
@@ -317,7 +317,7 @@ beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UT
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logs.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
 
-$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf $(ALLINC) $(ALLSRC) 
+$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO $(ALLINC) $(ALLSRC) 
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
 	@ln -s $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
 	@echo "Documentation found in $@"

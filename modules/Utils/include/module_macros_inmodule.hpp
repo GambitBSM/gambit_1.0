@@ -104,22 +104,55 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Let the module source know that this functor is declared by the core, \
-      and set up a helper function to call its iterate method if it is able to \
-      manage loops. */                                                         \
+      /* Let the module source know that this functor is declared by the core*/\
+      namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
+                                                                               \
+      /* Create safe pointers to the index of the OpenMP chunk this functor    \
+      is running within, the iteration number of the loop it is running within,\
+      and the maximum number of threads that it is permitted to employ in      \
+      carrying out its task. */                                                \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Loop                                                       \
+          {                                                                    \
+            safe_ptr<int> chunk_index = Functown::FUNCTION.chunkPtr();         \
+            safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
+            safe_ptr<int> max_threads = Functown::FUNCTION.threadPtr();        \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Set up a helper function to call the iterate method if the functor is \
+      able to manage loops. */                                                 \
       namespace Functown                                                       \
       {                                                                        \
-        extern module_functor<TYPE> FUNCTION;                                  \
         BOOST_PP_IIF(CAN_MANAGE,                                               \
-          void CAT(FUNCTION,_iterate)(int iteration)                           \
+          void CAT(FUNCTION,_iterate)(int ci, int it, int mt)                  \
           {                                                                    \
-            FUNCTION.iterate(iteration);                                       \
+            int mp = *SafePointers::FUNCTION::Loop::max_threads;               \
+            if (mt > mp)                                                       \
+            {                                                                  \
+              cout<<endl<<"Error: you cannot launch an iteration of a loop "   \
+               "over module functions with a larger permitted number of "<<endl\
+               <<"threads than the loop manager itself may employ."<<endl;     \
+              cout<<"  Offending function: "<<STRINGIFY(MODULE)<<"::"<<        \
+               STRINGIFY(FUNCTION)<<endl;                                      \
+              cout<<"  Threads allowed in offending loop manager: "<<mp<<endl; \
+              cout<<"  Maximum threads suggested for iteration: "<<mt<<endl;   \
+              cout<<"Notice that "<<mt<<" > "<<mp<<".  Mmmm."<<endl;           \
+              /* FIXME throw a real error here */                              \
+              exit(1);                                                         \
+            }                                                                  \
+            FUNCTION.iterate(ci,it,mt);                                        \
           }                                                                    \
         ,)                                                                     \
       }                                                                        \
                                                                                \
-      /* Create pointers to the iteration number and the single iteration of   \
-      the loop that can be executed by this functor. */                        \
+      /* Declare the parameters safe-pointer map as external, and create a     \
+      pointer to the single iteration of the loop that can be executed by this \
+      functor. */                                                              \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
@@ -127,9 +160,9 @@
           extern std::map<str, safe_ptr<double> > Param;                       \
           namespace Loop                                                       \
           {                                                                    \
-            safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
             BOOST_PP_IIF(CAN_MANAGE,                                           \
-              void (*executeIteration)(int)= &Functown::CAT(FUNCTION,_iterate);\
+              void (*executeIteration)(int, int, int) =                        \
+               &Functown::CAT(FUNCTION,_iterate);                              \
             ,)                                                                 \
           }                                                                    \
         }                                                                      \

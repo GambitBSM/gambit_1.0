@@ -9,7 +9,7 @@
 
 /* The ATLAS 0 lepton direct stop analysis (20fb^-1) - `heavy stop'.
 
-based on: ATLAS-CONF-2013-024
+   based on: ATLAS-CONF-2013-024
 
    Code by Martin White, Sky French.
    Known errors:
@@ -49,9 +49,9 @@ namespace Gambit {
       _numSR1 = 0 ; _numSR2 = 0; _numSR3 = 0;
 
       for(int i=0;i<NCUTS;i++){
-	cutFlowVector.push_back(0);
-	cutFlowVector_str.push_back("");
-	cutFlowVector_alt.push_back(0);
+        cutFlowVector.push_back(0);
+        cutFlowVector_str.push_back("");
+        cutFlowVector_alt.push_back(0);
       }
 
     }
@@ -81,7 +81,7 @@ namespace Gambit {
       vector<Jet*> trueBJets; //for debugging
       for (Jet* jet : event->jets()) {
         if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
-	if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
+        if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
       }
 
       // Overlap removal
@@ -105,7 +105,7 @@ namespace Gambit {
           if (elVec.deltaR_eta(jetVec)<0.2)overlap=true;
         }
         if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.8)goodJets.push_back(baselineJets.at(iJet));
-	if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.8 && baselineJets.at(iJet)->pT()>35.)signalJets.push_back(baselineJets.at(iJet));
+        if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.8 && baselineJets.at(iJet)->pT()>35.)signalJets.push_back(baselineJets.at(iJet));
       }
 
       // Remove electrons with dR=0.4 or surviving jets
@@ -117,7 +117,7 @@ namespace Gambit {
           if (elVec.deltaR_eta(jetVec)<0.4)overlap=true;
         }
         if (!overlap && elVec.pT()>25.)signalElectrons.push_back(baselineElectrons.at(iEl));
-	if(!overlap)electronsForVeto.push_back(baselineElectrons.at(iEl));
+        if(!overlap)electronsForVeto.push_back(baselineElectrons.at(iEl));
       }
 
       // Remove muons with dR=0.4 or surviving jets
@@ -128,10 +128,10 @@ namespace Gambit {
 
         for (size_t iJet=0;iJet<goodJets.size();iJet++) {
           P4 jetVec=goodJets.at(iJet)->mom();
-	  if (muVec.deltaR_eta(jetVec)<0.4)overlap=true;
+          if (muVec.deltaR_eta(jetVec)<0.4)overlap=true;
         }
         if (!overlap && muVec.pT()>25.)signalMuons.push_back(baselineMuons.at(iMu));
-	if(!overlap)muonsForVeto.push_back(baselineMuons.at(iMu));
+        if(!overlap)muonsForVeto.push_back(baselineMuons.at(iMu));
       }
 
       // We now have the signal electrons, muons, jets and b jets- move on to the analysis
@@ -140,26 +140,26 @@ namespace Gambit {
       int nElectrons = signalElectrons.size();
       int nMuons = signalMuons.size();
       int nJets = signalJets.size();
-      
+
       //if(leptonsForVeto.size()>0 && leptonsForVeto[0]->pT()>25.)cout << "Leptons size " << leptonsForVeto.size() << " muons " << nMuons << " electrons " << nElectrons << endl;
 
       //Common preselection for all signal regions
       bool passJetCut=false;
       bool passBJetCut=false;
-     
-      if(nJets>=6){
-	if(signalJets[0]->pT() > 80.
-	   && signalJets[1]->pT() > 80.
-	   && signalJets[2]->pT() > 35.
-	   && signalJets[3]->pT() > 35.
-	   && signalJets[4]->pT() > 35.
-	   && signalJets[5]->pT() > 35.)passJetCut=true;
 
-	for(int j=0; j<nJets; j++) {
-	  for(int k=j+1; k<nJets; k++) {
-	    if(signalJets[j]->isBJet() && signalJets[k]->isBJet()) passBJetCut=true;
-	  }
-	}
+      if(nJets>=6){
+        if(signalJets[0]->pT() > 80.
+           && signalJets[1]->pT() > 80.
+           && signalJets[2]->pT() > 35.
+           && signalJets[3]->pT() > 35.
+           && signalJets[4]->pT() > 35.
+           && signalJets[5]->pT() > 35.)passJetCut=true;
+
+        for(int j=0; j<nJets; j++) {
+          for(int k=j+1; k<nJets; k++) {
+            if(signalJets[j]->isBJet() && signalJets[k]->isBJet()) passBJetCut=true;
+          }
+        }
       }
 
       //mjjj combinations
@@ -176,67 +176,67 @@ namespace Gambit {
       TLorentzVector jet5;
       TLorentzVector jet6;
       if(nJets>=6) {
-	int j1 = 0 ; int j2 = 0; int j3 = 0; int j4 = 0; int j5 = 0; //int j6 = 0;
-	for(int k=0; k<nJets; k++) {
-	  for(int l=0; l<nJets; l++) {
-	    if(k!=l) {
-	      jet1.SetPtEtaPhiE(signalJets[k]->pT(),signalJets[k]->eta(),signalJets[k]->phi(),signalJets[k]->E());
-	      jet2.SetPtEtaPhiE(signalJets[l]->pT(),signalJets[l]->eta(),signalJets[l]->phi(),signalJets[l]->E());
-	      if(jet1.DeltaR(jet2)<mindphi_12) {
-		j1 = k;
-		j2 = l;
-		mindphi_12 = jet1.DeltaR(jet2);
-		W1 = jet1+jet2;
-	      }
-	    }
-	  }
-	}
-	double mindphi_w1j3 = 9999.;
-	for(int p=0; p<nJets; p++) {
-	  if(p!=j1 && p!=j2) {
-	    jet3.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
-	    if(jet3.DeltaR(W1)<mindphi_w1j3) {
-	      j3 = p;
-	      mindphi_w1j3 = jet3.DeltaR(W1);
-	      T1 = W1+jet3;
-	    }
-	  }
-	}
-	double mindphi_45 = 9999.;
-	for(int k=0; k<nJets; k++) {
-	  for(int l=0; l<nJets; l++) {
-	    if(k!=j1 && k!=j2 && k!=j3 && l!=j1 && l!=j2 && l!=j3 && k!=l) {
-	      jet4.SetPtEtaPhiE(signalJets[k]->pT(),signalJets[k]->eta(),signalJets[k]->phi(),signalJets[k]->E());
-	      jet5.SetPtEtaPhiE(signalJets[l]->pT(),signalJets[l]->eta(),signalJets[l]->phi(),signalJets[l]->E());
-	      if(jet4.DeltaR(jet5)<mindphi_45) {
-		j4 = k;
-		j5 = l;
-		mindphi_45 = jet4.DeltaR(jet5);
-		W2 = jet4+jet5;
-	      }
-	    }
-	  }
-	}
-	double mindphi_w2j6 = 9999.;
-	for(int p=0; p<nJets; p++) {
-	  if(p!=j1 && p!=j2 && p!=j3 && p!=j4 && p!=j5) {
-	    jet6.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
-	    if(jet6.DeltaR(W2)<mindphi_w2j6) {
-	      //j6 = p;
-	      mindphi_w2j6 = jet6.DeltaR(W2);
-	      T2 = W2+jet6;
-	    }
-	  }
-	}
+        int j1 = 0 ; int j2 = 0; int j3 = 0; int j4 = 0; int j5 = 0; //int j6 = 0;
+        for(int k=0; k<nJets; k++) {
+          for(int l=0; l<nJets; l++) {
+            if(k!=l) {
+              jet1.SetPtEtaPhiE(signalJets[k]->pT(),signalJets[k]->eta(),signalJets[k]->phi(),signalJets[k]->E());
+              jet2.SetPtEtaPhiE(signalJets[l]->pT(),signalJets[l]->eta(),signalJets[l]->phi(),signalJets[l]->E());
+              if(jet1.DeltaR(jet2)<mindphi_12) {
+                j1 = k;
+                j2 = l;
+                mindphi_12 = jet1.DeltaR(jet2);
+                W1 = jet1+jet2;
+              }
+            }
+          }
+        }
+        double mindphi_w1j3 = 9999.;
+        for(int p=0; p<nJets; p++) {
+          if(p!=j1 && p!=j2) {
+            jet3.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
+            if(jet3.DeltaR(W1)<mindphi_w1j3) {
+              j3 = p;
+              mindphi_w1j3 = jet3.DeltaR(W1);
+              T1 = W1+jet3;
+            }
+          }
+        }
+        double mindphi_45 = 9999.;
+        for(int k=0; k<nJets; k++) {
+          for(int l=0; l<nJets; l++) {
+            if(k!=j1 && k!=j2 && k!=j3 && l!=j1 && l!=j2 && l!=j3 && k!=l) {
+              jet4.SetPtEtaPhiE(signalJets[k]->pT(),signalJets[k]->eta(),signalJets[k]->phi(),signalJets[k]->E());
+              jet5.SetPtEtaPhiE(signalJets[l]->pT(),signalJets[l]->eta(),signalJets[l]->phi(),signalJets[l]->E());
+              if(jet4.DeltaR(jet5)<mindphi_45) {
+                j4 = k;
+                j5 = l;
+                mindphi_45 = jet4.DeltaR(jet5);
+                W2 = jet4+jet5;
+              }
+            }
+          }
+        }
+        double mindphi_w2j6 = 9999.;
+        for(int p=0; p<nJets; p++) {
+          if(p!=j1 && p!=j2 && p!=j3 && p!=j4 && p!=j5) {
+            jet6.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
+            if(jet6.DeltaR(W2)<mindphi_w2j6) {
+              //j6 = p;
+              mindphi_w2j6 = jet6.DeltaR(W2);
+              T2 = W2+jet6;
+            }
+          }
+        }
 
-	if(fabs(T1.M()-173.)<fabs(T2.M()-173.)) {
-	  mjjj0 = T1;
-	  mjjj1 = T2;
-	}
-	else {
-	  mjjj0 = T2;
-	  mjjj1 = T1;
-	}
+        if(fabs(T1.M()-173.)<fabs(T2.M()-173.)) {
+          mjjj0 = T1;
+          mjjj1 = T2;
+        }
+        else {
+          mjjj0 = T2;
+          mjjj1 = T1;
+        }
 
       }
 
@@ -257,13 +257,13 @@ namespace Gambit {
       float minphi =9999.;
       int whichb=0;
       for(int j=0; j<nJets; j++) {
-	if(signalJets[j]->isBJet()) {
-	  if(fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())))<minphi) {
-	    minphi = fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())));
-	    dphi_bjetmet = minphi;
-	    whichb=j;
-	  }
-	}
+        if(signalJets[j]->isBJet()) {
+          if(fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())))<minphi) {
+            minphi = fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())));
+            dphi_bjetmet = minphi;
+            whichb=j;
+          }
+        }
       }
 
       float mT_bjetmet = 0;
@@ -272,13 +272,13 @@ namespace Gambit {
       bool cut_tau=true;
       //Tau Veto
       for (int j=0; j<nJets; j++) {
-	if(!signalJets[j]->isBJet() && std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
-	  cut_tau=false;
+        if(!signalJets[j]->isBJet() && std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
+          cut_tau=false;
       }
       //Calculate met/sqrt(HT) (use four leading jets only)
       //float HT=0;
       //if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
-     
+
       //Calculate mT
       P4 lepVec;
       if(nElectrons==1)lepVec=signalElectrons[0]->mom();
@@ -293,7 +293,7 @@ namespace Gambit {
       //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
       float meff = met + lepVec.pT();
       for (Jet* jet : signalJets) {
-	if(jet->pT()>30.)meff += jet->pT();
+        if(jet->pT()>30.)meff += jet->pT();
       }
       //Cutflow flags
       bool cut_mjjj0=false;
@@ -330,8 +330,8 @@ namespace Gambit {
       if(met>300.)cut_METGt300=true;
       if(met>350.)cut_METGt350=true;
       if(nJets>=6) {
-	if(mjjj0.M()<270 && mjjj0.M()>80) cut_mjjj0=true;
-	if(mjjj1.M()<270 && mjjj1.M()>80) cut_mjjj1=true;
+        if(mjjj0.M()<270 && mjjj0.M()>80) cut_mjjj0=true;
+        if(mjjj1.M()<270 && mjjj1.M()>80) cut_mjjj1=true;
       }
 
       cutFlowVector_str[0] = "No cuts ";
@@ -352,41 +352,41 @@ namespace Gambit {
       cutFlowVector_str[15] = "MET > 350 ";
 
       for(int j=0;j<NCUTS;j++){
-	if(
-	   (j==0) ||
+        if(
+           (j==0) ||
 
-	   (j==1 && cut_MuonVeto) ||
+           (j==1 && cut_MuonVeto) ||
 
-	   (j==2 && cut_ElectronVeto && cut_MuonVeto) ||
+           (j==2 && cut_ElectronVeto && cut_MuonVeto) ||
 
-	   (j==3 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130) ||
+           (j==3 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130) ||
 
-	   (j==4 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets) ||
+           (j==4 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets) ||
 
-	   (j==5 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets) ||
+           (j==5 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets) ||
 
-	   (j==6 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau) ||
+           (j==6 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau) ||
 
            (j==7 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag) ||
 
-	   (j==8 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175) ||
+           (j==8 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175) ||
 
-	   (j==9 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0) ||
+           (j==9 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0) ||
 
-	   (j==10 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1) ||
+           (j==10 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1) ||
 
-	   (j==11 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt150) ||
+           (j==11 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt150) ||
 
-	   (j==12 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt200) ||
+           (j==12 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt200) ||
 
-	   (j==13 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt250) ||
+           (j==13 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt250) ||
 
-	   (j==14 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt300) ||
+           (j==14 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt300) ||
 
-	   (j==15 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt350) )
+           (j==15 && cut_ElectronVeto && cut_MuonVeto && cut_METGt130 && cut_6jets && cut_dPhiJets && cut_tau && cut_Btag && cut_mTbjetmetGt175 && cut_mjjj0 && cut_mjjj1 && cut_METGt350) )
 
 
-	  cutFlowVector[j]++;
+          cutFlowVector[j]++;
       }
 
       //We're now ready to apply the cuts for each signal region
@@ -413,7 +413,7 @@ namespace Gambit {
 
       std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
       for(int j=0; j<NCUTS; j++) {
-	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
+        std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
       }
       cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
@@ -428,8 +428,10 @@ namespace Gambit {
       return 0;
     }
 
+  };
 
 
+  DEFINE_ANAFACTORY(ATLAS_0LEPStop_20invfb)
 
-};
+
 }
