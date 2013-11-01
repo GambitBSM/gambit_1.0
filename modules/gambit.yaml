@@ -64,9 +64,9 @@ adhoc:
   module:       ""
 
 # Test loop manager
-- purpose:      Likelihood
-  capability:   nevents_like
-  type:         double
+#- purpose:      Likelihood
+#  capability:   nevents_like
+#  type:         double
 
 # Uncomment to test FlavBit
 #- purpose:      Likelihood

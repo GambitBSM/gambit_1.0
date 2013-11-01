@@ -19,7 +19,11 @@
 #ifndef __priors_hpp__
 #define __priors_hpp__
 
-#include <math.h>
+#include <cmath>
+#include <vector>
+#include <set>
+#include <map>
+#include <algorithm>
 
 namespace Gambit {
 
@@ -49,7 +53,7 @@ namespace Priors {
    // Helper functions:
    // insert/retrieve multiple elements from vectors by index
    template <class T>
-   std::vector<T> get_many(const std::vector<T>& in_vec,const std::vector<int> indices)
+   std::vector<T> get_many(const std::vector<T>& in_vec,const std::vector<int>& indices)
    {
       std::vector<T> out_vec;
       for (std::vector<int>::const_iterator it=indices.begin(); it!=indices.end(); it++)
@@ -60,10 +64,12 @@ namespace Priors {
    }
 
    template <class T>
-   std::vector<T> set_many(std::vector<T>& inout_vec,const std::vector<int> indices,const std::vector<T>& values)
+   void set_many(std::vector<T>& inout_vec,const std::vector<int>& indices,const std::vector<T>& values)
    {
       int i=0;
-      for (std::vector<int>::const_iterator& it=indices.begin(); it!=indices.end(); it++)
+      std::vector<int>::const_iterator it;
+      
+      for (it=indices.begin(); it!=indices.end(); ++it)
       {
         ///TODO; should check that "indices" and "values" are the same size, and that inout_vec is large enough.
         inout_vec[*it] = values[i];
@@ -71,8 +77,6 @@ namespace Priors {
       }
       // inout_vec is modified in place.
    }
-
-
 
    // ------------------1D prior function library------------------------
 
@@ -82,14 +86,16 @@ namespace Priors {
    // 'flat' prior
    // Transforms x to a sample from the uniform interval [a,b].
    
-   double flatprior (double x, double a, double b) { 
+   double flatprior (double x, double a, double b) 
+   { 
        return x*(b-a) + a;
    }
    
    // 'log' prior
    // Transforms x=log(y) to a sample from the uniform interval [log(a),log(b)].
    // The base is irrelevant since it is just a scaling factor which normalises out
-   double logprior (double x, double a, double b) {    
+   double logprior (double x, double a, double b) 
+   {   
        return exp( x*(log(b)-log(a)) + log(a) );
    }
    
@@ -100,7 +106,7 @@ namespace Priors {
    class BasePrior
    {
       public:
-         virtual std::vector<double> transform(std::vector<double>) = 0;
+         virtual std::vector<double> transform(const std::vector<double>) const = 0;
    };
 
    // Simple 1d flat prior
@@ -114,7 +120,7 @@ namespace Priors {
    
          // Transformation from unit interval to specified range
          // (need to use vectors to be compatible with BasePrior virtual function)
-         std::vector<double> transform(std::vector<double> unitpars)
+         std::vector<double> transform(const std::vector<double> unitpars) const
          {
             std::vector<double> transformedpars(1,flatprior(unitpars[0],lower,upper));
             return transformedpars;
@@ -137,7 +143,7 @@ namespace Priors {
    
          // Transformation from unit interval to specified range
          // (need to use vectors to be compatible with BasePrior virtual function)
-         std::vector<double> transform(std::vector<double> unitpars)
+         std::vector<double> transform(const std::vector<double> unitpars) const
          {
             std::vector<double> transformedpars(1,logprior(unitpars[0],lower,upper));
             return transformedpars;
@@ -159,7 +165,7 @@ namespace Priors {
          NdFlatPrior(std::vector<std::pair<double,double>> ranges) : my_ranges(ranges) { }
    
          // Transformation from unit hypercube to my_ranges
-         std::vector<double> transform(std::vector<double> unitpars)
+         std::vector<double> transform(const std::vector<double> unitpars) const
          {
             double lower;
             double upper;
@@ -182,40 +188,38 @@ namespace Priors {
    // This is the class to use for setting simple 1D priors (from the library above) on individual parameters.
    // It actually also allows for any combination of MD priors to be set on any combination of subspaces of
    // the full prior.
-   typedef std::vector<std::pair<BasePrior*,std::vector<int>>>::iterator subpriors_it;
+   typedef std::map<std::vector<int>,BasePrior*>::const_iterator subpriors_it;
    class CompositePrior: public BasePrior
    {
       public:
    
          // Constructor
-         CompositePrior(std::vector<std::pair<BasePrior*,std::vector<int>>>& subpriors)
+         CompositePrior(const std::map<std::vector<int>,BasePrior*>& subpriors)
            : my_subpriors(subpriors) 
          { 
-           // This constructor takes a complicated argument, let me explain it:
-           // std::vector<std::pair<BasePrior&,std::vector<int>>>&
-           //
-           // Each element of the vector is a pair:
-           // std::pair<BasePrior&,std::vector<int>>
-           // Each pair contains a reference to a prior object, and a vector of ints.
-           // The job of the vector of ints is to specify the indices of the parameters
-           // in the hypercube to which each component prior transformation is to be
-           // applied.
+           // Each element of the input map has a key
+           // std::vector<int>
+           // which specifies which dimensions of the hypercube the subprior applies to,
+           // and a value
+           // BasePrior*
+           // which is a pointer to the prior object which acts on those dimensions.
            //
            // First, check to make sure none of the parameters indices are used twice,
            // and that there are no 'gaps'
            //
            std::vector<int> allindices; // put indices here as they are found 
-           for (subpriors_it it = subpriors.begin(); it != subpriors.end(); it++)
+           for (subpriors_it it = subpriors.begin(); it != subpriors.end(); ++it)
            {
              // Add new indices to the 'allindices' vector
-             std::vector<int> newindices = it->second;
-             allindices.insert(allindices.end(), newindices.begin(). newindices.end());
+             std::vector<int> newindices = it->first;
+             allindices.reserve( allindices.size() + newindices.size() );
+             allindices.insert( allindices.end(), newindices.begin(), newindices.end() );
            }
 
            // Now check if there were any duplicates, and report them if there were
            std::set<int> duplicates;
            std::vector<int> missing;
-           std::sort(allindices.begin(), allindices.end())
+           std::sort(allindices.begin(), allindices.end());
            for (int i=0; i<allindices.size()-1; i++)
            {
              // Check for duplicates
@@ -243,7 +247,7 @@ namespace Priors {
              { 
                std::cout<<"  Duplicate parameter vector indices detected!"<<std::endl;
                std::cout<<"  duplicates: ";
-               for (std::set<int>::iterator it=duplicates.begin(); it != duplicates.end(); it++)
+               for (std::set<int>::iterator it=duplicates.begin(); it != duplicates.end(); ++it)
                {
                  std::cout<<*it;
                }
@@ -253,7 +257,7 @@ namespace Priors {
              { 
                std::cout<<"  Missing parameter vector indices detected!"<<std::endl;
                std::cout<<"  missing: ";
-               for (std::vector<int>::iterator it=missing.begin(); it != missing.end(); it++)
+               for (std::vector<int>::iterator it=missing.begin(); it != missing.end(); ++it)
                {
                  std::cout<<*it;
                }
@@ -266,14 +270,22 @@ namespace Priors {
          } // End constructor
 
          // Transformation from unit hypercube to my_ranges
-         std::vector<double> transform(std::vector<double> unitpars)
+         std::vector<double> transform(const std::vector<double> unitpars) const
          {
-            std::vector<double> transformedpars(unitpars.size());
-            for (subprior_it it=my_subpriors.begin(); it!=my_subpriors.end(); it++)
+            std::vector<double> transformedpars(unitpars.size(),0.);
+            
+            for (subpriors_it it=my_subpriors.begin(); it!=my_subpriors.end(); ++it)
             {
-              std::vector<int> indices = it->second;
+              std::vector<int> indices = it->first;
+              // Better make sure the sub-prior object hasn't been lost somehow:
+              if (it->second == NULL)
+              {
+                 //TODO: insert real error
+                 std::cout<<"Uh oh, one of the pointers to a subprior owned by CompositePrior points at nothing :(. This should never happen: check Scanner code to make sure prior object is initialised properly, and/or priors.hpp for bugs"<<std::endl;
+                 exit(1);           
+              }
               // Do each sub-transformation
-              std::vector<double> values = (it->first)->transform(get_many(unitpars,indices));
+              std::vector<double> values = (it->second)->transform(get_many(unitpars,indices));
               // Put transformed parameters into output vector
               set_many(transformedpars,indices,values);
             }
@@ -282,7 +294,7 @@ namespace Priors {
            
       private:
          // References to component prior objects
-         std::vector<std::pair<BasePrior*,std::vector<int>>>& my_subpriors;
+         const std::map<std::vector<int>,BasePrior*>& my_subpriors;
    };
 
 } // end namespace Priors

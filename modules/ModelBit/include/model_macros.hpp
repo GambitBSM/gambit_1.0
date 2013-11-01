@@ -56,32 +56,30 @@
   }                                                                            \
 
 
-#define START_PARAMETERISATION                                                 \
+#define START_MODEL                                                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
-    ADD_TAG_IN_CURRENT_NAMESPACE(CAT_5(MODEL,_,PARAMETERISATION,_,parameters)) \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL,_,parameters))                    \
     /*FIXME PS: there is some duplication here -- we only really need to use the one tag as follows: */ \
-    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL,_,PARAMETERISATION))        \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
                                                                                \
     namespace Models                                                           \
     {                                                                          \
                                                                                \
-      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      namespace MODEL                                                          \
       {                                                                        \
                                                                                \
         /* Basic machinery, same as for modules 
            (macro from module_macros_incore.hpp) */                            \
-        CORE_START_MODULE_COMMON( CAT_3(MODEL,_,PARAMETERISATION) )            \
+        CORE_START_MODULE_COMMON(MODEL)                                        \
                                                                                \
-        /* Model lineage                                                       \  
-           Note: each parameterisation is automatically marked as a child of   \
-           the host model. They are treated internally as seperate models.     \
-           Child models can indeed inherit directly from these if desired. */  \
-        const std::vector<str> lineage = vecappend(PARENT::lineage,            \
-         STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)) );                         \
+        /* Model lineage                                                       
+           Each model is automatically marked as a child of the parent model.*/\
+        const std::vector<str> lineage = vecappend( PARENT::lineage,           \
+                                                    STRINGIFY(MODEL) );        \
                                                                                \
         /* Congruency function (checks if this model is a descendent of the
            specified model (or is itself the specified model) ) 
@@ -101,29 +99,26 @@
         /* Runtime addition of model to GAMBIT (modelClaw) database */         \
         void rt_add_model()                                                    \
         {                                                                      \
-          modelClaw.add_model(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)));     \
+          modelClaw.add_model(STRINGIFY(MODEL));                               \
         }                                                                      \
                                                                                \
         /* Runtime addition of model's parents to ModelClaw database */        \
         /* ///TODO: need to change this to allow multiple parents */           \
         void rt_add_parents()                                                  \
         {                                                                      \
-          modelClaw.add_parents(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)),    \
-           STRINGIFY(PARENT));                                                 \
+          modelClaw.add_parents(STRINGIFY(MODEL), STRINGIFY(PARENT));          \
         }                                                                      \
                                                                                \
         /* Runtime addition of model's lineage to ModelClaw database */        \
         void rt_add_lineage()                                                  \
         {                                                                      \
-          modelClaw.add_lineage(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)),    \
-           lineage);                                                           \
+          modelClaw.add_lineage(STRINGIFY(MODEL), lineage);                    \
         }                                                                      \
                                                                                \
         /* Runtime addition of model-as-a-descendant to ModelClaw databases */ \
         void rt_add_descendant()                                               \
         {                                                                      \
-          modelClaw.add_descendant(STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION)), \
-           &is_descendant_of);                                                 \
+          modelClaw.add_descendant(STRINGIFY(MODEL), &is_descendant_of);       \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
@@ -150,7 +145,8 @@
         /* Add appropriate 'provides' check to confirm the parameters object 
            as a CAPABILITY of this model. */                                   \
         template <>                                                            \
-        bool provides<Tags::CAT_5(MODEL,_,PARAMETERISATION,_,parameters)>() {  \
+        bool provides<Tags::CAT_3(MODEL,_,parameters)>()                       \
+        {                                                                      \
           return true;                                                         \
         }                                                                      \
                                                                                \
@@ -175,8 +171,7 @@
           {                                                                    \
             /* Need to populate the functor parameters object with model
                parameters. */                                                  \
-            cout<<"Initialising " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))\
-            " parameter object"<<endl;                                         \
+            cout<<"Initialising " STRINGIFY(MODEL) " parameter object"<<endl;  \
                                                                                \
             functorobject._definePars(parameterkeys);                          \
             /*parametersptr = &functorobject;  now obsolete*/                  \
@@ -218,7 +213,7 @@
     namespace Models                                                           \
     {                                                                          \
                                                                                \
-      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      namespace MODEL                                                          \
       {                                                                        \
                                                                                \
         /* Indicate that this model::parameterisation can provide quantity 
@@ -234,8 +229,7 @@
         void PARAMETER (double &);                                             \
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
-        MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,                              \
-                      CAT_3(MODEL,_,PARAMETERISATION),0)                       \
+        MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,MODEL,0)                      \
                                                                                \
       }                                                                        \
                                                                                \
@@ -245,8 +239,7 @@
                                                                                \
   /* Create dependency of PARAMETER functor on
      host model parameters object */                                           \
-  MODEL_DEPENDENCY(CAT_5(MODEL,_,PARAMETERISATION,_,parameters),               \
-   ModelParameters, CAT_3(MODEL,_,PARAMETERISATION), PARAMETER)                \
+  MODEL_DEPENDENCY(CAT_3(MODEL,_,parameters),ModelParameters,MODEL,PARAMETER)  \
                                                                                \
   /* Define the actual parameter setting function, now that we have the
      functor and its dependency */                                             \
@@ -256,7 +249,7 @@
     namespace Models                                                           \
     {                                                                          \
                                                                                \
-      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      namespace MODEL                                                          \
       {                                                                        \
                                                                                \
         /* The wrapper function which extracts the value of PARAMETER from
@@ -265,8 +258,7 @@
            core */                                                             \
         void PARAMETER (double &result) {                                      \
           using namespace SafePointers::PARAMETER;                             \
-          result = Dep::CAT_5(MODEL,_,PARAMETERISATION,_,parameters)\
-                          ->getValue(STRINGIFY(PARAMETER));                    \
+          result = Dep::CAT_3(MODEL,_,parameters)->getValue(STRINGIFY(PARAMETER)); \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -287,7 +279,7 @@
     namespace Models                                                           \
     {                                                                          \
                                                                                \
-      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      namespace MODEL                                                          \
       {                                                                        \
                                                                                \
         /* Add this parameter to the parameterkeys list (used later to         \
@@ -360,7 +352,7 @@
     namespace Models                                                           \
     {                                                                          \
                                                                                \
-      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      namespace MODEL                                                          \
       {                                                                        \
                                                                                \
         /* Indicate that this model::parameterisation can provide quantity     \
@@ -377,7 +369,7 @@
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,              \
-          CAT_3(MODEL_X,_,parameters),CAT_3(MODEL,_,PARAMETERISATION),0)       \
+          CAT_3(MODEL_X,_,parameters),MODEL,0)                                 \
                                                                                \
       }                                                                        \
                                                                                \
@@ -386,8 +378,7 @@
   }                                                                            \
                                                                                \
   /* Automatically add a dependency on the host model's parameters */          \
-  INTERPRET_AS_X__DEPENDENCY(MODEL_X,                                          \
-   CAT_5(MODEL,_,PARAMETERISATION,_,parameters), ModelParameters)              \
+  INTERPRET_AS_X__DEPENDENCY(MODEL_X,CAT_3(MODEL,_,parameters),ModelParameters) \
   
   
 // Actually define the interpret_as_X function. Alternatively this could be
@@ -403,7 +394,7 @@
     namespace Models                                                           \
     {                                                                          \
                                                                                \
-      namespace CAT_3(MODEL,_,PARAMETERISATION)                                \
+      namespace MODEL                                                          \
       {                                                                        \
                                                                                \
         /* Track whether MODEL_X_parameters functor has been initialised yet */\
@@ -422,7 +413,7 @@
                the dependency system if we like. Currently this won't compile
                if MODEL_X has not been defined prior to the current model. */  \
             cout<<"Initialising " STRINGIFY(MODEL_X) " parameter object "      \
-            "at behest of model " STRINGIFY(CAT_3(MODEL,_,PARAMETERISATION))   \
+            "at behest of model " STRINGIFY(MODEL)                             \
             <<endl;                                                            \
                                                                                \
             target_parameters._definePars(Models::MODEL_X::parameterkeys);     \
@@ -441,10 +432,7 @@
   }                                                                            \
 
 #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
-  MODEL_DEPENDENCY(DEP, TYPE,\
-      CAT_3(MODEL,_,PARAMETERISATION),\
-      CAT_3(MODEL_X,_,parameters)                                              \
-      )                                                                        \
+  MODEL_DEPENDENCY(DEP, TYPE, MODEL, CAT_3(MODEL_X,_,parameters) )             \
 
 // Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 #define INTERPRET_AS_PARENT__BEGIN                                             \
@@ -519,8 +507,7 @@
 /// Core's primary model functor list (no other functors are allowed here)         
 #define MAKE_PRIMARY_MODEL_FUNCTOR                                             \
   MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(primary_parameters,ModelParameters,          \
-    CAT_5(MODEL,_,PARAMETERISATION,_,parameters),                              \
-    CAT_3(MODEL,_,PARAMETERISATION))                                           \
+    CAT_3(MODEL,_,parameters),MODEL)                                           \
   
 /// Version of MAKE_FUNCTOR modified to build primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(FUNCTION,TYPE,CAPABILITY,ORIGIN)       \

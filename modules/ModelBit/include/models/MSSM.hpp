@@ -22,25 +22,19 @@
 
 #include <string>
 
-#define MODEL test_parent
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+#define MODEL test_parent_I
+  START_MODEL
   DEFINEPARS(p1,p2,p3)
-  #undef PARAMETERISATION
 #undef MODEL
 
 #define MODEL NormalDist
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+  START_MODEL
   DEFINEPARS(mu,sigma)
-  #undef PARAMETERISATION
 #undef MODEL
 
-#define MODEL MSSM
-#define PARENT test_parent_I /* We may define a different parent for
-  different parameterisations if we like. */
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+#define MODEL MSSM_I
+#define PARENT test_parent_I
+  START_MODEL
   DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
   INTERPRET_AS_PARENT__BEGIN
   INTERPRET_AS_PARENT__DEFINE(MSSM_I_IAPfunc)
@@ -65,7 +59,6 @@
       parentparams.setValue("p3", 1.00*M1*M2*M3);
     }
     }}} //exiting namespaces
-  #undef PARAMETERISATION
 #undef PARENT
 #undef MODEL
 
@@ -76,14 +69,10 @@
 // ( e.g. CMSSM_I_M0 )
 // If a parameter is to be matched to a "proper" capability then this needs to 
 // be specified using the long method.
-#define MODEL CMSSM
-// Currently only the parameterisations have a "lineage" vector, so we need to
-// pick one of those to inherit from. Probably need functions to map
-// horizontally between parametersations, similar to INTERPRET_AS_PARENT.
-#define PARENT MSSM_I
 
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+#define MODEL CMSSM_I
+#define PARENT MSSM_I
+  START_MODEL
   DEFINEPARS(M0, M12, A0, tanb, sgnmu)
   
     // Add in a sensibly named capability for good measure
@@ -131,44 +120,39 @@
     parentparams.setValue("AU3", 0);
   }
   }}} //exiting namespaces  
-  #undef PARAMETERISATION
-  
-  #define PARAMETERISATION II
-  START_PARAMETERISATION
+#undef PARENT
+#undef MODEL
+
+// Alternative parameterisations of models are treated just like any other model. You may like to have a "primary" parameterisation, and "alternative" parameterisations which are child models of the primary, with interpret-as-parent functions defined to convert from the alternate to the primary parameters.
+#define MODEL CMSSM_II
+#define PARENT MSSM_I  
+  START_MODEL
   DEFINEPARS(M0, M12, A0, B, mu)
-  #undef PARAMETERISATION
-  
 #undef PARENT
 #undef MODEL
 
 
 // Make second branch of model tree
 
-#define MODEL DMHalo_base
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+#define MODEL DMHalo_base_I
+  START_MODEL
   DEFINEPARS(null)
-  #undef PARAMETERISATION
 #undef MODEL   
 
-#define MODEL Gaussian_Halo
+#define MODEL Gaussian_Halo_I
 #define PARENT DMHalo_base_I
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+  START_MODEL
   DEFINEPARS(v_earth, par2, par3)   // Can call this more than once:
   DEFINEPARS(par4, par5, par6, par7, par8, par9, par10)
-  #undef PARAMETERISATION
 #undef PARENT
 #undef MODEL
 
 // Long way of defining a model. Individually specify parameter names and
 // the capabilities they map to. Also allows room to specify other things
 // about parameters if we like. 
-#define MODEL SomeOther_Halo
+#define MODEL SomeOther_Halo_I
 #define PARENT DMHalo_base_I
-
-  #define PARAMETERISATION I
-  START_PARAMETERISATION
+  START_MODEL
   
     #define PARAMETER v_earth
     MAP_TO_CAPABILITY(earthvel)
@@ -179,19 +163,10 @@
     MAP_TO_CAPABILITY(blah0cap)
     //DOSOMETHINGELSE(blah)
     #undef PARAMETER 
-
-  #undef PARAMETERISATION
   
 #undef PARENT
 #undef MODEL
 
-//  #define PARAMETER par2
-//    CAPABILITY(otherstuff)
-
-//INTERPRET_AS_PARENT(
-//  *insert real C++ code here*
-//)
-    
 
 // Currently cannot create "supermodels" as we could before, but I can
 // add this ability easily. Might have problems dealing with the
