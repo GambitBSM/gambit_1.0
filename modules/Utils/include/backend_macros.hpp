@@ -12,7 +12,7 @@
 ///   
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
-///  \date 2013 Mar, Apr
+///  \date 2013 Mar, Apr, Nov
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -37,11 +37,6 @@
 #include "util_types.hpp"
 #include "shared_types.hpp"
 
-#ifndef HAVE_MAC
-#define PHANDLE_DLMOPEN dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY)  
-#else
-#define PHANDLE_DLMOPEN dlopen(LIBPATH, RTLD_LAZY)  
-#endif
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
@@ -54,13 +49,22 @@ namespace Gambit                                                            \
                                                                             \
       void * pHandle;                                                       \
       void * pSym;                                                          \
-                                                                            \
+      bool present;                                                         \
       void loadLibrary()                                                    \
       {                                                                     \
-        /*pHandle = dlmopen(LM_ID_NEWLM, LIBPATH, RTLD_LAZY);    */             \
-        pHandle = PHANDLE_DLMOPEN;                                          \
-        if(not pHandle) { std::cout << dlerror() << std::endl; }            \
-        else std::cout << "Succeeded in loading " << LIBPATH << std::endl;  \
+        pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
+        if(not pHandle)                                                     \
+        {                                                                   \
+          std::cout << "Failed loading library from " << LIBPATH            \
+                    << " due to error: " << dlerror() << std::endl;         \
+          std::cout << "All functors generated from this library will get status=0" << std::endl; \
+          present = false;                                                  \
+        }                                                                   \
+        else                                                                \
+        {                                                                   \
+          std::cout << "Succeeded in loading " << LIBPATH << std::endl;     \
+          present = true;                                                   \
+        }                                                                   \
       }                                                                     \
                                                                             \
       /*The code within the void function 'loadLibrary' is executed         \
@@ -118,8 +122,27 @@ namespace Gambit                                                            \
                                                                             \
       void CAT(constructVarPointer_,NAME)()                                 \
       {                                                                     \
+        /* Obtain a void pointer (pSym) to the library symbol. */           \
+        /* -- First clear error code by calling dlerror() */                \
+        dlerror();                                                          \
+        /* -- Obtain pointer from symbol */                                 \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME = reinterpret_cast<TYPE*>(pSym);                               \
+        /* -- Disable the functor if the library is not present or the symbol not found. */ \
+        if(present == false)                                                \
+        {                                                                   \
+          Functown::get##NAME.setStatus(0);                                 \
+          Functown::set##NAME.setStatus(0);                                 \
+        }                                                                   \
+        else if(dlerror() != NULL)                                          \
+        {                                                                   \
+          std::cout << "Library symbol " << SYMBOLNAME << " not found." << std::endl;          \
+          std::cout << "The functor generated for this symbol will get status=0" << std::endl; \
+          Functown::get##NAME.setStatus(0);                                 \
+          Functown::set##NAME.setStatus(0);                                 \
+        }                                                                   \
+                                                                            \
+        /* Register functors */                                             \
         Core.registerBackendFunctor(Functown::get##NAME);                   \
         Core.registerBackendFunctor(Functown::set##NAME);                   \
       }                                                                     \
@@ -240,16 +263,32 @@ namespace Gambit                                                            \
          STRINGIFY(TYPE),                                                   \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
+                                                                            \
       } /* end namespace Functown */                                        \
+                                                                            \
                                                                             \
       void CAT(constructFuncPointer_,NAME)()                                \
       {                                                                     \
         /* Obtain a void pointer (pSym) to the library symbol. */           \
+        /* -- First clear error code by calling dlerror() */                \
+        dlerror();                                                          \
+        /* -- Obtain pointer from symbol */                                 \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
-        /* Convert it to type (NAME_type) and assign                        \
-           it to pointer NAME. */                                           \
         NAME = reinterpret_cast<NAME##_type>(pSym);                         \
         Functown::NAME.updatePointer(NAME);                                 \
+        /* -- Disable the functor if the library is not present or the symbol not found. */ \
+        if(present == false)                                                \
+        {                                                                   \
+          Functown::NAME.setStatus(0);                                      \
+        }                                                                   \
+        else if(dlerror() != NULL)                                          \
+        {                                                                   \
+          std::cout << "Library symbol " << SYMBOLNAME << " not found." << std::endl;          \
+          std::cout << "The functor generated for this symbol will get status=0" << std::endl; \
+          Functown::NAME.setStatus(0);                                      \
+        }                                                                   \
+                                                                            \
+        /* Register functor. */                                             \
         Core.registerBackendFunctor(Functown::NAME);                        \
       }                                                                     \
                                                                             \
