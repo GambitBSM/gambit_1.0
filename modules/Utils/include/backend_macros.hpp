@@ -16,11 +16,11 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 June
+///  \date 2013 Jun
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 July
+///  \date 2013 Jul, Nov
 ///
 ///  *********************************************
 
@@ -56,8 +56,11 @@ namespace Gambit                                                            \
         if(not pHandle)                                                     \
         {                                                                   \
           std::cout << "Failed loading library from " << LIBPATH            \
-                    << " due to error: " << dlerror() << std::endl;         \
-          std::cout << "All functors generated from this library will get status=0" << std::endl; \
+                    << " due to error:" << std::endl                        \
+                    << " " << dlerror() << std::endl;                       \
+          std::cout << "Functions loaded from this library will be register"\
+                       "ed as usual," << std::endl << "but will have their "\
+                       "status set to 'disabled'." << std::endl;            \
           present = false;                                                  \
         }                                                                   \
         else                                                                \
@@ -128,7 +131,8 @@ namespace Gambit                                                            \
         /* -- Obtain pointer from symbol */                                 \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME = reinterpret_cast<TYPE*>(pSym);                               \
-        /* -- Disable the functor if the library is not present or the symbol not found. */ \
+        /* -- Disable the functor if the library is not present or the      \
+        symbol not found. */                                                \
         if(present == false)                                                \
         {                                                                   \
           Functown::get##NAME.setStatus(0);                                 \
@@ -136,8 +140,10 @@ namespace Gambit                                                            \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
-          std::cout << "Library symbol " << SYMBOLNAME << " not found." << std::endl;          \
-          std::cout << "The functor generated for this symbol will get status=0" << std::endl; \
+          std::cout << "Library symbol " << SYMBOLNAME << " not found."     \
+           << std::endl;                                                    \
+          std::cout << "The functor generated for this symbol will get "    \
+           "status=disabled." << std::endl;                                 \
           Functown::get##NAME.setStatus(0);                                 \
           Functown::set##NAME.setStatus(0);                                 \
         }                                                                   \
@@ -276,15 +282,18 @@ namespace Gambit                                                            \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME = reinterpret_cast<NAME##_type>(pSym);                         \
         Functown::NAME.updatePointer(NAME);                                 \
-        /* -- Disable the functor if the library is not present or the symbol not found. */ \
+        /* -- Disable the functor if the library is not present or the      \
+        symbol not found. */                                                \
         if(present == false)                                                \
         {                                                                   \
           Functown::NAME.setStatus(0);                                      \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
-          std::cout << "Library symbol " << SYMBOLNAME << " not found." << std::endl;          \
-          std::cout << "The functor generated for this symbol will get status=0" << std::endl; \
+          std::cout << "Library symbol " << SYMBOLNAME << " not found."     \
+           << std::endl;                                                    \
+          std::cout << "The functor generated for this symbol will get "    \
+           "status=disabled." << std::endl;                                 \
           Functown::NAME.setStatus(0);                                      \
         }                                                                   \
                                                                             \
