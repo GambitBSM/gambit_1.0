@@ -47,7 +47,7 @@ namespace Gambit
                                 : boundCore(&core), boundIniFile(&iniFile), dependencyResolver(&a), flag(0x00)
                 {
                         //do you have xterm?
-                        hasXTerm = (system("which xterm") == 0) ? true : false;
+                        hasXTerm = (std::system("which xterm") == 0) ? true : false;
                         
                         //saving std output
                         defout = dup(STDOUT_FILENO);
@@ -58,7 +58,7 @@ namespace Gambit
                                 redirect = iniFile.getValue<bool>("enable_redirect");
                                 if (redirect)
                                 {
-                                        hasXTerm = (system("which xterm") == 0) ? true : false;
+                                        hasXTerm = (std::system("which xterm") == 0) ? true : false;
                                         defOutExit = defout;
                                         atexit(gambitScannerExit);
                                 }
@@ -438,7 +438,7 @@ namespace Gambit
                                         }
                                         else
                                         {
-                                                verion = "";
+                                                version = "";
                                         }
                                 }
                                 else

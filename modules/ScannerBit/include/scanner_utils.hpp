@@ -51,7 +51,7 @@ namespace Gambit
                         if(fork() == 0)
                         {
                                 std::string cmd = std::string("xterm -T ") + file +  std::string(" -e cat ") + std::string(name);
-                                system(cmd.c_str());
+                                std::system(cmd.c_str());
                                 abort();
                         }
                         return fopen(name, "w");
