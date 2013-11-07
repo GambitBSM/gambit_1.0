@@ -25,54 +25,23 @@
 #include <map>
 #include <sstream>
 #include <gambit_module.hpp>
+#include "priors.hpp"
 #include <typeinfo>
 #include <cxxabi.h>
-#include "multinest.h"
 
 // Auxilliary classes and functions needed by multinest
-// (cloned largely from eggbox.cc)
+// (cloned largely from eggbox.cc, and modified to use cwrapper.f90 interface instead of multinest.h)
+
+// C++ prototypes for the main run function for multinest, as well as the loglike and dumper functions
+extern "C" void run(bool, bool, bool, int, double, double, int, int, int, int, int, double, char[], int, int[], \
+                    bool, bool, bool, bool, double, int, double (*)(double*,int,int,void*), \
+                    void (*)(int,int,int,double*,double*,double*,double,double,double,void*),void *);
+//extern "C" double loglike(double*, int, int, void *);
+//extern "C" void dumper(int, int, int, double*, double*, double*,
+//                       double, double, double, void*);
 
 namespace Gambit {
    
-   namespace Priors {
-
-      // Virtual base class for priors
-      class BasePrior
-      {
-         public:
-            virtual std::vector<double> transform(std::vector<double>) = 0;
-      };
-
-      // Temporary proxy for prior functions
-      // My proposal is to have a collection of classes like this floating around in Utils, or ModelBit or some such.
-      class FlatPrior: public BasePrior
-      {
-         public:
-      
-            // Constructor
-            FlatPrior(std::vector<std::pair<double,double>> ranges) : my_ranges(ranges) { }
-      
-            // Transformation from unit hypercube to my_ranges
-            std::vector<double> transform(std::vector<double> unitpars)
-            {
-               double lower;
-               double upper;
-               std::vector<double> transformedpars(my_ranges.size());
-               for (int i = 0; i < my_ranges.size(); i++)
-               {
-                  lower = my_ranges[i].first;
-                  upper = my_ranges[i].second;
-                  transformedpars[i] = lower + (upper - lower)*unitpars[i];
-               }
-               return transformedpars;
-            }
-            
-         private:
-            // Ranges for parameters
-            std::vector<std::pair<double,double>> my_ranges;
-      };
-   } // end namespace Priors
-
    namespace MultiNest {
 
       // Class to connect multinest log-likelihood function and ScannerBit likelihood function
@@ -80,9 +49,9 @@ namespace Gambit {
       {
          private:
             // Pointer to a ScannerBit::Function_Base
-            ::Gambit::Scanner::Function_Base *my_LogLike;
-            // Reference to the object containing the prior transformation
-            ::Gambit::Priors::BasePrior &my_Prior;
+            ::Gambit::Scanner::Function_Base *boundLogLike;
+            // Pointer to the object containing the prior transformation
+            const ::Gambit::Priors::BasePrior *boundPrior;
             // Number of free parameters
             int my_ndim;
  
@@ -90,8 +59,13 @@ namespace Gambit {
   
             // Constructor
             // Possibly replace the function pointer to the prior function with something nicer, some virtual base class object or something.
-            LogLikeWrapper(::Gambit::Scanner::Function_Base *LogLike, ::Gambit::Priors::BasePrior &prior, int ndim) 
-              : my_LogLike(LogLike), my_Prior(prior), my_ndim(ndim) { }
+            LogLikeWrapper(::Gambit::Scanner::Function_Base *LogLike, const ::Gambit::Priors::BasePrior &prior, int ndim) 
+              : boundLogLike(LogLike), boundPrior(&prior), my_ndim(ndim) 
+            {
+              // Test that the prior has been bound properly
+              //std::vector<double> fakecube(my_ndim,0.5);
+              //boundPrior->transform(fakecube);
+            }
    
             /******************************************** loglikelihood routine ****************************************************/
             
@@ -109,11 +83,12 @@ namespace Gambit {
             // Output arguments
             // lnew 						= loglikelihood
             
-            void LogLike(double *Cube, int &ndim, int &npars, double &lnew)
+            double LogLike(double *Cube, int ndim, int npars)
             {
                    // We need to get the unit interval parameters out of "Cube", transform them to their physical values, and then pass them to the Scanner LogLike function to compute the log likelihood value
                    std::vector<double> unitpars(my_ndim); 
                    std::vector<double> physicalpars(my_ndim);
+                   double lnew;
                    int i;
                    // Note: if (ndim!=my_ndim) we are going to have a problem!
    
@@ -121,13 +96,15 @@ namespace Gambit {
                    for(i = 0; i < ndim; i++)
                    {
                       unitpars[i] = Cube[i];
+                          std::cout<<unitpars[i]<<std::endl;
                    }
-          
+ 
+                   if (boundPrior==NULL) {std::cout<<"null pointer!"<<std::endl;}
                    // Transform hypercube parameters to physical values
-                   physicalpars = my_Prior.transform(unitpars);
+                   physicalpars = boundPrior->transform(unitpars);
    
                    // Compute log-likelihood
-             	   lnew = (*my_LogLike)(physicalpars);
+             	   lnew = (*boundLogLike)(physicalpars);
    
                    // Write the physical parameters back into Cube for multinest to write to output file (no other purpose)
                    // (at this point any extra observables that have been computed could also be added to Cube for transfer to the multinest-controlled output files. Must be sufficiently many slots reserved in Cube for this.
@@ -135,7 +112,9 @@ namespace Gambit {
                    {
                       Cube[i] = physicalpars[i];
                    }
+
                    // Done! (lnew will be used by MultiNest to guide the search)
+                   return lnew;                  
             }
    
             /************************************************* dumper routine ******************************************************/
@@ -162,57 +141,67 @@ namespace Gambit {
             // logZerr						= error on log evidence value
             // context						void pointer, any additional information
             
-            void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr)
+            void dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double *paramConstr, double maxLogLike, double logZ, double logZerr)
             {
             	// convert the 2D Fortran arrays to C++ arrays
             	
             	
             	// the posterior distribution
             	// postdist will have nPar parameters in the first nPar columns & loglike value & the posterior probability in the last two columns
+                // Ben: This no longer works since the input types are different from eggbox.cc due to our use of the wrapper in cwrapper.f90. Probably could fix it easily if we really want this stuff for some reason.	
+            	//int i, j;
             	
-            	int i, j;
-            	
-            	double postdist[nSamples][nPar + 2];
-            	for( i = 0; i < nPar + 2; i++ )
-            		for( j = 0; j < nSamples; j++ )
-            			postdist[j][i] = posterior[0][i * nSamples + j];
+            	//double postdist[nSamples][nPar + 2];
+            	//for( i = 0; i < nPar + 2; i++ )
+            	//	for( j = 0; j < nSamples; j++ )
+            	//		postdist[j][i] = (*posterior)[0][i * nSamples + j];
             		
             	// last set of live points
             	// pLivePts will have nPar parameters in the first nPar columns & loglike value in the last column
             	
-            	double pLivePts[nlive][nPar + 1];
-            	for( i = 0; i < nPar + 1; i++ )
-            		for( j = 0; j < nlive; j++ )
-            			pLivePts[j][i] = physLive[0][i * nlive + j];
+            	//double pLivePts[nlive][nPar + 1];
+            	//for( i = 0; i < nPar + 1; i++ )
+            	//	for( j = 0; j < nlive; j++ )
+            	//		pLivePts[j][i] = (*physLive)[0][i * nlive + j];
             }
              
             /***********************************************************************************************************************/   
-     };
+      };
+
+      // Global pointer to loglikelihood object (multinest seems to be messing up the memory associated with the context pointer when using the new cwrapper.f90 interface)
+      LogLikeWrapper *global_loglike_object;
 
       // Plain-vanilla functions to pass to Multinest for the callback
       
       // So I have always been confused about what the 'context' variable was good for; it seemed pointless. I now have an excellent answer! So here is the story:
       // We need to "dynamically" generate the LogLike function to be run by Multinest. Using a wrapper class whose internal state we can vary does this nicely. However, we cannot obtain regular function pointers to object member functions! The "this" pointer for the object is always required.
       // To get around this, we give Multinest the below "ordinary" functions to work with, and instead pass a pointer to the wrapper object in via the "context" pointer! Then we can do whatever we like with it! Problem solved.
-      void callback_LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context)
+      // Note: we are using the c interface from cwrapper.f90, so the function signature is a little different than in the multinest examples.
+      double callback_loglike(double *Cube, int ndim, int npars, void *context)
       {
          // Cast the context pointer into a pointer to a LogLikeWrapper object
-         LogLikeWrapper *loglwrapper;
-         loglwrapper = static_cast<LogLikeWrapper*>(context);
+         //LogLikeWrapper *loglwrapper;
+         //loglwrapper = static_cast<LogLikeWrapper*>(context);
 
          // Run the likelihood function!
-         loglwrapper->LogLike(Cube, ndim, npars, lnew);
+         //return loglwrapper->LogLike(Cube, ndim, npars);
+
+         // using global pointer:
+         return global_loglike_object->LogLike(Cube, ndim, npars);
       }
 
       // Pull the same trick for the dumper function
-      void callback_dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr, void *context)
+      void callback_dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double *paramConstr, double maxLogLike, double logZ, double logZerr, void *context)
       {
          // Cast the context pointer into a pointer to a LogLikeWrapper object
-         LogLikeWrapper *loglwrapper;
-         loglwrapper = static_cast<LogLikeWrapper*>(context);
+         //LogLikeWrapper *loglwrapper;
+         //loglwrapper = static_cast<LogLikeWrapper*>(context);
 
          // Run the dumper function!
-         loglwrapper->dumper(nSamples, nlive, nPar, physLive, posterior, paramConstr, maxLogLike, logZ, logZerr);
+         //loglwrapper->dumper(nSamples, nlive, nPar, physLive, posterior, paramConstr, maxLogLike, logZ, logZerr);
+
+         //using global pointer:
+         global_loglike_object->dumper(nSamples, nlive, nPar, physLive, posterior, paramConstr, maxLogLike, logZ, logZerr);
       }
 
    } // End Multinest namespace
@@ -271,28 +260,59 @@ SCANNER_PLUGIN (multinest)
         							// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
         
-
                 // Create object to transform from unit hypercube to physical parameters
+                ///for (int i = 0; i < ndims; i++)
+                ///{
+                ///   ranges.push_back(std::make_pair(lower_limits[i],upper_limits[i]));
+                ///}
+                ///::Gambit::Priors::NdFlatPrior prior(ranges);
+
+                // Demo construction of composite prior
+                // use Log prior for first two parameters, and Flat prior for the rest
+                typedef std::map<std::vector<int>,::Gambit::Priors::BasePrior*> priorlist_type;
+                typedef std::map<std::vector<int>,::Gambit::Priors::BasePrior*>::iterator priorlist_type_it;
+                priorlist_type priorlist;
                 for (int i = 0; i < ndims; i++)
                 {
-                   ranges.push_back(std::make_pair(lower_limits[i],upper_limits[i]));
+                   std::vector<int> indices(1,i);
+                   if (i<2)
+                   {
+                      // Add a log prior to the priors list
+                      priorlist[indices] = new ::Gambit::Priors::LogPrior(lower_limits[i],upper_limits[i]);
+                   }
+                   else
+                   {
+                      // Add a flat prior to the priors list
+                      priorlist[indices] = new ::Gambit::Priors::FlatPrior(lower_limits[i],upper_limits[i]);
+                   }
                 }
-                ::Gambit::Priors::FlatPrior flatprior(ranges);
+                // The downside of this method is that we have to delete the individual prior objects ourselves later on.
+                ::Gambit::Priors::CompositePrior prior(priorlist);
 
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
-                // NOTE TO SELF: Can't full function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
-                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, flatprior, ndims);
+                // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
+                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims);
        
                 // Stick a pointer to the wrapper object into "context" so it can be retrieved by the callback functions
-                context = &loglwrapper;
-	
+                //context = &loglwrapper;
+                
+                // using global pointer instead: 	
+                ::Gambit::MultiNest::global_loglike_object = &loglwrapper;
+ 
+ 
         	// Run MultiNest (supplying callback functions which hook into the interface object, which they know about via the 'context' void pointer)
                 std::cout << "Starting multinest..." << std::endl;
-       	        nested::run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, ::Gambit::MultiNest::callback_LogLike, ::Gambit::MultiNest::callback_dumper, context);
+       	        run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, ::Gambit::MultiNest::callback_loglike, ::Gambit::MultiNest::callback_dumper, context);
                 std::cout << "Multinest finished!" << std::endl;
                 // Do some cleanup or something.
 
+                // Delete prior objects that we allocated with 'new'
+                for (priorlist_type_it it=priorlist.begin(); it!=priorlist.end(); it++)
+                {
+                  delete (it->second);
+                }
+     
                 return 0;
 
         }  //end module_main

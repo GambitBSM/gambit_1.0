@@ -36,6 +36,7 @@
 #include <vector>
 #include <time.h>
 #include <sstream>
+#include <boost/thread.hpp>
 #include "util_types.hpp"
 #include "util_functions.hpp"
 #include "printers.hpp"
@@ -48,7 +49,6 @@
 #define FUNCTORS_BASE_INVALIDATION_RATE 0.01
 // Initial runtime estimate
 #define FUNCTORS_RUNTIME_INIT 1000
-
 
 namespace Gambit
 {
@@ -178,10 +178,24 @@ namespace Gambit
         exit(1);
       } 
 
+      /// Set the index of the OpenMP chunk that this functor belongs to, inside a loop within which it runs
+      virtual void setChunk (int chunk)
+      { 
+        cout << "Error.  The setChunk method has not been defined in this class." << endl;
+        exit(1);
+      }
+
       /// Set the iteration number in a loop in which this functor runs
       virtual void setIteration (int iteration)
       { 
         cout << "Error.  The setIteration method has not been defined in this class." << endl;
+        exit(1);
+      }
+
+      /// Set the maximum number of OpenMP threads that this functor is permitted to operate
+      virtual void setThreads (int n_threads)
+      { 
+        cout << "Error.  The setThreads method has not been defined in this class." << endl;
         exit(1);
       }
 
@@ -297,6 +311,7 @@ namespace Gambit
         myType          = result_type;
         myOrigin        = origin_name;
         myStatus        = 1;
+        myChunkIndex    = 0;
         myCurrentIteration = 0;
         myLoopManager = "none";
         iCanManageLoops = false;
@@ -305,6 +320,13 @@ namespace Gambit
         runtime         = FUNCTORS_RUNTIME_INIT;
         pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
         fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
+        myMaxThreads    = boost::thread::hardware_concurrency();
+        if (myMaxThreads == 0)
+        {
+          cout << "Error: cannot determine number of hardware threads available on this system.";
+          //FIXME throw real error here
+          exit(1);
+        }
       }
 
       // Getter for averaged runtime
@@ -338,7 +360,7 @@ namespace Gambit
       }
 
       /// Execute a single iteration in the loop managed by this functor.
-      void iterate(int iteration)
+      void iterate(int chunk_index, int iteration, int max_threads)
       {
         if (not myNestedFunctorList.empty())
         {
@@ -346,11 +368,22 @@ namespace Gambit
            it != myNestedFunctorList.end(); ++it) 
           {
             (*it)->reset();                   // Reset the nested functor so that it recalculates.
+            (*it)->setChunk(chunk_index);     // Tell the nested functor what OpenMP chunk this is.
             (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
+            (*it)->setThreads(max_threads);   // Tell the nested functor the maximum threads it can use.
             (*it)->calculate();               // Set the nested functor off.
           }
         }
       } 
+
+      /// Set the index of the OpenMP chunk that this functor belongs to, inside a loop within which it runs
+      virtual void setChunk (int chunk) { myChunkIndex = chunk; }
+      /// Return a safe pointer to the iteration number in the loop in which this functor runs.
+      virtual safe_ptr<int> chunkPtr() 
+      {
+        if (this == NULL) functor::failBigTime("chunkPtr");
+        return safe_ptr<int>(&myChunkIndex); 
+      }
 
       /// Setter for setting the iteration number in the loop in which this functor runs
       virtual void setIteration (int iteration) { myCurrentIteration = iteration; }
@@ -359,6 +392,15 @@ namespace Gambit
       {
         if (this == NULL) functor::failBigTime("iterationPtr");
         return safe_ptr<int>(&myCurrentIteration); 
+      }
+
+      /// Setter for setting the maximum number of OpenMP threads that this functor is permitted to launch.
+      virtual void setThreads (int n_threads) { myMaxThreads = n_threads; }
+      /// Return a safe pointer to the maximum number of OpenMP threads that this functor is permitted to launch.
+      virtual safe_ptr<int> threadPtr() 
+      {
+        if (this == NULL) functor::failBigTime("threadPtr");
+        return safe_ptr<int>(&myMaxThreads); 
       }
 
       /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
@@ -689,8 +731,12 @@ namespace Gambit
       /// Vector of functors that have been set up to run nested within this one.
       std::vector<functor*> myNestedFunctorList;
 
+      /// Index of the OpenMP chunk that this functor belongs to, within a nested functor loop.
+      int myChunkIndex;
       /// Counter for iterations of nested functor loop.
       int myCurrentIteration;
+      /// Maximum number of OpenMP threads this functor is permitted to launch.
+      int myMaxThreads;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;

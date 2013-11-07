@@ -1,21 +1,22 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Dependecy resolution with boost graph library
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Christoph Weniger (c.weniger@uva.nl)
-//  Apr, May, June, July 2013
-//  Pat Scott
-//  May 03 2013, Aug 1
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Dependency resolution with boost graph library
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Apr, May, Jun, Jul
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 May, Aug, Nov
+///
+///  *********************************************
 
 #ifndef __graphs_hpp__
 #define __graphs_hpp__
@@ -84,7 +85,7 @@ namespace Gambit
         void printFunctorList();
 
         // Pretty print backend functor information
-        void printBackendFunctorList();
+        void printGenericFunctorList(const std::vector<functor*>*);
 
         // Pretty print function evaluation order
         void printFunctorEvalOrder();

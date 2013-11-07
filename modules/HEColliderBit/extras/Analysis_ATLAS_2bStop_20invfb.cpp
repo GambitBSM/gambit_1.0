@@ -126,10 +126,7 @@ namespace Gambit {
       // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
       // Calculate common variables and cuts first
-      int nElectrons = signalElectrons.size();
-      int nMuons = signalMuons.size();
       int nJets = signalJets.size();
-      int nBjets = bJets.size();
 
       //Jet cuts for each SR
       bool passSRAJetCut=false;
@@ -247,9 +244,9 @@ namespace Gambit {
       //Cutflow flags
       bool cut_ElectronVeto=false;
       bool cut_MuonVeto=false;
-      bool cut_2jets=false;
-      bool cut_3jets=false;
-      bool cut_dPhiJet1=false;
+      //bool cut_2jets=false;
+      //bool cut_3jets=false;
+      //bool cut_dPhiJet1=false;
       bool cut_METGt150=false;
       bool cut_METGt250=false;
       bool cut_dPhiJets=false;
@@ -258,9 +255,9 @@ namespace Gambit {
 
       if(electronsForVeto.size()==0)cut_ElectronVeto=true;
       if(muonsForVeto.size()==0)cut_MuonVeto=true;
-      if(passSRAJetCut)cut_2jets=true;
-      if(passSRBJetCut)cut_3jets=true;
-      if(dphi_jetmet1>2.5)cut_dPhiJet1=true;
+      //if(passSRAJetCut)cut_2jets=true;
+      //if(passSRBJetCut)cut_3jets=true;
+      //if(dphi_jetmet1>2.5)cut_dPhiJet1=true;
       if(dphi_min>0.4)cut_dPhiJets=true;
       if(met>150.)cut_METGt150=true;
       if(met>250.)cut_METGt250=true;
@@ -325,8 +322,10 @@ namespace Gambit {
       return 0;
     }
 
-
-
-
   };
+
+
+  DEFINE_ANAFACTORY(ATLAS_2bStop_20invfb)
+
+
 }

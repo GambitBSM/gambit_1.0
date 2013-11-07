@@ -1,9 +1,8 @@
-
 /** \class BTaggingWithTruth
  *
  *  Determines origin of jet,
  *  applies b-tagging efficiency (miss identification rate) formulas
- *  and sets b-tagging flags 
+ *  and sets b-tagging flags
  *
  *  $Date: 2013-04-26 12:39:14 +0200 (Fri, 26 Apr 2013) $
  *  $Revision: 1099 $
@@ -31,7 +30,7 @@
 #include "TDatabasePDG.h"
 #include "TLorentzVector.h"
 
-#include <algorithm> 
+#include <algorithm>
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
@@ -47,7 +46,7 @@ public:
   BTaggingWithTruthPartonClassifier() {}
 
   Int_t GetCategory(TObject *object);
-  
+
   Double_t fEtaMax, fPTMin;
 };
 
@@ -57,12 +56,10 @@ Int_t BTaggingWithTruthPartonClassifier::GetCategory(TObject *object)
 {
   Candidate *parton = static_cast<Candidate*>(object);
   const TLorentzVector &momentum = parton->Momentum;
-  Int_t pdgCode;
+  if (momentum.Pt() <= fPTMin || fabs(momentum.Eta()) > fEtaMax) return -1;
 
-  if(momentum.Pt() <= fPTMin || TMath::Abs(momentum.Eta()) > fEtaMax) return -1;
-  
-  pdgCode = TMath::Abs(parton->PID);
-  if(pdgCode != 21 && pdgCode > 5) return -1;
+  Int_t pdgCode = abs(parton->PID);
+  if (pdgCode != 21 && pdgCode > 5) return -1;
 
   return 0;
 }
@@ -102,25 +99,25 @@ void BTaggingWithTruth::Init()
   // read efficiency formulas
   param = GetParam("EfficiencyFormula");
   size = param.GetSize();
-  
+
   fEfficiencyMap.clear();
   for(i = 0; i < size/2; ++i)
-  {
-    formula = new DelphesFormula;
-    formula->Compile(param[i*2 + 1].GetString());
+    {
+      formula = new DelphesFormula;
+      formula->Compile(param[i*2 + 1].GetString());
 
-    fEfficiencyMap[param[i*2].GetInt()] = formula;
-  }
+      fEfficiencyMap[param[i*2].GetInt()] = formula;
+    }
 
   // set default efficiency formula
   itEfficiencyMap = fEfficiencyMap.find(0);
   if(itEfficiencyMap == fEfficiencyMap.end())
-  {
-    formula = new DelphesFormula;
-    formula->Compile("0.0");
+    {
+      formula = new DelphesFormula;
+      formula->Compile("0.0");
 
-    fEfficiencyMap[0] = formula;
-  }
+      fEfficiencyMap[0] = formula;
+    }
 
   // import input array(s)
 
@@ -128,7 +125,7 @@ void BTaggingWithTruth::Init()
   fItPartonInputArray = fPartonInputArray->MakeIterator();
 
   fFilter = new ExRootFilter(fPartonInputArray);
-  
+
   fJetInputArray = ImportArray(GetString("JetInputArray", "FastJetFinder/jets"));
   fItJetInputArray = fJetInputArray->MakeIterator();
 }
@@ -145,10 +142,10 @@ void BTaggingWithTruth::Finish()
   if(fItPartonInputArray) delete fItPartonInputArray;
 
   for(itEfficiencyMap = fEfficiencyMap.begin(); itEfficiencyMap != fEfficiencyMap.end(); ++itEfficiencyMap)
-  {
-    formula = itEfficiencyMap->second;
-    if(formula) delete formula;
-  }
+    {
+      formula = itEfficiencyMap->second;
+      if(formula) delete formula;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -156,7 +153,7 @@ void BTaggingWithTruth::Finish()
 void BTaggingWithTruth::Process()
 {
   Candidate *jet, *parton;
-  Double_t pt, eta, phi;
+  Double_t pt, eta;// UNUSED:, phi;
   TObjArray *partonArray;
   map< Int_t, DelphesFormula * >::iterator itEfficiencyMap;
   DelphesFormula *formula;
@@ -165,44 +162,38 @@ void BTaggingWithTruth::Process()
   // select quark and gluons
   fFilter->Reset();
   partonArray = fFilter->GetSubArray(fClassifier, 0);
-  
+
   if(partonArray == 0) return;
 
   TIter itPartonArray(partonArray);
-  
-   // loop over all input jets
+
+  // loop over all input jets
   fItJetInputArray->Reset();
-  while((jet = static_cast<Candidate*>(fItJetInputArray->Next())))
-  {
+  while((jet = static_cast<Candidate*>(fItJetInputArray->Next()))) {
     const TLorentzVector &jetMomentum = jet->Momentum;
     pdgCodeMax = -1;
     eta = jetMomentum.Eta();
-    phi = jetMomentum.Phi();
+    // UNUSED: phi = jetMomentum.Phi();
     pt = jetMomentum.Pt();
 
     // loop over all input partons
     itPartonArray.Reset();
-    bool foundB=false;
-    while((parton = static_cast<Candidate*>(itPartonArray.Next())))
-    {
-      pdgCode = TMath::Abs(parton->PID);
-      
-      if(pdgCode == 21) pdgCode = 0;
-      if(jetMomentum.DeltaR(parton->Momentum) <= fDeltaR)
-      {
-        if(pdgCodeMax < pdgCode) pdgCodeMax = pdgCode;
-	if(abs(pdgCode)==5)foundB=true;
+    //UNUSED: bool foundB = false;
+    while ((parton = static_cast<Candidate*>(itPartonArray.Next()))) {
+      pdgCode = abs(parton->PID);
+      if (pdgCode == 21) pdgCode = 0;
+      if (jetMomentum.DeltaR(parton->Momentum) <= fDeltaR) {
+        if (pdgCodeMax < pdgCode) pdgCodeMax = pdgCode;
+        //UNUSED: if (abs(pdgCode) == 5) foundB = true;
       }
-      
     }
-    if(pdgCodeMax == 0) pdgCodeMax = 21;
-    if(pdgCodeMax == -1) pdgCodeMax = 0;
+    if (pdgCodeMax == 0) pdgCodeMax = 21;
+    if (pdgCodeMax == -1) pdgCodeMax = 0;
     // debugging:
     //if(foundB)cout << "FOUNDB" << endl;
     // find an efficency formula
     itEfficiencyMap = fEfficiencyMap.find(pdgCodeMax);
-    if(itEfficiencyMap == fEfficiencyMap.end())
-    {
+    if (itEfficiencyMap == fEfficiencyMap.end()) {
       itEfficiencyMap = fEfficiencyMap.find(0);
     }
     formula = itEfficiencyMap->second;
@@ -213,5 +204,3 @@ void BTaggingWithTruth::Process()
     jet->PID = pdgCodeMax;
   }
 }
-
-//------------------------------------------------------------------------------

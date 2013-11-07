@@ -10,11 +10,11 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June, July, September
+///  \date 2013 May, Jun, Jul, Sep
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 May, July, Aug
+///  \date 2013 May, Jul, Aug, Nov
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu)
@@ -241,8 +241,7 @@ namespace Gambit
     void DependencyResolver::printFunctorList() 
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      str formatString = "%-25s %-25s %-25s %-25s %-25s %-7i %-5i %-5i\n";
-      int i = 0;
+      const str formatString = "%-20s %-32s %-32s %-32s %-15s %-7i %-5i %-5i\n";
       cout << endl << "Vertices registered in masterGraph" << endl;
       cout << "----------------------------------" << endl;
       cout << boost::format(formatString)%
@@ -258,26 +257,30 @@ namespace Gambit
          (*masterGraph[*vi]).status()%
          (*masterGraph[*vi]).dependencies().size()%
          (*masterGraph[*vi]).backendreqs().size();
-        i++;
       }
-      formatString = "%-25s %-25s %-45s %-25s\n";
       cout << endl << "Registered Backend vertices" << endl;
       cout <<         "---------------------------" << endl;
+      printGenericFunctorList(boundCore->getBackendFunctors());
+    }
+
+    /// Generic printer of the contents of a functor list
+    void DependencyResolver::printGenericFunctorList(const std::vector<functor*>* functorList) 
+    {
+      const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
       cout << boost::format(formatString)%
-       "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE";
+       "ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
       for (std::vector<functor *>::const_iterator 
-          it  = boundCore->getBackendFunctors()->begin();
-          it != boundCore->getBackendFunctors()->end();
+          it  = functorList->begin();
+          it != functorList->end();
           ++it)
       {
         cout << boost::format(formatString)%
          ((*it)->origin() + " (" + (*it)->version() + ")") %
          (*it)->name()%
          (*it)->capability()%
-         (*it)->type();
-        i++;
+         (*it)->type()%
+         (*it)->status();
       }
-      // cout << "TOTAL: " << i << endl;
     }
 
     /// Pretty print function evaluation order
@@ -687,6 +690,7 @@ namespace Gambit
       const IniParser::ObservableType * depEntry = NULL;
       bool entryExists = false;
       std::vector<functor *> vertexCandidates;
+      std::vector<functor *> disabledVertexCandidates;
 
       // Collect list of backend requirements of vertex
       std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
@@ -711,28 +715,46 @@ namespace Gambit
         if ( auxEntry != NULL and depEntry != NULL ) 
           entryExists = true;
 
-        // Loop over all available backend vertices, and make a list of
-        // functors that fulfill the backend dependency requirement
+        // Loop over all existing backend vertices, and make a list of
+        // functors that are available and fulfill the backend dependency requirement
         for (std::vector<functor *>::const_iterator
             itf  = boundCore->getBackendFunctors()->begin(); 
             itf != boundCore->getBackendFunctors()->end();
             ++itf) 
         {
           // Without inifile entry, just match capabilities and types exactly
-          if ( (*itf)->capability() == it->first and (*itf)->type() == it->second
+           if( (*itf)->capability() == it->first and (*itf)->type() == it->second
           // with inifile entry, we check capability, type, function name and
           // module name.
-            and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
+           and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
           {
-          // Add to vertex candidate list
-            vertexCandidates.push_back(*itf);
+            // If the vertex has not been disabled by the backend system
+            if ( (*itf)->status() != 0 )
+            {
+              // add it to vertex candidate list
+              vertexCandidates.push_back(*itf);
+            }
+            else
+            {
+              // otherwise, add it to disabled vertex candidate list
+              disabledVertexCandidates.push_back(*itf);
+            }            
           }
         }
 
         if (vertexCandidates.size() == 0)
         {
           cout << "ERROR: Found no candidates for backend requirement." << endl;
+          if (disabledVertexCandidates.size() != 0)
+          {
+            cout << "Note that viable candidates exist but have been disabled:" << endl;
+            printGenericFunctorList(&disabledVertexCandidates);
+            cout << "Please check that all shared objects exist for the" << endl;
+            cout << "necessary backends, and that they contain all the " << endl;
+            cout << "necessary functions required for this scan. " << endl;
+          }
           exit(0);
+          //FIXME throw a real error here
         }
 
         // One candidate...

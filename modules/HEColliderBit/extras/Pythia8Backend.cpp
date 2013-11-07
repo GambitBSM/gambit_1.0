@@ -27,32 +27,35 @@ namespace Gambit {
     Pythia8Backend::Pythia8Backend(int seed)
     {
       _initialized = false;
-      _pythiaInstance = new Pythia8::Pythia();
+      _pythiaInstance = new Pythia8::Pythia("DUMMYPATH", false);
 
       // Basic setup
-      _pythiaInstance->settings.parm("Beams:eCM", 8000);
-      _pythiaInstance->settings.mode("Main:numberOfEvents", 1000);
-      _pythiaInstance->settings.mode("Main:timesAllowErrors", 1000);
-      _pythiaInstance->settings.flag("Init:showProcesses", true);
-      _pythiaInstance->settings.flag("Init:showMultipartonInteractions", false);
-      _pythiaInstance->settings.flag("Init:showChangedSettings", false);
-      _pythiaInstance->settings.flag("Init:showChangedParticleData", false);
-      _pythiaInstance->settings.mode("Next:numberShowEvent", 10);
-      _pythiaInstance->settings.mode("Next:numberShowInfo", 0);
-      _pythiaInstance->settings.mode("Next:numberShowProcess", 0);
+      set("Beams:eCM", 8000);
+      set("Main:numberOfEvents", 1000);
+      set("Main:timesAllowErrors", 1000);
+      set("Print:quiet", true);
+      set("SLHA:verbose", 0);
+      // set("Init:showProcesses", true);
+      // set("Init:showMultipartonInteractions", false);
+      // set("Init:showChangedSettings", false);
+      // set("Init:showChangedParticleData", false);
+      // set("Next:numberShowEvent", 10);
+      // set("Next:numberShowInfo", 0);
+      // set("Next:numberShowProcess", 0);
 
       // Default to SUSY with precise subprocess control
-      _pythiaInstance->settings.flag("SUSY:all", true);
-      _pythiaInstance->settings.mode("SUSY:idA", 1);
+      set("SUSY:all", true);
+      // set("SUSY:idA", 1);
 
       // Modelling elements
-      _pythiaInstance->settings.flag("PartonLevel:MPI", false);
-      _pythiaInstance->settings.flag("PartonLevel:FSR", false); //true);
-      _pythiaInstance->settings.flag("HadronLevel:all", false); //true);
+      set("PartonLevel:MPI", false);
+      // set("PartonLevel:ISR", false);
+      // set("PartonLevel:FSR", false);
+      // set("HadronLevel:all", false);
 
       // Random seed setup
-      _pythiaInstance->settings.flag("Random:setSeed", true);
-      _pythiaInstance->settings.mode("Random:seed", seed);
+      set("Random:setSeed", true);
+      set("Random:seed", seed);
     }
 
 

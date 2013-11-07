@@ -80,7 +80,7 @@ namespace Gambit {
             const Pythia8::PhaseSpace* phaseSpacePtr, bool inEvent)
       {
         // Get the process code:
-        int processCode = sigmaProcessPtr->code();
+        //int processCode = sigmaProcessPtr->code();
 
         // Each process has a different KFactor... does something like this work?
         /// @todo this function has not been created yet....:

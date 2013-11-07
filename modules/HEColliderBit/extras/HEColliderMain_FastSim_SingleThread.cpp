@@ -58,7 +58,7 @@ int main()
 
   /// @todo Generalise to a vector of analyses, populated by names
 //  Gambit::Analysis* ana = Gambit::mkAnalysis("ATLAS_0LEP");
-  Gambit::Analysis* ana = Gambit::mkAnalysis("PERF");
+  Gambit::Analysis* ana = Gambit::mkAnalysis("Perf");
 
   // at the moment the ouptut file for the analysis is hardwired
   ana->init();

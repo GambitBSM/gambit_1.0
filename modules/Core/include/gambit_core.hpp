@@ -68,16 +68,16 @@ namespace Gambit
       /// Is the scan running in safe mode?
       bool safe_mode() { return safe_mode_on; }
 
-      /// Add an new module functor to functorList
+      /// Add a new module functor to functorList
       void registerModuleFunctor(functor &f) { functorList.push_back(&f); }
 
-      /// Add an new module functor to nestFunctorList
+      /// Add a new module functor to nestFunctorList
       void registerNestedModuleFunctor(functor &f) { nestedFunctorList.push_back(&f); }
 
-      /// Add an new backend functor to backendFunctorList
+      /// Add a new backend functor to backendFunctorList
       void registerBackendFunctor(functor &f) { backendFunctorList.push_back(&f); }
 
-      /// Add an new primary model functor to primaryModelFunctorList
+      /// Add a new primary model functor to primaryModelFunctorList
       void registerPrimaryModelFunctor(primary_model_functor &f) 
       {
         registerModuleFunctor(f);
