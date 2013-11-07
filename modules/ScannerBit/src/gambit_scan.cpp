@@ -427,10 +427,19 @@ namespace Gambit
                         if (boundIniFile->hasKey("scanner", "file_path"))
                         {
                                 std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
-                                std::string name, errors;
+                                std::string name, errors, version;
                                 if (boundIniFile->hasKey("scanner", "module")) 
                                 {
                                         name = boundIniFile->getValue<std::string>("scanner", "module");
+                                        
+                                        if (boundIniFile->hasKey("scanner", "version"))
+                                        {
+                                                std::string version = boundIniFile->getValue<std::string>("scanner", "version");
+                                        }
+                                        else
+                                        {
+                                                verion = "";
+                                        }
                                 }
                                 else
                                 {
@@ -444,7 +453,7 @@ namespace Gambit
                                 input[2] = (void *)(&lower_limits);
                                 input[3] = (void *)(&factory);
                                 
-                                Module::Module_Interface<int ()> interface(file, name, boundIniFile, &input);
+                                Module::Module_Interface<int ()> interface(file, name, version, boundIniFile, &input);
                                 errors = interface.printErrors();
                                 
                                 if (errors != "")

@@ -85,6 +85,7 @@ namespace Gambit
                         void *plugin;
                         std::string errors;
                         std::string name;
+                        std::string version;
                         std::vector<std::string> mod_names;
                         IniFileInterface iniFileInterface;
                         typedef void (*initFuncType)(std::vector<void *> *, void *);                              
@@ -97,7 +98,7 @@ namespace Gambit
                 public:
                         T* main;
                         
-                        Module_Interface(std::string file, std::string name_in, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL) : iniFileInterface(boundIniFile), errors(""), open(true), name(name_in)
+                        Module_Interface(std::string file, std::string name_in, std::string version, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL) : iniFileInterface(boundIniFile), errors(""), open(true), name(name_in), version(version)
                         {
                                 unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);

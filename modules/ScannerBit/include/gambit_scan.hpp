@@ -159,32 +159,32 @@ namespace Gambit
                         virtual ~Scanner_Function_Base(){}
                 };
 		
-		class Scanner_Function : public Scanner_Function_Base
-		{
-		public:
-			Scanner_Function (void *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
+                class Scanner_Function : public Scanner_Function_Base
+                {
+                public:
+                        Scanner_Function (void *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
 			
-			virtual double operator () (std::vector<double> &in)
-			{
-				double ret = 0;
-				parent->setParameters(in);
-				//std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+                        virtual double operator () (std::vector<double> &in)
+                        {
+                                double ret = 0;
+                                parent->setParameters(in);
+                                //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
                                 std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
-				for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
-				{
+                                for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
+                                {
                                         std::cout << "__________calculating vertex " << *it << std::endl;
-					parent->calcObsLike(*it);
+                                        parent->calcObsLike(*it);
                                         std::cout << "----------done " << std::endl;
-					//dependencyResolver.notifyOfInvalidation(*it);
-					ret += parent->getObsLike(*it);
+                                        //dependencyResolver.notifyOfInvalidation(*it);
+                                        ret += parent->getObsLike(*it);
                                         std::cout << "...collected double" << endl;
-				}
+                                }
 				
-				parent->resetAll();
+                                parent->resetAll();
 				
-				return ret;
-			}
-		};
+                                return ret;
+                        }
+                };
                 
                 template <class T>
                 struct factory_template

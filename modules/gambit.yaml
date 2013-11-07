@@ -118,3 +118,6 @@ loopsample:
   point_number: 3
   output_file:  output
   like:  Likelihood
+  
+multnest:
+  output_file:  output
