@@ -38,6 +38,9 @@
 namespace Gambit
 {
 
+  namespace DarkBit
+  {
+
     // A simple example
     struct Wstruct
     {
@@ -67,9 +70,11 @@ namespace Gambit
       double E_res[10], dE_res[10], E_thr[100];
     };
 
-   // A double in, double out function pointer.  FIXME Probably actually better if this goes in 
-   // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
-   typedef double(*fptr_dd)(double&);
+    // A double in, double out function pointer.  FIXME Probably actually better if this goes in 
+    // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
+    typedef double(*fptr_dd)(double&);
+
+  }
 
 }
 

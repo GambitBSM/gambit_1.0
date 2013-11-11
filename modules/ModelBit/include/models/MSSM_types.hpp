@@ -23,6 +23,10 @@
 namespace Gambit
 {
   
+  namespace MSSM
+  {
+
+  }
   
 }
 
