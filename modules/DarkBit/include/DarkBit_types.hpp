@@ -18,7 +18,7 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Christoph Weniger
-///          (FIXME @blah.edu)
+///          (c.weniger@uva.nl)
 ///  \date 2012 Mar
 ///
 ///  \author Torsten Bringmann
