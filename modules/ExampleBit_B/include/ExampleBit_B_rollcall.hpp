@@ -24,6 +24,9 @@
 ///  \date 2012 Nov  
 ///  \date 2013 Jan, Feb, April, May
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 ///
 /// \def MODULE
@@ -123,6 +126,18 @@ START_MODULE
       #define BACKEND_REQ refex2
       START_BACKEND_REQ(void)               // A backend requirement added for the purposes of testing the ability to pass parameters
       #undef BACKEND_REQ                    // to backends both by reference and by value.
+
+
+
+      #define BACKEND_REQ SomeInt           // Demonstrating new macro START_BACKEND_REQ_VARIABLE for declaring dependence on
+      START_BACKEND_REQ_VARIABLE(int)       // a backend variable.
+      BACKEND_OPTION(LibFirst)
+      #undef BACKEND_REQ
+
+      #define BACKEND_REQ someFunction      // (This backend function is used to test that the above backend variable works.)
+      START_BACKEND_REQ(void)
+      BACKEND_OPTION(LibFirst)
+      #undef BACKEND_REQ
 
     #undef FUNCTION
 

@@ -14,7 +14,7 @@
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
-///   \date 2013 Apr --> Added backend functor class
+///   \date 2013 Apr, Nov
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -100,6 +100,7 @@ namespace Gambit
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+
 
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager()
@@ -960,7 +961,7 @@ namespace Gambit
                        str func_capability, 
                        str result_type,
                        str origin_name,
-                       str origin_version) 
+                       str origin_version)
       : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
         func_capability, result_type, origin_name, origin_version) {}
 
@@ -991,13 +992,23 @@ namespace Gambit
         return myValue;
       }
 
-      /// 2) Alternative to operation (execute function and return a pointer to value)
+      /// Alternative to operation (execute function and return a pointer to value)
       safe_ptr<TYPE> valuePtr(ARGS... args)
       {
         if (this == NULL) functor::functor::failBigTime("valuePtr");
         if(this->needs_recalculating) { myValue = this->myFunction(args...); }
         return safe_ptr<TYPE>(&myValue);
       }
+
+      /// Alternative to operation, in case the functor return value is 
+      /// in fact a pointer to a backend variable. 
+      safe_variable_ptr<TYPE> variablePtr()
+      {
+        if (this == NULL) functor::functor::failBigTime("variablePtr");
+        if(this->needs_recalculating) { myValue = this->myFunction(); }
+        return safe_variable_ptr<TYPE>(myValue);
+      }
+
 
 
     protected:
@@ -1020,7 +1031,7 @@ namespace Gambit
                        str func_capability, 
                        str result_type,
                        str origin_name,
-                       str origin_version) 
+                       str origin_version)
       : backend_functor_common<void, ARGS...>(inputFunction, func_name,
         func_capability, result_type, origin_name, origin_version) {}
     
@@ -1088,7 +1099,7 @@ namespace Gambit
                                                           str func_capab, 
                                                           str ret_type, 
                                                           str origin_name,
-                                                          str origin_ver) 
+                                                          str origin_ver)
   { 
     return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
   }

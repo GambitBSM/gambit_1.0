@@ -21,10 +21,25 @@
 ///          (christoph.weniger@gmail.com)
 ///  \date 2013 Jan 
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_B_rollcall.hpp"
+
+
+namespace Gambit
+{
+  namespace Backends
+  {
+    namespace LibFirst
+    {
+      extern int * SomeInt;
+    }
+  }
+}
 
 namespace Gambit
 {
@@ -99,6 +114,20 @@ namespace Gambit
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
       GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
+
+
+      // Demostrating that backend variables can now be accessed via the namespace
+      // SafePointers::[module function name]::BEreq::[backend capability]
+      // The type of the pointer is the pointer wrapper class 'safe_variable_ptr'
+      // defined in util_types.hpp
+      cout << endl;
+      cout << "Will now set backend variable SomeInt=1000 by using a pointer in" << endl;
+      cout << "the namespace 'SafePointers::nevents_postcuts::BEreq'" << endl;
+      cout << "If this works the next result from 'someFunction' should be PI*1000." << endl;
+      *BEreq::SomeInt = 1000;
+      Backend_Reqs::nevents_postcuts::someFunction();
+      cout << endl;
+
     }
 
   }

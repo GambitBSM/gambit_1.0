@@ -16,11 +16,11 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 Jun
+///  \date 2013 June
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Jul, Nov
+///  \date 2013 July
 ///
 ///  *********************************************
 
@@ -56,11 +56,8 @@ namespace Gambit                                                            \
         if(not pHandle)                                                     \
         {                                                                   \
           std::cout << "Failed loading library from " << LIBPATH            \
-                    << " due to error:" << std::endl                        \
-                    << " " << dlerror() << std::endl;                       \
-          std::cout << "Functions loaded from this library will be register"\
-                       "ed as usual," << std::endl << "but will have their "\
-                       "status set to 'disabled'." << std::endl;            \
+                    << " due to error: " << dlerror() << std::endl;         \
+          std::cout << "All functors generated from this library will get status=0" << std::endl; \
           present = false;                                                  \
         }                                                                   \
         else                                                                \
@@ -95,16 +92,34 @@ namespace Gambit                                                            \
                                                                             \
       TYPE * NAME;                                                          \
                                                                             \
+      /* Construct 'getptr' function */                                     \
+      TYPE * getptr##NAME() { return NAME; }                                \
+                                                                            \
       /* Construct 'get' function */                                        \
+      /* Should be removed once code is converted to the new way of         \
+      accessing backend variables. */                                       \
       TYPE get##NAME() { return *NAME; }                                    \
                                                                             \
       /* Construct 'set' function */                                        \
+      /* Should be removed once code is converted to the new way of         \
+      accessing backend variables. */                                       \
       void set##NAME(TYPE a) { *NAME = a; }                                 \
                                                                             \
                                                                             \
       /* Create functor objects */                                          \
       namespace Functown                                                    \
       {                                                                     \
+        /* new, simpler functor that can return the pointer */              \
+        auto NAME = makeBackendFunctor<TYPE*>(                              \
+         Gambit::Backends::BACKENDNAME::getptr##NAME,                       \
+         STRINGIFY(NAME),   /* functor name */                              \
+         STRINGIFY(NAME),   /* functor capability */                        \
+         STRINGIFY(TYPE*),                                                  \
+         STRINGIFY(BACKENDNAME),                                            \
+         STRINGIFY(VERSION) );                                              \
+                                                                            \
+        /* Should be removed once code is converted to the new way of       \
+        accessing backend variables. */                                     \
         auto get##NAME = makeBackendFunctor<TYPE>(                          \
          Gambit::Backends::BACKENDNAME::get##NAME,                          \
          STRINGIFY(NAME),                                                   \
@@ -113,6 +128,8 @@ namespace Gambit                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
                                                                             \
+        /* Should be removed once code is converted to the new way of       \
+        accessing backend variables. */                                     \
         auto set##NAME = makeBackendFunctor<void>(                          \
          Gambit::Backends::BACKENDNAME::set##NAME,                          \
          STRINGIFY(NAME),                                                   \
@@ -131,24 +148,27 @@ namespace Gambit                                                            \
         /* -- Obtain pointer from symbol */                                 \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME = reinterpret_cast<TYPE*>(pSym);                               \
-        /* -- Disable the functor if the library is not present or the      \
-        symbol not found. */                                                \
+        /* -- Disable the functor if the library is not present             \
+              or the symbol not found. */                                   \
         if(present == false)                                                \
         {                                                                   \
+          Functown::NAME.setStatus(0);                                      \
           Functown::get##NAME.setStatus(0);                                 \
           Functown::set##NAME.setStatus(0);                                 \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
-          std::cout << "Library symbol " << SYMBOLNAME << " not found."     \
-           << std::endl;                                                    \
-          std::cout << "The functor generated for this symbol will get "    \
-           "status=disabled." << std::endl;                                 \
+          std::cout << "Library symbol " << SYMBOLNAME                      \
+                    << " not found." << std::endl;                          \
+          std::cout << "The functor generated for this symbol "             \
+                    << "will get status=0" << std::endl;                    \
+          Functown::NAME.setStatus(0);                                      \
           Functown::get##NAME.setStatus(0);                                 \
           Functown::set##NAME.setStatus(0);                                 \
         }                                                                   \
                                                                             \
         /* Register functors */                                             \
+        Core.registerBackendFunctor(Functown::NAME);                        \
         Core.registerBackendFunctor(Functown::get##NAME);                   \
         Core.registerBackendFunctor(Functown::set##NAME);                   \
       }                                                                     \
@@ -282,18 +302,15 @@ namespace Gambit                                                            \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME = reinterpret_cast<NAME##_type>(pSym);                         \
         Functown::NAME.updatePointer(NAME);                                 \
-        /* -- Disable the functor if the library is not present or the      \
-        symbol not found. */                                                \
+        /* -- Disable the functor if the library is not present or the symbol not found. */ \
         if(present == false)                                                \
         {                                                                   \
           Functown::NAME.setStatus(0);                                      \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
-          std::cout << "Library symbol " << SYMBOLNAME << " not found."     \
-           << std::endl;                                                    \
-          std::cout << "The functor generated for this symbol will get "    \
-           "status=disabled." << std::endl;                                 \
+          std::cout << "Library symbol " << SYMBOLNAME << " not found." << std::endl;          \
+          std::cout << "The functor generated for this symbol will get status=0" << std::endl; \
           Functown::NAME.setStatus(0);                                      \
         }                                                                   \
                                                                             \

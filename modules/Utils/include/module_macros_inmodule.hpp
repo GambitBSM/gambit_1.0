@@ -23,6 +23,10 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jan, Feb
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #ifndef __module_macros_inmodule_hpp__
@@ -82,6 +86,7 @@
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            DUMMYARG(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
 #define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
+#define START_BACKEND_REQ_VARIABLE(TYPE)                  MODULE_START_BACKEND_REQ_VARIABLE(TYPE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
@@ -336,6 +341,58 @@
             }                                                                  \
             return myptr->handoutFunctionPointer();                            \
                                                                                \
+          }                                                                    \
+                                                                               \
+        }                                                                      \
+                                                                               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Redirection of START_BACKEND_REQ_VARIABLE(TYPE) when invoked from within a module.
+#define MODULE_START_BACKEND_REQ_VARIABLE(TYPE)                                \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Create a safe variable pointer for the backend pointer returned by    \
+      the backend functor. To be filled automatically at runtime when the      \
+      dependency is resolved.*/                                                \
+      namespace SafePointers                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEreq                                                      \
+          {                                                                    \
+            extern safe_variable_ptr<TYPE> BACKEND_REQ;                        \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      namespace Backend_Reqs                                                   \
+      {                                                                        \
+                                                                               \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+                                                                               \
+          /* Declare a (base) pointer to the backend functor. To be filled     \
+          by the dependency resolver at runtime. */                            \
+          extern functor* CAT(BACKEND_REQ,_baseptr);                           \
+                                                                               \
+          /* Set up an empty alias for the backend requirement */              \
+          template<typename GENERIC_TYPE, typename... ARGS>                    \
+          GENERIC_TYPE BACKEND_REQ(ARGS ...args)                               \
+          {                                                                    \
+            cout<<"Incorrect return type implied for backend"<<endl;           \
+            cout<<"requirement BACKEND_REQ (function"<<endl;                   \
+            cout<<"FUNCTION, module MODULE). Exiting..."<<endl;                \
+            /** FIXME \todo Throw a real error here. */                        \
           }                                                                    \
                                                                                \
         }                                                                      \

@@ -21,6 +21,9 @@
 ///          (torsten.bringmann@desy.de)
 ///  \date 2013 Jun
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #ifndef __util_types_hpp__
@@ -93,6 +96,60 @@ namespace Gambit
       }
 
   };
+
+  /// A safe variable pointer that throws an informative error if you try to dereference
+  /// it when nullified, but unlike safe_ptr it can be used to overwrite the thing it points to.
+  /// However, it is not possible to change the address of this pointer without using the 'set'
+  /// function (in which case you presumably know what you're doing).
+  template <typename TYPE> 
+  class safe_variable_ptr
+  {
+
+    public:
+
+      /// Remove the default copy constructor and assignment operator.
+      safe_variable_ptr & operator=(const safe_variable_ptr&) = delete;
+      safe_variable_ptr(const safe_variable_ptr&) = delete;
+
+      /// Constructor
+      safe_variable_ptr(TYPE* in_ptr = NULL) { ptr = in_ptr; }
+
+      /// Set pointer
+      void set(TYPE* in_ptr) { ptr = in_ptr; }
+
+      /// Get pointer
+      TYPE* get() { return ptr; }
+
+      /// Dereference pointer
+      TYPE& operator*()
+      { 
+        if (ptr == NULL) dieGracefully();
+        return *ptr;
+      }        
+
+      /// Access member functions
+      TYPE* operator->()
+      { 
+        if (ptr == NULL) dieGracefully();
+        return ptr;
+      }        
+          
+    protected:
+
+      /// The actual underlying pointer
+      TYPE* ptr;
+
+      /// Failure message invoked when the user tries to dereference a null safe_variable_ptr
+      static void dieGracefully()
+      {
+        cout << endl << "You just tried to dereference a GAMBIT safe variable pointer that has value" << endl;
+        cout << "NULL.  Bad idea.  Probably you tried to retrieve a conditional" << endl;
+        cout << "dependency that has not been activated because the necessary condition" << endl;
+        cout << "has not been met." << endl;
+      }
+
+  };
+
 
 }
 #endif //defined __util_types_hpp__
