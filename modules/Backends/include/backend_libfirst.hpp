@@ -7,7 +7,7 @@
  * 
  * Modified: 2013-04-05
  * Pat Scott 2013-04-22
- * Anders Kvellestad 2013-04-25
+ * Anders Kvellestad 2013, Nov
  */
 
 /* Specify the path to the shared library along with a backend name. */
@@ -44,7 +44,7 @@ LOAD_LIBRARY
  * (e.g. "LibFirst_initialize_capability")  */
 
 BE_FUNCTION(initialize, void, (int), "_Z10initializei")
-BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv")
+BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
