@@ -141,6 +141,39 @@ Ongoing:
 Done:
 * Interface to MultiNest
 
+
+DarkBit
+-------
+
+Ongoing:
+
+* DarkSUSY relic density solver
+  - Problem with Fortran vs. C++ array indexing
+* Annihilation yields in DarkSUSY
+* Lars' p-/e+ propagation codes
+* Neutrinos from sun code in DarkSUSY + IceCube
+* Direct search codes (Chris' Fortran routines)
+* Relic density solver of MicrOmegas
+* SuperISO relic
+* PPPC (tables only?)
+* CR data (PAMELA, AMS-02 etc)
+* Planck, ATC, BESS, WMAP pol, HST... (CosmoBit)
+* Astrophysical probes in general (stars, DM self-interaction)
+* Implementation of minimal model (singlet DM) for prototypical model and
+  cross-section definitions etc.
+  - as new Model
+  - Calculation of relic density
+  - Primitive indirect dwarf limits
+  - Direct limits with Chris' module
+* Implementation of CMB limits (starting with codes from singlet paper)
+* Primitive dwarf/GC likelihood
+* Astrophysical DM distributions
+* Decaying dark matter
+* Asymmetric dark matter
+* Make use of print functions, once completed
+* Make use error system, once there
+
+
 More
 ----
 Inline to-dos can be be found here: \todo Do things in the to-do list.
