@@ -4,26 +4,12 @@ GAMBIT To-do List
 Core
 ----
 
-General:
-* Experiment with automake and cmake for build
-* Create mini-core for module stand-alone releases
-* Implement standalone compilation of physics modules
-* Create SLHA internal representation, plus hook up file reader/writer.
-* General review of legacy code -> cull obsolete stuff
-* Fix naming conventions
-  - filenames (lowercase+underscore)
-* Convert comments to Doxygen
-
-Messaging:
-* Implement proper exception handling system
-* Implement proper logging system
-* Write printer functions for all common functor types and print streams
-
 Rollcall:
 * Make functors thread-safe
+* Implement scan-level and point-level initialisation functions, in both backends and modules
+* Remove any need for macro calls from within module functions (macros-->safe pointer-like objects)  
 * Allow grouping of backend requirements into blocks/groups
 * Allow conditional backend requirements (conditional on model only, not dependency)
-* Implement scan-level and point-level initialisation functions, in both backends and modules
 * Tracking of config files -> lists in module/backend rollcall headers
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Add chained 'depends on parameter' to functor class (PS: Although I wrote it, I don't remember what this means - can anyone enlighten me??)
@@ -45,6 +31,21 @@ Backends:
 * Resolve residual issues with passing strings to fortran backends
 * Implement backending of Mathematica codes
 * Implement backending of Python codes
+
+Messaging:
+* Implement proper exception handling system
+* Implement proper logging system
+* Write printer functions for all common functor types and print streams
+
+General:
+* Experiment with automake and cmake for build
+* Create mini-core for module stand-alone releases
+* Implement standalone compilation of physics modules
+* Create SLHA internal representation, plus hook up file reader/writer.
+* General review of legacy code -> cull obsolete stuff
+* Fix naming conventions
+  - filenames (lowercase+underscore)
+* Convert comments to Doxygen
 
 Recent decisions impacting upcoming development:
 * Separate output/log for points with "BadPoint" errors
