@@ -59,6 +59,7 @@
 #include "create_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
+#include "safety_bucket.hpp"
 
 /// \name Tag-registration macros
 /// @{
@@ -107,14 +108,14 @@
 #define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
-/// a backend function to be available with capability \link BACKEND_REQ() 
-/// BACKEND_REQ\endlink and return type \em TYPE.
-#define START_BACKEND_REQ(TYPE)                           CORE_START_BACKEND_REQ(TYPE)
-
-/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and type \em TYPE.
-#define START_BACKEND_REQ_VARIABLE(TYPE)                  CORE_START_BACKEND_REQ_VARIABLE(TYPE)
+#define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,1)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
+/// a backend function to be available with capability \link BACKEND_REQ() 
+/// BACKEND_REQ\endlink and return type \em TYPE.
+#define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,0)
 
 /// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
@@ -755,8 +756,11 @@
   }                                                                            \
 
 
-/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.
-#define CORE_START_BACKEND_REQ(TYPE)                                           \
+
+/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within the core.
+/// The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC (or no flag)
+/// corresponds to IS_VARIABLE=0.
+#define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -767,101 +771,29 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Register the required return TYPE of the backend function */          \
+      /* Register the required return TYPE of the backend function/variable */ \
       template<>                                                               \
       struct dep_traits<BETags::BACKEND_REQ, Tags::FUNCTION>                   \
       {                                                                        \
-        typedef TYPE type;                                                     \
+        /* Use TYPE* for backend variables, and TYPE for backend functions */  \
+        typedef BOOST_PP_IIF(IS_VARIABLE, TYPE*, TYPE) type;                   \
       };                                                                       \
                                                                                \
-      /* Create a (base) pointer to the backend functor.  To be filled by      \
-      the dependency resolver at runtime. */                                   \
-      namespace Backend_Reqs                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          functor* CAT(BACKEND_REQ,_baseptr) = NULL;                           \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Indicate that FUNCTION has a BACKEND_REQ */                           \
-      template <>                                                              \
-      bool needs_from_backend<BETags::BACKEND_REQ, Tags::FUNCTION>()           \
-      {                                                                        \
-        return true;                                                           \
-      }                                                                        \
-                                                                               \
-      /* Resolve backend requirement BACKEND_REQ in FUNCTION */                \
-      template <>                                                              \
-      void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
-       (functor* be_functor)                                                   \
-      {                                                                        \
-        Backend_Reqs::FUNCTION::CAT(BACKEND_REQ,_baseptr) = be_functor;        \
-      }                                                                        \
-                                                                               \
-      /* Set up the commands to be called at runtime to register req*/         \
-      template <>                                                              \
-      void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
-      {                                                                        \
-        map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
-         &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
-        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] = STRINGIFY(TYPE);        \
-        Functown::FUNCTION.setBackendReq(                                      \
-         STRINGIFY(BACKEND_REQ),STRINGIFY(TYPE),                               \
-         &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
-      }                                                                        \
-                                                                               \
-      /* Create the backend requirement initialisation object */               \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code CAT_3(BACKEND_REQ,_backend_for_,FUNCTION)                     \
-         (&rt_register_req<BETags::BACKEND_REQ,Tags::FUNCTION>);               \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
-  }                                                                            \
-
-
-/// Redirection of START_BACKEND_REQ_VARIABLE(TYPE) when invoked from within the core.
-#define CORE_START_BACKEND_REQ_VARIABLE(TYPE)                                  \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-                                                                               \
-    /* Add BACKEND_REQ to global set of recognised backend func tags */        \
-    ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQ)                                \
-                                                                               \
-    namespace MODULE                                                           \
-    {                                                                          \
-                                                                               \
-      /* Register the required TYPE of the backend variable */                 \
-      template<>                                                               \
-      struct dep_traits<BETags::BACKEND_REQ, Tags::FUNCTION>                   \
-      {                                                                        \
-        typedef TYPE* type;                                                    \
-      };                                                                       \
-                                                                               \
-      /* Create a (base) pointer to the backend functor. To be filled by       \
-      the dependency resolver at runtime. */                                   \
-      namespace Backend_Reqs                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          functor* CAT(BACKEND_REQ,_baseptr) = NULL;                           \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe variable pointer for the backend pointer returned by    \
-      the backend functor. To be filled automatically at runtime when the      \
-      dependency is resolved.*/                                                \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
           namespace BEreq                                                      \
           {                                                                    \
-            safe_variable_ptr<TYPE> BACKEND_REQ;                               \
+                                                                               \
+            /* Create a (base) pointer to the backend functor.                 \
+            To be filled by the dependency resolver at runtime. */             \
+            functor* CAT(BACKEND_REQ,_baseptr) = NULL;                         \
+                                                                               \
+            /* If IS_VARIABLE=1, create a safe variable pointer for the        \
+            backend pointer returned by the backend functor. To be filled      \
+            automatically at runtime when the dependency is resolved.*/        \
+            BOOST_PP_IIF(IS_VARIABLE, safe_variable_ptr<TYPE> BACKEND_REQ; ,)  \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -878,26 +810,33 @@
       void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
        (functor* be_functor)                                                   \
       {                                                                        \
-        Backend_Reqs::FUNCTION::CAT(BACKEND_REQ,_baseptr) = be_functor;        \
+        SafePointers::FUNCTION::BEreq::CAT(BACKEND_REQ,_baseptr) = be_functor; \
                                                                                \
-        /* Cast the given functor pointer (be_functor) to a backend functor    \
-        pointer of the correct type, and then use the backend pointer returned \
-        by the functor to set the safe_variable_ptr living in                  \
-        SafePointers::FUNCTION::BEreq */                                       \
-        backend_functor<TYPE*> * ptr =                                         \
-                            dynamic_cast<backend_functor<TYPE*>*>(be_functor); \
-        SafePointers::FUNCTION::BEreq::BACKEND_REQ.set( (*ptr)() );            \
+        /* If IS_VARIABLE=1, cast the given functor pointer (be_functor) to    \
+        a backend functor pointer of the correct type, and then use the        \
+        backend pointer returned by the functor to set the safe_variable_ptr   \
+        living in SafePointers::FUNCTION::BEreq */                             \
+        BOOST_PP_IIF(IS_VARIABLE,                                              \
+          backend_functor<TYPE*> * ptr =                                       \
+            dynamic_cast<backend_functor<TYPE*>*>(be_functor);                 \
+          SafePointers::FUNCTION::BEreq::BACKEND_REQ.set( (*ptr)() );          \
+        ,)  /* End BOOST_PP_IIF */                                             \
       }                                                                        \
                                                                                \
-      /* Set up the commands to be called at runtime to register req*/         \
+      /* Set up the commands to be called at runtime to register req.          \
+      (Note that TYPE is used for backend functions, while TYPE* is used       \
+      for backend variables.) */                                               \
       template <>                                                              \
       void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
       {                                                                        \
         map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
          &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
-        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] = STRINGIFY(TYPE*);       \
-        Functown::FUNCTION.setBackendReq(                                      \
-         STRINGIFY(BACKEND_REQ),STRINGIFY(TYPE*),                              \
+                                                                               \
+        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =                         \
+          BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE));        \
+                                                                               \
+        Functown::FUNCTION.setBackendReq(STRINGIFY(BACKEND_REQ),               \
+          BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE)),        \
          &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \

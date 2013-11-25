@@ -32,6 +32,7 @@
 #include <string>
 #include <iostream>
 
+
 namespace Gambit
 {
 
@@ -153,3 +154,6 @@ namespace Gambit
 
 }
 #endif //defined __util_types_hpp__
+
+
+
