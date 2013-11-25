@@ -128,16 +128,16 @@ START_MODULE
       #undef BACKEND_REQ                    // to backends both by reference and by value.
 
 
-
-      #define BACKEND_REQ SomeInt           // Demonstrating new macro START_BACKEND_REQ_VARIABLE for declaring dependence on
-      START_BACKEND_REQ_VARIABLE(int)       // a backend variable.
-      BACKEND_OPTION(LibFirst)
+      #define BACKEND_REQ SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
+      START_BACKEND_REQ(int, VAR)           // is on a backend variable or a backend function. 
+      BACKEND_OPTION(LibFirst)              // (A backend function is assumed if no flag is given.)
       #undef BACKEND_REQ
 
       #define BACKEND_REQ someFunction      // (This backend function is used to test that the above backend variable works.)
-      START_BACKEND_REQ(void)
+      START_BACKEND_REQ(void, FUNC)
       BACKEND_OPTION(LibFirst)
       #undef BACKEND_REQ
+
 
     #undef FUNCTION
 

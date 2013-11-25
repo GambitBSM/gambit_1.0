@@ -87,15 +87,15 @@ namespace Gambit
       //cout << "The id is: " << *Dep::id << endl;
 
       cout << "My backend requirement of awesomeness has been filled by " << 
-       GET_BE_FUNCNAME(nevents_postcuts::awesomeness) << " from " <<
-       GET_BE_PACKAGE(nevents_postcuts::awesomeness) << ", v" << 
-       GET_BE_VERSION(nevents_postcuts::awesomeness) << "." << endl;
+       GET_BE_FUNCNAME(nevents_postcuts, awesomeness) << " from " <<
+       GET_BE_PACKAGE(nevents_postcuts, awesomeness) << ", v" << 
+       GET_BE_VERSION(nevents_postcuts, awesomeness) << "." << endl;
       cout << "Its value is: ";
-      double doall_local = GET_BE_RESULT(nevents_postcuts::awesomeness, 2);
+      double doall_local = GET_BE_RESULT(nevents_postcuts, awesomeness, 2);
       cout << doall_local << endl << endl;    
       int stuff = 2;
       cout << "Again, its value is: ";
-      double doall_local2 = GET_BE_RESULT(nevents_postcuts::awesomeness, byVal(stuff));
+      double doall_local2 = GET_BE_RESULT(nevents_postcuts, awesomeness, byVal(stuff));
       cout << doall_local2 << endl << endl;    
 
       result = (int) (*Dep::nevents + doall_local);
@@ -105,15 +105,15 @@ namespace Gambit
       double inputvar2 = 0;
       double inputvar3 = 2.5;
       cout << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
-      double refex1 = GET_BE_RESULT(nevents_postcuts::refex, inputvar1);
+      double refex1 = GET_BE_RESULT(nevents_postcuts, refex, inputvar1);
       cout << "Next returns void, takes parameters both by ref and by val." << endl;
-      GET_BE_RESULT(nevents_postcuts::refex2, inputvar2, byVal(inputvar3));
+      GET_BE_RESULT(nevents_postcuts, refex2, inputvar2, byVal(inputvar3));
       cout << "Results of backend functions with parameters passed byRef: " 
            << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
-      GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
+      GET_BE_RESULT(nevents_postcuts, runMe, byVal(*Dep::function_pointer), arg2);
 
 
       // Demostrating that backend variables can now be accessed via the namespace
@@ -125,7 +125,9 @@ namespace Gambit
       cout << "the namespace 'SafePointers::nevents_postcuts::BEreq'" << endl;
       cout << "If this works the next result from 'someFunction' should be PI*1000." << endl;
       *BEreq::SomeInt = 1000;
-      Backend_Reqs::nevents_postcuts::someFunction();
+      BEreq::someFunction();
+      cout << endl;
+      cout << "INFO:  " << BEreq::SomeInt.name() << "  --  " << BEreq::SomeInt.backend() << "  --  " << BEreq::SomeInt.version() << endl;
       cout << endl;
 
     }

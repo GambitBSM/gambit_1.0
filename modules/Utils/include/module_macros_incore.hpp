@@ -110,12 +110,14 @@
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and type \em TYPE.
-#define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,1)
+// #define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,1)
+
+#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend function to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and return type \em TYPE.
-#define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,0)
+// #define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,0)
 
 /// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
@@ -785,15 +787,14 @@
         {                                                                      \
           namespace BEreq                                                      \
           {                                                                    \
-                                                                               \
-            /* Create a (base) pointer to the backend functor.                 \
-            To be filled by the dependency resolver at runtime. */             \
-            functor* CAT(BACKEND_REQ,_baseptr) = NULL;                         \
-                                                                               \
-            /* If IS_VARIABLE=1, create a safe variable pointer for the        \
-            backend pointer returned by the backend functor. To be filled      \
-            automatically at runtime when the dependency is resolved.*/        \
-            BOOST_PP_IIF(IS_VARIABLE, safe_variable_ptr<TYPE> BACKEND_REQ; ,)  \
+            /* Create a safety_bucket for the backend variable/function.       \
+            To be initialized by the dependency resolver at runtime. */        \
+            BOOST_PP_IIF(IS_VARIABLE,                                          \
+              /* If IS_VARIABLE = 1: */                                        \
+              BEvariable_bucket<TYPE> BACKEND_REQ;                             \
+              , /* If IS_VARAIBLE = 0: */                                      \
+              BEfunction_bucket<TYPE> BACKEND_REQ;                             \
+            )  /* End BOOST_PP_IIF */                                          \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -810,17 +811,18 @@
       void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
        (functor* be_functor)                                                   \
       {                                                                        \
-        SafePointers::FUNCTION::BEreq::CAT(BACKEND_REQ,_baseptr) = be_functor; \
                                                                                \
-        /* If IS_VARIABLE=1, cast the given functor pointer (be_functor) to    \
-        a backend functor pointer of the correct type, and then use the        \
-        backend pointer returned by the functor to set the safe_variable_ptr   \
-        living in SafePointers::FUNCTION::BEreq */                             \
+        /* Use the given functor pointer (be_functor) to initialize the        \
+        safety_bucket SafePointers::FUNCTION::BEreq::BACKEND_REQ.              \
+        If IS_VARIABLE = 1 we do a type cast of the functor first. */          \
         BOOST_PP_IIF(IS_VARIABLE,                                              \
+          /* If IS_VARIABLE = 1: */                                            \
           backend_functor<TYPE*> * ptr =                                       \
             dynamic_cast<backend_functor<TYPE*>*>(be_functor);                 \
-          SafePointers::FUNCTION::BEreq::BACKEND_REQ.set( (*ptr)() );          \
-        ,)  /* End BOOST_PP_IIF */                                             \
+          SafePointers::FUNCTION::BEreq::BACKEND_REQ.initialize(ptr);          \
+          , /* If IS_VARIABLE = 0: */                                          \
+          SafePointers::FUNCTION::BEreq::BACKEND_REQ.initialize(be_functor);   \
+        ) /* End BOOST_PP_IIF */                                               \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register req.          \
