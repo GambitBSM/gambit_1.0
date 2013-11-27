@@ -79,23 +79,23 @@ namespace Gambit
       using namespace SafePointers::nevents_postcuts;
  
       cout << endl << "My dependency on nevents has been filled by " << 
-       GET_DEP_FUNCNAME(nevents_postcuts::nevents) << " from " <<
-       GET_DEP_MODULE(nevents_postcuts::nevents) << "." << endl;
+       Dep::nevents.name() << " from " <<
+       Dep::nevents.module() << "." << endl;
       cout << "Its value is: " << *Dep::nevents << endl;
 
       //cout << "Now let's see what happens when we try to retrieve a conditional dependency." << endl;
       //cout << "The id is: " << *Dep::id << endl;
 
       cout << "My backend requirement of awesomeness has been filled by " << 
-       GET_BE_FUNCNAME(nevents_postcuts, awesomeness) << " from " <<
-       GET_BE_PACKAGE(nevents_postcuts, awesomeness) << ", v" << 
-       GET_BE_VERSION(nevents_postcuts, awesomeness) << "." << endl;
+       BEreq::awesomeness.name() << " from " <<
+       BEreq::awesomeness.backend() << ", v" << 
+       BEreq::awesomeness.version() << "." << endl;
       cout << "Its value is: ";
-      double doall_local = GET_BE_RESULT(nevents_postcuts, awesomeness, 2);
+      double doall_local = BEreq::awesomeness(2);
       cout << doall_local << endl << endl;    
       int stuff = 2;
       cout << "Again, its value is: ";
-      double doall_local2 = GET_BE_RESULT(nevents_postcuts, awesomeness, byVal(stuff));
+      double doall_local2 = BEreq::awesomeness(byVal(stuff));
       cout << doall_local2 << endl << endl;    
 
       result = (int) (*Dep::nevents + doall_local);
@@ -105,15 +105,15 @@ namespace Gambit
       double inputvar2 = 0;
       double inputvar3 = 2.5;
       cout << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
-      double refex1 = GET_BE_RESULT(nevents_postcuts, refex, inputvar1);
+      double refex1 = BEreq::refex(inputvar1);
       cout << "Next returns void, takes parameters both by ref and by val." << endl;
-      GET_BE_RESULT(nevents_postcuts, refex2, inputvar2, byVal(inputvar3));
+      BEreq::refex2(inputvar2, byVal(inputvar3));
       cout << "Results of backend functions with parameters passed byRef: " 
            << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
-      GET_BE_RESULT(nevents_postcuts, runMe, byVal(*Dep::function_pointer), arg2);
+      BEreq::runMe(byVal(*Dep::function_pointer), arg2);
 
 
       // Demostrating that backend variables can now be accessed via the namespace

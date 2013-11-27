@@ -67,10 +67,10 @@ BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "ref
 
 
 /* Syntax for BE_VARIABLE:
- * BE_VARIABLE([choose variable name], [type], "[exact symbol name]")  */
+ * BE_VARIABLE([choose variable name], [type], "[exact symbol name]", "[choose capability name]")  */
 
-BE_VARIABLE(SomeInt, int, "someInt")
-BE_VARIABLE(SomeDouble, double, "someDouble")
+BE_VARIABLE(SomeInt, int, "someInt", "SomeInt")
+BE_VARIABLE(SomeDouble, double, "someDouble", "SomeDouble")
 
 /* We have now created the following:
  *

@@ -82,7 +82,7 @@ namespace Gambit                                                            \
 /// Macro for constructing pointers to library variables,
 /// defining simple 'get/set' functions and
 /// wrapping these functions in backend functors.
-#define BE_VARIABLE(NAME, TYPE, SYMBOLNAME)                                 \
+#define BE_VARIABLE(NAME, TYPE, SYMBOLNAME, CAPABILITY)                     \
 namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
@@ -113,7 +113,7 @@ namespace Gambit                                                            \
         auto NAME = makeBackendFunctor<TYPE*>(                              \
          Gambit::Backends::BACKENDNAME::getptr##NAME,                       \
          STRINGIFY(NAME),   /* functor name */                              \
-         STRINGIFY(NAME),   /* functor capability */                        \
+         CAPABILITY,        /* functor capability */                        \
          STRINGIFY(TYPE*),                                                  \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \

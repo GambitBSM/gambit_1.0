@@ -133,7 +133,7 @@ START_MODULE
       BACKEND_OPTION(LibFirst)              // (A backend function is assumed if no flag is given.)
       #undef BACKEND_REQ
 
-      #define BACKEND_REQ someFunction      // (This backend function is used to test that the above backend variable works.)
+      #define BACKEND_REQ  someFunction      // (This backend function is used to test that the above backend variable works.)
       START_BACKEND_REQ(void, FUNC)
       BACKEND_OPTION(LibFirst)
       #undef BACKEND_REQ

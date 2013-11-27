@@ -449,6 +449,11 @@
 /// where FUNCTION is really whatever label the functor with this dependency
 /// has.
 
+// Anders: I put this macro here to separate it from the macros in module_macros_incore.hpp.
+//         As I made changes to those macros, this whole model system failed, 
+//         so I figured it was better to make them separate for now. 
+//         Perhaps someone in the Model group can take a look and decide whether these macros
+//         should be combined again.   
 #define MODEL_DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                 \
                                                                                \
       /* Register the required TYPE of the required observable or likelihood   \
