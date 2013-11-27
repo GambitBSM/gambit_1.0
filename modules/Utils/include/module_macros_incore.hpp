@@ -542,23 +542,15 @@
         typedef TYPE type;                                                     \
       };                                                                       \
                                                                                \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          module_functor<TYPE>* DEP = NULL;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
+      /* Given that TYPE is not void, create a safety_bucket for the           \
+      dependency result. To be initialized automatically at runtime            \
+      when the dependency is resolved. */                                      \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          BOOST_PP_IIF(IS_TYPE(void,TYPE),,namespace Dep {safe_ptr<TYPE> DEP;})\
+          BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
+           namespace Dep {dep_bucket<TYPE> DEP;})                              \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -567,11 +559,11 @@
       void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
       {                                                                        \
         /* First try casting the pointer passed in to a module_functor */      \
-        Dependencies::FUNCTION::DEP =                                          \
+        module_functor<TYPE> * ptr =                                           \
          dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
                                                                                \
         /* Now test if that cast worked */                                     \
-        if (Dependencies::FUNCTION::DEP == 0)  /* It didn't; throw an error. */\
+        if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
           cout<<"Error: Null returned from dynamic cast in "<< endl;           \
           cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
@@ -580,11 +572,10 @@
           cout<<dep_functor->origin()<<"."<<endl;                              \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did!  Now set the pointer to the dependency result. */      \
+        else /* It did! Now initialize the safety_bucket using the functor.*/  \
         {                                                                      \
-         BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
-          SafePointers::FUNCTION::Dep::DEP =                                   \
-           Dependencies::FUNCTION::DEP->valuePtr(); )                          \
+          BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
+           SafePointers::FUNCTION::Dep::DEP.initialize(ptr); )                 \
         }                                                                      \
                                                                                \
       }                                                                        \

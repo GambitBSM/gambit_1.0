@@ -47,9 +47,15 @@
 /// @{
 
 /// Retrive the name of the function that fills \em DEP for the current function
-#define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
+#define GET_DEP_FUNCNAME(FUNCTION, DEP)      SafePointers::FUNCTION::Dep::DEP.name()
 /// Retrive the name of the module that provides the function that fills \em DEP for the current function
-#define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
+#define GET_DEP_MODULE(FUNCTION, DEP)        SafePointers::FUNCTION::Dep::DEP.module()
+
+// /// Retrive the name of the function that fills \em DEP for the current function
+// #define GET_DEP_FUNCNAME(FUNCTION, DEP)      Dependencies::FUNCTION::DEP->name()
+// /// Retrive the name of the module that provides the function that fills \em DEP for the current function
+// #define GET_DEP_MODULE(FUNCTION, DEP)        Dependencies::FUNCTION::DEP->origin()
+
 /// @}
 
 
@@ -202,25 +208,17 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          extern module_functor<TYPE>* DEP;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
+      /* Given that TYPE is not void, create a safety_bucket for the           \
+      dependency result. To be initialized automatically at runtime            \
+      when the dependency is resolved. */                                      \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
           BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                    \
-           namespace Dep { extern safe_ptr<TYPE> DEP; } )                      \
+            namespace Dep { extern dep_bucket<TYPE> DEP; } )                   \
         }                                                                      \
+                                                                               \
       }                                                                        \
                                                                                \
     }                                                                          \
