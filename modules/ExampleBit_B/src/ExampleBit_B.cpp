@@ -116,18 +116,22 @@ namespace Gambit
       BEreq::runMe(byVal(*Dep::function_pointer), arg2);
 
 
-      // Demostrating that backend variables can now be accessed via the namespace
-      // SafePointers::[module function name]::BEreq::[backend capability]
-      // The type of the pointer is the pointer wrapper class 'safe_variable_ptr'
-      // defined in util_types.hpp
+      // Demostration of accessing backend requirements via 'BEvariable_bucket'/'BEfunction_bucket' objects
+      // living in SafePointers::[module function name]::BEreq::[backend capability]
       cout << endl;
-      cout << "Will now set backend variable SomeInt=1000 by using a pointer in" << endl;
-      cout << "the namespace 'SafePointers::nevents_postcuts::BEreq'" << endl;
+      cout << "Will now set backend variable SomeInt=1000." << endl;
       cout << "If this works the next result from 'someFunction' should be PI*1000." << endl;
       *BEreq::SomeInt = 1000;
       BEreq::someFunction();
+
       cout << endl;
-      cout << "INFO:  " << BEreq::SomeInt.name() << "  --  " << BEreq::SomeInt.backend() << "  --  " << BEreq::SomeInt.version() << endl;
+      cout << "Will now call 'someFunction' once more, this time using the function pointer." << endl;
+      void (*function_pointer)() = BEreq::someFunction.pointer<>();
+      function_pointer();
+
+      cout << endl;
+      cout << "Print some info on the backend requirement 'SomeInt':" << endl;
+      cout << "Name: " << BEreq::SomeInt.name() << "   Backend: " << BEreq::SomeInt.backend() << "   Version: " << BEreq::SomeInt.version() << endl;
       cout << endl;
 
     }
