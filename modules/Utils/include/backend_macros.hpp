@@ -95,16 +95,6 @@ namespace Gambit                                                            \
       /* Construct 'getptr' function */                                     \
       TYPE * getptr##NAME() { return NAME; }                                \
                                                                             \
-      /* Construct 'get' function */                                        \
-      /* Should be removed once code is converted to the new way of         \
-      accessing backend variables. */                                       \
-      TYPE get##NAME() { return *NAME; }                                    \
-                                                                            \
-      /* Construct 'set' function */                                        \
-      /* Should be removed once code is converted to the new way of         \
-      accessing backend variables. */                                       \
-      void set##NAME(TYPE a) { *NAME = a; }                                 \
-                                                                            \
                                                                             \
       /* Create functor objects */                                          \
       namespace Functown                                                    \
@@ -115,26 +105,6 @@ namespace Gambit                                                            \
          STRINGIFY(NAME),   /* functor name */                              \
          CAPABILITY,        /* functor capability */                        \
          STRINGIFY(TYPE*),                                                  \
-         STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION) );                                              \
-                                                                            \
-        /* Should be removed once code is converted to the new way of       \
-        accessing backend variables. */                                     \
-        auto get##NAME = makeBackendFunctor<TYPE>(                          \
-         Gambit::Backends::BACKENDNAME::get##NAME,                          \
-         STRINGIFY(NAME),                                                   \
-         STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ),           \
-         STRINGIFY(TYPE),                                                   \
-         STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION) );                                              \
-                                                                            \
-        /* Should be removed once code is converted to the new way of       \
-        accessing backend variables. */                                     \
-        auto set##NAME = makeBackendFunctor<void>(                          \
-         Gambit::Backends::BACKENDNAME::set##NAME,                          \
-         STRINGIFY(NAME),                                                   \
-         STRINGIFY( CAT(BACKENDNAME,_##set##NAME##_capability) ),           \
-         "void",                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
                                                                             \
@@ -153,8 +123,6 @@ namespace Gambit                                                            \
         if(present == false)                                                \
         {                                                                   \
           Functown::NAME.setStatus(0);                                      \
-          Functown::get##NAME.setStatus(0);                                 \
-          Functown::set##NAME.setStatus(0);                                 \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
@@ -163,14 +131,10 @@ namespace Gambit                                                            \
           std::cout << "The functor generated for this symbol "             \
                     << "will get status=0" << std::endl;                    \
           Functown::NAME.setStatus(0);                                      \
-          Functown::get##NAME.setStatus(0);                                 \
-          Functown::set##NAME.setStatus(0);                                 \
         }                                                                   \
                                                                             \
         /* Register functors */                                             \
         Core.registerBackendFunctor(Functown::NAME);                        \
-        Core.registerBackendFunctor(Functown::get##NAME);                   \
-        Core.registerBackendFunctor(Functown::set##NAME);                   \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \

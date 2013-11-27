@@ -68,7 +68,7 @@ namespace Gambit
 
 
 
-  /// An interface class providing a 'safe' interface to module dependencies.
+  /// An interface class for module dependencies.
   template <typename TYPE>
   class dep_bucket : public safety_bucket_base
   {
@@ -151,7 +151,7 @@ namespace Gambit
   };
 
 
-  /// An interface class providing a 'safe' interface to backend variables.
+  /// An interface class for backend variables.
   template <typename TYPE>
   class BEvariable_bucket : public BE_bucket_base
   {
@@ -214,7 +214,7 @@ namespace Gambit
 
 
 
-  /// An interface class providing a 'safe' interface to backend functions.
+  /// An interface class for backend functions.
   template <typename TYPE>
   class BEfunction_bucket : public BE_bucket_base
   {

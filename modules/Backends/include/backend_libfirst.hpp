@@ -21,7 +21,7 @@
 #define VERSION 1.0
 
 
-/* The following macro loads the library (using dlmopen) in LIBPATH 
+/* The following macro loads the library (using dlopen) in LIBPATH 
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY
@@ -29,29 +29,22 @@ LOAD_LIBRARY
 /* Next we use macros BE_VARIABLE and BE_FUNCTION to load pointers 
  * (using dlsym) to the variables and functions within the library.
  *  
- * The macros also set up a minimal interface providing 'get/set'
- * functions for the library variables and function pointers 
- * for the library functions.
- *  
- * These functions are then wrapped in functors that the core can connect 
- * to the modules via the rollcall system */
- 
+ * The macros also create functors that wrap the library variables and functions.
+ * These are used by the Core for dependency resolution and to set up a suitable 
+ * interface to the library functions/variables at module level. */
+
 /* Syntax for BE_FUNCTION:
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
  * 
  * The last argument (capability name) is optional. 
- * If left out (as done below) it will default to "[backend name]_[function name]_capability"
- * (e.g. "LibFirst_initialize_capability")  */
+ * If left out (as done in some of the examples below) it will default to "[backend name]_[function name]_capability"
+ * (e.g. "LibFirst_initialize_capability") */
 
 BE_FUNCTION(initialize, void, (int), "_Z10initializei")
 BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
-
-//BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
-//BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
-//BE_FUNCTION(returnResult, double, (), "_Z12returnResultv", "LibFirst_returnResult_capability")
 
 /* We have now created the following:
  *
@@ -78,18 +71,14 @@ BE_VARIABLE(SomeDouble, double, "someDouble", "SomeDouble")
  * Gambit::Backends::LibFirst::SomeInt      type: int*
  * Gambit::Backends::LibFirst::SomeDouble   type: double*
  *
- * - Functions
- * Gambit::Backends::LibFirst::getSomeInt   type: int ()    
- * Gambit::Backends::LibFirst::setSomeInt   type: void (int)
- *
  * - Functors
- * Gambit::Backends::LibFirst::Functown::getSomeInt   type: Gambit::backend_functor<int>
- * Gambit::Backends::LibFirst::Functown::setSomeInt   type: Gambit::backend_functor<void,int>  */
+ * Gambit::Backends::LibFirst::Functown::SomeInt      type: Gambit::backend_functor<int>
+ * Gambit::Backends::LibFirst::Functown::SomeDouble   type: Gambit::backend_functor<double> */
 
 
 /* At this point we have a minimal interface to the loaded library.
  * Any additional convenince functions could be constructed below 
- * using the available pointers/functions. All convenience functions must be
+ * using the available pointers. All convenience functions must be
  * registred/wrapped via the macro BE_CONV_FUNCTION (see below). */
 
 

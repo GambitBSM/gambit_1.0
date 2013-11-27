@@ -39,54 +39,37 @@
 #include <boost/preprocessor/control/if.hpp>
 #include "safety_bucket.hpp"
 
+// TO BE REMOVED:
 /// \name Dependency-retrieval and info macros
 /// These are used from within module function source code to obtain the actual
 /// calculated values of dependencies, and probe details of the specific
 /// module functions that have been connected by the dependency resolver in order
 /// to fulfill dependencies.
 /// @{
-
-/// Retrive the name of the function that fills \em DEP for the current function
-#define GET_DEP_FUNCNAME(FUNCTION, DEP)      SafePointers::FUNCTION::Dep::DEP.name()
-/// Retrive the name of the module that provides the function that fills \em DEP for the current function
-#define GET_DEP_MODULE(FUNCTION, DEP)        SafePointers::FUNCTION::Dep::DEP.module()
-
 // /// Retrive the name of the function that fills \em DEP for the current function
-// #define GET_DEP_FUNCNAME(FUNCTION, DEP)      Dependencies::FUNCTION::DEP->name()
+// #define GET_DEP_FUNCNAME(FUNCTION, DEP)      SafePointers::FUNCTION::Dep::DEP.name()
 // /// Retrive the name of the module that provides the function that fills \em DEP for the current function
-// #define GET_DEP_MODULE(FUNCTION, DEP)        Dependencies::FUNCTION::DEP->origin()
-
+// #define GET_DEP_MODULE(FUNCTION, DEP)        SafePointers::FUNCTION::Dep::DEP.module()
 /// @}
 
 
+// TO BE REMOVED:
 /// \name Backend-requirement-retrieval and info macros
 /// These are used from within module function source code to obtain the actual
 /// calculated values of backend requirement, and probe details of the specific
 /// backend functions that have been connected by the dependency resolver in order
 /// to fulfill backend requirements.
 /// @{
-
-/// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
-#define GET_BE_RESULT(FUNCTION, BE_REQ, ...)    SafePointers::FUNCTION::BEreq::BE_REQ(__VA_ARGS__)
-/// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
-#define GET_BE_FUNCNAME(FUNCTION, BE_REQ)       SafePointers::FUNCTION::BEreq::BE_REQ.name()
-/// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
-#define GET_BE_PACKAGE(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.backend()
-/// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
-#define GET_BE_VERSION(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.version()
-/// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
-#define GET_BE_POINTER(FUNCTION, BE_REQ, ...)   SafePointers::FUNCTION::BEreq::BE_REQ.pointer<__VA_ARGS__>()
-
 // /// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
-// #define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
+// #define GET_BE_RESULT(FUNCTION, BE_REQ, ...)    SafePointers::FUNCTION::BEreq::BE_REQ(__VA_ARGS__)
 // /// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_FUNCNAME(BE_REQ)    Backend_Reqs::CAT(BE_REQ,_baseptr)->name()
+// #define GET_BE_FUNCNAME(FUNCTION, BE_REQ)       SafePointers::FUNCTION::BEreq::BE_REQ.name()
 // /// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
+// #define GET_BE_PACKAGE(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.backend()
 // /// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_VERSION(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->version()
+// #define GET_BE_VERSION(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.version()
 // /// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_POINTER(BE_REQ, ...)  Backend_Reqs::CAT(BE_REQ,_get_function_ptr)<__VA_ARGS__>()
+// #define GET_BE_POINTER(FUNCTION, BE_REQ, ...)   SafePointers::FUNCTION::BEreq::BE_REQ.pointer<__VA_ARGS__>()
 /// @}
 
 
