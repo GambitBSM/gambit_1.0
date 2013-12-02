@@ -15,6 +15,9 @@
 ///          (ben.farmer@gmail.com)
 ///    \date 2013 May
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #include <string>
@@ -52,17 +55,19 @@ namespace Gambit {
     void initMSSMspec (void *SMobj, void *r) {
       // Run the initialisation routine from the backend. I don't currently
       // know any smoother way to do this...
-      GET_BE_RESULT(initMSSMspec::BEinitMSSMspectrum, SMobj, r)
+      using namespace SafePointers::initMSSMspec;
+      BEreq::BEinitMSSMspectrum(SMobj, r);
     }
     
     void CMSSMspec (int &result)          
     {
+      using namespace SafePointers::CMSSMspec;
       cout << "My backend requirement of CMSSMspectrum has been filled by " << 
-       GET_BE_FUNCNAME(CMSSMspec::BECMSSMspectrum) << " from " <<
-       GET_BE_PACKAGE(CMSSMspec::BECMSSMspectrum) << ", v" << 
-       GET_BE_VERSION(CMSSMspec::BECMSSMspectrum) << "." << endl;
+       BEreq::BECMSSMspectrum.name() << " from " <<
+       BEreq::BECMSSMspectrum.backend() << ", v" << 
+       BEreq::BECMSSMspectrum.version() << "." << endl;
       cout << "Running backend function...";
-      GET_BE_RESULT(CMSSMspec::BECMSSMspectrum, SMobj, r);
+      BEreq::BECMSSMspectrum(SMobj, r);
     }
     */
     
@@ -111,19 +116,19 @@ namespace Gambit {
 
       // Dependency resolution
       cout << endl << "My dependency on SMparameters has been filled by " << 
-       GET_DEP_FUNCNAME(CMSSMspec::SMparameters) << " from " <<
-       GET_DEP_MODULE(CMSSMspec::SMparameters) << "." << endl;
+       Dep::SMparameters.name() << " from " <<
+       Dep::SMparameters.module() << "." << endl;
       cout << "Some values it contains are: ";
       cout << "mZ: " << (*Dep::SMparameters).mZ << endl;
       cout << "mtop: " << (*Dep::SMparameters).mtop << endl;
       
       // Backend resolution
       cout << "My backend requirement of CMSSMspectrum has been filled by " << 
-       GET_BE_FUNCNAME(CMSSMspec::BECMSSMspectrum) << " from " <<
-       GET_BE_PACKAGE(CMSSMspec::BECMSSMspectrum) << ", v" << 
-       GET_BE_VERSION(CMSSMspec::BECMSSMspectrum) << "." << endl;
+       BEreq::BECMSSMspectrum.name() << " from " <<
+       BEreq::BECMSSMspectrum.backend() << ", v" << 
+       BEreq::BECMSSMspectrum.version() << "." << endl;
       cout << "Running backend function...";
-      result = GET_BE_RESULT(CMSSMspec::BECMSSMspectrum, *Dep::SMparameters, *Dep::CMSSMparameters);
+      result = BEreq::BECMSSMspectrum(*Dep::SMparameters, *Dep::CMSSMparameters);
     }
     
     void genMSSMspec (MSSMspecQ &result)
@@ -132,20 +137,19 @@ namespace Gambit {
 
       // Dependency resolution
       cout << endl << "My dependency on SMparameters has been filled by " << 
-       GET_DEP_FUNCNAME(genMSSMspec::SMparameters) << " from " <<
-       GET_DEP_MODULE(genMSSMspec::SMparameters) << "." << endl;
+       Dep::SMparameters.name() << " from " <<
+       Dep::SMparameters.module() << "." << endl;
       cout << "Some values it contains are: ";
       cout << "mZ: " << (*Dep::SMparameters).mZ << endl;
       cout << "mtop: " << (*Dep::SMparameters).mtop << endl;
       
       // Backend resolution
       cout << "My backend requirement of genMSSMspectrum has been filled by " << 
-       GET_BE_FUNCNAME(genMSSMspec::BEgenMSSMspectrum) << " from " <<
-       GET_BE_PACKAGE(genMSSMspec::BEgenMSSMspectrum) << ", v" << 
-       GET_BE_VERSION(genMSSMspec::BEgenMSSMspectrum) << "." << endl;
+       BEreq::BEgenMSSMspectrum.name() << " from " <<
+       BEreq::BEgenMSSMspectrum.backend() << ", v" << 
+       BEreq::BEgenMSSMspectrum.version() << "." << endl;
       cout << "Running backend function...";
-      result = GET_BE_RESULT(genMSSMspec::BEgenMSSMspectrum, *Dep::SMparameters, 
-                                  *Dep::MSSMsoftmasses);
+      result = BEreq::BEgenMSSMspectrum(*Dep::SMparameters, *Dep::MSSMsoftmasses);
     }
     
   }

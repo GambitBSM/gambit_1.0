@@ -40,20 +40,20 @@ START_MODULE
       START_FUNCTION(RDspectype)
       // DEPENDENCY(dssusy, int) 
       // CW: Is this some placeholder initialization?
-      #define BACKEND_REQ DarkSUSY_getmspctm_capability
-        START_BACKEND_REQ(DS_MSPCTM)
+      #define BACKEND_REQ mspctm
+        START_BACKEND_REQ(DS_MSPCTM, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_getwidths_capability
-        START_BACKEND_REQ(DS_WIDTHS)
+      #define BACKEND_REQ widths
+        START_BACKEND_REQ(DS_WIDTHS, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_getintdof_capability
-        START_BACKEND_REQ(DS_INTDOF)
+      #define BACKEND_REQ intdof
+        START_BACKEND_REQ(DS_INTDOF, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_getpacodes_capability
-        START_BACKEND_REQ(DS_PACODES)
+      #define BACKEND_REQ pacodes
+        START_BACKEND_REQ(DS_PACODES, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
     #undef FUNCTION
@@ -73,8 +73,8 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
       DEPENDENCY(RD_spectrum, RDspectype)
-      #define BACKEND_REQ DarkSUSY_setrdmgev_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdmgev
+        START_BACKEND_REQ(DS_RDMGEV, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
     #undef FUNCTION
@@ -110,36 +110,32 @@ START_MODULE
        START_BACKEND_REQ(double)
        BACKEND_OPTION(DarkSUSY, 0.1)
      #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_setrdmgev_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdmgev
+        START_BACKEND_REQ(DS_RDMGEV, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_setrdpth_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdpth
+        START_BACKEND_REQ(DS_RDPTH, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_setrdpars_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdpars
+        START_BACKEND_REQ(DS_RDPARS, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_setrdswitch_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdswitch
+        START_BACKEND_REQ(DS_RDSWITCH, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_setrdlun_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdlun
+        START_BACKEND_REQ(DS_RDLUN, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_setrdpadd_capability
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ rdpadd
+        START_BACKEND_REQ(DS_RDPADD, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_getrddof_capability
-        START_BACKEND_REQ(DS_RDDOF)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ DarkSUSY_getrdpars_capability
-        START_BACKEND_REQ(DS_RDPARS)
+      #define BACKEND_REQ rddof
+        START_BACKEND_REQ(DS_RDDOF, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
       #define BACKEND_REQ dsanwx

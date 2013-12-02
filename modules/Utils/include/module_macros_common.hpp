@@ -14,6 +14,9 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #ifndef __module_macros_common_hpp__
@@ -39,6 +42,19 @@
 #define START_FUNCTION_2(_1, _2)                                 CAT(START_FUNCTION_,IF_DEFINED(START_FUNCTION_##_2,_2))(_1)  
 #define START_FUNCTION_1(_1)                                     START_FUNCTION_CANNOT_MANAGE_LOOPS(_1) 
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
+
+
+/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC])
+#define START_BACKEND_REQ_VAR(TYPE)                        DECLARE_BACKEND_REQ(TYPE,1)
+#define START_BACKEND_REQ_FUNC(TYPE)                       DECLARE_BACKEND_REQ(TYPE,0)
+// #define START_BACKEND_REQ_VAR(TYPE)                        DECLARE_BACKEND_REQ_VARIABLE(TYPE)
+// #define START_BACKEND_REQ_FUNC(TYPE)                       DECLARE_BACKEND_REQ_FUNCTION(TYPE)
+#define START_BACKEND_REQ_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ; should be VAR, FUNC or absent.")
+#define DEFINED_START_BACKEND_REQ_VAR  ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
+#define DEFINED_START_BACKEND_REQ_FUNC ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
+#define START_BACKEND_REQ_2(_1, _2)                        CAT(START_BACKEND_REQ_,IF_DEFINED(START_BACKEND_REQ_##_2,_2))(_1)  
+#define START_BACKEND_REQ_1(_1)                            START_BACKEND_REQ_FUNC(_1) 
+#define START_BACKEND_REQ(...)                             VARARG(START_BACKEND_REQ, __VA_ARGS__)
 
 
 ///Simple alias for ALLOW_MODEL/S

@@ -23,6 +23,10 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jan, Feb
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #ifndef __module_macros_inmodule_hpp__
@@ -33,38 +37,39 @@
 #include "util_macros.hpp"
 #include "module_macros_common.hpp"
 #include <boost/preprocessor/control/if.hpp>
+#include "safety_bucket.hpp"
 
+// TO BE REMOVED:
 /// \name Dependency-retrieval and info macros
 /// These are used from within module function source code to obtain the actual
 /// calculated values of dependencies, and probe details of the specific
 /// module functions that have been connected by the dependency resolver in order
 /// to fulfill dependencies.
 /// @{
-
-/// Retrive the name of the function that fills \em DEP for the current function
-#define GET_DEP_FUNCNAME(DEP)      Dependencies::DEP->name()
-/// Retrive the name of the module that provides the function that fills \em DEP for the current function
-#define GET_DEP_MODULE(DEP)        Dependencies::DEP->origin()
+// /// Retrive the name of the function that fills \em DEP for the current function
+// #define GET_DEP_FUNCNAME(FUNCTION, DEP)      SafePointers::FUNCTION::Dep::DEP.name()
+// /// Retrive the name of the module that provides the function that fills \em DEP for the current function
+// #define GET_DEP_MODULE(FUNCTION, DEP)        SafePointers::FUNCTION::Dep::DEP.module()
 /// @}
 
 
+// TO BE REMOVED:
 /// \name Backend-requirement-retrieval and info macros
 /// These are used from within module function source code to obtain the actual
 /// calculated values of backend requirement, and probe details of the specific
 /// backend functions that have been connected by the dependency resolver in order
 /// to fulfill backend requirements.
 /// @{
-
-/// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
-#define GET_BE_RESULT(BE_REQ, ...) Backend_Reqs::BE_REQ(__VA_ARGS__)
-/// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
-#define GET_BE_FUNCNAME(BE_REQ)    Backend_Reqs::CAT(BE_REQ,_baseptr)->name()
-/// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
-#define GET_BE_PACKAGE(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->origin()
-/// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
-#define GET_BE_VERSION(BE_REQ)     Backend_Reqs::CAT(BE_REQ,_baseptr)->version()
-/// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
-#define GET_BE_POINTER(BE_REQ, ...)  Backend_Reqs::CAT(BE_REQ,_get_function_ptr)<__VA_ARGS__>()
+// /// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
+// #define GET_BE_RESULT(FUNCTION, BE_REQ, ...)    SafePointers::FUNCTION::BEreq::BE_REQ(__VA_ARGS__)
+// /// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
+// #define GET_BE_FUNCNAME(FUNCTION, BE_REQ)       SafePointers::FUNCTION::BEreq::BE_REQ.name()
+// /// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
+// #define GET_BE_PACKAGE(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.backend()
+// /// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
+// #define GET_BE_VERSION(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.version()
+// /// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
+// #define GET_BE_POINTER(FUNCTION, BE_REQ, ...)   SafePointers::FUNCTION::BEreq::BE_REQ.pointer<__VA_ARGS__>()
 /// @}
 
 
@@ -81,7 +86,11 @@
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            DUMMYARG(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
-#define START_BACKEND_REQ(TYPE)                           MODULE_START_BACKEND_REQ(TYPE)
+
+// #define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                MODULE_DECLARE_BACKEND_REQ_VARIABLE(TYPE)
+// #define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                MODULE_DECLARE_BACKEND_REQ_FUNCTION(TYPE)
+#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
+
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
@@ -182,25 +191,17 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          extern module_functor<TYPE>* DEP;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
+      /* Given that TYPE is not void, create a safety_bucket for the           \
+      dependency result. To be initialized automatically at runtime            \
+      when the dependency is resolved. */                                      \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
           BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                    \
-           namespace Dep { extern safe_ptr<TYPE> DEP; } )                      \
+            namespace Dep { extern dep_bucket<TYPE> DEP; } )                   \
         }                                                                      \
+                                                                               \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -242,108 +243,31 @@
   }                                                                            \
 
 
-/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within a module.
-#define MODULE_START_BACKEND_REQ(TYPE)                                         \
+/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within a module. 
+#define MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                          \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
     namespace MODULE                                                           \
     {                                                                          \
-                                                                               \
-      namespace Backend_Reqs                                                   \
+      namespace SafePointers                                                   \
       {                                                                        \
-                                                                               \
         namespace FUNCTION                                                     \
         {                                                                      \
-                                                                               \
-          /* Declare a (base) pointer to the backend function functor.  To be  \
-          filled by the dependency resolver at runtime. */                     \
-          extern functor* CAT(BACKEND_REQ,_baseptr);                           \
-                                                                               \
-          /* Set up an empty alias for the backend requirement */              \
-          template<typename GENERIC_TYPE, typename... ARGS>                    \
-          GENERIC_TYPE BACKEND_REQ(ARGS ...args)                               \
+          namespace BEreq                                                      \
           {                                                                    \
-            cout<<"Incorrect return type implied for backend"<<endl;           \
-            cout<<"requirement BACKEND_REQ (function"<<endl;                   \
-            cout<<"FUNCTION, module MODULE). Exiting..."<<endl;                \
-            /** FIXME \todo Throw a real error here. */                        \
+            /* Create a safety_bucket for the backend variable/function.       \
+            To be initialized by the dependency resolver at runtime. */        \
+            BOOST_PP_IIF(IS_VARIABLE,                                          \
+              /* If IS_VARIABLE = 1: */                                        \
+              extern BEvariable_bucket<TYPE> BACKEND_REQ;                      \
+              , /* If IS_VARAIBLE = 0: */                                      \
+              extern BEfunction_bucket<TYPE> BACKEND_REQ;                      \
+            ) /* End BOOST_PP_IIF */                                           \
           }                                                                    \
-                                                                               \
-          /* Set up a working alias that casts the (base) pointer to the       \
-          backend functor to the appropriate backend_functor type, and then    \
-          dereferences it to call the actual backend function. */              \
-          template<typename ...ARGS>                                           \
-          TYPE BACKEND_REQ(ARGS&& ...args)                                     \
-          {                                                                    \
-            typedef backend_functor<TYPE, ARGS...> be_functor;                 \
-            be_functor* myptr;                                                 \
-            if (Core.safe_mode())                                              \
-            {                                                                  \
-              myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
-              if (myptr == 0)                                                  \
-              {                                                                \
-                cout<<endl<<"Error: Null returned from dynamic cast in ";      \
-                cout<<"attempting to retrieve backend requirement"<<endl;      \
-                cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
-                cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
-                cout<<"). Probably you have passed arguments of the "<<endl;   \
-                cout<<"wrong type(s) when calling this function."<<endl;       \
-                cout<<"The return type of the backend function is supposed ";  \
-                cout<<"to be "<<STRINGIFY(TYPE)<<endl;                         \
-                /** FIXME \todo throw real error here */                       \
-              }                                                                \
-            }                                                                  \
-            else                                                               \
-            {                                                                  \
-              myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
-            }                                                                  \
-            BOOST_PP_IIF(IS_TYPE(void,TYPE),,return)                           \
-             (*myptr)(std::forward<ARGS>(args)...);                            \
-                                                                               \
-          }                                                                    \
-                                                                               \
-          /* Set up a working alias that casts the (base) pointer to the       \
-          backend functor to the appropriate backend_functor type, and then    \
-          returns the underlying pointer to the actual backend function. */    \
-          template<typename ...ARGS>                                           \
-          /* Horrifically complicated syntax to return a function ptr */       \
-          TYPE(*CAT(BACKEND_REQ,_get_function_ptr)())(ARGS...)                 \
-          {                                                                    \
-            typedef backend_functor<TYPE, ARGS...> be_functor;                 \
-            be_functor* myptr;                                                 \
-            if (Core.safe_mode())                                              \
-            {                                                                  \
-              myptr = dynamic_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));    \
-              if (myptr == 0)                                                  \
-              {                                                                \
-                cout<<endl<<"Error: Null returned from dynamic cast in ";      \
-                cout<<"attempting to retrieve underlying function pointer ";   \
-                cout<<endl<<"for backend requirement"<<endl;                   \
-                cout<<STRINGIFY(BACKEND_REQ)<<" (function ";                   \
-                cout<<STRINGIFY(FUNCTION)<<", module "<<STRINGIFY(MODULE);     \
-                cout<<"). Probably you have passed arguments of the "<<endl;   \
-                cout<<"wrong type(s) when calling this function."<<endl;       \
-                cout<<"The return type of the backend function is supposed ";  \
-                cout<<"to be "<<STRINGIFY(TYPE)<<endl;                         \
-                /** FIXME \todo throw real error here */                       \
-              }                                                                \
-            }                                                                  \
-            else                                                               \
-            {                                                                  \
-              myptr = static_cast<be_functor*>(CAT(BACKEND_REQ,_baseptr));     \
-            }                                                                  \
-            return myptr->handoutFunctionPointer();                            \
-                                                                               \
-          }                                                                    \
-                                                                               \
         }                                                                      \
-                                                                               \
       }                                                                        \
-                                                                               \
     }                                                                          \
-                                                                               \
   }                                                                            \
 
 

@@ -36,10 +36,14 @@
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Jan, Feb
-//
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jan, Feb
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #ifndef __module_macros_incore_hpp__
@@ -55,6 +59,7 @@
 #include "create_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
+#include "safety_bucket.hpp"
 
 /// \name Tag-registration macros
 /// @{
@@ -103,9 +108,16 @@
 #define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
+/// a backend variable to be available with capability \link BACKEND_REQ() 
+/// BACKEND_REQ\endlink and type \em TYPE.
+// #define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,1)
+
+#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend function to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and return type \em TYPE.
-#define START_BACKEND_REQ(TYPE)                           CORE_START_BACKEND_REQ(TYPE)
+// #define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,0)
 
 /// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
@@ -530,23 +542,15 @@
         typedef TYPE type;                                                     \
       };                                                                       \
                                                                                \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          module_functor<TYPE>* DEP = NULL;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
+      /* Given that TYPE is not void, create a safety_bucket for the           \
+      dependency result. To be initialized automatically at runtime            \
+      when the dependency is resolved. */                                      \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          BOOST_PP_IIF(IS_TYPE(void,TYPE),,namespace Dep {safe_ptr<TYPE> DEP;})\
+          BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
+           namespace Dep {dep_bucket<TYPE> DEP;})                              \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -555,11 +559,11 @@
       void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
       {                                                                        \
         /* First try casting the pointer passed in to a module_functor */      \
-        Dependencies::FUNCTION::DEP =                                          \
+        module_functor<TYPE> * ptr =                                           \
          dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
                                                                                \
         /* Now test if that cast worked */                                     \
-        if (Dependencies::FUNCTION::DEP == 0)  /* It didn't; throw an error. */\
+        if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
           cout<<"Error: Null returned from dynamic cast in "<< endl;           \
           cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
@@ -568,11 +572,10 @@
           cout<<dep_functor->origin()<<"."<<endl;                              \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did!  Now set the pointer to the dependency result. */      \
+        else /* It did! Now initialize the safety_bucket using the functor.*/  \
         {                                                                      \
-         BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
-          SafePointers::FUNCTION::Dep::DEP =                                   \
-           Dependencies::FUNCTION::DEP->valuePtr(); )                          \
+          BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
+           SafePointers::FUNCTION::Dep::DEP.initialize(ptr); )                 \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -746,8 +749,11 @@
   }                                                                            \
 
 
-/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.
-#define CORE_START_BACKEND_REQ(TYPE)                                           \
+
+/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within the core.
+/// The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC (or no flag)
+/// corresponds to IS_VARIABLE=0.
+#define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -758,20 +764,29 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Register the required return TYPE of the backend function */          \
+      /* Register the required return TYPE of the backend function/variable */ \
       template<>                                                               \
       struct dep_traits<BETags::BACKEND_REQ, Tags::FUNCTION>                   \
       {                                                                        \
-        typedef TYPE type;                                                     \
+        /* Use TYPE* for backend variables, and TYPE for backend functions */  \
+        typedef BOOST_PP_IIF(IS_VARIABLE, TYPE*, TYPE) type;                   \
       };                                                                       \
                                                                                \
-      /* Create a (base) pointer to the backend functor.  To be filled by      \
-      the dependency resolver at runtime. */                                   \
-      namespace Backend_Reqs                                                   \
+      namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          functor* CAT(BACKEND_REQ,_baseptr) = NULL;                           \
+          namespace BEreq                                                      \
+          {                                                                    \
+            /* Create a safety_bucket for the backend variable/function.       \
+            To be initialized by the dependency resolver at runtime. */        \
+            BOOST_PP_IIF(IS_VARIABLE,                                          \
+              /* If IS_VARIABLE = 1: */                                        \
+              BEvariable_bucket<TYPE> BACKEND_REQ;                             \
+              , /* If IS_VARAIBLE = 0: */                                      \
+              BEfunction_bucket<TYPE> BACKEND_REQ;                             \
+            )  /* End BOOST_PP_IIF */                                          \
+          }                                                                    \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -787,18 +802,34 @@
       void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
        (functor* be_functor)                                                   \
       {                                                                        \
-        Backend_Reqs::FUNCTION::CAT(BACKEND_REQ,_baseptr) = be_functor;        \
+                                                                               \
+        /* Use the given functor pointer (be_functor) to initialize the        \
+        safety_bucket SafePointers::FUNCTION::BEreq::BACKEND_REQ.              \
+        If IS_VARIABLE = 1 we do a type cast of the functor first. */          \
+        BOOST_PP_IIF(IS_VARIABLE,                                              \
+          /* If IS_VARIABLE = 1: */                                            \
+          backend_functor<TYPE*> * ptr =                                       \
+            dynamic_cast<backend_functor<TYPE*>*>(be_functor);                 \
+          SafePointers::FUNCTION::BEreq::BACKEND_REQ.initialize(ptr);          \
+          , /* If IS_VARIABLE = 0: */                                          \
+          SafePointers::FUNCTION::BEreq::BACKEND_REQ.initialize(be_functor);   \
+        ) /* End BOOST_PP_IIF */                                               \
       }                                                                        \
                                                                                \
-      /* Set up the commands to be called at runtime to register req*/         \
+      /* Set up the commands to be called at runtime to register req.          \
+      (Note that TYPE is used for backend functions, while TYPE* is used       \
+      for backend variables.) */                                               \
       template <>                                                              \
       void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
       {                                                                        \
         map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
          &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
-        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] = STRINGIFY(TYPE);        \
-        Functown::FUNCTION.setBackendReq(                                      \
-         STRINGIFY(BACKEND_REQ),STRINGIFY(TYPE),                               \
+                                                                               \
+        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =                         \
+          BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE));        \
+                                                                               \
+        Functown::FUNCTION.setBackendReq(STRINGIFY(BACKEND_REQ),               \
+          BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE)),        \
          &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \

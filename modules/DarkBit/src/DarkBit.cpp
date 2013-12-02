@@ -40,6 +40,9 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_spectrum_SUSY(RDspectype &result)
     {
+      /* AK: added this line */
+      using namespace SafePointers::RD_spectrum_SUSY;
+
       RDspectype myres;
       int copr[0];           // flag for which coannihilation processes to include
       double mcofr;          // maximal coannihilating particle mass
@@ -51,11 +54,16 @@ namespace Gambit {
       int kgamma=13,kw=14,kz=15,kgluon=16,kh1=17,kh2=18,kh3=19,khc=20;
 
 // read out DS mass spectrum and relevant particle info
-      DS_PACODES DSpart=GET_BE_RESULT(RD_spectrum_SUSY::DarkSUSY_getpacodes_capability);
-      DS_MSPCTM mymspctm=GET_BE_RESULT(RD_spectrum_SUSY::DarkSUSY_getmspctm_capability);
-      DS_INTDOF myintdof=GET_BE_RESULT(RD_spectrum_SUSY::DarkSUSY_getintdof_capability);
-      DS_WIDTHS mywidths=GET_BE_RESULT(RD_spectrum_SUSY::DarkSUSY_getwidths_capability);
-
+/* AK: replaced these lines
+      DS_PACODES DSpart=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getpacodes_capability);
+      DS_MSPCTM mymspctm=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getmspctm_capability);
+      DS_INTDOF myintdof=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getintdof_capability);
+      DS_WIDTHS mywidths=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getwidths_capability);
+*/
+      DS_PACODES DSpart = *BEreq::pacodes;
+      DS_MSPCTM mymspctm= *BEreq::mspctm;
+      DS_INTDOF myintdof= *BEreq::intdof;
+      DS_WIDTHS mywidths= *BEreq::widths;
 
 // determine relevant coannihilating particles
 // set by hand which coannihilation processes to include
@@ -160,6 +168,7 @@ namespace Gambit {
     void RD_thresholds_resonances_ordered(RDrestype &result)
     {
       using namespace SafePointers::RD_thresholds_resonances_ordered;
+
 //read out location and number of resonances and thresholds from RDspectrum
       RDspectype specres = *Dep::RD_spectrum;
       result.n_res=specres.n_res;
@@ -210,8 +219,11 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
+      /* AK: added this line */
+      using namespace SafePointers::RD_eff_annrate_SUSY;
+
 //read out location and number of resonances and thresholds from RDspectrum
-      RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered::RD_spectrum$
+      RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered, RD_spectrum$
       double mwimp=specres.E_thr[0]/2;
 
 // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
@@ -245,7 +257,10 @@ namespace Gambit {
             }
           }
         }
-        GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdmgev_capability, byVal(myrdmgev));
+        /* AK: replaced this line
+        GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdmgev_capability, byVal(myrdmgev));
+        */
+        *BEreq::rdmgev = myrdmgev;
 
 //Now this should be a pointer to dsanwx -- how to implement that???
 //      result=;
@@ -257,7 +272,14 @@ namespace Gambit {
 
       std::cout << "!!! Remember to change return type in DarkBit_rollcall.hpp(2x!) and DarkBit.cpp !!!" << std::endl;
 
-      result = GET_BE_POINTER(RD_oh2_general::dsanwx, double&);
+      /* AK: replaced this line 
+             Note: Here you are accessing a backend requirement for the module function RD_oh2_general
+                   while inside another module function RD_eff_annrate_SUSY. This is probably something we want
+                   should avoid. It's better to repeat the BACKEND_REQ 'block' in DarkBit_rollcall.hpp for this backend requirement.
+                   (In the long run I think we may solve this in a more elegant way...)
+      result = GET_BE_POINTER(RD_oh2_general, dsanwx, double&);
+      */
+      result = SafePointers::RD_oh2_general::BEreq::dsanwx.pointer<double&>();
 
     } // function RD_eff_annrate_SUSY
 
@@ -267,7 +289,8 @@ namespace Gambit {
     void RD_oh2_general(double &result)
     {
 
-//      using namespace SafePointers::RD_oh2_general;
+      /* AK: added this line */
+      using namespace SafePointers::RD_oh2_general;
 
 //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       using namespace SafePointers::RD_oh2_general;
@@ -286,25 +309,44 @@ namespace Gambit {
 
 // this tells DS which DOF parameterization should be used
 // NB: this only needs to be done once -- how to do that in c++? (cf use of data staement in FORTRAN)
-      // GET_BE_RESULT(RD_oh2_general::dsrdset, "dof", 3, "3", 1);
-      GET_BE_RESULT(RD_oh2_general::dsrdinit);
+      // GET_BE_RESULT(RD_oh2_general, dsrdset, "dof", 3, "3", 1);
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, dsrdinit);
+      */
+      BEreq::dsrdinit();
+
 // the following replaces the broken(?) dsrdcom -- should be fixed with higher DS versions
       DS_RDPARS myrdpars;
       myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
       myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
       myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
       myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;myrdpars.cfr=0.5;
-      GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdpars_capability, byVal(myrdpars));
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdpars_capability, byVal(myrdpars));
+      */
+      *BEreq::rdpars = myrdpars;
+
       DS_RDSWITCH myrdswitch;
       myrdswitch.thavint=1;myrdswitch.rdprt=0;
-      GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdswitch_capability, byVal(myrdswitch));
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdswitch_capability, byVal(myrdswitch));
+      */
+      *BEreq::rdswitch = myrdswitch;
+
       DS_RDLUN myrdlun;
       myrdlun.rdlulog=6;myrdlun.rdluerr=6;
-      GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdlun_capability, byVal(myrdlun));
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdlun_capability, byVal(myrdlun));
+      */
+      *BEreq::rdlun = myrdlun;
+
       DS_RDPADD myrdpadd;
       myrdpadd.pdivr=2.0;myrdpadd.dpres=0.5;myrdpadd.nlow=20;myrdpadd.nhigh=10;
       myrdpadd.npres=4;myrdpadd.nthup=4;myrdpadd.cthtest=0;myrdpadd.spltest=1;
-      GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdpadd_capability, byVal(myrdpadd));
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdpadd_capability, byVal(myrdpadd));
+      */
+      *BEreq::rdpadd = myrdpadd;
 
 // write information about thresholds and resonances to DS common blocks
 // [this is the model-independent part of dsrdstart]
@@ -315,7 +357,10 @@ namespace Gambit {
         myrdmgev.rgev[i]=myres.E_res[i];
         myrdmgev.rwid[i]=myres.dE_res[i];
       }
-      GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdmgev_capability, byVal(myrdmgev));
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdmgev_capability, byVal(myrdmgev));
+      */
+      *BEreq::rdmgev = myrdmgev;
 
       myrdpth.nth=myres.n_thr-1;   // NB: DS does not count 2* WIMP rest mass as thr
       myrdpth.pth[0]=0;
@@ -324,14 +369,22 @@ namespace Gambit {
         myrdpth.pth[i]=sqrt(pow(myres.E_thr[i],2)/4-pow(mwimp,2));
         myrdpth.incth[i]=1;
       }
-      GET_BE_RESULT(RD_oh2_general::DarkSUSY_setrdpth_capability, byVal(myrdpth));
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdpth_capability, byVal(myrdpth));
+      */
+      *BEreq::rdpth = myrdpth;
 
 
 // TODO: introduce & keep track of DS  error flags in /rderrors/ !
 
 // determine starting point for integration of Boltzmann eq
 // (and make sure not to start at higher T than defined in tabulated dof)
-      DS_RDDOF myrddof=GET_BE_RESULT(RD_oh2_general::DarkSUSY_getrddof_capability);
+
+      /* AK: replaced this line
+      DS_RDDOF myrddof=GET_BE_RESULT(RD_oh2_general, DarkSUSY_getrddof_capability);
+      */
+      DS_RDDOF myrddof = *BEreq::rddof;
+
       double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof.tgev[0]);
       double tstart=mwimp/xstart;
       int k;
@@ -349,17 +402,30 @@ namespace Gambit {
 
 
 // tabulate invariant rate
-     GET_BE_RESULT(RD_oh2_general::dsrdtab, byVal(*Dep::RD_eff_annrate),xstart);
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, dsrdtab, byVal(*Dep::RD_eff_annrate),xstart);
+      */
+      BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
 
 // determine integration limit
-      GET_BE_RESULT(RD_oh2_general::dsrdthlim);
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, dsrdthlim);
+      */
+      BEreq::dsrdthlim();
 
 // solve Boltzmann eqn
       double xend, yend, xf;
       int nfcn;
-      double(*fptr)(double&) = GET_BE_POINTER(RD_oh2_general::dsrdwintp, double&);
+      /* AK: replaced this line
+      double(*fptr)(double&) = GET_BE_POINTER(RD_oh2_general, dsrdwintp, double&);
+      */
+      double(*fptr)(double&) = BEreq::dsrdwintp.pointer<double&>();
+
       std::cout << "Starting dsrdeqn" << std::endl;
-      GET_BE_RESULT(RD_oh2_general::dsrdeqn, byVal(fptr),xstart,xend,yend,xf,nfcn);
+      /* AK: replaced this line
+      GET_BE_RESULT(RD_oh2_general, dsrdeqn, byVal(fptr),xstart,xend,yend,xf,nfcn);
+      */
+      BEreq::dsrdeqn(byVal(fptr),xstart,xend,yend,xf,nfcn);
 
       result = 0.70365e8*myrddof.fh[myrddof.nf]*mwimp*yend;
 
@@ -378,7 +444,13 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_test_out(double &result)
     {
-//      RDspectype specres = GET_DEP( RD_test_out::RD_spectrum);
+      /* AK: added this line */
+      using namespace SafePointers::RD_test_out;
+
+        /* AK: would have replaced this line (if it was not commented out)...
+//      RDspectype specres = GET_DEP( RD_test_out, RD_spectrum);
+        */
+//      RDspectype specres = *Dep::RD_spectrum;
 
 //      std::cout << "mchi =" << specres.mass_co[0] << std::endl;
 //      std::cout << "dof chi =" << specres.dof_co[0] << std::endl;

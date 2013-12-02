@@ -77,20 +77,20 @@ BE_FUNCTION(dsanwx, double, (double&), "dsanwx_", "dsanwx")
 
 
 /* Syntax for BE_VARIABLE:
- * BE_VARIABLE([choose variable name], [type], "[exact symbol name]")  */
+ * BE_VARIABLE([choose variable name], [type], "[exact symbol name]", "[choose capability name]")  */
 
-BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_")
-BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_")
-BE_VARIABLE(intdof, DS_INTDOF, "intdof_")
-BE_VARIABLE(pacodes, DS_PACODES, "pacodes_")
-BE_VARIABLE(widths, DS_WIDTHS, "widths_")
-BE_VARIABLE(rdmgev, DS_RDMGEV, "rdmgev_")
-BE_VARIABLE(rdpth, DS_RDPTH, "rdpth_")
-BE_VARIABLE(rddof, DS_RDDOF, "rddof_")
-BE_VARIABLE(rdpars, DS_RDPARS, "rdpars_")
-BE_VARIABLE(rdswitch, DS_RDSWITCH, "rdswitch_")
-BE_VARIABLE(rdlun, DS_RDLUN, "rdlun_")
-BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_")
+BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_", "mssmpar")
+BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_", "mspctm")
+BE_VARIABLE(intdof, DS_INTDOF, "intdof_", "intdof")
+BE_VARIABLE(pacodes, DS_PACODES, "pacodes_", "pacodes")
+BE_VARIABLE(widths, DS_WIDTHS, "widths_", "widths")
+BE_VARIABLE(rdmgev, DS_RDMGEV, "rdmgev_", "rdmgev")
+BE_VARIABLE(rdpth, DS_RDPTH, "rdpth_", "rdpth")
+BE_VARIABLE(rddof, DS_RDDOF, "rddof_", "rddof")
+BE_VARIABLE(rdpars, DS_RDPARS, "rdpars_", "rdpars")
+BE_VARIABLE(rdswitch, DS_RDSWITCH, "rdswitch_", "rdswitch")
+BE_VARIABLE(rdlun, DS_RDLUN, "rdlun_", "rdlun")
+BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_", "rdpadd")
 
 
 // BE_VARIABLE(SomeInt, int, "someInt")

@@ -19,6 +19,9 @@
 ///  \author Christoph Weniger
 ///    \date 2013 Jan 
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #include <string>
@@ -67,8 +70,9 @@ namespace Gambit
     void identity     (str    &result)    { result = "turkion"; }
     void function_pointer_retriever( double(*&result)(int&) )
     {
+      using namespace SafePointers::function_pointer_retriever;
       //Two ways to try this: a pointer to a fortran function that has been backended (and takes an int as an input by reference):
-      result = GET_BE_POINTER(function_pointer_retriever::externalFunction, int&);
+      result = BEreq::externalFunction.pointer<int&>();
       //or a pointer to a local C++ funtion
       //result = &some_other_function;
     }
