@@ -36,7 +36,7 @@
 #include <vector>
 #include <time.h>
 #include <sstream>
-#include <boost/thread.hpp>
+#include <omp.h>
 #include "util_types.hpp"
 #include "util_functions.hpp"
 #include "printers.hpp"
@@ -314,14 +314,15 @@ namespace Gambit
         myStatus        = 1;
         myChunkIndex    = 0;
         myCurrentIteration = 0;
-        myLoopManager = "none";
+        myLoopManager   = "none";
         iCanManageLoops = false;
         needs_recalculating = true;
         runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
         runtime         = FUNCTORS_RUNTIME_INIT;
         pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
         fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
-        myMaxThreads    = boost::thread::hardware_concurrency();
+        globlMaxThreads = omp_get_thread_limit();
+        myMaxThreads    = globlMaxThreads;
         if (myMaxThreads == 0)
         {
           cout << "Error: cannot determine number of hardware threads available on this system.";
@@ -738,6 +739,8 @@ namespace Gambit
       int myCurrentIteration;
       /// Maximum number of OpenMP threads this functor is permitted to launch.
       int myMaxThreads;
+      /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
+      int globlMaxThreads;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;

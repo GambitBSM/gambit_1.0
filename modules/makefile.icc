@@ -9,7 +9,7 @@ export
 
 CC = icc 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt -lboost_thread
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt -openmp
 CFLAGS = -O3 -Wall -g
 
 FC = ifort

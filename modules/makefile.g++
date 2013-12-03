@@ -24,7 +24,7 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib
 
 CC = g++ 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -lboost_thread -g -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -fopenmp -g -Wl,-rpath,$(MULTINESTLIBDIR)
 
 CFLAGS = -O3 -Wall -g
 
