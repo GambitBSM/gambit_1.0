@@ -13,8 +13,8 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2012 Nov  
-///  \date 2013 Jan -- Aug
-///  \date 2013 Foreverrrrr
+///  \date 2013 All year 
+///  \date 2014 Foreverrrrr
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -35,50 +35,15 @@
 #include "functors.hpp"
 #include "extern_core.hpp"
 #include "util_macros.hpp"
+#include "safety_bucket.hpp"
 #include "module_macros_common.hpp"
 #include <boost/preprocessor/control/if.hpp>
-#include "safety_bucket.hpp"
-
-// TO BE REMOVED:
-/// \name Dependency-retrieval and info macros
-/// These are used from within module function source code to obtain the actual
-/// calculated values of dependencies, and probe details of the specific
-/// module functions that have been connected by the dependency resolver in order
-/// to fulfill dependencies.
-/// @{
-// /// Retrive the name of the function that fills \em DEP for the current function
-// #define GET_DEP_FUNCNAME(FUNCTION, DEP)      SafePointers::FUNCTION::Dep::DEP.name()
-// /// Retrive the name of the module that provides the function that fills \em DEP for the current function
-// #define GET_DEP_MODULE(FUNCTION, DEP)        SafePointers::FUNCTION::Dep::DEP.module()
-/// @}
-
-
-// TO BE REMOVED:
-/// \name Backend-requirement-retrieval and info macros
-/// These are used from within module function source code to obtain the actual
-/// calculated values of backend requirement, and probe details of the specific
-/// backend functions that have been connected by the dependency resolver in order
-/// to fulfill backend requirements.
-/// @{
-// /// Obtain the backend requirement \em BE_REQ of the current function, with arguments (...)
-// #define GET_BE_RESULT(FUNCTION, BE_REQ, ...)    SafePointers::FUNCTION::BEreq::BE_REQ(__VA_ARGS__)
-// /// Obtain the name of the backend function that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_FUNCNAME(FUNCTION, BE_REQ)       SafePointers::FUNCTION::BEreq::BE_REQ.name()
-// /// Obtain the name of the backend that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_PACKAGE(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.backend()
-// /// Obtain the version of the backend that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_VERSION(FUNCTION, BE_REQ)        SafePointers::FUNCTION::BEreq::BE_REQ.version()
-// /// Obtain the underlying function pointer to the backend function that fills the requirement \em BE_REQ of the current function
-// #define GET_BE_POINTER(FUNCTION, BE_REQ, ...)   SafePointers::FUNCTION::BEreq::BE_REQ.pointer<__VA_ARGS__>()
-/// @}
-
 
 /// \name Rollcall macros
 /// These are called from within rollcall headers in each module to 
 /// register module functions, their capabilities, return types, dependencies,
 /// and backend requirements.
 /// @{
-
 // Redirect the rollcall macros to their in-module variants
 #define START_MODULE                                      DUMMY
 #define START_CAPABILITY                                  DUMMY
@@ -86,16 +51,11 @@
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            DUMMYARG(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
-
-// #define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                MODULE_DECLARE_BACKEND_REQ_VARIABLE(TYPE)
-// #define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                MODULE_DECLARE_BACKEND_REQ_FUNCTION(TYPE)
 #define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
-
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
-
 /// @}
 
 
@@ -116,19 +76,18 @@
       /* Let the module source know that this functor is declared by the core*/\
       namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
                                                                                \
-      /* Create safe pointers to the index of the OpenMP chunk this functor    \
-      is running within, the iteration number of the loop it is running within,\
-      and the maximum number of threads that it is permitted to employ in      \
-      carrying out its task. */                                                \
+      /* Create safe pointers to the iteration number of the loop this functor \
+      is running within, and the set of threads indices that it is permitted to\
+      employ in carrying out its task. */                                      \
       namespace SafePointers                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
           namespace Loop                                                       \
           {                                                                    \
-            safe_ptr<int> chunk_index = Functown::FUNCTION.chunkPtr();         \
             safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
-            safe_ptr<int> max_threads = Functown::FUNCTION.threadPtr();        \
+            safe_ptr<std::set<int> > available_threads =                       \
+             Functown::FUNCTION.threadPtr();                                   \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -138,9 +97,10 @@
       namespace Functown                                                       \
       {                                                                        \
         BOOST_PP_IIF(CAN_MANAGE,                                               \
-          void CAT(FUNCTION,_iterate)(int ci, int it, int mt)                  \
+          void CAT(FUNCTION,_iterate)(int it, const std::set<int>&cand_threads)\
           {                                                                    \
-            int mp = *SafePointers::FUNCTION::Loop::max_threads;               \
+            int mp = SafePointers::FUNCTION::Loop::available_threads->size();  \
+            int mt = cand_threads.size();                                      \
             if (mt > mp)                                                       \
             {                                                                  \
               cout<<endl<<"Error: you cannot launch an iteration of a loop "   \
@@ -154,7 +114,30 @@
               /* FIXME throw a real error here */                              \
               exit(1);                                                         \
             }                                                                  \
-            FUNCTION.iterate(ci,it,mt);                                        \
+            for (std::set<int>::const_iterator it = cand_threads.begin();      \
+                 it != cand_threads.end(); ++it)                               \
+            {                                                                  \
+              if (SafePointers::FUNCTION::Loop::available_threads->find(*it)   \
+                  == SafePointers::FUNCTION::Loop::available_threads->end())   \
+              {                                                                \
+                cout<<endl<<"Error: one or more of the thread indices you have"\
+                 " tried to provide to some nested functions is not allowed, " \
+                 "as *this* function was not given permission to use that "    \
+                 "thread in the first place.  Check *Loops::available_threads" \
+                 "in"<<STRINGIFY(MODULE)<<"::"<<STRINGIFY(FUNCTION)<<"."<<endl;\
+                cout<<"  Threads allowed in offending loop manager: "<<        \
+                 *SafePointers::FUNCTION::Loop::available_threads<<endl;       \
+                cout<<"  Requested threads: "<<cand_threads<<endl;             \
+                /* FIXME throw a real error here */                            \
+                exit(1);                                                       \
+              }                                                                \
+            }                                                                  \
+            FUNCTION.iterate(it,cand_threads);                                 \
+          }                                                                    \
+          void CAT(FUNCTION,_easy_iterate)(int it)                             \
+          {                                                                    \
+            FUNCTION.iterate(it,                                               \
+             *SafePointers::FUNCTION::Loop::available_threads);                \
           }                                                                    \
         ,)                                                                     \
       }                                                                        \
@@ -170,8 +153,10 @@
           namespace Loop                                                       \
           {                                                                    \
             BOOST_PP_IIF(CAN_MANAGE,                                           \
-              void (*executeIteration)(int, int, int) =                        \
+              void (*executeIteration)(int, const std::set<int>&) =            \
                &Functown::CAT(FUNCTION,_iterate);                              \
+              void (*executeEasyIteration)(int) =                              \
+               &Functown::CAT(FUNCTION,_easy_iterate);                         \
             ,)                                                                 \
           }                                                                    \
         }                                                                      \

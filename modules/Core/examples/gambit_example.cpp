@@ -19,7 +19,6 @@
 
 #include "graphs.hpp"
 #include "exceptions.hpp"
-#include "map_extensions.hpp"
 #include "yaml_parser.hpp"
 #include "gambit_scan.hpp"
 #include "backend_rollcall.hpp"

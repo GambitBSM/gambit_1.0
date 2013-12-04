@@ -167,7 +167,7 @@ HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 FlavBit/build/FlavBit.o $(UTILSDIR)/build/rngs.o \
-$(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
+$(UTILSDIR)/build/util_functions.o $(UTILSDIR)/build/stream_printers.o Example_SUSYspecBit/build/SUSYspecBit.o \
 DarkBit/build/DarkBit.o\
 $(YAMLDIR)/yaml-cpp.a
 

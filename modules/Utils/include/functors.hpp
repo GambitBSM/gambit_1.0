@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, May, June, July
+///  \date 2013 Apr, May, June, July, Dec
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -36,6 +36,7 @@
 #include <vector>
 #include <time.h>
 #include <sstream>
+#include <numeric>
 #include <omp.h>
 #include "util_types.hpp"
 #include "util_functions.hpp"
@@ -60,8 +61,23 @@ namespace Gambit
 
     public:
 
-      /// Empty virtual calculate(), needs to be redefined in daughters.
-      virtual void calculate() {}
+      /// Constructor
+      functor (str func_name,
+               str func_capability,
+               str result_type,
+               str origin_name) :      
+       myName          (func_name),
+       myCapability    (func_capability),
+       myType          (result_type),
+       myOrigin        (origin_name),
+       myStatus        (1),
+       needs_recalculating (true) {}
+      
+      /// Virtual calculate(), needs to be redefined in daughters.
+      virtual void calculate() {};
+
+      /// Virtual calculate(thread_indices), needs to be redefined in daughters.
+      virtual void calculate(const std::set<int> &) {};
 
       // It may be safer to have some of the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
@@ -179,13 +195,6 @@ namespace Gambit
         exit(1);
       } 
 
-      /// Set the index of the OpenMP chunk that this functor belongs to, inside a loop within which it runs
-      virtual void setChunk (int chunk)
-      { 
-        cout << "Error.  The setChunk method has not been defined in this class." << endl;
-        exit(1);
-      }
-
       /// Set the iteration number in a loop in which this functor runs
       virtual void setIteration (int iteration)
       { 
@@ -194,7 +203,7 @@ namespace Gambit
       }
 
       /// Set the maximum number of OpenMP threads that this functor is permitted to operate
-      virtual void setThreads (int n_threads)
+      virtual void setThreads (std::set<int> thread_indices)
       { 
         cout << "Error.  The setThreads method has not been defined in this class." << endl;
         exit(1);
@@ -238,7 +247,7 @@ namespace Gambit
       {
          std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
           << "function should be redefined in daughter functor classes. If this is running there is a problem "
-          << "somewhere... (from functor "<<myName<<")"<<std::endl;
+          << "somewhere, e.g. you have called print on a void function result (from functor "<<myName<<")"<<std::endl;
       }
 
 
@@ -306,51 +315,48 @@ namespace Gambit
                             str func_capability,
                             str result_type,
                             str origin_name)
+      : functor            (func_name, func_capability, result_type, origin_name),
+        myCurrentIteration (0),
+        myLoopManager      ("none"),
+        iCanManageLoops    (false),
+        iCanRunNested      (false),
+        runningNested      (false),
+        runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
+        runtime            (FUNCTORS_RUNTIME_INIT),
+        pInvalidation      (FUNCTORS_BASE_INVALIDATION_RATE),
+        fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
+        globlMaxThreads    (omp_get_max_threads())
       {
-        myName          = func_name;
-        myCapability    = func_capability;
-        myType          = result_type;
-        myOrigin        = origin_name;
-        myStatus        = 1;
-        myChunkIndex    = 0;
-        myCurrentIteration = 0;
-        myLoopManager   = "none";
-        iCanManageLoops = false;
-        needs_recalculating = true;
-        runtime_average = FUNCTORS_RUNTIME_INIT; // default 1 micro second
-        runtime         = FUNCTORS_RUNTIME_INIT;
-        pInvalidation   = FUNCTORS_BASE_INVALIDATION_RATE;
-        fadeRate        = FUNCTORS_FADE_RATE; // can be set individually for each functor
-        globlMaxThreads = omp_get_thread_limit();
-        myMaxThreads    = globlMaxThreads;
-        if (myMaxThreads == 0)
+        if (globlMaxThreads == 0)
         {
           cout << "Error: cannot determine number of hardware threads available on this system.";
           //FIXME throw real error here
           exit(1);
         }
+        for (int i = 0; i < globlMaxThreads; ++i) all_thread_indices.insert(all_thread_indices.end(), i);
+        myThreadIndices = all_thread_indices;
       }
 
-      // Getter for averaged runtime
+      /// Getter for averaged runtime
       double getRuntimeAverage()
       {
         return runtime_average;
       }
 
-      // Reset functor
+      /// Reset functor
       void reset()
       {
         needs_recalculating = true;
         runtime = .0;
       }
 
-      // Tell functor that it invalidated the current point in model space
+      /// Tell functor that it invalidated the current point in model space
       void notifyOfInvalidation()
       {
         pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
       }
 
-      // Invalidation rate
+      /// Invalidation rate
       double getInvalidationRate()
       {
         return pInvalidation;
@@ -362,30 +368,21 @@ namespace Gambit
       }
 
       /// Execute a single iteration in the loop managed by this functor.
-      void iterate(int chunk_index, int iteration, int max_threads)
+      void iterate(int iteration, const std::set<int> &thread_indices)
       {
         if (not myNestedFunctorList.empty())
-        {
+        {          
+          omp_set_num_threads(thread_indices.size());  // So OpenMP knows how many threads are permitted in the next team.
           for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
            it != myNestedFunctorList.end(); ++it) 
           {
             (*it)->reset();                   // Reset the nested functor so that it recalculates.
-            (*it)->setChunk(chunk_index);     // Tell the nested functor what OpenMP chunk this is.
             (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-            (*it)->setThreads(max_threads);   // Tell the nested functor the maximum threads it can use.
-            (*it)->calculate();               // Set the nested functor off.
+            (*it)->setThreads(thread_indices);// Tell the nested functor what thread indices it is permitted to use.
+            (*it)->calculate(thread_indices); // Set the nested functor off.
           }
         }
       } 
-
-      /// Set the index of the OpenMP chunk that this functor belongs to, inside a loop within which it runs
-      virtual void setChunk (int chunk) { myChunkIndex = chunk; }
-      /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-      virtual safe_ptr<int> chunkPtr() 
-      {
-        if (this == NULL) functor::failBigTime("chunkPtr");
-        return safe_ptr<int>(&myChunkIndex); 
-      }
 
       /// Setter for setting the iteration number in the loop in which this functor runs
       virtual void setIteration (int iteration) { myCurrentIteration = iteration; }
@@ -396,13 +393,13 @@ namespace Gambit
         return safe_ptr<int>(&myCurrentIteration); 
       }
 
-      /// Setter for setting the maximum number of OpenMP threads that this functor is permitted to launch.
-      virtual void setThreads (int n_threads) { myMaxThreads = n_threads; }
-      /// Return a safe pointer to the maximum number of OpenMP threads that this functor is permitted to launch.
-      virtual safe_ptr<int> threadPtr() 
+      /// Setter for setting the indices of the OpenMP threads that this functor is permitted to launch.
+      virtual void setThreads (std::set<int> thread_indices) { myThreadIndices = thread_indices; }
+      /// Return a safe pointer to the indices of the OpenMP threads that this functor is permitted to launch.
+      virtual safe_ptr<std::set<int> > threadPtr() 
       {
         if (this == NULL) functor::failBigTime("threadPtr");
-        return safe_ptr<int>(&myMaxThreads); 
+        return safe_ptr<std::set<int> >(&myThreadIndices); 
       }
 
       /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
@@ -411,7 +408,7 @@ namespace Gambit
       virtual bool canBeLoopManager() { if (this == NULL) failBigTime("canBeLoopManager"); return iCanManageLoops; }
 
       /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
-      virtual void setLoopManagerCapability (str manager) { myLoopManager = manager; }
+      virtual void setLoopManagerCapability (str manager) { iCanRunNested = true; runningNested = true; myLoopManager = manager; }
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManager; }
 
@@ -727,20 +724,26 @@ namespace Gambit
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;
 
+      /// Flag indicating whether this function can run nested in a loop over functions
+      bool iCanRunNested;
+
+      /// Flag indicating whether this function actually is running nested in a loop over functions
+      bool runningNested;
+
       /// Capability of a function that mangages a loop that this function can run inside of.
       str myLoopManager;
 
       /// Vector of functors that have been set up to run nested within this one.
       std::vector<functor*> myNestedFunctorList;
 
-      /// Index of the OpenMP chunk that this functor belongs to, within a nested functor loop.
-      int myChunkIndex;
       /// Counter for iterations of nested functor loop.
       int myCurrentIteration;
-      /// Maximum number of OpenMP threads this functor is permitted to launch.
-      int myMaxThreads;
+      /// Indices of the OpenMP threads that this functor is permitted to launch.
+      std::set<int> myThreadIndices;
       /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
-      int globlMaxThreads;
+      const int globlMaxThreads;
+      /// Pointer to the set of indices of all threads this MPI process is permitted to launch.
+      std::set<int> all_thread_indices;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
@@ -767,6 +770,34 @@ namespace Gambit
       /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
       std::map< sspair, std::vector<sspair> > permitted_map;
 
+      /// Internal timespec object
+      timespec tp;
+
+      /// Do pre-calculate timing things
+      virtual void startTiming(double nsec, double sec)
+      {
+#ifndef HAVE_MAC
+        clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
+        nsec = (double)-tp.tv_nsec;
+        sec = (double)-tp.tv_sec;
+      }
+
+      /// Do post-calculate timing things
+      virtual void finishTiming(double nsec, double sec)
+      {
+#ifndef HAVE_MAC
+        clock_gettime(CLOCK_MONOTONIC, &tp);
+#endif
+        nsec += (double)tp.tv_nsec;
+        sec += (double)tp.tv_sec;
+        runtime = sec*1e9 + nsec;
+        needs_recalculating = false;
+        runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
+        pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
+        cout << "Runtime " << myName << ": " << runtime << " ns (" << runtime_average << " ns)" << endl;
+      }
+
   };
 
 
@@ -783,57 +814,72 @@ namespace Gambit
                             str func_capability,
                             str result_type,
                             str origin_name)
-      : module_functor_common(func_name, func_capability, result_type, origin_name)
+      : module_functor_common(func_name, func_capability, result_type, origin_name),
+        myFunction (inputFunction)              // Assign the internal function pointer
       {
-        myFunction = inputFunction;
+        myValue = new TYPE[globlMaxThreads];    // Allocate the memory needed to hold the result of this function
+        loner.insert(0);                        // Bring out "The Loner"
       }
 
-      /// Calculate method
+      /// Destructor
+      ~module_functor() { delete [] myValue; }
+
+      /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
+      virtual void setLoopManagerCapability (str manager) 
+      { 
+        module_functor_common::setLoopManagerCapability(manager); // Call the regular version of this method first, then...
+        delete [] myValue;                    // ...get rid of the scalar result container, and instead...
+        myValue = new TYPE[globlMaxThreads];  // ...reserve enough space to hold as many results as there are threads allowed
+      }
+
+      /// Calculate method (no-argument overload -- calling this runs the functor non-nested if it needs calculating.)
       void calculate()
       {
-        if(this->needs_recalculating)
+        // If this functor wants to nest, tell it not to.  (In principle this should be impossible, but...)
+        if (runningNested and needs_recalculating)
         {
-          timespec tp;
-          double nsec, sec;
-#ifndef HAVE_MAC
-          clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-          nsec = (double)-tp.tv_nsec;
-          sec = (double)-tp.tv_sec;
-          myFunction(myValue);
-#ifndef HAVE_MAC
-          clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-          nsec += (double)tp.tv_nsec;
-          sec += (double)tp.tv_sec;
-          this->runtime = sec*1e9 + nsec;
-          this->needs_recalculating = false;
-          this->runtime_average = this->runtime_average*(1-this->fadeRate) + this->fadeRate*this->runtime;
-          this->pInvalidation = this->pInvalidation*(1-this->fadeRate) +
-            this->fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-          cout << "Runtime " << this->myName << ": " << this->runtime << " ns (" <<
-            this->runtime_average << " ns)" << endl;
+          delete [] myValue;      // Get rid of the array of myValues created to allow nesting
+          myValue = new TYPE[1];  // Go back to the original scalar myValue used when not nesting
+          cout << "WARNING: forcibly converting nested to non-nested functor: " << this->name() << endl;
+          cout << "This means you have called a raw calculate() on a nested functor that" << endl;
+          cout << "needs recalculating. I *really* hope you know what you're doing..." << endl;
+          runningNested = false;
         }
+        calculate(loner);         // Run the calculate method and keep just one copy of the result.
       }
 
       /// Operation (return value)
       TYPE operator()() 
       { 
         if (this == NULL) functor::failBigTime("operator()");
-        return myValue;
+        if (runningNested)
+        {
+          return myValue[0]; //FIXME
+        }
+        else
+        {
+          return myValue[0];
+        }
       }
 
       /// Alternative to operation (returns a safe pointer to value)
       safe_ptr<TYPE> valuePtr()
       {
         if (this == NULL) functor::failBigTime("valuePtr");
-        return safe_ptr<TYPE>(&myValue);
+        return safe_ptr<TYPE>(&myValue[0]);
       }
 
       /// Printer function
       virtual void print(printers::BasePrinter* printer)
       {
-        printer->print(this->myValue);
+        if (runningNested)
+        {
+          printer->print(myValue[0]); //FIXME
+        }
+        else
+        {
+          printer->print(myValue[0]);
+        }
       }
 
     protected:
@@ -841,8 +887,39 @@ namespace Gambit
       /// Internal storage of function pointer
       void (*myFunction)(TYPE &);
 
-      /// Internal storage of function value
-      TYPE myValue;
+      /// Internal pointer to storage location of function value
+      TYPE* myValue;
+
+      /// Set containing a single element equal to zero.
+      std::set<int> loner;
+
+      /// True calculate method
+      void calculate(const std::set<int> &thread_indices)
+      {
+        if (needs_recalculating)
+        {
+          double nsec = 0, sec = 0;
+          this->startTiming(nsec,sec);                 //Begin timing function evaluation
+          if (thread_indices.empty())                  //Make sure that the thread_indices vector is not empty  
+          {
+            cout << "Error: thread_indices empty in calculate(thread_indices) " << endl;
+            cout << "for functor " << this->name() << " in " << this->origin() << "." << endl;
+            exit(1);
+            //FIXME real error here
+          }
+          std::set<int>::const_iterator start = thread_indices.begin();
+          myFunction(myValue[*start]);                 //Run and place result in the first requested slot in myValue
+          int myint = 2;
+          if (thread_indices.size() > 1)               //Copy the result to all the other requested slots in myValue
+          {
+            for (std::set<int>::const_iterator it = ++start; it != thread_indices.end(); ++it) 
+            {
+              myValue[*it] = myValue[*start];
+            }
+          }
+          this->finishTiming(nsec,sec);                //Stop timing function evaluation
+        }
+      }
 
   };
 
@@ -860,36 +937,18 @@ namespace Gambit
                             str func_capability,
                             str result_type,
                             str origin_name)
-      : module_functor_common(func_name, func_capability, result_type, origin_name)
-      {
-        myFunction = inputFunction;
-      }
+      : module_functor_common(func_name, func_capability, result_type, origin_name),
+        myFunction (inputFunction) {}
 
       /// Calculate method
       void calculate()
       {
-        if(this->needs_recalculating)
+        if (needs_recalculating)
         {
-          timespec tp;
-          double nsec, sec;
-#ifndef HAVE_MAC
-          clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-          nsec = (double)-tp.tv_nsec;
-          sec = (double)-tp.tv_sec;
+          double nsec = 0, sec = 0;
+          this->startTiming(nsec,sec);
           this->myFunction();
-#ifndef HAVE_MAC
-          clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-          nsec += (double)tp.tv_nsec;
-          sec += (double)tp.tv_sec;
-          this->runtime = sec*1e9 + nsec;
-          this->needs_recalculating = false;
-          this->runtime_average = this->runtime_average*(1-this->fadeRate) + this->fadeRate*this->runtime;
-          this->pInvalidation = this->pInvalidation*(1-this->fadeRate) +
-            this->fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-          cout << "Runtime " << this->myName << ": " << this->runtime << " ns (" <<
-            this->runtime_average << " ns)" << endl;
+          this->finishTiming(nsec,sec);
         }
       }
 
@@ -897,6 +956,11 @@ namespace Gambit
 
       /// Internal storage of function pointer
       void (*myFunction)();
+
+      /// Overloaded calculate method for cases where the functor is running nested.
+      /// Just ignores the thread indices passed in this case, as the return type is 
+      /// void anyway, so there is no need to save a result.
+      void calculate (const std::set<int> &thread_indices) { calculate(); }
 
   };
 
@@ -924,17 +988,10 @@ namespace Gambit
                               str func_capability, 
                               str result_type,
                               str origin_name,
-                              str origin_version)
-      {
-        myFunction      = inputFunction;
-        myName          = func_name;
-        myCapability    = func_capability;
-        myType          = result_type;
-        myOrigin        = origin_name;
-        myVersion       = origin_version;
-        myStatus        = 1;
-        needs_recalculating = true;
-      }
+                              str origin_version) 
+      : functor (func_name, func_capability, result_type, origin_name),
+        myFunction (inputFunction) 
+      { myVersion = origin_version; }
 
       /// Update the internal function pointer wrapped by the functor
       void updatePointer(funcPtrType inputFunction)
@@ -968,39 +1025,11 @@ namespace Gambit
       : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
         func_capability, result_type, origin_name, origin_version) {}
 
-      /* Which is the better user interface?
-       * 
-       * 1) Force the use of 'someFunctor.calculate(args...)'
-       *    to run a calculation and then obtain result via 'someFunctor()'.
-       * 
-       * 2) Use 'someFunctor(args...)' to perform calculation and return result.
-       *    The function 'someFunctor.calculate(args...)' could still be used
-       *    to force a re-calculation (regardless of 'needs_recalculating' flag).
-       *    (Could also throw in a 'getResult()' function.) */
-       
-      // 1) Calculate method
-      //void calculate(ARGS... args) { if(this->needs_recalculating) { myValue = this->myFunction(args...); } }
-
-      // 1) Operation (return value) 
-      //TYPE operator()() { return this->myValue; }
-
-      /// 2) Calculate method 
-      void calculate(ARGS... args) { myValue = this->myFunction(args...); }
-
-      /// 2) Operation (execute function and return value) 
+      /// Operation (execute function and return value) 
       TYPE operator()(ARGS... args) 
       { 
         if (this == NULL) functor::failBigTime("operator()");
-        if(this->needs_recalculating) { myValue = this->myFunction(args...); }
-        return myValue;
-      }
-
-      /// Alternative to operation (execute function and return a pointer to value)
-      safe_ptr<TYPE> valuePtr(ARGS... args)
-      {
-        if (this == NULL) functor::functor::failBigTime("valuePtr");
-        if(this->needs_recalculating) { myValue = this->myFunction(args...); }
-        return safe_ptr<TYPE>(&myValue);
+        return this->myFunction(args...);
       }
 
       /// Alternative to operation, in case the functor return value is 
@@ -1008,16 +1037,9 @@ namespace Gambit
       safe_variable_ptr<TYPE> variablePtr()
       {
         if (this == NULL) functor::functor::failBigTime("variablePtr");
-        if(this->needs_recalculating) { myValue = this->myFunction(); }
-        return safe_variable_ptr<TYPE>(myValue);
+        return safe_variable_ptr<TYPE>(this->myFunction); 
       }
 
-
-
-    protected:
-
-      /// Internal storage of function value
-      TYPE myValue;
   };
 
 
@@ -1038,20 +1060,11 @@ namespace Gambit
       : backend_functor_common<void, ARGS...>(inputFunction, func_name,
         func_capability, result_type, origin_name, origin_version) {}
     
-      // 1) Calculate method
-      //void calculate(ARGS... args) { if(this->needs_recalculating) { this->myFunction(args...); } }
-
-      // 1) Operation (return value) 
-      //TYPE operator()() { this->myFunction(args...); }
-
-      /// 2) Calculate method 
-      void calculate(ARGS... args) { this->myFunction(args...); }
-
-      /// 2) Operation (execute function and return value) 
+      /// Operation (execute function and return value) 
       void operator()(ARGS... args) 
       { 
         if (this == NULL) functor::functor::failBigTime("operator()");
-        if(this->needs_recalculating) { this->myFunction(args...); }
+        this->myFunction(args...);
       }
 
   };
@@ -1074,11 +1087,11 @@ namespace Gambit
                               str func_capability,
                               str result_type,
                               str origin_name)
-        : module_functor<ModelParameters>(inputFunction,
-                                          func_name,
-                                          func_capability,
-                                          result_type,
-                                          origin_name) {}   
+      : module_functor<ModelParameters>(inputFunction,
+                                        func_name,
+                                        func_capability,
+                                        result_type,
+                                        origin_name) {}   
       
       /// Functor contents raw pointer "get" function
       /// Returns a raw pointer to myValue, so that the contents may be 
@@ -1087,7 +1100,7 @@ namespace Gambit
       ModelParameters* getcontentsPtr()
       {
         if (this == NULL) functor::failBigTime("getcontentsPtr");
-        return &this->myValue;
+        return myValue;
       }
 
   };    

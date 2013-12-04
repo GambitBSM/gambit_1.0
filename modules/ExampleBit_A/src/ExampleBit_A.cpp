@@ -141,13 +141,15 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace SafePointers::eventLoopManager;
-      unsigned int nEvents = 20;         // Number of times to run the loop
-      int ci = 0;                        // Index of the OpenMP 'chunk' of a loop in which a given loop iteration occurs
-      int mt = 2;                        // Maximum OpenMP threads permitted to be launched by nested functions
+      unsigned int nEvents = 20;                // Number of times to run the loop
+      std::set<int> thread_indices;             // Indices of the OpenMP threads permitted to be launched by nested functions
+      thread_indices.insert(0);                 // Pick some random threads to pass down to the nested functions to use
+      thread_indices.insert(2);
       for(unsigned long it = 1; it <= nEvents; it++)
       {
         cout << "This is iteration " << it << " of " << nEvents << " being run by eventLoopManager." << endl;
-        Loop::executeIteration(ci, it, mt);   // This is a (member) function pointer, so *Loop::executeIteration(i) works fine too.
+        Loop::executeIteration(it,thread_indices);   // This is a (member) function pointer, so *Loop::executeIteration(it,[indices]) works fine too.
+        //Loop::executeEasyIteration(it);             // This version is just equivalent to Loop::executeIteration(it,*Loop::available_threads)
       }
     }
 
@@ -161,9 +163,8 @@ namespace Gambit
         twistor.seed(newseed);   // Re-seed the random number generator
       }
       result = random_0to5(twistor);  // Generate and return the random number
-      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<" of chunk ";
-      cout<<*Loop::chunk_index<<", with maximum threads "<<*Loop::max_threads<<"."<<endl;
-
+      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<
+       " with maximum threads "<<Loop::available_threads->size()<<"."<<endl;
     }
 
     // Rounds an event count to the nearest integer

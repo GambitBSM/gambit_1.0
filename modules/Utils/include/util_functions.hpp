@@ -10,11 +10,7 @@
 ///   
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr
-///
-///  \author Ben Farmer  
-///          (benjamin.farmer@monash.edu)
-///  \date 2013 Jun
+///  \date 2013 Apr, Dec
 ///
 ///  *********************************************
 
@@ -48,22 +44,6 @@ namespace Gambit
   template <typename T>
   T byVal(T t) { return t; }
 
-  /// Overload << operator to allow easy printing of contents of vectors to 
-  /// stdout. Works only if elements of vector can themselves be output using
-  /// << operator.
-  template < class Type >
-  inline std::ostream& operator << (std::ostream& os, const std::vector<Type>& v) 
-  {
-      // Compiler complained that I did not have this typename thing, but I don't
-      // really understand what it does. 
-      os << "[";
-      for (typename std::vector<Type>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
-      {
-          os << " " << *ii;
-      }
-      os << " ]";
-      return os;
-  }
 }
         
 #endif //defined __util_functions_hpp__
