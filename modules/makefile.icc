@@ -9,8 +9,8 @@ export
 
 CC = icc 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt -openmp
-CFLAGS = -O3 -Wall -g
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt 
+CFLAGS = -O3 -Wall -g -fopenmp
 
 FC = ifort
 FFLAGS = -O3 -fPIC
@@ -48,7 +48,7 @@ endif
 
 CCEXTRA= -pipe -pg -std=c++0x 
 GCC++EXTRA=-Woverloaded-virtual
-CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
+CFLAGS += -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
 	-I$(COREDIR)/include \
 	-I$(MODELDIR)/include -I$(MODELDIR)/include/models \

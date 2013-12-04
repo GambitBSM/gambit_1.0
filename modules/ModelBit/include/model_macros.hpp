@@ -607,7 +607,7 @@
   function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
   {                                                                            \
      Functown::FUNCTION.calculate();                                           \
-     return Functown::FUNCTION();                                              \
+     return Functown::FUNCTION(0);                                             \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function,     \ 

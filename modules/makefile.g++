@@ -24,9 +24,9 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib
 
 CC = g++ 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -fopenmp -g -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
 
-CFLAGS = -O3 -Wall -g
+CFLAGS = -O3 -Wall -g -fopenmp -std=c++0x
 
 FC = gfortran
 FFLAGS = -O3 -fPIC
@@ -62,9 +62,9 @@ BOOST=./
 export BOOST
 endif
 
-CCEXTRA=-Wextra -pipe -g -pg -std=c++0x
+CCEXTRA=-Wextra -pipe -g -pg
 GCC++EXTRA=-Woverloaded-virtual
-CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
+CFLAGS += -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
 	-I$(COREDIR)/include \
 	-I$(MODELDIR)/include -I$(MODELDIR)/include/models \

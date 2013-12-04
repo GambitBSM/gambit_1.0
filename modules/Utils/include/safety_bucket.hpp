@@ -76,16 +76,17 @@ namespace Gambit
     public:
 
       /// Constructor for dep_bucket.
-      dep_bucket(module_functor<TYPE> * functor_ptr_in = NULL)
+      dep_bucket(module_functor<TYPE> * functor_ptr_in = NULL, safe_ptr<std::set<int> > threadset_in = NULL)
       {
-        initialize(functor_ptr_in);
+        initialize(functor_ptr_in, threadset_in);
       }
 
-      /// Initialize this bucket with a functor pointer.
-      void initialize(module_functor<TYPE> * functor_ptr_in)
+      /// Initialize this bucket with a depedency functor pointer and a safe pointer to the threadset of the dependent functor.
+      void initialize(module_functor<TYPE> * functor_ptr_in, safe_ptr<std::set<int> > threadset_in)
       {
         _functor_ptr = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
+        _threadset = threadset_in;
         
         // Extract pointer to dependency from functor and store as a safe_ptr.
         if (functor_ptr_in == NULL)  
@@ -110,7 +111,11 @@ namespace Gambit
       const TYPE& operator *() const
       {
         if (not _initialized) dieGracefully();
-        return *_sptr;
+        int current_thread_index = *(_threadset->begin());  //Get the index of the first thread that the dependent functor has control of
+       #pragma omp critical (bucket)
+       {  cout<<"  Retrieving dependency for thread: "<<current_thread_index<<endl;}
+       
+        return _sptr[current_thread_index];                 //Retrieve the dependency at that index
       }
 
       /// Get the safe_ptr.
@@ -125,6 +130,7 @@ namespace Gambit
 
       module_functor<TYPE> * _functor_ptr;
       safe_ptr<TYPE> _sptr;
+      safe_ptr<std::set<int> > _threadset;
   };
 
 

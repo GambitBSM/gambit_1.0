@@ -795,7 +795,7 @@ namespace Gambit
         needs_recalculating = false;
         runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
         pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-        cout << "Runtime " << myName << ": " << runtime << " ns (" << runtime_average << " ns)" << endl;
+        if (not runningNested) cout << "Runtime " << myName << ": " << runtime << " ns (" << runtime_average << " ns)" << endl;
       }
 
   };
@@ -849,12 +849,12 @@ namespace Gambit
       }
 
       /// Operation (return value)
-      TYPE operator()() 
+      TYPE operator()(int index) 
       { 
         if (this == NULL) functor::failBigTime("operator()");
         if (runningNested)
         {
-          return myValue[0]; //FIXME
+          return myValue[index];
         }
         else
         {
@@ -866,21 +866,23 @@ namespace Gambit
       safe_ptr<TYPE> valuePtr()
       {
         if (this == NULL) functor::failBigTime("valuePtr");
-        return safe_ptr<TYPE>(&myValue[0]);
+        return safe_ptr<TYPE>(myValue);
       }
 
       /// Printer function
-      virtual void print(printers::BasePrinter* printer)
+      virtual void print(printers::BasePrinter* printer, int index)
       {
         if (runningNested)
         {
-          printer->print(myValue[0]); //FIXME
+          printer->print(myValue[index]);
         }
         else
         {
           printer->print(myValue[0]);
         }
       }
+      /// Printer function (single-argument short-circuit)
+      virtual void print(printers::BasePrinter* printer) { print(printer,0); }
 
     protected:
 

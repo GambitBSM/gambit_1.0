@@ -362,6 +362,10 @@ namespace Gambit
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
         // Ben: may want to do this call elsewhere; I added it here for testing.
+        // Pat: note that this prints from thread index 0 only, i.e. results created by 
+        //      threads other than the main one need to be accessed with 
+        //        masterGraph[*it]->print(boundPrinter,index);
+        //      where index is some integer s.t. 0 <= index <= number of hardware threads
         masterGraph[*it]->print(boundPrinter);
       }
     }
@@ -370,7 +374,11 @@ namespace Gambit
     {
       // Returns just doubles, and crashes for other types
       // TODO: Catch errors
-      return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))();
+      // Pat: Note that this always accesses the 0-index result (which is considered to be
+      // the 'final result' when more than one thread has run the functor, and is the 
+      // only result when the functor has not been run in parallel); accessing the results
+      // from any other threads requires passing the desired thread index explicity instead of 0.
+      return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 
     void DependencyResolver::notifyOfInvalidation(VertexID vertex)

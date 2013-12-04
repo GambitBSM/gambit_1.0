@@ -73,6 +73,13 @@ namespace Gambit
         return *ptr;
       }        
 
+      /// Dereference pointer as if it is an array
+      const TYPE& operator[](int index) const
+      { 
+        if (ptr == NULL) dieGracefully();
+        return *(ptr+index);
+      }        
+
       /// Access is allowed to const member functions only
       const TYPE* operator->() const
       { 

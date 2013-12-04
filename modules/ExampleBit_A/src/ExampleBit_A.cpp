@@ -41,6 +41,7 @@ namespace Gambit
   {
 
     // Some local module codes and declarations
+    // Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example for now
     double count = 3.5;
     int accumulatedCounts = 0;
     std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
@@ -142,29 +143,53 @@ namespace Gambit
     {
       using namespace SafePointers::eventLoopManager;
       unsigned int nEvents = 20;                // Number of times to run the loop
-      std::set<int> thread_indices;             // Indices of the OpenMP threads permitted to be launched by nested functions
-      thread_indices.insert(0);                 // Pick some random threads to pass down to the nested functions to use
-      thread_indices.insert(2);
-      for(unsigned long it = 1; it <= nEvents; it++)
+
+      //There are three things available in loop manager functions from the Loops namespace:
+      //  -std::set<int>* Loop::available_threads -- a set of thread indices that you are allowed to use in this function (these are 'GAMBIT thread indices', not necessarily the same
+      //                                             as OpenMP thread indices unless you only run a single, non-nested OpenMP thread team, and hand out a GAMBIT index for each thread).
+      //  -Loop::executeIteration(int it, std::set<int> thread_indices) -- execute an iteration of the loop this function manages, passing in the iteration no. and a set of 
+      //                                                                thread indices that the functions inside the loop are allowed to use to parallise themselves if they want.
+      //  -Loop::executeEasyIteration(int it) -- execute an iteration of the loop this function manages, allowing the nested functions to use all threads that this one can.
+
+      //A simple loop example without OpenMP.  Commented out for now.
+      //std::set<int> thread_indices;             // Indices of the OpenMP threads permitted to be launched by nested functions
+      //thread_indices.insert(0);                 // Pick some random threads to pass down to all the nested functions to use
+      //thread_indices.insert(2);                 // Note though that the results of the zero-index thread are the only ones 
+      //                                          // accessed after the loop, i.e. this is where the final restults need to be calculated. 
+      //for(unsigned long it = 0; it < nEvents; it++)
+      //{
+      //  cout << "This is iteration " << it+1 << " of " << nEvents << " being run by eventLoopManager." << endl;
+      //  Loop::executeIteration(it,thread_indices);   // This is a (member) function pointer, so *Loop::executeIteration(it,[indices]) works fine too.
+      //  //Loop::executeEasyIteration(it);            // This version is just equivalent to Loop::executeIteration(it,*Loop::available_threads), using all threads
+      //}
+
+      //A simple loop example using OpenMP
+      #pragma omp parallel
       {
-        cout << "This is iteration " << it << " of " << nEvents << " being run by eventLoopManager." << endl;
-        Loop::executeIteration(it,thread_indices);   // This is a (member) function pointer, so *Loop::executeIteration(it,[indices]) works fine too.
-        //Loop::executeEasyIteration(it);             // This version is just equivalent to Loop::executeIteration(it,*Loop::available_threads)
+        std::set<int> thread_indices;
+        thread_indices.insert(omp_get_thread_num());
+        #pragma omp single 
+          Loop::executeIteration(0,thread_indices); //Do the zero iteration separately to allow init.  
+        #pragma omp for
+        for(unsigned long it = 1; it < nEvents; it++)
+        {
+          Loop::executeIteration(it,thread_indices);   
+        }
       }
+
     }
 
     // Produces a random floating-point 'event count' between 0 and 5.
     void exampleEventGen(double &result)
     {
       using namespace SafePointers::exampleEventGen;
-      if (*Loop::iteration == 0) // In the first iteration of a loop
-      {
-        newseed = std::chrono::system_clock::now().time_since_epoch().count();
-        twistor.seed(newseed);   // Re-seed the random number generator
+      //result = random_0to5(twistor);  // Generate and return the random number
+      result = *(Loop::available_threads->begin()); //just take the thread number as the result
+      #pragma omp critical (exampleEventGen_print)
+      { 
+        cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<
+         " with maximum allowed threads "<<Loop::available_threads->size()<<"."<<endl;
       }
-      result = random_0to5(twistor);  // Generate and return the random number
-      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<
-       " with maximum threads "<<Loop::available_threads->size()<<"."<<endl;
     }
 
     // Rounds an event count to the nearest integer
@@ -172,20 +197,39 @@ namespace Gambit
     {
       using namespace SafePointers::exampleCut;
       result = (int) *Dep::event;
-      cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
+      #pragma omp critical (exampleCut_print)
+      { 
+        cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
+      }
     }
 
+    // Adds an integral event count to a total number of accumulated events.
     void eventAccumulator(int &result)
     {
-      // Adds an integral event count to a total number of accumulated events.
+      //There are two things available in nested functions from the Loops namespace:
+      //  -std::set<int>* Loop::available_threads -- a set of thread indices that you are allowed to use in this function.
+      //  -int* Loop::iteration -- the iteration number passed down directly by the function managing the loop that this one runs within. 
+      //  You can always get at OpenMP functions too (omp_get_thread_num, omp_get_ancestor_thread_num, etc) -- but it is better not to assume
+      //  too much about the other functions that might be managing this one, either directly or indirectly.
+
       using namespace SafePointers::eventAccumulator;
       if (*Loop::iteration == 0) // In the first iteration of a loop
       {
         accumulatedCounts = 0;   // Zero the total accumulated counts
       }
-      accumulatedCounts += *Dep::event;  // Add the latest event count to the total
-      result = accumulatedCounts;        // Return the current total
-      cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+      #pragma omp critical (eventAccumulator_update) // Only let one thread at a time accumulate results
+      {
+        accumulatedCounts += *Dep::event;  // Add the latest event count to the total
+      }
+      #pragma omp barrier                  // Forces all threads in the team to submit their results before the total is committed.
+      result = accumulatedCounts;          // Return the current total
+      #pragma omp critical (eventAccumulator_print)
+      { 
+        cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+        cout<<"  Retrieved event count: "<<*Dep::event<<endl;
+        cout<<"  I have thread index: "<<*(Loop::available_threads->begin());
+        cout<<"  Current total counts is: "<<result<<endl;
+      }
     }
 
   }

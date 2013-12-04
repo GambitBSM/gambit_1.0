@@ -467,7 +467,7 @@
   function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
   {                                                                            \
      Functown::FUNCTION.calculate();                                           \
-     BOOST_PP_IIF(IS_TYPE(void,TYPE),,return Functown::FUNCTION();)            \
+     BOOST_PP_IIF(IS_TYPE(void,TYPE),,return Functown::FUNCTION(0);)           \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function*/    \
@@ -575,7 +575,8 @@
         else /* It did! Now initialize the safety_bucket using the functor.*/  \
         {                                                                      \
           BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
-           SafePointers::FUNCTION::Dep::DEP.initialize(ptr); )                 \
+           SafePointers::FUNCTION::Dep::DEP.initialize(                        \
+           ptr,Functown::FUNCTION.threadPtr()); )                              \
         }                                                                      \
                                                                                \
       }                                                                        \

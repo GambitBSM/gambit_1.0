@@ -269,7 +269,7 @@ int main( int argc, const char* argv[] )
     cout << "  " << Models::CMSSM_I::name() << " says: " << Mstop << " (string-style)" <<endl ;
     // Call the module function by its functor 
     Models::CMSSM_I::Functown::Mstop.calculate();
-    cout << "  " << Models::CMSSM_I::name() << " says: " << Models::CMSSM_I::Functown::Mstop() << " (functor-style)" <<endl ; 
+    cout << "  " << Models::CMSSM_I::name() << " says: " << Models::CMSSM_I::Functown::Mstop(0) << " (functor-style)" <<endl ; 
   }
   
   /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
@@ -564,7 +564,7 @@ int main( int argc, const char* argv[] )
   if (ExampleBit_B::provides("nevents_postcuts")) {
     cout << "OK, so what is it then?" << endl;
     ExampleBit_B::Functown::nevents_postcuts.calculate();
-    cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts() << " (functor-style)" <<endl ;
+    cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts(0) << " (functor-style)" <<endl ;
   }
   cout << "Do you have a conditional dependency on an ID string when LibFirst v1.2 is used to provide awesomeness?"<<endl ;
   cout << ExampleBit_B::name() << " says: ";
@@ -609,42 +609,6 @@ int main( int argc, const char* argv[] )
   }
 
   cout <<  endl;
-
-  // CW: The loop manager can be tested by running gambit_example and setting
-  // nevents_like as observable in gambit.yaml
- 
-  // // ****************
-  // // Example rollcall-loops test code
-  // // ****************
- 
-  // cout<<endl;
-  // cout<<"***********************"<<endl;
-  // cout<<"Rollcall-loops example:"<<endl;
-  // cout<<"***********************"<<endl;
-  // cout<<endl;
-
-  // // Necessary by-hand dependency resolution for the loop example.
-  // ExampleBit_A::Functown::exampleCut.resolveDependency(&ExampleBit_A::Functown::exampleEventGen);
-  // ExampleBit_A::Functown::eventAccumulator.resolveDependency(&ExampleBit_A::Functown::exampleCut);
-  // ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
-  // ExampleBit_A::Functown::nevents_like.resolveDependency(&ExampleBit_A::Functown::eventAccumulator);
-  // 
-  // // Necessary by-hand nested-functor-list resolution for the loop example.
-  // std::vector<functor*> loopFunctors;
-  // loopFunctors.push_back(&ExampleBit_A::Functown::exampleEventGen);
-  // loopFunctors.push_back(&ExampleBit_A::Functown::exampleCut);
-  // loopFunctors.push_back(&ExampleBit_A::Functown::eventAccumulator);
-  // ExampleBit_A::Functown::eventLoopManager.setNestedList(loopFunctors);
-
-  // ExampleBit_A::Functown::eventLoopManager.calculate();
-  // ExampleBit_A::Functown::nevents_like.calculate();
-  // cout<<"Result from nevents_like is: "<<ExampleBit_A::Functown::nevents_like()<<endl;
-
-  // cout<<endl;
-  // cout<<"***********************"<<endl;
-  // cout<<"End rollcall-loops.    "<<endl;
-  // cout<<"***********************"<<endl;
-  // cout<<endl;
 
   // ****************
   // Example_SUSYspecBit test code
