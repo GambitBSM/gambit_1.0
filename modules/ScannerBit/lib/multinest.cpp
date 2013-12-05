@@ -260,38 +260,10 @@ SCANNER_PLUGIN (multinest)
         							// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
         
-                // Create object to transform from unit hypercube to physical parameters
-                ///for (int i = 0; i < ndims; i++)
-                ///{
-                ///   ranges.push_back(std::make_pair(lower_limits[i],upper_limits[i]));
-                ///}
-                ///::Gambit::Priors::NdFlatPrior prior(ranges);
-
-                // Demo construction of composite prior
-                // use Log prior for first two parameters, and Flat prior for the rest
-                typedef std::map<std::vector<int>,::Gambit::Priors::BasePrior*> priorlist_type;
-                typedef std::map<std::vector<int>,::Gambit::Priors::BasePrior*>::iterator priorlist_type_it;
-                priorlist_type priorlist;
-                for (int i = 0; i < ndims; i++)
-                {
-                   std::vector<int> indices(1,i);
-                   if (i<2)
-                   {
-                      // Add a log prior to the priors list
-                      priorlist[indices] = new ::Gambit::Priors::LogPrior(lower_limits[i],upper_limits[i]);
-                   }
-                   else
-                   {
-                      // Add a flat prior to the priors list
-                      priorlist[indices] = new ::Gambit::Priors::FlatPrior(lower_limits[i],upper_limits[i]);
-                   }
-                }
-                // The downside of this method is that we have to delete the individual prior objects ourselves later on.
-                ::Gambit::Priors::CompositePrior prior(priorlist);
-
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
+                // NOTE 2: Prior creation now shifted into ModelBit! Pointer to a prior object must wind up here somehow!
                 ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims);
        
                 // Stick a pointer to the wrapper object into "context" so it can be retrieved by the callback functions
@@ -307,12 +279,6 @@ SCANNER_PLUGIN (multinest)
                 std::cout << "Multinest finished!" << std::endl;
                 // Do some cleanup or something.
 
-                // Delete prior objects that we allocated with 'new'
-                for (priorlist_type_it it=priorlist.begin(); it!=priorlist.end(); it++)
-                {
-                  delete (it->second);
-                }
-     
                 return 0;
 
         }  //end module_main

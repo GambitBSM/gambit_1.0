@@ -43,7 +43,42 @@ void beispiel(const char* inifilename)
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
-    
+  
+  // Build prior object
+  ///%%%% TO BE DONE AUTOMATICALLY BASED ON INIFILE OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  // Demo construction of composite prior
+  // use Log prior for first two parameters, and Flat prior for the rest
+  typedef std::map<std::vector<int>,Priors::BasePrior*> priorlist_type;
+  typedef std::map<std::vector<int>,Priors::BasePrior*>::iterator priorlist_type_it;
+  priorlist_type priorlist;
+  for (int i = 0; i < ndims; i++)
+  {
+     std::vector<int> indices(1,i);
+     if (i<2)
+     {
+        // Add a log prior to the priors list
+        priorlist[indices] = new Priors::LogPrior(lower_limits[i],upper_limits[i]);
+     }
+     else
+     {
+        // Add a flat prior to the priors list
+        priorlist[indices] = new Priors::FlatPrior(lower_limits[i],upper_limits[i]);
+     }
+  }
+  // The downside of this method is that we have to delete the individual prior objects ourselves later on.
+  Priors::CompositePrior prior(priorlist);
+  // WE THEN NEED TO PASS THE PRIOR OBJECT TO THE CORE, WHICH WILL DELIVER IT TO THE SCANNER
+  // At the end of the code, someone needs to delete the prior objects:
+ 
+  // Delete prior objects that we allocated with 'new'
+  for (priorlist_type_it it=priorlist.begin(); it!=priorlist.end(); it++)
+  {
+    delete (it->second);
+  }   
+
+  ///%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
 

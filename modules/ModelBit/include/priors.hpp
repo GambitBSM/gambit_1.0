@@ -50,8 +50,75 @@ namespace Gambit {
 // required parameter order.
 
 namespace Priors {
-   // Helper functions:
-   // insert/retrieve multiple elements from vectors by index
+
+   /// Registry of priors
+   /// Here we specify mappings from strings to prior objects.
+   /// We need this so that strings in the inifile can be used to choose
+   /// which prior objects and which combinations of them we want. 
+
+
+// let us imagine that the user wants to specify something like this in the inifile:
+// log; M0; lower=x; upper=y
+// log; M12; lower=x; upper=y
+// flat; A0; lower=x; upper=y
+
+// or something worse;
+// log; p1; lower=x; upper=y
+// custom2D; p2,p3; lower1=x2; lower2=x2; upper1=x1; upper2=x2; extrapar=z
+
+// (where custom2D is a 2D prior over p2 and p3, with some specified ranges, 
+// but also an extra parameter which controls some aspect of the prior shape
+
+// Need to create the appropriate prior objects based on this information.
+// Will have to communicate to the primary parameter object to get the correct
+// ordering of parameters.
+
+// Lets make some fake structure to hold this information, to be replaced by
+// output of the yaml file parser.
+// Ahh ok I have added a proposal to gambit.yaml for the sort of thing we need.
+// Looks like, for every prior object we want to create, there should be 3 things:
+// prior name (string, identifies factory function to use)
+// parameters list (strings, identifes parameters to associate with this prior)
+
+  custom2D:
+    parameters: A0, Mstop
+    options:
+       lower1: -1000
+       upper1: 1000
+    
+
+   std::map<std::string
+
+   // We need a factory system of some kind.
+   // Factory functions need to be able to pass a variety of arguments to the 
+   // constructors of the priors, sometimes doubles, but also other prior objects!
+
+   typedef Image* create_image_function();
+   
+   template <class T>
+   Image* create_image(SomeType arg)
+   {
+       return new T(arg);
+   }
+   
+   ...
+   map<string, create_image_function*> creators;
+   creators["Foo"] = &create_image<Foo>;
+   creators["Bar"] = &create_image<Bar>;
+   creators["Baz"] = &create_image<Baz>;
+   
+   shared_ptr<Image> ImageFactory::make_image(const string& str)
+   {
+       // checking to see if str exists as a key 
+       // would be nice
+       return shared_ptr<Image>(creators[str](arg));
+   }
+
+
+
+   /// Helper functions:
+   /// insert/retrieve multiple elements from vectors by index
+   /// @{
    template <class T>
    std::vector<T> get_many(const std::vector<T>& in_vec,const std::vector<int>& indices)
    {
@@ -77,6 +144,7 @@ namespace Priors {
       }
       // inout_vec is modified in place.
    }
+   /// @}
 
    // ------------------1D prior function library------------------------
 
@@ -102,15 +170,15 @@ namespace Priors {
    // ----------------------------------------------------------
 
 
-   // Virtual base class for priors
+   /// Virtual base class for priors
    class BasePrior
    {
       public:
          virtual std::vector<double> transform(const std::vector<double>) const = 0;
    };
 
-   // Simple 1d flat prior
-   // Ranges set by constructor
+   /// Simple 1d flat prior
+   /// Ranges set by constructor
    class FlatPrior: public BasePrior
    {
       public:
@@ -132,8 +200,8 @@ namespace Priors {
          double upper;
    };
 
-   // Simple 1d log prior
-   // Ranges set by constructor
+   /// Simple 1d log prior
+   /// Ranges set by constructor
    class LogPrior: public BasePrior
    {
       public:
@@ -155,8 +223,8 @@ namespace Priors {
          double upper;
    };
 
-   // Simple multidimensional flat prior
-   // Ranges set by constructor
+   /// Simple multidimensional flat prior
+   /// Ranges set by constructor
    class NdFlatPrior: public BasePrior
    {
       public:
@@ -184,10 +252,10 @@ namespace Priors {
          std::vector<std::pair<double,double>> my_ranges;
    };
 
-   // General "build-a-prior" class
-   // This is the class to use for setting simple 1D priors (from the library above) on individual parameters.
-   // It actually also allows for any combination of MD priors to be set on any combination of subspaces of
-   // the full prior.
+   /// General "build-a-prior" class
+   /// This is the class to use for setting simple 1D priors (from the library above) on individual parameters.
+   /// It actually also allows for any combination of MD priors to be set on any combination of subspaces of
+   /// the full prior.
    typedef std::map<std::vector<int>,BasePrior*>::const_iterator subpriors_it;
    class CompositePrior: public BasePrior
    {

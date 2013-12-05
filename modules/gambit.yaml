@@ -48,6 +48,57 @@ adhoc:
     range: [2, 4.5]
     fixed: true
 
+# Ben: proposed replacement for the input parameters section (to allow more general treatment of priors)
+
+##############################
+--- # Model and prior setup
+##############################
+
+# First, simply register parameters, whether they are fixed, what value they are fixed to etc
+CMSSM_I:
+  A0:
+    fixed: true
+  M0:
+    fixed: true
+  M12:
+    fixed: true
+    same_as: CMSSM_I::M0
+  Mstop:
+    fixed: true
+    same_as: CMSSM_I::M12
+  sgnmu:
+    fixed: true
+    fixed_value: 1.5
+
+# Second, specify the priors, the parameters they work with, and any options as needed for that prior
+# A prior object is built for every entry here, and then they are combined into a "composite" prior
+# (below I suggest "range" as a convinient wrapper option, but one that not every prior will have.
+# Complicated priors can hopefully make do with just key, value option pairs, which each individual
+# prior knows what it wants to do with. Users will have to look up the documentation for wacky priors
+# in order to know what keys they are allowed to use with that prior)
+
+# (I put this is a section outside of CMSSM_I, since in principle we could create composite priors that
+# mix together parameters of different models, though that would be weird. Might have to specify the
+# model name along with the parameter... e.g. CMSSM_I::M0, as in the "same_as" option.
+priors:
+  log:
+    parameters: M0
+    range: [0,1000]
+  log:
+    parameters: M12
+    range: [100,2000]
+  custom2D:
+    parameters: A0, Mstop
+    options:
+       lower1: -1000
+       upper1: 1000
+       lower2: 0
+       upper2: 2000
+       blahblah1: 0
+       correlation: 0.5
+       key: stringoption # I guess this might be useful for something 
+
+
 ###############################
 --- # Observables of interest
 ###############################
