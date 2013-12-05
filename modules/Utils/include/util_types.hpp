@@ -31,6 +31,7 @@
 
 #include <string>
 #include <iostream>
+#include <omp.h>
 
 
 namespace Gambit
@@ -64,24 +65,24 @@ namespace Gambit
       safe_ptr(TYPE* in_ptr = NULL) { ptr = in_ptr; }
 
       /// Set pointer
-      void set(TYPE* in_ptr) { ptr = in_ptr; }
+      virtual void set(TYPE* in_ptr) { ptr = in_ptr; }
 
       /// Dereference pointer
-      const TYPE& operator*() const
+      virtual const TYPE& operator*() const
       { 
         if (ptr == NULL) dieGracefully();
         return *ptr;
       }        
 
       /// Dereference pointer as if it is an array
-      const TYPE& operator[](int index) const
+      virtual const TYPE& operator[](int index) const
       { 
         if (ptr == NULL) dieGracefully();
         return *(ptr+index);
       }        
 
       /// Access is allowed to const member functions only
-      const TYPE* operator->() const
+      virtual const TYPE* operator->() const
       { 
         if (ptr == NULL) dieGracefully();
         return ptr;
@@ -102,6 +103,27 @@ namespace Gambit
         cout << "that you are not actually scanning.  This means there is a bug in one" << endl;
         cout << "of your module functions." << endl;
       }
+
+  };
+
+
+  /// A safe pointer designed to point at an array, and return the entry in that array 
+  /// corresponding to the current OpenMP thread.
+  template <typename TYPE>
+  class omp_safe_ptr : public safe_ptr<TYPE>
+  {
+
+    public:
+
+      /// Constructor
+      omp_safe_ptr(TYPE* in_ptr = NULL) : safe_ptr<TYPE>(in_ptr) {}
+
+      /// Dereference pointer
+      virtual const TYPE& operator*() const
+      { 
+        if (this->ptr == NULL) safe_ptr<TYPE>::dieGracefully();
+        return *(this->ptr+omp_get_thread_num());
+      }        
 
   };
 

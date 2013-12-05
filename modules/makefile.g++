@@ -62,7 +62,7 @@ BOOST=./
 export BOOST
 endif
 
-CCEXTRA=-Wextra -pipe -g -pg
+CCEXTRA= -pipe -pg -Wextra -g 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS += -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
@@ -81,7 +81,7 @@ CFLAGS += -O0 $(COMPOPTS) \
 	-IExample_SUSYspecBit/include \
 	-IFlavBit/include \
 	-I$(YAMLDIR)/include \
-        -I$(MULTINESTINC)
+	-I$(MULTINESTINC)
 
 COMMONLIBS = -lm 
 
@@ -97,7 +97,7 @@ all: mh gambit_example beb_tester gambit_example_minimal doxygen
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-	@rm -f _*.txt $(DOCDIR)/Manual.html
+	@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)

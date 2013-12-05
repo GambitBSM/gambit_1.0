@@ -55,13 +55,13 @@ namespace Gambit {
     void initMSSMspec (void *SMobj, void *r) {
       // Run the initialisation routine from the backend. I don't currently
       // know any smoother way to do this...
-      using namespace SafePointers::initMSSMspec;
+      using namespace Pipes::initMSSMspec;
       BEreq::BEinitMSSMspectrum(SMobj, r);
     }
     
     void CMSSMspec (int &result)          
     {
-      using namespace SafePointers::CMSSMspec;
+      using namespace Pipes::CMSSMspec;
       cout << "My backend requirement of CMSSMspectrum has been filled by " << 
        BEreq::BECMSSMspectrum.name() << " from " <<
        BEreq::BECMSSMspectrum.backend() << ", v" << 
@@ -112,7 +112,7 @@ namespace Gambit {
     
     void CMSSMspec (MSSMspecQ &result)          
     {
-      using namespace SafePointers::CMSSMspec;
+      using namespace Pipes::CMSSMspec;
 
       // Dependency resolution
       cout << endl << "My dependency on SMparameters has been filled by " << 
@@ -133,7 +133,7 @@ namespace Gambit {
     
     void genMSSMspec (MSSMspecQ &result)
     {
-      using namespace SafePointers::genMSSMspec;
+      using namespace Pipes::genMSSMspec;
 
       // Dependency resolution
       cout << endl << "My dependency on SMparameters has been filled by " << 

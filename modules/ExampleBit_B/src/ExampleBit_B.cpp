@@ -64,7 +64,7 @@ namespace Gambit
 
     void xsection         (double &result) 
     { 
-      using namespace SafePointers::xsection;
+      using namespace Pipes::xsection;
       cout << endl;
       cout << "In ExampleBit_B, function xsection" << endl;
       cout << "  Printing parameter values:" << endl;
@@ -76,7 +76,7 @@ namespace Gambit
 
     void nevents_postcuts (int    &result)          
     {
-      using namespace SafePointers::nevents_postcuts;
+      using namespace Pipes::nevents_postcuts;
  
       cout << endl << "My dependency on nevents has been filled by " << 
        Dep::nevents.name() << " from " <<
@@ -117,7 +117,7 @@ namespace Gambit
 
 
       // Demostration of accessing backend requirements via 'BEvariable_bucket'/'BEfunction_bucket' objects
-      // living in SafePointers::[module function name]::BEreq::[backend capability]
+      // living in Pipes::[module function name]::BEreq::[backend capability]
       cout << endl;
       cout << "Will now set backend variable SomeInt=1000." << endl;
       cout << "If this works the next result from 'someFunction' should be PI*1000." << endl;

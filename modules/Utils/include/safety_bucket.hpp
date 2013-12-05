@@ -19,6 +19,7 @@
 
 
 #include <iostream>
+#include <omp.h>
 #include "extern_core.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
@@ -76,17 +77,17 @@ namespace Gambit
     public:
 
       /// Constructor for dep_bucket.
-      dep_bucket(module_functor<TYPE> * functor_ptr_in = NULL, safe_ptr<std::set<int> > threadset_in = NULL)
+      dep_bucket(module_functor<TYPE> * functor_ptr_in = NULL, module_functor_common* dependent_functor_ptr_in = NULL)
       {
-        initialize(functor_ptr_in, threadset_in);
+        initialize(functor_ptr_in, dependent_functor_ptr_in);
       }
 
-      /// Initialize this bucket with a depedency functor pointer and a safe pointer to the threadset of the dependent functor.
-      void initialize(module_functor<TYPE> * functor_ptr_in, safe_ptr<std::set<int> > threadset_in)
+      /// Initialize this bucket with a depedency functor pointer.
+      void initialize(module_functor<TYPE> * functor_ptr_in, module_functor_common* dependent_functor_ptr_in)
       {
         _functor_ptr = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
-        _threadset = threadset_in;
+        _dependent_functor_ptr = dependent_functor_ptr_in;
         
         // Extract pointer to dependency from functor and store as a safe_ptr.
         if (functor_ptr_in == NULL)  
@@ -110,12 +111,16 @@ namespace Gambit
       /// Dereference the dependency pointer stored as a safe_ptr.
       const TYPE& operator *() const
       {
+        int index = 0;
         if (not _initialized) dieGracefully();
-        int current_thread_index = *(_threadset->begin());  //Get the index of the first thread that the dependent functor has control of
-       #pragma omp critical (bucket)
-       {  cout<<"  Retrieving dependency for thread: "<<current_thread_index<<endl;}
-       
-        return _sptr[current_thread_index];                 //Retrieve the dependency at that index
+        if (_functor_ptr->loopManagerCapability() != "none" and
+            _functor_ptr->loopManagerCapability() == _dependent_functor_ptr->loopManagerCapability() and
+            _functor_ptr->loopManagerName()       == _dependent_functor_ptr->loopManagerName()       and
+            _functor_ptr->loopManagerOrigin()     == _dependent_functor_ptr->loopManagerOrigin()         )
+        { 
+          index = omp_get_thread_num();      //Choose the index of the thread if the dependency and the dependent functor 
+        }                                    //are running inside the same loop.  If not, just access the first element.
+        return _sptr[index];                 
       }
 
       /// Get the safe_ptr.
@@ -130,7 +135,8 @@ namespace Gambit
 
       module_functor<TYPE> * _functor_ptr;
       safe_ptr<TYPE> _sptr;
-      safe_ptr<std::set<int> > _threadset;
+      module_functor_common * _dependent_functor_ptr;
+
   };
 
 

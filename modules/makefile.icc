@@ -10,7 +10,7 @@ export
 CC = icc 
 LN = $(CC)
 LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt 
-CFLAGS = -O3 -Wall -g -fopenmp
+CFLAGS = -O3 -Wall -g -fopenmp -std=c++0x
 
 FC = ifort
 FFLAGS = -O3 -fPIC
@@ -46,7 +46,7 @@ BOOST=./
 export BOOST
 endif
 
-CCEXTRA= -pipe -pg -std=c++0x 
+CCEXTRA= -pipe -pg 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS += -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
@@ -80,7 +80,7 @@ all: mh gambit_example beb_tester gambit_example_minimal doxygen
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-	@rm -f _*.txt $(DOCDIR)/Manual.html
+	@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)

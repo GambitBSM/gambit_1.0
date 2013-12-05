@@ -76,18 +76,15 @@
       /* Let the module source know that this functor is declared by the core*/\
       namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
                                                                                \
-      /* Create safe pointers to the iteration number of the loop this functor \
-      is running within, and the set of threads indices that it is permitted to\
-      employ in carrying out its task. */                                      \
-      namespace SafePointers                                                   \
+      /* Create a safe pointer to the iteration number of the loop this functor\
+      is running within. */                                                    \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
           namespace Loop                                                       \
           {                                                                    \
-            safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();       \
-            safe_ptr<std::set<int> > available_threads =                       \
-             Functown::FUNCTION.threadPtr();                                   \
+            omp_safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();   \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -97,47 +94,9 @@
       namespace Functown                                                       \
       {                                                                        \
         BOOST_PP_IIF(CAN_MANAGE,                                               \
-          void CAT(FUNCTION,_iterate)(int it, const std::set<int>&cand_threads)\
+          void CAT(FUNCTION,_iterate)(int it)                                  \
           {                                                                    \
-            int mp = SafePointers::FUNCTION::Loop::available_threads->size();  \
-            int mt = cand_threads.size();                                      \
-            if (mt > mp)                                                       \
-            {                                                                  \
-              cout<<endl<<"Error: you cannot launch an iteration of a loop "   \
-               "over module functions with a larger permitted number of "<<endl\
-               <<"threads than the loop manager itself may employ."<<endl;     \
-              cout<<"  Offending function: "<<STRINGIFY(MODULE)<<"::"<<        \
-               STRINGIFY(FUNCTION)<<endl;                                      \
-              cout<<"  Threads allowed in offending loop manager: "<<mp<<endl; \
-              cout<<"  Maximum threads suggested for iteration: "<<mt<<endl;   \
-              cout<<"Notice that "<<mt<<" > "<<mp<<".  Mmmm."<<endl;           \
-              /* FIXME throw a real error here */                              \
-              exit(1);                                                         \
-            }                                                                  \
-            for (std::set<int>::const_iterator it = cand_threads.begin();      \
-                 it != cand_threads.end(); ++it)                               \
-            {                                                                  \
-              if (SafePointers::FUNCTION::Loop::available_threads->find(*it)   \
-                  == SafePointers::FUNCTION::Loop::available_threads->end())   \
-              {                                                                \
-                cout<<endl<<"Error: one or more of the thread indices you have"\
-                 " tried to provide to some nested functions is not allowed, " \
-                 "as *this* function was not given permission to use that "    \
-                 "thread in the first place.  Check *Loops::available_threads" \
-                 "in"<<STRINGIFY(MODULE)<<"::"<<STRINGIFY(FUNCTION)<<"."<<endl;\
-                cout<<"  Threads allowed in offending loop manager: "<<        \
-                 *SafePointers::FUNCTION::Loop::available_threads<<endl;       \
-                cout<<"  Requested threads: "<<cand_threads<<endl;             \
-                /* FIXME throw a real error here */                            \
-                exit(1);                                                       \
-              }                                                                \
-            }                                                                  \
-            FUNCTION.iterate(it,cand_threads);                                 \
-          }                                                                    \
-          void CAT(FUNCTION,_easy_iterate)(int it)                             \
-          {                                                                    \
-            FUNCTION.iterate(it,                                               \
-             *SafePointers::FUNCTION::Loop::available_threads);                \
+            FUNCTION.iterate(it);                                              \
           }                                                                    \
         ,)                                                                     \
       }                                                                        \
@@ -145,7 +104,7 @@
       /* Declare the parameters safe-pointer map as external, and create a     \
       pointer to the single iteration of the loop that can be executed by this \
       functor. */                                                              \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -153,10 +112,8 @@
           namespace Loop                                                       \
           {                                                                    \
             BOOST_PP_IIF(CAN_MANAGE,                                           \
-              void (*executeIteration)(int, const std::set<int>&) =            \
+              void (*executeIteration)(int) =                                  \
                &Functown::CAT(FUNCTION,_iterate);                              \
-              void (*executeEasyIteration)(int) =                              \
-               &Functown::CAT(FUNCTION,_easy_iterate);                         \
             ,)                                                                 \
           }                                                                    \
         }                                                                      \
@@ -179,7 +136,7 @@
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
       when the dependency is resolved. */                                      \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -215,7 +172,7 @@
                                                                                \
       /* Create a safe pointer to the model parameters result. To be filled    \
       automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -228,14 +185,15 @@
   }                                                                            \
 
 
-/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within a module. 
+/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within
+/// a module. 
 #define MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                          \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \

@@ -36,7 +36,7 @@
 #include <vector>
 #include <time.h>
 #include <sstream>
-#include <numeric>
+#include <algorithm>
 #include <omp.h>
 #include "util_types.hpp"
 #include "util_functions.hpp"
@@ -75,9 +75,6 @@ namespace Gambit
       
       /// Virtual calculate(), needs to be redefined in daughters.
       virtual void calculate() {};
-
-      /// Virtual calculate(thread_indices), needs to be redefined in daughters.
-      virtual void calculate(const std::set<int> &) {};
 
       // It may be safer to have some of the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
@@ -202,13 +199,6 @@ namespace Gambit
         exit(1);
       }
 
-      /// Set the maximum number of OpenMP threads that this functor is permitted to operate
-      virtual void setThreads (std::set<int> thread_indices)
-      { 
-        cout << "Error.  The setThreads method has not been defined in this class." << endl;
-        exit(1);
-      }
-
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor)
       {
@@ -316,16 +306,16 @@ namespace Gambit
                             str result_type,
                             str origin_name)
       : functor            (func_name, func_capability, result_type, origin_name),
-        myCurrentIteration (0),
-        myLoopManager      ("none"),
         iCanManageLoops    (false),
-        iCanRunNested      (false),
-        runningNested      (false),
+        iRunNested         (false),
         runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
         runtime            (FUNCTORS_RUNTIME_INIT),
         pInvalidation      (FUNCTORS_BASE_INVALIDATION_RATE),
         fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
-        globlMaxThreads    (omp_get_max_threads())
+        globlMaxThreads    (omp_get_max_threads()),
+        myLoopManagerCapability ("none"),
+        myLoopManagerName       ("none"),
+        myLoopManagerOrigin     ("none")
       {
         if (globlMaxThreads == 0)
         {
@@ -333,8 +323,6 @@ namespace Gambit
           //FIXME throw real error here
           exit(1);
         }
-        for (int i = 0; i < globlMaxThreads; ++i) all_thread_indices.insert(all_thread_indices.end(), i);
-        myThreadIndices = all_thread_indices;
       }
 
       /// Getter for averaged runtime
@@ -368,38 +356,27 @@ namespace Gambit
       }
 
       /// Execute a single iteration in the loop managed by this functor.
-      void iterate(int iteration, const std::set<int> &thread_indices)
+      void iterate(int iteration)
       {
         if (not myNestedFunctorList.empty())
         {          
-          omp_set_num_threads(thread_indices.size());  // So OpenMP knows how many threads are permitted in the next team.
           for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
            it != myNestedFunctorList.end(); ++it) 
           {
             (*it)->reset();                   // Reset the nested functor so that it recalculates.
             (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-            (*it)->setThreads(thread_indices);// Tell the nested functor what thread indices it is permitted to use.
-            (*it)->calculate(thread_indices); // Set the nested functor off.
+            (*it)->calculate();               // Set the nested functor off.
           }
         }
       } 
 
       /// Setter for setting the iteration number in the loop in which this functor runs
-      virtual void setIteration (int iteration) { myCurrentIteration = iteration; }
+      virtual void setIteration (int iteration) { myCurrentIteration[omp_get_thread_num()] = iteration; }
       /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-      virtual safe_ptr<int> iterationPtr() 
+      virtual omp_safe_ptr<int> iterationPtr() 
       {
         if (this == NULL) functor::failBigTime("iterationPtr");
-        return safe_ptr<int>(&myCurrentIteration); 
-      }
-
-      /// Setter for setting the indices of the OpenMP threads that this functor is permitted to launch.
-      virtual void setThreads (std::set<int> thread_indices) { myThreadIndices = thread_indices; }
-      /// Return a safe pointer to the indices of the OpenMP threads that this functor is permitted to launch.
-      virtual safe_ptr<std::set<int> > threadPtr() 
-      {
-        if (this == NULL) functor::failBigTime("threadPtr");
-        return safe_ptr<std::set<int> >(&myThreadIndices); 
+        return omp_safe_ptr<int>(myCurrentIteration); 
       }
 
       /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
@@ -408,9 +385,13 @@ namespace Gambit
       virtual bool canBeLoopManager() { if (this == NULL) failBigTime("canBeLoopManager"); return iCanManageLoops; }
 
       /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
-      virtual void setLoopManagerCapability (str manager) { iCanRunNested = true; runningNested = true; myLoopManager = manager; }
+      virtual void setLoopManagerCapability (str cap) { iRunNested = true; myLoopManagerCapability = cap; }
       /// Getter for revealing the required capability of the wrapped function's loop manager
-      virtual str loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManager; }
+      virtual str loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerCapability; }
+      /// Getter for revealing the name of the wrapped function's assigned loop manager
+      virtual str loopManagerName() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerName; }
+      /// Getter for revealing the module of the wrapped function's assigned loop manager
+      virtual str loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerOrigin; }
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies() { return myDependencies; }
@@ -484,8 +465,8 @@ namespace Gambit
         }
       }
 
-      /// Add and activate unconditional dependencies (a beer for anyone who can explain why this-> is required here).
-      void setDependency(str dep, str type, void(*resolver)(functor*), str purpose= "")
+      /// Add and activate unconditional dependencies.
+      void setDependency(str dep, str type, void(*resolver)(functor*, module_functor_common*), str purpose= "")
       {
         sspair key (dep, type);
         myDependencies.push_back(key);
@@ -495,7 +476,7 @@ namespace Gambit
 
       /// Add a backend conditional dependency for multiple backend versions
       void setBackendConditionalDependency
-       (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
+       (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
       {
         // Split the version string and send each version to be registered
         std::vector<str> versions = delimiterSplit(ver, ",");
@@ -507,7 +488,7 @@ namespace Gambit
 
       /// Add a backend conditional dependency for a single backend version
       void setBackendConditionalDependencySingular
-       (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*))
+       (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
       {
         sspair key (dep, dep_type);
         std::vector<str> quad;
@@ -537,7 +518,7 @@ namespace Gambit
 
       /// Add a model conditional dependency for multiple models
       void setModelConditionalDependency
-       (str model, str dep, str dep_type, void(*resolver)(functor*))
+       (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
       {
         // Split the model string and send each model to be registered
         std::vector<str> models = delimiterSplit(model, ",");
@@ -549,7 +530,7 @@ namespace Gambit
 
       /// Add a model conditional dependency for a single model
       void setModelConditionalDependencySingular
-       (str model, str dep, str dep_type, void(*resolver)(functor*))
+       (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
       { 
         sspair key (dep, dep_type);
         if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
@@ -634,9 +615,15 @@ namespace Gambit
         }
         else
         {
-          (*dependency_map[key])(dep_functor);
+          (*dependency_map[key])(dep_functor,this);
           // propagate purpose from next to next-to-output nodes
           dep_functor->setPurpose(this->myPurpose);
+          // save the identity of this functor's loop manager (if it has one)
+          if (dep_functor->capability() == myLoopManagerCapability and dep_functor->canBeLoopManager()) 
+          { 
+            myLoopManagerName = dep_functor->name();
+            myLoopManagerOrigin = dep_functor->origin();
+          }
         }
       }
 
@@ -725,25 +712,23 @@ namespace Gambit
       bool iCanManageLoops;
 
       /// Flag indicating whether this function can run nested in a loop over functions
-      bool iCanRunNested;
-
-      /// Flag indicating whether this function actually is running nested in a loop over functions
-      bool runningNested;
+      bool iRunNested;
 
       /// Capability of a function that mangages a loop that this function can run inside of.
-      str myLoopManager;
+      str myLoopManagerCapability;
+      /// Name of a function that mangages a loop that this function can run inside of.
+      str myLoopManagerName;
+      /// Module of a function that mangages a loop that this function can run inside of.
+      str myLoopManagerOrigin;
 
       /// Vector of functors that have been set up to run nested within this one.
       std::vector<functor*> myNestedFunctorList;
 
-      /// Counter for iterations of nested functor loop.
-      int myCurrentIteration;
-      /// Indices of the OpenMP threads that this functor is permitted to launch.
-      std::set<int> myThreadIndices;
+      /// Pointer to counters for iterations of nested functor loop.
+      int* myCurrentIteration;
+
       /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
       const int globlMaxThreads;
-      /// Pointer to the set of indices of all threads this MPI process is permitted to launch.
-      std::set<int> all_thread_indices;
 
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
@@ -761,7 +746,7 @@ namespace Gambit
 
       /// Map from (dependency-type pairs) to (pointers to templated void functions 
       /// that set dependency functor pointers)
-      std::map<sspair, void(*)(functor*)> dependency_map;
+      std::map<sspair, void(*)(functor*, module_functor_common*)> dependency_map;
 
       /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
       /// that set backend requirement functor pointers)
@@ -795,7 +780,7 @@ namespace Gambit
         needs_recalculating = false;
         runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
         pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-        if (not runningNested) cout << "Runtime " << myName << ": " << runtime << " ns (" << runtime_average << " ns)" << endl;
+        if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime << " ns (" << runtime_average << " ns)" << endl;
       }
 
   };
@@ -815,51 +800,48 @@ namespace Gambit
                             str result_type,
                             str origin_name)
       : module_functor_common(func_name, func_capability, result_type, origin_name),
-        myFunction (inputFunction)              // Assign the internal function pointer
+        myFunction (inputFunction)
       {
-        myValue = new TYPE[globlMaxThreads];    // Allocate the memory needed to hold the result of this function
-        loner.insert(0);                        // Bring out "The Loner"
+        myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
+        myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
+        myCurrentIteration[0] = 0;              // Zero the iteration counter to start off.
       }
 
       /// Destructor
-      ~module_functor() { delete [] myValue; }
+      ~module_functor() 
+      { 
+        delete [] myValue;
+        delete [] myCurrentIteration;
+      }
 
       /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
       virtual void setLoopManagerCapability (str manager) 
       { 
-        module_functor_common::setLoopManagerCapability(manager); // Call the regular version of this method first, then...
-        delete [] myValue;                    // ...get rid of the scalar result container, and instead...
-        myValue = new TYPE[globlMaxThreads];  // ...reserve enough space to hold as many results as there are threads allowed
+        module_functor_common::setLoopManagerCapability(manager); // Call the regular version of this method.
+        delete [] myValue;                              // Get rid of the scalar result container
+        delete [] myCurrentIteration;                   // Get rid of the scalar iteration container
+        myValue = new TYPE[globlMaxThreads];            // Reserve enough space to hold as many results as there are threads allowed
+        myCurrentIteration = new int[globlMaxThreads];  // Reserve enough space to hold as many iteration numbers as there are threads allowed
+        std::fill(myCurrentIteration, myCurrentIteration+globlMaxThreads, 0); // Zero them to start off
       }
 
-      /// Calculate method (no-argument overload -- calling this runs the functor non-nested if it needs calculating.)
+      /// Calculate method
       void calculate()
       {
-        // If this functor wants to nest, tell it not to.  (In principle this should be impossible, but...)
-        if (runningNested and needs_recalculating)
+        if (needs_recalculating)
         {
-          delete [] myValue;      // Get rid of the array of myValues created to allow nesting
-          myValue = new TYPE[1];  // Go back to the original scalar myValue used when not nesting
-          cout << "WARNING: forcibly converting nested to non-nested functor: " << this->name() << endl;
-          cout << "This means you have called a raw calculate() on a nested functor that" << endl;
-          cout << "needs recalculating. I *really* hope you know what you're doing..." << endl;
-          runningNested = false;
+          double nsec = 0, sec = 0;
+          this->startTiming(nsec,sec);                       //Begin timing function evaluation
+          this->myFunction(myValue[omp_get_thread_num()]);  //Run and place result in the appropriate slot in myValue
+          this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         }
-        calculate(loner);         // Run the calculate method and keep just one copy of the result.
       }
 
       /// Operation (return value)
       TYPE operator()(int index) 
       { 
         if (this == NULL) functor::failBigTime("operator()");
-        if (runningNested)
-        {
-          return myValue[index];
-        }
-        else
-        {
-          return myValue[0];
-        }
+        return (iRunNested ? myValue[index] : myValue[0]);
       }
 
       /// Alternative to operation (returns a safe pointer to value)
@@ -870,17 +852,7 @@ namespace Gambit
       }
 
       /// Printer function
-      virtual void print(printers::BasePrinter* printer, int index)
-      {
-        if (runningNested)
-        {
-          printer->print(myValue[index]);
-        }
-        else
-        {
-          printer->print(myValue[0]);
-        }
-      }
+      virtual void print(printers::BasePrinter* printer, int index) { if (iRunNested) printer->print(myValue[index]); else printer->print(myValue[0]); }
       /// Printer function (single-argument short-circuit)
       virtual void print(printers::BasePrinter* printer) { print(printer,0); }
 
@@ -891,37 +863,6 @@ namespace Gambit
 
       /// Internal pointer to storage location of function value
       TYPE* myValue;
-
-      /// Set containing a single element equal to zero.
-      std::set<int> loner;
-
-      /// True calculate method
-      void calculate(const std::set<int> &thread_indices)
-      {
-        if (needs_recalculating)
-        {
-          double nsec = 0, sec = 0;
-          this->startTiming(nsec,sec);                 //Begin timing function evaluation
-          if (thread_indices.empty())                  //Make sure that the thread_indices vector is not empty  
-          {
-            cout << "Error: thread_indices empty in calculate(thread_indices) " << endl;
-            cout << "for functor " << this->name() << " in " << this->origin() << "." << endl;
-            exit(1);
-            //FIXME real error here
-          }
-          std::set<int>::const_iterator start = thread_indices.begin();
-          myFunction(myValue[*start]);                 //Run and place result in the first requested slot in myValue
-          int myint = 2;
-          if (thread_indices.size() > 1)               //Copy the result to all the other requested slots in myValue
-          {
-            for (std::set<int>::const_iterator it = ++start; it != thread_indices.end(); ++it) 
-            {
-              myValue[*it] = myValue[*start];
-            }
-          }
-          this->finishTiming(nsec,sec);                //Stop timing function evaluation
-        }
-      }
 
   };
 
@@ -958,11 +899,6 @@ namespace Gambit
 
       /// Internal storage of function pointer
       void (*myFunction)();
-
-      /// Overloaded calculate method for cases where the functor is running nested.
-      /// Just ignores the thread indices passed in this case, as the return type is 
-      /// void anyway, so there is no need to save a result.
-      void calculate (const std::set<int> &thread_indices) { calculate(); }
 
   };
 

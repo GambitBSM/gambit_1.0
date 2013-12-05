@@ -318,7 +318,8 @@
                                                                                \
       /* Resolve dependency DEP_TAG in function TAG */                         \
       template <typename DEP_TAG, typename TAG>                                \
-      void resolve_dependency(functor* dep_functor)                            \
+      void resolve_dependency(functor* dep_functor,                            \
+       module_functor_common* this_functor)                                    \
       {                                                                        \
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this dependency for this function.";                       \
@@ -490,7 +491,7 @@
                                                                                \
   /* Create a map to hold pointers to all the model parameters accessible to   \
   this functor. */                                                             \
-  namespace SafePointers                                                       \
+  namespace Pipes                                                              \
   {                                                                            \
     namespace FUNCTION                                                         \
     {                                                                          \
@@ -545,7 +546,7 @@
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
       when the dependency is resolved. */                                      \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -556,28 +557,29 @@
                                                                                \
       /* Resolve dependency DEP in FUNCTION */                                 \
       template <>                                                              \
-      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
+      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor, \
+       module_functor_common* this_functor)                                    \
       {                                                                        \
-        /* First try casting the pointer passed in to a module_functor */      \
+        /* First try casting the dep pointer passed in to a module_functor */  \
         module_functor<TYPE> * ptr =                                           \
          dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
                                                                                \
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
-          cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
-          cout<<"DEP of function FUNCTION.  Attempt was to "<< endl;           \
+          cout<<"Error: Null returned from dynamic cast of "<< endl;           \
+          cout<<"dependency functor in MODULE::resolve_dependency, for"<< endl;\
+          cout<<"dependency DEP of function FUNCTION.  Attempt was to "<< endl;\
           cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
           cout<<dep_functor->origin()<<"."<<endl;                              \
+          exit(1);                                                             \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did! Now initialize the safety_bucket using the functor.*/  \
-        {                                                                      \
-          BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
-           SafePointers::FUNCTION::Dep::DEP.initialize(                        \
-           ptr,Functown::FUNCTION.threadPtr()); )                              \
-        }                                                                      \
+                                                                               \
+        /* It did! Now initialize the safety_bucket using the functors.*/      \
+        BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                     \
+          Pipes::FUNCTION::Dep::DEP.initialize(ptr,this_functor);              \
+        )                                                                      \
                                                                                \
       }                                                                        \
 
@@ -664,7 +666,7 @@
                                                                                \
       /* Create a safe pointer to the model parameter values. To be filled     \
       automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -675,7 +677,7 @@
       /* Resolve dependency on parameters of MODEL in FUNCTION */              \
       template <>                                                              \
       void resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>                \
-       (functor* params_functor)                                               \
+       (functor* params_functor, module_functor_common* this_functor)          \
       {                                                                        \
         /* First try casting the pointer passed in to a module_functor */      \
         Parameters::FUNCTION::MODEL =                                          \
@@ -689,37 +691,36 @@
           cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;       \
           cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;        \
           cout<<params_functor->origin()<<"."<<endl;                           \
+          exit(1);                                                             \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did! */                                                     \
+                                                                               \
+        /* It did! Set the pointer to the model parameter result. */           \
+        Pipes::FUNCTION::Model::MODEL =                                        \
+         Parameters::FUNCTION::MODEL->valuePtr();                              \
+        /* Get a pointer to the parameter map provided by this MODEL */        \
+        const std::map<str,double>* parameterMap =                             \
+         Pipes::FUNCTION::Model::MODEL->getValuesPtr();                        \
+        /* Use that to add the parameters provided by this MODEL to the map    \
+        of safe pointers to model parameters. */                               \
+        for (std::map<str,double>::const_iterator it = parameterMap->begin();  \
+         it != parameterMap->end(); ++it)                                      \
         {                                                                      \
-          /* Set the pointer to the model parameter result. */                 \
-          SafePointers::FUNCTION::Model::MODEL =                               \
-           Parameters::FUNCTION::MODEL->valuePtr();                            \
-          /* Get a pointer to the parameter map provided by this MODEL */      \
-          const std::map<str,double>* parameterMap =                           \
-           SafePointers::FUNCTION::Model::MODEL->getValuesPtr();               \
-          /* Use that to add the parameters provided by this MODEL to the map  \
-          of safe pointers to model parameters. */                             \
-          for (std::map<str,double>::const_iterator it = parameterMap->begin();\
-           it != parameterMap->end(); ++it)                                    \
-          {                                                                    \
-            if (SafePointers::FUNCTION::Param.find(it->first) ==               \
-                SafePointers::FUNCTION::Param.end())                           \
-            { /* Add a safe pointer to the value of this parameter to the map*/\
-              SafePointers::FUNCTION::Param[it->first] =                       \
-               safe_ptr<const double>(&(parameterMap->at(it->first)));         \
-            }                                                                  \
-            else                                                               \
-            { /* This parameter already exists in the map! Fail. */            \
-              cout<<"Error in MODULE::resolve_dependency, for model"<< endl;   \
-              cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;   \
-              cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;    \
-              cout<<params_functor->origin()<<"."<<endl;                       \
-              cout<<"You have tried to scan two models simultaneously"<< endl; \
-              cout<<"that have one or more parameters in common. "<< endl;     \
-              cout<<"Problem parameter: "<<it->first<<endl;                    \
-            }                                                                  \
+          if (Pipes::FUNCTION::Param.find(it->first) ==                        \
+              Pipes::FUNCTION::Param.end())                                    \
+          { /* Add a safe pointer to the value of this parameter to the map*/  \
+            Pipes::FUNCTION::Param[it->first] =                                \
+             safe_ptr<const double>(&(parameterMap->at(it->first)));           \
+          }                                                                    \
+          else                                                                 \
+          { /* This parameter already exists in the map! Fail. */              \
+            cout<<"Error in MODULE::resolve_dependency, for model"<< endl;     \
+            cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;     \
+            cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;      \
+            cout<<params_functor->origin()<<"."<<endl;                         \
+            cout<<"You have tried to scan two models simultaneously"<< endl;   \
+            cout<<"that have one or more parameters in common. "<< endl;       \
+            cout<<"Problem parameter: "<<it->first<<endl;                      \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -773,7 +774,7 @@
         typedef BOOST_PP_IIF(IS_VARIABLE, TYPE*, TYPE) type;                   \
       };                                                                       \
                                                                                \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -805,15 +806,15 @@
       {                                                                        \
                                                                                \
         /* Use the given functor pointer (be_functor) to initialize the        \
-        safety_bucket SafePointers::FUNCTION::BEreq::BACKEND_REQ.              \
+        safety_bucket Pipes::FUNCTION::BEreq::BACKEND_REQ.                     \
         If IS_VARIABLE = 1 we do a type cast of the functor first. */          \
         BOOST_PP_IIF(IS_VARIABLE,                                              \
           /* If IS_VARIABLE = 1: */                                            \
           backend_functor<TYPE*> * ptr =                                       \
             dynamic_cast<backend_functor<TYPE*>*>(be_functor);                 \
-          SafePointers::FUNCTION::BEreq::BACKEND_REQ.initialize(ptr);          \
+          Pipes::FUNCTION::BEreq::BACKEND_REQ.initialize(ptr);                 \
           , /* If IS_VARIABLE = 0: */                                          \
-          SafePointers::FUNCTION::BEreq::BACKEND_REQ.initialize(be_functor);   \
+          Pipes::FUNCTION::BEreq::BACKEND_REQ.initialize(be_functor);          \
         ) /* End BOOST_PP_IIF */                                               \
       }                                                                        \
                                                                                \

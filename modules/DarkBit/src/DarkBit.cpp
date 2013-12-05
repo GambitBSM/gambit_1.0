@@ -41,7 +41,7 @@ namespace Gambit {
     void RD_spectrum_SUSY(RDspectype &result)
     {
       /* AK: added this line */
-      using namespace SafePointers::RD_spectrum_SUSY;
+      using namespace Pipes::RD_spectrum_SUSY;
 
       RDspectype myres;
       int copr[0];           // flag for which coannihilation processes to include
@@ -167,7 +167,7 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_thresholds_resonances_ordered(RDrestype &result)
     {
-      using namespace SafePointers::RD_thresholds_resonances_ordered;
+      using namespace Pipes::RD_thresholds_resonances_ordered;
 
 //read out location and number of resonances and thresholds from RDspectrum
       RDspectype specres = *Dep::RD_spectrum;
@@ -220,7 +220,7 @@ namespace Gambit {
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
       /* AK: added this line */
-      using namespace SafePointers::RD_eff_annrate_SUSY;
+      using namespace Pipes::RD_eff_annrate_SUSY;
 
 //read out location and number of resonances and thresholds from RDspectrum
       RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered, RD_spectrum$
@@ -279,7 +279,7 @@ namespace Gambit {
                    (In the long run I think we may solve this in a more elegant way...)
       result = GET_BE_POINTER(RD_oh2_general, dsanwx, double&);
       */
-      result = SafePointers::RD_oh2_general::BEreq::dsanwx.pointer<double&>();
+      result = Pipes::RD_oh2_general::BEreq::dsanwx.pointer<double&>();
 
     } // function RD_eff_annrate_SUSY
 
@@ -288,12 +288,10 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_oh2_general(double &result)
     {
-
       /* AK: added this line */
-      using namespace SafePointers::RD_oh2_general;
+      using namespace Pipes::RD_oh2_general;
 
 //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
-      using namespace SafePointers::RD_oh2_general;
       RDrestype myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.E_thr[0]/2;
 
@@ -445,7 +443,7 @@ namespace Gambit {
     void RD_test_out(double &result)
     {
       /* AK: added this line */
-      using namespace SafePointers::RD_test_out;
+      using namespace Pipes::RD_test_out;
 
         /* AK: would have replaced this line (if it was not commented out)...
 //      RDspectype specres = GET_DEP( RD_test_out, RD_spectrum);

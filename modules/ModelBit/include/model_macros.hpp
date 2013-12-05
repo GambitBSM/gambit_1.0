@@ -257,8 +257,9 @@
            and is what will be wrapped in a functor for processing by the 
            core */                                                             \
         void PARAMETER (double &result) {                                      \
-          using namespace SafePointers::PARAMETER;                             \
-          result = Dep::CAT_3(MODEL,_,parameters)->getValue(STRINGIFY(PARAMETER)); \
+          using namespace Pipes::PARAMETER;                                    \
+        result = Dep::CAT_3(MODEL,_,parameters)->                              \
+          getValue(STRINGIFY(PARAMETER));                                      \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -476,7 +477,7 @@
                                                                                \
       /* Create a safe pointer to the dependency result. To be filled          \
       automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -486,7 +487,8 @@
                                                                                \
       /* Resolve dependency DEP in FUNCTION */                                 \
       template <>                                                              \
-      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
+      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor, \
+       module_functor_common* this_functor)                                    \
       {                                                                        \
         /* First try casting the pointer passed in to a module_functor */      \
         Dependencies::FUNCTION::DEP =                                          \
@@ -505,7 +507,7 @@
         else /* It did!  Now set the pointer to the dependency result. */      \
         {                                                                      \
          BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
-          SafePointers::FUNCTION::Dep::DEP =                                   \
+          Pipes::FUNCTION::Dep::DEP =                                          \
            Dependencies::FUNCTION::DEP->valuePtr(); )                          \
         }                                                                      \
                                                                                \
@@ -518,7 +520,7 @@
 /// ability to write code straight in the model definition header file.
 
 /// Need this piece BEFORE the user code (so that the Dependencies and
-/// Safepointers namespaces exist for use in their code)
+/// Pipes namespaces exist for use in their code)
 /// Make sure to put it inside the Gambit::Models::MODULE namespace, and don't
 /// forget to first ADD_TAG_IN_CURRENT_NAMESPACE(DEP) inside the GAMBIT
 /// namespace

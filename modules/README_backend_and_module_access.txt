@@ -15,19 +15,19 @@ namespace in which the your entire module should live.)
 
 * All module dependencies live in the namespace 
     
-    SafePointers::FUNCTION::Dep
+    Pipes::FUNCTION::Dep
   
   where FUNCTION is the name of the module function you're writing.
 
 
 * All backend requirements (variables/functions) live in the namespace
   
-    SafePointers::FUNCTION::BEreq
+    Pipes::FUNCTION::BEreq
 
 
 * Thus, a module function could typically start with a statement
   
-    using namespace SafePointers::FUNCTION;
+    using namespace Pipes::FUNCTION;
 
   to simplify the code a bit.
 
@@ -57,7 +57,7 @@ Example:
 
   - Start the module function with the statement:
 
-      using namespace SafePointers::SomeFunction;
+      using namespace Pipes::SomeFunction;
 
 
   - Get value of "ModuleDependency":  
@@ -119,7 +119,3 @@ Example:
   see Utils/include/util_types.hpp for the definition of these classes.
 
 
-  Final note: 
-  We may decide to rename the 'SafePointer::FUNCTION' namespace.
-  From a module perspective this should only affect the 
-  'using namespace SafePointers::FUNCTION' statement.

@@ -41,7 +41,7 @@ namespace Gambit
     // Module functions
     void SI_bsgamma(double &result)          
     {
-      using namespace SafePointers::SI_bsgamma;
+      using namespace Pipes::SI_bsgamma;
 
       char name[50];
       //double x=1.;
