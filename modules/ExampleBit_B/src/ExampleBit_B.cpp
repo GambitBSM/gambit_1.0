@@ -21,10 +21,25 @@
 ///          (christoph.weniger@gmail.com)
 ///  \date 2013 Jan 
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_B_rollcall.hpp"
+
+
+namespace Gambit
+{
+  namespace Backends
+  {
+    namespace LibFirst
+    {
+      extern int * SomeInt;
+    }
+  }
+}
 
 namespace Gambit
 {
@@ -49,7 +64,7 @@ namespace Gambit
 
     void xsection         (double &result) 
     { 
-      using namespace SafePointers::xsection;
+      using namespace Pipes::xsection;
       cout << endl;
       cout << "In ExampleBit_B, function xsection" << endl;
       cout << "  Printing parameter values:" << endl;
@@ -61,26 +76,26 @@ namespace Gambit
 
     void nevents_postcuts (int    &result)          
     {
-      using namespace SafePointers::nevents_postcuts;
+      using namespace Pipes::nevents_postcuts;
  
       cout << endl << "My dependency on nevents has been filled by " << 
-       GET_DEP_FUNCNAME(nevents_postcuts::nevents) << " from " <<
-       GET_DEP_MODULE(nevents_postcuts::nevents) << "." << endl;
+       Dep::nevents.name() << " from " <<
+       Dep::nevents.module() << "." << endl;
       cout << "Its value is: " << *Dep::nevents << endl;
 
       //cout << "Now let's see what happens when we try to retrieve a conditional dependency." << endl;
       //cout << "The id is: " << *Dep::id << endl;
 
       cout << "My backend requirement of awesomeness has been filled by " << 
-       GET_BE_FUNCNAME(nevents_postcuts::awesomeness) << " from " <<
-       GET_BE_PACKAGE(nevents_postcuts::awesomeness) << ", v" << 
-       GET_BE_VERSION(nevents_postcuts::awesomeness) << "." << endl;
+       BEreq::awesomeness.name() << " from " <<
+       BEreq::awesomeness.backend() << ", v" << 
+       BEreq::awesomeness.version() << "." << endl;
       cout << "Its value is: ";
-      double doall_local = GET_BE_RESULT(nevents_postcuts::awesomeness, 2);
+      double doall_local = BEreq::awesomeness(2);
       cout << doall_local << endl << endl;    
       int stuff = 2;
       cout << "Again, its value is: ";
-      double doall_local2 = GET_BE_RESULT(nevents_postcuts::awesomeness, byVal(stuff));
+      double doall_local2 = BEreq::awesomeness(byVal(stuff));
       cout << doall_local2 << endl << endl;    
 
       result = (int) (*Dep::nevents + doall_local);
@@ -90,15 +105,35 @@ namespace Gambit
       double inputvar2 = 0;
       double inputvar3 = 2.5;
       cout << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
-      double refex1 = GET_BE_RESULT(nevents_postcuts::refex, inputvar1);
+      double refex1 = BEreq::refex(inputvar1);
       cout << "Next returns void, takes parameters both by ref and by val." << endl;
-      GET_BE_RESULT(nevents_postcuts::refex2, inputvar2, byVal(inputvar3));
+      BEreq::refex2(inputvar2, byVal(inputvar3));
       cout << "Results of backend functions with parameters passed byRef: " 
            << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
-      GET_BE_RESULT(nevents_postcuts::runMe, byVal(*Dep::function_pointer), arg2);
+      BEreq::runMe(byVal(*Dep::function_pointer), arg2);
+
+
+      // Demostration of accessing backend requirements via 'BEvariable_bucket'/'BEfunction_bucket' objects
+      // living in Pipes::[module function name]::BEreq::[backend capability]
+      cout << endl;
+      cout << "Will now set backend variable SomeInt=1000." << endl;
+      cout << "If this works the next result from 'someFunction' should be PI*1000." << endl;
+      *BEreq::SomeInt = 1000;
+      BEreq::someFunction();
+
+      cout << endl;
+      cout << "Will now call 'someFunction' once more, this time using the function pointer." << endl;
+      void (*function_pointer)() = BEreq::someFunction.pointer<>();
+      function_pointer();
+
+      cout << endl;
+      cout << "Print some info on the backend requirement 'SomeInt':" << endl;
+      cout << "Name: " << BEreq::SomeInt.name() << "   Backend: " << BEreq::SomeInt.backend() << "   Version: " << BEreq::SomeInt.version() << endl;
+      cout << endl;
+
     }
 
   }

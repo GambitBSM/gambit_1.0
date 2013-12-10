@@ -42,7 +42,7 @@
   void MSSM_I_IAPfunc (ModelParameters &parentparams)
   {
       cout<<"Running interpret_as_parent calculations for MSSM_I -> test_parent_I ..."<<endl;
-      using namespace SafePointers::test_parent_I_parameters;
+      using namespace Pipes::test_parent_I_parameters;
       const ModelParameters &p = *Dep::MSSM_I_parameters;
       
       double M1 = p["M1"];
@@ -98,7 +98,7 @@
         ModelParameters objects in their functors, i.e. this pointer might be
         removed in the future, so better to use this proper method. */
     
-    using namespace SafePointers::MSSM_I_parameters;
+    using namespace Pipes::MSSM_I_parameters;
     const ModelParameters &p = *Dep::CMSSM_I_parameters;
       
     double M0  = p["M0"];

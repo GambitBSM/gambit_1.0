@@ -9,8 +9,8 @@ export
 
 CC = icc 
 LN = $(CC)
-LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt -lboost_thread
-CFLAGS = -O3 -Wall -g
+LNFLAGS =  -lstdc++ -rdynamic -ldl -lgfortran -lrt 
+CFLAGS = -O3 -Wall -g -fopenmp -std=c++0x
 
 FC = ifort
 FFLAGS = -O3 -fPIC
@@ -46,9 +46,9 @@ BOOST=./
 export BOOST
 endif
 
-CCEXTRA= -pipe -pg -std=c++0x 
+CCEXTRA= -pipe -pg 
 GCC++EXTRA=-Woverloaded-virtual
-CFLAGS= $(CCEXTRA) -O0 $(COMPOPTS) \
+CFLAGS += -O0 $(COMPOPTS) \
 	-I$(BOOSTINC) \
 	-I$(COREDIR)/include \
 	-I$(MODELDIR)/include -I$(MODELDIR)/include/models \
@@ -80,7 +80,7 @@ all: mh gambit_example beb_tester gambit_example_minimal doxygen
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
-	@rm -f _*.txt $(DOCDIR)/Manual.html
+	@rm -f _*.txt
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)
@@ -167,7 +167,7 @@ HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
 FlavBit/build/FlavBit.o $(UTILSDIR)/build/rngs.o \
-$(UTILSDIR)/build/util_functions.o Example_SUSYspecBit/build/SUSYspecBit.o \
+$(UTILSDIR)/build/util_functions.o $(UTILSDIR)/build/stream_printers.o Example_SUSYspecBit/build/SUSYspecBit.o \
 DarkBit/build/DarkBit.o\
 $(YAMLDIR)/yaml-cpp.a
 

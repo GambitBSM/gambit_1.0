@@ -14,11 +14,14 @@
 ///
 ///  \author Pat Scott
 ///    \date 2012 Nov
-///    \date 2013 Jan, Feb, May 
+///    \date 2013 Jan, Feb, May, Dec 
 ///
 ///  \author Christoph Weniger
 ///    \date 2013 Jan 
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #include <string>
@@ -38,6 +41,7 @@ namespace Gambit
   {
 
     // Some local module codes and declarations
+    // Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example for now.
     double count = 3.5;
     int accumulatedCounts = 0;
     std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
@@ -62,13 +66,14 @@ namespace Gambit
 
     // Module functions
     void nevents_dbl  (double &result)    { result = count++; }
-    void nevents_int  (int    &result)    { result = (int) (*SafePointers::nevents_int::Dep::nevents); }
-    void nevents_like (double &result)    { result = 2.0 * (*SafePointers::nevents_like::Dep::eventAccumulation); }
+    void nevents_int  (int    &result)    { result = (int) (*Pipes::nevents_int::Dep::nevents); }
+    void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
     void function_pointer_retriever( double(*&result)(int&) )
     {
+      using namespace Pipes::function_pointer_retriever;
       //Two ways to try this: a pointer to a fortran function that has been backended (and takes an int as an input by reference):
-      result = GET_BE_POINTER(function_pointer_retriever::externalFunction, int&);
+      result = BEreq::externalFunction.pointer<int&>();
       //or a pointer to a local C++ funtion
       //result = &some_other_function;
     }
@@ -76,13 +81,13 @@ namespace Gambit
     // Example of interacting with models
     void damu (double &result)
     {
-      using namespace SafePointers::damu;
+      using namespace Pipes::damu;
       //Old way (still works, but no longer the canonical method):
       // double p1 = Model::test_parent_I->getValue("p1");
       // Model::test_parent_I->print();
       //and so on...     
       //The reason I made the ModelParameters object still
-      //available in SafePointers::<functionname>::Model::<modelname>
+      //available in Pipes::<functionname>::Model::<modelname>
       //is that the authors of module functions may want to
       //do something more advanced with it than just read off the
       //parameter values.
@@ -105,7 +110,7 @@ namespace Gambit
     // normal distribution (with hard-coded "observations")
     void normaldist_loglike (double &result)
     {
-      using namespace SafePointers::normaldist_loglike;      
+      using namespace Pipes::normaldist_loglike;      
 
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard
@@ -136,51 +141,81 @@ namespace Gambit
     // Run a fake 'event loop' 
     void eventLoopManager()
     {
-      using namespace SafePointers::eventLoopManager;
+      using namespace Pipes::eventLoopManager;
       unsigned int nEvents = 20;         // Number of times to run the loop
-      int ci = 0;                        // Index of the OpenMP 'chunk' of a loop in which a given loop iteration occurs
-      int mt = 2;                        // Maximum OpenMP threads permitted to be launched by nested functions
-      for(unsigned long it = 1; it <= nEvents; it++)
+
+      //There is basically just one thing available from the Loops namespace in loop managers like this one:
+      //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
+      //                                                  set of nested functions, passing them the iteration_number.
+
+      //A simple loop example without OpenMP.  Commented out for now.
+      //for(unsigned long it = 0; it < nEvents; it++)
+      //{
+      //  cout << "This is iteration " << it+1 << " of " << nEvents << " being run by eventLoopManager." << endl;
+      //  Loop::executeIteration(it);    // This is a (member) function pointer, so *Loop::executeIteration(it) works fine too.
+      //}
+
+      //A simple loop example using OpenMP
+      Loop::executeIteration(0);         //Do the zero iteration separately to allow nested functions to self-init.
+      #pragma omp parallel
       {
-        cout << "This is iteration " << it << " of " << nEvents << " being run by eventLoopManager." << endl;
-        Loop::executeIteration(ci, it, mt);   // This is a (member) function pointer, so *Loop::executeIteration(i) works fine too.
+        #pragma omp for
+        for(unsigned long it = 1; it < nEvents-1; it++)
+        {
+          Loop::executeIteration(it);   
+        }
       }
+      Loop::executeIteration(nEvents-1); //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
+
     }
 
     // Produces a random floating-point 'event count' between 0 and 5.
     void exampleEventGen(double &result)
     {
-      using namespace SafePointers::exampleEventGen;
-      if (*Loop::iteration == 0) // In the first iteration of a loop
-      {
-        newseed = std::chrono::system_clock::now().time_since_epoch().count();
-        twistor.seed(newseed);   // Re-seed the random number generator
+      using namespace Pipes::exampleEventGen;
+      result = random_0to5(twistor);                 // Generate and return the random number
+      #pragma omp critical (print)
+      { 
+        cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       }
-      result = random_0to5(twistor);  // Generate and return the random number
-      cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<" of chunk ";
-      cout<<*Loop::chunk_index<<", with maximum threads "<<*Loop::max_threads<<"."<<endl;
-
     }
 
     // Rounds an event count to the nearest integer
     void exampleCut(int &result)
     {
-      using namespace SafePointers::exampleCut;
+      using namespace Pipes::exampleCut;
       result = (int) *Dep::event;
-      cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
+      #pragma omp critical (print)
+      { 
+        cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
+      }
     }
 
+    // Adds an integral event count to a total number of accumulated events.
     void eventAccumulator(int &result)
     {
-      // Adds an integral event count to a total number of accumulated events.
-      using namespace SafePointers::eventAccumulator;
-      if (*Loop::iteration == 0) // In the first iteration of a loop
+      //There is basically just one thing available in nested functions from the Loops namespace:
+      //  int* Loop::iteration -- the iteration number passed down directly by the function managing the loop that this one runs within. 
+      //You can always get at OpenMP functions too (omp_get_thread_num, omp_get_ancestor_thread_num, etc) -- but it is better not to assume
+      //too much about the other functions that might be managing this one, either directly or indirectly.
+
+      using namespace Pipes::eventAccumulator;
+      if (*Loop::iteration == 0)                     // In the first iteration of a loop
       {
-        accumulatedCounts = 0;   // Zero the total accumulated counts
+        accumulatedCounts = 0;                       // Zero the total accumulated counts
       }
-      accumulatedCounts += *Dep::event;  // Add the latest event count to the total
-      result = accumulatedCounts;        // Return the current total
-      cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+      #pragma omp critical (eventAccumulator_update) // Only let one thread at a time accumulate results
+      {
+        accumulatedCounts += *Dep::event;            // Add the latest event count to the total
+      }
+      result = accumulatedCounts;                    // Return the current total
+      #pragma omp critical (print)
+      { 
+        cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+        cout<<"  Retrieved event count: "<<*Dep::event<<endl;
+        cout<<"  I have thread index: "<<omp_get_thread_num();
+        cout<<"  Current total counts is: "<<result<<endl;
+      }
     }
 
   }

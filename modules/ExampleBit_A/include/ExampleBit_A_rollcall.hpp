@@ -110,7 +110,7 @@ START_MODULE
     START_FUNCTION(fptr)
 
       #define BACKEND_REQ externalFunction            
-      START_BACKEND_REQ(double)            
+      START_BACKEND_REQ(double)
       #undef BACKEND_REQ
 
     #undef FUNCTION
@@ -126,6 +126,8 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
+
+
 
   #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
   START_CAPABILITY

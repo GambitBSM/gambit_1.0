@@ -36,10 +36,14 @@
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Jan, Feb
-//
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jan, Feb
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #ifndef __module_macros_incore_hpp__
@@ -55,6 +59,7 @@
 #include "create_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
+#include "safety_bucket.hpp"
 
 /// \name Tag-registration macros
 /// @{
@@ -103,9 +108,16 @@
 #define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
+/// a backend variable to be available with capability \link BACKEND_REQ() 
+/// BACKEND_REQ\endlink and type \em TYPE.
+// #define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,1)
+
+#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend function to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and return type \em TYPE.
-#define START_BACKEND_REQ(TYPE)                           CORE_START_BACKEND_REQ(TYPE)
+// #define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,0)
 
 /// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
@@ -306,7 +318,8 @@
                                                                                \
       /* Resolve dependency DEP_TAG in function TAG */                         \
       template <typename DEP_TAG, typename TAG>                                \
-      void resolve_dependency(functor* dep_functor)                            \
+      void resolve_dependency(functor* dep_functor,                            \
+       module_functor_common* this_functor)                                    \
       {                                                                        \
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this dependency for this function.";                       \
@@ -455,7 +468,7 @@
   function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
   {                                                                            \
      Functown::FUNCTION.calculate();                                           \
-     BOOST_PP_IIF(IS_TYPE(void,TYPE),,return Functown::FUNCTION();)            \
+     BOOST_PP_IIF(IS_TYPE(void,TYPE),,return Functown::FUNCTION(0);)           \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function*/    \
@@ -478,7 +491,7 @@
                                                                                \
   /* Create a map to hold pointers to all the model parameters accessible to   \
   this functor. */                                                             \
-  namespace SafePointers                                                       \
+  namespace Pipes                                                              \
   {                                                                            \
     namespace FUNCTION                                                         \
     {                                                                          \
@@ -530,50 +543,43 @@
         typedef TYPE type;                                                     \
       };                                                                       \
                                                                                \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
+      /* Given that TYPE is not void, create a safety_bucket for the           \
+      dependency result. To be initialized automatically at runtime            \
+      when the dependency is resolved. */                                      \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          module_functor<TYPE>* DEP = NULL;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          BOOST_PP_IIF(IS_TYPE(void,TYPE),,namespace Dep {safe_ptr<TYPE> DEP;})\
+          BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                   \
+           namespace Dep {dep_bucket<TYPE> DEP;})                              \
         }                                                                      \
       }                                                                        \
                                                                                \
       /* Resolve dependency DEP in FUNCTION */                                 \
       template <>                                                              \
-      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor) \
+      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor, \
+       module_functor_common* this_functor)                                    \
       {                                                                        \
-        /* First try casting the pointer passed in to a module_functor */      \
-        Dependencies::FUNCTION::DEP =                                          \
+        /* First try casting the dep pointer passed in to a module_functor */  \
+        module_functor<TYPE> * ptr =                                           \
          dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
                                                                                \
         /* Now test if that cast worked */                                     \
-        if (Dependencies::FUNCTION::DEP == 0)  /* It didn't; throw an error. */\
+        if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
-          cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
-          cout<<"DEP of function FUNCTION.  Attempt was to "<< endl;           \
+          cout<<"Error: Null returned from dynamic cast of "<< endl;           \
+          cout<<"dependency functor in MODULE::resolve_dependency, for"<< endl;\
+          cout<<"dependency DEP of function FUNCTION.  Attempt was to "<< endl;\
           cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
           cout<<dep_functor->origin()<<"."<<endl;                              \
+          exit(1);                                                             \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did!  Now set the pointer to the dependency result. */      \
-        {                                                                      \
-         BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
-          SafePointers::FUNCTION::Dep::DEP =                                   \
-           Dependencies::FUNCTION::DEP->valuePtr(); )                          \
-        }                                                                      \
+                                                                               \
+        /* It did! Now initialize the safety_bucket using the functors.*/      \
+        BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                     \
+          Pipes::FUNCTION::Dep::DEP.initialize(ptr,this_functor);              \
+        )                                                                      \
                                                                                \
       }                                                                        \
 
@@ -660,7 +666,7 @@
                                                                                \
       /* Create a safe pointer to the model parameter values. To be filled     \
       automatically at runtime when the dependency is resolved. */             \
-      namespace SafePointers                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
@@ -671,7 +677,7 @@
       /* Resolve dependency on parameters of MODEL in FUNCTION */              \
       template <>                                                              \
       void resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>                \
-       (functor* params_functor)                                               \
+       (functor* params_functor, module_functor_common* this_functor)          \
       {                                                                        \
         /* First try casting the pointer passed in to a module_functor */      \
         Parameters::FUNCTION::MODEL =                                          \
@@ -685,37 +691,36 @@
           cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;       \
           cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;        \
           cout<<params_functor->origin()<<"."<<endl;                           \
+          exit(1);                                                             \
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
-        else /* It did! */                                                     \
+                                                                               \
+        /* It did! Set the pointer to the model parameter result. */           \
+        Pipes::FUNCTION::Model::MODEL =                                        \
+         Parameters::FUNCTION::MODEL->valuePtr();                              \
+        /* Get a pointer to the parameter map provided by this MODEL */        \
+        const std::map<str,double>* parameterMap =                             \
+         Pipes::FUNCTION::Model::MODEL->getValuesPtr();                        \
+        /* Use that to add the parameters provided by this MODEL to the map    \
+        of safe pointers to model parameters. */                               \
+        for (std::map<str,double>::const_iterator it = parameterMap->begin();  \
+         it != parameterMap->end(); ++it)                                      \
         {                                                                      \
-          /* Set the pointer to the model parameter result. */                 \
-          SafePointers::FUNCTION::Model::MODEL =                               \
-           Parameters::FUNCTION::MODEL->valuePtr();                            \
-          /* Get a pointer to the parameter map provided by this MODEL */      \
-          const std::map<str,double>* parameterMap =                           \
-           SafePointers::FUNCTION::Model::MODEL->getValuesPtr();               \
-          /* Use that to add the parameters provided by this MODEL to the map  \
-          of safe pointers to model parameters. */                             \
-          for (std::map<str,double>::const_iterator it = parameterMap->begin();\
-           it != parameterMap->end(); ++it)                                    \
-          {                                                                    \
-            if (SafePointers::FUNCTION::Param.find(it->first) ==               \
-                SafePointers::FUNCTION::Param.end())                           \
-            { /* Add a safe pointer to the value of this parameter to the map*/\
-              SafePointers::FUNCTION::Param[it->first] =                       \
-               safe_ptr<const double>(&(parameterMap->at(it->first)));         \
-            }                                                                  \
-            else                                                               \
-            { /* This parameter already exists in the map! Fail. */            \
-              cout<<"Error in MODULE::resolve_dependency, for model"<< endl;   \
-              cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;   \
-              cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;    \
-              cout<<params_functor->origin()<<"."<<endl;                       \
-              cout<<"You have tried to scan two models simultaneously"<< endl; \
-              cout<<"that have one or more parameters in common. "<< endl;     \
-              cout<<"Problem parameter: "<<it->first<<endl;                    \
-            }                                                                  \
+          if (Pipes::FUNCTION::Param.find(it->first) ==                        \
+              Pipes::FUNCTION::Param.end())                                    \
+          { /* Add a safe pointer to the value of this parameter to the map*/  \
+            Pipes::FUNCTION::Param[it->first] =                                \
+             safe_ptr<const double>(&(parameterMap->at(it->first)));           \
+          }                                                                    \
+          else                                                                 \
+          { /* This parameter already exists in the map! Fail. */              \
+            cout<<"Error in MODULE::resolve_dependency, for model"<< endl;     \
+            cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;     \
+            cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;      \
+            cout<<params_functor->origin()<<"."<<endl;                         \
+            cout<<"You have tried to scan two models simultaneously"<< endl;   \
+            cout<<"that have one or more parameters in common. "<< endl;       \
+            cout<<"Problem parameter: "<<it->first<<endl;                      \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -746,8 +751,11 @@
   }                                                                            \
 
 
-/// Redirection of START_BACKEND_REQ(TYPE) when invoked from within the core.
-#define CORE_START_BACKEND_REQ(TYPE)                                           \
+
+/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within the core.
+/// The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC (or no flag)
+/// corresponds to IS_VARIABLE=0.
+#define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -758,20 +766,29 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Register the required return TYPE of the backend function */          \
+      /* Register the required return TYPE of the backend function/variable */ \
       template<>                                                               \
       struct dep_traits<BETags::BACKEND_REQ, Tags::FUNCTION>                   \
       {                                                                        \
-        typedef TYPE type;                                                     \
+        /* Use TYPE* for backend variables, and TYPE for backend functions */  \
+        typedef BOOST_PP_IIF(IS_VARIABLE, TYPE*, TYPE) type;                   \
       };                                                                       \
                                                                                \
-      /* Create a (base) pointer to the backend functor.  To be filled by      \
-      the dependency resolver at runtime. */                                   \
-      namespace Backend_Reqs                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          functor* CAT(BACKEND_REQ,_baseptr) = NULL;                           \
+          namespace BEreq                                                      \
+          {                                                                    \
+            /* Create a safety_bucket for the backend variable/function.       \
+            To be initialized by the dependency resolver at runtime. */        \
+            BOOST_PP_IIF(IS_VARIABLE,                                          \
+              /* If IS_VARIABLE = 1: */                                        \
+              BEvariable_bucket<TYPE> BACKEND_REQ;                             \
+              , /* If IS_VARAIBLE = 0: */                                      \
+              BEfunction_bucket<TYPE> BACKEND_REQ;                             \
+            )  /* End BOOST_PP_IIF */                                          \
+          }                                                                    \
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -787,18 +804,34 @@
       void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
        (functor* be_functor)                                                   \
       {                                                                        \
-        Backend_Reqs::FUNCTION::CAT(BACKEND_REQ,_baseptr) = be_functor;        \
+                                                                               \
+        /* Use the given functor pointer (be_functor) to initialize the        \
+        safety_bucket Pipes::FUNCTION::BEreq::BACKEND_REQ.                     \
+        If IS_VARIABLE = 1 we do a type cast of the functor first. */          \
+        BOOST_PP_IIF(IS_VARIABLE,                                              \
+          /* If IS_VARIABLE = 1: */                                            \
+          backend_functor<TYPE*> * ptr =                                       \
+            dynamic_cast<backend_functor<TYPE*>*>(be_functor);                 \
+          Pipes::FUNCTION::BEreq::BACKEND_REQ.initialize(ptr);                 \
+          , /* If IS_VARIABLE = 0: */                                          \
+          Pipes::FUNCTION::BEreq::BACKEND_REQ.initialize(be_functor);          \
+        ) /* End BOOST_PP_IIF */                                               \
       }                                                                        \
                                                                                \
-      /* Set up the commands to be called at runtime to register req*/         \
+      /* Set up the commands to be called at runtime to register req.          \
+      (Note that TYPE is used for backend functions, while TYPE* is used       \
+      for backend variables.) */                                               \
       template <>                                                              \
       void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
       {                                                                        \
         map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
          &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
-        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] = STRINGIFY(TYPE);        \
-        Functown::FUNCTION.setBackendReq(                                      \
-         STRINGIFY(BACKEND_REQ),STRINGIFY(TYPE),                               \
+                                                                               \
+        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =                         \
+          BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE));        \
+                                                                               \
+        Functown::FUNCTION.setBackendReq(STRINGIFY(BACKEND_REQ),               \
+          BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE)),        \
          &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \

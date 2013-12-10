@@ -257,8 +257,9 @@
            and is what will be wrapped in a functor for processing by the 
            core */                                                             \
         void PARAMETER (double &result) {                                      \
-          using namespace SafePointers::PARAMETER;                             \
-          result = Dep::CAT_3(MODEL,_,parameters)->getValue(STRINGIFY(PARAMETER)); \
+          using namespace Pipes::PARAMETER;                                    \
+        result = Dep::CAT_3(MODEL,_,parameters)->                              \
+          getValue(STRINGIFY(PARAMETER));                                      \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -449,6 +450,69 @@
 /// where FUNCTION is really whatever label the functor with this dependency
 /// has.
 
+// Anders: I put this macro here to separate it from the macros in module_macros_incore.hpp.
+//         As I made changes to those macros, this whole model system failed, 
+//         so I figured it was better to make them separate for now. 
+//         Perhaps someone in the Model group can take a look and decide whether these macros
+//         should be combined again.   
+#define MODEL_DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                 \
+                                                                               \
+      /* Register the required TYPE of the required observable or likelihood   \
+      function DEP */                                                          \
+      template<>                                                               \
+      struct dep_traits<Tags::DEP, Tags::FUNCTION>                             \
+      {                                                                        \
+        typedef TYPE type;                                                     \
+      };                                                                       \
+                                                                               \
+      /* Create a pointer to the dependency functor. To be filled by the       \
+      dependency resolver during runtime. */                                   \
+      namespace Dependencies                                                   \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          module_functor<TYPE>* DEP = NULL;                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Create a safe pointer to the dependency result. To be filled          \
+      automatically at runtime when the dependency is resolved. */             \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          BOOST_PP_IIF(IS_TYPE(void,TYPE),,namespace Dep {safe_ptr<TYPE> DEP;})\
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Resolve dependency DEP in FUNCTION */                                 \
+      template <>                                                              \
+      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor, \
+       module_functor_common* this_functor)                                    \
+      {                                                                        \
+        /* First try casting the pointer passed in to a module_functor */      \
+        Dependencies::FUNCTION::DEP =                                          \
+         dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
+                                                                               \
+        /* Now test if that cast worked */                                     \
+        if (Dependencies::FUNCTION::DEP == 0)  /* It didn't; throw an error. */\
+        {                                                                      \
+          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
+          cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
+          cout<<"DEP of function FUNCTION.  Attempt was to "<< endl;           \
+          cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
+          cout<<dep_functor->origin()<<"."<<endl;                              \
+          /** FIXME \todo throw real error here */                             \
+        }                                                                      \
+        else /* It did!  Now set the pointer to the dependency result. */      \
+        {                                                                      \
+         BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
+          Pipes::FUNCTION::Dep::DEP =                                          \
+           Dependencies::FUNCTION::DEP->valuePtr(); )                          \
+        }                                                                      \
+                                                                               \
+      }                                                                        \
+
 
 /// ModelBit counterpart of CORE_DEPENDENCY(DEP, TYPE). Minor alterations made 
 /// to the namespace structure (added "models"), but otherwise identical to 
@@ -456,7 +520,7 @@
 /// ability to write code straight in the model definition header file.
 
 /// Need this piece BEFORE the user code (so that the Dependencies and
-/// Safepointers namespaces exist for use in their code)
+/// Pipes namespaces exist for use in their code)
 /// Make sure to put it inside the Gambit::Models::MODULE namespace, and don't
 /// forget to first ADD_TAG_IN_CURRENT_NAMESPACE(DEP) inside the GAMBIT
 /// namespace
@@ -471,7 +535,7 @@
     {                                                                          \
      namespace MODULE                                                          \
      {                                                                         \
-      DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                         \
+      MODEL_DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                   \
                                                                                \
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
       template <>                                                              \
@@ -545,7 +609,7 @@
   function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
   {                                                                            \
      Functown::FUNCTION.calculate();                                           \
-     return Functown::FUNCTION();                                              \
+     return Functown::FUNCTION(0);                                             \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function,     \ 

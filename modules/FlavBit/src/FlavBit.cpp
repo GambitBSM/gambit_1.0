@@ -16,6 +16,9 @@
 ///          (mahmoudi@in2p3.fr)
 ///  \date 2013 Oct
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Nov
 ///  *********************************************
 
 #include "gambit_module_headers.hpp"
@@ -38,6 +41,7 @@ namespace Gambit
     // Module functions
     void SI_bsgamma(double &result)          
     {
+      using namespace Pipes::SI_bsgamma;
 
       char name[50];
       //double x=1.;
@@ -48,18 +52,18 @@ namespace Gambit
       //printf("name=%s\n",name);
        
       /*cout << "My backend requirement of bsgamma_calculator has been filled by " << 
-      GET_BE_FUNCNAME(SI_bsgamma::bsgamma_calculator) << " from " <<
-      GET_BE_PACKAGE(SI_bsgamma::bsgamma_calculator) << ", v" << 
-      GET_BE_VERSION(SI_bsgamma::bsgamma_calculator) << "." << endl;
+      BEreq::bsgamma_calculator.name() << " from " <<
+      BEreq::bsgamma_calculator.backend() << ", v" << 
+      BEreq::bsgamma_calculator.version() << "." << endl;
       cout << "Its value is: ";*/
 
-      //printf("%.5e\n",GET_BE_RESULT(SI_bsgamma::Li2, byVal(x)));
+      //printf("%.5e\n", BEreq::Li2(byVal(x)));
      
-      //printf("%d\n",GET_BE_RESULT(SI_bsgamma::test_file, byVal(name)));
+      //printf("%d\n", BEreq::test_file(byVal(name)));
      
-      //printf("%d\n",GET_BE_RESULT(SI_bsgamma::test_slha, byVal(name)));
+      //printf("%d\n", BEreq::test_slha(byVal(name)));
       
-      result = GET_BE_RESULT(SI_bsgamma::bsgamma_calculator, byVal(name));
+      result = BEreq::bsgamma_calculator(byVal(name));
       
       printf("BR(b->s gamma)=%.3e\n",result);
 
