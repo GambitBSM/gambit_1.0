@@ -162,7 +162,6 @@ DarkBit
 -------
 
 Ongoing:
-
 * DarkSUSY relic density solver
   - Problem with Fortran vs. C++ array indexing
 * Annihilation yields in DarkSUSY
@@ -183,7 +182,7 @@ Ongoing:
   - Direct limits with Chris' module
 * Implementation of CMB limits (starting with codes from singlet paper)
 * Primitive dwarf/GC likelihood
-* Astrophysical DM distributions
+* Astrophysical DM distributions (substucture & phase space)
 * Decaying dark matter
 * Asymmetric dark matter
 * Make use of print functions, once completed

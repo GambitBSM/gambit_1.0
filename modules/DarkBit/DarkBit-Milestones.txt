@@ -1,0 +1,32 @@
+Milestones until March 2014 meeting:
+
+0. Singlet dark matter + MSSM-25 implementation [Christoph]
+    - Discuss with collider group + ModelBit about MSSM-25 status (Dec.)
+    - Implementation singlet DM as prototype (Jan.)
+    - Implementation of dummy MSSM-25 routines (Feb./Mar.)
+
+1. Relic density calculations (backend MicrOmegas + DarkSUSY) [Torsten,
+    Jonathan]
+    - Mostly solution of technical problems (array indexing, shared libraries
+      etc.) (Feb.)
+
+2. Gamma + neutrino yields (backending DarkSUSY) [Christoph, Torsten, Jonathan,
+    Jokaim]
+    - Discuss right format for gamma-ray spectrum (Dec. + Jan.)
+    - Implementation of gamma-ray yields (Jan.)
+    - Discussion + implementation of neutrino yields (Feb. + Mar.)
+
+3. Parametrizations of generalized halos, J-factors + gamma-ray 'propagation
+    routines' [Christoph + Lars]
+    - Discussion about parametrization (Dec. + Jan.)
+    - Implementation (Feb. + Mar.)
+
+4. WIMP-nucleon cross-sections [Chris]
+    - backending DarkSUSY (Feb.)
+
+5. direct detection routines [Chris]
+    - backending aspects of Chris' direct detection code (Mar.)
+
+6. IceCube likelihoods [Pat] (until Mar.?)
+
+7. CMB + Fermi likelihoods (simplified) [Christoph] (until or after Mar.)
