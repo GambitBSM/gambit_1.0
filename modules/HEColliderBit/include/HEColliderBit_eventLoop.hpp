@@ -10,17 +10,11 @@
 ///           HEColliderBit_rollcall.hpp
 ///    Once they are both ready.
 ///
-///  Compile-time registration of available 
-///  observables and likelihoods, as well as their
-///  dependencies.
-///
-///  Add to this if you want to add an observable
-///  or likelihood to this module.
-///
-///  Don't put typedefs or other type definitions
-///  in this file; see 
-///  Core/include/types_rollcall.hpp for further
-///  instructions on how to add new types.
+///  /@todo Don't put typedefs or other type
+///         definitions in this file; see 
+///         Core/include/types_rollcall.hpp for
+///         further instructions on how to add new
+///         types.
 ///
 ///  *********************************************
 ///
@@ -62,7 +56,7 @@ START_MODULE
 
   /// Event capabilities
   /// \todo Replace BLAH_* with the proper types.  Put those types in the
-  /// \todo      proper place for typedefs.
+  /// \todo      proper place for types / typedefs.
   #define CAPABILITY hardScatteringEvent
   START_CAPABILITY
 
@@ -71,6 +65,9 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     #undef FUNCTION
 
+  /// For now, let's stick to what we already have running.
+  /// \todo These later:
+  /*
     #define FUNCTION generateHerwigEvent
     START_FUNCTION(BLAH_herwigEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
@@ -80,6 +77,7 @@ START_MODULE
     START_FUNCTION(BLAH_madGraphEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     #undef FUNCTION
+  */
 
   #undef CAPABILITY
 
@@ -111,6 +109,9 @@ START_MODULE
     DEPENDENCY(hardScatteringEvent, BLAH_py8event)
     #undef FUNCTION
 
+  /// For now, let's stick to what we already have running.
+  /// \todo These later:
+  /*
     #define FUNCTION convertHerwigEvent
     START_FUNCTION(BLAH_GambitColliderEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
@@ -122,6 +123,7 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(hardScatteringEvent, BLAH_madGraphEvent)
     #undef FUNCTION
+  */
 
     #define FUNCTION convertDelphesEvent
     START_FUNCTION(BLAH_GambitColliderEvent)
@@ -136,3 +138,18 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
+
+
+  /// Event accumulators
+  /// \todo Do we need one of these defined for each analysis??
+  #define CAPABILITY analysis_xxx_accumulator
+  START_CAPABILITY
+
+    #define FUNCTION analysis_xxx
+    START_FUNCTION(double)   /// Could be a scaled number of events, so double
+    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
+    DEPENDENCY(GambitColliderEvent)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+  /// \todo How many more do we need to define...?
