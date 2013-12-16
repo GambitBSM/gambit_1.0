@@ -10,7 +10,7 @@
 ///           HEColliderBit_rollcall.hpp
 ///    Once they are both ready.
 ///
-///  /@todo Don't put typedefs or other type
+///  \@todo Don't put typedefs or other type
 ///         definitions in this file; see 
 ///         Core/include/types_rollcall.hpp for
 ///         further instructions on how to add new
@@ -55,18 +55,17 @@ START_MODULE
 
 
   /// Event capabilities
-  /// \todo Replace BLAH_* with the proper types.  Put those types in the
-  /// \todo      proper place for types / typedefs.
   #define CAPABILITY hardScatteringEvent
   START_CAPABILITY
 
     #define FUNCTION generatePythia8Event
-    START_FUNCTION(BLAH_py8event)
+    START_FUNCTION(PythiaEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
-  /// \todo These later:
+  /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
+  /// \todo ... these later:
   /*
     #define FUNCTION generateHerwigEvent
     START_FUNCTION(BLAH_herwigEvent)
@@ -81,61 +80,64 @@ START_MODULE
 
   #undef CAPABILITY
 
+/// I still need to see how Aldo's FastSim works... So for now, I'll
+/// comment out this entire CAPABILITY.
+/*
   #define CAPABILITY detectorReconstructedEvent
   START_CAPABILITY
     
-    #define FUNCTION reconstructDelphesEvent
-    START_FUNCTION(BLAH_delphesEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    #undef FUNCTION
-
+    /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
     #define FUNCTION reconstructFastSimEvent
     START_FUNCTION(BLAH_AldoDetEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     #undef FUNCTION
 
   #undef CAPABILITY
+*/
 
-
-  /// Event converters to the standard Gambit collider event format
-  /// \todo Replace BLAH_* with the proper types.  Put those types in the
-  /// \todo      proper place for typedefs.
   #define CAPABILITY GambitColliderEvent
   START_CAPABILITY
 
-    #define FUNCTION convertPythia8Event
-    START_FUNCTION(BLAH_GambitColliderEvent)
+    /// Detector simulators which directly produce the standard event format
+    #define FUNCTION reconstructDelphesEvent
+    START_FUNCTION(StandardEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    DEPENDENCY(hardScatteringEvent, BLAH_py8event)
+    DEPENDENCY(hardScatteringEvent, PythiaEvent)
+    #undef FUNCTION
+
+    /// Event converters to the standard Gambit collider event format
+    #define FUNCTION convertPythia8Event
+    START_FUNCTION(StandardEvent)
+    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
+    DEPENDENCY(hardScatteringEvent, PythiaEvent)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
-  /// \todo These later:
+  /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for typedefs.
+  /// \todo ... these later:
   /*
     #define FUNCTION convertHerwigEvent
-    START_FUNCTION(BLAH_GambitColliderEvent)
+    START_FUNCTION(StandardEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(hardScatteringEvent, BLAH_herwigEvent)
     #undef FUNCTION
 
     #define FUNCTION convertMadGraphEvent
-    START_FUNCTION(BLAH_GambitColliderEvent)
+    START_FUNCTION(StandardEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(hardScatteringEvent, BLAH_madGraphEvent)
     #undef FUNCTION
   */
 
+  /// Currently, it seems that the delphes "backend" we have automatically
+  /// converts its own output to our standard event format.
+  /*
     #define FUNCTION convertDelphesEvent
-    START_FUNCTION(BLAH_GambitColliderEvent)
+    START_FUNCTION(StandardEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(detectorReconstructedEvent, BLAH_delphesEvent)
     #undef FUNCTION
-
-    #define FUNCTION convertFastSimEvent
-    START_FUNCTION(BLAH_GambitColliderEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    DEPENDENCY(detectorReconstructedEvent, BLAH_AldoDetEvent)
-    #undef FUNCTION
+  */
 
   #undef CAPABILITY
 
