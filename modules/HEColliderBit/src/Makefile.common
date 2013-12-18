@@ -1,0 +1,61 @@
+## You can set these xxxDIR variables in your .bashrc if needed.
+## Probably we need a configure script... we're reinventing GNU autotools!
+
+ifndef PYTHIA8
+  PYTHIA8 := $(PYTHIA8DIR)
+  ifndef PYTHIA8
+    PYTHIA8 := $(PY8DIR)
+  endif
+endif
+ifdef PYTHIA8
+  $(info Pythia8 path = $(PYTHIA8))
+else
+  $(warning $$PYTHIA8DIR or $$PY8DIR variable not defined)
+endif
+
+ifndef DELPHES
+  DELPHES := $(DELPHESDIR)
+  ifndef DELPHES
+    DELPHES := $(DELPSDIR)
+  endif
+endif
+ifdef DELPHES
+  $(info Delphes path = $(DELPHES))
+else
+  $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+endif
+
+ifndef BOOST
+  BOOST := $(BOOSTDIR)
+endif
+ifdef BOOST
+  $(info Boost path = $(BOOST))
+else
+  $(warning $$BOOSTDIR variable not defined)
+endif
+
+
+###################
+## Compiler choices and flags
+
+CXX := g++
+
+CXXFLAGS := -std=c++11 -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+
+$(info Pythia version = $(shell cat `pythia8-config --xmldoc`/Version.xml | grep versionNumber | cut -d'"' -f4))
+PY8FLAGS := $(shell pythia8-config --cxxflags --libs)
+FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
+ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
+DELPHESFLAGS := -I$(DELPHES) -I$(DELPHES)/external -L$(DELPHES) -lDelphes
+BOOSTFLAGS := -I$(BOOST)
+BOOSTSERIALIZATION := -L$(BOOST)/stage/lib -lboost_serialization
+
+
+###################
+## Other useful variables for make rules
+
+# UTILHEADERS := Event.hpp FastJetUtils.hpp Jet.hpp MathUtils.hpp MCUtils.hpp Particle.hpp PIDCodes.hpp PIDUtils.hpp Vectors.hpp
+# DELPHESHEADERS := Delphes3Backend.hpp
+# ALDODETHEADERS := DetectorResponse.hpp FastSim.hpp
+# PY8HEADERS := Py8Utils.hpp  Pythia8Backend.hpp
+# HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)

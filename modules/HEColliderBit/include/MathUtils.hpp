@@ -52,8 +52,8 @@ namespace Gambit {
     /// NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
     ///
     /// @todo Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion...
-    /// @todo SFINAE and template for FP types
-    inline bool inRange(double val, double low, double high) {
+    /// @todo SFINAE specialisation using C++11 machinery
+    inline bool in_range(double val, double low, double high) {
       return val >= low && val < high;
     }
 
@@ -62,8 +62,8 @@ namespace Gambit {
     /// NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
     ///
     /// @todo Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion...
-    /// @todo SFINAE and template for integer types
-    inline bool inRange(int val, int low, int high) {
+    /// @todo SFINAE specialisation using C++11 machinery
+    inline bool in_range(int val, int low, int high) {
       return val >= low && val < high;
     }
 
@@ -76,7 +76,7 @@ namespace Gambit {
       const double interval = (end-start)/static_cast<double>(nbins);
       // Add all edges except the last
       double edge = start;
-      while (inRange(edge, start, end)) {
+      while (in_range(edge, start, end)) {
         rtn.push_back(edge);
         edge += interval;
       }
@@ -110,7 +110,8 @@ namespace Gambit {
     /// @name Physics maths utils
     //@{
 
-    inline double deltaPhi(double a, double b) {
+    /// @todo SFINAE specialisation using C++11 machinery
+    inline double delta_phi(double a, double b) {
       double rtn = a - b;
       rtn = fmod(rtn, 2*M_PI);
       if (rtn == 0) return 0;

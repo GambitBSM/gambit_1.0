@@ -16,25 +16,30 @@ namespace Gambit {
 
 
     Analysis* mkAnalysis(const std::string& name) {
-      // TODO: stringify
-      #define IF_X_RTN_CREATEX(A) if (name == "ATLAS_0LEP") return create_Analysis_ ## A();
+      // #define IF_X_RTN_CREATEX(A) if (name == #A) return create_Analysis_ ## A()
+      // IF_X_RTN_CREATEX(ATLAS_0LEP);
+      // IF_X_RTN_CREATEX(ATLAS_0LEPStop_20invfb);
+      // IF_X_RTN_CREATEX(ATLAS_1LEPStop_20invfb);
+      // IF_X_RTN_CREATEX(ATLAS_2bStop_20invfb);
+      // IF_X_RTN_CREATEX(ATLAS_2LEPStop_20invfb);
+      // IF_X_RTN_CREATEX(Perf);
+      // throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
 
-      if (name == "ATLAS_0LEP") {
+      if (name == "ATLAS_0LEP")
         return create_Analysis_ATLAS_0LEP();
-      } else if (name == "ATLAS_0LEPStop_20invfb") {
+      if (name == "ATLAS_0LEPStop_20invfb")
         return create_Analysis_ATLAS_0LEPStop_20invfb();
-      } else if (name == "ATLAS_1LEPStop_20invfb") {
+      if (name == "ATLAS_1LEPStop_20invfb")
         return create_Analysis_ATLAS_1LEPStop_20invfb();
-      } else if (name == "ATLAS_2bStop_20invfb") {
+      if (name == "ATLAS_2bStop_20invfb")
         return create_Analysis_ATLAS_2bStop_20invfb();
-      } else if (name == "ATLAS_2LEPStop_20invfb") {
+      if (name == "ATLAS_2LEPStop_20invfb")
         return create_Analysis_ATLAS_2LEPStop_20invfb();
-      } else if (name == "Perf") {
+      if (name == "Perf")
         return create_Analysis_Perf();
-      } else {
-        throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
-      }
-      return 0;
+      throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
+
+      return nullptr;
     }
 
 
