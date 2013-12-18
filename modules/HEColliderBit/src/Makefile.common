@@ -12,6 +12,7 @@ ifdef PYTHIA8
 else
   $(warning $$PYTHIA8DIR or $$PY8DIR variable not defined)
 endif
+#$(info Pythia version = $(shell cat `pythia8-config --xmldoc`/Version.xml | grep versionNumber | cut -d'"' -f4))
 
 ifndef DELPHES
   DELPHES := $(DELPHESDIR)
@@ -36,19 +37,27 @@ endif
 
 
 ###################
-## Compiler choices and flags
+## Default compiler choices and dependency compile/link flags
 
 CXX := g++
 
-CXXFLAGS := -std=c++11 -O3 -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+HEC_CXXFLAGS := -std=c++11 -O3 -fPIC -pedantic -Wall -Wno-long-long -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+HEC_LDFLAGS :=
 
-$(info Pythia version = $(shell cat `pythia8-config --xmldoc`/Version.xml | grep versionNumber | cut -d'"' -f4))
-PY8FLAGS := $(shell pythia8-config --cxxflags --libs)
-FJFLAGS := $(shell fastjet-config --cxxflags --libs --plugins)
-ROOTFLAGS := $(shell root-config --cflags --libs --ldflags)
-DELPHESFLAGS := -I$(DELPHES) -I$(DELPHES)/external -L$(DELPHES) -lDelphes
-BOOSTFLAGS := -I$(BOOST)
-BOOSTSERIALIZATION := -L$(BOOST)/stage/lib -lboost_serialization
+PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)
+PY8_LDFLAGS := $(shell pythia8-config --libs)
+
+FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+FJ_LDFLAGS := $(shell fastjet-config --libs)
+
+ROOT_CXXFLAGS := $(shell root-config --cflags)
+ROOT_LDFLAGS := $(shell root-config --libs)
+
+DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
+DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
+
+BOOST_CPPFLAGS := -I$(BOOST)
+BOOSTSX_LDFLAGS := -L$(BOOST)/stage/lib -lboost_serialization
 
 
 ###################
