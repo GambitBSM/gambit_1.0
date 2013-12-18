@@ -115,7 +115,7 @@ int main() {
 
   // For event generation
   Pythia8Backend* myPythia;
-  Delphes3Backend* myDelphes = new Delphes3Backend(delphesConfigFile);
+  Delphes3Backend* myDelphes = NULL; //AB new Delphes3Backend(delphesConfigFile);
 
   // For event storage
   Pythia8::Event genEvent;
@@ -228,7 +228,7 @@ int main() {
       // Run Delphes (not thread safe)
       #pragma omp critical
       {
-        myDelphes->processEvent(genEvent, recoEvent);
+        //AB myDelphes->processEvent(genEvent, recoEvent);
       }
 
       // Run all analyses attached to the thread

@@ -88,10 +88,12 @@ example-py8-bsm: example-py8-bsm.cpp $(ANAOBJS) $(MT2OBJS)
 example-py8-0lep: example-py8-0lep.cpp $(ANAOBJS) $(MT2OBJS)
 	$(CXX) $^ $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) -o example-py8-0lep
 
+
 OPTFLAGS := -DQUIET #-DARCHIVE #-DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp $(ANAOBJS) $(PY8OBJS) $(DELPHESOBJS) $(MT2OBJS)
 	$(CXX) $^ $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(ROOTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
 
+# TODO: remove this near-duplicate!!!
 example-MJW-stop: HEColliderMain-StopMJW.cpp $(ANAOBJS) $(PY8OBJS) $(DELPHESOBJS) $(MT2OBJS)
 	$(CXX) $^ $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(ROOTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) -lEG $(OPTFLAGS) -o example-MJW-stop
 
