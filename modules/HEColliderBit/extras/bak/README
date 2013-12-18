@@ -1,0 +1,38 @@
+Code conventions
+================
+
+* .hpp and .cpp file suffixes
+* CamelCase filenames for framework files, lowercase for examples/executables-to-be
+* lower case variable names
+* CamelCase class names
+* lowCamelCase() or snake_style() function names
+* indent with spaces... how many? 2? 4?
+* everything in GAMBIT namespace
+* units: always GeV and mm
+
+QUESTIONS:
+* what is the header include path? (#include "GAMBIT/HEColliderBit/Foo.hpp" would be nice) How?
+* can we require C++11?
+
+
+Pythia8 OpenMP SUSY generation and analysis demo
+================================================
+
+py8-bsm.cc contains a proof-of-concept Pythia8 main program parallelised via OpenMP and
+using FastJet and ROOT for a mini final-state particle analysis in the event loop. It
+obviously needs to be worked on to make it suitable for inclusion in the Gambit framework
+but being so simple makes it obvious what is going on. Build using the Makefile, e.g.:
+
+make all PY8DIR=$HOME/heplocal
+
+or, to build one program only, and using the clang++ compiler (on Macs particularly):
+
+make example-py8-bsm CXX=clang++ PY8DIR=$HOME/heplocal
+
+Run as follows:
+
+PYTHIA8DATA=../xmldoc example-py8-bsm
+
+or as follows for timing tests with explicit control over the number of threads:
+
+time OMP_NUM_THREADS=1 PYTHIA8DATA=$PY8DIR/xmldoc example-py8-bsm
