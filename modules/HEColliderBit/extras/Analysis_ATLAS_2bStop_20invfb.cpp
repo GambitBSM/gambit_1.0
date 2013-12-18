@@ -35,7 +35,7 @@ namespace Gambit {
     vector<int> cutFlowVector_alt;
     vector<int> cutFlowVector;
     vector<string> cutFlowVector_str;
-    int NCUTS=2;
+    int NCUTS; //=2;
 
     // Debug histos
 
@@ -44,6 +44,7 @@ namespace Gambit {
     Analysis_ATLAS_2bStop_20invfb() {
 
       _numSRA = 0 ; _numSRB = 0; _numSRA15 = 0; _numSRA20 = 0; _numSRA25 = 0; _numSRA30 = 0; _numSRA35 = 0;
+      NCUTS=2;
 
       for(int i=0;i<NCUTS;i++){
         cutFlowVector.push_back(0);
