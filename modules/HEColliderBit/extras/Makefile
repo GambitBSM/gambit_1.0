@@ -119,4 +119,4 @@ BTaggingWithTruth_dict.cc: BTaggingWithTruth.h
 
 
 clean:
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.cc *_dict.h *.o
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.* *_rdict.pcm *.o
