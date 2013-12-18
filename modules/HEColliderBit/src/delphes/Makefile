@@ -1,10 +1,10 @@
 include ../Makefile.common
 
-libGambitHEColliderDelphes.a: AbsoluteIsolation.o  AbsoluteIsolation_dict.o BTaggingWithTruth.o BTaggingWithTruth_dict.o
-	$(CXX) $(LDFLAGS) $(HEC_LDFLAGS) $^ $(ROOTFLAGS) $(DELPHESFLAGS) -o $@
+libGambitHEColliderDelphes.so: AbsoluteIsolation.o  AbsoluteIsolation_dict.o BTaggingWithTruth.o BTaggingWithTruth_dict.o
+	$(CXX) -shared $(LDFLAGS) $(HEC_LDFLAGS) $^ $(ROOT_LDFLAGS) $(DELPHES_LDFLAGS) -o $@
 
 %.o : %.cc $(HEADERS)
-	$(CXX) -c $< $(CXXFLAGS) $(HEC_CXXFLAGS) -fopenmp $(ROOTFLAGS) $(DELPHESFLAGS) -o $@
+	$(CXX) -c $< $(CXXFLAGS) $(HEC_CXXFLAGS) -fopenmp $(ROOT_CXXFLAGS) $(DELPHES_CXXFLAGS) -o $@
 
 AbsoluteIsolation_dict.cc: AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
 	@echo "Generating dictionary from $^"
