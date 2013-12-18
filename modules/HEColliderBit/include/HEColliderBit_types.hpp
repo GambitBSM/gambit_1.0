@@ -28,6 +28,8 @@
 #ifndef __HEColliderBit_types_hpp__
 #define __HEColliderBit_types_hpp__
 
+/// \todo Some of these includes may eventually need to be in shared_types
+/// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
 #include "Pythia8Backend.hpp"
 #include "Delphes3Backend.hpp"
 #include "Analysis.hpp"
@@ -35,18 +37,30 @@
 
 namespace Gambit {
   namespace HEColliderBit {
-    /// \todo Some of these types may eventually need to be in shared_types
-    /// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
     
-    // I'm putting these typedefs in here for verbosity and readability.
-    // In any case, they are used to communicate between HEColliderBit
-    // module functions. --Abram
-    typedef Pythia8Backend MyPythia;
-    typedef Delphes3Backend MyDelphes;
-
+    // This typedef is here for verbosity and readability.
     typedef Pythia8::Event PythiaEvent;
-    typedef Event StandardEvent;
-    typedef Analysis ColliderAnalysis;
+    // All of the other types are in Gambit::HEColliderBit within the includes
+    // above, so there should be no more ambiguity.
 
-  }
+    struct SubprocessGroup {
+      SubprocessGroup()
+        : xsec(-1), nevts(-1) { }
+      SubprocessGroup(double xs, const vector<int>& parts1,
+                      const vector<int>& parts2)
+        : xsec(xs), nevts(-1), particlesInProcess1(parts1),
+          particlesInProcess2(parts2) { }
+      void addAnalysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
+      double xsec;
+      // string name; // or int id = 1000*sp_type + sp_instance
+      int nevts;
+      /// @todo Add some metric of CPU cost per event for this process type?
+      /// The processes are selected by the IDs of the particles which
+      /// must be in the process.
+      vector<int> particlesInProcess1;
+      vector<int> particlesInProcess2;
+      vector<shared_ptr<Analysis>> analyses;
+    };
+
+ }
 }
