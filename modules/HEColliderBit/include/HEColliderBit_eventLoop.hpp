@@ -53,41 +53,58 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY subprocessGroup
+  START_CAPABILITY
+    #define FUNCTION getSubprocessGroup
+    START_FUNCTION(SubprocessGroup)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  /// Finalization capabilities
+  #define CAPABILITY scaleFactor
+  START_CAPABILITY
+    #define FUNCTION getScaleFactor
+    START_FUNCTION(double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   /// Fully initialized simulation tool capabilities
   /// @todo Backend these properly once the class loader is ready.
   #define CAPABILITY readiedHardScatteringSim
   START_CAPABILITY
     #define FUNCTION readyPythiaBackend
-    START_FUNCTION(Pythia8Backend)
+    START_FUNCTION(Pythia8Backend*)
     DEPENDENCY(slhaFileName, std::string)
-    DEPENDENCY(nEvents, int)
+    DEPENDENCY(subprocessGroup, SubprocessGroup)
     #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY readiedDetectorSim
   START_CAPABILITY
     #define FUNCTION readyDelphesBackend
-    START_FUNCTION(Delphes3Backend)
+    START_FUNCTION(Delphes3Backend*)
     DEPENDENCY(delphesConfigFileName, std::string)
     #undef FUNCTION
   #undef CAPABILITY
 
 
   /// Event loop management capabilities
-  #define CAPABILITY eventLoopManager
+  #define CAPABILITY legacyEventLoopManager
   START_CAPABILITY
+    /// \note Got the impression from Andy that the "Vanilla" Loop may be better.
+    /// \todo Delete this entire module function if vanilla loops are better.
     #define FUNCTION manageXsecDependentLoop
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
-    /// \todo The Pythia8Backend may not be instantiated until within the loop.
-    DEPENDENCY(readiedHardScatteringSim, Pythia8Backend)
-    DEPENDENCY(readiedDetectorSim, Delphes3Backend)
     #undef FUNCTION
+  #undef CAPABILITY
 
+  #define CAPABILITY eventLoopManager
+  START_CAPABILITY
     #define FUNCTION manageVanillaLoop
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
-    DEPENDENCY(readiedHardScatteringSim, Pythia8Backend)
-    DEPENDENCY(readiedDetectorSim, Delphes3Backend)
+    DEPENDENCY(nEvents, int)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -98,6 +115,7 @@ START_MODULE
     #define FUNCTION generatePythia8Event
     START_FUNCTION(PythiaEvent)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
+    DEPENDENCY(readiedHardScatteringSim, Pythia8Backend*)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -138,6 +156,7 @@ START_MODULE
     START_FUNCTION(Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(hardScatteringEvent, PythiaEvent)
+    DEPENDENCY(readiedDetectorSim, Delphes3Backend*)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
@@ -184,7 +203,8 @@ START_MODULE
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
-    DEPENDENCY(GambitColliderEvent)
+    DEPENDENCY(GambitColliderEvent, Event)
+    DEPENDENCY(scaleFactor, double)
     #undef FUNCTION
   #undef CAPABILITY
   /// \todo How many more do we need to define...?

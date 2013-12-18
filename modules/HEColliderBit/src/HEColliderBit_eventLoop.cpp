@@ -24,10 +24,6 @@
 #include "gambit_module_headers.hpp"
 #include "HEColliderBit_eventLoop.hpp"
 
-#include "omp.h"
-#define MAIN_SHARED slhaFileName,delphesConfigFile,myDelphes
-#define MAIN_PRIVATE genEvent,recoEvent,myPythia
-
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
 // xsec calculation is ongoing.
@@ -42,18 +38,11 @@ namespace Gambit {
     /// @todo Put in actual analyses rather than a simple counter
     double counter = 0.;
 
-    /// Proper backending must wait until the class loader is ready.
-    /// Until then, let's just hard code these as local variables.
-    /// \todo Check up on the initializations of these guys.
-    /// \todo These may not actually be instantiated until within the 
-    ///       parallelized event loop....
-    Pythia8Backend* myPythia;
-    Delphes3Backend* myDelphes = new Delphes3Backend(delphesConfigFile);
-
     /// Initialization ... \todo Does Gambit call this automatically??
     void initialize()
     {
-      std::cout << "\n\n -----\n Hi there. This is HEColliderBit testing an event loop.\n\n";
+      std::cout << "\n\n -----\n Hi there. This is HEColliderBit testing";
+      std::cout << " an event loop.\n\n";
     }
 
 
@@ -64,45 +53,97 @@ namespace Gambit {
     /// *** Initialization for managers ***
     
     /// @todo Model info including SLHA will need to come from ModelBit
-    void getslhaFileName(std::string &result) { result = "sps1aWithDecays.spc"; }
+    void getslhaFileName(std::string &result)
+          { result = "sps1aWithDecays.spc"; }
 
     /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
     /// @note That means that the class loaders had better be working by then...
-    void getDelphesConfigFileName (std::string &result) { result = "delphes_card_ATLAS.tcl"; }
+    void getDelphesConfigFileName (std::string &result)
+          { result = "delphes_card_ATLAS.tcl"; }
 
     /// @todo nEvents should really depend on the xsec calculation, which again is bound to analyses
-    void getNEvents(int &result) { result = 2000; }
+    void getNEvents(int &result)
+          { result = 2000; }
+
+    /// @todo More subprocesses. For current testing, only ~g and ~q.
+    void getSubprocessGroup(SubprocessGroup &result) {
+      result = SubprocessGroup(0.6, //< xsec estimate
+                    {{1000021, 1000001, 1000002, 1000003, 1000004,
+                               2000001, 2000002, 2000003, 2000004}};
+                    {{1000021, 1000001, 1000002, 1000003, 1000004,
+                               2000001, 2000002, 2000003, 2000004}});
+      /// \todo Test boring event counter first.  Uncomment analysis later.
+      // result.add_analysis( mkAnalysis("ATLAS_0LEP") );
+    }
+
+
+    /// *** Finalization for analyses ***
+    void getScaleFactor(double &result)
+          { result = 1.5; }
+
+
+    /// *** Readied Simulation Tools ***
+    
+    /// Proper backending must wait until the class loader is ready.
+    /// Until then, let's just hard code these.
+    void readyPythiaBackend(Pythia8Backend* &result) {
+      using namespace Pipes::readyPythiaBackend;
+      result = new Pythia8Backend(omp_get_thread_num());
+      result->set("SLHA:file", *Dep::slhaFileName);
+      result->set("SUSY:idVecA", *Dep::subprocessGroup.particlesInProcess1);
+      result->set("SUSY:idVecB", *Dep::subprocessGroup.particlesInProcess2);
+    }
+
+    void readyDelphesBackend(Delphes3Backend* &result) {
+      using namespace Pipes::readyDelphesBackend;
+      result = new Delphes3Backend(*Dep::delphesConfigFileName);
+    }
 
 
     /// *** Loop Managers ***
     void manageXsecDependentLoop() {
-      using namespace Pipes::eventLoopManager;
+      using namespace Pipes::manageXsecDependentLoop;
       /// \todo Will need to remind myself how Andy's code works.
       /// \todo Check out HEColliderMain.cpp in extras folder.
+      /// \todo Delete this entire module function if vanilla loops are better.
+      std::cout<<"*** 'manageXsecDependentLoop()' was called.\n";
+      std::cout<<"    Are we still gonna do this one? I dunno...\n\n\n";
+      exit(1);
     }
 
     void manageVanillaLoop() {
-      using namespace Pipes::eventLoopManager;
-      /// \todo Fill in a simple (possibly crappy demo) event loop
+      using namespace Pipes::manageVanillaLoop;
+      std::cout<<"*** 'manageVanillaLoop()' was called. \n";
+      std::cout<<"    Now testing parallelized, Gambitized, HEColliderBit Loop.";
+      std::cout<<"\n\n\n";
+
+      #pragma omp parallel
+      {
+        #pragma omp for
+        for (int it=0; it<*Dep::nEvents; it++) {
+          Loop::executeIteration(it);
+        }
+      }
+      std::cout<<"\n\n ** Success!! ** \n\n\n";
     }
 
     /// Hard Scattering Event Generators
     void generatePythia8Event(PythiaEvent &result) {
       using namespace Pipes::generatePythia8Event;
       result.clear();
-      /// Run Pythia8
-      myPythia->nextEvent(result);
+      /// Get the next event from Pythia8
+      *Dep::readiedHardScatteringSim->nextEvent(result);
     }
 
     /// Standard Event Format Functions
     void reconstructDelphesEvent(Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
       result.clear();
-      /// Feed the Pythia8 event to Delphes
+      /// Feed the Pythia8 event to Delphes for detector simulation
       /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
       #pragma omp critical (Delphes)
       {
-        myDelphes->processEvent(*Dep::hardScatteringEvent, result);
+        *Dep::readiedDetectorSim->processEvent(*Dep::hardScatteringEvent, result);
       }
     }
 
@@ -118,20 +159,16 @@ namespace Gambit {
     // At the end, scales the result by some adjustment factor.
     void simpleCounter(double &result)
     {
-      using namespace Pipes::eventAccumulator;
-      /// \note Adjustment factors like this will probably come from outside.
-      /// \todo Thus, make it a CAPABILITY, and have this depend on it, possibly conditionally.
-      double scaleFactor = 1.5;
-
-      if (*Loop::iteration == 0)                // In the first iteration of a loop
+      using namespace Pipes::simpleCounter;
+      if (*Loop::iteration == 0)
       {
-        counter = 0.;                           // Zero the total accumulated counts
+        counter = 0.;
       }
-      #pragma omp critical (accumulator_update) // Only let one thread at a time accumulate results
+      #pragma omp critical (accumulator_update)
       {
-        counter += 1.;                          // Add one event count to the total
+        counter += 1.;
       }
-      result = counter * scaleFactor;           // Return the current, scaled total
+      result = counter * *Dep::scaleFactor;
       #pragma omp critical (print)
       { 
         cout<<"  Running simpleCounter in iteration "<<*Loop::iteration<<endl;
@@ -142,5 +179,4 @@ namespace Gambit {
     }
 
   }
-
 }
