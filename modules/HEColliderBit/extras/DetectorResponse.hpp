@@ -1,8 +1,8 @@
 #include "Particle.hpp"
 #include "TRandom.h"
 
-/// @todo Actually this whole file should be *in* namespace Gambit
-using namespace Gambit;
+namespace Gambit {
+  namespace HEColliderBit {
 
 
 // the base class of the Detector Response
@@ -64,3 +64,5 @@ double RESHAD(double e, double eta, double Caloth){
 //}
 */
 
+  }
+}

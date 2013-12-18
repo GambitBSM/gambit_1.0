@@ -43,12 +43,11 @@
 #include "FastSim.hpp"
 
 
-namespace Gambit
-{
-  namespace HEColliderBit
-  {
-    class FastSimBackend
-    {
+namespace Gambit {
+  namespace HEColliderBit {
+
+
+    class FastSimBackend {
     public:
       FastSimBackend(DetectorType detector);
       ~FastSimBackend();
@@ -93,5 +92,7 @@ namespace Gambit
       */
       // TODO: rollcall?
     };
+
+
   }
 }

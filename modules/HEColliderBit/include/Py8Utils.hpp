@@ -7,7 +7,7 @@
 
 #include "Pythia8/Pythia.h"
 
-/// @todo Replace foreach with auto?
+/// @todo Replace foreach with for-range?
 #include "boost/foreach.hpp"
 #ifndef foreach
 #define foreach BOOST_FOREACH
