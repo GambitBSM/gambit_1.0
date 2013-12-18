@@ -42,6 +42,11 @@ namespace Gambit {
         delete _pythiaInstance;
       }
 
+      /// @name Access the internal Pythia instance (non-const and const versions)
+      //@{
+      Pythia8::Pythia& py() { return *_pythiaInstance; }
+      const Pythia8::Pythia& py() const { return *_pythiaInstance; }
+      //@}
 
       /// @name Parameter setting functions
       /// @todo Throw an exception if already initialized
@@ -53,12 +58,6 @@ namespace Gambit {
       void set(const std::string& key, vector<double> val) { _pythiaInstance->settings.pvec(key, val); }
       void set(const std::string& key, vector<int> val) { _pythiaInstance->settings.mvec(key, val); }
       void set(const std::string& command) { _pythiaInstance->readString(command); }
-      //@}
-
-      /// @name Access the internal Pythia instance (non-const and const versions)
-      //@{
-      Pythia8::Pythia& py() { return *_pythiaInstance; }
-      const Pythia8::Pythia& py() const { return *_pythiaInstance; }
       //@}
 
       /// Make the next event and fill it into the supplied object
