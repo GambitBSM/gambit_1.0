@@ -244,6 +244,7 @@ int main() {
     // Record the (LO) cross-section on the analysis
     /// @todo Combine same-process xsecs on the SP group, then set on the analyses before adding SPs?
     thread_cfgs[NTHREAD].xsec = myPythia->xsec();
+    cout << "XSEC = " << myPythia->xsec() << endl;
     for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses) {
       cout << "Py8 xsec = " << myPythia->xsec() << " +- " << myPythia->xsecErr() << endl;
       ana->improve_xsec(myPythia->xsec(), myPythia->xsecErr());

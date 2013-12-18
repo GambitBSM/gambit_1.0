@@ -106,7 +106,7 @@ int main() {
       vector<PseudoJet> jets = sorted_by_pt(cseq.inclusive_jets(60));
       /// @todo Need to do e/gamma jet overlap removal... and remove prompt taus and muons
       h_njet.Fill(jets.size());
-      if (jets.size() > 1) cout << deltaPhi(pseudojet_to_vec4(jets[0]), pseudojet_to_vec4(jets[1])) << endl;
+      // if (jets.size() > 1) cout << deltaPhi(pseudojet_to_vec4(jets[0]), pseudojet_to_vec4(jets[1])) << endl;
 
 
       // Now define vectors of baseline objects
