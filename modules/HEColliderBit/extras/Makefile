@@ -62,7 +62,7 @@ HEADERS := $(UTILHEADERS) $(DELPHESHEADERS) $(ALDODETHEADERS) $(PY8HEADERS)
 ANAOBJS := Analysis_ATLAS_0LEPStop_20invfb.o Analysis_ATLAS_0LEP_XXinvfb.o Analysis_ATLAS_1LEPStop_20invfb.o \
            Analysis_ATLAS_2bStop_20invfb.o Analysis_ATLAS_2LEPStop_20invfb.o Analysis_Perf.o Analysis.o
 PY8OBJS := Pythia8Backend.o
-FASTSIMOBJS :=  FastSimBackend.o FastSim.o DetectorResponse.o
+FASTSIMOBJS := FastSimBackend.o FastSim.o DetectorResponse.o
 DELPHESOBJS := Delphes3Backend.o AbsoluteIsolation.o AbsoluteIsolation_dict.o BTaggingWithTruth.o BTaggingWithTruth_dict.o
 MT2OBJS := mt2_bisect.o
 
@@ -88,12 +88,14 @@ example-py8-bsm: example-py8-bsm.cpp $(ANAOBJS) $(MT2OBJS)
 example-py8-0lep: example-py8-0lep.cpp $(ANAOBJS) $(MT2OBJS)
 	$(CXX) $^ $(CXXFLAGS) $(BOOSTFLAGS) $(PY8FLAGS) $(FJFLAGS)  $(ROOTFLAGS) -o example-py8-0lep
 
+
 OPTFLAGS := -DQUIET #-DARCHIVE #-DMKHISTOS
 example-delphes-py8: HEColliderMain.cpp $(ANAOBJS) $(PY8OBJS) $(DELPHESOBJS) $(MT2OBJS)
-	$(CXX) $^ $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
+	$(CXX) $^ $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(ROOTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) -lEG $(OPTFLAGS) -o example-delphes-py8
 
+# TODO: remove this near-duplicate!!!
 example-MJW-stop: HEColliderMain-StopMJW.cpp $(ANAOBJS) $(PY8OBJS) $(DELPHESOBJS) $(MT2OBJS)
-	$(CXX) $^ $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(DELPHESFLAGS) $(PY8FLAGS) $(ROOTFLAGS) -lEG $(OPTFLAGS) -o example-MJW-stop
+	$(CXX) $^ $(CXXFLAGS) -fopenmp $(BOOSTFLAGS) $(BOOSTSERIALIZATION) $(ROOTFLAGS) $(DELPHESFLAGS) $(PY8FLAGS) -lEG $(OPTFLAGS) -o example-MJW-stop
 
 
 
@@ -108,13 +110,13 @@ example-fastsim-py8: HEColliderMain_FastSim_SingleThread.cpp $(ANAOBJS) $(FASTSI
 
 
 AbsoluteIsolation_dict.cc: AbsoluteIsolation.h
-	@echo "Generating dictionary from $<"
-	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
+	@echo "Generating dictionary from $^"
+	@rootcint -f AbsoluteIsolation_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external $^ AbsoluteIsolationLinkDef.h
 
 BTaggingWithTruth_dict.cc: BTaggingWithTruth.h
-	@echo "Generating dictionary from $<"
-	@rootcint -f BTaggingWithTruth_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external BTaggingWithTruth.h BTaggingWithTruthLinkDef.h
+	@echo "Generating dictionary from $^"
+	@rootcint -f BTaggingWithTruth_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external $^ BTaggingWithTruthLinkDef.h
 
 
 clean:
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.cc *_dict.h
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.cc *_dict.h *.o

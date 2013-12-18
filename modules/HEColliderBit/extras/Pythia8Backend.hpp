@@ -55,10 +55,14 @@ namespace Gambit {
       void set(const std::string& command) { _pythiaInstance->readString(command); }
       //@}
 
+      /// @name Access the internal Pythia instance (non-const and const versions)
+      //@{
+      Pythia8::Pythia& py() { return *_pythiaInstance; }
+      const Pythia8::Pythia& py() const { return *_pythiaInstance; }
+      //@}
 
       /// Make the next event and fill it into the supplied object
       void nextEvent(Pythia8::Event& event);
-
 
       /// @name Get the number of events requested / errors permitted in a run
       //@{
@@ -66,12 +70,11 @@ namespace Gambit {
       int nAborts() { return _pythiaInstance->mode("Main:timesAllowErrors"); }
       //@}
 
-
       /// @name Cross-section and error in pb
       /// @todo What will our std xsec unit be (in HEColliderBit or GAMBIT as a whole)?
       //@{
-      int xsec() { return _pythiaInstance->info.sigmaGen() * 1e9; }
-      int xsecErr() { return _pythiaInstance->info.sigmaErr() * 1e9; }
+      double xsec() { return _pythiaInstance->info.sigmaGen() * 1e9; }
+      double xsecErr() { return _pythiaInstance->info.sigmaErr() * 1e9; }
       //@}
 
 

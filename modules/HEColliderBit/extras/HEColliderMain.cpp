@@ -115,7 +115,7 @@ int main() {
 
   // For event generation
   Pythia8Backend* myPythia;
-  Delphes3Backend* myDelphes = new Delphes3Backend(delphesConfigFile);
+  Delphes3Backend* myDelphes = NULL; //AB new Delphes3Backend(delphesConfigFile);
 
   // For event storage
   Pythia8::Event genEvent;
@@ -228,7 +228,7 @@ int main() {
       // Run Delphes (not thread safe)
       #pragma omp critical
       {
-        myDelphes->processEvent(genEvent, recoEvent);
+        //AB myDelphes->processEvent(genEvent, recoEvent);
       }
 
       // Run all analyses attached to the thread
@@ -244,6 +244,7 @@ int main() {
     // Record the (LO) cross-section on the analysis
     /// @todo Combine same-process xsecs on the SP group, then set on the analyses before adding SPs?
     thread_cfgs[NTHREAD].xsec = myPythia->xsec();
+    cout << "XSEC = " << myPythia->xsec() << endl;
     for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses) {
       cout << "Py8 xsec = " << myPythia->xsec() << " +- " << myPythia->xsecErr() << endl;
       ana->improve_xsec(myPythia->xsec(), myPythia->xsecErr());

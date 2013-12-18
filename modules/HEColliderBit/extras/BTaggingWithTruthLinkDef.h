@@ -6,12 +6,12 @@
  *  $Date: 2013-04-26 12:39:14 +0200 (Fri, 26 Apr 2013) $
  *  $Revision: 1099 $
  *
- *  
+ *
  *  \author P. Demin - UCL, Louvain-la-Neuve
  *
  */
 
-#include "AbsoluteIsolation.h"
+#include "BTaggingWithTruth.h"
 
 #ifdef __CINT__
 

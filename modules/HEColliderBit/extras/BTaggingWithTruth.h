@@ -5,7 +5,7 @@
  *
  *  Determines origin of jet,
  *  applies b-tagging efficiency (miss identification rate) formulas
- *  and sets b-tagging flags 
+ *  and sets b-tagging flags
  *
  *  $Date: 2013-04-26 12:39:14 +0200 (Fri, 26 Apr 2013) $
  *  $Revision: 1099 $
@@ -43,17 +43,17 @@ private:
   Double_t fDeltaR;
 
   std::map< Int_t, DelphesFormula * > fEfficiencyMap; //!
-  
+
   BTaggingWithTruthPartonClassifier *fClassifier; //!
-  
+
   ExRootFilter *fFilter;
 
   TIterator *fItPartonInputArray; //!
-  
+
   TIterator *fItJetInputArray; //!
 
   const TObjArray *fPartonInputArray; //!
-  
+
   const TObjArray *fJetInputArray; //!
 
   ClassDef(BTaggingWithTruth, 1)
