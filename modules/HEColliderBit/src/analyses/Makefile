@@ -23,4 +23,6 @@ libGambitHEColliderAnalysis.so: $(ANAOBJS) mt2_bisect.o
 mt2_bisect.o: mt2_bisect.cpp mt2_bisect.h
 	$(CXX) -c $(CXXFLAGS) $(HEC_CXXFLAGS) -Wno-error=uninitialized -Wno-unused-but-set-variable $< -o $@
 
-# TODO: add clean
+.PHONY: clean
+clean:
+	rm *.o *.so
