@@ -18,7 +18,9 @@ namespace Gambit {
     }
 
     inline P4 pseudojet_to_p4(const fastjet::PseudoJet& p) {
-      return P4::mkXYZM(p.px(), p.py(), p.pz(), p.m());
+      const double m = p.m();
+      assert(m > -1e-3 && "Negative mass vector from FastJet");
+      return P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
     }
 
     //@}

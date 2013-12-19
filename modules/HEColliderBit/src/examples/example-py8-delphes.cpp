@@ -178,9 +178,7 @@ int main() {
         //   myDelphes->processEvent(genEvent, recoEvent);
         // }
         // or just run Pythia...
-        cout << "FOO" << endl;
         myPythia->nextEvent(recoEvent);
-        cout << "BAR" << endl;
 
         // Run all analyses attached to the thread
         for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses)

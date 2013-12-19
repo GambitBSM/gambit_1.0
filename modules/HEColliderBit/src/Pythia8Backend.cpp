@@ -89,6 +89,8 @@ namespace Gambit {
       vector<fastjet::PseudoJet> jetparticles;
       vector<fastjet::PseudoJet> bhadrons, taus;
 
+      // cout << 1 << endl;
+
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
@@ -106,6 +108,8 @@ namespace Gambit {
           gevt.add_particle(gp); // Will be automatically categorised
         }
       }
+
+      // cout << 2 << endl;
 
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
@@ -132,6 +136,8 @@ namespace Gambit {
 
       }
 
+      // cout << 3 << endl;
+
       // Jet finding
       // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
@@ -151,6 +157,8 @@ namespace Gambit {
         /// Add to the event
         gevt.addJet(new Jet(pseudojet_to_p4(pj), isB));
       }
+
+      // cout << 4 << endl;
 
       // MET (not equal to sum of prompt invisibles)
       gevt.set_missingmom(-vec4_to_p4(ptot));
