@@ -42,7 +42,7 @@ namespace Gambit {
     //@{
 
     inline double deltaPhi(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
-      return deltaPhi(a.phi(), b.phi());
+      return delta_phi(a.phi(), b.phi());
     }
 
     inline double deltaR(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {

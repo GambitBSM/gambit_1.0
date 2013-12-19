@@ -102,8 +102,8 @@ namespace Gambit {
 
 int main() {
   // Make this user code more pleasant
-  using namespace Gambit;
-  using namespace Gambit::HEColliderBit;
+  namespace GHEC = Gambit::HEColliderBit;
+  using namespace GHEC;
 
   // Basic setup
   /// @todo Model info including SLHA will need to come from ModelBit
@@ -119,7 +119,7 @@ int main() {
 
   // For event storage
   Pythia8::Event genEvent;
-  Gambit::Event recoEvent;
+  GHEC::Event recoEvent;
 
   cout << endl << "Running parallelized HECollider simulation" << endl;
 

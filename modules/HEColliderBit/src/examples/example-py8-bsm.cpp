@@ -9,8 +9,8 @@
 #include "TH1F.h"
 #include "TCanvas.h"
 
+namespace GHEC = Gambit::HEColliderBit;
 using namespace Pythia8;
-using namespace Gambit;
 using namespace fastjet;
 using namespace std;
 
@@ -91,7 +91,7 @@ int main() {
         ptot += p.p();
 
         // Choose jet constituents (should include neutrinos for ATLAS?)
-        jetparticles.push_back( vec4_to_pseudojet(p.p()) );
+        jetparticles.push_back( GHEC::vec4_to_pseudojet(p.p()) );
 
         // Identify final state electrons and muons
         /// @todo Need to determine if these are prompt: e/mu from hadron decays are not of interest
@@ -106,7 +106,7 @@ int main() {
       vector<PseudoJet> jets = sorted_by_pt(cseq.inclusive_jets(60));
       /// @todo Need to do e/gamma jet overlap removal... and remove prompt taus and muons
       h_njet.Fill(jets.size());
-      // if (jets.size() > 1) cout << deltaPhi(pseudojet_to_vec4(jets[0]), pseudojet_to_vec4(jets[1])) << endl;
+      // if (jets.size() > 1) cout << deltaPhi(GHEC::pseudojet_to_vec4(jets[0]), GHEC::pseudojet_to_vec4(jets[1])) << endl;
 
 
       // Now define vectors of baseline objects
@@ -137,10 +137,10 @@ int main() {
       //Remove any jet within dR=0.2 of an electrons
       for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
         bool overlap=false;
-        Vec4 jetVec=pseudojet_to_vec4(baselineJets.at(iJet));
+        Vec4 jetVec=GHEC::pseudojet_to_vec4(baselineJets.at(iJet));
         for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
           Vec4 elVec=baselineElectrons.at(iEl).p();
-          if (deltaR(elVec,jetVec)<0.2)overlap=true;
+          if (GHEC::deltaR(elVec,jetVec)<0.2)overlap=true;
         }
         if (!overlap)signalJets.push_back(baselineJets.at(iJet));
       }
@@ -150,8 +150,8 @@ int main() {
         bool overlap=false;
         Vec4 elVec=baselineElectrons.at(iEl).p();
         for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-          Vec4 jetVec=pseudojet_to_vec4(signalJets.at(iJet));
-          if (deltaR(elVec,jetVec)<0.4)overlap=true;
+          Vec4 jetVec=GHEC::pseudojet_to_vec4(signalJets.at(iJet));
+          if (GHEC::deltaR(elVec,jetVec)<0.4)overlap=true;
         }
         if (!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
       }
@@ -161,8 +161,8 @@ int main() {
         bool overlap=false;
         Vec4 muVec=baselineMuons.at(iMu).p();
         for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-          Vec4 jetVec=pseudojet_to_vec4(signalJets.at(iJet));
-          if (deltaR(muVec,jetVec)<0.4)overlap=true;
+          Vec4 jetVec=GHEC::pseudojet_to_vec4(signalJets.at(iJet));
+          if (GHEC::deltaR(muVec,jetVec)<0.4)overlap=true;
         }
         if (!overlap)signalMuons.push_back(baselineMuons.at(iMu));
       }
@@ -188,6 +188,9 @@ int main() {
       meff_incl+=met;
 
 
+      /// @todo Argh, these regions overlap but the same vectors are re-constructed N times for each >M jets selection!!!
+
+
       // Do 2 jet regions
 
       if (nJets>1) {
@@ -197,10 +200,10 @@ int main() {
           int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
             if (numJets>1)break;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin) {
               dPhiMin=dphi;
               numJets+=1;
@@ -224,10 +227,10 @@ int main() {
           int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
             if (numJets>2)break;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin) {
               dPhiMin=dphi;
               numJets+=1;
@@ -250,10 +253,10 @@ int main() {
           int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
             if (numJets>3)break;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin4) {
               dPhiMin4=dphi;
               numJets+=1;
@@ -263,9 +266,9 @@ int main() {
           float dPhiMin2=9999;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
@@ -290,10 +293,10 @@ int main() {
           int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
             if (numJets>3)break;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin4) {
               dPhiMin4=dphi;
               numJets+=1;
@@ -303,9 +306,9 @@ int main() {
           float dPhiMin2=9999;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }
@@ -328,10 +331,10 @@ int main() {
           int numJets=0;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
             if (numJets>3)break;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin4) {
               dPhiMin4=dphi;
               numJets+=1;
@@ -341,9 +344,9 @@ int main() {
           float dPhiMin2=9999;
           for (int iJet=0;iJet<nJets;iJet++) {
             PseudoJet jet=signalJets.at(iJet);
-            Vec4 jetVec=pseudojet_to_vec4(jet);
+            Vec4 jetVec=GHEC::pseudojet_to_vec4(jet);
             if (jet.pt()<40.) continue;
-            float dphi=deltaPhi(ptot,jetVec);
+            float dphi=GHEC::deltaPhi(ptot,jetVec);
             if (dphi<dPhiMin2) {
               dPhiMin2=dphi;
             }

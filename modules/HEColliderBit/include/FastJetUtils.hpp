@@ -35,7 +35,7 @@ namespace Gambit {
 
 
     inline double deltaPhi(const fastjet::PseudoJet& a, const fastjet::PseudoJet& b) {
-      return deltaPhi(a.phi(), b.phi());
+      return delta_phi(a.phi(), b.phi());
     }
 
 

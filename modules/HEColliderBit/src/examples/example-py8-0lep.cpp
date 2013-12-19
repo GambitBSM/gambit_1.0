@@ -10,8 +10,8 @@
 // #include "TH1F.h"
 // #include "TCanvas.h"
 
+namespace GHEC = Gambit::HEColliderBit;
 using namespace Pythia8;
-using namespace Gambit;
 using namespace fastjet;
 using namespace std;
 
@@ -55,14 +55,14 @@ int main() {
 
   py.init();
 
-  Gambit::Analysis* ana = Gambit::mkAnalysis("ATLAS_0LEP");
+  GHEC::Analysis* ana = GHEC::mkAnalysis("ATLAS_0LEP");
   ana->init();
 
   for (size_t i = 0; i < 1000; ++i) {
     if (!py.next()) continue;
     cout << py.event.size() << endl;
 
-    Gambit::Event evt;
+    GHEC::Event evt;
     fillGambitEvent(py.event, evt);
 
     ana->analyze(evt);
