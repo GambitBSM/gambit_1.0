@@ -107,8 +107,6 @@ namespace Gambit {
         }
       }
 
-      cout << "FOOF" << endl;
-
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
@@ -122,9 +120,7 @@ namespace Gambit {
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
-          cout << "A" << endl;
           Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
-          cout << "B" << endl;
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         } else {
@@ -135,8 +131,6 @@ namespace Gambit {
         }
 
       }
-
-      cout << "BARB" << endl;
 
       // Jet finding
       // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
