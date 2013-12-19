@@ -33,8 +33,7 @@ namespace Gambit {
   namespace HEColliderBit {
 
 
-    Delphes3Backend::Delphes3Backend(string configFileName)
-    {
+    Delphes3Backend::Delphes3Backend(string configFileName) {
       try {
         // To read Delphes Config File
         confReader = new ExRootConfReader();
@@ -63,8 +62,7 @@ namespace Gambit {
     }
 
 
-    Delphes3Backend::~Delphes3Backend()
-    {
+    Delphes3Backend::~Delphes3Backend() {
       try {
         // Finalization and deletion of stuff
         modularDelphes->FinishTask();
@@ -77,8 +75,7 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::processEvent(Pythia8::Event &eventIn, Event &eventOut)
-    {
+    void Delphes3Backend::processEvent(Pythia8::Event &eventIn, Event &eventOut) {
       try {
         modularDelphes->Clear();
         convertInput(eventIn);
@@ -91,8 +88,7 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::convertInput(Pythia8::Event &event)
-    {
+    void Delphes3Backend::convertInput(Pythia8::Event& event) {
 
       for (int ip = 0; ip < event.size(); ++ip) {
         const Pythia8::Particle& p = event[ip];
@@ -104,9 +100,9 @@ namespace Gambit {
         pdgCode = abs(candidate->PID);
 
         //candidate->Status = p.status();
-	//MJW changed this because it may be confusing DELPHES
+        //MJW changed this because it may be confusing DELPHES
 
-	candidate->Status=p.status();
+        candidate->Status=p.status();
 
         pdgParticle = pdg->GetParticle(p.id());
 
@@ -120,10 +116,10 @@ namespace Gambit {
         allParticleOutputArray->Add(candidate);
         if (!pdgParticle) continue;
 
-	if (p.isFinal()) {
+        if (p.isFinal()) {
           stableParticleOutputArray->Add(candidate);
         }
-	if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) {
+        if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) {
           partonOutputArray->Add(candidate);
 
         }
@@ -133,8 +129,9 @@ namespace Gambit {
 
     // ReconstructedEvent is a boring class in the HEColliderBit namespace
     // See the DelphesGambit.hpp file for details
-    void Delphes3Backend::convertOutput(Event &event)
-    {
+    void Delphes3Backend::convertOutput(Event &event) {
+      event.clear();
+
       Particle *recoParticle;
       Jet *recoJet;
       // Delphes particle arrays: Post-Detector Sim

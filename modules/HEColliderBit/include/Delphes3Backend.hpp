@@ -43,19 +43,19 @@
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
 
-namespace Gambit
-{
-  namespace HEColliderBit
-  {
-    class Delphes3Backend
-    {
+namespace Gambit {
+  namespace HEColliderBit {
+
+
+
+    class Delphes3Backend {
     public:
       Delphes3Backend(string configFileName);
       ~Delphes3Backend();
 
-      void processEvent(Pythia8::Event &eventIn, Event &eventOut);
-      void convertInput(Pythia8::Event &event);
-      void convertOutput(Event &event);
+      void processEvent(Pythia8::Event& eventIn, Event& eventOut);
+      void convertInput(Pythia8::Event& event);
+      void convertOutput(Event& event);
 
     private:
       // To read Delphes Config File
@@ -77,5 +77,7 @@ namespace Gambit
 
       // TODO: rollcall?
     };
+
+
   }
 }

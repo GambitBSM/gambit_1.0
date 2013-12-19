@@ -1,29 +1,3 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  //  ********************************************
-//  //
-//  //  For now, this is a main script for testing
-//  //  the Pythia8Backend and Delphes3Backend codes.
-//  //
-//  //  Later on, it should be converted to a module
-//  //  with a proper rollcall.
-//  //
-//  //  ********************************************
-//  //
-//  //  Authors
-//  //  =======
-//  //
-//  //  (add name and date if you modify)
-//  //
-//  //  Abram Krislock
-//  //  2013 Apr 23, Aug 30
-//  //  Aldo Saavedra
-//  //  2013 June 14
-//  //  Andy Buckley
-//  //  2013 July 20, Oct 04, Oct 20, Oct 25
-//  //
-//  //  ********************************************
-//
-//
 #include "Pythia8Backend.hpp"
 #include "Delphes3Backend.hpp"
 #include "Analysis.hpp"
@@ -42,7 +16,6 @@
 
 #include "omp.h"
 #define MAIN_SHARED slhaFileName,delphesConfigFile,myDelphes
-#define MAIN_PRIVATE genEvent,recoEvent,myPythia
 
 using namespace std;
 
@@ -68,60 +41,53 @@ namespace Gambit {
     };
 
 
-    /// @todo Should be a struct (i.e. public by default)?
-    class KFactorHooks : public Pythia8::UserHooks {
-      /// @todo once KFactorContainer is created, need to pass it in here.
-      KFactorHooks() {}
-      ~KFactorHooks() {}
+    // struct KFactorHooks : public Pythia8::UserHooks {
+    //   /// @todo once KFactorContainer is created, need to pass it in here.
+    //   KFactorHooks() {}
+    //   ~KFactorHooks() {}
 
-      // To apply the KFactors directly within Pythia, we need to modify the cross sections:
-      virtual bool canModifySigma() {return true;}
-      virtual double multiplySigmaBy(const Pythia8::SigmaProcess* sigmaProcessPtr,
-                                     const Pythia8::PhaseSpace* phaseSpacePtr, bool inEvent)
-      {
-        // Get the process code:
-        //int processCode = sigmaProcessPtr->code();
+    //   // To apply the KFactors directly within Pythia, we need to modify the cross sections:
+    //   virtual bool canModifySigma() {return true;}
+    //   virtual double multiplySigmaBy(const Pythia8::SigmaProcess* sigmaProcessPtr,
+    //                                  const Pythia8::PhaseSpace* phaseSpacePtr, bool inEvent)
+    //   {
+    //     // Get the process code:
+    //     //int processCode = sigmaProcessPtr->code();
 
-        // Each process has a different KFactor... does something like this work?
-        /// @todo this function has not been created yet....:
-        // return magicKFactor->getKFactorMagically(processCode);
-        return 1.;
-      }
+    //     // Each process has a different KFactor... does something like this work?
+    //     /// @todo this function has not been created yet....:
+    //     // return magicKFactor->getKFactorMagically(processCode);
+    //     return 1.;
+    //   }
 
-    private:
-      /// @todo this class has not been created yet....:
-      // KFactorContainer *magicKFactor;
-      /// @todo should it instead get this info from SubprocessGroup?
-      SubprocessGroup* subprocessGroup;
-    };
+    // private:
+    //   /// @todo this class has not been created yet....:
+    //   // KFactorContainer *magicKFactor;
+    //   /// @todo should it instead get this info from SubprocessGroup?
+    //   SubprocessGroup* subprocessGroup;
+    // };
 
   }
 }
 
 
+namespace GHEC = Gambit::HEColliderBit;
+using namespace GHEC;
 
 int main() {
-  // Make this user code more pleasant
-  namespace GHEC = Gambit::HEColliderBit;
-  using namespace GHEC;
 
   // Basic setup
   /// @todo Model info including SLHA will need to come from ModelBit
   const string slhaFileName = "../data/sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   /// @note That means that the class loaders had better be working by then...
-  const string delphesConfigFile = "delphes_card_ATLAS.tcl";
+  const string delphesConfigFile = "../data/delphes_card_ATLAS.tcl";
   const int NEVENTS = 2000;
 
-  // For event generation
-  Pythia8Backend* myPythia;
-  Delphes3Backend* myDelphes = NULL; //AB new Delphes3Backend(delphesConfigFile);
-
-  // For event storage
-  Pythia8::Event genEvent;
-  GHEC::Event recoEvent;
-
   cout << endl << "Running parallelized HECollider simulation" << endl;
+
+  // Global instance of Delphes, since it's not thread-safe
+  unique_ptr<Delphes3Backend> myDelphes = nullptr; //AB new Delphes3Backend(delphesConfigFile);
 
   // Subprocess group setup
   // Decide how many events of each subprocess group to use, split according to number of threads
@@ -155,7 +121,7 @@ int main() {
   for (auto& sp_group : sp_groups) {
     sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEP") );
     sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
-    // sp_group.second.add_analysis( mkAnalysis("ATLAS_1LEPStop_20invfb") );
+    // sp_group.second.add_analysis( mkAnalysis("ATLAS_1LEPStop_20invfb") ); //< buggy: segfaults in finalize
     sp_group.second.add_analysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
     sp_group.second.add_analysis( mkAnalysis("ATLAS_2bStop_20invfb") );
   }
@@ -196,11 +162,11 @@ int main() {
   omp_set_num_threads(NUM_THREADS);
   cout << "Total target number of events = " << NEVENTS << endl;
 
-  #pragma omp parallel shared(MAIN_SHARED) private(MAIN_PRIVATE) num_threads(NUM_THREADS)
+  #pragma omp parallel shared(MAIN_SHARED) num_threads(NUM_THREADS)
   {
     // Py8 backend process configuration
     const int NTHREAD = omp_get_thread_num();
-    myPythia = new Pythia8Backend(NTHREAD);
+    unique_ptr<Pythia8Backend> myPythia( new Pythia8Backend(NTHREAD) );
     myPythia->set("SLHA:file", slhaFileName);
     myPythia->set("SUSY:idVecA", thread_cfgs[NTHREAD].particlesInProcess1);
     myPythia->set("SUSY:idVecB", thread_cfgs[NTHREAD].particlesInProcess2);
@@ -217,19 +183,18 @@ int main() {
 
     // Run the event loop
     int counter = 0;
+    GHEC::Event recoEvent;
     assert(thread_cfgs[NTHREAD].nevts > 0);
     for (counter = 0; counter < thread_cfgs[NTHREAD].nevts; counter++) {
-      genEvent.clear();
-      recoEvent.clear();
-
-      // Run Pythia8
-      myPythia->nextEvent(genEvent);
-
-      // Run Delphes (not thread safe)
-      #pragma omp critical
-      {
-        //AB myDelphes->processEvent(genEvent, recoEvent);
-      }
+      // // Run Pythia8 and run Delphes (not thread safe)
+      // Pythia8::Event genEvent;
+      // myPythia->nextEvent(genEvent);
+      // #pragma omp critical
+      // {
+      //   myDelphes->processEvent(genEvent, recoEvent);
+      // }
+      // or just run Pythia...
+      myPythia->nextEvent(recoEvent);
 
       // Run all analyses attached to the thread
       for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses)
@@ -257,7 +222,6 @@ int main() {
     #ifdef ARCHIVE
     outFile.close();
     #endif
-    delete myPythia;
   } // end omp parallel block
 
 
@@ -284,6 +248,5 @@ int main() {
     cout << a.first << ": log likelihood = " << a.second->loglikelihood() << endl;
   }
 
-  delete myDelphes;
   return 0;
 }

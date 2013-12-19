@@ -18,7 +18,7 @@ namespace Gambit {
     }
 
     inline P4 pseudojet_to_p4(const fastjet::PseudoJet& p) {
-      return P4(p.px(), p.py(), p.pz(), p.e());
+      return P4::mkXYZM(p.px(), p.py(), p.pz(), p.m());
     }
 
     //@}
