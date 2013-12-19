@@ -148,16 +148,16 @@ int main() {
                                2000001, 2000002, 2000003, 2000004}},
                     {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
 
-  // Stop processes
+  // // Stop processes
   // sp_groups["t~"] = SubprocessGroup(1, {{1000006}},{{ 1000006}});
 
   // Bind subprocesses to analysis pointers
   for (auto& sp_group : sp_groups) {
     sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEP") );
-    // sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
+    sp_group.second.add_analysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
     // sp_group.second.add_analysis( mkAnalysis("ATLAS_1LEPStop_20invfb") );
-    // sp_group.second.add_analysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
-    // sp_group.second.add_analysis( mkAnalysis("ATLAS_2bStop_20invfb") );
+    sp_group.second.add_analysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
+    sp_group.second.add_analysis( mkAnalysis("ATLAS_2bStop_20invfb") );
   }
 
 
