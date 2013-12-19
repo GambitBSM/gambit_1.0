@@ -45,7 +45,7 @@ int main() {
 
   // pycfg.flag("SUSY:qg2squarkgluino", true);
   pycfg.flag("SUSY:all", true);
-  pycfg.word("SLHA:file", "sps1aWithDecays.spc");
+  pycfg.word("SLHA:file", "../data/sps1aWithDecays.spc");
 
   // pycfg.flag("WeakSingleBoson:ffbar2gmZ", true);
   // pycfg.flag("23:onMode", false);

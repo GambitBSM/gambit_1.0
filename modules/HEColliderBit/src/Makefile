@@ -29,11 +29,11 @@ example-py8-delphes: examples/example-py8-delphes.o Pythia8Backend.o Delphes3Bac
 	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(BOOST_LDFLAGS) $(ROOT_LDFLAGS) $(DELPHES_LDFLAGS) $(PY8_LDFLAGS) -lEG $(OPTFLAGS) -fopenmp -o $@
 
 
-# Basic example of running Py8 and a hard-coded analysis: remove!
+# Basic example of running OpenMP Py8 and a hard-coded analysis: remove!
 example-py8-bsm: examples/example-py8-bsm.o
 	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -fopenmp -o $@
 
-# Basic example of running Py8 and using a hard-coded version of the ATLAS 0LEP analysis: remove!
+# Basic example of running OpenMP Py8 and using a hard-coded version of the ATLAS 0LEP analysis: remove!
 example-py8-0lep: examples/example-py8-0lep.o
 	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -fopenmp -o $@
 

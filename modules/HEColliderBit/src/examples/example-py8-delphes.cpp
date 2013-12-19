@@ -107,7 +107,7 @@ int main() {
 
   // Basic setup
   /// @todo Model info including SLHA will need to come from ModelBit
-  const string slhaFileName = "sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
+  const string slhaFileName = "../data/sps1aWithDecays.spc"; //"mhmodBenchmark.slha";
   /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
   /// @note That means that the class loaders had better be working by then...
   const string delphesConfigFile = "delphes_card_ATLAS.tcl";
