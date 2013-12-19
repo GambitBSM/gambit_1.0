@@ -62,6 +62,7 @@ DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
 BOOST_CXXFLAGS := -I$(BOOST)
 BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
 
+ANA_LDFLAGS := -Lanalysis -lGambitHEColliderAnalysis
 
 ###################
 ## Other useful variables for make rules
