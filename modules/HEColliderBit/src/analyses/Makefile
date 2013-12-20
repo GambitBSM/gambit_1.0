@@ -1,5 +1,7 @@
 include ../Makefile.common
 
+HEADERS := $(wildcard ../../include/*.hpp)
+
 ANAOBJS := Analysis.o \
   Analysis_ATLAS_0LEPStop_20invfb.o \
   Analysis_ATLAS_0LEP_XXinvfb.o \
@@ -8,15 +10,10 @@ ANAOBJS := Analysis.o \
   Analysis_ATLAS_2LEPStop_20invfb.o \
   Analysis_Perf.o
 
-#.PHONY = all clean
-
-#all: libGambitHEColliderAnalysis.so
-#	@true
-
 libGambitHEColliderAnalysis.so: $(ANAOBJS) mt2_bisect.o
 	$(CXX) -shared $(LDFLAGS) $(HEC_LDFLAGS) $(BOOST_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -lm $^ -o $@
 
-%.o : %.cpp
+%.o : %.cpp $(HEADERS)
     # TODO: get rid of the ROOT usage in all the analyses
 	$(CXX) -c $< -I../../include $(HEC_CXXFLAGS) -DQUIET $(BOOST_CXXFLAGS) $(FJ_CXXFLAGS) $(ROOT_CXXFLAGS) -o $@
 
