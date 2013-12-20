@@ -14,7 +14,7 @@ Milestones until March 2014 meeting:
     Jokaim]
     - Discuss right format for gamma-ray spectrum (Dec. + Jan.)
     - Implementation of gamma-ray yields (Jan.)
-    - Discussion + implementation of neutrino yields (Feb. + Mar.)
+    - Discussion + implementation of neutrino yields (Feb. + Mar.) [with Pat]
 
 3. Parametrizations of generalized halos, J-factors + gamma-ray 'propagation
     routines' [Christoph + Lars]
@@ -27,6 +27,11 @@ Milestones until March 2014 meeting:
 5. direct detection routines [Chris]
     - backending aspects of Chris' direct detection code (Mar.)
 
-6. IceCube likelihoods [Pat] (until Mar.?)
+6. IceCube likelihoods [Pat] (until March meeting)
 
 7. CMB + Fermi likelihoods (simplified) [Christoph] (until or after Mar.)
+
+
+During the discussion, general help was offered by: 
+Jonathan (in general), Torsten for DS backending questions, Pat + Christoph for
+integration into GAMBIT in general
