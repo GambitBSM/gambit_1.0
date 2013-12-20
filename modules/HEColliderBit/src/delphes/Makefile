@@ -5,7 +5,7 @@ include ../Makefile.common
 libGambitHEColliderDelphes.so: AbsoluteIsolation.o  AbsoluteIsolation_dict.o BTaggingWithTruth.o BTaggingWithTruth_dict.o
 	$(CXX) -shared $(LDFLAGS) $(HEC_LDFLAGS) $^ $(ROOT_LDFLAGS) $(DELPHES_LDFLAGS) -o $@
 
-%.o : %.cc $(HEADERS)
+%.o : %.cc
 	$(CXX) -c $< $(CXXFLAGS) $(HEC_CXXFLAGS) -fopenmp $(ROOT_CXXFLAGS) $(DELPHES_CXXFLAGS) -o $@
 
 AbsoluteIsolation_dict.cc: AbsoluteIsolation.h AbsoluteIsolationLinkDef.h
@@ -17,4 +17,4 @@ BTaggingWithTruth_dict.cc: BTaggingWithTruth.h BTaggingWithTruthLinkDef.h
 	@rootcint -f BTaggingWithTruth_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external $^
 
 clean:
-	rm *.o *.so
+	rm -f *_dict.cc *_dict.h *_rdict.pcm *.o *.so

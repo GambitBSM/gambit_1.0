@@ -4,7 +4,9 @@ include Makefile.common
 FASTSIMOBJS := FastSimBackend.o FastSim.o DetectorResponse.o
 
 ANA_LIB := analyses/libGambitHEColliderAnalysis.so
-DELPHES_LIB := delphes/libGambitHEColliderDelphes.so
+DELPHES_LIB := delphes/AbsoluteIsolation_dict.o  delphes/AbsoluteIsolation.o  delphes/BTaggingWithTruth_dict.o  delphes/BTaggingWithTruth.o
+# TODO: why doesn't the below work??
+#DELPHES_LIB := delphes/libGambitHEColliderDelphes.so
 OPTFLAGS := -DQUIET #-DARCHIVE #-DMKHISTOS
 
 .PHONY: all clean sterile
@@ -30,38 +32,38 @@ $(DELPHES_LIB):
 # Running Pythia8 and Delphes through some analyses with backend/analysis factory machinery and OpenMP thread groups
 example-py8-delphes: examples/example-py8-delphes.o Pythia8Backend.o Delphes3Backend.o $(ANA_LIB) $(DELPHES_LIB)
 	@echo "    Building $@ ..."
-	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(BOOST_LDFLAGS) $(ROOT_LDFLAGS) $(DELPHES_LDFLAGS) $(PY8_LDFLAGS) -lEG $(OPTFLAGS) -fopenmp -o $@
+	$(CXX) -lm $^ $(BOOST_LDFLAGS) $(ROOT_LDFLAGS) $(DELPHES_LDFLAGS) $(PY8_LDFLAGS) -lEG $(OPTFLAGS) -fopenmp -o $@
 
 
 # Basic example of running OpenMP Py8 and a hard-coded analysis: remove!
-example-py8-bsm: examples/example-py8-bsm.o
+example-py8-bsm: examples/example-py8-bsm.o $(ANA_LIB) 
 	@echo "    Building $@ ..."
-	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -fopenmp -o $@
+	$(CXX) -lm $^ $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -fopenmp -o $@
 
 # Basic example of running OpenMP Py8 and using a hard-coded version of the ATLAS 0LEP analysis: remove!
-example-py8-0lep: examples/example-py8-0lep.o
+example-py8-0lep: examples/example-py8-0lep.o $(ANA_LIB) 
 	@echo "    Building $@ ..."
-	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -fopenmp -o $@
+	$(CXX) -lm $^ $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -fopenmp -o $@
 
 
 # The simplest example of fastsim
-example-fastsim: examples/example-fastsim.o $(FASTSIMOBJS)
+example-fastsim: examples/example-fastsim.o $(FASTSIMOBJS) $(ANA_LIB) 
 	@echo "    Building $@ ..."
-	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -lm -o $@
+	$(CXX) -lm $^ $(BOOST_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -lm -o $@
 
 # A HECollider example interfaced to FastSim and Pythia8 using the respective backends (reads cmndpythia_zee.cmnd)
-example-fastsim-py8: examples/example-fastsim-py8.o $(FASTSIMOBJS) $(PY8OBJS)
+example-fastsim-py8: examples/example-fastsim-py8.o $(FASTSIMOBJS) $(PY8OBJS) $(ANA_LIB) 
 	@echo "    Building $@ ..."
-	$(CXX) -lm $^ $(ANA_LIB) $(BOOST_LDFLAGS) $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -lEG -o $@
+	$(CXX) -lm $^ $(BOOST_LDFLAGS) $(PY8_LDFLAGS) $(FJ_LDFLAGS) $(ROOT_LDFLAGS) -lEG -o $@
 
 
 clean:
 	@echo "    Cleaning this directory..."
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.* *_rdict.pcm *.o
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-py8-delphes tester_thread* *.o
 
 sterile:
 	@echo "    Cleaning all directories..."
-	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-delphes-py8 tester_thread* *_dict.* *_rdict.pcm *.o
+	@rm -f example-fastsim example-fastsim-py8 example-py8-bsm example-py8-0lep example-py8-delphes tester_thread* *.o
 	@cd analyses && make clean
 	@cd delphes && make clean
 # TODO:

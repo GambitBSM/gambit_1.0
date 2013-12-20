@@ -25,4 +25,4 @@ mt2_bisect.o: mt2_bisect.cpp mt2_bisect.h
 
 .PHONY: clean
 clean:
-	rm *.o *.so
+	rm -f *.o *.so

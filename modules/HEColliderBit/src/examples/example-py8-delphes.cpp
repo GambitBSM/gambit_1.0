@@ -16,7 +16,7 @@
 #endif
 
 #include "omp.h"
-#define MAIN_SHARED slhaFileName,delphesConfigFile,myDelphes
+#define MAIN_SHARED slhaFileName,myDelphes
 
 using namespace std;
 
@@ -87,7 +87,7 @@ int main() {
   cout << endl << "Running parallelized HECollider simulation for " << NUM_EVENTS << " events" << endl;
 
   // Global instance of Delphes, since it's not thread-safe
-  shared_ptr<Delphes3Backend> myDelphes;//(new Delphes3Backend(delphesConfigFile));
+  shared_ptr<Delphes3Backend> myDelphes(new Delphes3Backend(delphesConfigFile));
 
   // Subprocess group setup
   /// Decide how many events of each subprocess group to use, from interpolated NLO subprocess cross-sections
@@ -171,14 +171,12 @@ int main() {
       GHEC::Event recoEvent;
       for (int counter = 0; counter < sp_num_events_per_thread; counter++) {
         // // Run Pythia8 and run Delphes (not thread safe)
-        // Pythia8::Event genEvent;
-        // myPythia->nextEvent(genEvent);
-        // #pragma omp critical
-        // {
-        //   myDelphes->processEvent(genEvent, recoEvent);
-        // }
-        // or just run Pythia...
-        myPythia->nextEvent(recoEvent);
+        Pythia8::Event genEvent;
+        myPythia->nextEvent(genEvent);
+        #pragma omp critical
+        {
+          myDelphes->processEvent(genEvent, recoEvent);
+        }
 
         // Run all analyses attached to the thread
         for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses)
