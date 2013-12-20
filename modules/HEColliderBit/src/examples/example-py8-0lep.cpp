@@ -63,7 +63,7 @@ int main() {
     cout << py.event.size() << endl;
 
     GHEC::Event evt;
-    fillGambitEvent(py.event, evt);
+    GHEC::fillGambitEvent(py.event, evt);
 
     ana->analyze(evt);
   }
