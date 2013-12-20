@@ -7,10 +7,12 @@ ifndef PYTHIA8
     PYTHIA8 := $(PY8DIR)
   endif
 endif
-ifdef PYTHIA8
-  $(info Pythia8 path = $(PYTHIA8))
-else
-  $(warning $$PYTHIA8DIR or $$PY8DIR variable not defined)
+ifndef SHH
+  ifdef PYTHIA8
+    $(info Pythia8 path = $(PYTHIA8))
+  else
+    $(warning $$PYTHIA8DIR or $$PY8DIR variable not defined)
+  endif
 endif
 #$(info Pythia version = $(shell cat `pythia8-config --xmldoc`/Version.xml | grep versionNumber | cut -d'"' -f4))
 
@@ -20,19 +22,23 @@ ifndef DELPHES
     DELPHES := $(DELPSDIR)
   endif
 endif
-ifdef DELPHES
-  $(info Delphes path = $(DELPHES))
-else
-  $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+ifndef SHH
+  ifdef DELPHES
+    $(info Delphes path = $(DELPHES))
+  else
+    $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+  endif
 endif
 
 ifndef BOOST
   BOOST := $(BOOSTDIR)
 endif
-ifdef BOOST
-  $(info Boost path = $(BOOST))
-else
-  $(warning $$BOOSTDIR variable not defined)
+ifndef SHH
+  ifdef BOOST
+    $(info Boost path = $(BOOST))
+  else
+    $(warning $$BOOSTDIR variable not defined)
+  endif
 endif
 
 ## Checks for the existence of libboost_serialization
