@@ -7,7 +7,7 @@
 ///  model or backend as the results of their
 ///  externally-accessible functions.  Also
 ///  other classes, typedefs, etc that are used
-///  internall in more than one module, model or
+///  internally in more than one module, model or
 ///  backend.
 ///
 ///  *********************************************
@@ -17,6 +17,10 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
+///
+///  \author Abram Krislock
+///          (abram.krislock@fysik.su.se)
+///  \date 2013 Dec
 ///
 ///  *********************************************
 

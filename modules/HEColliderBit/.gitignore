@@ -1,0 +1,6 @@
+*.root
+*.o
+*~
+example-py8-delphes
+example-py8-0lep
+example-py8-bsm
