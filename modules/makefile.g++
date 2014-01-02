@@ -23,7 +23,7 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib
 # Another option would be to wrap the gambit executables in shell scripts which set local enironment variables appropriately before actually running gambit.
 
 CC = g++ 
-LNFLAGS =  -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS += -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
 
 FC = gfortran
 CCEXTRA= -pipe -pg -Wextra -g 

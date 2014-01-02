@@ -9,7 +9,7 @@
 export
 
 LN = $(CC)
-CFLAGS = -O3 -Wall -g -fopenmp -std=c++0x
+CFLAGS = -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
 FFLAGS = -O3 -fPIC
 
 ######################################################
@@ -34,6 +34,35 @@ FLAVDIR = FlavBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
 
+# Location of external libraries used in HEColliderBit
+# TODO: once the class-loader is ready, will these still be needed?
+
+ifndef DELPHES
+  DELPHES := $(DELPHESDIR)
+  ifndef DELPHES
+    DELPHES := $(DELPSDIR)
+  endif
+endif
+ifndef SHH
+  ifdef DELPHES
+    $(info Delphes path = $(DELPHES))
+  else
+    $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+  endif
+endif
+
+ifndef BOOST
+  BOOST := $(BOOSTDIR)
+endif
+ifndef SHH
+  ifdef BOOST
+    $(info Boost path = $(BOOST))
+  else
+    $(warning $$BOOSTDIR variable not defined... Using ./ instead.)
+  endif
+endif
+
+
 # Boost is required. Read README for details
 ifdef BOOST
 BOOSTINC=$(BOOST)
@@ -43,10 +72,30 @@ BOOST=./
 export BOOST
 endif
 
-GCC++EXTRA=-Woverloaded-virtual
+# External code specific flags
+PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)
+PY8_LDFLAGS := $(shell pythia8-config --libs)
+
+FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+FJ_LDFLAGS := $(shell fastjet-config --libs)
+
+ROOT_CXXFLAGS := $(shell root-config --cflags)
+ROOT_LDFLAGS := $(shell root-config --libs)
+
+DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
+DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
+
+BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
+
 CFLAGS += -O0 $(COMPOPTS) \
-	-I$(BOOSTINC) \
-	-I$(COREDIR)/include \
+					-I$(BOOSTINC) \
+					$(PY8_CXXFLAGS) \
+					$(FJ_CXXFLAGS) \
+					$(ROOT_CXXFLAGS) \
+					$(DELPHES_CXXFLAGS)
+
+GCC++EXTRA=-Woverloaded-virtual
+CFLAGS += -I$(COREDIR)/include \
 	-I$(MODELDIR)/include -I$(MODELDIR)/include/models \
 	-I$(UTILSDIR)/include \
 	-I$(SCANDIR)/include \
@@ -62,7 +111,12 @@ CFLAGS += -O0 $(COMPOPTS) \
 	-IFlavBit/include \
 	-I$(YAMLDIR)/include
 
-COMMONLIBS = -lm
+LNFLAGS = $(PY8_LDFLAGS) \
+					$(FJ_LDFLAGS) \
+					$(ROOT_LDFLAGS) \
+					$(DELPHES_LDFLAGS) \
+					$(BOOST_LDFLAGS)
+
 
 # beb_tester from makefile.test_backend
 TARGETS = gambit_example beb_tester gambit_example_minimal
