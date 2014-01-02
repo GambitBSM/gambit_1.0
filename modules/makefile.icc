@@ -21,7 +21,7 @@ distclean: clean
 
 $(YAMLDIR)/yaml-cpp.a:
 	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make -f makefile.icc
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=icc
 
 
 

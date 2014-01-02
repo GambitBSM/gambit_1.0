@@ -37,7 +37,7 @@ distclean: clean
 
 $(YAMLDIR)/yaml-cpp.a:
 	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make -f makefile.g++
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=g++ 
 
 #libmultinest_interface.so:
 multinest:
