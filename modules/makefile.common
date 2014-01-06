@@ -8,8 +8,20 @@
 
 export
 
+# set SHH to anything to make the output less verbose
+# SHH = stfu
+ifndef SHH
+  $(info )
+  $(info -------- Gambit main compilation --------)
+  $(info )
+endif
+
 LN = $(CC)
-CFLAGS = -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
+ifdef SHH
+  CFLAGS = -O3 -g -fPIC -fopenmp -std=c++0x
+else
+  CFLAGS = -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
+endif
 FFLAGS = -O3 -fPIC
 
 ######################################################
@@ -43,12 +55,15 @@ ifndef DELPHES
     DELPHES := $(DELPSDIR)
   endif
 endif
-ifndef SHH
-  ifdef DELPHES
+ifdef DELPHES
+  ifndef SHH
+    $(info INFO:)
     $(info Delphes path = $(DELPHES))
-  else
-    $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+    $(info )
   endif
+else
+  $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+  $(error Dependency error....)
 endif
 
 ifndef BOOST
@@ -56,9 +71,11 @@ ifndef BOOST
 endif
 ifndef SHH
   ifdef BOOST
+    $(info INFO:)
     $(info Boost path = $(BOOST))
+    $(info )
   else
-    $(warning $$BOOSTDIR variable not defined... Using ./ instead.)
+    $(warning $$BOOSTDIR variable not defined... Trying ./ instead.)
   endif
 endif
 
@@ -76,11 +93,60 @@ endif
 PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)
 PY8_LDFLAGS := $(shell pythia8-config --libs)
 
+ifndef PY8_CXXFLAGS
+  $(info ***!!!***)
+  $(info Pythia compile flags failed to configure.)
+  $(info Please include /where/pythia/is/bin in your $$PATH variable.)
+  $(info You may also need to include /where/pythia/is/lib in your)
+  $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
+  $(error Dependency error....)
+else
+  ifndef SHH
+    $(info INFO:)
+    $(info -- Pythia8 Flags --)
+    $(info Compile > $(PY8_CXXFLAGS))
+    $(info Link    > $(PY8_LDFLAGS))
+    $(info )
+  endif
+endif
+
 FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
 FJ_LDFLAGS := $(shell fastjet-config --libs)
 
+ifndef FJ_CXXFLAGS
+  $(info ***!!!***)
+  $(info Fastjet compile flags failed to configure.) 
+  $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
+  $(info You may also need to include /where/fastjet/is/lib in your)
+  $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
+  $(error Dependency error....)
+else
+  ifndef SHH
+    $(info INFO:)
+    $(info -- Fastjet Flags --)
+    $(info Compile > $(FJ_CXXFLAGS))
+    $(info Link    > $(FJ_LDFLAGS))
+    $(info )
+  endif
+endif
+
 ROOT_CXXFLAGS := $(shell root-config --cflags)
 ROOT_LDFLAGS := $(shell root-config --libs)
+
+ifndef ROOT_CXXFLAGS
+  $(info ***!!!***)
+  $(info ROOT compile flags failed to configure.) 
+  $(info Please use the 'thisroot' shell script from your ROOT installation.)
+  $(error Dependency error....)
+else
+  ifndef SHH
+    $(info INFO:)
+    $(info -- ROOT Flags --)
+    $(info Compile > $(ROOT_CXXFLAGS))
+    $(info Link    > $(ROOT_LDFLAGS))
+    $(info )
+  endif
+endif
 
 DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
 DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
