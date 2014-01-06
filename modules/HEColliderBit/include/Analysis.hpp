@@ -38,7 +38,7 @@ namespace Gambit {
       /// Analyze the event (accessed by pointer)
       /// @todo Call init() automatically on first call to analyze()? -- requires a bit of indirection: not worth it?
       /// @todo Needs to be called from Derived::analyze()
-      virtual void analyze(const Event* e) {
+      virtual void analyze(const Event*) {
         _ntot += 1; //< @todo Event weight support needed?
       }
 
@@ -76,7 +76,7 @@ namespace Gambit {
       /// @note We don't use operator += because it's awkward with pointer l/rvalues
       /// @todo Put some real implementation in the base class, e.g. checking
       ///       ana name consistency... or make it pure virtual (once anas are updated).
-      virtual void add(const Analysis* a) { } //= 0;
+      virtual void add(const Analysis*) { } //= 0;
       /// Reference-based version of add()
       void add(const Analysis& a) { add(&a); }
 
