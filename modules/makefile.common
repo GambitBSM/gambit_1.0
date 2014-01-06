@@ -131,10 +131,18 @@ clean:
 	@echo cleaning
 	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -f _*.txt
+	@rm -f *.gv
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)
 .PHONY: clean
+
+# also removes ~ files and other weirdly generated files
+distclean: clean
+	cd contrib/yaml-cpp-0.5.1; make clean
+	rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
+.PHONY: distclean
+
 
 $(COREDIR)/build/.minihelp:
 	@echo "*******************************************"

@@ -29,12 +29,6 @@ FC = gfortran
 CCEXTRA= -pipe -pg -Wextra -g 
 CFLAGS += -I$(MULTINESTINC)
 
-# also removes ~ files and other weirdly generated files
-distclean: clean
-	cd contrib/yaml-cpp-0.5.1; make -f makefile.g++ clean
-	rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
-.PHONY: distclean
-
 $(YAMLDIR)/yaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=g++ 
