@@ -16,6 +16,9 @@ OPTFLAGS := -DQUIET #-DARCHIVE #-DMKHISTOS
 all: example-py8-delphes example-py8-bsm example-py8-0lep #example-fastsim example-fastsim-py8
 	@true
 
+backends: Pythia8Backend.o Delphes3Backend.o $(ANA_LIB) $(DELPHES_LIB)
+	@true
+
 $(ANA_LIB): $(HEADERS)
 	@echo "\n****\nNow building the analyses...\n****\n"
 	@cd analyses && make

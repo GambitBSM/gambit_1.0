@@ -40,6 +40,7 @@ Messaging:
 * Write printer functions for all common functor types and print streams (**Hopefully happens a bit on its own as the two points above get dealt with**)
 
 General:
+* Until automake and cmake are done, may want to make more "makefile.common" files for readability (**Abram; after getting things compiling again.**)
 * Experiment with automake and cmake for build (**Antje to update automake system to current master; Ben, Pat, Chistoph + others to test; Antje to merge into master before G3. Cmake to be left for after G3.**)
 * Create mini-core for module stand-alone releases (**Pat; before G3**)
 * Implement standalone compilation of physics modules (**Pat; before G3**)

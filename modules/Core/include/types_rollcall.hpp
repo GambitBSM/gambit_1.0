@@ -104,6 +104,8 @@
 
 // Include the modules' own types
 #include "DarkBit_types.hpp"
-#include "HEColliderBit_types.hpp"
+#ifdef COLLIDE
+  #include "HEColliderBit_types.hpp"
+#endif
 
 #endif /* defined __types_rollcall_hpp__ */

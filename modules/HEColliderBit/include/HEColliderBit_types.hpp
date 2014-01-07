@@ -64,3 +64,5 @@ namespace Gambit {
 
  }
 }
+
+#endif /* defined __HEColliderBit_types_hpp__ */

@@ -7,12 +7,6 @@
 
 #include "Pythia8/Pythia.h"
 
-/// @todo Replace foreach with for-range?
-#include "boost/foreach.hpp"
-#ifndef foreach
-#define foreach BOOST_FOREACH
-#endif
-
 
 namespace Gambit {
   namespace HEColliderBit {
@@ -71,7 +65,7 @@ namespace Gambit {
       if (abs(p.id()) == 5 || PID::hasBottom(p.id())) return true;
       /// @todo What about partonic decays?
       if (p.isParton()) return false; // stop the walking at hadron level
-      foreach (int m, evt.motherList(n)) {
+      for (int m : evt.motherList(n)) {
         if (fromBottom(m, evt)) return true;
       }
       return false;
@@ -83,7 +77,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 15) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      foreach (int m, evt.motherList(n)) {
+      for (int m : evt.motherList(n)) {
         if (fromTau(m, evt)) return true;
       }
       return false;
@@ -95,7 +89,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       if (p.isHadron()) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      foreach (int m, evt.motherList(n)) {
+      for (int m : evt.motherList(n)) {
         if (fromHadron(m, evt)) return true;
       }
       return false;
@@ -112,7 +106,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       //assert(!p.isParton());
       if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
-      foreach (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (evt[m].isFinal()) {
           rtn.push_back(m);
         } else {
@@ -126,7 +120,7 @@ namespace Gambit {
       // *This* particle must be a b or b-hadron
       if (!PID::hasBottom(evt[n].id())) return false;
       // Daughters must *not* include a b or b-hadron
-      foreach (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (PID::hasBottom(evt[m].id())) return false;
       }
       return true;
@@ -137,7 +131,7 @@ namespace Gambit {
       // *This* particle must be a tau
       if (abs(evt[n].id()) != 15) return false;
       // Daughters must *not* include a tau
-      foreach (int m, evt.daughterList(n)) {
+      for (int m : evt.daughterList(n)) {
         if (abs(evt[m].id()) == 15) return false;
       }
       return true;
@@ -228,10 +222,10 @@ namespace Gambit {
       vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       // Do jet b-tagging, etc. and add to the Event
-      foreach (const fastjet::PseudoJet& pj, pjets) {
+      for (auto& pj : pjets) {
         /// @todo Use ghost tagging! For fun...
         bool isB = false;
-        foreach (const fastjet::PseudoJet& pb, bhadrons) {
+        for (auto& pb : bhadrons) {
           if (pj.delta_R(pb) < 0.3) {
             isB = true;
             break;
