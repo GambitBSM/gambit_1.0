@@ -31,6 +31,7 @@
 import os
 import re
 import datetime
+import sys
 
 # No empties from re.split
 def neatsplit(regex,string):
@@ -82,6 +83,9 @@ def addiffunctormacro(line,module,typeset,typeheaders):
         #This line defines a function, so the first argument defines a candidate type
         candidate_type = splitline[1]
         #Now check if the type is declared in any of the module type headers (not very efficient, but simple)
+        # FIXME: what if that type is -not- declared?? The harvester is finding dummy types which are commented out
+        #        in HEColliderBit_rollcall.hpp and -not- defined in any header. It causes the compilation to crash.
+        #        Please fix. I would, but I'm not sure I wouldn't break the harvester...  --Abram
         for header in typeheaders:
             local_namespace = ""
             with open(header) as f:
@@ -97,7 +101,11 @@ def addiffunctormacro(line,module,typeset,typeheaders):
 
 # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
 # but are included in module_rollcall.hpp or types_rollcall.hpp)
-exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
+if len(sys.argv) > 1 and sys.argv[1] == 'smashCrashBashBangBoom':
+  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
+else:
+  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
+
 # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
 exclude_type=set(["void"])
 

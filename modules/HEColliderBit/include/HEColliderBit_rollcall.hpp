@@ -211,4 +211,7 @@ START_MODULE
   #undef CAPABILITY
   /// \todo How many more do we need to define...?
 
+#undef MODULE
+
+
 #endif /* defined __HEColliderBit_rollcall_hpp__ */

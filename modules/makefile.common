@@ -9,10 +9,28 @@
 export
 
 # set SHH to anything to make the output less verbose
-# SHH = stfu
+# NOTE: You can do so on the command line:
+#       make -f makefile.xxx SHH=whatever
+ifdef SHH
+  SHH = stfu
+endif
+
+# set COLLIDE to anything to also include HEColliderBit compilation
+# NOTE: You can do so on the command line:
+#       make -f makefile.xxx COLLIDE=whatever
+# TODO: Once this works for everyone (or, once the class loader is ready and 
+#       we need to completely change the way HEColliderBit compiles), then
+#       we should get rid of this flag entirely.
+ifdef COLLIDE
+  COLLIDE = smashCrashBashBangBoom
+endif
+
 ifndef SHH
   $(info )
   $(info -------- Gambit main compilation --------)
+  ifdef COLLIDE
+    $(info *** Including HEColliderBit ***)
+  endif
   $(info )
 endif
 
@@ -32,7 +50,10 @@ FFLAGS = -O3 -fPIC
 # There are also in-code options, but this could potentially lead to
 # a speedup and smaller code. -1000 allows all log messages to be treated.
 #
-COMPOPTS= -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
+COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
+ifdef COLLIDE
+  COMPOPTS += -DCOLLIDE=smashCrashBashBangBoom
+endif
 
 # Location of gambit sub-directories
 COREDIR = Core
@@ -63,7 +84,11 @@ ifdef DELPHES
   endif
 else
   $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
-  $(error Dependency error....)
+  ifdef COLLIDE
+    $(error HEColliderBit dependency error....)
+  else
+    $(info Be sure to set that variable when compiling HEColliderBit)
+  endif
 endif
 
 ifndef BOOST
@@ -94,12 +119,16 @@ PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)
 PY8_LDFLAGS := $(shell pythia8-config --libs)
 
 ifndef PY8_CXXFLAGS
-  $(info ***!!!***)
+  $(warning ***!!!***)
   $(info Pythia compile flags failed to configure.)
   $(info Please include /where/pythia/is/bin in your $$PATH variable.)
   $(info You may also need to include /where/pythia/is/lib in your)
   $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-  $(error Dependency error....)
+  ifdef COLLIDE
+    $(error HEColliderBit dependency error....)
+  else
+    $(info Be sure to set these PATHs when compiling HEColliderBit)
+  endif
 else
   ifndef SHH
     $(info INFO:)
@@ -119,7 +148,11 @@ ifndef FJ_CXXFLAGS
   $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
   $(info You may also need to include /where/fastjet/is/lib in your)
   $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-  $(error Dependency error....)
+  ifdef COLLIDE
+    $(error HEColliderBit dependency error....)
+  else
+    $(info Be sure to set these PATHs when compiling HEColliderBit)
+  endif
 else
   ifndef SHH
     $(info INFO:)
@@ -137,7 +170,11 @@ ifndef ROOT_CXXFLAGS
   $(info ***!!!***)
   $(info ROOT compile flags failed to configure.) 
   $(info Please use the 'thisroot' shell script from your ROOT installation.)
-  $(error Dependency error....)
+  ifdef COLLIDE
+    $(error HEColliderBit dependency error....)
+  else
+    $(info Be sure to set up ROOT properly when compiling HEColliderBit)
+  endif
 else
   ifndef SHH
     $(info INFO:)
@@ -167,7 +204,6 @@ CFLAGS += -I$(COREDIR)/include \
 	-I$(SCANDIR)/include \
 	-I$(BACKENDDIR)/include \
 	-I$(BACKENDDIR)/lib \
-	-I$(HECOLLIDERDIR)/include \
 	-I$(DARKDIR)/include \
 	-I$(FLAVDIR)/include \
 	-IExampleBit_A/include \
@@ -177,11 +213,17 @@ CFLAGS += -I$(COREDIR)/include \
 	-IFlavBit/include \
 	-I$(YAMLDIR)/include
 
-LNFLAGS = $(PY8_LDFLAGS) \
-					$(FJ_LDFLAGS) \
-					$(ROOT_LDFLAGS) \
-					$(DELPHES_LDFLAGS) \
-					$(BOOST_LDFLAGS)
+ifdef COLLIDE
+  CFLAGS += -I$(HECOLLIDERDIR)/include
+endif
+
+LNFLAGS =	$(BOOST_LDFLAGS)
+ifdef COLLIDE
+  LNFLAGS +=  $(PY8_LDFLAGS) \
+		$(FJ_LDFLAGS) \
+		$(ROOT_LDFLAGS) \
+		$(DELPHES_LDFLAGS)
+endif
 
 
 # beb_tester from makefile.test_backend
@@ -278,6 +320,12 @@ ALLINC = $(COREINC) $(MODELINC) $(UTILSINC) $(BACKENDINC) $(SCANINC) $(DARKINC) 
 ALLSRC = $(CORESRC) $(MODELSRC) $(UTILSSRC) $(BACKENDSRC) $(SCANSRC) $(DARKSRC) $(FLAVSRC) $(HECOLLIDERSRC) $(EXAMPLE_ASRC) $(EXAMPLE_BSRC) $(TMPSCANBITSRC)
 ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(FLAVLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) $(TMPSCANBITLIBS)
 
+ifdef COLLIDE
+  ALLINC += $(HECOLLIDERINC)
+  ALLSRC += $(HECOLLIDERSRC)
+  ALLOBJECTS += $(HECOLLIDEROBJECTS)
+endif
+
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
 HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
@@ -288,6 +336,10 @@ FlavBit/build/FlavBit.o $(UTILSDIR)/build/rngs.o \
 $(UTILSDIR)/build/util_functions.o $(UTILSDIR)/build/stream_printers.o Example_SUSYspecBit/build/SUSYspecBit.o \
 DarkBit/build/DarkBit.o\
 $(YAMLDIR)/yaml-cpp.a
+
+ifdef COLLIDE
+  BUILDOBJECTS += HEColliderBit/build/HEColliderBit.o
+endif
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(ALLINC)
 	@echo ___________Compiling $<:
@@ -312,7 +364,13 @@ $(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(ALLINC)
 $(COREDIR)/build/%.o: $(COREDIR)/examples/%.c $(ALLINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
-	
+
+ifdef COLLIDE
+$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(ALLINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+endif
+
 $(MODELDIR)/build/%.o: $(MODELDIR)/src/%.f $(ALLINC)
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
@@ -410,7 +468,7 @@ gambit_example_minimal: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example_minimal
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
-	python $(HARVESTER)
+	python $(HARVESTER) $(COLLIDE)
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
