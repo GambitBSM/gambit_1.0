@@ -10,16 +10,20 @@ export
 
 # set SHH to anything to make the output less verbose
 # NOTE: You can do so on the command line:
-#       make -f makefile.xxx SHH=stfu
-# SHH = stfu
+#       make -f makefile.xxx SHH=whatever
+ifdef SHH
+  SHH = stfu
+endif
 
 # set COLLIDE to anything to also include HEColliderBit compilation
 # NOTE: You can do so on the command line:
-#       make -f makefile.xxx COLLIDE=smashcrashbangboom
+#       make -f makefile.xxx COLLIDE=whatever
 # TODO: Once this works for everyone (or, once the class loader is ready and 
 #       we need to completely change the way HEColliderBit compiles), then
 #       we should get rid of this flag entirely.
-# COLLIDE = smashcrashbangboom
+ifdef COLLIDE
+  COLLIDE = smashCrashBashBangBoom
+endif
 
 ifndef SHH
   $(info )
@@ -46,7 +50,10 @@ FFLAGS = -O3 -fPIC
 # There are also in-code options, but this could potentially lead to
 # a speedup and smaller code. -1000 allows all log messages to be treated.
 #
-COMPOPTS= -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
+COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
+ifdef COLLIDE
+  COMPOPTS += -DCOLLIDE=smashCrashBashBangBoom
+endif
 
 # Location of gambit sub-directories
 COREDIR = Core
@@ -461,7 +468,7 @@ gambit_example_minimal: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example_minimal
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
-	python $(HARVESTER)
+	python $(HARVESTER) $(COLLIDE)
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
