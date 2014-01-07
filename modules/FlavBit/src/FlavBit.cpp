@@ -44,12 +44,10 @@ namespace Gambit
       using namespace Pipes::SI_bsgamma;
 
       char name[50];
-      //double x=1.;
       
-      sprintf(name,"example.lha");
+      sprintf(name,"../../superiso_v3.3/example.lha");
 
       printf("test FlavBit\n");
-      //printf("name=%s\n",name);
        
       /*cout << "My backend requirement of bsgamma_calculator has been filled by " << 
       BEreq::bsgamma_calculator.name() << " from " <<
@@ -57,16 +55,41 @@ namespace Gambit
       BEreq::bsgamma_calculator.version() << "." << endl;
       cout << "Its value is: ";*/
 
-      //printf("%.5e\n", BEreq::Li2(byVal(x)));
-     
-      //printf("%d\n", BEreq::test_file(byVal(name)));
-     
-      //printf("%d\n", BEreq::test_slha(byVal(name)));
-      
-      result = BEreq::bsgamma_calculator(byVal(name));
+     struct parameters param;
+
+      BEreq::Init_param(&param);
+
+      if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
+      else
+      {
+		double mu_W=2.*param.mass_W;
+		double mu_b=param.mass_b_1S/2.;
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
+
+		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
+		result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),byVal(mu_W),&param);
+	  }
       
       printf("BR(b->s gamma)=%.3e\n",result);
+    }
+    
+    void SI_Btaunu(double &result)          
+    {
+      using namespace Pipes::SI_Btaunu;
 
+      char name[50];
+     
+      sprintf(name,"../../superiso_v3.3/example.lha");
+
+      struct parameters param;
+
+      BEreq::Init_param(&param);
+
+      if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
+      else result = BEreq::Btaunu(&param);
+      
+      printf("BR(B->tau nu)=%.3e\n",result);
     }
     
   }

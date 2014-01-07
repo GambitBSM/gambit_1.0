@@ -64,24 +64,53 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_bsgamma                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-      #define BACKEND_REQ bsgamma_calculator
+/*      #define BACKEND_REQ bsgamma_calculator
         START_BACKEND_REQ(double)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ Li2
+*/ 
+      #define BACKEND_REQ bsgamma
         START_BACKEND_REQ(double)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ test_file
+      #define BACKEND_REQ Les_Houches_Reader
         START_BACKEND_REQ(int)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
-      #define BACKEND_REQ test_slha
-        START_BACKEND_REQ(int)
+      #define BACKEND_REQ Init_param
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CW_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ C_calculator_base1
+        START_BACKEND_REQ(void)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
    #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY SI_Btaunu               // Observable: BR(B -> tau nu)
+  START_CAPABILITY
+    #define FUNCTION SI_Btaunu                // Name of specific function providing the observable
+    START_FUNCTION(double)                  // Function calculates a double precision variable
+      #define BACKEND_REQ Btaunu
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Les_Houches_Reader
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Init_param
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+   #undef FUNCTION
+  #undef CAPABILITY
+
 #undef MODULE
 
 #endif // defined(__FlavBit_rollcall_hpp__)

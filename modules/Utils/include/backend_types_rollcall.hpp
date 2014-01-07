@@ -21,6 +21,7 @@
 // Include all the type headers from the different backends
 #include "DarkSUSY_types.hpp"
 #include "fakeSoftSUSY_types.hpp"
+#include "SuperIso_types.hpp"
 
 #endif //__backend_types_rollcall_hpp__
 

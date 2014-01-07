@@ -1,8 +1,8 @@
 /* 
  * SuperIso Backend
  * 
- * Modified:
- * Nazila Mahmoudi 2013-10-27
+ * Last modified:
+ * Nazila Mahmoudi 2013-12-31
  */
 
 /* Specify the path to the shared library along with a backend name. */
@@ -38,10 +38,25 @@ LOAD_LIBRARY
  * If left out (as done below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability")  */
 
-BE_FUNCTION(bsgamma_calculator, double, (char[]), "bsgamma_calculator", "bsgamma_calculator")
-BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
+BE_FUNCTION(Les_Houches_Reader, int, (char[], struct parameters*), "Les_Houches_Reader", "Les_Houches_Reader")
+BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
+BE_FUNCTION(slha_adjust, void, (struct parameters*), "slha_adjust", "slha_adjust")
 BE_FUNCTION(test_file, int, (char*), "test_file", "test_file")
 BE_FUNCTION(test_slha, int, (char[]), "test_slha", "test_slha")
+
+BE_FUNCTION(CW_calculator, void, (double[], double[], double[], double, struct parameters*), "CW_calculator", "CW_calculator")
+BE_FUNCTION(C_calculator_base1, void, (double[], double[], double[], double, double[], double[], double[], double, struct parameters*), "C_calculator_base1", "C_calculator_base1")
+BE_FUNCTION(C_calculator_base2, void, (double[], double[], double, double[], double[], double, struct parameters*), "C_calculator_base2", "C_calculator_base2")
+BE_FUNCTION(Cprime_calculator, void, (double[], double _Complex[], double, double, struct parameters*), "Cprime_calculator", "Cprime_calculator")
+BE_FUNCTION(CQ_calculator, void, (double _Complex[], double _Complex[], double, double, struct parameters*), "CQ_calculator", "CQ_calculator")
+
+BE_FUNCTION(bsgamma, double, (double[], double[], double[], double, double, struct parameters*), "bsgamma", "bsgamma")
+BE_FUNCTION(Btaunu, double, (struct parameters*), "Btaunu", "Btaunu")
+
+// TO BE REMOVED
+BE_FUNCTION(bsgamma_calculator, double, (char[]), "bsgamma_calculator", "bsgamma_calculator")
+BE_FUNCTION(Btaunu_calculator, double, (char[]), "Btaunu_calculator", "Btaunu_calculator")
+BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
