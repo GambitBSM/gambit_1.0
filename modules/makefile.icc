@@ -7,8 +7,12 @@
 ###
 include makefile.common
 
-CC = icc 
+ifndef CC
+  CC = icc 
+endif
 LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran -lrt 
 
-FC = ifort
+ifndef FC
+  FC = ifort
+endif
 CCEXTRA= -pipe -pg 

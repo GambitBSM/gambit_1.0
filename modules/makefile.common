@@ -8,6 +8,12 @@
 
 export
 
+# some stuff in the code simply does not work on a Mac.
+# set HAVE_MAC to anything to get the compiler to skip that stuff.
+ifdef HAVE_MAC
+  HAVE_MAC = iMissUbuntuAlready
+endif
+
 # set SHH to anything to make the output less verbose
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx SHH=whatever
@@ -52,7 +58,10 @@ FFLAGS = -O3 -fPIC
 #
 COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
 ifdef COLLIDE
-  COMPOPTS += -DCOLLIDE=smashCrashBashBangBoom
+  COMPOPTS += -DCOLLIDE=$(COLLIDE)
+endif
+ifdef HAVE_MAC
+  COMPOPTS += -DHAVE_MAC=$(HAVE_MAC)
 endif
 
 # Location of gambit sub-directories
