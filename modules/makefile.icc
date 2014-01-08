@@ -7,16 +7,12 @@
 ###
 include makefile.common
 
-ifndef CC
-  CC = icc 
-endif
+CC = icc 
+FC = ifort
+CCEXTRA= -pipe -pg 
+
 ifdef HAVE_MAC
   LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran
 else
   LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran -lrt
 endif
-
-ifndef FC
-  FC = ifort
-endif
-CCEXTRA= -pipe -pg 

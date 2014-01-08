@@ -22,20 +22,16 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib
 # UPDATE: To avoid messing up the shell environment, turns out we can compile the runtime path for shared libraries into our executables using the -rpath option. Doing this in LNFLAGS just below.
 # Another option would be to wrap the gambit executables in shell scripts which set local enironment variables appropriately before actually running gambit.
 
-ifndef CC
-  CC = g++ 
-endif
+CC = g++ 
+FC = gfortran
+CCEXTRA= -pipe -pg -Wextra -g 
+CFLAGS += -I$(MULTINESTINC)
+
 ifdef HAVE_MAC
   LNFLAGS += -lstdc++ -dynamic -ldl -lgfortran -g -Wl,-rpath,$(MULTINESTLIBDIR)
 else
   LNFLAGS += -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
 endif
-
-ifndef FC
-  FC = gfortran
-endif
-CCEXTRA= -pipe -pg -Wextra -g 
-CFLAGS += -I$(MULTINESTINC)
 
 #libmultinest_interface.so:
 multinest:
