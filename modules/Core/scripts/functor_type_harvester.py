@@ -21,7 +21,7 @@
 #   
 #  \author Ben Farmer 
 #          (ben.farmer@gmail.com)
-#    \date 2013 Sep 
+#    \date 2013 Sep, 2014 Jan 
 #
 #  \author Pat Scott 
 #          (patscott@physics.mcgill.ca)
@@ -32,6 +32,25 @@ import os
 import re
 import datetime
 import sys
+
+# Remove C/C++ comments from 'text' (From http://stackoverflow.com/questions/241327/python-snippet-to-remove-c-and-c-comments)
+def comment_remover(text):
+    def replacer(match):
+        s = match.group(0)
+        if s.startswith('/'):
+            return ""
+        else:
+            return s
+    pattern = re.compile(
+        r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
+        re.DOTALL | re.MULTILINE
+    )
+    return re.sub(pattern, replacer, text[:])
+
+# Replacement for f.readlines(), which removes all C/C++ comments from the text before returning a list of all the lines (as f.readlines() does)
+def readlines_nocomments(f):
+    processed_text = comment_remover(f.read())
+    return processed_text.splitlines()
 
 # No empties from re.split
 def neatsplit(regex,string):
@@ -89,7 +108,7 @@ def addiffunctormacro(line,module,typeset,typeheaders):
         for header in typeheaders:
             local_namespace = ""
             with open(header) as f:
-                for line in f.readlines():
+                for line in readlines_nocomments(f):
                     splitline = neatsplit('\{|\}|:|;',line)
                     # Determine the local namespace and look for a class or struct matching the candidate type 
                     for i in range(5):
@@ -101,10 +120,10 @@ def addiffunctormacro(line,module,typeset,typeheaders):
 
 # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
 # but are included in module_rollcall.hpp or types_rollcall.hpp)
-if len(sys.argv) > 1 and sys.argv[1] == 'smashCrashBashBangBoom':
-  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
-else:
-  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
+#if len(sys.argv) > 1 and sys.argv[1] == 'smashCrashBashBangBoom':
+exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
+#else:
+#  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
 
 # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
 exclude_type=set(["void"])
@@ -116,10 +135,10 @@ exclude_type=set(["void"])
 headers=set()
 type_headers=set()
 with open("Core/include/module_rollcall.hpp") as f:
-    for line in f.readlines():
+    for line in readlines_nocomments(f):
         addifheader(line,headers)        
 with open("Core/include/types_rollcall.hpp") as f:
-    for line in f.readlines():
+    for line in readlines_nocomments(f):
         addifheader(line,type_headers)        
 
 # Remove excluded headers from the set
@@ -150,7 +169,7 @@ for header in fullheaders:
     with open(header) as f:
         print "Scanning header {0}".format(header)
         module = ""
-        for line in f.readlines():
+        for line in readlines_nocomments(f):
             # If this line defines the module name, update it.
             module = update_module(line,module)
             # Check for calls to functor creation macros, and harvest the types used.

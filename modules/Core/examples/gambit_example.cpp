@@ -24,6 +24,7 @@
 #include "backend_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
+#include "stream_printers.hpp"
 
 using namespace Gambit;
 

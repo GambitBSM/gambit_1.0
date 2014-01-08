@@ -37,6 +37,9 @@
 #define ADD_ALL_PRINT_FUNCTIONS \
   BOOST_PP_SEQ_FOR_EACH(VPRINT, _, PRINTABLE_TYPES)
 
+//#pragma message "Base class print functions:"
+//#pragma message BOOST_PP_STRINGIZE(ADD_ALL_PRINT_FUNCTIONS)
+
 namespace Gambit
 {
 

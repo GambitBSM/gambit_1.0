@@ -64,11 +64,11 @@
 /// \name Tag-registration macros
 /// @{
 /// Add a regular tag to the current namespace
-#define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; };
+#define ADD_TAG_IN_CURRENT_NAMESPACE(TAG) namespace Tags { struct TAG; }
 /// Add a backend tag to the current namespace
-#define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; };
+#define ADD_BETAG_IN_CURRENT_NAMESPACE(TAG) namespace BETags { struct TAG; }
 /// Add a backend tag to the current namespace
-#define ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(TAG) namespace ModelTags { struct TAG; };
+#define ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(TAG) namespace ModelTags { struct TAG; }
 /// @}
 
 
