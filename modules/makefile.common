@@ -387,6 +387,10 @@ $(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(ALLINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
 	
+$(YAMLDIR)/yaml-cpp.a:
+	@echo ___________Building YAML:
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
+
 ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@

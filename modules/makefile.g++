@@ -29,13 +29,7 @@ FC = gfortran
 CCEXTRA= -pipe -pg -Wextra -g 
 CFLAGS += -I$(MULTINESTINC)
 
-$(YAMLDIR)/yaml-cpp.a:
-	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make YAML_CC=g++ 
-
 #libmultinest_interface.so:
 multinest:
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/multinest.cpp -o $(SCANDIR)/lib/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
 	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/lib/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
-
-
