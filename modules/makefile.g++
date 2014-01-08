@@ -26,7 +26,7 @@ ifndef CC
   CC = g++ 
 endif
 ifdef HAVE_MAC
-  LNFLAGS += -lstdc++ -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
+  LNFLAGS += -lstdc++ -dynamic -ldl -lgfortran -g -Wl,-rpath,$(MULTINESTLIBDIR)
 else
   LNFLAGS += -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
 endif

@@ -10,7 +10,11 @@ include makefile.common
 ifndef CC
   CC = icc 
 endif
-LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran -lrt 
+ifdef HAVE_MAC
+  LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran
+else
+  LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran -lrt
+endif
 
 ifndef FC
   FC = ifort
