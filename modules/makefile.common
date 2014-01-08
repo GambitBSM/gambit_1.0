@@ -10,6 +10,8 @@ export
 
 # some stuff in the code simply does not work on a Mac.
 # set HAVE_MAC to anything to get the compiler to skip that stuff.
+# NOTE: You can do so on the command line:
+#       make -f makefile.xxx HAVE_MAC=whatever
 ifdef HAVE_MAC
   HAVE_MAC = iMissUbuntuAlready
 endif
@@ -35,7 +37,7 @@ ifndef SHH
   $(info )
   $(info -------- Gambit main compilation --------)
   ifdef COLLIDE
-    $(info *** Including HEColliderBit ***)
+    $(info *** Including HEColliderBit $(COLLIDE) ***)
   endif
   $(info )
 endif
@@ -200,11 +202,12 @@ DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
 BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
 
 CFLAGS += -O0 $(COMPOPTS) \
-					-I$(BOOSTINC) \
-					$(PY8_CXXFLAGS) \
-					$(FJ_CXXFLAGS) \
-					$(ROOT_CXXFLAGS) \
-					$(DELPHES_CXXFLAGS)
+					-I$(BOOSTINC)
+ifdef COLLIDE
+  CFLAGS += $(PY8_CXXFLAGS) \
+						$(ROOT_CXXFLAGS) \
+						$(DELPHES_CXXFLAGS)
+endif
 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS += -I$(COREDIR)/include \

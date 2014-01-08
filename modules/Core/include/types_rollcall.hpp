@@ -105,6 +105,9 @@
 // Include the modules' own types
 #include "DarkBit_types.hpp"
 #ifdef COLLIDE
+  // Debugging... No seriously, I am including these headers, right??
+  #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)
+  #pragma message "Included from types_rollcall: HEColliderBit_types.hpp"
   #include "HEColliderBit_types.hpp"
 #endif
 
