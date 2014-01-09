@@ -110,11 +110,9 @@ def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
         #Now check if the type is declared in any of the module type headers (not very efficient, but simple)
         for header in typeheaders:
             local_namespace = ""
-            if module=="HEColliderBit" and candidate_type=="PythiaEvent" and header=="./HEColliderBit/include/HEColliderBit_types.hpp": print "IN COLLIDER BIT TYPES"
             with open(header) as f:
                 for line in readlines_nocomments(f):
                     splitline = neatsplit('\{|\}|:|;',line)
-                    if module=="HEColliderBit" and candidate_type=="PythiaEvent" and header=="./HEColliderBit/include/HEColliderBit_types.hpp": print splitline       
                     # Determine the local namespace and look for a class or struct matching the candidate type 
                     for i in range(5):
                         if len(splitline)>i:
@@ -122,8 +120,6 @@ def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
                             candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
                     # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
                     candidate_type = check_for_declaration(line,module,local_namespace,candidate_type)
-
-            if module=="HEColliderBit" and candidate_type=="PythiaEvent" and header=="./HEColliderBit/include/HEColliderBit_types.hpp": print "LEFT COLLIDER BIT TYPES"
         typeset.add(candidate_type)                    
 
 # Harvest the list of rollcall headers to be searched, and the list of type headers to be searched.
@@ -197,9 +193,7 @@ def main(argv):
     #  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
     
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
-    # Ben: We don't seem to be using this, and I don't know why we need it since types which can't be printed may nevertheless be attempted to be printed, in which case the base printer class will just throw an error for us (well so far it just spits out a default message, but we can handle this however we like there). Anyway I left this here for now, but I expect we'll delete it.
     exclude_type=set(["void"])
-
 
     # Recurse through headers, locating all the included headers therein, and find them all in the gambit source tree so that we can parse
     # them for types etc.  
