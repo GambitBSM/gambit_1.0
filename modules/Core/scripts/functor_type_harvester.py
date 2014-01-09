@@ -155,12 +155,20 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
     for path in full_header_paths:
         get_headers(path,new_headers,verbose=verbose)
 
-    # Delete elements of 'exclude_set' from 'new_headers'
-    new_headers.difference_update(exclude_set)
- 
+    # Add headers that we started with to the 'exclude_set' so that we don't search them again.
+    new_exclude_set=set()
+    new_exclude_set.update(exclude_set)
+    new_exclude_set.update(header_set)
+
+    # Delete elements of 'new_exclude_set' from 'new_headers'
+    new_headers.difference_update(new_exclude_set)
+
     # Do this again for all the headers we just found, if we found any
+    if verbose: print "Harvested the following new headers:"
+    for header in new_headers:
+        if verbose: print header
     if len(new_headers) > 0:
-        find_and_harvest_headers(new_headers,fullheadlist,exclude_set)
+        find_and_harvest_headers(new_headers,fullheadlist,new_exclude_set,verbose=verbose)
 
 
 
@@ -201,10 +209,11 @@ def main(argv):
     exclude_type=set(["void"])
 
     # Recurse through headers, locating all the included headers therein, and find them all in the gambit source tree so that we can parse
-    # them for types etc.  
+    # them for types etc.
+    
     find_and_harvest_headers(headers,fullheaders,exclude_header,verbose=verbose)
     find_and_harvest_headers(type_headers,fulltypeheaders,exclude_header,verbose=verbose)
-   
+     
     # Search through rollcall headers and look for macro calls which create 'module_functor's     
     types=set(["ModelParameters"]) #Manually add this one to avoid scanning through modelbit
     for header in fullheaders:
