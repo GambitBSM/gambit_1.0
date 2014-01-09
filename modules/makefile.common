@@ -29,6 +29,10 @@ endif
 # TODO: Once this works for everyone (or, once the class loader is ready and 
 #       we need to completely change the way HEColliderBit compiles), then
 #       we should get rid of this flag entirely.
+$(info COLLIDE = $(COLLIDE))
+$(info PATH = $(PATH))
+$(info LD_LIBRARY_PATH = $(LD_LIBRARY_PATH))
+$(info DYLD_LIBRARY_PATH = $(DYLD_LIBRARY_PATH))
 ifdef COLLIDE
   COLLIDE = smashCrashBashBangBoom
 endif
@@ -199,6 +203,26 @@ endif
 DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
 DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
 
+ifndef DELPHES_CXXFLAGS
+  $(warning ***!!!***)
+  $(info Delphes compile flags failed to configure.)
+  $(info Please define an environment variable DELPHESDIR containing)
+  $(info the path to the root Delphes directory)
+  ifdef COLLIDE
+    $(error HEColliderBit dependency error....)
+  else
+    $(info Be sure to set these PATHs when compiling HEColliderBit)
+  endif
+else
+  ifndef SHH
+    $(info INFO:)
+    $(info -- Delphes Flags --)
+    $(info Compile > $(DELPHES_CXXFLAGS))
+    $(info Link    > $(DELPHES_LDFLAGS))
+    $(info )
+  endif
+endif
+
 BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
 
 CFLAGS += -O0 $(COMPOPTS) \
@@ -228,6 +252,8 @@ CFLAGS += -I$(COREDIR)/include \
 ifdef COLLIDE
   CFLAGS += -I$(HECOLLIDERDIR)/include
 endif
+
+$(info CFLAGS = $(CFLAGS))
 
 LNFLAGS =	$(BOOST_LDFLAGS)
 ifdef COLLIDE
