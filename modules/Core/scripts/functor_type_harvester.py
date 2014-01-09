@@ -167,17 +167,22 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
 def main(argv):
     # Handle command line options
     verbose = False
+    collide = False
     try:
-        opts, args = getopt.getopt(argv,"v",["verbose"])
+        opts, args = getopt.getopt(argv,"vc",["verbose","collide"])
     except getopt.GetoptError:
-        print 'Usage: functor_type_harvestor.py [-v]'
+        print 'Usage: functor_type_harvestor.py [flags]'
         print ' flags:'
         print '        -v : More verbose output'  
+        print '        -c : Turn on HECollider'  
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
         verbose = True
         print 'functor_type_harvester.py: verbose=True'
+      elif opt in ('-c','--collide'):
+        collide = True
+
 
     headers      = set(["module_rollcall.hpp"])
     type_headers = set(["types_rollcall.hpp"])
@@ -186,11 +191,11 @@ def main(argv):
 
     # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
     # but are included in module_rollcall.hpp or types_rollcall.hpp)
-    #if len(argv) > 1 and sys.argv[1] == 'smashCrashBashBangBoom':
-    exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
-    #else:
-    #  print "Excluding HEColliderBit rollcall headers from type harvesting..."
-    #  exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
+    if collide:
+      exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
+    else:
+      print "Excluding HEColliderBit rollcall headers from type harvesting..."
+      exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
     
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_type=set(["void"])

@@ -257,7 +257,7 @@ $(info CFLAGS = $(CFLAGS))
 
 LNFLAGS =	$(BOOST_LDFLAGS)
 ifdef COLLIDE
-  LNFLAGS +=  $(PY8_LDFLAGS) \
+  LNFLAGS += $(PY8_LDFLAGS) \
 		$(FJ_LDFLAGS) \
 		$(ROOT_LDFLAGS) \
 		$(DELPHES_LDFLAGS)
@@ -367,6 +367,12 @@ endif
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
 HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
+ifndef SHH
+  HARVESTER_OPTS+= -v
+endif
+ifdef COLLIDE
+  HARVESTER_OPTS+= -c
+endif
 
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
 BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
@@ -510,7 +516,7 @@ gambit_example_minimal: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example_minimal
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
-	python $(HARVESTER) $(COLLIDE)
+	python $(HARVESTER) $(HARVESTER_OPTS)
 
 libfirst.so:
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o

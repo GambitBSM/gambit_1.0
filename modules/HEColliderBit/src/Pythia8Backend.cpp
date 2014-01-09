@@ -58,7 +58,7 @@ namespace Gambit {
     }
 
 
-    void Pythia8Backend::nextEvent(Pythia8::Event& event) {
+    void Pythia8Backend::nextEvent(PythiaEvent& event) {
       // Automatically initialize when a first event is requested
       if (!_initialized) {
         _pythiaInstance->init();
@@ -84,7 +84,7 @@ namespace Gambit {
 
 
     /// Fill a Gambit::HECollider::Event from a Pythia8 event
-    void Pythia8Backend::convertOutput(const Pythia8::Event& pevt, Event& gevt) const {
+    void Pythia8Backend::convertOutput(const PythiaEvent& pevt, Event& gevt) const {
       Pythia8::Vec4 ptot;
       vector<fastjet::PseudoJet> jetparticles;
       vector<fastjet::PseudoJet> bhadrons, taus;

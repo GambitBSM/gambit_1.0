@@ -75,7 +75,7 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::processEvent(Pythia8::Event &eventIn, Event &eventOut) {
+    void Delphes3Backend::processEvent(const PythiaEvent& eventIn, Event &eventOut) {
       try {
         modularDelphes->Clear();
         convertInput(eventIn);
@@ -88,7 +88,7 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::convertInput(Pythia8::Event& event) {
+    void Delphes3Backend::convertInput(const PythiaEvent& event) {
 
       for (int ip = 0; ip < event.size(); ++ip) {
         const Pythia8::Particle& p = event[ip];

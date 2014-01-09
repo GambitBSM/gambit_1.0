@@ -28,6 +28,19 @@
 #ifndef __HEColliderBit_types_hpp__
 #define __HEColliderBit_types_hpp__
 
+/// \note The order of these includes matters to the compiler.
+#include "Pythia8/Pythia.h"
+namespace Gambit {
+  namespace HEColliderBit {
+
+    // This typedef is here for verbosity and readability.
+    typedef Pythia8::Event PythiaEvent;
+
+    // All of the other types are in Gambit::HEColliderBit within the includes
+    // or defined below, so there should be no more ambiguity.
+  }
+}
+
 /// \todo Some of these includes may eventually need to be in shared_types
 /// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
 #include "Pythia8Backend.hpp"
@@ -37,11 +50,6 @@
 
 namespace Gambit {
   namespace HEColliderBit {
-    
-    // This typedef is here for verbosity and readability.
-    typedef Pythia8::Event PythiaEvent;
-    // All of the other types are in Gambit::HEColliderBit within the includes
-    // above, so there should be no more ambiguity.
 
     struct SubprocessGroup {
       SubprocessGroup()
