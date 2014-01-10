@@ -145,10 +145,10 @@ namespace Gambit {
       vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       // Do jet b-tagging, etc. and add to the Event
-      foreach (const fastjet::PseudoJet& pj, pjets) {
+      for (auto& pj : pjets) {
         /// @todo Use ghost tagging! For fun...
         bool isB = false;
-        foreach (const fastjet::PseudoJet& pb, bhadrons) {
+        for (auto& pb : bhadrons) {
           if (pj.delta_R(pb) < 0.3) {
             isB = true;
             break;

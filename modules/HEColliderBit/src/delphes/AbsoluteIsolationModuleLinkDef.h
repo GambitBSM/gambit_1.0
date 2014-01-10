@@ -11,7 +11,7 @@
  *
  */
 
-#include "AbsoluteIsolation.h"
+#include "AbsoluteIsolationModule.h"
 
 #ifdef __CINT__
 

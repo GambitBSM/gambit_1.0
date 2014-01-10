@@ -35,15 +35,15 @@
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
 #include "TLorentzVector.h"
-
-#include "Event.hpp"
-#include "Py8Utils.hpp"
 #include "modules/Delphes.h"
 #include "classes/DelphesClasses.h"
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
 
 #include "HEColliderBit_types.hpp"
+
+#include "Event.hpp"
+#include "Py8Utils.hpp"
 
 namespace Gambit {
   namespace HEColliderBit {

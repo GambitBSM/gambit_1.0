@@ -29,10 +29,12 @@ endif
 # TODO: Once this works for everyone (or, once the class loader is ready and 
 #       we need to completely change the way HEColliderBit compiles), then
 #       we should get rid of this flag entirely.
-$(info COLLIDE = $(COLLIDE))
-$(info PATH = $(PATH))
-$(info LD_LIBRARY_PATH = $(LD_LIBRARY_PATH))
-$(info DYLD_LIBRARY_PATH = $(DYLD_LIBRARY_PATH))
+ifndef SHH
+  $(info COLLIDE = $(COLLIDE))
+  $(info PATH = $(PATH))
+  $(info LD_LIBRARY_PATH = $(LD_LIBRARY_PATH))
+  $(info DYLD_LIBRARY_PATH = $(DYLD_LIBRARY_PATH))
+endif
 ifdef COLLIDE
   COLLIDE = smashCrashBashBangBoom
 endif
@@ -53,6 +55,7 @@ else
   CFLAGS = -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
 endif
 FFLAGS = -O3 -fPIC
+# TODO is anyone using CCEXTRA??
 
 ######################################################
 # Explicit options for gambit building:
@@ -64,7 +67,7 @@ FFLAGS = -O3 -fPIC
 #
 COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
 ifdef COLLIDE
-  COMPOPTS += -DCOLLIDE=$(COLLIDE)
+  COMPOPTS += -DCOLLIDE=$(COLLIDE) -DQUIET
 endif
 ifdef HAVE_MAC
   COMPOPTS += -DHAVE_MAC=$(HAVE_MAC)
@@ -123,10 +126,20 @@ endif
 # Boost is required. Read README for details
 ifdef BOOST
 BOOSTINC=$(BOOST)
+BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
 else
 BOOSTINC=./
 BOOST=./
 export BOOST
+endif
+BOOST_CXXFLAGS := -I$(BOOSTINC)
+BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
+ifndef SHH
+  $(info INFO:)
+  $(info -- Boost Flags --)
+  $(info Compile > $(BOOST_CXXFLAGS))
+  $(info Link    > $(BOOST_LDFLAGS))
+  $(info )
 endif
 
 # External code specific flags
@@ -137,7 +150,8 @@ ifndef PY8_CXXFLAGS
   $(warning ***!!!***)
   $(info Pythia compile flags failed to configure.)
   $(info Please include /where/pythia/is/bin in your $$PATH variable.)
-  $(info You may also need to include /where/pythia/is/lib in your)
+  $(info You may also need to include /where/pythia/is/lib and)
+  $(info /where/pythia/is/lib/archive in your)
   $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
   ifdef COLLIDE
     $(error HEColliderBit dependency error....)
@@ -179,7 +193,7 @@ else
 endif
 
 ROOT_CXXFLAGS := $(shell root-config --cflags)
-ROOT_LDFLAGS := $(shell root-config --libs)
+ROOT_LDFLAGS := $(subst lib,lib -lEG,$(shell root-config --libs))
 
 ifndef ROOT_CXXFLAGS
   $(info ***!!!***)
@@ -223,72 +237,85 @@ else
   endif
 endif
 
-BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
-
 CFLAGS += -O0 $(COMPOPTS) \
-					-I$(BOOSTINC)
+					$(BOOST_CXXFLAGS)
 ifdef COLLIDE
   CFLAGS += $(PY8_CXXFLAGS) \
 						$(ROOT_CXXFLAGS) \
-						$(DELPHES_CXXFLAGS)
+						$(DELPHES_CXXFLAGS) \
+						$(FJ_CXXFLAGS)
 endif
 
 GCC++EXTRA=-Woverloaded-virtual
 CFLAGS += -I$(COREDIR)/include \
-	-I$(MODELDIR)/include -I$(MODELDIR)/include/models \
-	-I$(UTILSDIR)/include \
-	-I$(SCANDIR)/include \
-	-I$(BACKENDDIR)/include \
-	-I$(BACKENDDIR)/lib \
-	-I$(DARKDIR)/include \
-	-I$(FLAVDIR)/include \
-	-IExampleBit_A/include \
-	-IExampleBit_B/include \
-	-IDarkBit/include \
-	-IExample_SUSYspecBit/include \
-	-IFlavBit/include \
-	-I$(YAMLDIR)/include
+					-I$(MODELDIR)/include -I$(MODELDIR)/include/models \
+					-I$(UTILSDIR)/include \
+					-I$(SCANDIR)/include \
+					-I$(BACKENDDIR)/include \
+					-I$(BACKENDDIR)/lib \
+					-I$(DARKDIR)/include \
+					-I$(FLAVDIR)/include \
+					-IExampleBit_A/include \
+					-IExampleBit_B/include \
+					-IDarkBit/include \
+					-IExample_SUSYspecBit/include \
+					-IFlavBit/include \
+					-I$(YAMLDIR)/include
 
 ifdef COLLIDE
   CFLAGS += -I$(HECOLLIDERDIR)/include
 endif
 
-$(info CFLAGS = $(CFLAGS))
+ifndef SHH
+  $(info CFLAGS = $(CFLAGS))
+  $(info )
+endif
 
 LNFLAGS =	$(BOOST_LDFLAGS)
 ifdef COLLIDE
   LNFLAGS += $(PY8_LDFLAGS) \
-		$(FJ_LDFLAGS) \
-		$(ROOT_LDFLAGS) \
-		$(DELPHES_LDFLAGS)
+						 $(FJ_LDFLAGS) \
+						 $(ROOT_LDFLAGS) \
+						 $(DELPHES_LDFLAGS)
 endif
 
+ifndef SHH
+  $(info LNFLAGS = $(LNFLAGS))
+  $(info )
+endif
+
+
+# all phony stuff here
+.PHONY: default all clean sterile distclean doxygen mh
 
 # beb_tester from makefile.test_backend
 TARGETS = gambit_example beb_tester gambit_example_minimal
 
 default: mh gambit_example gambit_example_minimal
-.PHONY: default
 
 all: mh gambit_example beb_tester gambit_example_minimal doxygen
-.PHONY: all
 
 clean: 
 	@echo cleaning
-	@rm -rf $(TARGETS) */build/* $(COREDIR)/build/.minihelp $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
+	@rm -rf $(TARGETS) 
+	@rm -rf */build/* 
+	@rm -rf $(COREDIR)/build/.minihelp 
+	@rm -rf $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -f _*.txt
 	@rm -f *.gv
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)
-.PHONY: clean
 
 # also removes ~ files and other weirdly generated files
-distclean: clean
-	cd contrib/yaml-cpp-0.5.1; make clean
-	rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
-.PHONY: distclean
+sterile: distclean
+	@true
 
+distclean: clean
+	@cd contrib/yaml-cpp-0.5.1; make clean
+	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
+	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
+	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
 
 $(COREDIR)/build/.minihelp:
 	@echo "*******************************************"
@@ -354,80 +381,138 @@ EXSUSYSPECINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/inc
 EXSUSYSPECSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
 EXSUSYSPECLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXSUSYSPECSRC)))))
 
+# Well, crap. Some of these aren't even being used! What a confusing Makefile!!
+# # TODO clean up this crap. We still need to use and/or edit this Makefile
+# #      until the autotools are ready!!
 ALLINC = $(COREINC) $(MODELINC) $(UTILSINC) $(BACKENDINC) $(SCANINC) $(DARKINC) $(FLAVINC) $(HECOLLIDERINC) $(EXAMPLE_AINC) $(EXAMPLE_BINC) $(TMPSCANBITINC)
 ALLSRC = $(CORESRC) $(MODELSRC) $(UTILSSRC) $(BACKENDSRC) $(SCANSRC) $(DARKSRC) $(FLAVSRC) $(HECOLLIDERSRC) $(EXAMPLE_ASRC) $(EXAMPLE_BSRC) $(TMPSCANBITSRC)
-ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(FLAVLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) $(TMPSCANBITLIBS)
+#ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(FLAVLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) $(TMPSCANBITLIBS)
 
 ifdef COLLIDE
   ALLINC += $(HECOLLIDERINC)
   ALLSRC += $(HECOLLIDERSRC)
-  ALLOBJECTS += $(HECOLLIDEROBJECTS)
+#  ALLOBJECTS += $(HECOLLIDEROBJECTS)
 endif
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
 HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
 ifndef SHH
-  HARVESTER_OPTS+= -v
+  HARVESTER_OPTS += -v
 endif
 ifdef COLLIDE
-  HARVESTER_OPTS+= -c
+  HARVESTER_OPTS += -c
 endif
 
 #Anything that needs compiling for gambit_example that is not in the Core/src directory
-BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o ExampleBit_A/build/ExampleBit_A.o ExampleBit_B/build/ExampleBit_B.o \
-FlavBit/build/FlavBit.o $(UTILSDIR)/build/rngs.o \
-$(UTILSDIR)/build/util_functions.o $(UTILSDIR)/build/stream_printers.o Example_SUSYspecBit/build/SUSYspecBit.o \
-DarkBit/build/DarkBit.o\
-$(YAMLDIR)/yaml-cpp.a
+BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o \
+							 ExampleBit_A/build/ExampleBit_A.o \
+							 ExampleBit_B/build/ExampleBit_B.o \
+							 FlavBit/build/FlavBit.o \
+							 $(UTILSDIR)/build/rngs.o \
+							 $(UTILSDIR)/build/util_functions.o \
+							 $(UTILSDIR)/build/stream_printers.o \
+							 Example_SUSYspecBit/build/SUSYspecBit.o \
+							 DarkBit/build/DarkBit.o\
+							 $(YAMLDIR)/yaml-cpp.a
 
 ifdef COLLIDE
-  BUILDOBJECTS += HEColliderBit/build/HEColliderBit.o
+	# TODO is there a slick way to include this...?
+	#      Apparently not. Due to the unuse of ALLOBJECTS, this makefile
+	#      is much less slick than I thought it was.
+  ANAOBJECTS = HEColliderBit/build/Analysis.o \
+							 HEColliderBit/build/Analysis_ATLAS_0LEPStop_20invfb.o \
+							 HEColliderBit/build/Analysis_ATLAS_0LEP_XXinvfb.o \
+							 HEColliderBit/build/Analysis_ATLAS_1LEPStop_20invfb.o \
+							 HEColliderBit/build/Analysis_ATLAS_2bStop_20invfb.o \
+							 HEColliderBit/build/Analysis_ATLAS_2LEPStop_20invfb.o \
+							 HEColliderBit/build/Analysis_Perf.o \
+							 HEColliderBit/build/mt2_bisect.o
+  DELPHESMODULEOBJECTS = HEColliderBit/build/AbsoluteIsolationModule.o \
+												 HEColliderBit/build/AbsoluteIsolationModule_dict.o \
+												 HEColliderBit/build/BTaggingWithTruthModule.o \
+												 HEColliderBit/build/BTaggingWithTruthModule_dict.o
+  BUILDOBJECTS += HEColliderBit/build/HEColliderBit.o \
+									HEColliderBit/build/Delphes3Backend.o \
+									HEColliderBit/build/Pythia8Backend.o \
+									$(ANAOBJECTS) \
+									$(DELPHESMODULEOBJECTS)
 endif
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(ALLINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.c $(ALLINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.f $(ALLINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.f $(ALLINC)
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.f
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
 	
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(ALLINC)
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.c $(ALLINC)
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ifdef COLLIDE
-$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(ALLINC)
+	# Analysis...:
+$(HECOLLIDERDIR)/build/mt2_bisect.o: $(HECOLLIDERDIR)/src/analyses/mt2_bisect.cpp \
+																		 $(HECOLLIDERDIR)/src/analyses/mt2_bisect.h
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
+
+$(HECOLLIDERDIR)/build/Anal%.o: $(HECOLLIDERDIR)/src/analyses/Anal%.cpp
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+  # Delphes modules...:
+$(HECOLLIDERDIR)/build/%Module.o: $(HECOLLIDERDIR)/src/delphes/%Module.cc
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
+
+$(HECOLLIDERDIR)/build/%Module_dict.o: $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
+
+$(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
+															$(HECOLLIDERDIR)/src/delphes/%Module.h \
+															$(HECOLLIDERDIR)/src/delphes/%ModuleLinkDef.h
+	@echo ___________Generating Dictionary from $^:
+	@rootcint -f $@ -c $(DELPHES_CXXFLAGS) $^
+	# hack, but blame rootcint for being dumb
+	@sed 's,$(HECOLLIDERDIR)/src/delphes/,,g' $@ > temp_dict.cc
+	@mv temp_dict.cc $@
+	@sed 's,$(HECOLLIDERDIR)/src/delphes/,,g' $(patsubst %.cc,%.h,$@) > temp_dict.h
+	@mv temp_dict.h $(patsubst %.cc,%.h,$@)
+
+  # HEColliderBit...:
+$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
 
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.f $(ALLINC)
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
 	
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(ALLINC)
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.c $(ALLINC)
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(ALLINC)
+$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
 	
@@ -435,83 +520,89 @@ $(YAMLDIR)/yaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.c $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.f $(EXAMPLE_AINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+ExampleBit_A/build/%.o: ExampleBit_A/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.cpp $(EXAMPLE_BINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.c $(EXAMPLE_BINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.f $(EXAMPLE_BINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+ExampleBit_B/build/%.o: ExampleBit_B/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-DarkBit/build/%.o: DarkBit/src/%.cpp $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+DarkBit/build/%.o: DarkBit/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-DarkBit/build/%.o: DarkBit/src/%.c $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+DarkBit/build/%.o: DarkBit/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-DarkBit/build/%.o: DarkBit/src/%.f $(DARKINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+DarkBit/build/%.o: DarkBit/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-FlavBit/build/%.o: FlavBit/src/%.cpp $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+FlavBit/build/%.o: FlavBit/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-FlavBit/build/%.o: FlavBit/src/%.c $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+FlavBit/build/%.o: FlavBit/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-FlavBit/build/%.o: FlavBit/src/%.f $(FLAVINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+FlavBit/build/%.o: FlavBit/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 	
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.cpp $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f $(EXSUSYSPECINC) $(UTILSINC) $(COREINC) $(BACKENDINC)
+Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(UTILSINC) $(COREINC) $(BACKENDINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c $(UTILSINC) $(COREINC) $(BACKENDINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f $(UTILSINC) $(COREINC) $(BACKENDINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f
 	@echo ___________Compiling $<:
 	$(FC) $(CFLAGS) -c $< -o $@
 
-gambit_example: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so
+gambit_example: $(FUNCTOR_TYPES) \
+								$(COREDIR)/build/gambit_example.o \
+								$(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) \
+								libfirst.so libfortran.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example_minimal: $(FUNCTOR_TYPES) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) $(ALLINC) libfirst.so libfortran.so libsample.so libtest.so
+gambit_example_minimal: $(FUNCTOR_TYPES) \
+												$(COREDIR)/build/gambit_example_minimal.o \
+												$(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) \
+												libfirst.so libfortran.so libsample.so libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
@@ -535,17 +626,18 @@ libtest.so:
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
 
 # beb_tester from makefile.test_backend
-beb_tester: $(CORELIBS) $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o 
+beb_tester: $(CORELIBS) $(BUILDOBJECTS) \
+						$(UTILSDIR)/build/backend-fherwig.o \
+						$(UTILSDIR)/build/beb_tester.o 
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logs.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
 
-$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO $(ALLINC) $(ALLSRC) 
+$(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
 	@ln -s $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
 	@echo "Documentation found in $@"
 
 doxygen: $(DOCDIR)/html/index.html
-.PHONY: doxygen
 
 headertest:
 	@echo "simple, standalone header test: "

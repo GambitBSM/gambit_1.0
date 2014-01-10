@@ -3,6 +3,13 @@ GAMBIT To-do List
 
 (G3 = GAMBIT III = March Collaboration Meeting)
 
+Core / Everybody
+----------------
+
+Makefiles:
+* Until the autotools are ready to go, can we please clean up the extra confusing makefile? Many of these make variables are not even being used.
+* Address some of the other TODOs in the makfiles.
+
 Core
 ----
 

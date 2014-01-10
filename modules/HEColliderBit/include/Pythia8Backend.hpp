@@ -22,6 +22,7 @@
 //  //
 //  //  ********************************************
 
+#include "HEColliderBit_types.hpp"
 #include "Py8Utils.hpp"
 #include "Event.hpp"
 

@@ -14,7 +14,7 @@
  *
  */
 
-#include "AbsoluteIsolation.h"
+#include "AbsoluteIsolationModule.h"
 ClassImp(AbsoluteIsolation)
 
 #include "classes/DelphesClasses.h"
