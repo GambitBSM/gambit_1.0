@@ -22,7 +22,8 @@
 #include <numeric>
 
 #include "gambit_module_headers.hpp"
-#include "HEColliderBit_eventLoop.hpp"
+#include "HEColliderBit_rollcall.hpp"
+#include "HEColliderBit_types.hpp"
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
@@ -69,7 +70,7 @@ namespace Gambit {
     void getSubprocessGroup(SubprocessGroup &result) {
       result = SubprocessGroup(0.6, //< xsec estimate
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
-                               2000001, 2000002, 2000003, 2000004}};
+                               2000001, 2000002, 2000003, 2000004}},
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                                2000001, 2000002, 2000003, 2000004}});
       /// \todo Test boring event counter first.  Uncomment analysis later.
@@ -92,8 +93,8 @@ namespace Gambit {
       using namespace Pipes::readyPythiaBackend;
       result = new Pythia8Backend(omp_get_thread_num());
       result->set("SLHA:file", *Dep::slhaFileName);
-      result->set("SUSY:idVecA", *Dep::subprocessGroup.particlesInProcess1);
-      result->set("SUSY:idVecB", *Dep::subprocessGroup.particlesInProcess2);
+      result->set("SUSY:idVecA", (*Dep::subprocessGroup).particlesInProcess1);
+      result->set("SUSY:idVecB", (*Dep::subprocessGroup).particlesInProcess2);
     }
 
     void readyDelphesBackend(Delphes3Backend* &result) {
@@ -134,7 +135,7 @@ namespace Gambit {
       using namespace Pipes::generatePythia8Event;
       result.clear();
       /// Get the next event from Pythia8
-      *Dep::readiedHardScatteringSim->nextEvent(result);
+      (*Dep::readiedHardScatteringSim)->nextEvent(result);
     }
 
     /// Standard Event Format Functions
@@ -145,7 +146,7 @@ namespace Gambit {
       /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
       #pragma omp critical (Delphes)
       {
-        *Dep::readiedDetectorSim->processEvent(*Dep::hardScatteringEvent, result);
+        (*Dep::readiedDetectorSim)->processEvent(*Dep::hardScatteringEvent, result);
         cout<<"  ****** Delphes Reconstruction ****** \n";
       }
     }
@@ -175,7 +176,7 @@ namespace Gambit {
       #pragma omp critical (print)
       { 
         cout<<"  Running simpleCounter in iteration "<<*Loop::iteration<<endl;
-        cout<<"  Retrieved event met: "<<*Dep::GambitColliderEvent.met()<<endl;
+        cout<<"  Retrieved event met: "<<(*Dep::GambitColliderEvent).met()<<endl;
         cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
         cout<<"  Current total counts is: "<<result<<endl;
       }

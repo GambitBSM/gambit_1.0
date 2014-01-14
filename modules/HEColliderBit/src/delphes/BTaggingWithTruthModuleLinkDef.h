@@ -11,7 +11,7 @@
  *
  */
 
-#include "BTaggingWithTruth.h"
+#include "BTaggingWithTruthModule.h"
 
 #ifdef __CINT__
 

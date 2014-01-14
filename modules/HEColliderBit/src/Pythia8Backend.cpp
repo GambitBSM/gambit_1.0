@@ -58,7 +58,7 @@ namespace Gambit {
     }
 
 
-    void Pythia8Backend::nextEvent(Pythia8::Event& event) {
+    void Pythia8Backend::nextEvent(PythiaEvent& event) {
       // Automatically initialize when a first event is requested
       if (!_initialized) {
         _pythiaInstance->init();
@@ -84,7 +84,7 @@ namespace Gambit {
 
 
     /// Fill a Gambit::HECollider::Event from a Pythia8 event
-    void Pythia8Backend::convertOutput(const Pythia8::Event& pevt, Event& gevt) const {
+    void Pythia8Backend::convertOutput(const PythiaEvent& pevt, Event& gevt) const {
       Pythia8::Vec4 ptot;
       vector<fastjet::PseudoJet> jetparticles;
       vector<fastjet::PseudoJet> bhadrons, taus;
@@ -145,10 +145,10 @@ namespace Gambit {
       vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       // Do jet b-tagging, etc. and add to the Event
-      foreach (const fastjet::PseudoJet& pj, pjets) {
+      for (auto& pj : pjets) {
         /// @todo Use ghost tagging! For fun...
         bool isB = false;
-        foreach (const fastjet::PseudoJet& pb, bhadrons) {
+        for (auto& pb : bhadrons) {
           if (pj.delta_R(pb) < 0.3) {
             isB = true;
             break;

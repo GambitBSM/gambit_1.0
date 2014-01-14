@@ -35,13 +35,15 @@
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
 #include "TLorentzVector.h"
-
-#include "Event.hpp"
-#include "Py8Utils.hpp"
 #include "modules/Delphes.h"
 #include "classes/DelphesClasses.h"
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
+
+#include "HEColliderBit_types.hpp"
+
+#include "Event.hpp"
+#include "Py8Utils.hpp"
 
 namespace Gambit {
   namespace HEColliderBit {
@@ -53,8 +55,8 @@ namespace Gambit {
       Delphes3Backend(string configFileName);
       ~Delphes3Backend();
 
-      void processEvent(Pythia8::Event& eventIn, Event& eventOut);
-      void convertInput(Pythia8::Event& event);
+      void processEvent(const PythiaEvent& eventIn, Event& eventOut);
+      void convertInput(const PythiaEvent& event);
       void convertOutput(Event& event);
 
     private:

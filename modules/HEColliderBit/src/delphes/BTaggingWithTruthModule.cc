@@ -12,7 +12,8 @@
  *
  */
 
-#include "BTaggingWithTruth.h"
+#include "BTaggingWithTruthModule.h"
+ClassImp(BTaggingWithTruth)
 
 #include "classes/DelphesClasses.h"
 #include "classes/DelphesFactory.h"
