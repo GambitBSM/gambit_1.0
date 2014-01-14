@@ -143,6 +143,11 @@ START_MODULE
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
     #undef FUNCTION
+    #define FUNCTION RD_oh2_SingletDM
+      START_FUNCTION(double)
+      ALLOW_MODELS(SingletDM)
+      DEPENDENCY(GA_BRs, Gambit::DarkBit::BRs)
+    #undef FUNCTION
   #undef CAPABILITY
 
 
@@ -155,6 +160,48 @@ START_MODULE
   #undef CAPABILITY
 
 
+
+  #define CAPABILITY GA_dNdE
+  START_CAPABILITY
+    #define FUNCTION GA_dNdE_from_BRs
+      START_FUNCTION(Gambit::DarkBit::dNdE)
+      ALLOW_MODELS(SingletDM)
+      DEPENDENCY(GA_BRs, Gambit::DarkBit::BRs)
+      #define BACKEND_REQ dshayield
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ dsinit
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY GA_BRs
+  START_CAPABILITY
+    #define FUNCTION GA_BRs_SingletDM
+      START_FUNCTION(Gambit::DarkBit::BRs)
+      ALLOW_MODELS(SingletDM)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_FermiLATdwarfs
+  START_CAPABILITY
+    #define FUNCTION lnL_FermiLATdwarfsSimple
+      START_FUNCTION(double)
+      DEPENDENCY(GA_dNdE, Gambit::DarkBit::dNdE)
+      DEPENDENCY(GA_BRs, Gambit::DarkBit::BRs)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_oh2
+  START_CAPABILITY
+    #define FUNCTION lnL_oh2_Simple
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

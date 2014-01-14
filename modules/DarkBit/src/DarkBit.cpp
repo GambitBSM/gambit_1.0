@@ -19,7 +19,7 @@
 //  2013 Jun
 //
 //  Christoph Weniger <c.weniger@uva.nl>
-//  July 2013
+//  July 2013, January 2014
 //
 //  *********************************************
 
@@ -455,5 +455,101 @@ namespace Gambit {
 //      std::cout << "# coannihilating particles: " << specres.n_co << std::endl;
     }
 
+    bool dsinit_flag = false;
+
+    void GA_dNdE_from_BRs(Gambit::DarkBit::dNdE &result)
+    {
+      using namespace Pipes::GA_dNdE_from_BRs;
+      int flag = 0;  // CW: Does this flag have any use?
+      int ch;
+      int yieldk = 152;
+      double BR;  // Channel as understood by DS
+      std::vector<double> xgrid;
+      std::vector<double> ygrid;
+
+      std::vector<std::string> BRlist = (*Dep::GA_BRs).getBRlist();
+      double mass = (*Dep::GA_BRs).DMmass;
+
+      // FIXME: Should not be hardcoded:
+      int n = 1000;
+      double E0 = 0.1;
+      double E1 = mass;
+
+      // Initialize darksusy
+      // FIXME: Move somewhere else
+      if (not dsinit_flag) 
+      {
+          BEreq::dsinit();
+          dsinit_flag = true;
+      }
+
+      // Generate grid for dNdE
+      for (int i = 0; i<n; i++)
+      {
+        xgrid.push_back(E0*pow(E1/E0, (double)i/(n-1)));
+        ygrid.push_back(0);
+      }
+
+      for (std::vector<std::string>::iterator it = BRlist.begin(); it!=BRlist.end(); it++)
+      {
+        BR = (*Dep::GA_BRs).get(*it);
+        ch = 0;
+        if (*it == "mumu") ch = 17;
+        if (*it == "bb") ch = 25;
+        if (BR != 0 and ch == 0)  // Ignore channel if not known
+        {
+          std::cout << 
+            "DarkBit WARNING: Do not know spectrum of requested annihilation channel." 
+            << std::endl;
+          BR = 0;
+        }
+        if (BR != 0 and ch != 0)
+        {
+          for (int i = 0; i<n; i++)
+          {
+            ygrid[i] += BR * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
+          }
+        }
+      }
+      result = Gambit::DarkBit::dNdE(xgrid, ygrid);
+    }
+
+    void GA_BRs_SingletDM(Gambit::DarkBit::BRs &result)
+    {
+      using namespace Pipes::GA_BRs_SingletDM;
+      Gambit::DarkBit::BRs myBRs;
+      // Toy branching ratios for SingletDM
+      myBRs.set("mumu", 1);  
+      myBRs.set("bb", *Param["mass"]);
+      myBRs.normalize();
+      myBRs.DMmass = *Param["mass"];
+      myBRs.sigmaV = pow(*Param["lambda"], 2) * pow(*Param["mass"]/10, -2) * 3e-26;
+      result = myBRs;
+    }
+
+    void lnL_FermiLATdwarfsSimple(double &result)
+    {
+      using namespace Pipes::lnL_FermiLATdwarfsSimple;
+      double dNdEint = (*Dep::GA_dNdE).integrate(1, 100);
+      double sigmaV = (*Dep::GA_BRs).sigmaV;
+      double mass = (*Dep::GA_BRs).DMmass;
+      double flux = dNdEint*sigmaV/pow(mass,2) * 1e23; // Toy flux
+      double flux0 = 1e-3;
+      result = pow(flux/flux0, 2);
+    }
+
+    void RD_oh2_SingletDM(double &result)
+    {
+      using namespace Pipes::RD_oh2_SingletDM;
+      double sigmaV = (*Dep::GA_BRs).sigmaV;
+      result = 0.11/sigmaV * 3e-26;
+    }
+
+    void lnL_oh2_Simple(double &result)
+    {
+      using namespace Pipes::lnL_oh2_Simple;
+      double oh2 = *Dep::RD_oh2;
+      result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
+    }
   }
 }

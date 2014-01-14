@@ -1,0 +1,71 @@
+# GAMBIT Initialization file (in YAML)
+#
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+
+########################
+--- # Input parameters
+########################
+
+SingletDM:
+  lambda:
+    range: [0.1, 10]
+    fixed: false
+  mass:
+    range: [10, 100]
+    fixed: false
+
+###############################
+--- # Observables of interest
+###############################
+
+- purpose:      Likelihood
+  capability:   lnL_FermiLATdwarfs
+
+- purpose:      Likelihood
+  capability:   lnL_oh2
+
+#########################
+--- # Auxiliary entries
+#########################
+
+- capability:   "lnL_oh2"
+  dependencies:
+  - {capability: "RD_oh2", function: "RD_oh2_SingletDM"}
+
+##########################
+--- # Name/Value Section
+##########################
+
+# Some exemplary keys and subkeys
+my_key: 123
+another_key:
+  subkey3:
+    subsubkey1: value2
+
+#scanner:
+#  module:  crapsample
+#  file_path:  ScannerBit/lib/libsample.so
+
+scanner:
+  module:  multinest
+  file_path:  ScannerBit/lib/libmultinest_interface.so
+    
+enable_redirect: true
+
+redirect_output:
+   CMSSM_I:  xterm
+    
+crapsample:
+  point_number: 3
+  output_file:  output
+  like:  Likelihood
+
+loopsample:
+  point_number: 3
+  output_file:  output
+  like:  Likelihood
+  
+multnest:
+  output_file:  output
