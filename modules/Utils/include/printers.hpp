@@ -104,7 +104,7 @@ namespace Gambit
           {
             my_ostream << it->first <<":"<< it->second << ", ";
           }
-          my_ostream << "\b\b]";
+          my_ostream << "\b\b]" << std::endl;
         }
     
       private:
