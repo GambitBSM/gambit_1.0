@@ -3,50 +3,91 @@
 # Christoph Weniger <c.weniger@uva.nl>
 # June, July 2013
 #
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
 
-########################
---- # Input parameters
-########################
+###################################
+--- # Input parameter declarations
+###################################
+
+# First, simply register parameters, whether they are fixed, what value they are fixed to etc
+# Ben: the 'ranges' keyword CAN be entered here. If this is done, GAMBIT assumes you want
+# to sample from a flat prior over this range. For any other prior, you need to specify it
+# properly in the "priors" section.
 
 CMSSM_I:
   A0:
-    range: [1,2]
     fixed: true
+    range: [-1000, 1000]
   M0:
-    range: [1,2]
     fixed: true
   M12:
-    range: [1,2]
     fixed: true
     same_as: CMSSM_I::M0
   Mstop:
-    range: [1,2]
     fixed: true
     same_as: CMSSM_I::M12
   sgnmu:
-    range: [1,2]
     fixed: true
     fixed_value: 1.5
   tanb:
-    range: [1,2]
     fixed: true
+# Ben: this was in the old inifile: I don't know what it does 
   param_not_in_gambit:
 
 # The "adhoc" model bypasses ModelBit and produces some model parameter nodes
 # on the fly. This can be used for testing purposes.
 adhoc:
   m0:
-    range: [2, 4.5]
     fixed: true
+    range: [0, 5]
   m1:
-    range: [2, 4.5]
     fixed: true
+    range: [6, 10]
   m2:
-    range: [2, 4.5]
     fixed: true
-  m3:
-    range: [2, 4.5]
-    fixed: true
+    range: [50, 500]
+
+# Ben: proposed replacement for the input parameters section (to allow more general treatment of priors)
+
+##############################
+--- # Prior setup
+##############################
+
+# Here specify the priors, the parameters they work with, and any options as needed for that prior
+# A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
+# and then they are combined into a "composite" prior 
+
+# (I put this is a section outside of CMSSM_I, since in principle we could create composite priors that
+# mix together parameters of different models, though that would be weird. Might have to specify the
+# model name along with the parameter... e.g. CMSSM_I::M0, as in the "same_as" option.
+# The category names for each sub-prior are arbitrary, but I think needed due to the way yaml works.
+# (since I can't have several categories with the same name, e.g. "log")
+# Will need to think about how to deal with "effective" priors also...
+# Maybe just specify a module function which computes the effective prior factor?
+# Gambit will have to know to use this effective prior to weight the likelihood.
+# Really it can go straight into the likelihood, it is just that we need to keep
+# track of it so that it can be REMOVED from the likelihood when plotting
+# the likelihood itself (since it is NOT a likelihood). Actually, I think we
+# decided that we can deal with this via the "purpose" system.
+
+m0_prior:
+  parameters: [CMSSM_I::M0]
+  type: log
+  range: [0,1000]
+
+m12_prior: 
+  parameters: [CMSSM_I::M12]
+  type: log
+  range: [100,2000]
+
+tanbMstop_prior:
+  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
+  type: 2d_gaussian
+  options:
+    cov: [[0.5, 0.1],[0.1, 0.6]]
+    demo: 45
 
 ###############################
 --- # Observables of interest
