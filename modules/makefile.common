@@ -143,8 +143,18 @@ ifndef SHH
 endif
 
 # External code specific flags
-PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)
-PY8_LDFLAGS := $(shell pythia8-config --libs)
+# Ben: looks like environment variables are not inherited by 'shell'. We just need PATH here
+#  so I added this explicitly to the shell environment.
+PY8_CXXFLAGS := $(shell PATH=$(PATH) pythia8-config --cxxflags)
+PY8_LDFLAGS := $(shell PATH=$(PATH) pythia8-config --libs)
+
+# Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied toi). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
+#(i.e. 
+# pythia8-config --libs 
+# returns:
+# -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
+# while I need -L/home/farmer/bin/lib/archive
+PY8_LDFLAGS:=$(PY8_LD_HACK) $(PY8_LDFLAGS) 
 
 ifndef PY8_CXXFLAGS
   $(warning ***!!!***)
