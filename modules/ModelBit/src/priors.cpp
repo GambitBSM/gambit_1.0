@@ -224,7 +224,21 @@ namespace Gambit {
    // Transformation from unit hypercube to my_ranges
    std::map<std::string,double> CompositePrior::transform(const std::map<std::string,double>& unitpars) const
    {
-      std::map<std::string,double> transformedpars;
+      std::map<std::string,double> transformedpars; // Initialise empty map
+      // Check if unitpars is empty
+      if (unitpars.empty())
+      {
+         ///TODO: error
+         std::cout<<"Error in CompositePrior transform function! Supplied unitpars (unit hypercube parameter map) is empty!"<<std::endl;
+         exit(1);
+      }
+      std::cout<<unitpars.size()<<std::endl;
+      std::cout<<( unitpars.begin()==unitpars.end() )<<std::endl;
+      for(pars_const_it par = unitpars.begin(); par != unitpars.end(); par++) 
+      {
+         std::cout<<par->first<<std::endl;
+      }
+
       for (subpriors_it subprior=my_subpriors.begin(); subprior!=my_subpriors.end(); ++subprior)
       {
         // Better make sure the sub-prior object hasn't been lost somehow:
@@ -261,6 +275,7 @@ namespace Gambit {
         {
           /// TODO: Gambit error
           std::cout<<"Error in CompositePrior transform function! Parameter '"<<par->first<<"' was not transformed by any of the subprior objects! This problem should have been picked up by the PriorManager object when it built the subprior objects in the first place, please check for errors there! There could also be a bug in one of the subprior classes, i.e. if they don't return the transformed parameter that they are supposed to."<<std::endl;
+          std::cout<<transformedpars.count(par->first)<<std::endl;
           exit(1);
         }
       }

@@ -54,18 +54,17 @@ namespace Gambit {
             const ::Gambit::Priors::BasePrior *boundPrior;
             // Number of free parameters
             int my_ndim;
- 
+            // Parameter keys (names)
+            // TODO: Talk with Greg about how to handle this (well this whole wrapper actually...)
+            const std::vector<std::string> parameter_keys; 
+
          public:
   
             // Constructor
             // Possibly replace the function pointer to the prior function with something nicer, some virtual base class object or something.
-            LogLikeWrapper(::Gambit::Scanner::Function_Base *LogLike, const ::Gambit::Priors::BasePrior &prior, int ndim) 
-              : boundLogLike(LogLike), boundPrior(&prior), my_ndim(ndim) 
-            {
-              // Test that the prior has been bound properly
-              //std::vector<double> fakecube(my_ndim,0.5);
-              //boundPrior->transform(fakecube);
-            }
+            LogLikeWrapper(::Gambit::Scanner::Function_Base* LogLike, const ::Gambit::Priors::BasePrior& prior, int ndim, const std::vector<std::string>& keys) 
+              : boundLogLike(LogLike), boundPrior(&prior), my_ndim(ndim), parameter_keys(keys)
+            { }
    
             /******************************************** loglikelihood routine ****************************************************/
             
@@ -86,17 +85,19 @@ namespace Gambit {
             double LogLike(double *Cube, int ndim, int npars)
             {
                    // We need to get the unit interval parameters out of "Cube", transform them to their physical values, and then pass them to the Scanner LogLike function to compute the log likelihood value
-                   std::vector<double> unitpars(my_ndim); 
-                   std::vector<double> physicalpars(my_ndim);
+                   std::map<std::string,double> unitpars; 
+                   std::map<std::string,double> physicalpars;
                    double lnew;
                    int i;
-                   // Note: if (ndim!=my_ndim) we are going to have a problem!
-   
+                   // TODO: error
+                   if (ndim!=my_ndim) {std::cout<<"ndim!=my_ndim in multinest LogLike function!"<<std::endl; exit(1);}
+                   if (ndim!=parameter_keys.size()) {std::cout<<"ndim!=parameter_keys.size() in multinest LogLike function!"<<std::endl; exit(1);}
+
                    // Extra unit hypercube parameters from Cube
                    for(i = 0; i < ndim; i++)
                    {
-                      unitpars[i] = Cube[i];
-                          std::cout<<unitpars[i]<<std::endl;
+                      unitpars[parameter_keys[i]] = Cube[i];
+                      std::cout<<parameter_keys[i]<<" = "<<unitpars[parameter_keys[i]]<<std::endl;
                    }
  
                    if (boundPrior==NULL) {std::cout<<"null pointer!"<<std::endl;}
@@ -104,13 +105,22 @@ namespace Gambit {
                    physicalpars = boundPrior->transform(unitpars);
    
                    // Compute log-likelihood
-             	   lnew = (*boundLogLike)(physicalpars);
-   
+                   // TODO: Greg, physicalpars is now a map; can we change what boundLogLike accepts? There are probably a few things you might want to change about how this works actually. For now I'll pull the physical values out into a vector again
+                   std::vector<double> phys_vals_as_vector;
+                   for( std::map<std::string,double>::iterator it = physicalpars.begin(); it != physicalpars.end(); ++it ) {
+    	              phys_vals_as_vector.push_back( it->second );
+                   }
+
+                   // WANT TO DO THIS:
+             	   //lnew = (*boundLogLike)(physicalpars);
+                   // BUT FOR NOW HAVE TO DO THIS:
+                   lnew = (*boundLogLike)(phys_vals_as_vector); 
+
                    // Write the physical parameters back into Cube for multinest to write to output file (no other purpose)
                    // (at this point any extra observables that have been computed could also be added to Cube for transfer to the multinest-controlled output files. Must be sufficiently many slots reserved in Cube for this.
                    for(i = 0; i < ndim; i++)
                    {
-                      Cube[i] = physicalpars[i];
+                      Cube[i] = physicalpars[parameter_keys[i]];
                    }
 
                    // Done! (lnew will be used by MultiNest to guide the search)
@@ -264,8 +274,20 @@ SCANNER_PLUGIN (multinest)
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
                 // NOTE 2: Prior creation now shifted into ModelBit! Pointer to a prior object must wind up here somehow!
-                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims);
-       
+                // WANT TO DO THIS:
+                //::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims, keys);
+                // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
+                std::vector< ::Gambit::Priors::BasePrior* > subpriors;
+                std::pair<double,double> unit_range(0,1);
+                for( std::vector<std::string>::iterator it=keys.begin(); it!=keys.end(); it++)
+                {
+                  subpriors.push_back( new ::Gambit::Priors::RangePrior1D< ::Gambit::Priors::flatprior >(*it, unit_range) );
+                }
+                ::Gambit::Priors::CompositePrior prior(subpriors);
+                // REPLACE THE ABOVE BY PRIOR CREATED BY PRIOR FACTORY USING INIFILE
+
+                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims, keys);
+
                 // Stick a pointer to the wrapper object into "context" so it can be retrieved by the callback functions
                 //context = &loglwrapper;
                 
