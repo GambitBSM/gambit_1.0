@@ -1,39 +1,13 @@
 # simple makefile. 
 #
 # Lundberg 2011-Aug
-# Pat Scott 2012-Nov
+# Pat Scott 2012-Nov+
 # Abram Krislock 2014-Jan
 #
 ###
 include makefile.common
 
-# Ben: temporary ugly variables needed to link to multinest and include headers
-# We need these unless multinest gets installed somewhere that the various paths can find it. It does not do this by default
-# Currently Multinest must be built seperately, and gambit informed of its location via the below variables.
-# Gambit should build regardless of whether you have multinest or not.
-# To build the multinest-ScannerBit interface module, run "make -f makefile.g++ multinest"
-# Currently tested only with MultiNest_v3.3
-# (I have added this version of multinest to the 'extras' directory)
-# MULTINESTINC should be a path containing "multinest.h"
-# MULTINESTLIBDIR should be a path containing "libmultinest.so"
-MULTINESTINC = /usr/local/includes
-MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib
-# Also need to add this path to LD_LIBRARY_PATH so that the multinest library can be located at runtime. Or else we have to make sure it gets installed properly into say /usr/local/lib or some such.
-# UPDATE: To avoid messing up the shell environment, turns out we can compile the runtime path for shared libraries into our executables using the -rpath option. Doing this in LNFLAGS just below.
-# Another option would be to wrap the gambit executables in shell scripts which set local enironment variables appropriately before actually running gambit.
-
 CC = g++ 
 FC = gfortran
 CCEXTRA= -pipe -pg -Wextra -g 
-CFLAGS += -I$(MULTINESTINC)
-
-ifdef HAVE_MAC
-  LNFLAGS += -lstdc++ -dynamic -ldl -lgfortran -g -Wl,-rpath,$(MULTINESTLIBDIR)
-else
-  LNFLAGS += -lstdc++ -rdynamic -dynamic -ldl -lgfortran -lrt -g -Wl,-rpath,$(MULTINESTLIBDIR)
-endif
-
-#libmultinest_interface.so:
-multinest:
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/multinest.cpp -o $(SCANDIR)/lib/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
-	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/lib/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
+LNFLAGS += -g

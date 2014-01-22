@@ -124,7 +124,7 @@ namespace Gambit
         21.19538797,  16.42544039,  18.93568891,  22.40925288 
         };
     
-      double loglTotal;
+      double loglTotal = 0.;
       
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)

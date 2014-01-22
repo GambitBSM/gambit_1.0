@@ -1,14 +1,14 @@
 # common elements of both makefiles
 #
 # Lundberg 2011-Aug
-# Pat Scott 2012-Nov
+# Pat Scott 2012-Nov+
 # Abram Krislock 2014-Jan
 #
 ###
 
 export
 
-# some stuff in the code simply does not work on a Mac.
+# some stuff in the code simply does not work on a Mac (yet).
 # set HAVE_MAC to anything to get the compiler to skip that stuff.
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx HAVE_MAC=whatever
@@ -48,30 +48,12 @@ ifndef SHH
   $(info )
 endif
 
-LN = $(CC)
-ifdef SHH
-  CFLAGS = -O3 -g -fPIC -fopenmp -std=c++0x
-else
-  CFLAGS = -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
-endif
-FFLAGS = -O3 -fPIC
-# TODO is anyone using CCEXTRA??
-
-######################################################
-# Explicit options for gambit building:
-# 
-# CoreBit/include/logs.hpp:
-# hard disable (via macros) of low-level gambit debugging.
-# There are also in-code options, but this could potentially lead to
-# a speedup and smaller code. -1000 allows all log messages to be treated.
-#
-COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
-ifdef COLLIDE
-  COMPOPTS += -DCOLLIDE=$(COLLIDE) -DQUIET
-endif
-ifdef HAVE_MAC
-  COMPOPTS += -DHAVE_MAC=$(HAVE_MAC)
-endif
+#**********************  Begin temporary ScannerBit scanner library path hackery
+# Hard-coded Multinest paths
+# TODO set automatically at configure time eventually -- same goes for all scanner and backend libs
+MULTINESTINC = /usr/local/includes#                                       # path containing "multinest.h"
+MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib#   # path containing "libmultinest.so"
+#**********************
 
 # Location of gambit sub-directories
 COREDIR = Core
@@ -82,55 +64,72 @@ BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
+EXAMPLEADIR = ExampleBit_A
+EXAMPLEBDIR = ExampleBit_B
+EXSUSYSPECDIR = Example_SUSYspecBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
 
-# Location of external libraries used in HEColliderBit
-# TODO: once the class-loader is ready, will these still be needed?
+GCC++EXTRA= -Woverloaded-virtual
+CFLAGS= -I$(COREDIR)/include \
+	-I$(MODELDIR)/include \
+	-I$(MODELDIR)/include/models \
+	-I$(UTILSDIR)/include \
+	-I$(SCANDIR)/include \
+	-I$(BACKENDDIR)/include \
+	-I$(BACKENDDIR)/lib \
+	-I$(DARKDIR)/include \
+	-I$(FLAVDIR)/include \
+        -I$(HECOLLIDERDIR)/include \
+	-I$(EXAMPLEADIR)/include \
+	-I$(EXAMPLEBDIR)/include \
+	-I$(DARKDIR)/include \
+	-I$(EXSUSYSPECDIR)/include \
+	-I$(FLAVDIR)/include \
+	-I$(YAMLDIR)/include \
+	-I$(MULTINESTINC)
 
-ifndef DELPHES
-  DELPHES := $(DELPHESDIR)
-  ifndef DELPHES
-    DELPHES := $(DELPSDIR)
-  endif
-endif
-ifdef DELPHES
-  ifndef SHH
-    $(info INFO:)
-    $(info Delphes path = $(DELPHES))
-    $(info )
-  endif
+LN = $(CC)
+ifdef SHH
+  CFLAGS += -O3 -g -fPIC -fopenmp -std=c++0x 
 else
-  $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
-  ifdef COLLIDE
-    $(error HEColliderBit dependency error....)
+  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
+endif
+FFLAGS = -O3 -fPIC
+
+# CoreBit/include/logs.hpp:
+# hard disable (via macros) of low-level gambit debugging.
+# There are also in-code options, but this could potentially lead to
+# a speedup and smaller code. -1000 allows all log messages to be treated.
+# TODO this is legacy SUFIT, to be revised
+COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
+ifdef COLLIDE
+  COMPOPTS += -DCOLLIDE=$(COLLIDE) -DQUIET
+endif
+ifdef HAVE_MAC
+  COMPOPTS += -DHAVE_MAC=$(HAVE_MAC)
+endif
+CFLAGS += $(COMPOPTS)
+
+# Boost is required. Read README for details
+ifndef BOOST
+  ifdef BOOSTDIR
+    BOOST := $(BOOSTDIR)
   else
-    $(info Be sure to set that variable when compiling HEColliderBit)
+    $(info $$BOOSTDIR not defined.  Boost assumed to be installed in ./ or regular system paths.)
+    BOOSTINC=./
+    BOOST=./
+    export BOOST
   endif
 endif
-
-ifndef BOOST
-  BOOST := $(BOOSTDIR)
-endif
-ifndef SHH
-  ifdef BOOST
+ifdef BOOST
+  ifndef SHH
     $(info INFO:)
     $(info Boost path = $(BOOST))
     $(info )
-  else
-    $(warning $$BOOSTDIR variable not defined... Trying ./ instead.)
   endif
-endif
-
-
-# Boost is required. Read README for details
-ifdef BOOST
-BOOSTINC=$(BOOST)
-BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
-else
-BOOSTINC=./
-BOOST=./
-export BOOST
+  BOOSTINC=$(BOOST)
+  BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
 endif
 BOOST_CXXFLAGS := -I$(BOOSTINC)
 BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
@@ -141,180 +140,182 @@ ifndef SHH
   $(info Link    > $(BOOST_LDFLAGS))
   $(info )
 endif
+CFLAGS += $(BOOST_CXXFLAGS)
 
-# External code specific flags
-# Ben: looks like environment variables are not inherited by 'shell'. We just need PATH here
-#  so I added this explicitly to the shell environment.
-PY8_CXXFLAGS := $(shell PATH=$(PATH) pythia8-config --cxxflags)
-PY8_LDFLAGS := $(shell PATH=$(PATH) pythia8-config --libs)
-
-# Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied toi). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
-#(i.e. 
-# pythia8-config --libs 
-# returns:
-# -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
-# while I need -L/home/farmer/bin/lib/archive
-PY8_LDFLAGS:=$(PY8_LD_HACK) $(PY8_LDFLAGS) 
-
-ifndef PY8_CXXFLAGS
-  $(warning ***!!!***)
-  $(info Pythia compile flags failed to configure.)
-  $(info Please include /where/pythia/is/bin in your $$PATH variable.)
-  $(info You may also need to include /where/pythia/is/lib and)
-  $(info /where/pythia/is/lib/archive in your)
-  $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-  ifdef COLLIDE
-    $(error HEColliderBit dependency error....)
-  else
-    $(info Be sure to set these PATHs when compiling HEColliderBit)
-  endif
+LNFLAGS = $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -lyaml-cpp -Wl,-rpath,$(MULTINESTLIBDIR)
+ifdef HAVE_MAC
+  LNFLAGS += -dynamic
 else
-  ifndef SHH
-    $(info INFO:)
-    $(info -- Pythia8 Flags --)
-    $(info Compile > $(PY8_CXXFLAGS))
-    $(info Link    > $(PY8_LDFLAGS))
-    $(info )
-  endif
+  LNFLAGS += -rdynamic -lrt
 endif
 
-FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
-FJ_LDFLAGS := $(shell fastjet-config --libs)
 
-ifndef FJ_CXXFLAGS
-  $(info ***!!!***)
-  $(info Fastjet compile flags failed to configure.) 
-  $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
-  $(info You may also need to include /where/fastjet/is/lib in your)
-  $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-  ifdef COLLIDE
-    $(error HEColliderBit dependency error....)
-  else
-    $(info Be sure to set these PATHs when compiling HEColliderBit)
-  endif
-else
-  ifndef SHH
-    $(info INFO:)
-    $(info -- Fastjet Flags --)
-    $(info Compile > $(FJ_CXXFLAGS))
-    $(info Link    > $(FJ_LDFLAGS))
-    $(info )
-  endif
-endif
-
-ROOT_CXXFLAGS := $(shell root-config --cflags)
-ROOT_LDFLAGS := $(subst lib,lib -lEG,$(shell root-config --libs))
-
-ifndef ROOT_CXXFLAGS
-  $(info ***!!!***)
-  $(info ROOT compile flags failed to configure.) 
-  $(info Please use the 'thisroot' shell script from your ROOT installation.)
-  ifdef COLLIDE
-    $(error HEColliderBit dependency error....)
-  else
-    $(info Be sure to set up ROOT properly when compiling HEColliderBit)
-  endif
-else
-  ifndef SHH
-    $(info INFO:)
-    $(info -- ROOT Flags --)
-    $(info Compile > $(ROOT_CXXFLAGS))
-    $(info Link    > $(ROOT_LDFLAGS))
-    $(info )
-  endif
-endif
-
-DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
-DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
-
-ifndef DELPHES_CXXFLAGS
-  $(warning ***!!!***)
-  $(info Delphes compile flags failed to configure.)
-  $(info Please define an environment variable DELPHESDIR containing)
-  $(info the path to the root Delphes directory)
-  ifdef COLLIDE
-    $(error HEColliderBit dependency error....)
-  else
-    $(info Be sure to set these PATHs when compiling HEColliderBit)
-  endif
-else
-  ifndef SHH
-    $(info INFO:)
-    $(info -- Delphes Flags --)
-    $(info Compile > $(DELPHES_CXXFLAGS))
-    $(info Link    > $(DELPHES_LDFLAGS))
-    $(info )
-  endif
-endif
-
-CFLAGS += -O0 $(COMPOPTS) \
-					$(BOOST_CXXFLAGS)
+#**********************  Begin temporary ColliderBit no-backend hackery
 ifdef COLLIDE
+
+  # Flags, switches and directories for external libraries used in HEColliderBit.
+  # TODO: once the class-loader is ready, these will all either not be required, or just set automatically at BOSS time or configure time
+
+  ifndef DELPHES
+    DELPHES := $(DELPHESDIR)
+    ifndef DELPHES
+      DELPHES := $(DELPSDIR)
+    endif
+  endif
+
+  ifdef DELPHES
+    ifndef SHH
+      $(info INFO:)
+      $(info Delphes path = $(DELPHES))
+      $(info )
+    endif
+  else
+    $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
+    ifdef COLLIDE
+      $(error HEColliderBit dependency error....)
+    else
+      $(info Be sure to set that variable when compiling HEColliderBit)
+    endif
+  endif
+
+  # External code specific flags
+  # Ben: looks like environment variables are not inherited by 'shell'. We just need PATH here
+  #  so I added this explicitly to the shell environment.
+  PY8_CXXFLAGS := $(shell PATH=$(PATH) pythia8-config --cxxflags)
+  PY8_LDFLAGS := $(shell PATH=$(PATH) pythia8-config --libs)
+
+  # Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied toi). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
+  #(i.e. 
+  # pythia8-config --libs 
+  # returns:
+  # -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
+  # while I need -L/home/farmer/bin/lib/archive
+  PY8_LDFLAGS:=$(PY8_LD_HACK) $(PY8_LDFLAGS) 
+
+  ifndef PY8_CXXFLAGS
+    $(warning ***!!!***)
+    $(info Pythia compile flags failed to configure.)
+    $(info Please include /where/pythia/is/bin in your $$PATH variable.)
+    $(info You may also need to include /where/pythia/is/lib and)
+    $(info /where/pythia/is/lib/archive in your)
+    $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
+    ifdef COLLIDE
+      $(error HEColliderBit dependency error....)
+    else
+      $(info Be sure to set these PATHs when compiling HEColliderBit)
+    endif
+  else
+    ifndef SHH
+      $(info INFO:)
+      $(info -- Pythia8 Flags --)
+      $(info Compile > $(PY8_CXXFLAGS))
+      $(info Link    > $(PY8_LDFLAGS))
+      $(info )
+    endif
+  endif
+
+  FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+  FJ_LDFLAGS := $(shell fastjet-config --libs)
+
+  ifndef FJ_CXXFLAGS
+    $(info ***!!!***)
+    $(info Fastjet compile flags failed to configure.) 
+    $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
+    $(info You may also need to include /where/fastjet/is/lib in your)
+    $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
+    ifdef COLLIDE
+      $(error HEColliderBit dependency error....)
+    else
+      $(info Be sure to set these PATHs when compiling HEColliderBit)
+    endif
+  else
+    ifndef SHH
+      $(info INFO:)
+      $(info -- Fastjet Flags --)
+      $(info Compile > $(FJ_CXXFLAGS))
+      $(info Link    > $(FJ_LDFLAGS))
+      $(info )
+    endif
+  endif
+
+  ROOT_CXXFLAGS := $(shell root-config --cflags)
+  ROOT_LDFLAGS := $(subst lib,lib -lEG,$(shell root-config --libs))
+
+  ifndef ROOT_CXXFLAGS
+    $(info ***!!!***)
+    $(info ROOT compile flags failed to configure.) 
+    $(info Please use the 'thisroot' shell script from your ROOT installation.)
+    $(error HEColliderBit dependency error....)
+  else
+    ifndef SHH
+      $(info INFO:)
+      $(info -- ROOT Flags --)
+      $(info Compile > $(ROOT_CXXFLAGS))
+      $(info Link    > $(ROOT_LDFLAGS))
+      $(info )
+    endif
+  endif
+
+  DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
+  DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
+
+  ifndef DELPHES_CXXFLAGS
+    $(warning ***!!!***)
+    $(info Delphes compile flags failed to configure.)
+    $(info Please define an environment variable DELPHESDIR containing)
+    $(info the path to the root Delphes directory)
+    $(error HEColliderBit dependency error....)
+  else
+    ifndef SHH
+      $(info INFO:)
+      $(info -- Delphes Flags --)
+      $(info Compile > $(DELPHES_CXXFLAGS))
+      $(info Link    > $(DELPHES_LDFLAGS))
+      $(info )
+    endif
+  endif
+
   CFLAGS += $(PY8_CXXFLAGS) \
-						$(ROOT_CXXFLAGS) \
-						$(DELPHES_CXXFLAGS) \
-						$(FJ_CXXFLAGS)
-endif
+	$(ROOT_CXXFLAGS) \
+	$(DELPHES_CXXFLAGS) \
+	$(FJ_CXXFLAGS) \
 
-GCC++EXTRA=-Woverloaded-virtual
-CFLAGS += -I$(COREDIR)/include \
-					-I$(MODELDIR)/include -I$(MODELDIR)/include/models \
-					-I$(UTILSDIR)/include \
-					-I$(SCANDIR)/include \
-					-I$(BACKENDDIR)/include \
-					-I$(BACKENDDIR)/lib \
-					-I$(DARKDIR)/include \
-					-I$(FLAVDIR)/include \
-					-IExampleBit_A/include \
-					-IExampleBit_B/include \
-					-IDarkBit/include \
-					-IExample_SUSYspecBit/include \
-					-IFlavBit/include \
-					-I$(YAMLDIR)/include
+  LNFLAGS += $(PY8_LDFLAGS) \
+	$(FJ_LDFLAGS) \
+	$(ROOT_LDFLAGS) \
+	$(DELPHES_LDFLAGS)
 
-ifdef COLLIDE
-  CFLAGS += -I$(HECOLLIDERDIR)/include
 endif
+#**********************
 
 ifndef SHH
   $(info CFLAGS = $(CFLAGS))
   $(info )
-endif
-
-LNFLAGS =	$(BOOST_LDFLAGS)
-ifdef COLLIDE
-  LNFLAGS += $(PY8_LDFLAGS) \
-						 $(FJ_LDFLAGS) \
-						 $(ROOT_LDFLAGS) \
-						 $(DELPHES_LDFLAGS)
-endif
-
-ifndef SHH
   $(info LNFLAGS = $(LNFLAGS))
   $(info )
 endif
 
-
 # all phony stuff here
 .PHONY: default all clean sterile distclean doxygen mh
 
-# beb_tester from makefile.test_backend
-TARGETS = gambit_example beb_tester gambit_example_minimal
+TARGETS = gambit_example gambit_example_minimal
 
 default: mh gambit_example gambit_example_minimal
 
-all: mh gambit_example beb_tester gambit_example_minimal doxygen
+all: mh gambit_example gambit_example_minimal doxygen
 
 clean: 
 	@echo cleaning
 	@rm -rf $(TARGETS) 
 	@rm -rf */build/* 
+	@cd contrib/yaml-cpp-0.5.1; make clean
+	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
 	@rm -rf $(COREDIR)/build/.minihelp 
-	@rm -rf $(COREDIR)/include/*gch $(COREDIR)/include/*/*gch
 	@rm -f _*.txt
 	@rm -f *.gv
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
+	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)
 
 # also removes ~ files and other weirdly generated files
@@ -322,10 +323,8 @@ sterile: distclean
 	@true
 
 distclean: clean
-	@cd contrib/yaml-cpp-0.5.1; make clean
 	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
 	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
-	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
 
 $(COREDIR)/build/.minihelp:
 	@echo "*******************************************"
@@ -346,62 +345,55 @@ $(COREDIR)/build/.minihelp:
 mh: $(COREDIR)/build/.minihelp
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
-CORESRC:=$(wildcard $(COREDIR)/src/*cpp) $(wildcard $(COREDIR)/src/*c)
-CORELIBS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(CORESRC)))))
+CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
+COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(CORESRC))))
 
 MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp) \
-$(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
-MODELSRC:=$(wildcard $(MODELDIR)/src/*cpp) $(wildcard $(MODELDIR)/source/*c)
-MODELLIBS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(MODELSRC)))))
+ $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
+MODELSRC:=$(wildcard $(MODELDIR)/src/*cpp)
+MODELOBJS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(MODELSRC))))
 
 UTILSINC:=$(wildcard $(UTILSDIR)/include/*hpp) $(wildcard $(UTILSDIR)/include/*h)
-UTILSSRC:=$(wildcard $(UTILSDIR)/src/*cpp) $(wildcard $(UTILSDIR)/src/*c)
-UTILSLIBS:=$(addprefix $(UTILSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(UTILSSRC)))))
+UTILSSRC:=$(wildcard $(UTILSDIR)/src/*cpp)
+UTILSOBJS:=$(addprefix $(UTILSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(UTILSSRC))))
 
 BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp)  $(wildcard $(BACKENDDIR)/lib/*hpp) \
-$(wildcard $(BACKENDDIR)/include/*h)  $(wildcard $(BACKENDDIR)/lib/*h)
-BACKENDSRC:=$(wildcard $(BACKENDDIR)/src/*cpp) $(wildcard $(BACKENDDIR)/src/*c)
-BACKENDLIBS:=$(addprefix $(BACKENDDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(BACKENDSRC)))))
+ $(wildcard $(BACKENDDIR)/include/*h)  $(wildcard $(BACKENDDIR)/lib/*h)
+BACKENDSRC:=$(wildcard $(BACKENDDIR)/src/*cpp)
+BACKENDOBJS:=$(addprefix $(BACKENDDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(BACKENDSRC))))
 
 SCANINC:=$(wildcard $(SCANDIR)/include/*hpp) $(wildcard $(SCANDIR)/include/*h)
-SCANSRC:=$(wildcard $(SCANDIR)/src/*cpp) $(wildcard $(SCANDIR)/src/*c)
-SCANLIBS:=$(addprefix $(SCANDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SCANSRC)))))
+SCANSRC:=$(wildcard $(SCANDIR)/src/*cpp)
+SCANOBJS:=$(addprefix $(SCANDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(SCANSRC))))
 
 DARKINC:=$(wildcard $(DARKDIR)/include/*hpp) $(wildcard $(DARKDIR)/include/*h)
-DARKSRC:=$(wildcard $(DARKDIR)/src/*cpp) $(wildcard $(DARKDIR)/src/*c)
-DARKLIBS:=$(addprefix $(DARKDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(DARKSRC)))))
+DARKSRC:=$(wildcard $(DARKDIR)/src/*cpp)
+DARKOBJS:=$(addprefix $(DARKDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DARKSRC))))
 
 FLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
-FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp) $(wildcard $(FLAVDIR)/src/*c)
-FLAVLIBS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(FLAVSRC)))))
+FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp)
+FLAVOBJS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(FLAVSRC))))
 
 HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
 HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
-HECOLLIDERLIBS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(HECOLLIDERSRC)))))
+HECOLLIDEROBJS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(HECOLLIDERSRC))))
 
-EXAMPLE_AINC:=$(wildcard ExampleBit_A/include/*hpp) $(wildcard ExampleBit_A/include/*h)
-EXAMPLE_ASRC:=$(wildcard ExampleBit_A/src/*cpp) $(wildcard ExampleBit_A/src/*c)
-EXAMPLE_ALIBS:=$(addprefix ExampleBit_A/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXAMPLE_ASRC)))))
+EXAMPLE_AINC:=$(wildcard $(EXAMPLEADIR)/include/*hpp) $(wildcard $(EXAMPLEADIR)/include/*h)
+EXAMPLE_ASRC:=$(wildcard $(EXAMPLEADIR)/src/*cpp)
+EXAMPLE_AOBJS:=$(addprefix $(EXAMPLEADIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXAMPLE_ASRC))))
 
-EXAMPLE_BINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/include/*h)
-EXAMPLE_BSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
-EXAMPLE_BLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXAMPLE_BSRC)))))
+EXAMPLE_BINC:=$(wildcard $(EXAMPLEBDIR)/include/*hpp) $(wildcard $(EXAMPLEBDIR)/include/*h)
+EXAMPLE_BSRC:=$(wildcard $(EXAMPLEBDIR)/src/*cpp)
+EXAMPLE_BOBJS:=$(addprefix $(EXAMPLEBDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXAMPLE_BSRC))))
 
-EXSUSYSPECINC:=$(wildcard ExampleBit_B/include/*hpp) $(wildcard ExampleBit_B/include/*h)
-EXSUSYSPECSRC:=$(wildcard ExampleBit_B/src/*cpp) $(wildcard ExampleBit_B/src/*c)
-EXSUSYSPECLIBS:=$(addprefix ExampleBit_B/build/,$(notdir $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(EXSUSYSPECSRC)))))
+EXSUSYSPECINC:=$(wildcard $(EXSUSYSPECDIR)/include/*hpp) $(wildcard $(EXSUSYSPECDIR)/include/*h)
+EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
+EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
-# Well, crap. Some of these aren't even being used! What a confusing Makefile!!
-# # TODO clean up this crap. We still need to use and/or edit this Makefile
-# #      until the autotools are ready!!
-ALLINC = $(COREINC) $(MODELINC) $(UTILSINC) $(BACKENDINC) $(SCANINC) $(DARKINC) $(FLAVINC) $(HECOLLIDERINC) $(EXAMPLE_AINC) $(EXAMPLE_BINC) $(TMPSCANBITINC)
-ALLSRC = $(CORESRC) $(MODELSRC) $(UTILSSRC) $(BACKENDSRC) $(SCANSRC) $(DARKSRC) $(FLAVSRC) $(HECOLLIDERSRC) $(EXAMPLE_ASRC) $(EXAMPLE_BSRC) $(TMPSCANBITSRC)
-#ALLOBJECTS = $(CORELIBS) $(MODELLIBS) $(UTILSLIBS) $(BACKENDLIBS) $(SCANLIBS) $(DARKLIBS) $(FLAVLIBS) $(HECOLLIDERLIBS) $(EXAMPLE_ALIBS) $(EXAMPLE_BLIBS) $(TMPSCANBITLIBS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
-  ALLINC += $(HECOLLIDERINC)
-  ALLSRC += $(HECOLLIDERSRC)
-#  ALLOBJECTS += $(HECOLLIDEROBJECTS)
+  ALLOBJECTS += $(HECOLLIDEROBJECTS)
 endif
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
@@ -414,88 +406,69 @@ ifdef COLLIDE
   HARVESTER_OPTS += -c
 endif
 
-#Anything that needs compiling for gambit_example that is not in the Core/src directory
-BUILDOBJECTS = $(UTILSDIR)/build/exceptions.o \
-							 ExampleBit_A/build/ExampleBit_A.o \
-							 ExampleBit_B/build/ExampleBit_B.o \
-							 FlavBit/build/FlavBit.o \
-							 $(UTILSDIR)/build/rngs.o \
-							 $(UTILSDIR)/build/util_functions.o \
-							 $(UTILSDIR)/build/stream_printers.o \
-							 Example_SUSYspecBit/build/SUSYspecBit.o \
-							 DarkBit/build/DarkBit.o\
-							 $(YAMLDIR)/yaml-cpp.a
-
-ifdef COLLIDE
-	# TODO is there a slick way to include this...?
-	#      Apparently not. Due to the unuse of ALLOBJECTS, this makefile
-	#      is much less slick than I thought it was.
-  ANAOBJECTS = HEColliderBit/build/Analysis.o \
-							 HEColliderBit/build/Analysis_ATLAS_0LEPStop_20invfb.o \
-							 HEColliderBit/build/Analysis_ATLAS_0LEP_XXinvfb.o \
-							 HEColliderBit/build/Analysis_ATLAS_1LEPStop_20invfb.o \
-							 HEColliderBit/build/Analysis_ATLAS_2bStop_20invfb.o \
-							 HEColliderBit/build/Analysis_ATLAS_2LEPStop_20invfb.o \
-							 HEColliderBit/build/Analysis_Perf.o \
-							 HEColliderBit/build/mt2_bisect.o
-  DELPHESMODULEOBJECTS = HEColliderBit/build/AbsoluteIsolationModule.o \
-												 HEColliderBit/build/AbsoluteIsolationModule_dict.o \
-												 HEColliderBit/build/BTaggingWithTruthModule.o \
-												 HEColliderBit/build/BTaggingWithTruthModule_dict.o
-  BUILDOBJECTS += HEColliderBit/build/HEColliderBit.o \
-									HEColliderBit/build/Delphes3Backend.o \
-									HEColliderBit/build/Pythia8Backend.o \
-									$(ANAOBJECTS) \
-									$(DELPHESMODULEOBJECTS)
-endif
-
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(COREINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.c
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(COREINC)
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.f
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(UTILSINC)
 	@echo ___________Compiling $<:
-	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.f
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(MODELINC)
 	@echo ___________Compiling $<:
-	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(SCANINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
 	
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp
+$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(EXAMPLE_AINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.c
+$(EXAMPLEBDIR)/build/%.o: $(EXAMPLEBDIR)/src/%.cpp $(EXAMPLE_BINC)
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(DARKINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(FLAVINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+	
+$(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(EXSUSYSPECINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 ifdef COLLIDE
 	# Analysis...:
-$(HECOLLIDERDIR)/build/mt2_bisect.o: $(HECOLLIDERDIR)/src/analyses/mt2_bisect.cpp \
-																		 $(HECOLLIDERDIR)/src/analyses/mt2_bisect.h
+  $(HECOLLIDERDIR)/build/mt2_bisect.o: $(HECOLLIDERDIR)/src/analyses/mt2_bisect.cpp \
+   $(HECOLLIDERDIR)/src/analyses/mt2_bisect.h
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
 
-$(HECOLLIDERDIR)/build/Anal%.o: $(HECOLLIDERDIR)/src/analyses/Anal%.cpp
+  $(HECOLLIDERDIR)/build/Anal%.o: $(HECOLLIDERDIR)/src/analyses/Anal%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-  # Delphes modules...:
-$(HECOLLIDERDIR)/build/%Module.o: $(HECOLLIDERDIR)/src/delphes/%Module.cc
+	# Delphes modules...:
+  $(HECOLLIDERDIR)/build/%Module.o: $(HECOLLIDERDIR)/src/delphes/%Module.cc
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
 
-$(HECOLLIDERDIR)/build/%Module_dict.o: $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc
+  $(HECOLLIDERDIR)/build/%Module_dict.o: $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
 
-$(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
-															$(HECOLLIDERDIR)/src/delphes/%Module.h \
-															$(HECOLLIDERDIR)/src/delphes/%ModuleLinkDef.h
+  $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
+   $(HECOLLIDERDIR)/src/delphes/%Module.h \
+   $(HECOLLIDERDIR)/src/delphes/%ModuleLinkDef.h
 	@echo ___________Generating Dictionary from $^:
 	@rootcint -f $@ -c $(DELPHES_CXXFLAGS) $^
 	# hack, but blame rootcint for being dumb
@@ -504,143 +477,49 @@ $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
 	@sed 's,$(HECOLLIDERDIR)/src/delphes/,,g' $(patsubst %.cc,%.h,$@) > temp_dict.h
 	@mv temp_dict.h $(patsubst %.cc,%.h,$@)
 
-  # HEColliderBit...:
-$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp
+	# HEColliderBit
+  $(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
 
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) -I$(DSINC) $(CFLAGS) -c $< -o $@
-	
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
-	
 $(YAMLDIR)/yaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
 
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-ExampleBit_A/build/%.o: ExampleBit_A/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-ExampleBit_B/build/%.o: ExampleBit_B/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-
-DarkBit/build/%.o: DarkBit/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-DarkBit/build/%.o: DarkBit/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-DarkBit/build/%.o: DarkBit/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-
-FlavBit/build/%.o: FlavBit/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-FlavBit/build/%.o: FlavBit/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-FlavBit/build/%.o: FlavBit/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-	
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-Example_SUSYspecBit/build/%.o: Example_SUSYspecBit/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.c
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.f
-	@echo ___________Compiling $<:
-	$(FC) $(CFLAGS) -c $< -o $@
-
-gambit_example: $(FUNCTOR_TYPES) \
-								$(COREDIR)/build/gambit_example.o \
-								$(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) \
-								libfirst.so libfortran.so
+gambit_example: $(YAMLDIR)/yaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example.o $(CORELIBS) $(MODELLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example_minimal: $(FUNCTOR_TYPES) \
-												$(COREDIR)/build/gambit_example_minimal.o \
-												$(CORELIBS) $(SCANLIBS) $(MODELLIBS) $(BUILDOBJECTS) \
-												libfirst.so libfortran.so libsample.so libtest.so
+gambit_example_minimal: $(YAMLDIR)/yaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(CORELIBS) $(MODELLIBS) $(SCANLIBS) $(BUILDOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
 	python $(HARVESTER) $(HARVESTER_OPTS)
 
-libfirst.so:
+$(BACKENDDIR)/lib/libfirst.so: $(BACKENDDIR)/lib/libfirst.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
 	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o  
 
-libfortran.so:
+$(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o  
 	
-libsample.so:
+$(SCANDIR)/lib/libsample.so: $(SCANDIR)/lib/crapsample.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/crapsample.cpp -o $(SCANDIR)/lib/crapsample.o
 	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/crapsample.o  
 
-libtest.so:
+$(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
 
-# beb_tester from makefile.test_backend
-beb_tester: $(CORELIBS) $(BUILDOBJECTS) \
-						$(UTILSDIR)/build/backend-fherwig.o \
-						$(UTILSDIR)/build/beb_tester.o 
-	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_core.o $(COREDIR)/build/logs.o $(BUILDOBJECTS) $(UTILSDIR)/build/backend-fherwig.o $(UTILSDIR)/build/beb_tester.o $(CFLAGS) -o $@ $(LNFLAGS)
+#libmultinest_interface.so
+multinest:
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/multinest.cpp -o $(SCANDIR)/lib/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
+	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/lib/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
@@ -652,8 +531,8 @@ doxygen: $(DOCDIR)/html/index.html
 headertest:
 	@echo "simple, standalone header test: "
 	@for q in $(COREDIR)/include/*.hpp $(COREDIR)/include/*.hpp ; do \
-	echo "==================================================" ;\
-	echo "======= testing: $(CC) $(CFLAGS) $$q -o /dev/null";\
-	if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
+	 echo "==================================================" ;\
+	 echo "======= testing: $(CC) $(CFLAGS) $$q -o /dev/null";\
+	 if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
 ht: headertest
 

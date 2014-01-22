@@ -3,18 +3,11 @@ GAMBIT To-do List
 
 (G3 = GAMBIT III = March Collaboration Meeting)
 
-Core / Everybody
-----------------
-
-Makefiles:
-* Until the autotools are ready to go, can we please clean up the extra confusing makefile? Many of these make variables are not even being used.
-* Address some of the other TODOs in the makfiles.
 
 Core
 ----
 
 Rollcall:
-* Make functors thread-safe (**Pat; before Xmas**)
 * Implement scan-level and point-level initialisation functions, in both backends and modules (**Pat & Chistoph; before G3**)
 * Remove any need for macro calls from within module functions (macros-->safe pointer-like objects)  (**Anders; before G3**)
 * Allow grouping of backend requirements into blocks/groups  (**Pat; before G3**)
@@ -70,6 +63,8 @@ Done:
   - GAMBIT->Gambit
 * Create shorthand for parameter access from within module functions (e.g. Params["M0"])
 * Module-specific types in module directories, but common return types in Utils/include/shared_types.hpp
+* Make functors thread-safe
+* Until the autotools are ready to go, can we please clean up the extra confusing makefile? Many of these make variables are not even being used.
 
 
 Models
@@ -92,6 +87,8 @@ Done:
 
 HE Collider
 -----------
+
+* Address some of the other TODOs in the makfiles.
 
 * Py8 shower alpha_s -> 0.118
 
