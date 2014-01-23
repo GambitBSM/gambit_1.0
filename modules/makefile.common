@@ -390,6 +390,7 @@ EXSUSYSPECINC:=$(wildcard $(EXSUSYSPECDIR)/include/*hpp) $(wildcard $(EXSUSYSPEC
 EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
+GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
 ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
@@ -406,43 +407,43 @@ ifdef COLLIDE
   HARVESTER_OPTS += -c
 endif
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(GAMBITINC) $(ROLLCALL_HEADERS)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(UTILSINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(MODELINC)
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(SCANINC)
+$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(GAMBITINC) $(SCANINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
 	
-$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(EXAMPLE_AINC)
+$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_AINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(EXAMPLEBDIR)/build/%.o: $(EXAMPLEBDIR)/src/%.cpp $(EXAMPLE_BINC)
+$(EXAMPLEBDIR)/build/%.o: $(EXAMPLEBDIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_BINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(DARKINC)
+$(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(GAMBITINC) $(DARKINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(FLAVINC)
+$(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 	
-$(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(EXSUSYSPECINC)
+$(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(GAMBITINC) $(EXSUSYSPECINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
