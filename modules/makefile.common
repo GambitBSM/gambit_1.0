@@ -298,7 +298,7 @@ endif
 # all phony stuff here
 .PHONY: default all clean sterile distclean doxygen mh
 
-TARGETS = gambit_example gambit_example_minimal
+TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
 
 default: mh gambit_example gambit_example_minimal
 
@@ -431,6 +431,10 @@ $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_AINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
+$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(BACKENDINC) $(UTILSINC) $(MODELINC) $(EXAMPLE_AINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 $(EXAMPLEBDIR)/build/%.o: $(EXAMPLEBDIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_BINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -497,6 +501,11 @@ gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) 
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+
+ExampleBit_A_standalone: $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) \
+ $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so
+	@echo ___________Linking $@:
+	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
 	python $(HARVESTER) $(HARVESTER_OPTS)

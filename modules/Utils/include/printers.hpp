@@ -87,6 +87,12 @@ namespace Gambit
           my_ostream<<value<<std::endl;       
         }
 
+        void print(int& value)
+        {
+          if (verbose) {std::cout<<"printing an int using ostreamPrinter!"<<std::endl;}
+          my_ostream<<value<<std::endl;       
+        }
+
         void print(std::vector<double>& value)
         {
           if (verbose) {std::cout<<"printing a std::vector<double> using ostreamPrinter!"<<std::endl;}
