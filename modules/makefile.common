@@ -142,7 +142,9 @@ ifndef SHH
 endif
 CFLAGS += $(BOOST_CXXFLAGS)
 
-LNFLAGS = $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -lyaml-cpp -Wl,-rpath,$(MULTINESTLIBDIR)
+#LNFLAGS = -L$(YAMLDIR) -lyaml-cpp $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+#Ben: for me, $(YAMLDIR)/yaml-cpp.a is the yaml library, i.e. it is not called libyaml-cpp.a, thus the -lyaml-cpp command doesn't work. I have replaced this with the full path
+LNFLAGS = $(YAMLDIR)/yaml-cpp.a $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
@@ -394,7 +396,8 @@ GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
 ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
-  ALLOBJECTS += $(HECOLLIDEROBJECTS)
+  ALLOBJECTS += $(HECOLLIDEROBJS)
+  $(info ALLOBJECTS = $(ALLOBJECTS))
 endif
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
