@@ -142,9 +142,7 @@ ifndef SHH
 endif
 CFLAGS += $(BOOST_CXXFLAGS)
 
-#LNFLAGS = -L$(YAMLDIR) -lyaml-cpp $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
-#Ben: for me, $(YAMLDIR)/yaml-cpp.a is the yaml library, i.e. it is not called libyaml-cpp.a, thus the -lyaml-cpp command doesn't work. I have replaced this with the full path
-LNFLAGS = $(YAMLDIR)/yaml-cpp.a $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS = -L$(YAMLDIR) -lyaml-cpp $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
@@ -397,7 +395,6 @@ ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(BACKENDOBJS) $(SCANOBJS) $(
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
-  $(info ALLOBJECTS = $(ALLOBJECTS))
 endif
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
@@ -487,16 +484,16 @@ ifdef COLLIDE
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
 
-$(YAMLDIR)/yaml-cpp.a:
+$(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
 
-gambit_example: $(YAMLDIR)/yaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
+gambit_example: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example_minimal: $(YAMLDIR)/yaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
+gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
