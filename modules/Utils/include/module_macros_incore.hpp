@@ -54,12 +54,12 @@
 #include <boost/preprocessor/logical/compl.hpp>
 
 #include "graphs.hpp"
-#include "dictionary.hpp"
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
+
 
 /// \name Tag-registration macros
 /// @{
@@ -71,6 +71,12 @@
 #define ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(TAG) namespace ModelTags { struct TAG; }
 /// @}
 
+
+/// \name Some simple macro constants
+/// @{
+#define IS_MODEL 1
+#define NOT_MODEL 0
+/// @}
 
 /// \name Rollcall macros (redirection within the Core).
 /// These are called from within rollcall headers in each module to 
@@ -100,7 +106,7 @@
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink depends on the 
 /// presence of another module function that can supply capability \em DEP, with
 /// return type \em TYPE.
-#define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE)
+#define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, NOT_MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
 /// specific model \em MODEL.  If this is absent, all models are allowed but no 
@@ -162,158 +168,113 @@
 
 /// Central module definition macro, used by modules and models.
 #define CORE_START_MODULE_COMMON(MODULE)                                       \
-      /* A way to fetch a trait of an observable or likelihood                 \
-      (like its type), based on its tag.*/                                     \
-      template <typename TAG>                                                  \
-      struct function_traits                                                   \
+                                                                               \
+      namespace Accessors                                                      \
       {                                                                        \
-        typedef double type;  /* Scalar numerical value by default. */         \
-      };                                                                       \
                                                                                \
-      /* Equivalent class for dependencies, where TAG is dependent upon        \
-      DEP_TAG */                                                               \
-      template <typename DEP_TAG, typename TAG>                                \
-      struct dep_traits                                                        \
-      {                                                                        \
-        typedef double type;  /* Scalar numerical value by default. */         \
-      };                                                                       \
+        /* Module name */                                                      \
+        str name() { return STRINGIFY(MODULE); }                               \
                                                                                \
-      /* Module name */                                                        \
-      str name() { return STRINGIFY(MODULE); }                                 \
+        /* Maps from tag strings to tag-specialisted functions */              \
+        std::map<str, bool(*)()> map_bools;                                    \
+        std::map<str, bool(*)(str)> condit_bools;                              \
+        std::map<str, std::map<str, bool(*)()> >model_bools;                   \
                                                                                \
-      /* Maps from tag strings to tag-specialisted functions */                \
-      std::map<str, void(*)()> map_voids;                                      \
-      std::map<str, bool(*)()> map_bools;                                      \
-      std::map<str, bool(*)(str)> condit_bools;                                \
-      std::map<str, std::map<str, bool(*)()> >model_bools;                     \
-      Gambit::dict moduleDict;                                                 \
+        /* All module observables/likelihoods, their dependencies, required    \
+        quantities from backends, and their types, as strings */               \
+        static std::map<str,str> iCanDo, iMayNeed, iMayNeedFromBackends;       \
                                                                                \
-      /* All module observables/likelihoods, their dependencies, required      \
-      quantities from backends, and their types, as strings */                 \
-      static std::map<str,str> iCanDo, iMayNeed, iMayNeedFromBackends;         \
+        /* Module provides observable/likelihood TAG? */                       \
+        template <typename TAG>                                                \
+        bool provides() { return false; }                                      \
                                                                                \
-      /* Module provides observable/likelihood TAG? */                         \
-      template <typename TAG>                                                  \
-      bool provides() { return false; }                                        \
+        /* Overloaded, non-templated version */                                \
+        bool provides(str obs)                                                 \
+        {                                                                      \
+          if (map_bools.find(obs) == map_bools.end()) { return false; }        \
+          return (*map_bools[obs])();                                          \
+        }                                                                      \
                                                                                \
-      /* Overloaded, non-templated version */                                  \
-      bool provides(str obs)                                                   \
-      {                                                                        \
-        if (map_bools.find(obs) == map_bools.end()) { return false; }          \
-        return (*map_bools[obs])();                                            \
-      }                                                                        \
+        /* Module requires observable/likelihood DEP_TAG to compute TAG */     \
+        template <typename DEP_TAG, typename TAG>                              \
+        bool requires() { return false; }                                      \
                                                                                \
-      /* Module requires observable/likelihood DEP_TAG to compute TAG */       \
-      template <typename DEP_TAG, typename TAG>                                \
-      bool requires() { return false; }                                        \
+        /* Overloaded, non-templated version */                                \
+        bool requires(str dep, str obs)                                        \
+        {                                                                      \
+          if (map_bools.find(dep+obs) == map_bools.end()) { return false; }    \
+          return (*map_bools[dep+obs])();                                      \
+        }                                                                      \
                                                                                \
-      /* Overloaded, non-templated version */                                  \
-      bool requires(str dep, str obs)                                          \
-      {                                                                        \
-        if (map_bools.find(dep+obs) == map_bools.end()) { return false; }      \
-        return (*map_bools[dep+obs])();                                        \
-      }                                                                        \
+        /* Additional overloaded, non-templated versions */                    \
+        bool requires(str dep, str obs, str req, str be, str ver)              \
+        {                                                                      \
+          if (requires(dep, obs)) {return true; }                              \
+          if (condit_bools.find(dep+obs+req+be) == condit_bools.end())         \
+          {                                                                    \
+            return false;                                                      \
+          }                                                                    \
+          if ((*condit_bools[dep+obs+req+be])("any"))                          \
+          {                                                                    \
+            return true;                                                       \
+          }                                                                    \
+          else                                                                 \
+          {                                                                    \
+            return (*condit_bools[dep+obs+req+be])(ver);                       \
+          }                                                                    \
+        }                                                                      \
+        bool requires(str dep, str obs, str req, str be)                       \
+        {                                                                      \
+          return requires(dep, obs, req, be, "any");                           \
+        }                                                                      \
                                                                                \
-      /* Additional overloaded, non-templated versions */                      \
-      bool requires(str dep, str obs, str req, str be, str ver)                \
-      {                                                                        \
-        if (requires(dep, obs)) {return true; }                                \
-        if (condit_bools.find(dep+obs+req+be) == condit_bools.end())           \
+        /* Module requires quantity BE_TAG from a backend to compute TAG */    \
+        template <typename BE_TAG, typename TAG>                               \
+        bool needs_from_backend() { return false; }                            \
+                                                                               \
+        /* Overloaded, non-templated version */                                \
+        bool needs_from_backend(str quant, str obs)                            \
+        {                                                                      \
+          if (map_bools.find("BE_"+quant+obs) == map_bools.end()) return false;\
+          return (*map_bools["BE_"+quant+obs])();                              \
+        }                                                                      \
+                                                                               \
+        /* Module may require observable/likelihood DEP_TAG to compute TAG,    \
+        depending on the backend and version meeting requirement REQ_TAG.*/    \
+        template <typename DEP_TAG, typename TAG, typename REQ_TAG,            \
+         typename BE>                                                          \
+        bool requires_conditional_on_backend(str ver) {return false; }         \
+                                                                               \
+        /* Overloaded version of templated function */                         \
+        template <typename DEP_TAG, typename TAG, typename REQ_TAG,            \
+         typename BE>                                                          \
+        bool requires_conditional_on_backend()                                 \
+        {                                                                      \
+          return requires_conditional_on_backend<DEP_TAG,TAG,                  \
+           REQ_TAG,BE>("any");                                                 \
+        }                                                                      \
+                                                                               \
+        /* Module may require observable/likelihood DEP_TAG to compute TAG,    \
+        depending on the model being scanned.*/                                \
+        template <typename DEP_TAG, typename TAG>                              \
+        bool requires_conditional_on_model(str model) {return false; }         \
+                                                                               \
+        /* Module allows use of model MODEL_TAG when computing TAG */          \
+        template <typename MODEL_TAG, typename TAG>                            \
+        bool explicitly_allowed_model()                                        \
         {                                                                      \
           return false;                                                        \
         }                                                                      \
-        if ((*condit_bools[dep+obs+req+be])("any"))                            \
+                                                                               \
+        /* Overloaded, non-templated version */                                \
+        bool allowed_model(str model, str obs)                                 \
         {                                                                      \
-          return true;                                                         \
+          if (model_bools.find(obs) == model_bools.end()) return true;         \
+          if (model_bools[obs].find(model) == model_bools[obs].end())          \
+           return false;                                                       \
+          return (*model_bools[obs][model])();                                 \
         }                                                                      \
-        else                                                                   \
-        {                                                                      \
-          return (*condit_bools[dep+obs+req+be])(ver);                         \
-        }                                                                      \
-      }                                                                        \
-      bool requires(str dep, str obs, str req, str be)                         \
-      {                                                                        \
-        return requires(dep, obs, req, be, "any");                             \
-      }                                                                        \
                                                                                \
-      /* Module requires quantity BE_TAG from a backend to compute TAG */      \
-      template <typename BE_TAG, typename TAG>                                 \
-      bool needs_from_backend() { return false; }                              \
-                                                                               \
-      /* Overloaded, non-templated version */                                  \
-      bool needs_from_backend(str quant, str obs)                              \
-      {                                                                        \
-        if (map_bools.find("BE_"+quant+obs) == map_bools.end()) return false;  \
-        return (*map_bools["BE_"+quant+obs])();                                \
-      }                                                                        \
-                                                                               \
-      /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
-      depending on the backend and version used to meet requirement REQ_TAG. */\
-      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
-      bool requires_conditional_on_backend(str ver) {return false; }           \
-                                                                               \
-      /* Overloaded version of templated function */                           \
-      template <typename DEP_TAG, typename TAG, typename REQ_TAG, typename BE> \
-      bool requires_conditional_on_backend()                                   \
-      {                                                                        \
-        return requires_conditional_on_backend<DEP_TAG,TAG,REQ_TAG,BE>("any"); \
-      }                                                                        \
-                                                                               \
-      /* Module may require observable/likelihood DEP_TAG to compute TAG,      \
-      depending on the model being scanned.*/                                  \
-      template <typename DEP_TAG, typename TAG>                                \
-      bool requires_conditional_on_model(str model) {return false; }           \
-                                                                               \
-      /* Module allows use of model MODEL_TAG when computing TAG */            \
-      template <typename MODEL_TAG, typename TAG>                              \
-      bool explicitly_allowed_model()                                          \
-      {                                                                        \
-        return false;                                                          \
-      }                                                                        \
-                                                                               \
-      /* Overloaded, non-templated version */                                  \
-      bool allowed_model(str model, str obs)                                   \
-      {                                                                        \
-        if (model_bools.find(obs) == model_bools.end()) return true;           \
-        if (model_bools[obs].find(model) == model_bools[obs].end())            \
-         return false;                                                         \
-        return (*model_bools[obs][model])();                                   \
-      }                                                                        \
-                                                                               \
-      /* Report on observable/likelihood TAG */                                \
-      template <typename TAG>                                                  \
-      void report()                                                            \
-      {                                                                        \
-        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
-      }                                                                        \
-                                                                               \
-      /* Overloaded, non-templated version */                                  \
-      void report(str obs)                                                     \
-      {                                                                        \
-        if (map_voids.find(obs) == map_voids.end())                            \
-        {                                                                      \
-          cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl; \
-        }                                                                      \
-        else { (*map_voids[obs])(); }                                          \
-      }                                                                        \
-                                                                               \
-      /* Alias for observable/likelihood function TAG */                       \
-      template <typename TAG>                                                  \
-      typename function_traits<TAG>::type result()                             \
-      {                                                                        \
-        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
-        return 0;                                                              \
-      }                                                                        \
-                                                                               \
-      /* Overloaded, 'stringy' version */                                      \
-      /* A templated function that uses an input string obs to pull a pointer  \
-      to the zero-parameter alias fuction above out of the module's private    \
-      dictionary.  It then dereferences that pointer, calls the function and   \
-      returns the result. */                                                   \
-      template <typename TYPE>                                                 \
-      TYPE result(str obs)                                                     \
-      {                                                                        \
-        return ( *moduleDict.get<TYPE(*)()>(obs) )();                          \
       }                                                                        \
                                                                                \
       /* Resolve dependency DEP_TAG in function TAG */                         \
@@ -391,14 +352,9 @@
     /* Add CAPABILITY to the global set of things that can be calculated*/     \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAPABILITY)                                   \
                                                                                \
-    namespace MODULE                                                           \
-    {                                                                          \
-                                                                               \
-      /* Indicate that this module can provide quantity CAPABILITY */          \
-      template <>                                                              \
-      bool provides<Tags::CAPABILITY>() { return true; }                       \
-                                                                               \
-    }                                                                          \
+    /* Indicate that this module can provide quantity CAPABILITY */            \
+    template <>                                                                \
+    bool MODULE::Accessors::provides<Tags::CAPABILITY>() { return true; }      \
                                                                                \
   }                                                                            \
 
@@ -438,22 +394,6 @@
 
 /// Main parts of the functor creation
 #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)               \
-  /* Set up an auxilary method to report stuff to the core about the           \
-  function.  Not actually sure what this would                                 \
-  be used for at this stage. */                                                \
-  template <>                                                                  \
-  void report<Tags::FUNCTION>()                                                \
-  {                                                                            \
-    cout<<"Dear Core, I provide the function with tag: "<<                     \
-    STRINGIFY(FUNCTION)<<endl;                                                 \
-  }                                                                            \
-                                                                               \
-  /* Register the FUNCTION's result TYPE */                                    \
-  template<>                                                                   \
-  struct function_traits<Tags::FUNCTION>                                       \
-  {                                                                            \
-    typedef TYPE type;                                                         \
-  };                                                                           \
                                                                                \
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
@@ -463,24 +403,15 @@
      STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
   }                                                                            \
                                                                                \
-  /* Set up an alias function to call the function */                          \
-  template <>                                                                  \
-  function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
-  {                                                                            \
-     Functown::FUNCTION.calculate();                                           \
-     BOOST_PP_IIF(IS_TYPE(void,TYPE),,return Functown::FUNCTION(0);)           \
-  }                                                                            \
-                                                                               \
   /* Set up the commands to be called at runtime to register the function*/    \
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
     Core.registerModuleFunctor(Functown::FUNCTION);                            \
     BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
-    map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;            \
-    map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;                  \
-    iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                             \
-    moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);    \
+    Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
+     &Accessors::provides<Tags::CAPABILITY>;                                   \
+    Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
   }                                                                            \
                                                                                \
   /* Create the function initialisation object */                              \
@@ -531,17 +462,9 @@
   }                                                                            \
 
 
-/// First common component of CORE_DEPENDENCY(DEP, TYPE) and 
+/// First common component of CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                       \
-                                                                               \
-      /* Register the required TYPE of the required observable or likelihood   \
-      function DEP */                                                          \
-      template<>                                                               \
-      struct dep_traits<Tags::DEP, Tags::FUNCTION>                             \
-      {                                                                        \
-        typedef TYPE type;                                                     \
-      };                                                                       \
                                                                                \
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
@@ -584,9 +507,9 @@
       }                                                                        \
 
 
-/// Second common component of CORE_DEPENDENCY(DEP, TYPE) and 
+/// Second common component of CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
-#define DEPENDENCY_COMMON_2(DEP,TYPE)                                          \
+#define DEPENDENCY_COMMON_2(DEP,FUNCTION)                                      \
                                                                                \
   /* Create the dependency initialisation object */                            \
   namespace Ini                                                                \
@@ -597,13 +520,16 @@
                                                                             
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
-#define CORE_DEPENDENCY(DEP, TYPE)                                             \
+#define CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, IS_MODEL_DEP)             \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Add DEP to global set of tags of recognised module capabilities/deps */ \
     ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
+                                                                               \
+    /* Put everything inside the Models namespace if this is a model dep */    \
+    BOOST_PP_IIF(IS_MODEL_DEP, namespace Models {, )                           \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
@@ -612,7 +538,7 @@
                                                                                \
       /* Indicate that FUNCTION requires DEP to have been computed previously*/\
       template <>                                                              \
-      bool requires<Tags::DEP, Tags::FUNCTION>()                               \
+      bool Accessors::requires<Tags::DEP, Tags::FUNCTION>()                    \
       {                                                                        \
         return true;                                                           \
       }                                                                        \
@@ -621,16 +547,19 @@
       template <>                                                              \
       void rt_register_dependency<Tags::DEP, Tags::FUNCTION> ()                \
       {                                                                        \
-        map_bools[STRINGIFY(CAT(DEP,FUNCTION))] =                              \
-         &requires<Tags::DEP, Tags::FUNCTION>;                                 \
-        iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
+        Accessors::map_bools[STRINGIFY(CAT(DEP,FUNCTION))] =                   \
+         &Accessors::requires<Tags::DEP, Tags::FUNCTION>;                      \
+        Accessors::iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                 \
         Functown::FUNCTION.setDependency(STRINGIFY(DEP),STRINGIFY(TYPE),       \
          &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
       }                                                                        \
                                                                                \
-      DEPENDENCY_COMMON_2(DEP, TYPE)                                           \
+      DEPENDENCY_COMMON_2(DEP, FUNCTION)                                       \
                                                                                \
     }                                                                          \
+                                                                               \
+    /* Close the Models namespace if this is a model dep */                    \
+    BOOST_PP_IIF(IS_MODEL_DEP, }, )                                            \
                                                                                \
   }                                                                            \
 
@@ -649,19 +578,10 @@
                                                                                \
       /* Indicate that FUNCTION can be used with MODEL */                      \
       template <>                                                              \
-      bool explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>()        \
+      bool Accessors::explicitly_allowed_model<ModelTags::MODEL,               \
+       Tags::FUNCTION>()                                                       \
       {                                                                        \
         return true;                                                           \
-      }                                                                        \
-                                                                               \
-      /* Create a pointer to the model parameter functor. To be filled by the  \
-      dependency resolver during runtime. */                                   \
-      namespace Parameters                                                     \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          module_functor<ModelParameters>* MODEL = NULL;                       \
-        }                                                                      \
       }                                                                        \
                                                                                \
       /* Create a safe pointer to the model parameter values. To be filled     \
@@ -670,7 +590,7 @@
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Model { safe_ptr<ModelParameters> MODEL; }                 \
+          namespace Dep { dep_bucket<ModelParameters> CAT(MODEL,_parameters); }\
         }                                                                      \
       }                                                                        \
                                                                                \
@@ -679,12 +599,13 @@
       void resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>                \
        (functor* params_functor, module_functor_common* this_functor)          \
       {                                                                        \
+        cout << "In the model resolve_dep for " << STRINGIFY(FUNCTION) << endl; /*FIXME*/\
         /* First try casting the pointer passed in to a module_functor */      \
-        Parameters::FUNCTION::MODEL =                                          \
+        module_functor<ModelParameters>* ptr =                                 \
          dynamic_cast<module_functor<ModelParameters>*>(params_functor);       \
                                                                                \
         /* Now test if that cast worked */                                     \
-        if (Parameters::FUNCTION::MODEL == 0)  /* It didn't; throw an error. */\
+        if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
           cout<<"Error: Null returned from dynamic cast in "<< endl;           \
           cout<<"MODULE::resolve_dependency, for model"<< endl;                \
@@ -695,12 +616,14 @@
           /** FIXME \todo throw real error here */                             \
         }                                                                      \
                                                                                \
-        /* It did! Set the pointer to the model parameter result. */           \
-        Pipes::FUNCTION::Model::MODEL =                                        \
-         Parameters::FUNCTION::MODEL->valuePtr();                              \
+        /* It did! Now initialize the safety_bucket using the functors.*/      \
+        Pipes::FUNCTION::Dep::CAT(MODEL,_parameters).initialize(ptr,           \
+         this_functor);                                                        \
         /* Get a pointer to the parameter map provided by this MODEL */        \
+        safe_ptr<ModelParameters> model_safe_ptr =                             \
+         Pipes::FUNCTION::Dep::CAT(MODEL,_parameters).safe_pointer();          \
         const std::map<str,double>* parameterMap =                             \
-         Pipes::FUNCTION::Model::MODEL->getValuesPtr();                        \
+         model_safe_ptr->getValuesPtr();                                       \
         /* Use that to add the parameters provided by this MODEL to the map    \
         of safe pointers to model parameters. */                               \
         for (std::map<str,double>::const_iterator it = parameterMap->begin();  \
@@ -711,6 +634,7 @@
           { /* Add a safe pointer to the value of this parameter to the map*/  \
             Pipes::FUNCTION::Param[it->first] =                                \
              safe_ptr<const double>(&(parameterMap->at(it->first)));           \
+             cout << "Added "<<it->first<<" to Param map in "<<STRINGIFY(FUNCTION)<<endl; /*FIXME*/\
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
@@ -730,9 +654,9 @@
       template <>                                                              \
       void rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION> ()         \
       {                                                                        \
-        model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =                   \
-         &explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>;          \
-        iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";                        \
+        Accessors::model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =        \
+         &Accessors::explicitly_allowed_model<ModelTags::MODEL,Tags::FUNCTION>;\
+        Accessors::iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";             \
         Functown::FUNCTION.setAllowedModel(STRINGIFY(MODEL));                  \
         Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
          STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \
@@ -752,9 +676,9 @@
 
 
 
-/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within the core.
-/// The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC (or no flag)
-/// corresponds to IS_VARIABLE=0.
+/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within 
+/// the core. The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC 
+/// (or no flag) corresponds to IS_VARIABLE=0.
 #define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
                                                                                \
   namespace Gambit                                                             \
@@ -765,15 +689,6 @@
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
-                                                                               \
-      /* Register the required return TYPE of the backend function/variable */ \
-      template<>                                                               \
-      struct dep_traits<BETags::BACKEND_REQ, Tags::FUNCTION>                   \
-      {                                                                        \
-        /* Use TYPE* for backend variables, and TYPE for backend functions */  \
-        typedef BOOST_PP_IIF(IS_VARIABLE, TYPE*, TYPE) type;                   \
-      };                                                                       \
-                                                                               \
       namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
@@ -794,7 +709,7 @@
                                                                                \
       /* Indicate that FUNCTION has a BACKEND_REQ */                           \
       template <>                                                              \
-      bool needs_from_backend<BETags::BACKEND_REQ, Tags::FUNCTION>()           \
+      bool Accessors::needs_from_backend<BETags::BACKEND_REQ, Tags::FUNCTION>()\
       {                                                                        \
         return true;                                                           \
       }                                                                        \
@@ -824,10 +739,10 @@
       template <>                                                              \
       void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
       {                                                                        \
-        map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =                 \
-         &needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;              \
+        Accessors::map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =      \
+         &Accessors::needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;   \
                                                                                \
-        iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =                         \
+        Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =              \
           BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE));        \
                                                                                \
         Functown::FUNCTION.setBackendReq(STRINGIFY(BACKEND_REQ),               \
@@ -900,11 +815,11 @@
       void rt_register_dependency                                              \
        <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION> ()                       \
       {                                                                        \
-        iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)] = STRINGIFY(TYPE);         \
+        Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)]=STRINGIFY(TYPE);\
       }                                                                        \
                                                                                \
       /* Create the first conditional dependency initialisation object */      \
-      DEPENDENCY_COMMON_2(CONDITIONAL_DEPENDENCY, TYPE)                        \
+      DEPENDENCY_COMMON_2(CONDITIONAL_DEPENDENCY, FUNCTION)                    \
                                                                                \
     }                                                                          \
                                                                                \
@@ -927,8 +842,9 @@
       /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have        \
       been computed previously if BACKEND is in use for BACKEND_REQ.*/         \
       template <>                                                              \
-      bool requires_conditional_on_backend<Tags::CONDITIONAL_DEPENDENCY,       \
-       Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND> (str ver)         \
+      bool Accessors::requires_conditional_on_backend                          \
+       <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,     \
+       BETags::BACKEND> (str ver)                                              \
       {                                                                        \
         typedef std::vector<str> vec;                                          \
         vec versions = delimiterSplit(VERSTRING, ",");                         \
@@ -945,14 +861,15 @@
       void rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
        Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND> ()                \
       {                                                                        \
-        condit_bools[STRINGIFY(CAT_4(CONDITIONAL_DEPENDENCY,FUNCTION,          \
-         BACKEND_REQ,BACKEND))] = &requires_conditional_on_backend             \
+        Accessors::condit_bools[STRINGIFY(CAT_4(CONDITIONAL_DEPENDENCY,        \
+         FUNCTION,BACKEND_REQ,BACKEND))] =                                     \
+         &Accessors::requires_conditional_on_backend                           \
          <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,   \
          BETags::BACKEND>;                                                     \
         Functown::FUNCTION.setBackendConditionalDependency                     \
          (STRINGIFY(BACKEND_REQ), STRINGIFY(BACKEND), VERSTRING,               \
          STRINGIFY(CONDITIONAL_DEPENDENCY),                                    \
-         iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],                          \
+         Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],               \
          &resolve_dependency<Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);   \
       }                                                                        \
                                                                                \
@@ -982,8 +899,8 @@
       /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have        \
       been computed previously if one of the model in MODELSTRING is scanned.*/\
       template <>                                                              \
-      bool requires_conditional_on_model<Tags::CONDITIONAL_DEPENDENCY,         \
-       Tags::FUNCTION> (str model)                                             \
+      bool Accessors::requires_conditional_on_model                            \
+       <Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)               \
       {                                                                        \
         typedef std::vector<str> vec;                                          \
         vec models = delimiterSplit(MODELSTRING, ",");                         \
@@ -1000,12 +917,12 @@
       void rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
        Tags::FUNCTION> ()                                                      \
       {                                                                        \
-        condit_bools[STRINGIFY(CAT(CONDITIONAL_DEPENDENCY,FUNCTION))] =        \
-         &requires_conditional_on_model<Tags::CONDITIONAL_DEPENDENCY,          \
-         Tags::FUNCTION>;                                                      \
+        Accessors::condit_bools[STRINGIFY(CAT(CONDITIONAL_DEPENDENCY,          \
+         FUNCTION))] = &Accessors::requires_conditional_on_model               \
+         <Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION>;                        \
         Functown::FUNCTION.setModelConditionalDependency                       \
          (MODELSTRING, STRINGIFY(CONDITIONAL_DEPENDENCY),                      \
-         iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],                          \
+         Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],               \
          &resolve_dependency<Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);   \
       }                                                                        \
                                                                                \

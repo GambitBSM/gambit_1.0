@@ -73,7 +73,7 @@ namespace Gambit
        myStatus        (1),
        needs_recalculating (true) {}
       
-      /// Virtual calculate(), needs to be redefined in daughters.
+      /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate() {};
 
       // It may be safer to have some of the following things accessible 
@@ -89,6 +89,9 @@ namespace Gambit
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
       /// @}
+
+      /// Reset-then-recalculate method
+      virtual void reset_and_calculate() { this->reset(); this->calculate(); } 
 
       /// Setter for version
       void setVersion(str ver) { if (this == NULL) failBigTime("setVersion"); myVersion = ver; }
@@ -363,9 +366,8 @@ namespace Gambit
           for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
            it != myNestedFunctorList.end(); ++it) 
           {
-            (*it)->reset();                   // Reset the nested functor so that it recalculates.
             (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-            (*it)->calculate();               // Set the nested functor off.
+            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off
           }
         }
       } 
@@ -832,7 +834,7 @@ namespace Gambit
         {
           double nsec = 0, sec = 0;
           this->startTiming(nsec,sec);                       //Begin timing function evaluation
-          this->myFunction(myValue[omp_get_thread_num()]);  //Run and place result in the appropriate slot in myValue
+          this->myFunction(myValue[omp_get_thread_num()]);   //Run and place result in the appropriate slot in myValue
           this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         }
       }

@@ -43,7 +43,6 @@ Messaging:
 General:
 * Until automake and cmake are done, may want to make more "makefile.common" files for readability (**Abram; after getting things compiling again.**)
 * Experiment with automake and cmake for build (**Antje to update automake system to current master; Ben, Pat, Chistoph + others to test; Antje to merge into master before G3. Cmake to be left for after G3.**)
-* Create mini-core for module stand-alone releases (**Pat; before G3**)
 * Implement standalone compilation of physics modules (**Pat; before G3**)
 * Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat; before G3**)
 * Create SLHA internal representation, plus hook up file reader/writer. (**Are, Csaba; progress before G3, completion maybe not**) 
@@ -81,7 +80,7 @@ Ongoing:
   - Need to check if variadics exists before bothering to redefine the macro, or something.
 
 Done:
-
+* Reunify model macros with module macros as much as possible (dependency macro in particular)
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
 

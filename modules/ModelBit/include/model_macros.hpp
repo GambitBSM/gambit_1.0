@@ -17,6 +17,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July, Aug
+///  \date 2014 Jan
 ///
 ///  *********************************************
 
@@ -40,31 +41,15 @@
 /// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
 /// but are modified here and there to suit the role of models.
 
-/// Note: Piggybacks off the CORE_START_MODULE_COMMON macro, since we need all the
-/// same basic machinery this creates.
-// Removed for now
-//#define START_MODEL                                                          \
-  namespace Gambit {                                                           \
-    namespace Models {                                                         \
-      namespace MODEL {                                                        \
-                                                                               \
-        /* Model name */                                                       \
-        str name() { return STRINGIFY(MODEL); }                                \
-                                                                               \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-
-
+/// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
+/// machinery.
 #define START_MODEL                                                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
-    ADD_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL,_,parameters))                    \
-    /*FIXME PS: there is some duplication here -- we only really need to use the one tag as follows: */ \
-    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                       \
                                                                                \
     namespace Models                                                           \
     {                                                                          \
@@ -132,20 +117,10 @@
         /* Model parameter names */                                            \
         std::vector<str> parameterkeys;                                        \
                                                                                \
-        /* Pointer to the parameter object
-           (points to nothing until we initialise the parameter object) 
-           Not sure if there is some nicer way to do this, some prototyping
-           thing perhaps? Don't want to create these objects unless we 
-           actually need them...
-           UPDATE: This is now obsolete. ModelParameters live in their functors,
-           and we only do things with them via the "calculate" function of the
-           functor. */                                                         \
-        /*ModelParameters* parametersptr;         */                           \
-                                                                               \
         /* Add appropriate 'provides' check to confirm the parameters object 
            as a CAPABILITY of this model. */                                   \
         template <>                                                            \
-        bool provides<Tags::CAT_3(MODEL,_,parameters)>()                       \
+        bool Accessors::provides<Tags::CAT_3(MODEL,_,parameters)>()            \
         {                                                                      \
           return true;                                                         \
         }                                                                      \
@@ -216,10 +191,9 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
-        /* Indicate that this model::parameterisation can provide quantity 
-           CAPABILITY */                                                       \
+        /* Indicate that this PARAMETER can provide quantity CAPABILITY */     \
         template <>                                                            \
-        bool provides<Tags::CAPABILITY>() { return true; }                     \
+        bool Accessors::provides<Tags::CAPABILITY>() { return true; }          \
                                                                                \
         /* The wrapper function which extracts the value of PARAMETER from
            the parameter object. This is the analogue of a module function, 
@@ -237,11 +211,11 @@
                                                                                \
   }                                                                            \
                                                                                \
-  /* Create dependency of PARAMETER functor on
-     host model parameters object */                                           \
-  MODEL_DEPENDENCY(CAT_3(MODEL,_,parameters),ModelParameters,MODEL,PARAMETER)  \
+  /* Create dependency of PARAMETER functor on host model parameters object */ \
+  CORE_DEPENDENCY(CAT(MODEL,_parameters),ModelParameters,MODEL,PARAMETER,      \
+   IS_MODEL)                                                                   \
                                                                                \
-  /* Define the actual parameter setting function, now that we have the
+  /* Define the actual parameter setting function, now that we have the        
      functor and its dependency */                                             \
   namespace Gambit                                                             \
   {                                                                            \
@@ -256,10 +230,11 @@
            the parameter object. This is the analogue of a module function, 
            and is what will be wrapped in a functor for processing by the 
            core */                                                             \
-        void PARAMETER (double &result) {                                      \
-          using namespace Pipes::PARAMETER;                                    \
-        result = Dep::CAT_3(MODEL,_,parameters)->                              \
-          getValue(STRINGIFY(PARAMETER));                                      \
+        void PARAMETER (double &result)                                        \
+        {                                                                      \
+          safe_ptr<ModelParameters> model_safe_ptr =                           \
+           Pipes::PARAMETER::Dep::CAT(MODEL,_parameters).safe_pointer();       \
+          result = model_safe_ptr->getValue(STRINGIFY(PARAMETER));             \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -359,7 +334,10 @@
         /* Indicate that this model::parameterisation can provide quantity     \
            MODEL_X_parameters */                                               \
         template <>                                                            \
-        bool provides<Tags::CAT_3(MODEL_X,_,parameters)>() { return true; }    \
+        bool Accessors::provides<Tags::CAT_3(MODEL_X,_,parameters)>()          \
+        {                                                                      \
+          return true;                                                         \
+        }                                                                      \
                                                                                \
         /* The function which computes the MODEL_X_parameters object. This     \
            is the analogue of a module function, and is what will be wrapped   \
@@ -433,7 +411,7 @@
   }                                                                            \
 
 #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
-  MODEL_DEPENDENCY(DEP, TYPE, MODEL, CAT_3(MODEL_X,_,parameters) )             \
+  CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT_3(MODEL_X,_,parameters), IS_MODEL)     \
 
 // Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 #define INTERPRET_AS_PARENT__BEGIN                                             \
@@ -445,125 +423,6 @@
 #define INTERPRET_AS_PARENT__DEFINE(FUNC)                                      \
   INTERPRET_AS_X__DEFINE(PARENT,FUNC)                                          \
 
-/// Dependency related macros. Note macro format:
-///   CORE_DEPENDENCY_GUTS(DEP, TYPE, MODULE, FUNCTION)
-/// where FUNCTION is really whatever label the functor with this dependency
-/// has.
-
-// Anders: I put this macro here to separate it from the macros in module_macros_incore.hpp.
-//         As I made changes to those macros, this whole model system failed, 
-//         so I figured it was better to make them separate for now. 
-//         Perhaps someone in the Model group can take a look and decide whether these macros
-//         should be combined again.   
-#define MODEL_DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                 \
-                                                                               \
-      /* Register the required TYPE of the required observable or likelihood   \
-      function DEP */                                                          \
-      template<>                                                               \
-      struct dep_traits<Tags::DEP, Tags::FUNCTION>                             \
-      {                                                                        \
-        typedef TYPE type;                                                     \
-      };                                                                       \
-                                                                               \
-      /* Create a pointer to the dependency functor. To be filled by the       \
-      dependency resolver during runtime. */                                   \
-      namespace Dependencies                                                   \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          module_functor<TYPE>* DEP = NULL;                                    \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Create a safe pointer to the dependency result. To be filled          \
-      automatically at runtime when the dependency is resolved. */             \
-      namespace Pipes                                                          \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          BOOST_PP_IIF(IS_TYPE(void,TYPE),,namespace Dep {safe_ptr<TYPE> DEP;})\
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      /* Resolve dependency DEP in FUNCTION */                                 \
-      template <>                                                              \
-      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor, \
-       module_functor_common* this_functor)                                    \
-      {                                                                        \
-        /* First try casting the pointer passed in to a module_functor */      \
-        Dependencies::FUNCTION::DEP =                                          \
-         dynamic_cast<module_functor<TYPE>*>(dep_functor);                     \
-                                                                               \
-        /* Now test if that cast worked */                                     \
-        if (Dependencies::FUNCTION::DEP == 0)  /* It didn't; throw an error. */\
-        {                                                                      \
-          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
-          cout<<"MODULE::resolve_dependency, for dependency"<< endl;           \
-          cout<<"DEP of function FUNCTION.  Attempt was to "<< endl;           \
-          cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
-          cout<<dep_functor->origin()<<"."<<endl;                              \
-          /** FIXME \todo throw real error here */                             \
-        }                                                                      \
-        else /* It did!  Now set the pointer to the dependency result. */      \
-        {                                                                      \
-         BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                     \
-          Pipes::FUNCTION::Dep::DEP =                                          \
-           Dependencies::FUNCTION::DEP->valuePtr(); )                          \
-        }                                                                      \
-                                                                               \
-      }                                                                        \
-
-
-/// ModelBit counterpart of CORE_DEPENDENCY(DEP, TYPE). Minor alterations made 
-/// to the namespace structure (added "models"), but otherwise identical to 
-/// CORE_DEPENDENCY. Also had to pull it into two pieces to accommodate the
-/// ability to write code straight in the model definition header file.
-
-/// Need this piece BEFORE the user code (so that the Dependencies and
-/// Pipes namespaces exist for use in their code)
-/// Make sure to put it inside the Gambit::Models::MODULE namespace, and don't
-/// forget to first ADD_TAG_IN_CURRENT_NAMESPACE(DEP) inside the GAMBIT
-/// namespace
-#define MODEL_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)                          \
-                                                                               \
-  namespace Gambit {                                                           \
-                                                                               \
-    /* Add DEP to global set of tags of recognised module capabilities/deps */ \
-    ADD_TAG_IN_CURRENT_NAMESPACE(DEP)                                          \
-                                                                               \
-    namespace Models                                                           \
-    {                                                                          \
-     namespace MODULE                                                          \
-     {                                                                         \
-      MODEL_DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                   \
-                                                                               \
-      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
-      template <>                                                              \
-      bool requires<Tags::DEP, Tags::FUNCTION>()                               \
-      {                                                                        \
-        return true;                                                           \
-      }                                                                        \
-                                                                               \
-      /* Set up the commands to be called at runtime to register dependency*/  \
-      template <>                                                              \
-      void rt_register_dependency<Tags::DEP, Tags::FUNCTION> ()                \
-      {                                                                        \
-        map_bools[STRINGIFY(CAT(DEP,FUNCTION))] =                              \
-         &requires<Tags::DEP, Tags::FUNCTION>;                                 \
-        iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                            \
-        Functown::FUNCTION.setDependency(STRINGIFY(DEP),STRINGIFY(TYPE),       \
-         &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
-      }                                                                        \
-                                                                               \
-      /* Create the dependency initialisation object */                        \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code CAT_3(DEP,_for_,FUNCTION)                                     \
-         (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                 \
-      }                                                                        \
-     }                                                                         \
-    }                                                                          \
-  }                                                                            \
 
 /// Macro to create and register primary model functors. 
 ///
@@ -576,23 +435,6 @@
 /// Version of MAKE_FUNCTOR modified to build primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(FUNCTION,TYPE,CAPABILITY,ORIGIN)       \
                                                                                \
-  /* Set up an auxilary method to report stuff to the core about the       
-  function.  Not actually sure what this would                             
-  be used for at this stage. */                                                \
-  template <>                                                                  \
-  void report<Tags::FUNCTION>()                                                \
-  {                                                                            \
-    cout<<"Dear Core, I provide the function with tag: "<<                     \
-    STRINGIFY(FUNCTION)<<endl;                                                 \
-  }                                                                            \
-                                                                               \
-  /* Register the FUNCTION's result TYPE */                                    \
-  template<>                                                                   \
-  struct function_traits<Tags::FUNCTION>                                       \
-  {                                                                            \
-    typedef TYPE type;                                                         \
-  };                                                                           \
-                                                                               \
   /* Create the function wrapper object (functor) */                           \
   /* Note: primary_model_functors can only contain results of type 
      ModelParameters, so the TYPE argument is not very useful in this macro.
@@ -604,14 +446,6 @@
      STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
   }                                                                            \
                                                                                \
-  /* Set up an alias function to call the function */                          \
-  template <>                                                                  \
-  function_traits<Tags::FUNCTION>::type result<Tags::FUNCTION>()               \
-  {                                                                            \
-     Functown::FUNCTION.calculate();                                           \
-     return Functown::FUNCTION(0);                                             \
-  }                                                                            \
-                                                                               \
   /* Set up the commands to be called at runtime to register the function,     \ 
      including registering the functor with the primaryModelFunctorList in     \
      the Core. */                                                              \
@@ -619,10 +453,9 @@
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
     Core.registerPrimaryModelFunctor(Functown::FUNCTION);                      \
-    map_bools[STRINGIFY(CAPABILITY)] = &provides<Tags::CAPABILITY>;            \
-    map_voids[STRINGIFY(FUNCTION)] = &report<Tags::FUNCTION>;                  \
-    iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                             \
-    moduleDict.set<TYPE(*)()>(STRINGIFY(FUNCTION),&result<Tags::FUNCTION>);    \
+    Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
+     &Accessors::provides<Tags::CAPABILITY>;                                   \
+    Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
   }                                                                            \
                                                                                \
   /* Create the function initialisation object */                              \

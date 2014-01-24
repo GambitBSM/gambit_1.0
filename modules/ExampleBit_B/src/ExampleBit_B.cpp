@@ -74,7 +74,7 @@ namespace Gambit
       result = 5.e10; 
     }
 
-    void nevents_postcuts (int    &result)          
+    void nevents_postcuts (int &result)          
     {
       using namespace Pipes::nevents_postcuts;
  

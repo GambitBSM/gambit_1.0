@@ -160,23 +160,14 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Create a pointer to the model functor. To be filled by the            \
-      dependency resolver during runtime. */                                   \
-      namespace Parameters                                                     \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          extern module_functor<ModelParameters>* MODEL;                       \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
       /* Create a safe pointer to the model parameters result. To be filled    \
       automatically at runtime when the dependency is resolved. */             \
       namespace Pipes                                                   \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
-          namespace Model {extern safe_ptr<ModelParameters> MODEL; }           \
+          namespace Dep {extern dep_bucket<ModelParameters>                    \
+           CAT(MODEL,_parameters); }                                           \
         }                                                                      \
       }                                                                        \
                                                                                \
