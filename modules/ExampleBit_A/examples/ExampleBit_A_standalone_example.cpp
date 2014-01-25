@@ -44,12 +44,12 @@ using std::endl;
   #undef CAPABILITY
 #undef MODULE
 
-// Ad-hoc function bodies for filling dependencies that can or should not otherwise be filled from inside ExampleBit_A.
+// Ad-hoc function bodies for filling dependencies that cannot or should not otherwise be filled from inside ExampleBit_A.
 namespace Gambit 
 {
   namespace ExampleBit_A
   {
-    void local_xsection(double &result) { result = 2.0; } //*Pipes::local_xsection::Param["M0"]; }
+    void local_xsection(double &result) { result = *Pipes::local_xsection::Param["M1"]; }
     void nevents_dummy(double &result) { result = 5.; }
   }
 }
@@ -65,18 +65,8 @@ int main()
   cout << endl << "Start ExampleBit_A standalone example" << endl;
   cout << "----------" << endl;
   
-  // Select the primary model(s) for which we will actuall be choosing parameter values.
-  std::vector<std::string> primaryModels; 
-  primaryModels.push_back("CMSSM_I");
-  cout << "Your selected model(s) are: " << primaryModels << endl;
-  
-  // Activate models
-  modelClaw.activatePrimaryModels(primaryModels);
-
-  // Retrieve a raw pointer to the parameter set(s), for manually setting their values
+  // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
   ModelParameters* CMSSM_primary_parameters = Models::CMSSM_I::Functown::primary_parameters.getcontentsPtr();
-  // Initialise it; FIXME this should not be required, as this step should be performed automatically in the constructor of the primary_model_functor, not inside its wrapped function
-  Models::CMSSM_I::Functown::primary_parameters.calculate();
 
   // Choose and set up a printer object
   printers::ostreamPrinter myPrinter(std::cout,1); 
@@ -99,9 +89,9 @@ int main()
   // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
   function_pointer_retriever.resolveBackendReq(&Backends::LibFortran::Functown::externalFunction);
   
-  // Notify the functors of the model being scanned FIXME this needs to be made more elegant
-  //Models::CMSSM_I::Functown::MSSM_I_parameters.notifyOfModel("CMSSM_I");
-  //local_xsection.notifyOfModel("CMSSM_I");
+  // Notify the functors of the models being scanned FIXME this needs to be made more elegant with loops over lists
+  Models::CMSSM_I::Functown::MSSM_I_parameters.notifyOfModel("CMSSM_I");
+  local_xsection.notifyOfModel("CMSSM_I");
 
   // Resolve dependencies 'by hand'.  The ordering is unimportant, but *something* in the chain must 
   // have one of its dependencies filled by Models::PRI::Functown::primary_parameters, where PRI is a primary model.
@@ -145,7 +135,8 @@ int main()
     CMSSM_primary_parameters->setValue("tanb",i*10.);
     CMSSM_primary_parameters->setValue("sgnmu",1.);
 
-    // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled.
+    // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
+    // i.e. calculate quantities that other quantities depend on first.
     nevents_dummy.reset_and_calculate();
     Models::CMSSM_I::Functown::MSSM_I_parameters.reset_and_calculate();
     local_xsection.reset_and_calculate();
@@ -168,4 +159,4 @@ int main()
    
   return 1;
 
-};
+}

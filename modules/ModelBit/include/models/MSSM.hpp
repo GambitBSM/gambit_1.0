@@ -21,6 +21,7 @@
 #define __MSSM_hpp__
 
 #include <string>
+#include <module_macros_incore.hpp>
 
 #define MODEL test_parent_I
   START_MODEL
@@ -50,9 +51,15 @@
       double M3 = p["M3"];
       
       //Can now get parameters less verbosely:
+      //double M1 = *Param["M1"];
+      //double M2 = *Param["M2"];
+      //double M3 = *Param["M3"];
+
+      //Or alternatively, if you also declare explicit dependencies on any of the parameters:
       //double M1 = *Dep::M1;
       //double M2 = *Dep::M2;
       //double M3 = *Dep::M3;
+      //*Params is the preferred way though.
       
       parentparams.setValue("p1", 0.01*M1*M2*M3);
       parentparams.setValue("p2", 0.10*M1*M2*M3);

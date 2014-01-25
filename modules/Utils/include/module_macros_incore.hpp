@@ -72,11 +72,20 @@
 /// @}
 
 
-/// \name Some simple macro constants
+/// \name Simple macro constants
 /// @{
 #define IS_MODEL 1
 #define NOT_MODEL 0
 /// @}
+
+/// \name String comparison macro
+/// Macros to evaluate whether a token is equal to "ModelParameters" or not
+/// \endcode
+/// @{
+#define YesThisIs_ModelParameters 1)(1
+#define IS_MODEL_PARAMETERS(TOKEN) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT(YesThisIs_,TOKEN))),2)
+/// @}
+
 
 /// \name Rollcall macros (redirection within the Core).
 /// These are called from within rollcall headers in each module to 
@@ -352,9 +361,17 @@
     /* Add CAPABILITY to the global set of things that can be calculated*/     \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAPABILITY)                                   \
                                                                                \
-    /* Indicate that this module can provide quantity CAPABILITY */            \
-    template <>                                                                \
-    bool MODULE::Accessors::provides<Tags::CAPABILITY>() { return true; }      \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      namespace Accessors                                                      \
+      {                                                                        \
+        /* Indicate that this module can provide quantity CAPABILITY */        \
+        template <>                                                            \
+        bool provides<Tags::CAPABILITY>() { return true; }                     \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
                                                                                \
   }                                                                            \
 
@@ -398,8 +415,12 @@
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
-    module_functor<TYPE> FUNCTION                                              \
-     (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
+    BOOST_PP_IIF(IS_MODEL_PARAMETERS(TYPE),                                    \
+      model_functor                                                            \
+    ,                                                                          \
+      module_functor<TYPE>                                                     \
+    )                                                                          \
+    FUNCTION (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),   \
      STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
   }                                                                            \
                                                                                \
@@ -536,11 +557,11 @@
                                                                                \
       DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                         \
                                                                                \
-      /* Indicate that FUNCTION requires DEP to have been computed previously*/\
-      template <>                                                              \
-      bool Accessors::requires<Tags::DEP, Tags::FUNCTION>()                    \
+      namespace Accessors                                                      \
       {                                                                        \
-        return true;                                                           \
+        /* Indicate that FUNCTION requires DEP to be computed previously*/     \
+        template <>                                                            \
+        bool requires<Tags::DEP, Tags::FUNCTION>() { return true; }            \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register dependency*/  \
@@ -576,15 +597,17 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Indicate that FUNCTION can be used with MODEL */                      \
-      template <>                                                              \
-      bool Accessors::explicitly_allowed_model<ModelTags::MODEL,               \
-       Tags::FUNCTION>()                                                       \
+      namespace Accessors                                                      \
       {                                                                        \
-        return true;                                                           \
+        /* Indicate that FUNCTION can be used with MODEL */                    \
+        template <>                                                            \
+        bool explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>()      \
+        {                                                                      \
+          return true;                                                         \
+        }                                                                      \
       }                                                                        \
                                                                                \
-      /* Create a safe pointer to the model parameter values. To be filled     \
+      /* Create a safety bucket to the model parameter values. To be filled    \
       automatically at runtime when the dependency is resolved. */             \
       namespace Pipes                                                          \
       {                                                                        \
@@ -599,7 +622,6 @@
       void resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>                \
        (functor* params_functor, module_functor_common* this_functor)          \
       {                                                                        \
-        cout << "In the model resolve_dep for " << STRINGIFY(FUNCTION) << endl; /*FIXME*/\
         /* First try casting the pointer passed in to a module_functor */      \
         module_functor<ModelParameters>* ptr =                                 \
          dynamic_cast<module_functor<ModelParameters>*>(params_functor);       \
@@ -634,7 +656,6 @@
           { /* Add a safe pointer to the value of this parameter to the map*/  \
             Pipes::FUNCTION::Param[it->first] =                                \
              safe_ptr<const double>(&(parameterMap->at(it->first)));           \
-             cout << "Added "<<it->first<<" to Param map in "<<STRINGIFY(FUNCTION)<<endl; /*FIXME*/\
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
@@ -656,7 +677,8 @@
       {                                                                        \
         Accessors::model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =        \
          &Accessors::explicitly_allowed_model<ModelTags::MODEL,Tags::FUNCTION>;\
-        Accessors::iMayNeed[STRINGIFY(MODEL)] = "ModelParameters";             \
+        Accessors::iMayNeed[STRINGIFY(CAT(MODEL,_parameters))] =               \
+         "ModelParameters";                                                    \
         Functown::FUNCTION.setAllowedModel(STRINGIFY(MODEL));                  \
         Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
          STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \
@@ -708,10 +730,13 @@
       }                                                                        \
                                                                                \
       /* Indicate that FUNCTION has a BACKEND_REQ */                           \
-      template <>                                                              \
-      bool Accessors::needs_from_backend<BETags::BACKEND_REQ, Tags::FUNCTION>()\
+      namespace Accessors                                                      \
       {                                                                        \
-        return true;                                                           \
+        template <>                                                            \
+        bool needs_from_backend<BETags::BACKEND_REQ, Tags::FUNCTION>()         \
+        {                                                                      \
+          return true;                                                         \
+        }                                                                      \
       }                                                                        \
                                                                                \
       /* Resolve backend requirement BACKEND_REQ in FUNCTION */                \
@@ -839,20 +864,23 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have        \
-      been computed previously if BACKEND is in use for BACKEND_REQ.*/         \
-      template <>                                                              \
-      bool Accessors::requires_conditional_on_backend                          \
-       <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,     \
-       BETags::BACKEND> (str ver)                                              \
+      namespace Accessors                                                      \
       {                                                                        \
-        typedef std::vector<str> vec;                                          \
-        vec versions = delimiterSplit(VERSTRING, ",");                         \
-        for (vec::iterator it = versions.begin() ; it != versions.end(); ++it) \
+        /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have      \
+        been computed previously if BACKEND is in use for BACKEND_REQ.*/       \
+        template <>                                                            \
+        bool requires_conditional_on_backend                                   \
+         <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,   \
+         BETags::BACKEND> (str ver)                                            \
         {                                                                      \
-          if (*it == ver) return true;                                         \
+          typedef std::vector<str> vec;                                        \
+          vec versions = delimiterSplit(VERSTRING, ",");                       \
+          for (vec::iterator it= versions.begin() ; it != versions.end(); ++it)\
+          {                                                                    \
+            if (*it == ver) return true;                                       \
+          }                                                                    \
+          return false;                                                        \
         }                                                                      \
-        return false;                                                          \
       }                                                                        \
                                                                                \
       /* Set up the second set of commands to be called at runtime to register \
@@ -896,19 +924,22 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to have        \
-      been computed previously if one of the model in MODELSTRING is scanned.*/\
-      template <>                                                              \
-      bool Accessors::requires_conditional_on_model                            \
-       <Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)               \
+      namespace Accessors                                                      \
       {                                                                        \
-        typedef std::vector<str> vec;                                          \
-        vec models = delimiterSplit(MODELSTRING, ",");                         \
-        for (vec::iterator it = models.begin() ; it != models.end(); ++it)     \
+        /* Indicate that FUNCTION requires CONDITIONAL_DEPENDENCY to be        \
+        computed previously if one of the models in MODELSTRING is scanned.*/  \
+        template <>                                                            \
+        bool requires_conditional_on_model                                     \
+         <Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)             \
         {                                                                      \
-          if (*it == model) return true;                                       \
+          typedef std::vector<str> vec;                                        \
+          vec models = delimiterSplit(MODELSTRING, ",");                       \
+          for (vec::iterator it = models.begin() ; it != models.end(); ++it)   \
+          {                                                                    \
+            if (*it == model) return true;                                     \
+          }                                                                    \
+          return false;                                                        \
         }                                                                      \
-        return false;                                                          \
       }                                                                        \
                                                                                \
       /* Set up the second set of commands to be called at runtime to register \

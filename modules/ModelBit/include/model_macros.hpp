@@ -114,45 +114,19 @@
           ini_code AddDescendant (&rt_add_descendant);                         \
         }                                                                      \
                                                                                \
-        /* Model parameter names */                                            \
-        std::vector<str> parameterkeys;                                        \
-                                                                               \
-        /* Add appropriate 'provides' check to confirm the parameters object 
-           as a CAPABILITY of this model. */                                   \
-        template <>                                                            \
-        bool Accessors::provides<Tags::CAT_3(MODEL,_,parameters)>()            \
+        namespace Accessors                                                    \
         {                                                                      \
-          return true;                                                         \
+          /* Add appropriate 'provides' check to confirm the parameters object 
+             as a CAPABILITY of this model. */                                 \
+          template <>                                                          \
+          bool provides<Tags::CAT(MODEL,_parameters)>() { return true; }       \
         }                                                                      \
                                                                                \
-        /* Track whether ModelParameters object has been initialised with the
-           correct keys yet */                                                 \
-        bool isinitialised(false);                                             \
-                                                                               \
-        /* Functor "calculate" function. Grabs parameters from the
-           alpha_parameters provided by ScannerBit and puts them into the
-           ModelParameters object */                                           \
-        /* Register (prototype) the function */                                \
-        void primary_parameters (ModelParameters &);                           \
+        /* Functor's actual "calculate" function.  Doesn't do anything. */     \
+        void primary_parameters (ModelParameters &result) {};                  \
                                                                                \
         /* Wrap it up in a primary_model_functor */                            \
         MAKE_PRIMARY_MODEL_FUNCTOR                                             \
-                                                                               \
-        /* Functor "calculate" function. Initialises the ModelParameters object,
-           causing it to define its parameters correctly */                    \
-        void primary_parameters (ModelParameters &functorobject)               \
-        {                                                                      \
-          if (not isinitialised)                                               \
-          {                                                                    \
-            /* Need to populate the functor parameters object with model
-               parameters. */                                                  \
-            cout<<"Initialising " STRINGIFY(MODEL) " parameter object"<<endl;  \
-                                                                               \
-            functorobject._definePars(parameterkeys);                          \
-            /*parametersptr = &functorobject;  now obsolete*/                  \
-            isinitialised = true;                                              \
-          }                                                                    \
-        }                                                                      \
                                                                                \
       }                                                                        \
     }                                                                          \
@@ -191,9 +165,12 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
-        /* Indicate that this PARAMETER can provide quantity CAPABILITY */     \
-        template <>                                                            \
-        bool Accessors::provides<Tags::CAPABILITY>() { return true; }          \
+        namespace Accessors                                                    \
+        {                                                                      \
+          /* Indicate that this PARAMETER can provide quantity CAPABILITY */   \
+          template <>                                                          \
+          bool provides<Tags::CAPABILITY>() { return true; }                   \
+        }                                                                      \
                                                                                \
         /* The wrapper function which extracts the value of PARAMETER from
            the parameter object. This is the analogue of a module function, 
@@ -249,6 +226,7 @@
 // need them if a specific capability is wanted, which MAP_TO_CAPABILITY
 // still provides.
 #define DEFINEPAR(PARAMETER)                                                   \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -258,17 +236,15 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
-        /* Add this parameter to the parameterkeys list (used later to         \
-           create the parameter object) */                                     \
-        /*parameterkeys.push_back(STRINGIFY(PARAMETER));                    */ \
-                                                                               \
-        /* Compiler doesn't like calling push_back yet it seems, so do it at   \
-           initialisation time using this ini_code trick. Don't call this      \
-           function ever again!*/                                              \
-        void CAT(add,PARAMETER)() {                                            \
-          parameterkeys.push_back(STRINGIFY(PARAMETER));                       \
+        /* A function that tells the functor holding the ModelParameters object\
+           to add the new parameter to its [parameter name, value] map. */     \
+        void CAT(add,PARAMETER)()                                              \
+        {                                                                      \
+          Functown::primary_parameters.addParameter(STRINGIFY(PARAMETER));     \
         }                                                                      \
                                                                                \
+        /* Compiler cann't call push_back, so do it at  initialisation time    \
+           using this ini_code trick. Don't call this function ever again!*/   \
         namespace Ini                                                          \
         {                                                                      \
           ini_code CAT(iniadd,PARAMETER) (&CAT(add,PARAMETER));                \
@@ -323,7 +299,7 @@
                                                                                \
     /* Add tags which specify MODEL_X's parameter object as a CAPABILITY of
        the current model */                                                    \
-    ADD_TAG_IN_CURRENT_NAMESPACE(CAT_3(MODEL_X,_,parameters))                  \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL_X,_parameters))                     \
                                                                                \
     namespace Models                                                           \
     {                                                                          \
@@ -331,12 +307,12 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
-        /* Indicate that this model::parameterisation can provide quantity     \
-           MODEL_X_parameters */                                               \
-        template <>                                                            \
-        bool Accessors::provides<Tags::CAT_3(MODEL_X,_,parameters)>()          \
+        namespace Accessors                                                    \
         {                                                                      \
-          return true;                                                         \
+          /* Indicate that this model::parameterisation can provide quantity   \
+             MODEL_X_parameters */                                             \
+          template <>                                                          \
+          bool provides<Tags::CAT(MODEL_X,_parameters)>() { return true; }     \
         }                                                                      \
                                                                                \
         /* The function which computes the MODEL_X_parameters object. This     \
@@ -344,11 +320,25 @@
            in a functor for processing by the core                             \
            Note: CODE must be enclosed in braces. */                           \
         /* Register (prototype) the function */                                \
-        void CAT_3(MODEL_X,_,parameters) (ModelParameters &);                  \
+        void CAT(MODEL_X,_parameters) (ModelParameters &);                     \
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
-        MAKE_FUNCTOR(CAT_3(MODEL_X,_,parameters),ModelParameters,              \
-          CAT_3(MODEL_X,_,parameters),MODEL,0)                                 \
+        MAKE_FUNCTOR(CAT(MODEL_X,_parameters),ModelParameters,                 \
+         CAT(MODEL_X,_parameters),MODEL,0)                                     \
+                                                                               \
+        /* Make a function that tells the functor to take its parameter        \
+           definition from MODEL_X's primary_parameters functor. */            \
+        void CAT(pars_for_,MODEL_X)()                                          \
+        {                                                                      \
+          MODEL_X::Functown::primary_parameters.donateParameters               \
+           (MODEL::Functown::CAT(MODEL_X,_parameters));                        \
+        }                                                                      \
+                                                                               \
+        /* Call it at initialisation time using an ini_code object. */         \
+        namespace Ini                                                          \
+        {                                                                      \
+          ini_code CAT(ini_pars_for_,MODEL_X) (&CAT(pars_for_,MODEL_X));       \
+        }                                                                      \
                                                                                \
       }                                                                        \
                                                                                \
@@ -357,7 +347,7 @@
   }                                                                            \
                                                                                \
   /* Automatically add a dependency on the host model's parameters */          \
-  INTERPRET_AS_X__DEPENDENCY(MODEL_X,CAT_3(MODEL,_,parameters),ModelParameters) \
+  INTERPRET_AS_X__DEPENDENCY(MODEL_X,CAT(MODEL,_parameters),ModelParameters)   \
   
   
 // Actually define the interpret_as_X function. Alternatively this could be
@@ -376,32 +366,15 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
-        /* Track whether MODEL_X_parameters functor has been initialised yet */\
-        bool CAT_3(MODEL_X,_,parameters_isinitialised)(false);                 \
-                                                                               \
         /* Prototype the user-defined function */                              \
         void FUNC (ModelParameters &);                                         \
                                                                                \
         /* The actual definition of the interpret_as_X function */             \
-        void CAT_3(MODEL_X,_,parameters) (ModelParameters &target_parameters)  \
+        void CAT(MODEL_X,_parameters) (ModelParameters &result)                \
         {                                                                      \
-          if (not CAT_3(MODEL_X,_,parameters_isinitialised) )                  \
-          {                                                                    \
-            /* Need to populate the functor parameters object with MODEL_X's
-               parameters. We could rewrite this to get the parameterkeys via
-               the dependency system if we like. Currently this won't compile
-               if MODEL_X has not been defined prior to the current model. */  \
-            cout<<"Initialising " STRINGIFY(MODEL_X) " parameter object "      \
-            "at behest of model " STRINGIFY(MODEL)                             \
-            <<endl;                                                            \
-                                                                               \
-            target_parameters._definePars(Models::MODEL_X::parameterkeys);     \
-            CAT_3(MODEL_X,_,parameters_isinitialised) = true;                  \
-          }                                                                    \
-          /* Run user-supplied code (which must take target_parameters as an
+          /* Run user-supplied code (which must take result as an
              argument, and set the parameters it contains as desired) */       \
-          FUNC (target_parameters);                                            \
-                                                                               \
+          FUNC (result);                                                       \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -411,7 +384,7 @@
   }                                                                            \
 
 #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
-  CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT_3(MODEL_X,_,parameters), IS_MODEL)     \
+  CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)        \
 
 // Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 #define INTERPRET_AS_PARENT__BEGIN                                             \
@@ -430,7 +403,7 @@
 /// Core's primary model functor list (no other functors are allowed here)         
 #define MAKE_PRIMARY_MODEL_FUNCTOR                                             \
   MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(primary_parameters,ModelParameters,          \
-    CAT_3(MODEL,_,parameters),MODEL)                                           \
+    CAT(MODEL,_parameters),MODEL)                                              \
   
 /// Version of MAKE_FUNCTOR modified to build primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(FUNCTION,TYPE,CAPABILITY,ORIGIN)       \
