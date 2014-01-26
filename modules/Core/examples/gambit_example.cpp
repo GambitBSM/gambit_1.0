@@ -221,15 +221,15 @@ int main( int argc, const char* argv[] )
 
   cout<<""<<endl;
   cout<<"Retrieving model names and lineages from their namespaces..."<<endl;
-  //cout<<"Models::MSSM::name(): "<<Models::MSSM::name()<<endl;
+  //cout<<"Models::MSSM::Accessors::name(): "<<Models::MSSM::Accessors::name()<<endl;
   // Models are no longer independent namespaces from parameterisations, they
   // simply combine together. So no more "name()" for just the base model.
-  cout<<"Models::MSSM_I::name(): "<<Models::MSSM_I::name()<<endl;
+  cout<<"Models::MSSM_I::Accessors::name(): "<<Models::MSSM_I::Accessors::name()<<endl;
   cout<<"Models::MSSM_I::lineage: "<<Models::MSSM_I::lineage<<endl;
 
-  cout<<"Models::CMSSM_I::name(): "<<Models::CMSSM_I::name()<<endl;
+  cout<<"Models::CMSSM_I::Accessors::name(): "<<Models::CMSSM_I::Accessors::name()<<endl;
   cout<<"Models::CMSSM_I::lineage: "<<Models::CMSSM_I::lineage<<endl;
-  cout<<"Models::CMSSM_II::name(): "<<Models::CMSSM_II::name()<<endl;
+  cout<<"Models::CMSSM_II::Accessors::name(): "<<Models::CMSSM_II::Accessors::name()<<endl;
   cout<<"Models::CMSSM_II::lineage: "<<Models::CMSSM_II::lineage<<endl;
 
   // So, every model parameterisation is now contained in a structure very
@@ -239,65 +239,34 @@ int main( int argc, const char* argv[] )
   // because they are auto-generated case, with enough info to avoid name
   // clashes. Only explicitly specified capabilities will have a "normal" name.
   
-  cout << "My name is " << Models::CMSSM_I::name() << endl;
-  cout << " I can calculate: " << endl << Models::CMSSM_I::iCanDo << endl;
-  cout << " ...but I may need: " << endl << Models::CMSSM_I::iMayNeed << endl;
+  cout << "My name is " << Models::CMSSM_I::Accessors::name() << endl;
+  cout << " I can calculate: " << endl << Models::CMSSM_I::Accessors::iCanDo << endl;
+  cout << " ...but I may need: " << endl << Models::CMSSM_I::Accessors::iMayNeed << endl;
   cout << endl;
 
-  cout << "I can do Mstop " << Models::CMSSM_I::provides("CMSSM_I_Mstop") << endl;
+  cout << "I can do Mstop " << Models::CMSSM_I::Accessors::provides("CMSSM_I_Mstop") << endl;
 
   // Note: Tags::CAPABILITY is Tags::CMSSM_I_M0 (since this also goes into the global tags box)
   //       Tags::FUNCTION is Tags::M0 (local to module scope, so this name is ok)
   // Which tag is which?
-  // provides<Tags::CAPABILITY>
-  // function_traits<Tags::FUNCTION>
-  // report<Tags::FUNCTION>
-  // result<Tags::FUNCTION>
-  // So only 'provides' uses the CAPABILITY tag.
+  // Accessors::provides<Tags::CAPABILITY>
   
   // FUNCTION == CAPABILITY in this case.
   cout << "Core says: report on Mstop!" << endl;
-  cout << "  " << Models::CMSSM_I::name() << " says: ";
-  cout << "  "; Models::CMSSM_I::report("Mstop");
-  if (Models::CMSSM_I::provides("Mstop")) {
-    cout << "OK, so what is it then?" << endl;
-    typedef Models::CMSSM_I::function_traits<Tags::Mstop>::type testType; //in this case the underlying type is double
-    // Call the module function by its tag  
-    testType Mstop = Models::CMSSM_I::result<Tags::Mstop>() ;
-    cout << "  " << Models::CMSSM_I::name() << " says: " << Mstop << " (tag-style)" <<endl ;
-    // Call the module function by its string name (could use TestType here too insead of double) 
-    double Mstop2 = Models::CMSSM_I::result<double>("Mstop") ;
-    cout << "  " << Models::CMSSM_I::name() << " says: " << Mstop << " (string-style)" <<endl ;
+  cout << "  " << Models::CMSSM_I::Accessors::name() << " says: ";
+  if (Models::CMSSM_I::Accessors::provides("Mstop")) {
     // Call the module function by its functor 
     Models::CMSSM_I::Functown::Mstop.calculate();
-    cout << "  " << Models::CMSSM_I::name() << " says: " << Models::CMSSM_I::Functown::Mstop(0) << " (functor-style)" <<endl ; 
+    cout << "  " << Models::CMSSM_I::Accessors::name() << " says: " << Models::CMSSM_I::Functown::Mstop(0) << endl ; 
   }
   
   /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
      can access the parameters this way now: */
   cout << "Core says: report on parameters!" << endl;
-  cout << "  " << Models::CMSSM_I::name() << " says: ";
-  cout << "  "; Models::CMSSM_I::report("parameters");
-  if (Models::CMSSM_I::provides("CMSSM_I_parameters")) {
-    cout << "OK, so what is it then?" << endl;
-    typedef Models::CMSSM_I::function_traits<Tags::primary_parameters>::type testType; //in this case the underlying type is ModelParameters
-    // Call the module function by its tag
-    // (creates a copy of the parameters object?)
-    /*
-    testType* CMSSMIparameters = Models::CMSSM::I::result<Tags::primary_parameters>;
-    // Extract parameters from the retrieved parameter object
-    cout << "  " << Models::CMSSM::I::name() << " says: M0 = " << \
-      CMSSMIparameters->getValue("M0")<< " (tag-style)" <<endl ;
-    cout << "  " << Models::CMSSM::I::name() << " says: M12 = " << \
-      CMSSMIparameters->getValue("M12")<< " (tag-style)" <<endl ;
-    cout << "  " << Models::CMSSM::I::name() << " says: tanb = " << \
-      CMSSMIparameters->getValue("tanB")<< " (tag-style)" <<endl ;
-    */
-    // Call the module function by its string name (could use TestType here too insead of double) 
-    
-    // IMPORTANT!
+  cout << "  " << Models::CMSSM_I::Accessors::name() << " says: ";
+  if (Models::CMSSM_I::Accessors::provides("CMSSM_I_parameters"))
+  {
     // This is the "proper" way to deal with the full set of a parameters of a model
-    cout << endl ;
     cout << " Functor access to ModelParameters object (currently read-only) " << endl ;
     cout << endl ;
     // First, make sure the functor has "run" so that it has obtained its values
@@ -305,16 +274,15 @@ int main( int argc, const char* argv[] )
     Models::CMSSM_I::Functown::primary_parameters.calculate(); //Already done, but doing it again won't hurt
     
     // Next, grab a safe pointer to the model object
-    // Cannot get the object using the () method because this *copies* the object
-    // stored in "value".
+    // Cannot get the object using the () method because this *copies* the object stored in "value".
     safe_ptr<ModelParameters> CMSSMIsafeptr = Models::CMSSM_I::Functown::primary_parameters.valuePtr();
     
     // Now we can do stuff with the ModelParameters object!
-    cout << "  " << Models::CMSSM_I::name() << " says: M0 = " << \
+    cout << "  " << Models::CMSSM_I::Accessors::name() << " says: M0 = " << \
       CMSSMIsafeptr->getValue("M0")<< " (functor safe_ptr-style)" <<endl ;
-    cout << "  " << Models::CMSSM_I::name() << " says: M12 = " << \
+    cout << "  " << Models::CMSSM_I::Accessors::name() << " says: M12 = " << \
       CMSSMIsafeptr->getValue("M12")<< " (functor safe_ptr-style)" <<endl ;
-    cout << "  " << Models::CMSSM_I::name() << " says: tanb = " << \
+    cout << "  " << Models::CMSSM_I::Accessors::name() << " says: tanb = " << \
       CMSSMIsafeptr->getValue("tanb")<< " (functor safe_ptr-style)" <<endl ;
     cout<<"Dumping CMSSM::I parameters...";
     CMSSMIsafeptr->print();
@@ -346,7 +314,7 @@ int main( int argc, const char* argv[] )
   
   cout<<endl;
   cout<<"Model congruency tests:"<<endl;
-  cout<<"Checking congruency of "<<Models::CMSSM_I::name()<<"..."<<endl;
+  cout<<"Checking congruency of "<<Models::CMSSM_I::Accessors::name()<<"..."<<endl;
   cout<<"lineage is:"<<Models::CMSSM_I::lineage<<endl;
   cout<<"is descendant of MSSM_I?         :"<<Models::CMSSM_I::is_descendant_of("MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<Models::CMSSM_I::is_descendant_of("CMSSM_I")<<endl;
@@ -356,7 +324,7 @@ int main( int argc, const char* argv[] )
   cout<<endl;
   
   // New way of checking congruency using global lineage database
-  cout<<"Checking congruency of "<<Models::CMSSM_I::name()<<" using database..."<<endl;
+  cout<<"Checking congruency of "<<Models::CMSSM_I::Accessors::name()<<" using database..."<<endl;
   cout<<"lineage is:"<< modelClaw.get_lineage("CMSSM_I") <<endl;
   cout<<"is descendant of MSSM_I?         :"<<strict_descendant_of("CMSSM_I","MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<strict_descendant_of("CMSSM_I","CMSSM_I")<<endl;
@@ -364,7 +332,7 @@ int main( int argc, const char* argv[] )
   cout<<"is descendant of CMSSM_II?       :"<<strict_descendant_of("CMSSM_I","CMSSM_II")<<endl;
     
   // Can now check ancestry using global 'descendants' database
-  cout<<"Finding descendants of "<<Models::MSSM_I::name()<<" using database..."<<endl;
+  cout<<"Finding descendants of "<<Models::MSSM_I::Accessors::name()<<" using database..."<<endl;
   cout<<"descendants are:"<< modelClaw.get_descendants("MSSM_I") <<endl;
   cout<<"is ancestor of MSSM_I?         :"<<strict_ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of or == MSSM_I?   :"<<ancestor_of("MSSM_I","MSSM_I")<<endl;
@@ -454,85 +422,59 @@ int main( int argc, const char* argv[] )
   SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&Gambit::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
 
   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
-  cout << "My name is " << ExampleBit_A::name() << endl;
-  cout << " I can calculate: " << endl << ExampleBit_A::iCanDo << endl;
-  cout << " ...but I may need: " << endl << ExampleBit_A::iMayNeed << endl;
+  cout << "My name is " << ExampleBit_A::Accessors::name() << endl;
+  cout << " I can calculate: " << endl << ExampleBit_A::Accessors::iCanDo << endl;
+  cout << " ...but I may need: " << endl << ExampleBit_A::Accessors::iMayNeed << endl;
   cout << endl;
   
-  cout << "I can do nevents (tag-style) " << ExampleBit_A::provides<Tags::nevents>() << endl;
-  cout << "I can do nevents (string-style) " << ExampleBit_A::provides("nevents") << endl;
-  if (ExampleBit_A::requires("nevents_like","nevents")) { 
+  cout << "I can do nevents (tag-style): " << ExampleBit_A::Accessors::provides<Tags::nevents>() << endl;
+  cout << "I can do nevents (string-style): " << ExampleBit_A::Accessors::provides("nevents") << endl;
+  if (ExampleBit_A::Accessors::requires("nevents_like","nevents")) { 
     cout << "I require nevents_like to do this though." << endl;
   }
-  cout << "I can do nevents_like " << ExampleBit_A::provides("nevents_like") << endl;
-  if (ExampleBit_A::requires("nevents","nevents_like")) { 
+  cout << "I can do nevents_like: " << ExampleBit_A::Accessors::provides("nevents_like") << endl;
+  if (ExampleBit_A::Accessors::requires("nevents","nevents_like")) { 
     cout << "I require nevents to do this though." << endl;
   }
-  //cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::provides<Tags::nevents_postcuts>() << endl;
-  cout << "I can do nevents_postcuts (string-style) " << ExampleBit_A::provides("nevents_postcuts") << endl;
-  cout << "I can do xsection " << ExampleBit_A::provides("xsection") << endl;
-  cout << "I can do id " << ExampleBit_A::provides("id") << endl;
+  //cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::Accessors::provides<Tags::nevents_postcuts>() << endl;
+  cout << "I can do nevents_postcuts: " << ExampleBit_A::Accessors::provides("nevents_postcuts") << endl;
+  cout << "I can do xsection: " << ExampleBit_A::Accessors::provides("xsection") << endl;
+  cout << "I can do id: " << ExampleBit_A::Accessors::provides("id") << endl;
+ 
 
-  //cout << "Core says: report on n_events_like!" << endl;
-  //cout << "  " << ExampleBit_A::name() << " says: ";
-  //cout << "  "; ExampleBit_A::report("nevents_like");
-  //if (ExampleBit_A::provides("nevents_like")) {
-  //  cout << "OK, so what is it then?" << endl;
-  //  typedef ExampleBit_A::function_traits<Tags::nevents_like>::type testType; //in this case the underlying type is double
-    // Call the module function by its tag  
-  //  testType nevents_like = ExampleBit_A::result<Tags::nevents_like>() ;
-  //  cout << "  " << ExampleBit_A::name() << " says: " << nevents_like << " (tag-style)" <<endl ;
-    // Call the module function by its string name (could use TestType here too insead of double) 
-  //  double nevents_like2 = ExampleBit_A::result<double>("nevents_like") ;
-  //  cout << "  " << ExampleBit_A::name() << " says: " << nevents_like2 << " (string-style)" <<endl ;
-    // Call the module function by its functor 
-  //  ExampleBit_A::Functown::nevents_like.calculate();
-  //  cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::Functown::nevents_like() << " (functor-style)" <<endl ; 
-  //}
-  
-
-  cout << "Core says: report on n_events_postcuts!" << endl;
-  cout << "  " << ExampleBit_A::name() << " says: ";
-  cout << "  "; ExampleBit_A::report("nevents_postcuts");
-  if (ExampleBit_A::provides("nevents_postcuts")) {
-    cout << "OK, so what is it then?" << endl;
-    //cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_postcuts>() << endl ;
-  }
   cout << "Core says: report on n_events!" << endl;
-  cout << "  " << ExampleBit_A::name() << " says: ";
-  cout << "  "; ExampleBit_A::report("nevents_dbl");
-  if (ExampleBit_A::provides("nevents")) {
-    cout << "OK, so what is it then?" << endl;
-    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << endl ;
+  cout << "  " << ExampleBit_A::Accessors::name() << " says: ";
+  if (ExampleBit_A::Accessors::provides("nevents"))
+  {
+    ExampleBit_A::Functown::nevents_dbl.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::nevents_dbl(0) << endl ;
   }
   cout << "Core says: report on n_events again!" << endl;
-  cout << "  " << ExampleBit_A::name() << " says: ";
-  cout << "  "; ExampleBit_A::report("nevents_dbl");
-  if (ExampleBit_A::provides("nevents")) {
-    cout << "OK, so what is it now, then?" << endl;
-    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_dbl>() << endl ;
+  cout << "  " << ExampleBit_A::Accessors::name() << " says: ";
+  if (ExampleBit_A::Accessors::provides("nevents"))
+  {
+    ExampleBit_A::Functown::nevents_dbl.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::nevents_dbl(0) << endl ;
   }
-  cout << "  " << ExampleBit_A::name() << " also says: ";
-  cout << "  "; ExampleBit_A::report("nevents_int");
-  if (ExampleBit_A::provides("nevents")) {
-    cout << "OK, so what is it then?" << endl;
-    cout << "  " << ExampleBit_A::name() << " says: " << ExampleBit_A::result<Tags::nevents_int>() << endl ;
+  cout << "  " << ExampleBit_A::Accessors::name() << " also says: ";
+  if (ExampleBit_A::Accessors::provides("nevents"))
+  {
+    ExampleBit_A::Functown::nevents_int.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::nevents_int(0) << endl ;
   }  
   cout << "Core says: report on the particle ID!" << endl;
-  cout << "  " << ExampleBit_A::name() << " says: ";
-  cout << "  "; ExampleBit_A::report("identity");
-  if (ExampleBit_A::provides("id")) {
-    cout << "OK, so what is it then?" << endl;
-    typedef ExampleBit_A::function_traits<Tags::identity>::type testType; //in this case the underlying type is std::string
-    testType identity = ExampleBit_A::result<Tags::identity>();
-    cout << "  " << ExampleBit_A::name() << " says: " << identity << endl ;
+  cout << "  " << ExampleBit_A::Accessors::name() << " says: ";
+  if (ExampleBit_A::Accessors::provides("id"))
+  {
+    ExampleBit_A::Functown::identity.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::identity(0) << endl ;
   }
 
 
   cout <<  endl;
-  cout << "My name is " << ExampleBit_B::name() << endl;
-  cout << " I can calculate: " << endl << ExampleBit_B::iCanDo << endl;
-  cout << " ...but I may need: " << endl << ExampleBit_B::iMayNeed << endl;
+  cout << "My name is " << ExampleBit_B::Accessors::name() << endl;
+  cout << " I can calculate: " << endl << ExampleBit_B::Accessors::iCanDo << endl;
+  cout << " ...but I may need: " << endl << ExampleBit_B::Accessors::iMayNeed << endl;
   cout << endl;
 
   cout << "In fact, given the backend functors I am connected to, my dependencies are exactly:" << endl;
@@ -542,40 +484,39 @@ int main( int argc, const char* argv[] )
     cout << it->first << "   " << it->second << endl;        
   }
 
-  cout << "I can do nevents " << ExampleBit_B::provides("nevents") << endl;
-  cout << "I can do nevents_like " << ExampleBit_B::provides("nevents_like") << endl;
-  cout << "I can do nevents_postcuts " << ExampleBit_B::provides("nevents_postcuts") << endl;
-  cout << "I can do xsection " << ExampleBit_B::provides("xsection") << endl;
-  cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::allowed_model("MSSM_I", "xsection") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::MSSM_I, Tags::xsection>() << ")" << endl;
-  cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::allowed_model("CMSSM_I", "xsection") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::xsection>() << ")" << endl;
-  cout << "I can do charge " << ExampleBit_B::provides("charge") << endl;
-  cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::allowed_model("MSSM_I", "exampleCharge") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::MSSM_I, Tags::exampleCharge>() << ")" << endl;
-  cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::allowed_model("CMSSM_I", "exampleCharge") << "(" << ExampleBit_B::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::exampleCharge>() << ")" << endl;
-  cout << "I can do id " << ExampleBit_B::provides("id") << endl;
+  cout << "I can do nevents " << ExampleBit_B::Accessors::provides("nevents") << endl;
+  cout << "I can do nevents_like " << ExampleBit_B::Accessors::provides("nevents_like") << endl;
+  cout << "I can do nevents_postcuts " << ExampleBit_B::Accessors::provides("nevents_postcuts") << endl;
+  cout << "I can do xsection " << ExampleBit_B::Accessors::provides("xsection") << endl;
+  cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::Accessors::allowed_model("MSSM_I", "xsection");
+  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::MSSM_I, Tags::xsection>() << ")" << endl;
+  cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::Accessors::allowed_model("CMSSM_I", "xsection");
+  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::xsection>() << ")" << endl;
+  cout << "I can do charge " << ExampleBit_B::Accessors::provides("charge") << endl;
+  cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::Accessors::allowed_model("MSSM_I", "exampleCharge");
+  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::MSSM_I, Tags::exampleCharge>() << ")" << endl;
+  cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::Accessors::allowed_model("CMSSM_I", "exampleCharge");
+  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::exampleCharge>() << ")" << endl;
+  cout << "I can do id " << ExampleBit_B::Accessors::provides("id") << endl;
   cout << "Core says: report on n_events!" << endl;
-  cout << ExampleBit_B::name() << " says: ";
-  cout << "  "; ExampleBit_B::report("nevents");
-  if (ExampleBit_B::provides("nevents")) {
-    cout << "OK, so what is it then?" << endl;
-    cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::result<Tags::nevents>() << endl ;
+  if (ExampleBit_B::Accessors::provides("nevents")) {
+    ExampleBit_B::Functown::nevents.calculate();
+    cout << "  " << ExampleBit_B::Accessors::name() << " says: " << ExampleBit_B::Functown::nevents(0) << endl ;
   }
   cout << "Core says: report on n_events_postcuts!" << endl;
-  cout << ExampleBit_B::name() << " says: ";
-  cout << "  "; ExampleBit_B::report("nevents_postcuts");
-  if (ExampleBit_B::provides("nevents_postcuts")) {
-    cout << "OK, so what is it then?" << endl;
+  if (ExampleBit_B::Accessors::provides("nevents_postcuts")) {
     ExampleBit_B::Functown::nevents_postcuts.calculate();
-    cout << "  " << ExampleBit_B::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts(0) << " (functor-style)" <<endl ;
+    cout << "  " << ExampleBit_B::Accessors::name() << " says: " << ExampleBit_B::Functown::nevents_postcuts(0) <<endl ;
   }
   cout << "Do you have a conditional dependency on an ID string when LibFirst v1.2 is used to provide awesomeness?"<<endl ;
-  cout << ExampleBit_B::name() << " says: ";
-  cout << ExampleBit_B::requires("id", "nevents_postcuts", "awesomeness", "LibFirst", "1.2") << endl;
+  cout << ExampleBit_B::Accessors::name() << " says: ";
+  cout << ExampleBit_B::Accessors::requires("id", "nevents_postcuts", "awesomeness", "LibFirst", "1.2") << endl;
   cout << "What about version 1.3?"<<endl;
-  cout << ExampleBit_B::name() << " says: ";
-  cout << ExampleBit_B::requires("id", "nevents_postcuts", "awesomeness", "LibFirst", "1.3") << endl;
+  cout << ExampleBit_B::Accessors::name() << " says: ";
+  cout << ExampleBit_B::Accessors::requires("id", "nevents_postcuts", "awesomeness", "LibFirst", "1.3") << endl;
   cout << "What about some other version?"<<endl;
-  cout << ExampleBit_B::name() << " says: ";
-  cout << ExampleBit_B::requires("id", "nevents_postcuts", "awesomeness", "LibFirst") << endl;
+  cout << ExampleBit_B::Accessors::name() << " says: ";
+  cout << ExampleBit_B::Accessors::requires("id", "nevents_postcuts", "awesomeness", "LibFirst") << endl;
   cout << "Tell me some stuff about nevents_postcuts."<<endl;
   std::vector<sspair> deps, deps2, deps3, reqs, permitted;
   deps =  ExampleBit_B::Functown::nevents_postcuts.dependencies();
@@ -616,22 +557,17 @@ int main( int argc, const char* argv[] )
   // ****************
 
   cout <<  endl;
-  cout << "My name is " << SUSYspecBit::name() << endl;
-  cout << " I can calculate: " << endl << SUSYspecBit::iCanDo << endl;
-  cout << " ...but I may need: " << endl << SUSYspecBit::iMayNeed << endl;
+  cout << "My name is " << SUSYspecBit::Accessors::name() << endl;
+  cout << " I can calculate: " << endl << SUSYspecBit::Accessors::iCanDo << endl;
+  cout << " ...but I may need: " << endl << SUSYspecBit::Accessors::iMayNeed << endl;
   cout << endl;
-  cout << "I can do MSSMspectrum " << SUSYspecBit::provides("MSSMspectrum") << endl;
+  cout << "I can do MSSMspectrum " << SUSYspecBit::Accessors::provides("MSSMspectrum") << endl;
   cout << "(the following are temporary capabilities that will be shifted to ModelBit)" <<endl;
-  cout << "I can do SMparameters " << SUSYspecBit::provides("SMparameters") << endl;
-  cout << "I can do CMSSMparameters " << SUSYspecBit::provides("CMSSMparameters") << endl;
-  cout << "I can do MSSMsoftmasses " << SUSYspecBit::provides("MSSMsoftmasses") << endl;
+  cout << "I can do SMparameters " << SUSYspecBit::Accessors::provides("SMparameters") << endl;
+  cout << "I can do CMSSMparameters " << SUSYspecBit::Accessors::provides("CMSSMparameters") << endl;
+  cout << "I can do MSSMsoftmasses " << SUSYspecBit::Accessors::provides("MSSMsoftmasses") << endl;
   
-  cout << "Core says: report on MSSMspectrum!" << endl;
-  cout << SUSYspecBit::name() << " says: ";
-  cout << "  "; SUSYspecBit::report("genMSSMspec"); //need to specify the FUNCTION, not the CAPABILITY to report.
-  
-  cout << "Tell me some stuff about genMSSMspec."<<endl;
-  //std::vector<sspair> deps, deps2, deps3, reqs, permitted;//reusing these
+  cout << "Core says: tell me about MSSMspectrum!" << endl;
   deps =  SUSYspecBit::Functown::genMSSMspec.dependencies();
   cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
   reqs =  SUSYspecBit::Functown::genMSSMspec.backendreqs();
@@ -639,11 +575,11 @@ int main( int argc, const char* argv[] )
 
   /* I am having trouble figuring out the "by-hand" dependency resolution for
      this, so cutting it out for now
-  if (SUSYspecBit::provides("MSSMspectrum")) {
+  if (SUSYspecBit::Accessors::provides("MSSMspectrum")) {
     cout << "OK, so what is it then?" << endl;
     SUSYspecBit::Functown::genMSSMspec.calculate(); // Not done automatically by valuePtr!
     safe_ptr<MSSMspecQ> spectrum = SUSYspecBit::Functown::genMSSMspec.valuePtr();
-    cout << "  " << SUSYspecBit::name() << " says: " << endl;
+    cout << "  " << SUSYspecBit::Accessors::name() << " says: " << endl;
     cout << "    stop1 mass = " << spectrum->MASS.stop1 << endl;
     cout << "    neut1 mass = " << spectrum->MASS.neut1 << endl;
   }

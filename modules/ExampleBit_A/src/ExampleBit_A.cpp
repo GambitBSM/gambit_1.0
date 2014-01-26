@@ -65,7 +65,7 @@ namespace Gambit
 
 
     // Module functions
-    void nevents_dbl  (double &result)    { result = count++; }
+    void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
     void nevents_int  (int    &result)    { result = (int) (*Pipes::nevents_int::Dep::nevents); }
     void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
@@ -82,21 +82,15 @@ namespace Gambit
     void damu (double &result)
     {
       using namespace Pipes::damu;
-      //Old way (still works, but no longer the canonical method):
-      // double p1 = Model::test_parent_I->getValue("p1");
-      // Model::test_parent_I->print();
-      //and so on...     
-      //The reason I made the ModelParameters object still
-      //available in Pipes::<functionname>::Model::<modelname>
-      //is that the authors of module functions may want to
-      //do something more advanced with it than just read off the
-      //parameter values.
-
       std::cout << "In ExampleBit_A, function damu" << std::endl;
       std::cout << "  Printing parameter values:" << std::endl;
       std::cout << "p1: " << *Param["p1"] << std::endl;
       std::cout << "p2: " << *Param["p2"] << std::endl;
       std::cout << "p3: " << *Param["p3"] << std::endl;
+      //A safety_bucket containing the ModelParameters object itself is also 
+      //available as a dependency at Pipes::<functionname>::Dep::<modelname>_parameters, 
+      //in case you want to do something more advanced than just read off the
+      //parameter values.
     }
     
     // Helper function: not wrapped in rollcall header
@@ -124,7 +118,7 @@ namespace Gambit
         21.19538797,  16.42544039,  18.93568891,  22.40925288 
         };
     
-      double loglTotal;
+      double loglTotal = 0.;
       
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)

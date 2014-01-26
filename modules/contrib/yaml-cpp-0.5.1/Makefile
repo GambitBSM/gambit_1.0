@@ -7,7 +7,7 @@
 # Edited - Abram Krislock January 2014
 #     to work better with main makefile
 
-YAML_CFLAGS= -Wall -g -O3 -Iinclude -I$(BOOST)
+YAML_CFLAGS:= -Wall -g -O3 -Iinclude -I$(BOOST)
 YAML_SRC:=$(wildcard src/*.cpp) 
 YAML_SRCCONT:=$(wildcard src/contrib/*.cpp)
 YAML_LIBS:=$(addprefix build/,$(notdir $(patsubst %.cpp,%.o,$(YAML_SRC))))
@@ -20,9 +20,9 @@ build/contrib/%.o: src/contrib/%.cpp
 	$(YAML_CC) -c -o $@ $< $(YAML_CFLAGS)
 
 yaml: $(YAML_LIBS) $(YAML_LIBSCONT)
-	ar rcs yaml-cpp.a $^
+	ar rcs libyaml-cpp.a $^
 
 clean:
-	rm -f yaml-cpp.a
+	rm -f libyaml-cpp.a
 	rm -f build/*.o
 	rm -f build/contrib/*.o

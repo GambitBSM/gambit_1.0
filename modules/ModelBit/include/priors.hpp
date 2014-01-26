@@ -12,9 +12,11 @@
 //  (add name and date if you modify)
 //
 //  Ben Farmer
-//  2013 May 01
+//  May, Oct, Dec 2013
 //
 //  *********************************************
+
+/// TODO: change transform functions to work with maps rather than vectors, so that scannerbit can deal with whatever order of parameters that you like.
 
 #ifndef __priors_hpp__
 #define __priors_hpp__
@@ -24,301 +26,175 @@
 #include <set>
 #include <map>
 #include <algorithm>
+#include <yaml_parser.hpp> // for the Options class
 
 namespace Gambit {
+ namespace Priors {
 
-// All priors are transformations which "stretch" one or more random variates
-// sampled uniformly from the interval [0,1] (or higher dim. equivalent) into
-// a sample from a different distribution.
+   // Forward declarations of 1D prior functions 
+  
+   double flatprior (double, double, double); 
+   double logprior (double, double, double);
 
-// All priors will be used by pointers to the base class "BasePrior", so they
-// must inherit from this class. Their constructors can be used to set up
-// parameters of the transformation they perform, which should itself be 
-// actioned by the "transform" member function
+   //
+   // Prior classes
+   //
 
-// Note that before the transformation by these priors, the random number
-// generation is totally symmetric in all parameters (this is my current
-// assumption, may need to relax it to accommodate some fancy scanner)
-// So the way the prior transformation is defined is what really defines which
-// parameter in the hypercube is which physical parameter.
-
-// However, this order has to be the order expected by the scanner wrapper of 
-// the loglikelihood function (see ScannerBit/lib/multinest.cpp for example).
-// Parameter names are provided along with this function so that we can
-// match them up in the prior correctly. The idea is that the constructors
-// for the prior objects should be called in such a way as to match the
-// required parameter order.
-
-namespace Priors {
-   // Helper functions:
-   // insert/retrieve multiple elements from vectors by index
-   template <class T>
-   std::vector<T> get_many(const std::vector<T>& in_vec,const std::vector<int>& indices)
-   {
-      std::vector<T> out_vec;
-      for (std::vector<int>::const_iterator it=indices.begin(); it!=indices.end(); it++)
-      {
-        out_vec.push_back(in_vec[*it]);
-      }
-      return out_vec;
-   }
-
-   template <class T>
-   void set_many(std::vector<T>& inout_vec,const std::vector<int>& indices,const std::vector<T>& values)
-   {
-      int i=0;
-      std::vector<int>::const_iterator it;
-      
-      for (it=indices.begin(); it!=indices.end(); ++it)
-      {
-        ///TODO; should check that "indices" and "values" are the same size, and that inout_vec is large enough.
-        inout_vec[*it] = values[i];
-        i++;
-      }
-      // inout_vec is modified in place.
-   }
-
-   // ------------------1D prior function library------------------------
-
-   // Simple single parameter priors. 
-   // In all cases input x is a variate from the unit uniform distribution [0,1].
-   
-   // 'flat' prior
-   // Transforms x to a sample from the uniform interval [a,b].
-   
-   double flatprior (double x, double a, double b) 
-   { 
-       return x*(b-a) + a;
-   }
-   
-   // 'log' prior
-   // Transforms x=log(y) to a sample from the uniform interval [log(a),log(b)].
-   // The base is irrelevant since it is just a scaling factor which normalises out
-   double logprior (double x, double a, double b) 
-   {   
-       return exp( x*(log(b)-log(a)) + log(a) );
-   }
-   
-   // ----------------------------------------------------------
-
-
-   // Virtual base class for priors
+   /// Virtual base class for priors
    class BasePrior
    {
       public:
-         virtual std::vector<double> transform(const std::vector<double>) const = 0;
+         virtual std::map<std::string,double> transform(const std::map<std::string,double>&) const = 0;
+
+         /// Function to check the parameter ranges supplied in the input
+         void checkunit(const std::string&, double) const;
    };
 
-   // Simple 1d flat prior
-   // Ranges set by constructor
-   class FlatPrior: public BasePrior
+   /// Template class for 1d priors which need only a "range" option in their constructor
+   // See factory function map to see how to use this class to quickly create new priors of this kind
+   template <double Func(double,double,double)>
+   class RangePrior1D: public BasePrior
    {
       public:
    
          // Constructor
-         FlatPrior(double lower_in, double upper_in) : lower(lower_in), upper(upper_in) { }
-   
+         RangePrior1D(std::vector<std::string>&, IniParser::Options&);
+ 
+         // Constructor (for auto creation of flat prior; other priors don't need this kind of constructor! It won't hurt the other 1D range priors to have this though)
+         RangePrior1D(std::string&, std::pair<double, double>&);
+         
          // Transformation from unit interval to specified range
          // (need to use vectors to be compatible with BasePrior virtual function)
-         std::vector<double> transform(const std::vector<double> unitpars) const
-         {
-            std::vector<double> transformedpars(1,flatprior(unitpars[0],lower,upper));
-            return transformedpars;
-         }
+         std::map<std::string,double> transform(const std::map<std::string,double>&) const;
          
       private:
+         // Name of the parameter that this prior is supposed to transform
+         std::string myparameter;
          // Ranges for parameters
          double lower;
          double upper;
    };
 
-   // Simple 1d log prior
-   // Ranges set by constructor
-   class LogPrior: public BasePrior
+   // RangePrior1D member functions
+   // NOTE! I have put these in the header, rather than with the other member function definitions in priors.cpp, because this is a template class, and when we ask for instances of it in compile units aside from priors.cpp (e.g. in priorfactory.cpp) the compiler will sook that they haven't been defined (which they haven't, in that compiler unit, because the compiler didn't know to make those particular instances in advance when it compiled the priors.cpp unit). Anyway, having the definitions here in the header lets them be compiled as needed, wherever the template is instantiated.       
+ 
+   // Constructor
+   template <double Func(double,double,double)>
+   RangePrior1D<Func>::RangePrior1D(std::vector<std::string>& myparametersIN, IniParser::Options& options):
+     myparameter(myparametersIN[0])
    {
-      public:
+     // Read the entries we need from the options
+     if ( not options.hasKey("range") )
+     {
+       std::cout<<"Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')"<<std::endl;
+       std::cout<<"Dumping content of options:"<<std::endl;
+       options.dumpcontents();
+     }
+     std::pair<double, double> range = options.getValue< std::pair<double, double> >("range");
+     if (range.first > range.second)
+     {
+       std::cout<<"Error! lower end of range higher than upper end! Please fix your inifile entries"<<std::endl;
+       exit(1);
+     }
+     if (myparametersIN.size()!=1)
+     {
+       /// TODO: insert proper gambit error
+       std::cout << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size="<<myparametersIN.size()<<")"<< std::endl;
+       exit(1);
+     }
+     lower = range.first;
+     upper = range.second;                  
+   }
+ 
+   // Constructor (for auto creation of flat prior; other priors don't need this kind of constructor! It won't hurt the other 1D range priors to have this though)
+   template <double Func(double,double,double)>
+   RangePrior1D<Func>::RangePrior1D(std::string& myparameterIN, std::pair<double, double>& range):
+     myparameter(myparameterIN)
+   {
+     if (range.first > range.second)
+       {
+         std::cout<<"Error! lower end of range higher than upper end! Please fix your inifile entries"<<std::endl;
+         exit(1);
+       }
+     lower = range.first;
+     upper = range.second;                  
+   }
    
+   // Transformation from unit interval to specified range
+   // (need to use vectors to be compatible with BasePrior virtual function)
+   template <double Func(double,double,double)>
+   std::map<std::string,double> RangePrior1D<Func>::transform(const std::map<std::string,double>& unitpars) const
+   {
+      std::map<std::string,double> transformedpars;
+      
+      // Take the value of the 'myparameter' entry of unitpars and return the transformed value.
+      // (note that unitpats is const: access elements using 'at'
+      checkunit(myparameter,unitpars.at(myparameter));
+      transformedpars[myparameter] = Func(unitpars.at(myparameter),lower,upper);
+      
+      return transformedpars;
+   }
+
+   /// 2D Gaussian prior. Takes covariance matrix as arguments
+   class Gaussian2D: public BasePrior
+   {
+      public: 
          // Constructor
-         LogPrior(double lower_in, double upper_in) : lower(lower_in), upper(upper_in) { }
-   
-         // Transformation from unit interval to specified range
-         // (need to use vectors to be compatible with BasePrior virtual function)
-         std::vector<double> transform(const std::vector<double> unitpars) const
-         {
-            std::vector<double> transformedpars(1,logprior(unitpars[0],lower,upper));
-            return transformedpars;
-         }
+         Gaussian2D(std::vector<std::string>&, IniParser::Options&);
+        
+         // Transformation from unit interval to the Gaussian
+         std::map<std::string,double> transform(const std::map<std::string,double>&) const;
          
       private:
-         // Ranges for parameters
-         double lower;
-         double upper;
+         // Names of the parameters that this prior is supposed to transform
+         std::vector<std::string> myparameters;
+         // Covariance matrix
+         std::vector<std::vector<double>> cov;
    };
 
-   // Simple multidimensional flat prior
-   // Ranges set by constructor
-   class NdFlatPrior: public BasePrior
-   {
-      public:
-   
-         // Constructor
-         NdFlatPrior(std::vector<std::pair<double,double>> ranges) : my_ranges(ranges) { }
-   
-         // Transformation from unit hypercube to my_ranges
-         std::vector<double> transform(const std::vector<double> unitpars) const
-         {
-            double lower;
-            double upper;
-            std::vector<double> transformedpars(my_ranges.size());
-            for (int i = 0; i < my_ranges.size(); i++)
-            {
-               lower = my_ranges[i].first;
-               upper = my_ranges[i].second;
-               transformedpars[i] = lower + (upper - lower)*unitpars[i];
-            }
-            return transformedpars;
-         }
-         
-      private:
-         // Ranges for parameters
-         std::vector<std::pair<double,double>> my_ranges;
-   };
-
-   // General "build-a-prior" class
-   // This is the class to use for setting simple 1D priors (from the library above) on individual parameters.
-   // It actually also allows for any combination of MD priors to be set on any combination of subspaces of
-   // the full prior.
-   typedef std::map<std::vector<int>,BasePrior*>::const_iterator subpriors_it;
+   /// Special "build-a-prior" class
+   /// This is the class to use for setting simple 1D priors (from the library above) on individual parameters.
+   /// It actually also allows for any combination of MD priors to be set on any combination of subspaces of
+   /// the full prior.
+   typedef std::vector<BasePrior*>::const_iterator subpriors_it;
+   typedef std::map<std::string, double>::iterator pars_it;
+   typedef std::map<std::string, double>::const_iterator pars_const_it;
    class CompositePrior: public BasePrior
    {
       public:
-   
-         // Constructor
-         CompositePrior(const std::map<std::vector<int>,BasePrior*>& subpriors)
-           : my_subpriors(subpriors) 
-         { 
-           // Each element of the input map has a key
-           // std::vector<int>
-           // which specifies which dimensions of the hypercube the subprior applies to,
-           // and a value
-           // BasePrior*
-           // which is a pointer to the prior object which acts on those dimensions.
-           //
-           // First, check to make sure none of the parameters indices are used twice,
-           // and that there are no 'gaps'
-           //
-           std::vector<int> allindices; // put indices here as they are found 
-           for (subpriors_it it = subpriors.begin(); it != subpriors.end(); ++it)
-           {
-             // Add new indices to the 'allindices' vector
-             std::vector<int> newindices = it->first;
-             allindices.reserve( allindices.size() + newindices.size() );
-             allindices.insert( allindices.end(), newindices.begin(), newindices.end() );
-           }
-
-           // Now check if there were any duplicates, and report them if there were
-           std::set<int> duplicates;
-           std::vector<int> missing;
-           std::sort(allindices.begin(), allindices.end());
-           for (int i=0; i<allindices.size()-1; i++)
-           {
-             // Check for duplicates
-             if (allindices[i]==allindices[i+1])
-             {
-               duplicates.insert(allindices[i]);
-             }
-           
-             // Check for missing values
-             if (allindices[i]+1 != allindices[i+1])
-             {
-               for (int j=allindices[i]+1; j<allindices[i+1]; j++)
-               {
-                 missing.push_back(j);
-               }
-             } 
-           }         
   
-           // Report if there were any problems
-           if (duplicates.size()>0 or missing.size()>0)
-           {
-             /// TODO: Turn into proper gambit error
-             std::cout<<"Error setting up composite prior!"<<std::endl;
-             if (duplicates.size()>0)
-             { 
-               std::cout<<"  Duplicate parameter vector indices detected!"<<std::endl;
-               std::cout<<"  duplicates: ";
-               for (std::set<int>::iterator it=duplicates.begin(); it != duplicates.end(); ++it)
-               {
-                 std::cout<<*it;
-               }
-               std::cout<<std::endl;
-             }
-             if (missing.size()>0)
-             { 
-               std::cout<<"  Missing parameter vector indices detected!"<<std::endl;
-               std::cout<<"  missing: ";
-               for (std::vector<int>::iterator it=missing.begin(); it != missing.end(); ++it)
-               {
-                 std::cout<<*it;
-               }
-               std::cout<<std::endl;
-               std::cout<<"  (warning! missing indices over the maximum found cannot be detected by this routine! Please check these manually!"<<std::endl;
-             }
-             ///TODO: Exit properly rather than bailing out like this!
-             exit(1);
-           }         
-         } // End constructor
-
+         // TODO! Should convert from index lists to just using parameter names instead. We should try to let
+         // the order be controlled by scannerbit.
+      
+         // Constructor
+         CompositePrior(const std::vector<BasePrior*>&);
+         
          // Transformation from unit hypercube to my_ranges
-         std::vector<double> transform(const std::vector<double> unitpars) const
-         {
-            std::vector<double> transformedpars(unitpars.size(),0.);
-            
-            for (subpriors_it it=my_subpriors.begin(); it!=my_subpriors.end(); ++it)
-            {
-              std::vector<int> indices = it->first;
-              // Better make sure the sub-prior object hasn't been lost somehow:
-              if (it->second == NULL)
-              {
-                 //TODO: insert real error
-                 std::cout<<"Uh oh, one of the pointers to a subprior owned by CompositePrior points at nothing :(. This should never happen: check Scanner code to make sure prior object is initialised properly, and/or priors.hpp for bugs"<<std::endl;
-                 exit(1);           
-              }
-              // Do each sub-transformation
-              std::vector<double> values = (it->second)->transform(get_many(unitpars,indices));
-              // Put transformed parameters into output vector
-              set_many(transformedpars,indices,values);
-            }
-            return transformedpars;
-         }
-           
+         std::map<std::string,double> transform(const std::map<std::string,double>&) const;
+         
       private:
          // References to component prior objects
-         const std::map<std::vector<int>,BasePrior*>& my_subpriors;
+         const std::vector<BasePrior*>& my_subpriors;
    };
 
-} // end namespace Priors
 
+   /// Function typedef which is handy for our factory function map
+   // Should match the type of the "create_prior" function template.
+   typedef BasePrior* create_prior_function(std::vector<std::string>, IniParser::Options);
+
+   /// Template factory function for creating prior objects
+   template <class T>
+   BasePrior* create_prior(std::vector<std::string> parameters, IniParser::Options options)
+   {
+       return new T(parameters,options);
+   }
+ 
+   /// Map in which to keep factory functions for the priors
+   // (defined in priors.cpp)
+   extern const std::map<std::string, create_prior_function*> prior_creators;
+ 
+ } // end namespace Priors
 } // end namespace Gambit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif /* defined(__priors_hpp__) */

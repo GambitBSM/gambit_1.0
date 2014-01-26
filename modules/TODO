@@ -3,18 +3,11 @@ GAMBIT To-do List
 
 (G3 = GAMBIT III = March Collaboration Meeting)
 
-Core / Everybody
-----------------
-
-Makefiles:
-* Until the autotools are ready to go, can we please clean up the extra confusing makefile? Many of these make variables are not even being used.
-* Address some of the other TODOs in the makfiles.
 
 Core
 ----
 
 Rollcall:
-* Make functors thread-safe (**Pat; before Xmas**)
 * Implement scan-level and point-level initialisation functions, in both backends and modules (**Pat & Chistoph; before G3**)
 * Remove any need for macro calls from within module functions (macros-->safe pointer-like objects)  (**Anders; before G3**)
 * Allow grouping of backend requirements into blocks/groups  (**Pat; before G3**)
@@ -22,6 +15,7 @@ Rollcall:
 * Tracking of config files -> lists in module/backend rollcall headers (**Pat; before G3**)
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
+* Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; before G3**)
 
 IniFile:
 * Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions. (**Christoph & Pat; before G3**)
@@ -49,7 +43,6 @@ Messaging:
 General:
 * Until automake and cmake are done, may want to make more "makefile.common" files for readability (**Abram; after getting things compiling again.**)
 * Experiment with automake and cmake for build (**Antje to update automake system to current master; Ben, Pat, Chistoph + others to test; Antje to merge into master before G3. Cmake to be left for after G3.**)
-* Create mini-core for module stand-alone releases (**Pat; before G3**)
 * Implement standalone compilation of physics modules (**Pat; before G3**)
 * Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat; before G3**)
 * Create SLHA internal representation, plus hook up file reader/writer. (**Are, Csaba; progress before G3, completion maybe not**) 
@@ -70,6 +63,8 @@ Done:
   - GAMBIT->Gambit
 * Create shorthand for parameter access from within module functions (e.g. Params["M0"])
 * Module-specific types in module directories, but common return types in Utils/include/shared_types.hpp
+* Make functors thread-safe
+* Until the autotools are ready to go, can we please clean up the extra confusing makefile? Many of these make variables are not even being used.
 
 
 Models
@@ -85,13 +80,15 @@ Ongoing:
   - Need to check if variadics exists before bothering to redefine the macro, or something.
 
 Done:
-
+* Reunify model macros with module macros as much as possible (dependency macro in particular)
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
 
 
 HE Collider
 -----------
+
+* Address some of the other TODOs in the makfiles.
 
 * Py8 shower alpha_s -> 0.118
 

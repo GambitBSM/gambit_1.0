@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, May, June, July, Dec
+///  \date 2013 Apr-July, Dec-Jan '14
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -73,7 +73,7 @@ namespace Gambit
        myStatus        (1),
        needs_recalculating (true) {}
       
-      /// Virtual calculate(), needs to be redefined in daughters.
+      /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate() {};
 
       // It may be safer to have some of the following things accessible 
@@ -89,6 +89,9 @@ namespace Gambit
       virtual void notifyOfInvalidation() {}
       virtual void reset() {}
       /// @}
+
+      /// Reset-then-recalculate method
+      virtual void reset_and_calculate() { this->reset(); this->calculate(); } 
 
       /// Setter for version
       void setVersion(str ver) { if (this == NULL) failBigTime("setVersion"); myVersion = ver; }
@@ -363,9 +366,8 @@ namespace Gambit
           for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
            it != myNestedFunctorList.end(); ++it) 
           {
-            (*it)->reset();                   // Reset the nested functor so that it recalculates.
             (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-            (*it)->calculate();               // Set the nested functor off.
+            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off
           }
         }
       } 
@@ -832,7 +834,7 @@ namespace Gambit
         {
           double nsec = 0, sec = 0;
           this->startTiming(nsec,sec);                       //Begin timing function evaluation
-          this->myFunction(myValue[omp_get_thread_num()]);  //Run and place result in the appropriate slot in myValue
+          this->myFunction(myValue[omp_get_thread_num()]);   //Run and place result in the appropriate slot in myValue
           this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         }
       }
@@ -1007,11 +1009,51 @@ namespace Gambit
 
   };
 
+  /// Functors specific to ModelParameters objects
+  class model_functor : public module_functor<ModelParameters>
+  {
+  
+    public:
+    
+      /// Constructor
+      ///
+      /// This is not inherited from the parent class, but we don't need anything
+      /// different so we just directly call the parent class constructor.
+      model_functor(void (*inputFunction)(ModelParameters &),
+                              str func_name,
+                              str func_capability,
+                              str result_type,
+                              str origin_name)
+      : module_functor<ModelParameters>(inputFunction,
+                                        func_name,
+                                        func_capability,
+                                        result_type,
+                                        origin_name) {}   
+      
+      /// Function for adding a new parameter to the map inside the ModelParameters object
+      void addParameter(str parname)
+      {
+        myValue->_definePar(parname);
+      }
+
+      /// Function for handing over parameter identities to another model_functor
+      void donateParameters(model_functor &receiver)
+      {
+        for(std::map<std::string,double>::const_iterator it = myValue->getValuesPtr()->begin();
+            it != myValue->getValuesPtr()->end(); 
+            it++)
+        {
+          receiver.addParameter(it->first);
+        }
+      }
+
+  };    
+
   /// Functors specific to primary ModelParameters objects
   ///
   /// These allow direct access to the functor contents via a raw pointer, so 
   /// that the parameter values can be set (not allowed via safe pointers).
-  class primary_model_functor : public module_functor<ModelParameters>
+  class primary_model_functor : public model_functor
   {
   
     public:
@@ -1025,11 +1067,11 @@ namespace Gambit
                               str func_capability,
                               str result_type,
                               str origin_name)
-      : module_functor<ModelParameters>(inputFunction,
-                                        func_name,
-                                        func_capability,
-                                        result_type,
-                                        origin_name) {}   
+      : model_functor(inputFunction,
+                      func_name,
+                      func_capability,
+                      result_type,
+                      origin_name) {}   
       
       /// Functor contents raw pointer "get" function
       /// Returns a raw pointer to myValue, so that the contents may be 

@@ -23,6 +23,7 @@
 #include "exceptions.hpp"
 #include "yaml_parser.hpp"
 #include "gambit_scan.hpp"
+#include "priorfactory.hpp"
 
 using namespace Gambit;
 
@@ -42,7 +43,14 @@ void beispiel(const char* inifilename)
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
-    
+  
+  // Build prior object based on inifile instructions
+  Priors::PriorManager priorManager(iniFile);
+
+  // Extract a pointer to the prior object, so that it can be passed to the Scanner.
+  // Could do this via the Core instead, perhaps.
+  Priors::BasePrior* prior = priorManager.getprior();
+
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
 
@@ -142,4 +150,4 @@ int main( int argc, const char* argv[] )
    
   return 1;
 
-};
+}

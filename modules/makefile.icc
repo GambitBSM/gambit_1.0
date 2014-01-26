@@ -1,7 +1,7 @@
 # simple makefile. 
 #
 # Lundberg 2011-Aug
-# Pat Scott 2012-Nov
+# Pat Scott 2012-Nov+
 # Abram Krislock 2014-Jan
 #
 ###
@@ -10,9 +10,3 @@ include makefile.common
 CC = icc 
 FC = ifort
 CCEXTRA= -pipe -pg 
-
-ifdef HAVE_MAC
-  LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran
-else
-  LNFLAGS += -lstdc++ -rdynamic -ldl -lgfortran -lrt
-endif
