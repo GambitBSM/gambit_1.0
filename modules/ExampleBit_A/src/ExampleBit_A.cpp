@@ -212,6 +212,9 @@ namespace Gambit
       }
     }
 
+    void ExampleBit_A_PointInit_Default()
+    {
+    }
   }
 
 }

@@ -16,6 +16,11 @@ SingletDM:
     range: [10, 100]
     fixed: false
 
+########################
+--- # Prior setup
+########################
+
+
 ###############################
 --- # Observables of interest
 ###############################
@@ -44,13 +49,13 @@ another_key:
   subkey3:
     subsubkey1: value2
 
-#scanner:
-#  module:  crapsample
-#  file_path:  ScannerBit/lib/libsample.so
-
 scanner:
-  module:  multinest
-  file_path:  ScannerBit/lib/libmultinest_interface.so
+  module:  crapsample
+  file_path:  ScannerBit/lib/libsample.so
+
+#scanner:
+#  module:  multinest
+#  file_path:  ScannerBit/lib/libmultinest_interface.so
     
 enable_redirect: true
 

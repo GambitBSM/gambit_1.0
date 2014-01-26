@@ -224,7 +224,7 @@ namespace Gambit {
 
 //read out location and number of resonances and thresholds from RDspectrum
       RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered, RD_spectrum$
-      double mwimp=specres.E_thr[0]/2;
+      double mwimp = 0; // = specres.E_thr[0]/2;
 
 // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
 // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
@@ -233,7 +233,7 @@ namespace Gambit {
 //move info about coannihilating particles to DS common blocks
 //[this is essentially the model-dependent part of dsrdstart]
         DS_RDMGEV myrdmgev;
-        myrdmgev.nco=specres.n_co;
+        myrdmgev.nco = 0; // = specres.n_co;
         for (int i=0; i<myrdmgev.nco; i++) {
            myrdmgev.mco[i]=abs(specres.mass_co[i]);
            myrdmgev.mdof[i]=specres.dof_co[i];

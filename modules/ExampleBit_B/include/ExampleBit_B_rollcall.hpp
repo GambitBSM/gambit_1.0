@@ -67,6 +67,13 @@
 
 #define MODULE ExampleBit_B
 START_MODULE
+
+  #define CAPABILITY ExampleBit_B_PointInit
+  START_CAPABILITY
+    #define FUNCTION ExampleBit_B_PointInit_Default
+      START_FUNCTION(void, INIT_FUNCTION)
+    #undef FUNCTION
+  #undef CAPABILITY
  
   #define CAPABILITY xsection               // Observable: cross-section for some hypothetical process
   START_CAPABILITY

@@ -136,6 +136,10 @@ namespace Gambit
 
     }
 
+    void ExampleBit_B_PointInit_Default()
+    {
+    }
+
   }
 
 }
