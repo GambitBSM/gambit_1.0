@@ -551,5 +551,10 @@ namespace Gambit {
       double oh2 = *Dep::RD_oh2;
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
+
+    void DarkBit_PointInit_Default()
+    {
+      std::cout << "INITIALIZATION of DarkBit" << std::endl;
+    }
   }
 }

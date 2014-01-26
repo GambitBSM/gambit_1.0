@@ -27,20 +27,25 @@
 #include <boost/preprocessor/comparison/greater.hpp>
 
 
-/// \name Variadic redirection macro for START_FUNCTION(TYPE,[CAN_MANAGE_LOOPS/CANNOT_MANAGE_LOOPS])
+/// \name Variadic redirection macro for START_FUNCTION(TYPE,[CAN_MANAGE_LOOPS/CANNOT_MANAGE_LOOPS/INIT_FUNCTION])
 /// Registers the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink as a provider
 /// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
 /// type \em TYPE.  Allows this function to manage loops if the optional 
 /// second argument CAN_MANAGE_LOOPS is given; otherwise, if CANNOT_MANAGE_LOOPS is given
 /// instead, or no second argument is given, the function is prohibited from managing loops.
+/// Giving INIT_FUNCTION as second argument defines an initialization function
+/// (it allows the use of void return types and suppresses the hidden default dependence on a module-level
+/// initialization function).
+#define START_FUNCTION_INIT_FUNCTION(TYPE)                       DECLARE_FUNCTION(TYPE,2)
 #define START_FUNCTION_CAN_MANAGE_LOOPS(TYPE)                    DECLARE_FUNCTION(TYPE,1)
 #define START_FUNCTION_CANNOT_MANAGE_LOOPS(TYPE)                 DECLARE_FUNCTION(TYPE,0)
 #define START_FUNCTION_(TYPE)                                    FAIL("Unrecognised flag in argument 2 of START_FUNCTION; should be CAN_MANAGE_LOOPS, CANNOT_MANAGE_LOOPS, or absent.")
+#define DEFINED_START_FUNCTION_INIT_FUNCTION ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
 #define DEFINED_START_FUNCTION_CAN_MANAGE_LOOPS ()               // Tells the IF_DEFINED macro that this function is indeed defined.
 #define DEFINED_START_FUNCTION_CANNOT_MANAGE_LOOPS ()            // Tells the IF_DEFINED macro that this function is indeed defined.
 #define START_FUNCTION_2(_1, _2)                                 CAT(START_FUNCTION_,IF_DEFINED(START_FUNCTION_##_2,_2))(_1)  
-#define START_FUNCTION_1(_1)                                     START_FUNCTION_CANNOT_MANAGE_LOOPS(_1) 
+#define START_FUNCTION_1(_1)                                     START_FUNCTION_CANNOT_MANAGE_LOOPS(_1)
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
 

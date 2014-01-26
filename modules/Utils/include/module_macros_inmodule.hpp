@@ -47,7 +47,7 @@
 // Redirect the rollcall macros to their in-module variants
 #define START_MODULE                                      DUMMY
 #define START_CAPABILITY                                  DUMMY
-#define DECLARE_FUNCTION(TYPE, CAN_MANAGE)                MODULE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)
+#define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            DUMMYARG(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
@@ -63,9 +63,12 @@
 /// \name In-module rollcall macros
 /// @{
 
+#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
+#define INITDEPNO() 
+
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within a module core.
-#define MODULE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)                              \
+#define MODULE_DECLARE_FUNCTION(TYPE, FLAG)                                    \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -93,7 +96,7 @@
       able to manage loops. */                                                 \
       namespace Functown                                                       \
       {                                                                        \
-        BOOST_PP_IIF(CAN_MANAGE,                                               \
+        BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                                  \
           void CAT(FUNCTION,_iterate)(int it)                                  \
           {                                                                    \
             FUNCTION.iterate(it);                                              \
@@ -111,7 +114,7 @@
           extern std::map<str, safe_ptr<double> > Param;                       \
           namespace Loop                                                       \
           {                                                                    \
-            BOOST_PP_IIF(CAN_MANAGE,                                           \
+            BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                              \
               void (*executeIteration)(int) =                                  \
                &Functown::CAT(FUNCTION,_iterate);                              \
             ,)                                                                 \
@@ -122,7 +125,10 @@
     }                                                                          \
                                                                                \
   }                                                                            \
-
+                                                                               \
+  /* Every module function (except init-functions) depends on a                \
+     module-specific point-level initialization function */                    \
+  BOOST_PP_IIF(BOOST_PP_NOT_EQUAL(FLAG, 2), INITDEPYES, INITDEPNO)()           \
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \

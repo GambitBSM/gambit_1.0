@@ -33,7 +33,22 @@
 #define MODULE DarkBit
 START_MODULE
 
-  
+// Init functions:
+// - are required as default dependence of all module functions on the
+//   capability MODULE_PointInit
+// - should not have module-function dependencies
+// - can have backend dependencies
+// - must have return type void
+// - must be created with INIT_FUNCTION as second argument in START_FUNCTION
+// - do not itself depend on the initialization function
+
+  #define CAPABILITY DarkBit_PointInit
+  START_CAPABILITY
+    #define FUNCTION DarkBit_PointInit_Default
+      START_FUNCTION(void, INIT_FUNCTION)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
     #define FUNCTION RD_spectrum_SUSY

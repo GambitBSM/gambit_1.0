@@ -89,7 +89,7 @@
 /// \link MODULE() MODULE\endlink as a provider
 /// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
 /// type \em TYPE.
-#define DECLARE_FUNCTION(TYPE, CAN_MANAGE)                CORE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)
+#define DECLARE_FUNCTION(TYPE, FLAG)                CORE_DECLARE_FUNCTION(TYPE, FLAG)
 
 /// Indicates that the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink must be managed by another function (in the same
@@ -402,20 +402,23 @@
                                                                                \
   }                                                                            \
 
+#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
+#define INITDEPNO() 
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within the core.
-#define CORE_DECLARE_FUNCTION(TYPE, CAN_MANAGE)                                \
+#define CORE_DECLARE_FUNCTION(TYPE, FLAG)                                      \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
     /* Fail if a void-type function is declared, unless it can manage loops.*/ \
     BOOST_PP_IIF(                                                              \
-     BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_COMPL(CAN_MANAGE)),          \
+     BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_EQUAL(FLAG, 0)),             \
      FAIL("Module functions cannot have void results, unless they can manage " \
-          "loops (which is declared by adding CAN_MANAGE_LOOPS as the second " \
-          "argument of START_FUNCTION)."),)                                    \
+          "loops [are initialization functions] (which is declared by adding " \
+          "CAN_MANAGE_LOOPS [INIT_FUNCTION] as the second argument of        " \
+          "START_FUNCTION)."),)                                                \
                                                                                \
     /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
     ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                     \
@@ -430,11 +433,14 @@
       )                                                                        \
                                                                                \
       /* Wrap it in a functor */                                               \
-      MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,MODULE,CAN_MANAGE)                 \
+      MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,MODULE,BOOST_PP_EQUAL(FLAG, 1))    \
     }                                                                          \
                                                                                \
   }                                                                            \
-
+                                                                               \
+  /* Every module function (except init-functions) depends on a                \
+     module-specific point-level initialization function */                    \
+  BOOST_PP_IIF(BOOST_PP_NOT_EQUAL(FLAG, 2), INITDEPYES, INITDEPNO)()           \
 
 /// Main parts of the functor creation
 #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)               \
