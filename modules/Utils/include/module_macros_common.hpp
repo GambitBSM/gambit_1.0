@@ -13,6 +13,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
+///  \date 2014 Jan
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -44,7 +45,8 @@
 #define START_FUNCTION_INIT_FUNCTION(TYPE)                       DECLARE_FUNCTION(TYPE,2)
 #define START_FUNCTION_CAN_MANAGE_LOOPS(TYPE)                    DECLARE_FUNCTION(TYPE,1)
 #define START_FUNCTION_CANNOT_MANAGE_LOOPS(TYPE)                 DECLARE_FUNCTION(TYPE,0)
-#define START_FUNCTION_(TYPE)                                    FAIL("Unrecognised flag in argument 2 of START_FUNCTION; should be CAN_MANAGE_LOOPS, CANNOT_MANAGE_LOOPS, or absent.")
+#define START_FUNCTION_(TYPE)                                    FAIL("Unrecognised flag in argument 2 of START_FUNCTION; should be "\
+                                                                  "CAN_MANAGE_LOOPS, CANNOT_MANAGE_LOOPS, INIT_FUNCTION, or absent.")
 #define DEFINED_START_FUNCTION_INIT_FUNCTION ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
 #define DEFINED_START_FUNCTION_CAN_MANAGE_LOOPS ()               // Tells the IF_DEFINED macro that this function is indeed defined.
 #define DEFINED_START_FUNCTION_CANNOT_MANAGE_LOOPS ()            // Tells the IF_DEFINED macro that this function is indeed defined.
@@ -56,8 +58,6 @@
 /// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC])
 #define START_BACKEND_REQ_VAR(TYPE)                        DECLARE_BACKEND_REQ(TYPE,1)
 #define START_BACKEND_REQ_FUNC(TYPE)                       DECLARE_BACKEND_REQ(TYPE,0)
-// #define START_BACKEND_REQ_VAR(TYPE)                        DECLARE_BACKEND_REQ_VARIABLE(TYPE)
-// #define START_BACKEND_REQ_FUNC(TYPE)                       DECLARE_BACKEND_REQ_FUNCTION(TYPE)
 #define START_BACKEND_REQ_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ; should be VAR, FUNC or absent.")
 #define DEFINED_START_BACKEND_REQ_VAR  ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
 #define DEFINED_START_BACKEND_REQ_FUNC ()                  // Tells the IF_DEFINED macro that this function is indeed defined.

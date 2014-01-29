@@ -30,8 +30,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2012 Nov  
-///  \date 2013 Jan -- Aug
-///  \date 2013 Foreverrrrr
+///  \date 2013,14 Foreverrrrr
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -104,7 +103,7 @@
 /// \link MODULE() MODULE\endlink as a provider
 /// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
 /// type \em TYPE.
-#define DECLARE_FUNCTION(TYPE, FLAG)                CORE_DECLARE_FUNCTION(TYPE, FLAG)
+#define DECLARE_FUNCTION(TYPE, FLAG)                      CORE_DECLARE_FUNCTION(TYPE, FLAG)
 
 /// Indicates that the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink must be managed by another function (in the same
@@ -125,14 +124,7 @@
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and type \em TYPE.
-// #define DECLARE_BACKEND_REQ_VARIABLE(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,1)
-
-#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
-
-/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
-/// a backend function to be available with capability \link BACKEND_REQ() 
-/// BACKEND_REQ\endlink and return type \em TYPE.
-// #define DECLARE_BACKEND_REQ_FUNCTION(TYPE)                CORE_DECLARE_BACKEND_REQ(TYPE,0)
+#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 
 /// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
@@ -385,12 +377,13 @@
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    /* Fail if a void-type function is declared, unless it can manage loops.*/ \
+    /* Fail if a void-type function is declared, unless it can manage loops or \
+       is an initialisation function. */                                       \
     BOOST_PP_IIF(                                                              \
      BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_EQUAL(FLAG, 0)),             \
      FAIL("Module functions cannot have void results, unless they can manage " \
-          "loops [are initialization functions] (which is declared by adding " \
-          "CAN_MANAGE_LOOPS [INIT_FUNCTION] as the second argument of        " \
+          "loops or are initialization functions.  This is declared by adding "\
+          "CAN_MANAGE_LOOPS or INIT_FUNCTION as the second argument of        "\
           "START_FUNCTION)."),)                                                \
                                                                                \
     /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
@@ -411,9 +404,13 @@
                                                                                \
   }                                                                            \
                                                                                \
-  /* Every module function (except init-functions) depends on a                \
-     module-specific point-level initialization function */                    \
+  /* Every module function (except the point-level init functions themselves)  \
+     depends on a module-specific point-level initialization function. */      \
   BOOST_PP_IIF(BOOST_PP_NOT_EQUAL(FLAG, 2), INITDEPYES, INITDEPNO)()           \
+                                                                               \
+  /* The point-level init functions depend on a scan-level init funciton */    \
+  /// (TODO still to be implemented)
+
 
 /// Main parts of the functor creation
 #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)               \
@@ -468,6 +465,9 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
+      /* Fail if the user has tried to declare that any initialisation function\
+     (point or scan level) needs a loop manager. TODO*/                        \
+                                                                               \
       /* Set up the runtime commands that register the fact that this FUNCTION \
       requires it be run inside a loop manager with capability LOOPMAN. */     \
       template <>                                                              \
@@ -492,6 +492,9 @@
 /// First common component of CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                       \
+                                                                               \
+      /* Fail if the user has tried to declare a dependency for any            \
+      initialisation function (point or scan level). TODO*/                    \
                                                                                \
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
@@ -711,6 +714,9 @@
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
+                                                                               \
+    /* Fail if the user has tried to declare that a scan-level initialisation  \
+    function has a backend requirement. TODO*/                                 \
                                                                                \
     /* Add BACKEND_REQ to global set of recognised backend func tags */        \
     ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQ)                                \
