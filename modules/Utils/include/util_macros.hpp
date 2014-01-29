@@ -121,6 +121,7 @@
 
 /// Do ACTION if NAME is defined.
 #define IF_DEFINED(NAME,ACTION)        BOOST_PP_IF(DEFINED(NAME), ACTION, )
+#define IF_DEFINED2(NAME,A1,A2)        BOOST_PP_IF(DEFINED(NAME), A1, A2)
 /// Do ACTION if NAME is undefined.
 #define IF_NOT_DEFINED(NAME,ACTION)    BOOST_PP_IF(DEFINED(NAME), , ACTION)
 /// Do IF if NAME is defined, otherwise do ELSE.

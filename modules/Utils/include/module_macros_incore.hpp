@@ -367,7 +367,8 @@
                                                                                \
   }                                                                            \
 
-#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
+//#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
+#define INITDEPYES() DEPENDENCY(PointInit, void)
 #define INITDEPNO() 
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
@@ -409,7 +410,7 @@
   BOOST_PP_IIF(BOOST_PP_NOT_EQUAL(FLAG, 2), INITDEPYES, INITDEPNO)()           \
                                                                                \
   /* The point-level init functions depend on a scan-level init funciton */    \
-  /// (TODO still to be implemented)
+  /// (TODO to be implemented if really needed)
 
 
 /// Main parts of the functor creation
@@ -465,8 +466,9 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Fail if the user has tried to declare that any initialisation function\
-     (point or scan level) needs a loop manager. TODO*/                        \
+      IF_DEFINED(CAT(INITFUNC_,CAPABILITY),                                    \
+      FAIL("Initialization functions cannot depend on loop managers."          \
+      "Check your header files."))                                             \
                                                                                \
       /* Set up the runtime commands that register the fact that this FUNCTION \
       requires it be run inside a loop manager with capability LOOPMAN. */     \
@@ -493,8 +495,8 @@
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                       \
                                                                                \
-      /* Fail if the user has tried to declare a dependency for any            \
-      initialisation function (point or scan level). TODO*/                    \
+      IF_DEFINED(CAT(INITFUNC_,CAPABILITY),                                    \
+      FAIL("Initialization functions cannot have dependencies on their own.")) \
                                                                                \
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
@@ -716,7 +718,7 @@
   {                                                                            \
                                                                                \
     /* Fail if the user has tried to declare that a scan-level initialisation  \
-    function has a backend requirement. TODO*/                                 \
+    function has a backend requirement (non existent). TODO*/                  \
                                                                                \
     /* Add BACKEND_REQ to global set of recognised backend func tags */        \
     ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQ)                                \

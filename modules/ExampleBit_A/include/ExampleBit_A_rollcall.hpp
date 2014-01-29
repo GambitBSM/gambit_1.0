@@ -35,10 +35,10 @@
 #define MODULE ExampleBit_A
 START_MODULE
 
-  #define CAPABILITY ExampleBit_A_PointInit
+  #define CAPABILITY PointInit
   START_CAPABILITY
     #define FUNCTION ExampleBit_A_PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
+      START_FUNCTION(void)
     #undef FUNCTION
   #undef CAPABILITY
 

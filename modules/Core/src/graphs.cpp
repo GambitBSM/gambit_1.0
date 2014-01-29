@@ -160,6 +160,18 @@ namespace Gambit
       return candidateList;
     }
 
+    class edgeWriter
+    {
+      private:
+        const Graphs::MasterGraphType * myGraph;
+      public:
+        edgeWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
+        void operator()(std::ostream& out, const EdgeID& v) const
+        {
+          //out << "[style=\"dotted\"]";
+        }
+    };
+
     class labelWriter
     {
       private:
@@ -234,7 +246,7 @@ namespace Gambit
 
       // Generate graphviz plot
       std::ofstream outf("graph.gv");
-      write_graphviz(outf, masterGraph, labelWriter(&masterGraph));
+      write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
     }
 
     /// List of masterGraph content
@@ -478,6 +490,25 @@ namespace Gambit
         {
         // Add to vertex candidate list
           vertexCandidates.push_back(*vi);
+        }
+      }
+      // Special treatment of dependence on point-level initialization
+      // functions, which can only be resolved within a given module.
+      if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
+      {
+        std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin();
+        while (it != vertexCandidates.end())
+        {
+          if ( masterGraph[toVertex]->origin() != masterGraph[*it]->origin() )
+          {
+            // Delete all vertex candidates that do not belong to the correct
+            // module
+            it = vertexCandidates.erase(it);
+          }
+          else
+          {
+            ++it;
+          }
         }
       }
       if ( vertexCandidates.size() == 0 ) 

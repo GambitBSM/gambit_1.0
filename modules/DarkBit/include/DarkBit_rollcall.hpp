@@ -42,10 +42,10 @@ START_MODULE
 // - must be created with INIT_FUNCTION as second argument in START_FUNCTION
 // - do not itself depend on the initialization function
 
-  #define CAPABILITY DarkBit_PointInit
+  #define CAPABILITY PointInit
   START_CAPABILITY
     #define FUNCTION DarkBit_PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
+      START_FUNCTION(void)
     #undef FUNCTION
   #undef CAPABILITY
 

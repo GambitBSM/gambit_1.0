@@ -68,10 +68,10 @@
 #define MODULE ExampleBit_B
 START_MODULE
 
-  #define CAPABILITY ExampleBit_B_PointInit
+  #define CAPABILITY PointInit
   START_CAPABILITY
     #define FUNCTION ExampleBit_B_PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
+      START_FUNCTION(void)
     #undef FUNCTION
   #undef CAPABILITY
  

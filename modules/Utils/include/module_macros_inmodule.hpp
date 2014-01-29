@@ -63,7 +63,8 @@
 /// \name In-module rollcall macros
 /// @{
 
-#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
+//#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
+#define INITDEPYES() DEPENDENCY(PointInit, void)
 #define INITDEPNO() 
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
