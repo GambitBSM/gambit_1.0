@@ -28,12 +28,15 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
+///  \date 2014 Jan
 ///
 ///  *********************************************
 
 
 #ifndef __DarkBit_types_hpp__
 #define __DarkBit_types_hpp__
+
+#include <cmath>
 
 namespace Gambit
 {
