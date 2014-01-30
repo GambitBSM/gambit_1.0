@@ -202,6 +202,7 @@ namespace Gambit
      : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer)
     {
       addFunctors();
+      verbose = true;
     }
 
     /// Main dependency resolution
@@ -369,7 +370,12 @@ namespace Gambit
       std::vector<VertexID> order;
       // TODO: Should happen only once
       order = getSortedParentVertices(vertex, masterGraph, function_order);
-      for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it) {
+      for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it)
+      {
+        if (verbose)
+        {
+          cout << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "..." << endl;
+        }
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)

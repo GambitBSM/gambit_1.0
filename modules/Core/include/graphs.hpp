@@ -155,6 +155,9 @@ namespace Gambit
         // Temporary map for loop manager -> list of nested functions
         std::map<VertexID, std::set<VertexID>> loopManagerMap;
 
+        // Debug flag
+        bool verbose;
+
     };
   }
 }
