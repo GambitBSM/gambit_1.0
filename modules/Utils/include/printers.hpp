@@ -29,9 +29,12 @@
 #pragma message BOOST_PP_STRINGIZE(PRINTABLE_TYPES) //PRINTABLE_TYPES resides in all_functor_types.hpp 
 
 #define VPRINT(r,data,elem)                       \
-  virtual void print(elem& value)                 \
+  virtual void print(elem&)                       \
   {                                               \
-    std::cout<<"WARNING! No print function override has been defined for this type (for whatever printer class the current printer comes from)"<<std::endl; \
+    std::cout<<"WARNING! No print function "      \
+     "override has been defined for this type "   \
+     "(for whatever printer class the current "   \
+     "printer comes from)."<<std::endl;           \
   }                                              
 
 #define ADD_ALL_PRINT_FUNCTIONS \

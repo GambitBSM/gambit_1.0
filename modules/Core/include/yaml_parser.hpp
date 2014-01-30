@@ -42,7 +42,7 @@ namespace Gambit
       // {
       //   std::string name;
       //   std::pair<double, double> range;
-      // };
+      // }
     }
   }
 }
@@ -87,7 +87,7 @@ namespace YAML {
   //     rhs.range = node["range"].as<std::pair<double,double> >();
   //     return true;
   //   }
-  // };
+  // }
 }
 
 namespace Gambit
@@ -127,7 +127,7 @@ namespace Gambit
           std::cout << "Contents of options:" << std::endl;
           std::cout << options << std::endl;
           exit(1);
-        };
+        }
 
         // Dump contents of YAML::Node to cout
         void dumpcontents()
@@ -189,7 +189,7 @@ namespace Gambit
             return keyValuePairNode[key].as<TYPE>();
           std::cout << "ERROR: No inifile entry for " << key << std::endl;
           exit(1);
-        };
+        }
 
         template<typename TYPE> TYPE getValue(std::string key, std::string subkey) const
         {
@@ -198,7 +198,7 @@ namespace Gambit
           std::cout << "ERROR: No inifile entry for " <<
             key << "." << subkey << std::endl;
           exit(1);
-        };
+        }
 
         template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3) const
         {
@@ -207,7 +207,7 @@ namespace Gambit
           std::cout << "ERROR: No inifile entry for " << 
             s1 << "." << s2 << "." << s3 << std::endl;
           exit(1);
-        };
+        }
 
         template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4) const
         {
@@ -216,7 +216,7 @@ namespace Gambit
           std::cout << "ERROR: No inifile entry for " << 
             s1 << "." << s2 << "." << s3 << "." << s4 << std::endl;
           exit(1);
-        };
+        }
 
         //
         // Getters for model/parameter section
@@ -228,7 +228,7 @@ namespace Gambit
             return parametersNode[model][param][key].as<TYPE>();
           std::cout << "ERROR: " << model << "." << param << "." << key << "not found in inifile" << std::endl;
           exit(1);
-        };
+        }
 
         bool hasModelParameterEntry(std::string model, std::string param, std::string key) const
         {
@@ -286,7 +286,7 @@ namespace Gambit
             return priorsNode[priorname][key].as<TYPE>();
           std::cout << "ERROR: " << priorname << "." << key << "not found in inifile" << std::endl;
           exit(1);
-        };
+        }
 
         // For existence checks
         bool hasPriorEntry(std::string priorname, std::string key) const
@@ -361,6 +361,7 @@ namespace Gambit
 
 
   }
+
 }
 
 #endif /* defined(__yaml_parser_hpp__) */

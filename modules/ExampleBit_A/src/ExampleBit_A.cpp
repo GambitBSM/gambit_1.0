@@ -28,7 +28,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
-#include <math.h>
+#include <cmath>
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
@@ -40,31 +40,47 @@ namespace Gambit
   namespace ExampleBit_A
   {
 
-    // Some local module codes and declarations
-    // Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example for now.
+    /// Local module declarations
+    /// Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example.
+    /// @{
     double count = 3.5;
     int accumulatedCounts = 0;
     std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
     unsigned newseed = std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 twistor(newseed);
+    /// @}
+
+    /// \name Helper functions 
+    /// Not wrapped in rollcall header.
+    /// @{
+
+    /// Some other example function
     double some_other_function(int &input)
     {
       std::cout << "  This is some_other_function, invoked with argument " << input << std::endl;
       return input * 2.0;
     }
 
+    /// Un-normalised gaussian log-likelihood
+    double logf (double x, double mu, double sig)
+      {
+        return pow(x-mu, 2) / (2*pow(sig, 2));
+      }
 
-    // Initialization routine
-    void initialize ()
+    /// @}
+
+    //************************************************************
+
+    /// Initialisation function, called anew for each new model point before all other module functions are called.
+    void PointInit_Default()
     {
-      std::cout << std::endl;
-      std::cout << "********************************************" << std::endl;
-      std::cout << "***       Initializing ExampleBit_A      ***" << std::endl;
-      std::cout << "********************************************" << std::endl;
+      cout<<"  Initialising ExampleBit_A for current point."<<endl;
     }
 
+    //************************************************************
 
-    // Module functions
+    /// \name Module functions
+    /// @{
     void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
     void nevents_int  (int    &result)    { result = (int) (*Pipes::nevents_int::Dep::nevents); }
     void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
@@ -78,7 +94,7 @@ namespace Gambit
       //result = &some_other_function;
     }
 
-    // Example of interacting with models
+    /// Example of interacting with models
     void damu (double &result)
     {
       using namespace Pipes::damu;
@@ -91,17 +107,11 @@ namespace Gambit
       //available as a dependency at Pipes::<functionname>::Dep::<modelname>_parameters, 
       //in case you want to do something more advanced than just read off the
       //parameter values.
+      result = *Param["p1"] * *Param["p2"];
     }
-    
-    // Helper function: not wrapped in rollcall header
-    // (un-normalised gaussian log-likelihood)
-    double logf (double x, double mu, double sig)
-      {
-        return pow(x-mu, 2) / (2*pow(sig, 2));
-      }
-      
-    // Likelihood function for fitting the population parameters of a
-    // normal distribution (with hard-coded "observations")
+          
+    /// Likelihood function for fitting the population parameters of a
+    /// normal distribution (with hard-coded "observations")
     void normaldist_loglike (double &result)
     {
       using namespace Pipes::normaldist_loglike;      
@@ -130,9 +140,11 @@ namespace Gambit
       result = loglTotal;
     }  
 
-    // Some example functions for using loops within the dependency structure 
+    /// \name Loopmanager Examples
+    /// Some example functions for using loops within the dependency structure 
+    /// @{
 
-    // Run a fake 'event loop' 
+    /// Run a fake 'event loop' 
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
@@ -163,7 +175,7 @@ namespace Gambit
 
     }
 
-    // Produces a random floating-point 'event count' between 0 and 5.
+    /// Produces a random floating-point 'event count' between 0 and 5.
     void exampleEventGen(double &result)
     {
       using namespace Pipes::exampleEventGen;
@@ -174,7 +186,7 @@ namespace Gambit
       }
     }
 
-    // Rounds an event count to the nearest integer
+    /// Rounds an event count to the nearest integer
     void exampleCut(int &result)
     {
       using namespace Pipes::exampleCut;
@@ -185,7 +197,7 @@ namespace Gambit
       }
     }
 
-    // Adds an integral event count to a total number of accumulated events.
+    /// Adds an integral event count to a total number of accumulated events.
     void eventAccumulator(int &result)
     {
       //There is basically just one thing available in nested functions from the Loops namespace:
@@ -212,9 +224,8 @@ namespace Gambit
       }
     }
 
-    void ExampleBit_A_PointInit_Default()
-    {
-    }
+    /// @} @}
+
   }
 
 }

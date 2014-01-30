@@ -122,7 +122,7 @@ int main( int argc, const char* argv[] )
   cout<< "  * creates and registers module functions and their dependencies"<<endl;
   cout<< "  * creates and registers backends and backend functions"<<endl;
   cout<< "  * hooks module functions up to their dependencies"<<endl;
-  cout<< "  * (almost) hooks module functions up to their backend requirements"<<endl;
+  cout<< "  * hooks module functions up to their backend requirements"<<endl;
   cout<<endl;
 
   // Setup logs
@@ -246,15 +246,15 @@ int main( int argc, const char* argv[] )
 
   cout << "I can do Mstop " << Models::CMSSM_I::Accessors::provides("CMSSM_I_Mstop") << endl;
 
-  // Note: Tags::CAPABILITY is Tags::CMSSM_I_M0 (since this also goes into the global tags box)
-  //       Tags::FUNCTION is Tags::M0 (local to module scope, so this name is ok)
+  // Note: Gambit::Tags::CAPABILITY is Gambit::Tags::CMSSM_I_M0 (since this also goes into the global tags box)
+  //       Gambit::MODEL::Tags::FUNCTION is Gambit::MODEL::Tags::M0 (local to module scope, so this name is ok)
   // Which tag is which?
-  // Accessors::provides<Tags::CAPABILITY>
+  // Accessors::provides<Gambit::Tags::CAPABILITY>
   
   // FUNCTION == CAPABILITY in this case.
-  cout << "Core says: report on Mstop!" << endl;
-  cout << "  " << Models::CMSSM_I::Accessors::name() << " says: ";
   if (Models::CMSSM_I::Accessors::provides("Mstop")) {
+    cout << "Core says: report on Mstop!" << endl;
+    cout << "  " << Models::CMSSM_I::Accessors::name() << " says: ";
     // Call the module function by its functor 
     Models::CMSSM_I::Functown::Mstop.calculate();
     cout << "  " << Models::CMSSM_I::Accessors::name() << " says: " << Models::CMSSM_I::Functown::Mstop(0) << endl ; 
@@ -262,10 +262,10 @@ int main( int argc, const char* argv[] )
   
   /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
      can access the parameters this way now: */
-  cout << "Core says: report on parameters!" << endl;
-  cout << "  " << Models::CMSSM_I::Accessors::name() << " says: ";
   if (Models::CMSSM_I::Accessors::provides("CMSSM_I_parameters"))
   {
+    cout << "Core says: report on parameters!" << endl;
+    cout << "  " << Models::CMSSM_I::Accessors::name() << " says: ";
     // This is the "proper" way to deal with the full set of a parameters of a model
     cout << " Functor access to ModelParameters object (currently read-only) " << endl ;
     cout << endl ;
@@ -494,9 +494,9 @@ int main( int argc, const char* argv[] )
   cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::xsection>() << ")" << endl;
   cout << "I can do charge " << ExampleBit_B::Accessors::provides("charge") << endl;
   cout << "  when scanning the MSSM (explicitly?): " << ExampleBit_B::Accessors::allowed_model("MSSM_I", "exampleCharge");
-  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::MSSM_I, Tags::exampleCharge>() << ")" << endl;
+  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::MSSM_I, ExampleBit_B::Tags::exampleCharge>() << ")" << endl;
   cout << "  when scanning the CMSSM (explicitly?): " << ExampleBit_B::Accessors::allowed_model("CMSSM_I", "exampleCharge");
-  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::CMSSM_I, Tags::exampleCharge>() << ")" << endl;
+  cout << "(" << ExampleBit_B::Accessors::explicitly_allowed_model<ModelTags::CMSSM_I, ExampleBit_B::Tags::exampleCharge>() << ")" << endl;
   cout << "I can do id " << ExampleBit_B::Accessors::provides("id") << endl;
   cout << "Core says: report on n_events!" << endl;
   if (ExampleBit_B::Accessors::provides("nevents")) {
@@ -595,4 +595,4 @@ int main( int argc, const char* argv[] )
 
   return 1;
 
-};
+}

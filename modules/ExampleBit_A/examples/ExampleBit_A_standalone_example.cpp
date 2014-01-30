@@ -89,7 +89,7 @@ int main()
   // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
   function_pointer_retriever.resolveBackendReq(&Backends::LibFortran::Functown::externalFunction);
   
-  // Notify the functors of the models being scanned FIXME this needs to be made more elegant with loops over lists
+  // Notify the module functions of the models being scanned FIXME this needs to be made more elegant with loops over lists
   Models::CMSSM_I::Functown::MSSM_I_parameters.notifyOfModel("CMSSM_I");
   local_xsection.notifyOfModel("CMSSM_I");
 
@@ -134,6 +134,9 @@ int main()
     CMSSM_primary_parameters->setValue("M12",i*2.);
     CMSSM_primary_parameters->setValue("tanb",i*10.);
     CMSSM_primary_parameters->setValue("sgnmu",1.);
+
+    // Call the appropriate point-level module initialisation function.
+    PointInit_Default.reset_and_calculate();
 
     // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
     // i.e. calculate quantities that other quantities depend on first.

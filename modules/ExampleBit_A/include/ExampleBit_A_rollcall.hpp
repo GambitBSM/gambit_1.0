@@ -37,10 +37,14 @@ START_MODULE
 
   #define CAPABILITY PointInit
   START_CAPABILITY
-    #define FUNCTION ExampleBit_A_PointInit_Default
-      START_FUNCTION(void)
-    #undef FUNCTION
+
+    #define FUNCTION PointInit_Default
+    START_FUNCTION()                        // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
+    ALLOW_MODELS(CMSSM_I)                   // ALLOW_MODELS is permitted for initialisation functions, as are BACKEND_REQs. 
+    #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
+
   #undef CAPABILITY
+
 
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY
@@ -50,6 +54,7 @@ START_MODULE
     #undef FUNCTION                         // flag CANNOT_MANAGE_LOOPS is given instead, GAMBIT assumes that the function should not 
                                             // be allowed to manage loops.  Functions cannot have void result types unless they CAN_MANAGE_LOOPS. 
   #undef CAPABILITY                         
+
 
   #define CAPABILITY event
   START_CAPABILITY

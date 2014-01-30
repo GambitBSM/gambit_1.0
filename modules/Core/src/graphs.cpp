@@ -166,7 +166,7 @@ namespace Gambit
         const Graphs::MasterGraphType * myGraph;
       public:
         edgeWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
-        void operator()(std::ostream& out, const EdgeID& v) const
+        void operator()(std::ostream&, const EdgeID&) const
         {
           //out << "[style=\"dotted\"]";
         }

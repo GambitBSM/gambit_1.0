@@ -160,7 +160,7 @@ namespace Gambit{
      */
     std::string get_exception_dump(boost::exception const & e,unsigned int level=0);
 
-  };
+  }
 }
 
 #endif

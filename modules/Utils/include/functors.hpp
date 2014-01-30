@@ -149,7 +149,7 @@ namespace Gambit
         return empty;
       }
       /// Getter for listing permitted backends
-      virtual std::vector<sspair> backendspermitted(sspair quant) 
+      virtual std::vector<sspair> backendspermitted(sspair) 
       { 
         cout << "Error.  The backendspermitted method has not been defined in this class." << endl;
         exit(1);
@@ -158,7 +158,7 @@ namespace Gambit
       }
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
-      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver)  
+      virtual std::vector<sspair> backend_conditional_dependencies (str, str, str, str)  
       { 
         cout << "Error.  The backend_conditional_dependencies method has not been defined in this class." << endl;
         exit(1);
@@ -180,7 +180,7 @@ namespace Gambit
       }
 
       /// Getter for listing model-specific conditional dependencies
-      virtual std::vector<sspair> model_conditional_dependencies (str model)
+      virtual std::vector<sspair> model_conditional_dependencies (str)
       { 
         cout << "Error.  The model_conditional_dependencies method has not been defined in this class." << endl;
         exit(1);
@@ -189,35 +189,35 @@ namespace Gambit
       }
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
-      virtual void setNestedList (std::vector<functor*> &newNestList)
+      virtual void setNestedList (std::vector<functor*>&)
       { 
         cout << "Error.  The setNestedList method has not been defined in this class." << endl;
         exit(1);
       } 
 
       /// Set the iteration number in a loop in which this functor runs
-      virtual void setIteration (int iteration)
+      virtual void setIteration (int)
       { 
         cout << "Error.  The setIteration method has not been defined in this class." << endl;
         exit(1);
       }
 
       /// Resolve a dependency using a pointer to another functor object
-      virtual void resolveDependency (functor* dep_functor)
+      virtual void resolveDependency (functor*)
       {
         cout << "Error.  The resolveDependency method has not been defined in this class." << endl;
         exit(1);
       }
 
       /// Resolve a backend requirement using a pointer to another functor object
-      virtual void resolveBackendReq (functor* be_functor)
+      virtual void resolveBackendReq (functor*)
       {
         cout << "Error.  The resolveBackendReq method has not been defined in this class." << endl;
         exit(1);
       }
 
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
-      virtual void notifyOfModel(str model)
+      virtual void notifyOfModel(str)
       {
         cout << "Error.  The notifyOfModel method has not been defined in this class." << endl;
         exit(1);
@@ -236,7 +236,7 @@ namespace Gambit
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
       // Print function
-      virtual void print(printers::BasePrinter* printer)
+      virtual void print(printers::BasePrinter*)
       {
          std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
           << "function should be redefined in daughter functor classes. If this is running there is a problem "
@@ -309,16 +309,16 @@ namespace Gambit
                             str result_type,
                             str origin_name)
       : functor            (func_name, func_capability, result_type, origin_name),
+        runtime            (FUNCTORS_RUNTIME_INIT),
+        runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
+        fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
+        pInvalidation      (FUNCTORS_BASE_INVALIDATION_RATE),
         iCanManageLoops    (false),
         iRunNested         (false),
-        runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
-        runtime            (FUNCTORS_RUNTIME_INIT),
-        pInvalidation      (FUNCTORS_BASE_INVALIDATION_RATE),
-        fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
-        globlMaxThreads    (omp_get_max_threads()),
         myLoopManagerCapability ("none"),
         myLoopManagerName       ("none"),
-        myLoopManagerOrigin     ("none")
+        myLoopManagerOrigin     ("none"),
+        globlMaxThreads    (omp_get_max_threads())
       {
         if (globlMaxThreads == 0)
         {

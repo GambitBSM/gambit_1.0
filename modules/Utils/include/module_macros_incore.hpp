@@ -77,14 +77,11 @@
 #define NOT_MODEL 0
 /// @}
 
-/// \name String comparison macro
-/// Macros to evaluate whether a token is equal to "ModelParameters" or not
-/// \endcode
+/// \name String definitions for IS_EQUAL macro.
 /// @{
-#define YesThisIs_ModelParameters 1)(1
-#define IS_MODEL_PARAMETERS(TOKEN) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT(YesThisIs_,TOKEN))),2)
+#define ModelParameters_ModelParameters 1)(1
+#define PointInit_PointInit             1)(1
 /// @}
-
 
 /// \name Rollcall macros (redirection within the Core).
 /// These are called from within rollcall headers in each module to 
@@ -280,8 +277,7 @@
                                                                                \
       /* Resolve dependency DEP_TAG in function TAG */                         \
       template <typename DEP_TAG, typename TAG>                                \
-      void resolve_dependency(functor* dep_functor,                            \
-       module_functor_common* this_functor)                                    \
+      void resolve_dependency(functor*, module_functor_common*)                \
       {                                                                        \
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this dependency for this function.";                       \
@@ -360,16 +356,13 @@
       {                                                                        \
         /* Indicate that this module can provide quantity CAPABILITY */        \
         template <>                                                            \
-        bool provides<Tags::CAPABILITY>() { return true; }                     \
+        bool provides<Gambit::Tags::CAPABILITY>() { return true; }             \
       }                                                                        \
                                                                                \
     }                                                                          \
                                                                                \
   }                                                                            \
 
-//#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
-#define INITDEPYES() DEPENDENCY(PointInit, void)
-#define INITDEPNO() 
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within the core.
@@ -380,18 +373,42 @@
                                                                                \
     /* Fail if a void-type function is declared, unless it can manage loops or \
        is an initialisation function. */                                       \
-    BOOST_PP_IIF(                                                              \
-     BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_EQUAL(FLAG, 0)),             \
-     FAIL("Module functions cannot have void results, unless they can manage " \
-          "loops or are initialization functions.  This is declared by adding "\
-          "CAN_MANAGE_LOOPS or INIT_FUNCTION as the second argument of        "\
-          "START_FUNCTION)."),)                                                \
+    BOOST_PP_IIF(BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_EQUAL(FLAG, 0)), \
+      FAIL("Module functions cannot have void results, unless they manage "    \
+       "loops or are initialisation functions.  Loop managers are declared "   \
+       "by adding CAN_MANAGE_LOOPS as the second argument of START_FUNCTION"   \
+       ", and initialisation functions are declared by #defining CAPABILITY "  \
+       "PointInit.  Please check the rollcall header for " STRINGIFY(MODULE)   \
+       ".")                                                                    \
+    ,)                                                                         \
                                                                                \
-    /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
-    ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                     \
+    BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 2),                                      \
+      IF_NOT_EQUAL(CAPABILITY,PointInit,                                       \
+        /* Fail if an initialisation function's CAPABILITY is not PointInit. */\
+        FAIL("Only initialisation functions can be declared using the flag "   \
+         "INIT_FUNCTION. This requires CAPABILITY to be #defined as PointInit."\
+         " Please check the rollcall header for " STRINGIFY(MODULE) ".")       \
+      )                                                                        \
+      IF_NOT_EQUAL(TYPE,void,                                                  \
+        /* Fail if an initialisation function has a non-void return type */    \
+        FAIL("Initialisation functions must have void results. This is "       \
+         "indicated by calling START_FUNCTION with first argument void, "      \
+         "or giving no arguments.  Please check the rollcall header for "      \
+         STRINGIFY(MODULE) ".")                                                \
+      )                                                                        \
+    ,                                                                          \
+      IF_EQUAL(CAPABILITY,PointInit,                                           \
+        /* Fail if a  non-initialisation function has CAPABILITY PointInit. */ \
+        FAIL("Initialisation functions cannot manage loops. Please check the " \
+         "rollcall header for " STRINGIFY(MODULE) ".")                         \
+      )                                                                        \
+    )                                                                          \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
+      /* Add FUNCTION to the module's set of recognised functions. */          \
+      ADD_TAG_IN_CURRENT_NAMESPACE(FUNCTION)                                   \
+                                                                               \
       /* Register (prototype) the function */                                  \
       BOOST_PP_IIF(IS_TYPE(void,TYPE),                                         \
         void FUNCTION();                                                       \
@@ -407,10 +424,11 @@
                                                                                \
   /* Every module function (except the point-level init functions themselves)  \
      depends on a module-specific point-level initialization function. */      \
-  BOOST_PP_IIF(BOOST_PP_NOT_EQUAL(FLAG, 2), INITDEPYES, INITDEPNO)()           \
+  BOOST_PP_IIF(BOOST_PP_BITAND(BOOST_PP_NOT_EQUAL(FLAG, 2),                    \
+   BOOST_PP_NOT(IS_EQUAL(CAPABILITY,PointInit))), INITDEPYES, INITDEPNO)()     \
                                                                                \
-  /* The point-level init functions depend on a scan-level init funciton */    \
-  /// (TODO to be implemented if really needed)
+  /* If scan-level init functions are ever needed, the point-level init        \
+  functions should be made to depend on them here. */                          \
 
 
 /// Main parts of the functor creation
@@ -419,7 +437,7 @@
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
-    BOOST_PP_IIF(IS_MODEL_PARAMETERS(TYPE),                                    \
+    IF_ELSE_EQUAL(TYPE, ModelParameters,                                       \
       model_functor                                                            \
     ,                                                                          \
       module_functor<TYPE>                                                     \
@@ -435,7 +453,7 @@
     Core.registerModuleFunctor(Functown::FUNCTION);                            \
     BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
-     &Accessors::provides<Tags::CAPABILITY>;                                   \
+     &Accessors::provides<Gambit::Tags::CAPABILITY>;                                   \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
   }                                                                            \
                                                                                \
@@ -466,9 +484,10 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      IF_DEFINED(CAT(INITFUNC_,CAPABILITY),                                    \
-      FAIL("Initialization functions cannot depend on loop managers."          \
-      "Check your header files."))                                             \
+      IF_EQUAL(CAPABILITY, PointInit,                                          \
+        FAIL("Initialization functions cannot require loop managers. "         \
+         "Please check the rollcall header for " STRINGIFY(MODULE) ".")        \
+      )                                                                        \
                                                                                \
       /* Set up the runtime commands that register the fact that this FUNCTION \
       requires it be run inside a loop manager with capability LOOPMAN. */     \
@@ -495,8 +514,10 @@
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                       \
                                                                                \
-      IF_DEFINED(CAT(INITFUNC_,CAPABILITY),                                    \
-      FAIL("Initialization functions cannot have dependencies on their own.")) \
+      IF_EQUAL(CAPABILITY, PointInit,                                          \
+        FAIL("Initialization functions cannot have dependencies. "             \
+         "Please check the rollcall header for " STRINGIFY(MODULE) ".")        \
+      )                                                                        \
                                                                                \
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
@@ -512,8 +533,9 @@
                                                                                \
       /* Resolve dependency DEP in FUNCTION */                                 \
       template <>                                                              \
-      void resolve_dependency<Tags::DEP, Tags::FUNCTION>(functor* dep_functor, \
-       module_functor_common* this_functor)                                    \
+      void resolve_dependency<Gambit::Tags::DEP, Tags::FUNCTION>(functor*      \
+       dep_functor, module_functor_common* BOOST_PP_IIF(IS_TYPE(void,TYPE), ,  \
+       this_functor))                                                          \
       {                                                                        \
         /* First try casting the dep pointer passed in to a module_functor */  \
         module_functor<TYPE> * ptr =                                           \
@@ -547,7 +569,7 @@
   namespace Ini                                                                \
   {                                                                            \
     ini_code CAT_3(DEP,_for_,FUNCTION)                                         \
-     (&rt_register_dependency<Tags::DEP, Tags::FUNCTION>);                     \
+     (&rt_register_dependency<Gambit::Tags::DEP, Tags::FUNCTION>);             \
   }                                                                            \
                                                                             
 
@@ -572,18 +594,18 @@
       {                                                                        \
         /* Indicate that FUNCTION requires DEP to be computed previously*/     \
         template <>                                                            \
-        bool requires<Tags::DEP, Tags::FUNCTION>() { return true; }            \
+        bool requires<Gambit::Tags::DEP, Tags::FUNCTION>() { return true; }    \
       }                                                                        \
                                                                                \
       /* Set up the commands to be called at runtime to register dependency*/  \
       template <>                                                              \
-      void rt_register_dependency<Tags::DEP, Tags::FUNCTION> ()                \
+      void rt_register_dependency<Gambit::Tags::DEP, Tags::FUNCTION> ()        \
       {                                                                        \
         Accessors::map_bools[STRINGIFY(CAT(DEP,FUNCTION))] =                   \
-         &Accessors::requires<Tags::DEP, Tags::FUNCTION>;                      \
+         &Accessors::requires<Gambit::Tags::DEP, Tags::FUNCTION>;              \
         Accessors::iMayNeed[STRINGIFY(DEP)] = STRINGIFY(TYPE);                 \
         Functown::FUNCTION.setDependency(STRINGIFY(DEP),STRINGIFY(TYPE),       \
-         &resolve_dependency<Tags::DEP, Tags::FUNCTION>);                      \
+         &resolve_dependency<Gambit::Tags::DEP, Tags::FUNCTION>);              \
       }                                                                        \
                                                                                \
       DEPENDENCY_COMMON_2(DEP, FUNCTION)                                       \
@@ -717,8 +739,9 @@
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    /* Fail if the user has tried to declare that a scan-level initialisation  \
-    function has a backend requirement (non existent). TODO*/                  \
+    /* If scan-level initialisation functions are implemented, the macro should\
+    fail here if the user has tried to declare that a scan-level initialisation\
+    function has a backend requirement. */                                     \
                                                                                \
     /* Add BACKEND_REQ to global set of recognised backend func tags */        \
     ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQ)                                \
@@ -852,7 +875,7 @@
       the conditional dependency. */                                           \
       template <>                                                              \
       void rt_register_dependency                                              \
-       <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION> ()                       \
+       <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION> ()               \
       {                                                                        \
         Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)]=STRINGIFY(TYPE);\
       }                                                                        \
@@ -884,8 +907,8 @@
         been computed previously if BACKEND is in use for BACKEND_REQ.*/       \
         template <>                                                            \
         bool requires_conditional_on_backend                                   \
-         <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,   \
-         BETags::BACKEND> (str ver)                                            \
+         <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION,                \
+         BETags::BACKEND_REQ, BETags::BACKEND> (str ver)                       \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
           vec versions = delimiterSplit(VERSTRING, ",");                       \
@@ -900,19 +923,21 @@
       /* Set up the second set of commands to be called at runtime to register \
       the conditional dependency. */                                           \
       template <>                                                              \
-      void rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
-       Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND> ()                \
+      void rt_register_conditional_dependency                                  \
+       <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION,                  \
+       BETags::BACKEND_REQ, BETags::BACKEND> ()                                \
       {                                                                        \
         Accessors::condit_bools[STRINGIFY(CAT_4(CONDITIONAL_DEPENDENCY,        \
          FUNCTION,BACKEND_REQ,BACKEND))] =                                     \
          &Accessors::requires_conditional_on_backend                           \
-         <Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION, BETags::BACKEND_REQ,   \
-         BETags::BACKEND>;                                                     \
+         <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION,                \
+         BETags::BACKEND_REQ, BETags::BACKEND>;                                \
         Functown::FUNCTION.setBackendConditionalDependency                     \
          (STRINGIFY(BACKEND_REQ), STRINGIFY(BACKEND), VERSTRING,               \
          STRINGIFY(CONDITIONAL_DEPENDENCY),                                    \
          Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],               \
-         &resolve_dependency<Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);   \
+         &resolve_dependency<Gambit::Tags::CONDITIONAL_DEPENDENCY,             \
+         Tags::FUNCTION>);                                                     \
       }                                                                        \
                                                                                \
       /* Create the second conditional dependency initialisation object */     \
@@ -920,8 +945,9 @@
       {                                                                        \
         ini_code CAT_7(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_,           \
          BACKEND_REQ,_provided_by_,BACKEND)                                    \
-         (&rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
-         Tags::FUNCTION, BETags::BACKEND_REQ, BETags::BACKEND>);               \
+         (&rt_register_conditional_dependency                                  \
+         <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION,                \
+         BETags::BACKEND_REQ, BETags::BACKEND>);                               \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -944,7 +970,7 @@
         computed previously if one of the models in MODELSTRING is scanned.*/  \
         template <>                                                            \
         bool requires_conditional_on_model                                     \
-         <Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)             \
+         <Gambit::Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)     \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
           vec models = delimiterSplit(MODELSTRING, ",");                       \
@@ -959,24 +985,25 @@
       /* Set up the second set of commands to be called at runtime to register \
       the conditional dependency. */                                           \
       template <>                                                              \
-      void rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
-       Tags::FUNCTION> ()                                                      \
+      void rt_register_conditional_dependency                                  \
+       <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION> ()               \
       {                                                                        \
         Accessors::condit_bools[STRINGIFY(CAT(CONDITIONAL_DEPENDENCY,          \
          FUNCTION))] = &Accessors::requires_conditional_on_model               \
-         <Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION>;                        \
+         <Gambit::Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION>;                \
         Functown::FUNCTION.setModelConditionalDependency                       \
          (MODELSTRING, STRINGIFY(CONDITIONAL_DEPENDENCY),                      \
          Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],               \
-         &resolve_dependency<Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);   \
+         &resolve_dependency<Gambit::Tags::CONDITIONAL_DEPENDENCY,             \
+         Tags::FUNCTION>);                                                     \
       }                                                                        \
                                                                                \
       /* Create the second conditional dependency initialisation object */     \
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_4(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_models)     \
-         (&rt_register_conditional_dependency<Tags::CONDITIONAL_DEPENDENCY,    \
-         Tags::FUNCTION>);                                                     \
+         (&rt_register_conditional_dependency                                  \
+         <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);              \
       }                                                                        \
                                                                                \
     }                                                                          \

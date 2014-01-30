@@ -32,31 +32,22 @@
 
 namespace Gambit
 {
-  namespace Backends
-  {
-    namespace LibFirst
-    {
-      extern int * SomeInt;
-    }
-  }
-}
-
-namespace Gambit
-{
 
   namespace ExampleBit_B
   {
   
-    // Initialization routine
-    void initialize () 
+    //************************************************************
+
+    /// Initialisation function, called anew for each new model point before all other module functions are called.
+    void PointInit_Default()
     {
-      cout << endl;
-      cout << "********************************************" << endl;
-      cout << "***       Initializing ExampleBit_B      ***" << endl;
-      cout << "********************************************" << endl;
+      cout<<"  Initialising ExampleBit_B for current point."<<endl;
     }
 
-    // Module functions
+    //************************************************************
+
+    /// \name Module functions
+    /// @{
     void exampleCharge    (int    &result) { result = 1; }
     void identity         (str    &result) { result = "rabbiton"; }
     void nevents          (int    &result) { result = 2; }
@@ -115,7 +106,6 @@ namespace Gambit
       int arg2 = 15;
       BEreq::runMe(byVal(*Dep::function_pointer), arg2);
 
-
       // Demostration of accessing backend requirements via 'BEvariable_bucket'/'BEfunction_bucket' objects
       // living in Pipes::[module function name]::BEreq::[backend capability]
       cout << endl;
@@ -136,9 +126,7 @@ namespace Gambit
 
     }
 
-    void ExampleBit_B_PointInit_Default()
-    {
-    }
+    /// @}
 
   }
 

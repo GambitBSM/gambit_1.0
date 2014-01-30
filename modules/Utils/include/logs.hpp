@@ -199,9 +199,9 @@ namespace Gambit {
     std::string demangle_traceline(const char* name) throw();
 
     //! default log filename for errors
-    inline std::string _default_errfile(){ return "_GAMBIT.logs.err" ;};
+    inline std::string _default_errfile(){ return "_GAMBIT.logs.err" ;}
     //! default log filename for non-errors
-    inline std::string _default_logfile(){ return "_GAMBIT.logs.log" ;};
+    inline std::string _default_logfile(){ return "_GAMBIT.logs.log" ;}
 
     // these methods should not be called by the user but needs
     // to be public so they can be called from the logging macros

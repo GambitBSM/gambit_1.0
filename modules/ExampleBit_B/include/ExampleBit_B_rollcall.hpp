@@ -70,7 +70,7 @@ START_MODULE
 
   #define CAPABILITY PointInit
   START_CAPABILITY
-    #define FUNCTION ExampleBit_B_PointInit_Default
+    #define FUNCTION PointInit_Default
       START_FUNCTION(void)
     #undef FUNCTION
   #undef CAPABILITY
@@ -173,6 +173,7 @@ START_MODULE
 
   // Some likelihood of type double that depends on postcuts
   #define CAPABILITY lnL_ExampleBitB
+  START_CAPABILITY
     #define FUNCTION lnL_ExampleBitB
     START_FUNCTION(double)
     DEPENDENCY(nevents_postcuts, int)

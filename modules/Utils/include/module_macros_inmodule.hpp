@@ -63,12 +63,10 @@
 /// \name In-module rollcall macros
 /// @{
 
-//#define INITDEPYES() DEPENDENCY(CAT(MODULE,_PointInit), void)
-#define INITDEPYES() DEPENDENCY(PointInit, void)
-#define INITDEPNO() 
+#define ExampleBit_A_ExampleBit_A 1)(1
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
-/// from within a module core.
+/// from within a module.
 #define MODULE_DECLARE_FUNCTION(TYPE, FLAG)                                    \
                                                                                \
   namespace Gambit                                                             \
@@ -127,9 +125,13 @@
                                                                                \
   }                                                                            \
                                                                                \
-  /* Every module function (except init-functions) depends on a                \
-     module-specific point-level initialization function */                    \
-  BOOST_PP_IIF(BOOST_PP_NOT_EQUAL(FLAG, 2), INITDEPYES, INITDEPNO)()           \
+  /* Every module function (except the point-level init functions themselves)  \
+     depends on a module-specific point-level initialization function. */      \
+  BOOST_PP_IIF(BOOST_PP_BITAND(BOOST_PP_NOT_EQUAL(FLAG, 2),                    \
+   BOOST_PP_NOT(IS_EQUAL(CAPABILITY,PointInit))), INITDEPYES, INITDEPNO)()     \
+                                                                               \
+  /* If scan-level init functions are ever needed, the point-level init        \
+  functions should be made to depend on them here. */                          \
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \

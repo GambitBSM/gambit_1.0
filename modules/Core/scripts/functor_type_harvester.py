@@ -25,7 +25,7 @@
 #
 #  \author Pat Scott 
 #          (patscott@physics.mcgill.ca)
-#    \date 2013 Oct, Nov
+#    \date 2013 Oct, Nov, 2014 Jan
 #
 #*********************************************
 import os
@@ -91,7 +91,7 @@ def addifheader(line,headerset,verbose=False):
         headerset.add(split2[0])
         if verbose: print "      Added header '{0}' to set".format(split2[0])
 
-# Harvest type from a START_FUNCTION macro call
+# Harvest module names from rollcall headers
 def update_module(line,module):
     splitline = neatsplit('\(|\)|,|\s',line)
     if len(splitline)>2:
@@ -103,7 +103,7 @@ def update_module(line,module):
 # Harvest type from a START_FUNCTION macro call
 def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
     splitline = neatsplit('\(|\)|,|\s',line)
-    if len(splitline)>0 and splitline[0]=="START_FUNCTION":
+    if len(splitline)>1 and splitline[0]=="START_FUNCTION":
         #This line defines a function, so the first argument defines a candidate type
         candidate_type = splitline[1]
         if verbose: print "  {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)

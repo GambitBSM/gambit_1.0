@@ -16,6 +16,7 @@ Rollcall:
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
 * Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; before G3**)
+* Make name of current model (and related lineage tests) accessible from within module functions (**Pat; before G3**)
 
 IniFile:
 * Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions. (**Christoph & Pat; before G3**)

@@ -39,19 +39,20 @@
 /// type \em TYPE.  Allows this function to manage loops if the optional 
 /// second argument CAN_MANAGE_LOOPS is given; otherwise, if CANNOT_MANAGE_LOOPS is given
 /// instead, or no second argument is given, the function is prohibited from managing loops.
-/// Using PointInit as CAPABILITY defines an initialization function
-/// (it allows the use of void return types and suppresses the hidden default dependence on a module-level
-/// initialization function).
+/// Using PointInit as CAPABILITY defines an initialization function.  This enforces void 
+/// return types and suppresses the hidden default dependence on PointInit (i.e. so that
+/// point initialisation functions do not depend on themselves or other point init functions).
 #define START_FUNCTION_INIT_FUNCTION(TYPE)                       DECLARE_FUNCTION(TYPE,2)
 #define START_FUNCTION_CAN_MANAGE_LOOPS(TYPE)                    DECLARE_FUNCTION(TYPE,1)
-#define START_FUNCTION_CANNOT_MANAGE_LOOPS(TYPE)                 DECLARE_FUNCTION(TYPE,0)
+#define START_FUNCTION_CANNOT_MANAGE_LOOPS(TYPE)                 DECLARE_FUNCTION(TYPE,IF_ELSE_EQUAL(CAPABILITY, PointInit, 2, 0))
 #define START_FUNCTION_(TYPE)                                    FAIL("Unrecognised flag in argument 2 of START_FUNCTION; should be "\
-                                                                  "CAN_MANAGE_LOOPS, CANNOT_MANAGE_LOOPS, or absent.")
+                                                                  "CAN_MANAGE_LOOPS, CANNOT_MANAGE_LOOPS, INIT_FUNCTION, or absent.")
 #define DEFINED_START_FUNCTION_CAN_MANAGE_LOOPS ()               // Tells the IF_DEFINED macro that this function is indeed defined.
 #define DEFINED_START_FUNCTION_CANNOT_MANAGE_LOOPS ()            // ...
-#define DEFINED_INITFUNC_PointInit ()                            // ...
-#define START_FUNCTION_2(_1, _2)                                 CAT(START_FUNCTION_,IF_DEFINED(START_FUNCTION_##_2,_2))(_1)  
-#define START_FUNCTION_1(_1)                                     CAT(START_FUNCTION_,IF_DEFINED2(CAT(INITFUNC_,CAPABILITY), INIT_FUNCTION, CANNOT_MANAGE_LOOPS))(_1)
+#define DEFINED_START_FUNCTION_INIT_FUNCTION ()                  // ...
+#define START_FUNCTION_2(_1, _2)                                 CAT(START_FUNCTION_,IF_DEFINED(START_FUNCTION_##_2,_2))(_1)
+#define START_FUNCTION_1(_1)                                     CAT(START_FUNCTION_,IF_ELSE_EQUAL(CAPABILITY, PointInit, INIT_FUNCTION, CANNOT_MANAGE_LOOPS))(IF_ELSE_EMPTY(_1, void, _1))
+#define START_FUNCTION_0()                                       CAT(START_FUNCTION_,IF_ELSE_EQUAL(CAPABILITY, PointInit, INIT_FUNCTION, CANNOT_MANAGE_LOOPS))(void)
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
 
@@ -132,5 +133,14 @@
                                        (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 2))\
                                        (__VA_ARGS__)
 /// @}
+
+/// \name Initialisation dependency switches.
+/// Macros for defining the action to be taken if a dependency on the module's 
+/// point-level initialisation function is required.
+/// @{
+#define INITDEPYES() DEPENDENCY(PointInit, void)
+#define INITDEPNO() 
+/// @}
+
 
 #endif // defined __module_macros_common_hpp__

@@ -66,7 +66,34 @@
 #define double_double 1)(1
 #define bool_bool     1)(1
 #define char_char     1)(1
+#define string_string 1)(1
 #define IS_TYPE(COMPTYPE,TYPE) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT_3(COMPTYPE,_,TYPE))),2)
+/// @}
+
+/// \name String comparison macros.
+/// Macros for evaluating whether tokens are equal or not for certain special values, and
+/// for then switching on the result.
+/// Define your special values, such as "myToken" locally as 
+/// \code
+/// #define myToken_myToken 1)(1 
+/// Just like the IS_TYPE macro, so redirects to that.
+/// \endcode
+/// @{
+#define IS_EQUAL(A,B)          IS_TYPE(A,B)
+#define IF_EQUAL(A,B,C)        BOOST_PP_IIF(IS_EQUAL(A,B),C,)
+#define IF_NOT_EQUAL(A,B,C)    BOOST_PP_IIF(IS_EQUAL(A,B), ,C)
+#define IF_ELSE_EQUAL(A,B,C,D) BOOST_PP_IIF(IS_EQUAL(A,B),C,D)
+/// @}
+
+/// \name Empty token test macros.
+/// Macros for evaluating whether tokens are empty or not, and
+/// for then switching on the result.
+/// @{
+#define EMPTY_TOKEN_TESTER 1)(1
+#define IS_EMPTY(A)          IS_EQUAL(CAT(A,EMPTY),TOKEN_TESTER)
+#define IF_EMPTY(A,B)        BOOST_PP_IIF(IS_EMPTY(A),B,)
+#define IF_NOT_EMPTY(A,B)    BOOST_PP_IIF(IS_EMPTY(A), ,B)
+#define IF_ELSE_EMPTY(A,B,C) BOOST_PP_IIF(IS_EMPTY(A),B,C)
 /// @}
 
 /// \name Variadic macro expanders
@@ -121,11 +148,10 @@
 
 /// Do ACTION if NAME is defined.
 #define IF_DEFINED(NAME,ACTION)        BOOST_PP_IF(DEFINED(NAME), ACTION, )
-#define IF_DEFINED2(NAME,A1,A2)        BOOST_PP_IF(DEFINED(NAME), A1, A2)
 /// Do ACTION if NAME is undefined.
 #define IF_NOT_DEFINED(NAME,ACTION)    BOOST_PP_IF(DEFINED(NAME), , ACTION)
 /// Do IF if NAME is defined, otherwise do ELSE.
-#define SWITCH_DEFINED(NAME,IF,ELSE)   BOOST_PP_IF(DEFINED(NAME), IF, ELSE)
+#define IF_ELSE_DEFINED(NAME,IF,ELSE)  BOOST_PP_IF(DEFINED(NAME), IF, ELSE)
 /// @}
 
 #endif //defined __util_macros_hpp__

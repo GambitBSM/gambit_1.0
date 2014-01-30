@@ -119,11 +119,11 @@
           /* Add appropriate 'provides' check to confirm the parameters object 
              as a CAPABILITY of this model. */                                 \
           template <>                                                          \
-          bool provides<Tags::CAT(MODEL,_parameters)>() { return true; }       \
+          bool provides<Gambit::Tags::CAT(MODEL,_parameters)>(){return true;}  \
         }                                                                      \
                                                                                \
         /* Functor's actual "calculate" function.  Doesn't do anything. */     \
-        void primary_parameters (ModelParameters &result) {};                  \
+        void primary_parameters (ModelParameters&) {}                          \
                                                                                \
         /* Wrap it up in a primary_model_functor */                            \
         MAKE_PRIMARY_MODEL_FUNCTOR                                             \
@@ -151,12 +151,7 @@
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    /* lifted straight: need this or something similar?                        \
-    /* Add FUNCTION to global set of tags of recognised module capabils/deps */\
-    /* Ben: I am calling this function get##PARAMETER. Need to make more specific
-       to avoid name collisions? Are module functions in the module namespace?
-       This tag doesn't seem to be...                            */            \
-    ADD_TAG_IN_CURRENT_NAMESPACE(PARAMETER)                                    \
+    /* Add CAPABILITY to global set of tags of known module capabilities/deps*/\
     ADD_TAG_IN_CURRENT_NAMESPACE(CAPABILITY)                                   \
                                                                                \
     namespace Models                                                           \
@@ -165,11 +160,14 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
+        /* Add PARAMETER to set of tags of known module functions.*/           \
+        ADD_TAG_IN_CURRENT_NAMESPACE(PARAMETER)                                \
+                                                                               \
         namespace Accessors                                                    \
         {                                                                      \
           /* Indicate that this PARAMETER can provide quantity CAPABILITY */   \
           template <>                                                          \
-          bool provides<Tags::CAPABILITY>() { return true; }                   \
+          bool provides<Gambit::Tags::CAPABILITY>() { return true; }           \
         }                                                                      \
                                                                                \
         /* The wrapper function which extracts the value of PARAMETER from
@@ -275,8 +273,7 @@
 
 // No longer want every parameter in its own functor: just the ones with
 // custom CAPABILITIES
-//#define DO_LINK(r,data,elem) \
-//  LINK_PARAMETER_TO_CAPABILITY(elem,CAT_5(MODEL,_,PARAMETERISATION,_,elem))
+//#define DO_LINK(r,data,elem) LINK_PARAMETER_TO_CAPABILITY(elem,CAT_5(MODEL,_,PARAMETERISATION,_,elem))
 // Changed our minds again: We do want these "miniguys".
 //#define DO_LINK(r,data,elem) DEFINEPAR(elem)
 
@@ -297,8 +294,8 @@
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
-    /* Add tags which specify MODEL_X's parameter object as a CAPABILITY of
-       the current model */                                                    \
+    /* Add tags which specify that MODEL_X_parameters is a known capability/dep\  
+    in GAMBIT. */                                                              \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL_X,_parameters))                     \
                                                                                \
     namespace Models                                                           \
@@ -309,11 +306,17 @@
                                                                                \
         namespace Accessors                                                    \
         {                                                                      \
-          /* Indicate that this model::parameterisation can provide quantity   \
-             MODEL_X_parameters */                                             \
+          /* Indicate that this MODEL can provide quantity MODEL_X_parameters*/\
           template <>                                                          \
-          bool provides<Tags::CAT(MODEL_X,_parameters)>() { return true; }     \
+          bool provides<Gambit::Tags::CAT(MODEL_X,_parameters)>()              \
+          {                                                                    \
+            return true;                                                       \
+          }                                                                    \
         }                                                                      \
+                                                                               \
+        /* Add MODEL_X_parameters to the set of tags of known functions        \
+        provided by this model. */                                             \
+        ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL_X,_parameters))                 \
                                                                                \
         /* The function which computes the MODEL_X_parameters object. This     \
            is the analogue of a module function, and is what will be wrapped   \
@@ -427,7 +430,7 @@
   {                                                                            \
     Core.registerPrimaryModelFunctor(Functown::FUNCTION);                      \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
-     &Accessors::provides<Tags::CAPABILITY>;                                   \
+     &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
   }                                                                            \
                                                                                \
