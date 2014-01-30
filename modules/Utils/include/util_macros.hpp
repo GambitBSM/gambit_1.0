@@ -60,13 +60,14 @@
 /// #define X_IS_VOID(X) IS_TYPE(X, void)
 /// \endcode
 /// @{
-#define void_void     1)(1
-#define int_int       1)(1
-#define float_float   1)(1
-#define double_double 1)(1
-#define bool_bool     1)(1
-#define char_char     1)(1
-#define string_string 1)(1
+#define void_void                       1)(1
+#define int_int                         1)(1
+#define float_float                     1)(1
+#define double_double                   1)(1
+#define bool_bool                       1)(1
+#define char_char                       1)(1
+#define string_string                   1)(1
+#define ModelParameters_ModelParameters 1)(1
 #define IS_TYPE(COMPTYPE,TYPE) BOOST_PP_EQUAL(BOOST_PP_SEQ_SIZE((CAT_3(COMPTYPE,_,TYPE))),2)
 /// @}
 

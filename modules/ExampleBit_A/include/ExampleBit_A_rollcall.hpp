@@ -39,12 +39,11 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION PointInit_Default
-    START_FUNCTION()                        // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
+    START_INI_FUNCTION                      // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
     ALLOW_MODELS(CMSSM_I)                   // ALLOW_MODELS is permitted for initialisation functions, as are BACKEND_REQs. 
     #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
 
   #undef CAPABILITY
-
 
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY

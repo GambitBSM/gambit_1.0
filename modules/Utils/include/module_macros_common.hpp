@@ -42,6 +42,7 @@
 /// Using PointInit as CAPABILITY defines an initialization function.  This enforces void 
 /// return types and suppresses the hidden default dependence on PointInit (i.e. so that
 /// point initialisation functions do not depend on themselves or other point init functions).
+#define START_INI_FUNCTION                                       START_FUNCTION(void)
 #define START_FUNCTION_INIT_FUNCTION(TYPE)                       DECLARE_FUNCTION(TYPE,2)
 #define START_FUNCTION_CAN_MANAGE_LOOPS(TYPE)                    DECLARE_FUNCTION(TYPE,1)
 #define START_FUNCTION_CANNOT_MANAGE_LOOPS(TYPE)                 DECLARE_FUNCTION(TYPE,IF_ELSE_EQUAL(CAPABILITY, PointInit, 2, 0))
@@ -51,8 +52,7 @@
 #define DEFINED_START_FUNCTION_CANNOT_MANAGE_LOOPS ()            // ...
 #define DEFINED_START_FUNCTION_INIT_FUNCTION ()                  // ...
 #define START_FUNCTION_2(_1, _2)                                 CAT(START_FUNCTION_,IF_DEFINED(START_FUNCTION_##_2,_2))(_1)
-#define START_FUNCTION_1(_1)                                     CAT(START_FUNCTION_,IF_ELSE_EQUAL(CAPABILITY, PointInit, INIT_FUNCTION, CANNOT_MANAGE_LOOPS))(IF_ELSE_EMPTY(_1, void, _1))
-#define START_FUNCTION_0()                                       CAT(START_FUNCTION_,IF_ELSE_EQUAL(CAPABILITY, PointInit, INIT_FUNCTION, CANNOT_MANAGE_LOOPS))(void)
+#define START_FUNCTION_1(_1)                                     CAT(START_FUNCTION_,IF_ELSE_EQUAL(CAPABILITY, PointInit, INIT_FUNCTION, CANNOT_MANAGE_LOOPS))(_1)
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
 

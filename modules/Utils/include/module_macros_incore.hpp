@@ -79,7 +79,6 @@
 
 /// \name String definitions for IS_EQUAL macro.
 /// @{
-#define ModelParameters_ModelParameters 1)(1
 #define PointInit_PointInit             1)(1
 /// @}
 
@@ -389,7 +388,7 @@
          "INIT_FUNCTION. This requires CAPABILITY to be #defined as PointInit."\
          " Please check the rollcall header for " STRINGIFY(MODULE) ".")       \
       )                                                                        \
-      IF_NOT_EQUAL(TYPE,void,                                                  \
+      BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                       \
         /* Fail if an initialisation function has a non-void return type */    \
         FAIL("Initialisation functions must have void results. This is "       \
          "indicated by calling START_FUNCTION with first argument void, "      \
@@ -437,7 +436,7 @@
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
-    IF_ELSE_EQUAL(TYPE, ModelParameters,                                       \
+    BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE),                                \
       model_functor                                                            \
     ,                                                                          \
       module_functor<TYPE>                                                     \
