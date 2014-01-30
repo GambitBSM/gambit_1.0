@@ -49,7 +49,7 @@ void beispiel()
   modelClaw.activatePrimaryModels(selectedmodels);
 
   // Set up a printer object
-  printers::ostreamPrinter printer(std::cout,1); 
+  Printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);

@@ -44,6 +44,7 @@ namespace Gambit
     typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
+    typedef property_map<MasterGraphType,vertex_index_t>::type IndexMap;
 
     // Typedefs for communication channels with the master-likelihood
     typedef std::map<std::string, double *> inputMapType;
@@ -76,7 +77,7 @@ namespace Gambit
     {
       public:
         // Constructor, provide module and backend functor lists
-        DependencyResolver(const gambit_core&, const IniParser::IniFile&, printers::BasePrinter&);
+        DependencyResolver(const gambit_core&, const IniParser::IniFile&, Printers::BasePrinter&);
 
         // The dependency resolution
         void resolveNow();
@@ -89,6 +90,9 @@ namespace Gambit
 
         // Pretty print function evaluation order
         void printFunctorEvalOrder();
+
+        // Initialise the printer object with a list of functors for it to expect to be printed.
+        void initialisePrinter();
 
         // New IO routines
         std::vector<VertexID> getObsLikeOrder();
@@ -141,7 +145,7 @@ namespace Gambit
         const IniParser::IniFile *boundIniFile;
 
         // Printer object to which this dependency resolver is bound
-        printers::BasePrinter *boundPrinter;
+        Printers::BasePrinter *boundPrinter;
 
         // *** Output Vertex Infos
         std::vector<OutputVertexInfo> outputVertexInfos;
@@ -154,6 +158,9 @@ namespace Gambit
 
         // Temporary map for loop manager -> list of nested functions
         std::map<VertexID, std::set<VertexID>> loopManagerMap;
+
+        // Indices associated with graph vertices (used by printers to identify functors)
+        IndexMap index;
 
     };
   }
