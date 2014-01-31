@@ -55,7 +55,13 @@ void beispiel(const char* inifilename)
   modelClaw.activatePrimaryModels(selectedmodels);
 
   // Set up a printer object
-  printers::ostreamPrinter printer(std::cout,1); 
+  // (will do this with a factory that reads the inifile, similar to the PriorManager)
+  // Printers::ostreamPrinter printer(std::cout,1); 
+  // For now the asciiPrinter can be constructed using any stream, so for file output
+  // we need to give it a file stream object.
+  std::ofstream outfile("gambit_output.txt", std::ofstream::out);
+  std::ofstream infofile("gambit_output.info", std::ofstream::out);
+  Printers::asciiPrinter printer(outfile,infofile);
 
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);

@@ -22,8 +22,7 @@
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 July --> Added primary_model_functor class
-///  \date 2013 Sep  --> Added functor print functions
+///  \date 2013 July, Sep, 2014 Jan
 ///
 ///  *********************************************
 
@@ -71,6 +70,7 @@ namespace Gambit
        myType          (result_type),
        myOrigin        (origin_name),
        myStatus        (1),
+       printmeflag     (false),
        needs_recalculating (true) {}
       
       /// Virtual calculate(); needs to be redefined in daughters.
@@ -99,6 +99,8 @@ namespace Gambit
       void setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
+      /// Setter for the wrapped function's "printme" flag (true = 'yes please print me', false = 'no do not print me')
+      void setprintme(bool flag) { if (this == NULL) failBigTime("setprintme"); printmeflag = flag; }
 
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime("name"); return myName; }
@@ -116,7 +118,8 @@ namespace Gambit
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
-
+      /// Getter for the wrapped function's "printme" flag (true = 'yes please print me', false = 'no do not print me')
+      bool printme()    { if (this == NULL) failBigTime("printme"); return printmeflag; }
 
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager()
@@ -244,13 +247,22 @@ namespace Gambit
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
-      // Print function
-      virtual void print(printers::BasePrinter*)
-      {
-         std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
-          << "function should be redefined in daughter functor classes. If this is running there is a problem "
-          << "somewhere, e.g. you have called print on a void function result (from functor "<<myName<<")"<<std::endl;
+      /// Print function
+      virtual void print(Printers::BasePrinter* printer, int vertex)
+      { 
+         // Ben: removing the if - we should NEVER be here, not even if printmeflag=false
+         // TODO: Error
+         //if(this->printmeflag) {
+           std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
+            << "function should be redefined in daughter functor classes. If this is running there is a problem "
+            << "somewhere, e.g. you have called print on a void function result (from functor "<<myName<<")"<<std::endl;
+           std::cout<<"Currently only functors derived from module_functor_common are allowed to try to print "
+            << "themselves; i.e. backend functors may not do this (they inherit this default message)"<<std::endl;
+         //}
+         //exit(1);
       }
+
+      
 
 
     protected:
@@ -269,6 +281,8 @@ namespace Gambit
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
+      /// Flag to select whether or not the results of this functor should be sent to the printer object.
+      bool printmeflag;
 
       /// List of allowed models
       std::set<str> allowedModels;
@@ -757,7 +771,8 @@ namespace Gambit
           myBackendReqs.push_back(*it);        
         }
       }
-            
+
+
     protected:
 
       /// Current runtime in ns
@@ -919,9 +934,23 @@ namespace Gambit
       }
 
       /// Printer function
-      virtual void print(printers::BasePrinter* printer, int index) { if (iRunNested) printer->print(myValue[index]); else printer->print(myValue[0]); }
+      //virtual void print(Printers::BasePrinter* printer, int index) { if (iRunNested) printer->print(myValue[index]); else printer->print(myValue[0]); }
       /// Printer function (single-argument short-circuit)
-      virtual void print(printers::BasePrinter* printer) { print(printer,0); }
+      //virtual void print(Printers::BasePrinter* printer) { print(printer,0); }
+
+      // Ben: I am cutting out this index short-circuit business for now since I am not sure that a general printer can be expected to handle it sensibly.
+      // Ben: moving this to the module_functor_common class so that all functors inherit it...
+
+      /// Printer function
+      virtual void print(Printers::BasePrinter* printer, int vertex)
+      {
+        // Check if this functor is set to output its contents
+        if(this->printmeflag) {
+          // We can expand the list of stuff supplied to printers easily, but each printer will of course have to be modified to accept the new arguments.
+          printer->print(myValue[0],vertex,myName,myCapability,myOrigin);
+        }
+      }
+
 
     protected:
 
