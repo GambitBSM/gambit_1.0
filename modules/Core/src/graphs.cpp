@@ -198,8 +198,8 @@ namespace Gambit
     /// Add module functors to class internal list.
     DependencyResolver::DependencyResolver(const gambit_core &core, 
                                            const IniParser::IniFile &iniFile, 
-                                           printers::BasePrinter &printer)
-     : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer)
+                                           Printers::BasePrinter &printer)
+     : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
     {
       addFunctors();
       verbose = true;
@@ -245,9 +245,35 @@ namespace Gambit
         masterGraph[it->first]->setNestedList(functorList);
       }
 
+      // Initialise the printer object with a list of functor IDs whose 'printme' flag is true and whose 'status' is 2 (activative). (All functors which are going to run have status 2 by now yes?)
+      initialisePrinter();
+
       // Generate graphviz plot
       std::ofstream outf("graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
+    }
+
+    /// Set up printer object
+    // (i.e. give it the list of functors that need printing)
+    void DependencyResolver::initialisePrinter()
+    {
+      std::vector<int> functors_to_print;
+      graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
+      //IndexMap index = get(vertex_index, masterGraph); // Now done in the constructor
+      //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
+
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
+        // I am pretty sure checking for status==2 is what we want right? Just make sure
+        // that this runs after the dependency resolution.
+        if( masterGraph[*vi]->printme() and (masterGraph[*vi]->status()==2) )
+        {
+          functors_to_print.push_back(index[*vi]);
+        }
+      }
+      // sent vector of ID's of functors to be printed to printer.
+      // (if we want to only print functor output sometimes, and dynamically switch this on and off, we'll have to rethink the strategy here a little... for now if the print function of a functor does not get called, it is up to the printer how it deals with the missing result. Similarly for extra results, i.e. from any functors not in this initial list, whose "printme" flag later gets set to 'true' somehow.)
+      boundPrinter->initialise(functors_to_print);
     }
 
     /// List of masterGraph content
@@ -368,6 +394,10 @@ namespace Gambit
     void DependencyResolver::calcObsLike(VertexID vertex)
     {
       std::vector<VertexID> order;
+      typedef property_map<MasterGraphType, vertex_index_t>::type IndexMap;
+      //IndexMap index = get(vertex_index, masterGraph);
+      // TODO: Do I need to do this here? Should be a member variable of dependency resolver.
+
       // TODO: Should happen only once
       order = getSortedParentVertices(vertex, masterGraph, function_order);
       for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it)
@@ -384,7 +414,10 @@ namespace Gambit
         //      threads other than the main one need to be accessed with 
         //        masterGraph[*it]->print(boundPrinter,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        masterGraph[*it]->print(boundPrinter);
+        // Ben: Ugh ok I see. Well I had to kill this for now, will put it back asap...
+        //  the 'index' here is a unique identifier given to each graph vertex (functor),
+        //  not the thread obviously.
+        masterGraph[*it]->print(boundPrinter,index[*it]);
       }
     }
 
@@ -422,6 +455,8 @@ namespace Gambit
       {
         masterGraph[*vi]->reset();
       }
+      // TODO: Ben - this is temporary; the command to tell the printer to start a new point should probably be in ScannerBit or something.
+      boundPrinter->endline();
     }
 
     //
@@ -587,6 +622,15 @@ namespace Gambit
         cout << "Resolved by: [";
         cout << (*masterGraph[fromVertex]).name() << ", ";
         cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
+
+        // Ben: If toVertex is the Core, then fromVertex is one of our target functors, which for
+        // now I am assuming are also the things we want to output to the printer system. 
+        // So, so set their printme flags to true
+        if ( toVertex == OMEGA_VERTEXID )
+        {
+           masterGraph[fromVertex]->setprintme(true);
+           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO TRUE" << endl;
+        }
 
         if ( toVertex != OMEGA_VERTEXID)
         {

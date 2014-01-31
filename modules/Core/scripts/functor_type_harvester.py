@@ -13,7 +13,7 @@
 #  that GAMBIT will try to compile. These
 #  are needed to generate the default (virtual) 
 #  'print' functions in the base printer class
-#  (see Utils/include/printers.hpp)  
+#  (see Printers/include/baseprinter.hpp)  
 #
 #*********************************************
 #
