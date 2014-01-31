@@ -188,6 +188,15 @@ namespace Gambit
         return empty;
       }
 
+      /// Getter for listing model-specific conditional backend requirements
+      virtual std::vector<sspair> model_conditional_backend_reqs (str)
+      { 
+        cout << "Error.  The model_conditional_backend_reqs method has not been defined in this class." << endl;
+        exit(1);
+        std::vector<sspair> empty;
+        return empty;
+      }
+
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*>&)
       { 
@@ -227,7 +236,7 @@ namespace Gambit
       bool modelAllowed(str model)
       {
         if (allowedModels.empty()) return true;
-        str parent = find_parent_model(model);
+        str parent = find_allowed_parent_model(model);
         if (allowedModels.find(parent) != allowedModels.end()) return true;
         return false;        
       }
@@ -280,13 +289,26 @@ namespace Gambit
       }
 
       /// Try to find a parent model in the functor's allowedModels list
-      str find_parent_model(str model)
+      str find_allowed_parent_model(str model)
       {
         for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
         {
           if (model_is_registered(*it))
           {
             if (descendant_of(model, *it)) return *it;
+          } 
+        }    
+        return "";    
+      }
+
+      /// Try to find a parent model in some user-supplied map from models to sspair vectors
+      str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
+      {
+        for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
+        {
+          if (model_is_registered(it->first))
+          {
+            if (descendant_of(model, it->first)) return it->first;
           } 
         }    
         return "";    
@@ -455,16 +477,19 @@ namespace Gambit
       /// Getter for listing model-specific conditional dependencies
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
-        str parent = find_parent_model(model);
-        if (myModelConditionalDependencies.find(parent) != myModelConditionalDependencies.end())
-        {
-          return myModelConditionalDependencies[parent];
-        }
-        else
-        {
-          std::vector<sspair> empty;
-          return empty;
-        }
+        str parent = find_parent_model_in_map(model,myModelConditionalDependencies);
+        if (parent != "") return myModelConditionalDependencies[parent];
+        std::vector<sspair> empty;
+        return empty;
+      }
+
+      /// Getter for listing model-specific conditional backend requirements
+      virtual std::vector<sspair> model_conditional_backend_reqs (str model)
+      { 
+        str parent = find_parent_model_in_map(model,myModelConditionalBackendReqs);
+        if (parent != "") return myModelConditionalBackendReqs[parent];
+        std::vector<sspair> empty;
+        return empty;
       }
 
       /// Add and activate unconditional dependencies.
@@ -544,13 +569,42 @@ namespace Gambit
         dependency_map[key] = resolver;
       }
 
-      /// Add a backend requirement
+      /// Add an unconditional backend requirement
+      /// The info gets updated later if this turns out to be contitional on a model. 
       void setBackendReq(str req, str type, void(*resolver)(functor*))
       { 
         sspair key (req, type);
         backendreq_types[req] = type;
         myBackendReqs.push_back(key);
         backendreq_map[key] = resolver;
+      }
+
+      /// Add a model conditional backend requirement for multiple models
+      void setModelConditionalBackendReq
+       (str model, str req, str type)
+      {
+        // Split the model string and send each model to be registered
+        std::vector<str> models = delimiterSplit(model, ",");
+        for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
+        {
+          setModelConditionalBackendReqSingular(*it, req, type);
+        }
+      }
+
+      /// Add a model conditional backend requirement for a single model
+      void setModelConditionalBackendReqSingular
+       (str model, str req, str type)
+      { 
+        sspair key (req, type);
+        // Remove the entry from the unconditional backend reqs list...
+        myBackendReqs.erase(std::remove(myBackendReqs.begin(), myBackendReqs.end(), key), myBackendReqs.end());
+        // Check that the model is not already in the conditional backend reqs list, then add it
+        if (myModelConditionalBackendReqs.find(model) == myModelConditionalBackendReqs.end())
+        {
+          std::vector<sspair> newvec;
+          myModelConditionalBackendReqs[model] = newvec;
+        }
+        myModelConditionalBackendReqs[model].push_back(key);
       }
 
       /// Add multiple versions of a permitted backend 
@@ -676,7 +730,7 @@ namespace Gambit
         }        
       }
 
-      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
       virtual void notifyOfModel(str model)
       {
         //Make sure this model is actually allowed to be used with this functor, otherwise die gracefully.
@@ -693,6 +747,14 @@ namespace Gambit
         for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
         {
           myDependencies.push_back(*it);        
+        }
+        //If this model fits any conditional backend requirements (or is a descendent of a model that fits any), then activate them.
+        std::vector<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
+        cout << "model: " << model << endl;
+        for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
+        {
+          cout << "req: " << it->first << " " << it->second << endl;
+          myBackendReqs.push_back(*it);        
         }
       }
             
@@ -742,6 +804,9 @@ namespace Gambit
 
       /// Map from models to (vector of {conditional dependency-type} pairs)
       std::map< str, std::vector<sspair> > myModelConditionalDependencies;
+
+      /// Map from models to (vector of {conditional backend requirement-type} pairs)
+      std::map< str, std::vector<sspair> > myModelConditionalBackendReqs;
 
       /// Map from backend requirements to their required types
       std::map<str, str> backendreq_types;

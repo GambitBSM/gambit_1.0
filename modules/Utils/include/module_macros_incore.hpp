@@ -82,6 +82,20 @@
 #define PointInit_PointInit             1)(1
 /// @}
 
+/// \name Sneaky redefinition of \link DEFINED() DEFINED\endlink to allow testing whether specific tokens are defined.
+/// @{
+#define TOKEN_DEFINED(A) BOOST_PP_NOT(DEFINED(A))
+#define IF_TOKEN_DEFINED(A,B) BOOST_PP_IIF(DEFINED(A),BOOST_PP_EMPTY(),B)
+#define IF_TOKEN_UNDEFINED(A,B) BOOST_PP_IIF(DEFINED(A),B,BOOST_PP_EMPTY())
+#define IF_ELSE_TOKEN_DEFINED(A,B,C) BOOST_PP_IIF(DEFINED(A),C,B)
+#define DEFINED_MODULE                 ()
+#define DEFINED_CAPABILITY             ()
+#define DEFINED_FUNCTION               ()
+#define DEFINED_BACKEND_REQ            ()
+#define DEFINED_CONDITIONAL_DEPENDENCY ()
+/// @}
+
+
 /// \name Rollcall macros (redirection within the Core).
 /// These are called from within rollcall headers in each module to 
 /// register module functions, their capabilities, return types, dependencies,
@@ -139,11 +153,12 @@
 /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 
-/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
-/// should be activated if the model being scanned matches one of the models passed 
-/// as an argument.
-#define ACTIVATE_FOR_MODELS(...)                          CORE_ACTIVATE_DEP_MODEL(#__VA_ARGS__)
-
+/// Expander for ACTIVATE_FOR_MODELS
+/// Depends on whether the macro has been called inside a \em BACKEND_REQ block or a \em CONDITIONAL_DEPENDENCY block.
+/// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink or
+/// \link BACKEND_REQ() BACKEND_REQ\endlink should be activated if the model being scanned matches one of the
+/// models passed as an argument.
+#define ACTIVATE_FOR_MODELS(...)                         IF_ELSE_TOKEN_DEFINED(BACKEND_REQ, ACTIVATE_BE_MODEL, ACTIVATE_DEP_MODEL)(#__VA_ARGS__)
 /// @}
 
 
@@ -155,6 +170,10 @@
 /// Redirection of \link START_MODULE() START_MODULE\endlink when invoked from 
 /// within the core.
 #define CORE_START_MODULE                                                      \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_MODULE."))                                                           \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
     namespace MODULE                                                           \
@@ -236,11 +255,24 @@
           return (*map_bools["BE_"+quant+obs])();                              \
         }                                                                      \
                                                                                \
+        /* Module requires quantity BE_TAG from a backend to compute TAG if    \
+        scanning a given model. */                                             \
+        template <typename BE_TAG, typename TAG>                               \
+        bool needs_from_backend_conditional_on_model(str) { return false; }    \
+                                                                               \
+        /* Additional overloaded, non-templated version of needs_from_backend*/\
+        bool needs_from_backend(str quant, str obs, str model)                 \
+        {                                                                      \
+          if (condit_bools.find("BE_"+quant+obs) == condit_bools.end())        \
+           return false;                                                       \
+          return (*condit_bools["BE_"+quant+obs])(model);                      \
+        }                                                                      \
+                                                                               \
         /* Module may require observable/likelihood DEP_TAG to compute TAG,    \
         depending on the backend and version meeting requirement REQ_TAG.*/    \
         template <typename DEP_TAG, typename TAG, typename REQ_TAG,            \
          typename BE>                                                          \
-        bool requires_conditional_on_backend(str ver) {return false; }         \
+        bool requires_conditional_on_backend(str) {return false; }             \
                                                                                \
         /* Overloaded version of templated function */                         \
         template <typename DEP_TAG, typename TAG, typename REQ_TAG,            \
@@ -254,7 +286,7 @@
         /* Module may require observable/likelihood DEP_TAG to compute TAG,    \
         depending on the model being scanned.*/                                \
         template <typename DEP_TAG, typename TAG>                              \
-        bool requires_conditional_on_model(str model) {return false; }         \
+        bool requires_conditional_on_model(str) {return false; }               \
                                                                                \
         /* Module allows use of model MODEL_TAG when computing TAG */          \
         template <typename MODEL_TAG, typename TAG>                            \
@@ -336,11 +368,25 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
-
+                                                                               \
+      /* Runtime registration function for conditional backend req BE_REQ of   \
+      function TAG*/                                                           \
+      template <typename BE_REQ, typename TAG>                                 \
+      void rt_register_conditional_backend_req ()                              \
+      {                                                                        \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have this conditional backend requirement for this function.";  \
+      }                                                                        \
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
 #define CORE_START_CAPABILITY                                                  \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_CAPABILITY."))                                                       \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling START_CAPABILITY. Please check the rollcall header for "           \
+   STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -366,6 +412,15 @@
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within the core.
 #define CORE_DECLARE_FUNCTION(TYPE, FLAG)                                      \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_FUNCTION."))                                                         \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling START_FUNCTION. Please check the rollcall header for "             \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "START_FUNCTION. Please check the rollcall header for "                     \
+   STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -477,6 +532,15 @@
 /// within the core.
 #define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                            \
                                                                                \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "NEEDS_MANAGER_WITH_CAPABILITY."))                                          \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling NEEDS_MANAGER_WITH_CAPABILITY. Please check the rollcall header "  \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "NEEDS_MANAGER_WITH_CAPABILITY. Please check the rollcall header for "      \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -526,11 +590,6 @@
 /// First common component of CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION) and 
 /// CORE_START_CONDITIONAL_DEPENDENCY(TYPE).
 #define DEPENDENCY_COMMON_1(DEP, TYPE, MODULE, FUNCTION)                       \
-                                                                               \
-      IF_EQUAL(CAPABILITY, PointInit,                                          \
-        FAIL("Initialization functions cannot have dependencies. "             \
-         "Please check the rollcall header for " STRINGIFY(MODULE) ".")        \
-      )                                                                        \
                                                                                \
       /* Given that TYPE is not void, create a safety_bucket for the           \
       dependency result. To be initialized automatically at runtime            \
@@ -589,6 +648,11 @@
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, IS_MODEL_DEP)             \
                                                                                \
+  IF_EQUAL(CAPABILITY, PointInit,                                              \
+    FAIL("Initialization functions cannot have dependencies. "                 \
+    "Please check the rollcall header for " STRINGIFY(MODULE) ".")             \
+  )                                                                            \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -633,6 +697,15 @@
 
 /// Redirection of ALLOW_MODEL when invoked from within the core.
 #define CORE_ALLOWED_MODEL(MODEL)                                              \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ALLOWED_MODEL(S)."))                                                       \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling ALLOWED_MODEL(S). Please check the rollcall header "               \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ALLOWED_MODEL(S). Please check the rollcall header for "                   \
+   STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -749,6 +822,18 @@
 /// (or no flag) corresponds to IS_VARIABLE=0.
 #define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
                                                                                \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_BACKEND_REQ."))                                                      \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling START_BACKEND_REQ. Please check the rollcall header "              \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "START_BACKEND_REQ. Please check the rollcall header for "                  \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(BACKEND_REQ,FAIL("You must define BACKEND_REQ before "    \
+   "calling START_BACKEND_REQ. Please check the rollcall header for "          \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -814,7 +899,7 @@
       template <>                                                              \
       void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
       {                                                                        \
-        Accessors::map_bools[STRINGIFY(CAT(BE_##BACKEND_REQ,FUNCTION))] =      \
+        Accessors::map_bools[STRINGIFY(CAT_3(BE_,BACKEND_REQ,FUNCTION))] =     \
          &Accessors::needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;   \
                                                                                \
         Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =              \
@@ -840,6 +925,18 @@
 /// Redirection of BE_OPTION(BACKEND, VERSTRING) when invoked from within the 
 /// core.
 #define CORE_BACKEND_OPTION(BACKEND,VERSTRING)                                 \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "BE_OPTION."))                                                              \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling BE_OPTION. Please check the rollcall header "                      \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "BE_OPTION. Please check the rollcall header for "                          \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(BACKEND_REQ,FAIL("You must define BACKEND_REQ before "    \
+   "calling BE_OPTION. Please check the rollcall header for "                  \
+   STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -873,6 +970,18 @@
 /// the core.
 #define CORE_START_CONDITIONAL_DEPENDENCY(TYPE)                                \
                                                                                \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_CONDITIONAL_DEPENDENCY."))                                           \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling START_CONDITIONAL_DEPENDENCY. Please check the rollcall header "   \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "START_CONDITIONAL_DEPENDENCY. Please check the rollcall header for "       \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(CONDITIONAL_DEPENDENCY,FAIL("You must define "            \
+   "CONDITIONAL_DEPENDENCY before calling START_CONDITIONAL_DEPENDENCY. Please"\
+   " check the rollcall header for " STRINGIFY(MODULE) "."))                   \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -904,6 +1013,18 @@
 /// Redirection of ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING) when 
 /// invoked from within the core.
 #define CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)                  \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ACTIVATE_FOR_BACKEND."))                                                   \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling ACTIVATE_FOR_BACKEND. Please check the rollcall header "           \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ACTIVATE_FOR_BACKEND. Please check the rollcall header for "               \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(CONDITIONAL_DEPENDENCY,FAIL("You must define "            \
+   "CONDITIONAL_DEPENDENCY before calling ACTIVATE_FOR_BACKEND. Please"        \
+   " check the rollcall header for " STRINGIFY(MODULE) "."))                   \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -967,9 +1088,90 @@
                                                                                \
   }                                                                            \
 
-/// Redirection of ACTIVATE_DEP_MODEL(MODELSTRING) when invoked from within 
-/// the core.
-#define CORE_ACTIVATE_DEP_MODEL(MODELSTRING)                                   \
+/// Redirection of ACTIVATE_FOR_MODELS(MODELSTRING) when invoked from within 
+/// the core, inside a BACKEND_REQ definition.
+#define ACTIVATE_BE_MODEL(MODELSTRING)                                         \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ACTIVATE_FOR_MODEL(S)."))                                                  \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling ACTIVATE_FOR_MODEL(S). Please check the rollcall header "          \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ACTIVATE_FOR_MODEL(S). Please check the rollcall header for "              \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(BACKEND_REQ,FAIL("You must define either BACKEND_REQ or " \
+   "CONDITIONAL_DEPENDENCY before calling ACTIVATE_FOR_MODEL(S). Please check "\
+   "the rollcall header for " STRINGIFY(MODULE) "."))                          \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      namespace Accessors                                                      \
+      {                                                                        \
+        /* Indicate that FUNCTION requires BACKEND_REQ if one of the models in \
+        MODELSTRING is scanned.*/  \
+        template <>                                                            \
+        bool needs_from_backend_conditional_on_model                           \
+         <BETags::BACKEND_REQ, Tags::FUNCTION>(str model)                      \
+        {                                                                      \
+          typedef std::vector<str> vec;                                        \
+          vec models = delimiterSplit(MODELSTRING, ",");                       \
+          for (vec::iterator it = models.begin() ; it != models.end(); ++it)   \
+          {                                                                    \
+            if (*it == model) return true;                                     \
+          }                                                                    \
+          return false;                                                        \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Set up the second set of commands to be called at runtime to register \
+      the conditional backend requirement. */                                  \
+      template <>                                                              \
+      void rt_register_conditional_backend_req                                 \
+         <BETags::BACKEND_REQ, Tags::FUNCTION> ()                              \
+      {                                                                        \
+        Accessors::map_bools.erase(STRINGIFY(CAT_3(BE_,BACKEND_REQ,FUNCTION)));\
+                                                                               \
+        Accessors::condit_bools[STRINGIFY(CAT_3(BE_,BACKEND_REQ,FUNCTION))] =  \
+         &Accessors::needs_from_backend_conditional_on_model                   \
+         <BETags::BACKEND_REQ, Tags::FUNCTION>;                                \
+                                                                               \
+        Functown::FUNCTION.setModelConditionalBackendReq                       \
+         (MODELSTRING, STRINGIFY(BACKEND_REQ),                                 \
+         Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)]);             \
+      }                                                                        \
+                                                                               \
+      /* Create the second conditional backend requirement init object. */     \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_4(BACKEND_REQ,_backend_for_,FUNCTION,_with_models)        \
+         (&rt_register_conditional_backend_req                                 \
+         <BETags::BACKEND_REQ, Tags::FUNCTION>);                               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+/// Redirection of ACTIVATE_FOR_MODELS(MODELSTRING) when invoked from within 
+/// the core, inside a CONDITIONAL_DEPENDENCY definition.
+#define ACTIVATE_DEP_MODEL(MODELSTRING)                                        \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ACTIVATE_FOR_MODEL(S)."))                                                  \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling ACTIVATE_FOR_MODEL(S). Please check the rollcall header "          \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ACTIVATE_FOR_MODEL(S). Please check the rollcall header for "              \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(CONDITIONAL_DEPENDENCY,FAIL("You must define either "     \
+  "BACKEND_REQ or CONDITIONAL_DEPENDENCY before calling ACTIVATE_FOR_MODEL(S)."\
+  " Please check the rollcall header for " STRINGIFY(MODULE) "."))             \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -1004,6 +1206,7 @@
         Accessors::condit_bools[STRINGIFY(CAT(CONDITIONAL_DEPENDENCY,          \
          FUNCTION))] = &Accessors::requires_conditional_on_model               \
          <Gambit::Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION>;                \
+                                                                               \
         Functown::FUNCTION.setModelConditionalDependency                       \
          (MODELSTRING, STRINGIFY(CONDITIONAL_DEPENDENCY),                      \
          Accessors::iMayNeed[STRINGIFY(CONDITIONAL_DEPENDENCY)],               \
