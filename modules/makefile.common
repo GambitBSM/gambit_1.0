@@ -429,6 +429,10 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
+$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(GAMBITINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 $(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
