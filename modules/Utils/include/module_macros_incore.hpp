@@ -488,6 +488,19 @@
          "Please check the rollcall header for " STRINGIFY(MODULE) ".")        \
       )                                                                        \
                                                                                \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Loop                                                       \
+          {                                                                    \
+            /* Create a safe pointer to the iteration number of the loop this  \
+            functor is running within. */                                      \
+            omp_safe_ptr<int> iteration;                                       \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
       /* Set up the runtime commands that register the fact that this FUNCTION \
       requires it be run inside a loop manager with capability LOOPMAN. */     \
       template <>                                                              \
@@ -495,6 +508,7 @@
       {                                                                        \
         Core.registerNestedModuleFunctor(Functown::FUNCTION);                  \
         Functown::FUNCTION.setLoopManagerCapability(STRINGIFY(LOOPMAN));       \
+        Pipes::FUNCTION::Loop::iteration = Functown::FUNCTION.iterationPtr();  \
       }                                                                        \
                                                                                \
       /* Create the corresponding initialisation object */                     \
