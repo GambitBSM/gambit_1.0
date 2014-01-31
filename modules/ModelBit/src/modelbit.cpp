@@ -100,7 +100,8 @@ namespace Gambit
         if(el != selectedmodels.end())
         {
           // If yes, activate this functor
-          (*it)->setStatus(1); // 1 means "available". Possibly switch this to 2 ("active").
+          (*it)->setStatus(1);      // 1 means "available". Possibly switch this to 2 ("active").
+          (*it)->setprintme(true);  // Tell printer to output this functor
           // Initialise ModelParameters object it contains
           (*it)->calculate();
           // Add it to the map of active primary model functors in the core
