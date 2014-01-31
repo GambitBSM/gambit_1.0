@@ -57,7 +57,7 @@ namespace Gambit
        // } 
    
         // Constructor
-        asciiPrinter(std::ofstream&);
+        asciiPrinter(std::ofstream&, std::ofstream&);
   
         // default destructor should be fine?
  
@@ -72,7 +72,7 @@ namespace Gambit
         void endline();
          
         // add results to printer buffer
-        void addtobuffer(const int&, const std::vector<double>&);
+        void addtobuffer(const int&, const std::vector<double>&, const std::vector<std::string>&);
  
         // write the printer buffer to file       
         void dump_buffer();
@@ -88,8 +88,11 @@ namespace Gambit
         void print(ModelParameters const&,     const int, const std::string, const std::string, const std::string);
       
       private:
-        // File stream
+        // Main output file stream
         std::ofstream& my_fstream;
+        // "Info file" output stream
+        std::ofstream& info_fstream;
+
         // Buffer of results to print on a single line
         LineBuf linebuffer; //(std::map<int,std::vector<double>>)
         // Buffer containing many lines
@@ -100,7 +103,10 @@ namespace Gambit
         // Record of number of slots occupied by each printer item.
         // If this changes after the first buffer dump an error will occur. Functors which return mutable output are not currently supported by this printer type, and may never be since it is pretty hard to deal with in an ascii table. Actually strictly speaking a functor can use fewer slots than it uses in the first buffer dump (the max of its first 'bufferlength' uses), but not more.
         std::map<int,int> lineindexrecord;
- 
+
+        // Record a set of labels for each printer item: used to write "info" file explain what is in each column
+        std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
+        bool info_file_written = 0; // Flag to let us know that the info file has been written
     };
   
      

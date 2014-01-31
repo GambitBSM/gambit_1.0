@@ -60,7 +60,8 @@ void beispiel(const char* inifilename)
   // For now the asciiPrinter can be constructed using any stream, so for file output
   // we need to give it a file stream object.
   std::ofstream outfile("gambit_output.txt", std::ofstream::out);
-  Printers::asciiPrinter printer(outfile);
+  std::ofstream infofile("gambit_output.info", std::ofstream::out);
+  Printers::asciiPrinter printer(outfile,infofile);
 
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);

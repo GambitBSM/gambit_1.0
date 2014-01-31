@@ -39,8 +39,8 @@ namespace Gambit
     // Printer to ascii file (i.e. table of doubles)
 
     // Constructor
-    asciiPrinter::asciiPrinter(std::ofstream& myfstrm) :
-      my_fstream(myfstrm) 
+    asciiPrinter::asciiPrinter(std::ofstream& myfstrm, std::ofstream& inffstrm) :
+      my_fstream(myfstrm), info_fstream(inffstrm)
     {
       bufferlength = 10;
       buffer.resize(bufferlength); 
@@ -128,28 +128,57 @@ namespace Gambit
     }
   
     // add results to printer buffer
-    void asciiPrinter::addtobuffer(const int& vID, const std::vector<double>& functor_data) 
+    void asciiPrinter::addtobuffer(const int& vID, const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels) 
     {
-      //TODO: If a functor gets call twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
-      buffer[buf_loc][vID] = functor_data; 
+      //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
+      buffer[buf_loc][vID] = functor_data;
+      
+      if ( info_file_written == false )
+      {
+        if ( functor_labels.size() > label_record[vID].size() )
+        {
+           // Assume the new, longer label list is better to use. This variation of functor_data length from point to point is kind of dangerous for an ascii output file though and we might want to forbid it. There is some probability that my method of allocating the columns according to the most used by each functor in the first buffer dump will fail.
+           label_record[vID] = functor_labels;
+        }
+      }
     }
  
     // write the printer buffer to file       
     void asciiPrinter::dump_buffer()
     {
+      // Write record of what is in each column if we haven't done so yet
+      // Note the downside of using a map as the buffer; the order of stuff in the output file is going
+      // to be kind of haphazard due to the sorted order used by map. Will have to do more work to achieve
+      // an ordering that reflects the order of stuff in, say, the inifile.
+      if (info_file_written==false)
+      {
+        int column_index = 1;
+        for (std::map<int,int>::iterator
+          it = lineindexrecord.begin(); it != lineindexrecord.end(); it++)
+        {
+          int vID        = it->first;
+          int length     = it->second;     // slots reserved in output file for these results
+          for (int i=0; i<length; i++)
+          {
+            info_fstream<<"Column "<<column_index<<": "<<label_record[vID][i]<<std::endl;
+            column_index++;
+          }
+        }
+        info_fstream.flush();
+        info_file_written=true;
+      }
+
+      // Actual dump of buffer to file
       for (int i=0; i<bufferlength; i++)
       {
         for (std::map<int,int>::iterator
           it = lineindexrecord.begin(); it != lineindexrecord.end(); it++)
         { 
-          int length; // slots reserved in output file for these results
-          int reslength;  // actual length of the current results vector
           //(*it)->first  - VertexID
           //(*it)->second - std::pair<int,int> containing startindex and length
           std::vector<double>& results = buffer[i][it->first];
-          reslength  = results.size();
-          length     = it->second;
- 
+          int reslength  = results.size(); // actual length of the current results vector
+          int length     = it->second;     // slots reserved in output file for these results
           // print to the fstream!
           for (int j=0;j<length;j++)
           {
@@ -182,12 +211,20 @@ namespace Gambit
     void asciiPrinter::print(double const& value, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)
     {
       std::vector<double> vdvalue(1,value);
-      addtobuffer(vertex,vdvalue);       
+      std::vector<std::string> labels(1,origin_name+"::"+func_name+" ("+func_capability+")");
+      addtobuffer(vertex,vdvalue,labels);       
     }
  
     void asciiPrinter::print(std::vector<double> const& value, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)
     {
-      addtobuffer(vertex,value);
+      std::vector<std::string> labels;
+      labels.reserve(value.size());
+      for(int i=0;i<value.size();i++)
+      {
+        // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
+        labels.push_back(origin_name+"::"+func_name+"["+std::to_string(i)+"] ("+func_capability+")");
+      }
+      addtobuffer(vertex,value,labels);
     }
    
     void asciiPrinter::print(ModelParameters const& value, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)
@@ -197,14 +234,16 @@ namespace Gambit
       std::vector<double> vdvalue;
       names.reserve(parameter_map.size());
       vdvalue.reserve(parameter_map.size());
-      int i = 0;
       for (std::map<std::string, double>::iterator 
         it = parameter_map.begin(); it != parameter_map.end(); it++)
       {
-        names[i] = it->first;
-        vdvalue[i] = it->second;
+        std::stringstream ss;
+        ss<<origin_name<<"::"<<func_name<<"::"<<(it->first)<<" ("<<func_capability<<")";
+        //origin_name+"::"+func_name+std::string("::")+(it->first)+std::string(" (")+func_capability+")";
+        names.push_back( ss.str() ); 
+        vdvalue.push_back( it->second );
       }
-      addtobuffer(vertex,vdvalue);
+      addtobuffer(vertex,vdvalue,names);
     }
      
   } // end namespace printers
