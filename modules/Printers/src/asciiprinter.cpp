@@ -12,6 +12,10 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 Jul, Sep, 2014 Jan
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Jan
+///
 ///  *********************************************
 
 
@@ -42,6 +46,8 @@ namespace Gambit
     asciiPrinter::asciiPrinter(std::ofstream& myfstrm, std::ofstream& inffstrm) :
       my_fstream(myfstrm), info_fstream(inffstrm)
     {
+      buf_loc = 0;
+      info_file_written = false;
       bufferlength = 10;
       buffer.resize(bufferlength); 
       my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.

@@ -12,6 +12,10 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 Jul, Sep, 2014 Jan
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Jan
+///
 ///  *********************************************
 
 
@@ -97,7 +101,7 @@ namespace Gambit
         LineBuf linebuffer; //(std::map<int,std::vector<double>>)
         // Buffer containing many lines
         int bufferlength; //number of lines to store in buffer before printing
-        int buf_loc = 0; // current line of the buffer
+        int buf_loc; // current line of the buffer
         std::vector<LineBuf> buffer; // full buffer of output to be printed
  
         // Record of number of slots occupied by each printer item.
@@ -106,7 +110,7 @@ namespace Gambit
 
         // Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
-        bool info_file_written = 0; // Flag to let us know that the info file has been written
+        bool info_file_written; // Flag to let us know that the info file has been written
     };
   
      

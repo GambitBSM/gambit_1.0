@@ -260,10 +260,7 @@ namespace Gambit
             << "themselves; i.e. backend functors may not do this (they inherit this default message)"<<std::endl;
          //}
          //exit(1);
-      }
-
-      
-
+      }    
 
     protected:
           
