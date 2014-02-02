@@ -246,7 +246,7 @@ namespace Gambit
         masterGraph[it->first]->setNestedList(functorList);
       }
 
-      // Initialise the printer object with a list of functor IDs whose 'printme' flag is true and whose 'status' is 2 (activative). (All functors which are going to run have status 2 by now yes?)
+      // Initialise the printer object with a list of functors that are set to print
       initialisePrinter();
 
       // Generate graphviz plot
@@ -265,15 +265,14 @@ namespace Gambit
 
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        // I am pretty sure checking for status==2 is what we want right? Just make sure
-        // that this runs after the dependency resolution.
-        if( masterGraph[*vi]->printme() and (masterGraph[*vi]->status()==2) )
+        // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
+        if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
         {
           functors_to_print.push_back(index[*vi]);
         }
       }
       // sent vector of ID's of functors to be printed to printer.
-      // (if we want to only print functor output sometimes, and dynamically switch this on and off, we'll have to rethink the strategy here a little... for now if the print function of a functor does not get called, it is up to the printer how it deals with the missing result. Similarly for extra results, i.e. from any functors not in this initial list, whose "printme" flag later gets set to 'true' somehow.)
+      // (if we want to only print functor output sometimes, and dynamically switch this on and off, we'll have to rethink the strategy here a little... for now if the print function of a functor does not get called, it is up to the printer how it deals with the missing result. Similarly for extra results, i.e. from any functors not in this initial list, whose "requiresPrinting" flag later gets set to 'true' somehow.)
       boundPrinter->initialise(functors_to_print);
     }
 
@@ -624,13 +623,12 @@ namespace Gambit
         cout << (*masterGraph[fromVertex]).name() << ", ";
         cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
 
-        // Ben: If toVertex is the Core, then fromVertex is one of our target functors, which for
-        // now I am assuming are also the things we want to output to the printer system. 
-        // So, so set their printme flags to true
-        if ( toVertex == OMEGA_VERTEXID )
+        // If toVertex is the Core, then fromVertex is one of our target functors, which are
+        // the things we want to output to the printer system.  Turn off printing for all else.
+        if ( toVertex != OMEGA_VERTEXID )
         {
-           masterGraph[fromVertex]->setprintme(true);
-           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO TRUE" << endl;
+           masterGraph[fromVertex]->setPrintRequirement(false);
+           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO FALSE" << endl;
         }
 
         if ( toVertex != OMEGA_VERTEXID)

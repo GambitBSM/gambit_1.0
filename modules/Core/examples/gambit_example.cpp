@@ -110,7 +110,7 @@ void beispiel()
   //sample.mcmc();
 }
 
-int main( int argc, const char* argv[] )
+int main( int, const char*[] )
 {
   beispiel();
 

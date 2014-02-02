@@ -51,7 +51,7 @@ namespace Gambit
         // default destructor should be fine?
  
         // Initialisation function
-        // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose printme flags are set to true.
+        // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         // (currently does nothing for ostream printer)
         void initialise(const std::vector<int>&);
  
@@ -65,6 +65,8 @@ namespace Gambit
         // for all types that have a << operator already defined.
         void print(double const&,              const int, const std::string, const std::string, const std::string);
         void print(std::vector<double> const&, const int, const std::string, const std::string, const std::string);
+        void print(int const&,                 const int, const std::string, const std::string, const std::string);
+        void print(std::vector<int> const&,    const int, const std::string, const std::string, const std::string);
         void print(ModelParameters const&,     const int, const std::string, const std::string, const std::string);
       
       private:

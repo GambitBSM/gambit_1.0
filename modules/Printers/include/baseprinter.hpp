@@ -70,7 +70,7 @@ namespace Gambit
         ADD_ALL_PRINT_FUNCTIONS
 
         // Initialisation function
-        // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose printme flags are set to true. (TODO: probably extend this to be a list of functors THIS printer is supposed to print, since we may want several printers handling different functors, for SLHA output or some such perhaps).
+        // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true. (TODO: probably extend this to be a list of functors THIS printer is supposed to print, since we may want several printers handling different functors, for SLHA output or some such perhaps).
         virtual void initialise(const std::vector<int>&) = 0;
 
         // Function to signal to the printer to begin a new line/database entry/etc.

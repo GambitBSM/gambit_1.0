@@ -56,7 +56,7 @@ namespace Gambit
     // default destructor should be fine?
  
     // Initialisation function
-    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose printme flags are set to true.
+    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void asciiPrinter::initialise(const std::vector<int>& printmevec)
     {
       // Loop through buffer and initialise all the elements

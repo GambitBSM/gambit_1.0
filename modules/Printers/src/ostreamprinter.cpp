@@ -53,7 +53,7 @@ namespace Gambit
     // default destructor should be fine?
  
     // Initialisation function
-    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose printme flags are set to true.
+    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     // (currently does nothing for ostream printer)
     void ostreamPrinter::initialise(const std::vector<int>& functors_to_print) { }
  
@@ -78,6 +78,19 @@ namespace Gambit
     }
     
     
+    void ostreamPrinter::print(int const& value, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)
+    {
+      if (verbose) {std::cout<<"printing an int using ostreamPrinter!"<<std::endl;}
+      my_ostream<<value<<std::endl;       
+    }
+
+    void ostreamPrinter::print(std::vector<int> const& value, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)
+    {
+      if (verbose) {std::cout<<"printing a std::vector<int> using ostreamPrinter!"<<std::endl;}
+      my_ostream<<value<<std::endl;       
+    }
+
+
     void ostreamPrinter::print(ModelParameters const& value, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)
     {
       std::map<std::string, double> parameter_map = value.getValues();

@@ -70,7 +70,6 @@ namespace Gambit
        myType          (result_type),
        myOrigin        (origin_name),
        myStatus        (1),
-       printmeflag     (false),
        needs_recalculating (true) {}
       
       /// Virtual calculate(); needs to be redefined in daughters.
@@ -99,9 +98,7 @@ namespace Gambit
       void setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
-      /// Setter for the wrapped function's "printme" flag (true = 'yes please print me', false = 'no do not print me')
-      void setprintme(bool flag) { if (this == NULL) failBigTime("setprintme"); printmeflag = flag; }
-
+      
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime("name"); return myName; }
       /// Getter for the wrapped function's reported capability
@@ -118,8 +115,32 @@ namespace Gambit
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
-      /// Getter for the wrapped function's "printme" flag (true = 'yes please print me', false = 'no do not print me')
-      bool printme()    { if (this == NULL) failBigTime("printme"); return printmeflag; }
+      /// Getter indicating if the wrapped function's result should to be printed
+      virtual bool requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return false; }
+
+      /// Setter for indicating if the wrapped function's result should to be printed
+      virtual void setPrintRequirement(bool flag)
+      {
+        if (flag)
+        {
+          cout << "Error.  The setPrintRequirement method has not been defined in this class." << endl;
+          exit(1);
+        }
+      }
+
+      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
+      virtual void setNestedList (std::vector<functor*>&)
+      { 
+        cout << "Error.  The setNestedList method has not been defined in this class." << endl;
+        exit(1);
+      } 
+
+      /// Set the iteration number in a loop in which this functor runs
+      virtual void setIteration (int)
+      { 
+        cout << "Error.  The setIteration method has not been defined in this class." << endl;
+        exit(1);
+      }
 
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager()
@@ -200,20 +221,6 @@ namespace Gambit
         return empty;
       }
 
-      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
-      virtual void setNestedList (std::vector<functor*>&)
-      { 
-        cout << "Error.  The setNestedList method has not been defined in this class." << endl;
-        exit(1);
-      } 
-
-      /// Set the iteration number in a loop in which this functor runs
-      virtual void setIteration (int)
-      { 
-        cout << "Error.  The setIteration method has not been defined in this class." << endl;
-        exit(1);
-      }
-
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor*)
       {
@@ -248,18 +255,14 @@ namespace Gambit
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
       /// Print function
-      virtual void print(Printers::BasePrinter* printer, int vertex)
+      virtual void print(Printers::BasePrinter*, int)
       { 
-         // Ben: removing the if - we should NEVER be here, not even if printmeflag=false
-         // TODO: Error
-         //if(this->printmeflag) {
-           std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
-            << "function should be redefined in daughter functor classes. If this is running there is a problem "
-            << "somewhere, e.g. you have called print on a void function result (from functor "<<myName<<")"<<std::endl;
-           std::cout<<"Currently only functors derived from module_functor_common are allowed to try to print "
-            << "themselves; i.e. backend functors may not do this (they inherit this default message)"<<std::endl;
-         //}
-         //exit(1);
+         // TODO: throw real GAMBIT Error
+         std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
+          << "function should be redefined in daughter functor classes. If this is running there is a problem "
+          << "somewhere (from functor "<<myName<<")."<<std::endl;
+         std::cout<<"Currently only functors derived from module_functor_common<!=void> are allowed to try to print "
+          << "themselves; i.e. backend and void functors may not do this (they inherit this default message)"<<std::endl;
       }    
 
     protected:
@@ -278,8 +281,6 @@ namespace Gambit
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
-      /// Flag to select whether or not the results of this functor should be sent to the printer object.
-      bool printmeflag;
 
       /// List of allowed models
       std::set<str> allowedModels;
@@ -879,7 +880,8 @@ namespace Gambit
                             str result_type,
                             str origin_name)
       : module_functor_common(func_name, func_capability, result_type, origin_name),
-        myFunction (inputFunction)
+        myFunction  (inputFunction),
+        myPrintFlag (true)
       {
         myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
         myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
@@ -903,6 +905,12 @@ namespace Gambit
         myCurrentIteration = new int[globlMaxThreads];  // Reserve enough space to hold as many iteration numbers as there are threads allowed
         std::fill(myCurrentIteration, myCurrentIteration+globlMaxThreads, 0); // Zero them to start off
       }
+
+      /// Setter for indicating if the wrapped function's result should to be printed
+      virtual void setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; }
+
+      /// Getter indicating if the wrapped function's result should to be printed
+      virtual bool requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
 
       /// Calculate method
       void calculate()
@@ -931,22 +939,19 @@ namespace Gambit
       }
 
       /// Printer function
-      //virtual void print(Printers::BasePrinter* printer, int index) { if (iRunNested) printer->print(myValue[index]); else printer->print(myValue[0]); }
-      /// Printer function (single-argument short-circuit)
-      //virtual void print(Printers::BasePrinter* printer) { print(printer,0); }
-
-      // Ben: I am cutting out this index short-circuit business for now since I am not sure that a general printer can be expected to handle it sensibly.
-      // Ben: moving this to the module_functor_common class so that all functors inherit it...
-
-      /// Printer function
-      virtual void print(Printers::BasePrinter* printer, int vertex)
+      virtual void print(Printers::BasePrinter* printer, int vertex, int index)
       {
         // Check if this functor is set to output its contents
-        if(this->printmeflag) {
+        if(myPrintFlag)
+        {
+          if (not iRunNested) index = 0; // Force printing of index=0 if this functor canno trun nested. 
           // We can expand the list of stuff supplied to printers easily, but each printer will of course have to be modified to accept the new arguments.
           printer->print(myValue[0],vertex,myName,myCapability,myOrigin);
         }
       }
+
+      /// Printer function (no-thread-index short-circuit)
+      virtual void print(Printers::BasePrinter* printer, int vertex) { print(printer,vertex,0); }
 
 
     protected:
@@ -956,6 +961,9 @@ namespace Gambit
 
       /// Internal pointer to storage location of function value
       TYPE* myValue;
+
+      /// Flag to select whether or not the results of this functor should be sent to the printer object.
+      bool myPrintFlag;
 
   };
 
@@ -987,6 +995,9 @@ namespace Gambit
           this->finishTiming(nsec,sec);
         }
       }
+
+      /// Blank print method
+      virtual void print(Printers::BasePrinter* printer, int vertex) {} 
 
     protected:
 

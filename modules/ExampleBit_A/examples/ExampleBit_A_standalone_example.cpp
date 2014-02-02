@@ -69,7 +69,7 @@ int main()
   ModelParameters* CMSSM_primary_parameters = Models::CMSSM_I::Functown::primary_parameters.getcontentsPtr();
 
   // Choose and set up a printer object
-  printers::ostreamPrinter myPrinter(std::cout,1); 
+  Printers::ostreamPrinter myPrinter(std::cout,true); 
 
   // Print some diagnostics about ExampleBit_A
   cout << endl << "My name is " << name() << endl;
@@ -148,8 +148,8 @@ int main()
     function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain.)
 
     // Print the (cached) results of some module functions to the selected printer
-    nevents_dbl.print(&myPrinter);
-    nevents_int.print(&myPrinter);
+    nevents_dbl.print(&myPrinter,1); //FIXME the vertexIDs should be removed when they are no longer required
+    nevents_int.print(&myPrinter,2);
 
     // Retrieve the same cached results of the module functions directly.  The argument is the thread index; everything except '0' is just temp data.
     double r1 = nevents_dbl(0); 
