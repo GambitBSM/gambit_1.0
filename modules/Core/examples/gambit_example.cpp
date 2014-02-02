@@ -49,7 +49,7 @@ void beispiel()
   modelClaw.activatePrimaryModels(selectedmodels);
 
   // Set up a printer object
-  printers::ostreamPrinter printer(std::cout,1); 
+  Printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
   Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);
@@ -110,7 +110,7 @@ void beispiel()
   //sample.mcmc();
 }
 
-int main( int argc, const char* argv[] )
+int main( int, const char*[] )
 {
   beispiel();
 
@@ -475,6 +475,7 @@ int main( int argc, const char* argv[] )
   cout << "My name is " << ExampleBit_B::Accessors::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_B::Accessors::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_B::Accessors::iMayNeed << endl;
+  cout << " as well as: " << endl << ExampleBit_B::Accessors::iMayNeedFromBackends << endl;
   cout << endl;
 
   cout << "In fact, given the backend functors I am connected to, my dependencies are exactly:" << endl;
@@ -549,6 +550,18 @@ int main( int argc, const char* argv[] )
   {
     cout<<"none."<<endl;
   }
+
+  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a generic backend req on runMe?" << endl;
+  cout << ExampleBit_B::Accessors::needs_from_backend("runMe", "nevents_postcuts") << endl;
+
+  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a generic backend req on SomeInt?" << endl;
+  cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts") << endl;
+
+  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a backend req on SomeInt conditional on CMSSM_I?" << endl;
+  cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts", "CMSSM_I") << endl;
+
+  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a backend req on SomeInt conditional on OtherModel?" << endl;
+  cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts", "OtherModel") << endl;
 
   cout <<  endl;
 

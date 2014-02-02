@@ -15,6 +15,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Jul, Aug, Nov
+///  \date 2014 Jan
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu)
@@ -198,10 +199,11 @@ namespace Gambit
     /// Add module functors to class internal list.
     DependencyResolver::DependencyResolver(const gambit_core &core, 
                                            const IniParser::IniFile &iniFile, 
-                                           printers::BasePrinter &printer)
-     : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer)
+                                           Printers::BasePrinter &printer)
+     : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
     {
       addFunctors();
+      verbose = true;
     }
 
     /// Main dependency resolution
@@ -244,9 +246,34 @@ namespace Gambit
         masterGraph[it->first]->setNestedList(functorList);
       }
 
+      // Initialise the printer object with a list of functors that are set to print
+      initialisePrinter();
+
       // Generate graphviz plot
       std::ofstream outf("graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
+    }
+
+    /// Set up printer object
+    // (i.e. give it the list of functors that need printing)
+    void DependencyResolver::initialisePrinter()
+    {
+      std::vector<int> functors_to_print;
+      graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
+      //IndexMap index = get(vertex_index, masterGraph); // Now done in the constructor
+      //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
+
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
+        // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
+        if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
+        {
+          functors_to_print.push_back(index[*vi]);
+        }
+      }
+      // sent vector of ID's of functors to be printed to printer.
+      // (if we want to only print functor output sometimes, and dynamically switch this on and off, we'll have to rethink the strategy here a little... for now if the print function of a functor does not get called, it is up to the printer how it deals with the missing result. Similarly for extra results, i.e. from any functors not in this initial list, whose "requiresPrinting" flag later gets set to 'true' somehow.)
+      boundPrinter->initialise(functors_to_print);
     }
 
     /// List of masterGraph content
@@ -367,9 +394,18 @@ namespace Gambit
     void DependencyResolver::calcObsLike(VertexID vertex)
     {
       std::vector<VertexID> order;
+      typedef property_map<MasterGraphType, vertex_index_t>::type IndexMap;
+      //IndexMap index = get(vertex_index, masterGraph);
+      // TODO: Do I need to do this here? Should be a member variable of dependency resolver.
+
       // TODO: Should happen only once
       order = getSortedParentVertices(vertex, masterGraph, function_order);
-      for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it) {
+      for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it)
+      {
+        if (verbose)
+        {
+          cout << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "..." << endl;
+        }
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
@@ -378,7 +414,10 @@ namespace Gambit
         //      threads other than the main one need to be accessed with 
         //        masterGraph[*it]->print(boundPrinter,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        masterGraph[*it]->print(boundPrinter);
+        // Ben: Ugh ok I see. Well I had to kill this for now, will put it back asap...
+        //  the 'index' here is a unique identifier given to each graph vertex (functor),
+        //  not the thread obviously.
+        masterGraph[*it]->print(boundPrinter,index[*it]);
       }
     }
 
@@ -416,6 +455,8 @@ namespace Gambit
       {
         masterGraph[*vi]->reset();
       }
+      // TODO: Ben - this is temporary; the command to tell the printer to start a new point should probably be in ScannerBit or something.
+      boundPrinter->endline();
     }
 
     //
@@ -581,6 +622,14 @@ namespace Gambit
         cout << "Resolved by: [";
         cout << (*masterGraph[fromVertex]).name() << ", ";
         cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
+
+        // If toVertex is the Core, then fromVertex is one of our target functors, which are
+        // the things we want to output to the printer system.  Turn off printing for all else.
+        if ( toVertex != OMEGA_VERTEXID )
+        {
+           masterGraph[fromVertex]->setPrintRequirement(false);
+           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO FALSE" << endl;
+        }
 
         if ( toVertex != OMEGA_VERTEXID)
         {

@@ -22,8 +22,7 @@
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 July --> Added primary_model_functor class
-///  \date 2013 Sep  --> Added functor print functions
+///  \date 2013 July, Sep, 2014 Jan
 ///
 ///  *********************************************
 
@@ -99,7 +98,7 @@ namespace Gambit
       void setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
-
+      
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime("name"); return myName; }
       /// Getter for the wrapped function's reported capability
@@ -116,7 +115,32 @@ namespace Gambit
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+      /// Getter indicating if the wrapped function's result should to be printed
+      virtual bool requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return false; }
 
+      /// Setter for indicating if the wrapped function's result should to be printed
+      virtual void setPrintRequirement(bool flag)
+      {
+        if (flag)
+        {
+          cout << "Error.  The setPrintRequirement method has not been defined in this class." << endl;
+          exit(1);
+        }
+      }
+
+      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
+      virtual void setNestedList (std::vector<functor*>&)
+      { 
+        cout << "Error.  The setNestedList method has not been defined in this class." << endl;
+        exit(1);
+      } 
+
+      /// Set the iteration number in a loop in which this functor runs
+      virtual void setIteration (int)
+      { 
+        cout << "Error.  The setIteration method has not been defined in this class." << endl;
+        exit(1);
+      }
 
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager()
@@ -188,18 +212,13 @@ namespace Gambit
         return empty;
       }
 
-      /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
-      virtual void setNestedList (std::vector<functor*>&)
+      /// Getter for listing model-specific conditional backend requirements
+      virtual std::vector<sspair> model_conditional_backend_reqs (str)
       { 
-        cout << "Error.  The setNestedList method has not been defined in this class." << endl;
+        cout << "Error.  The model_conditional_backend_reqs method has not been defined in this class." << endl;
         exit(1);
-      } 
-
-      /// Set the iteration number in a loop in which this functor runs
-      virtual void setIteration (int)
-      { 
-        cout << "Error.  The setIteration method has not been defined in this class." << endl;
-        exit(1);
+        std::vector<sspair> empty;
+        return empty;
       }
 
       /// Resolve a dependency using a pointer to another functor object
@@ -227,7 +246,7 @@ namespace Gambit
       bool modelAllowed(str model)
       {
         if (allowedModels.empty()) return true;
-        str parent = find_parent_model(model);
+        str parent = find_allowed_parent_model(model);
         if (allowedModels.find(parent) != allowedModels.end()) return true;
         return false;        
       }
@@ -235,14 +254,16 @@ namespace Gambit
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
-      // Print function
-      virtual void print(printers::BasePrinter*)
-      {
+      /// Print function
+      virtual void print(Printers::BasePrinter*, int)
+      { 
+         // TODO: throw real GAMBIT Error
          std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
           << "function should be redefined in daughter functor classes. If this is running there is a problem "
-          << "somewhere, e.g. you have called print on a void function result (from functor "<<myName<<")"<<std::endl;
-      }
-
+          << "somewhere (from functor "<<myName<<")."<<std::endl;
+         std::cout<<"Currently only functors derived from module_functor_common<!=void> are allowed to try to print "
+          << "themselves; i.e. backend and void functors may not do this (they inherit this default message)"<<std::endl;
+      }    
 
     protected:
           
@@ -280,13 +301,26 @@ namespace Gambit
       }
 
       /// Try to find a parent model in the functor's allowedModels list
-      str find_parent_model(str model)
+      str find_allowed_parent_model(str model)
       {
         for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
         {
           if (model_is_registered(*it))
           {
             if (descendant_of(model, *it)) return *it;
+          } 
+        }    
+        return "";    
+      }
+
+      /// Try to find a parent model in some user-supplied map from models to sspair vectors
+      str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
+      {
+        for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
+        {
+          if (model_is_registered(it->first))
+          {
+            if (descendant_of(model, it->first)) return it->first;
           } 
         }    
         return "";    
@@ -455,16 +489,19 @@ namespace Gambit
       /// Getter for listing model-specific conditional dependencies
       virtual std::vector<sspair> model_conditional_dependencies (str model)
       { 
-        str parent = find_parent_model(model);
-        if (myModelConditionalDependencies.find(parent) != myModelConditionalDependencies.end())
-        {
-          return myModelConditionalDependencies[parent];
-        }
-        else
-        {
-          std::vector<sspair> empty;
-          return empty;
-        }
+        str parent = find_parent_model_in_map(model,myModelConditionalDependencies);
+        if (parent != "") return myModelConditionalDependencies[parent];
+        std::vector<sspair> empty;
+        return empty;
+      }
+
+      /// Getter for listing model-specific conditional backend requirements
+      virtual std::vector<sspair> model_conditional_backend_reqs (str model)
+      { 
+        str parent = find_parent_model_in_map(model,myModelConditionalBackendReqs);
+        if (parent != "") return myModelConditionalBackendReqs[parent];
+        std::vector<sspair> empty;
+        return empty;
       }
 
       /// Add and activate unconditional dependencies.
@@ -544,13 +581,42 @@ namespace Gambit
         dependency_map[key] = resolver;
       }
 
-      /// Add a backend requirement
+      /// Add an unconditional backend requirement
+      /// The info gets updated later if this turns out to be contitional on a model. 
       void setBackendReq(str req, str type, void(*resolver)(functor*))
       { 
         sspair key (req, type);
         backendreq_types[req] = type;
         myBackendReqs.push_back(key);
         backendreq_map[key] = resolver;
+      }
+
+      /// Add a model conditional backend requirement for multiple models
+      void setModelConditionalBackendReq
+       (str model, str req, str type)
+      {
+        // Split the model string and send each model to be registered
+        std::vector<str> models = delimiterSplit(model, ",");
+        for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
+        {
+          setModelConditionalBackendReqSingular(*it, req, type);
+        }
+      }
+
+      /// Add a model conditional backend requirement for a single model
+      void setModelConditionalBackendReqSingular
+       (str model, str req, str type)
+      { 
+        sspair key (req, type);
+        // Remove the entry from the unconditional backend reqs list...
+        myBackendReqs.erase(std::remove(myBackendReqs.begin(), myBackendReqs.end(), key), myBackendReqs.end());
+        // Check that the model is not already in the conditional backend reqs list, then add it
+        if (myModelConditionalBackendReqs.find(model) == myModelConditionalBackendReqs.end())
+        {
+          std::vector<sspair> newvec;
+          myModelConditionalBackendReqs[model] = newvec;
+        }
+        myModelConditionalBackendReqs[model].push_back(key);
       }
 
       /// Add multiple versions of a permitted backend 
@@ -676,7 +742,7 @@ namespace Gambit
         }        
       }
 
-      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
       virtual void notifyOfModel(str model)
       {
         //Make sure this model is actually allowed to be used with this functor, otherwise die gracefully.
@@ -694,8 +760,17 @@ namespace Gambit
         {
           myDependencies.push_back(*it);        
         }
+        //If this model fits any conditional backend requirements (or is a descendent of a model that fits any), then activate them.
+        std::vector<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
+        cout << "model: " << model << endl;
+        for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
+        {
+          cout << "req: " << it->first << " " << it->second << endl;
+          myBackendReqs.push_back(*it);        
+        }
       }
-            
+
+
     protected:
 
       /// Current runtime in ns
@@ -742,6 +817,9 @@ namespace Gambit
 
       /// Map from models to (vector of {conditional dependency-type} pairs)
       std::map< str, std::vector<sspair> > myModelConditionalDependencies;
+
+      /// Map from models to (vector of {conditional backend requirement-type} pairs)
+      std::map< str, std::vector<sspair> > myModelConditionalBackendReqs;
 
       /// Map from backend requirements to their required types
       std::map<str, str> backendreq_types;
@@ -802,7 +880,8 @@ namespace Gambit
                             str result_type,
                             str origin_name)
       : module_functor_common(func_name, func_capability, result_type, origin_name),
-        myFunction (inputFunction)
+        myFunction  (inputFunction),
+        myPrintFlag (true)
       {
         myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
         myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
@@ -826,6 +905,12 @@ namespace Gambit
         myCurrentIteration = new int[globlMaxThreads];  // Reserve enough space to hold as many iteration numbers as there are threads allowed
         std::fill(myCurrentIteration, myCurrentIteration+globlMaxThreads, 0); // Zero them to start off
       }
+
+      /// Setter for indicating if the wrapped function's result should to be printed
+      virtual void setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; }
+
+      /// Getter indicating if the wrapped function's result should to be printed
+      virtual bool requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
 
       /// Calculate method
       void calculate()
@@ -854,9 +939,20 @@ namespace Gambit
       }
 
       /// Printer function
-      virtual void print(printers::BasePrinter* printer, int index) { if (iRunNested) printer->print(myValue[index]); else printer->print(myValue[0]); }
-      /// Printer function (single-argument short-circuit)
-      virtual void print(printers::BasePrinter* printer) { print(printer,0); }
+      virtual void print(Printers::BasePrinter* printer, int vertex, int index)
+      {
+        // Check if this functor is set to output its contents
+        if(myPrintFlag)
+        {
+          if (not iRunNested) index = 0; // Force printing of index=0 if this functor canno trun nested. 
+          // We can expand the list of stuff supplied to printers easily, but each printer will of course have to be modified to accept the new arguments.
+          printer->print(myValue[0],vertex,myName,myCapability,myOrigin);
+        }
+      }
+
+      /// Printer function (no-thread-index short-circuit)
+      virtual void print(Printers::BasePrinter* printer, int vertex) { print(printer,vertex,0); }
+
 
     protected:
 
@@ -865,6 +961,9 @@ namespace Gambit
 
       /// Internal pointer to storage location of function value
       TYPE* myValue;
+
+      /// Flag to select whether or not the results of this functor should be sent to the printer object.
+      bool myPrintFlag;
 
   };
 
@@ -896,6 +995,9 @@ namespace Gambit
           this->finishTiming(nsec,sec);
         }
       }
+
+      /// Blank print method
+      virtual void print(Printers::BasePrinter* printer, int vertex) {} 
 
     protected:
 

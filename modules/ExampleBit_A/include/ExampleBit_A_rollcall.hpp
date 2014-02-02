@@ -31,7 +31,6 @@
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__
 
-
 #define MODULE ExampleBit_A
 START_MODULE
 
@@ -132,7 +131,7 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION identity               // Observable: particle id    
-    START_FUNCTION(std::string)             // Function returns the identity of the particle as a string 
+    START_FUNCTION(std::string)             // Function returns the identity of the particle as a string
     #undef FUNCTION
 
   #undef CAPABILITY

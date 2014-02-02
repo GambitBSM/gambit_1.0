@@ -51,7 +51,7 @@ namespace Gambit
         {
           if ( (*myGraph)[v]->status() == 2 )
           {
-	          out << "[fillcolor=\"red\", style=\"rounded,filled\", shape=box,";
+            out << "[fillcolor=\"red\", style=\"rounded,filled\", shape=box,";
             out << "label=< ";
             out << "<font point-size=\"20\" color=\"black\">" << (*myGraph)[v]->origin() << "</font><br/>";
           } else {
@@ -100,7 +100,8 @@ namespace Gambit
         if(el != selectedmodels.end())
         {
           // If yes, activate this functor
-          (*it)->setStatus(1); // 1 means "available". Possibly switch this to 2 ("active").
+          (*it)->setStatus(1);               // 1 means "available". Possibly switch this to 2 ("active").
+          (*it)->setPrintRequirement(true);  // Tell printer to output this functor
           // Initialise ModelParameters object it contains
           (*it)->calculate();
           // Add it to the map of active primary model functors in the core
@@ -171,9 +172,9 @@ namespace Gambit
       ///TODO: Make this into a proper GAMBIT error!
       if ( unusedmodels.size() > 0 )
       {
-        std::cout<<"ERROR! Some models selected for scanning are not \
-required by any of the requested observables/likelihoods! Please switch these \
-off in the inifile or add a target which actually uses them."<<std::endl;
+        std::cout<<"ERROR! Some models selected for scanning are not ";
+        std::cout<<"required by any of the requested observables/likelihoods! Please switch these ";
+        std::cout<<"off in the inifile or add a target which actually uses them."<<std::endl;
         std::cout<<"List of unused models:"<<std::endl;
         for (std::vector<std::string>::iterator it = unusedmodels.begin();
           it != unusedmodels.end(); ++it)

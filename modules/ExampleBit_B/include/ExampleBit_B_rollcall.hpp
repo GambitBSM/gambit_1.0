@@ -134,13 +134,14 @@ START_MODULE
       START_BACKEND_REQ(void)               // A backend requirement added for the purposes of testing the ability to pass parameters
       #undef BACKEND_REQ                    // to backends both by reference and by value.
 
-
       #define BACKEND_REQ SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
-      START_BACKEND_REQ(int, VAR)           // is on a backend variable or a backend function. 
-      BACKEND_OPTION(LibFirst)              // (A backend function is assumed if no flag is given.)
+      START_BACKEND_REQ(int, VAR)           // is on a backend variable or a backend function. A backend function is assumed if no flag is given. 
+      BACKEND_OPTION(LibFirst)              // 
+      //ACTIVATE_FOR_MODEL(MSSM_I)          // Demonstrating how backend requirements can be made conditional on one
+      ACTIVATE_FOR_MODELS(CMSSM_I, UED)     // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
       #undef BACKEND_REQ
 
-      #define BACKEND_REQ  someFunction      // (This backend function is used to test that the above backend variable works.)
+      #define BACKEND_REQ someFunction      // (This backend function is used to test that the above backend variable works.)
       START_BACKEND_REQ(void, FUNC)
       BACKEND_OPTION(LibFirst)
       #undef BACKEND_REQ

@@ -90,8 +90,33 @@ tanbMstop_prior:
     demo: 45
 
 ###############################
+#--- # Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
+
+###############################
 --- # Observables of interest
 ###############################
+
+# Ben: In order to make the printer system robust, I believe we 
+# have to specify here explicitly everything that we want to print.
+# For now, I am taking it that we want to print the 'observables
+# of interest' and nothing else.
+# In the future, we may want to add extra flags here like 
+# "do not print me", and extra options to be passed from that
+# function to the printer, say if we want it to print to a different
+# file or database or something.
+# In factor, for types that have mutable size, say vectors, we will
+# probably need to pass in a parameter saying how to reserve output
+# space for the observable (e.g. number of columns to give it in a
+# table), and will have to throw an error if this is exceeded. I
+# don't think we can reasonably do this dynamically... some printers
+# may be able to handle it though. Anyway the simple ones won't be
+# able to do this.
+# Oh, actually some kinds of databases would allow us print different
+# obserables at different iterations. So it will depend on the printer.
 
 # Uncomment to test DarkBit
 # - purpose:      Likelihood
@@ -126,6 +151,10 @@ tanbMstop_prior:
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
+- function:     "nevents_postcuts"
+  dependencies:
+  - {capability: "id", module: "ExampleBit_B"}
+
 #- capability:   "awesomeness"
 #  type:         ""
 #  function:     ""
@@ -155,12 +184,12 @@ redirect_output:
    CMSSM_I:  xterm
     
 crapsample:
-  point_number: 3
+  point_number: 10
   output_file:  output
   like:  Likelihood
 
 loopsample:
-  point_number: 3
+  point_number: 10
   output_file:  output
   like:  Likelihood
   

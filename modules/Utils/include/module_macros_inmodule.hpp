@@ -49,7 +49,7 @@
 #define START_CAPABILITY                                  DUMMY
 #define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
-#define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            DUMMYARG(LOOPMAN)                                  
+#define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
 #define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
@@ -63,8 +63,6 @@
 /// \name In-module rollcall macros
 /// @{
 
-#define ExampleBit_A_ExampleBit_A 1)(1
-
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within a module.
 #define MODULE_DECLARE_FUNCTION(TYPE, FLAG)                                    \
@@ -77,19 +75,6 @@
                                                                                \
       /* Let the module source know that this functor is declared by the core*/\
       namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
-                                                                               \
-      /* Create a safe pointer to the iteration number of the loop this functor\
-      is running within. */                                                    \
-      namespace Pipes                                                          \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace Loop                                                       \
-          {                                                                    \
-            omp_safe_ptr<int> iteration = Functown::FUNCTION.iterationPtr();   \
-          }                                                                    \
-        }                                                                      \
-      }                                                                        \
                                                                                \
       /* Set up a helper function to call the iterate method if the functor is \
       able to manage loops. */                                                 \
@@ -132,6 +117,30 @@
                                                                                \
   /* If scan-level init functions are ever needed, the point-level init        \
   functions should be made to depend on them here. */                          \
+
+/// Redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
+/// within a module.
+#define MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                          \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Loop                                                       \
+          {                                                                    \
+            /* Declare the safe pointer to the iteration number of the loop    \
+            this functor is running within, as external. */                    \
+            extern omp_safe_ptr<int> iteration;                                \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
 #define MODULE_DEPENDENCY(DEP, TYPE)                                           \
