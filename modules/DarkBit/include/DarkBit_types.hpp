@@ -37,6 +37,7 @@
 #define __DarkBit_types_hpp__
 
 #include <cmath>
+#include <gsl/gsl_integration.h>
 
 namespace Gambit
 {
@@ -79,11 +80,11 @@ namespace Gambit
 
 
     // A general DarkBit energy spectrum.  It can be either constructed from a
-    // table or from a function.
+    // table or from a function. Energies are given in GeV.
     class dNdE
     {
       public:
-        // Dummy constructor that does nothing
+        // Dummy constructor
         dNdE() : fromTable(false) {}
 
         // Construction from table
@@ -96,19 +97,26 @@ namespace Gambit
         };
 
         // Construction from external function
-        dNdE(double (*ptrdNdE)(double), double Emin, double Emax) : fromTable(false)
+        // The first argument is a pointer to a simple double(double function,
+        // second and third argument give the boudaries, and the last argument
+        // is a vector of pairs of doubles, describing position and width of
+        // critical poles in the spectrum.
+        dNdE(double (*ptrdNdE)(double), double Emin, double Emax,
+            std::vector<std::pair<double, double> > poles) :
+            fromTable(false)
         {
           this->ptrdNdE = ptrdNdE;
           this->Emin = Emin;
           this->Emax = Emax;
-          // TODO: Define Xgrid + Ygrid and poles
+          this->polePositions = poles;
+          // TODO soon: Construct Xgrid and Ygrid from this information
         };
 
         // Returns energy boundaries
         std::pair<double, double> getBounds()
         {
-          //std::pair<double, double> bounds (this->Emin, this->Emax);
-          //return bounds;
+          std::pair<double, double> bounds (this->Emin, this->Emax);
+          return bounds;
         }
 
         // Returns proposal x grid
@@ -123,7 +131,7 @@ namespace Gambit
           return this->Ygrid;
         }
 
-        // Returns poles critical for integration
+        // Returns critical poles and their widths for integration
         std::vector<std::pair<double, double> > getPoles()
         {
           return this->polePositions;
@@ -140,21 +148,22 @@ namespace Gambit
           {
             if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
             int i = 0; for (; Xgrid[i] > energy; i++) {};  // Find index
-            // Linear interpolation in log-log space
+            // Simple linear interpolation in log-log space
             double x0 = Xgrid[i];
             double x1 = Xgrid[i+1];
             double y0 = Ygrid[i];
             double y1 = Ygrid[i+1];
             return y0 * exp(log(y1/y0) * log(energy/x0) / log(x1/x0));
+            // TODO later: Add optional spline interpolation
           }
         };  
 
-        // dNdE integrated over interval E0, E1 [GeV]
+        // dNdE integrate over interval E0, E1
         double integrate(double E0, double E1) const
         {
           if (fromTable)
           {
-            // Simple trapezoidal integration (in log-log space)
+            // Simple trapezoidal integration in log-log space
             double sum = 0;
             if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
             int i0 = 0; for (; Xgrid[i0] > E0; i0++) {};  // E[i0] > E0
@@ -178,7 +187,8 @@ namespace Gambit
           }
           else
           {
-            return 0;  // TODO: Implement integration of spectrum
+            std::cout << "dNdE integration for functions not implemented yet." << std::endl; exit(1);
+            // TODO soon: Implement integration routine
           }
         }
 
@@ -190,7 +200,7 @@ namespace Gambit
         // A proposal grid for fast integration with trapez methods.  It should
         // be denser around poles.
         std::vector<double> Xgrid;  // Proposal energy grid [GeV] 
-        std::vector<double> Ygrid;  // dNdE values at grid points [GeV]
+        std::vector<double> Ygrid;  // dNdE values at grid points [1/GeV]
 
         // Position (first) and width (second) of poles and breaks in the
         // spectrum to guide integration routines [GeV].
@@ -202,7 +212,6 @@ namespace Gambit
         // Constructed from table or function?
         bool fromTable;
     };
-
 
     // A general DarkBit annihilation/decay descriptor.
     struct BRs
@@ -233,9 +242,8 @@ namespace Gambit
           }
           else
           {
-            std::cout << 
-              "DarkBit WARNING: I am ignoring a negative value for BR " << key 
-              << " :" << BR << " !" << std::endl;
+            std::cout << "DarkBit WARNING: I am ignoring a negative value for BR " 
+            << key << " :" << BR << " !" << std::endl;
           }
         }
 
@@ -373,6 +381,60 @@ namespace Gambit
     struct JvalueCatalog
     {
       // Catalog of JvalueMaps
+    };
+
+    // Abstract base class for 3D functions
+    class Funct3D
+    {
+      public:
+        virtual double operator() (double x, double y, double z) = 0;
+        double LineOfSightIntegral(double D, double phi, double theta);  
+        // TODO: Implement LOS integral (z points away from us)
+        // D: distance to object (in units of x, y & z)
+        // theta & phi: polar coordinates in (x, y) plane at z=0
+    };
+
+    // Abstract base class for spherical 3D functions
+    class SpheFunct3D : Funct3D
+    {
+      public:
+        virtual double operator() (double r) = 0;  // To be overwritten by daughter class
+        virtual double operator() (double x, double y, double z)
+        {
+          return this->operator()(sqrt(x*x + y*y + z*z));
+        };
+    };
+
+    class StandardDMprofiles : public SpheFunct3D
+    {
+      public:
+        StandardDMprofiles(std::string type, std::vector<double> pars)
+        {
+          if (type == "NFW")
+          {
+            this->rs = pars[0];
+            this->rhos = pars[1];
+            this->ptrF = &StandardDMprofiles::NFW;
+          }
+          // TODO: Implement Einasto profile, cored isothermal profile,
+          // alpha-beta-gamma profile, ...
+        }
+
+        double operator() (double r)
+        {
+          return (this->*ptrF)(r);
+        }
+
+      private:
+        double rs;  // Scale radius [kpc]
+        double rhos;  // Scale density [GeV/cm^3]
+        // Pointer to member function that implements DM profile
+        double (StandardDMprofiles::*ptrF)(double);  
+
+        double NFW(double r)
+        {
+          return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
+        }
     };
   }
 }
