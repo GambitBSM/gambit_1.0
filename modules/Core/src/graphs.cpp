@@ -262,9 +262,14 @@ namespace Gambit
       graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
       //IndexMap index = get(vertex_index, masterGraph); // Now done in the constructor
       //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
+      //Ok well it does seem to work in the constructor, not sure why though...
 
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
+        // Inform the active functors of the vertex ID that the masterGraph has assigned to them
+        // (so that later on they can pass this to the printer object to identify themselves)  
+        masterGraph[*vi]->setVertexID(index[*vi]);  
+
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
         {
@@ -394,7 +399,7 @@ namespace Gambit
     void DependencyResolver::calcObsLike(VertexID vertex)
     {
       std::vector<VertexID> order;
-      typedef property_map<MasterGraphType, vertex_index_t>::type IndexMap;
+      //typedef property_map<MasterGraphType, vertex_index_t>::type IndexMap;
       //IndexMap index = get(vertex_index, masterGraph);
       // TODO: Do I need to do this here? Should be a member variable of dependency resolver.
 
@@ -414,10 +419,7 @@ namespace Gambit
         //      threads other than the main one need to be accessed with 
         //        masterGraph[*it]->print(boundPrinter,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        // Ben: Ugh ok I see. Well I had to kill this for now, will put it back asap...
-        //  the 'index' here is a unique identifier given to each graph vertex (functor),
-        //  not the thread obviously.
-        masterGraph[*it]->print(boundPrinter,index[*it]);
+        masterGraph[*it]->print(boundPrinter);
       }
     }
 
@@ -624,11 +626,13 @@ namespace Gambit
         cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
 
         // If toVertex is the Core, then fromVertex is one of our target functors, which are
-        // the things we want to output to the printer system.  Turn off printing for all else.
-        if ( toVertex != OMEGA_VERTEXID )
+        // the things we want to output to the printer system.  Turn printing on for these.
+        // Ben: I had to change this back because otherwise you turn off printing for the model
+        // parameters functors, which modelbit previously turned on. 
+        if ( toVertex == OMEGA_VERTEXID )
         {
-           masterGraph[fromVertex]->setPrintRequirement(false);
-           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO FALSE" << endl;
+           masterGraph[fromVertex]->setPrintRequirement(true);
+           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO TRUE" << endl;
         }
 
         if ( toVertex != OMEGA_VERTEXID)

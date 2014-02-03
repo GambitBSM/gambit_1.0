@@ -70,8 +70,11 @@ namespace Gambit
        myType          (result_type),
        myOrigin        (origin_name),
        myStatus        (1),
+       myVertexID      (-1),
        needs_recalculating (true) {}
       
+      // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
+
       /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate() {};
 
@@ -98,7 +101,9 @@ namespace Gambit
       void setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
-      
+      /// Setter for vertex ID (used in printer system)     
+      void setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
+
       /// Getter for the wrapped function's name
       str name()        { if (this == NULL) failBigTime("name"); return myName; }
       /// Getter for the wrapped function's reported capability
@@ -115,6 +120,9 @@ namespace Gambit
       sspair quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+      /// Getter for vertex ID
+      int vertexID()    { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
+ 
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return false; }
 
@@ -255,7 +263,7 @@ namespace Gambit
       void setAllowedModel(str model) { allowedModels.insert(model); }
 
       /// Print function
-      virtual void print(Printers::BasePrinter*, int)
+      virtual void print(Printers::BasePrinter*)
       { 
          // TODO: throw real GAMBIT Error
          std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
@@ -281,6 +289,8 @@ namespace Gambit
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
+      /// Internal storage of the vertex ID number used by the printer system to identify functors
+      int myVertexID;
 
       /// List of allowed models
       std::set<str> allowedModels;
@@ -881,7 +891,7 @@ namespace Gambit
                             str origin_name)
       : module_functor_common(func_name, func_capability, result_type, origin_name),
         myFunction  (inputFunction),
-        myPrintFlag (true)
+        myPrintFlag (false)
       {
         myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
         myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
@@ -939,19 +949,19 @@ namespace Gambit
       }
 
       /// Printer function
-      virtual void print(Printers::BasePrinter* printer, int vertex, int index)
+      virtual void print(Printers::BasePrinter* printer, int index)
       {
         // Check if this functor is set to output its contents
         if(myPrintFlag)
         {
-          if (not iRunNested) index = 0; // Force printing of index=0 if this functor canno trun nested. 
+          if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
           // We can expand the list of stuff supplied to printers easily, but each printer will of course have to be modified to accept the new arguments.
-          printer->print(myValue[0],vertex,myName,myCapability,myOrigin);
+          printer->print(myValue[0],myVertexID,myName,myCapability,myOrigin);
         }
       }
 
       /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer, int vertex) { print(printer,vertex,0); }
+      virtual void print(Printers::BasePrinter* printer) { print(printer,0); }
 
 
     protected:
