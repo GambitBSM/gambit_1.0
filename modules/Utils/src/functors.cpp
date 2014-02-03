@@ -46,6 +46,7 @@ namespace Gambit
      myType          (result_type),
      myOrigin        (origin_name),
      myStatus        (1),
+     myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      needs_recalculating (true) {}
     
     /// Virtual calculate(); needs to be redefined in daughters.
@@ -70,6 +71,8 @@ namespace Gambit
     void functor::setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
     /// Setter for purpose (relevant only for next-to-output functors)
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
+    /// Setter for vertex ID (used in printer system)
+    void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
     
     /// Getter for the wrapped function's name
     str functor::name()        { if (this == NULL) failBigTime("name"); return myName; }
@@ -87,6 +90,8 @@ namespace Gambit
     sspair functor::quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
     /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
     str functor::purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+    /// Getter for vertex ID
+    int functor::vertexID()    { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return false; }
 
@@ -227,7 +232,7 @@ namespace Gambit
     void functor::setAllowedModel(str model) { allowedModels.insert(model); }
 
     /// Print function
-    void functor::print(Printers::BasePrinter*, int)
+    void functor::print(Printers::BasePrinter*)
     { 
        // TODO: throw real GAMBIT Error
        std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
@@ -740,7 +745,6 @@ namespace Gambit
 
   /// Class methods for actual module functors for TYPE != void
 
-    /// Constructor
     template <typename TYPE>
     module_functor<TYPE>::module_functor(void (*inputFunction)(TYPE &),
                                    str func_name,
@@ -749,7 +753,11 @@ namespace Gambit
                                    str origin_name)
     : module_functor_common(func_name, func_capability, result_type, origin_name),
       myFunction  (inputFunction),
-      myPrintFlag (true)
+      #ifdef STANDALONE
+        myPrintFlag (true)
+      #else 
+        myPrintFlag (false)
+      #endif
     {
       myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
       myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
@@ -766,7 +774,7 @@ namespace Gambit
 
     /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
     template <typename TYPE>
-    void module_functor<TYPE>::module_functor::setLoopManagerCapability (str manager) 
+    void module_functor<TYPE>::setLoopManagerCapability (str manager) 
     { 
       module_functor_common::setLoopManagerCapability(manager); // Call the regular version of this method.
       delete [] myValue;                              // Get rid of the scalar result container
@@ -815,20 +823,20 @@ namespace Gambit
 
     /// Printer function
     template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer, int vertex, int index)
+    void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
       // Check if this functor is set to output its contents
       if(myPrintFlag)
       {
-        if (not iRunNested) index = 0; // Force printing of index=0 if this functor canno trun nested. 
+        if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
         // We can expand the list of stuff supplied to printers easily, but each printer will of course have to be modified to accept the new arguments.
-        printer->print(myValue[0],vertex,myName,myCapability,myOrigin);
+        printer->print(myValue[0],myVertexID,myName,myCapability,myOrigin);
       }
     }
 
     /// Printer function (no-thread-index short-circuit)
     template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer, int vertex) { print(printer,vertex,0); }
+    void module_functor<TYPE>::print(Printers::BasePrinter* printer) { print(printer,0); }
 
 
   /// Class methods for actual module functors for TYPE=void

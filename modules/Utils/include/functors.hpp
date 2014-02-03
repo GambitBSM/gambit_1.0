@@ -91,7 +91,9 @@ namespace Gambit
       void setStatus(int stat);
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str purpose);
-      
+      /// Setter for vertex ID (used in printer system)     
+      void setVertexID(int vertexID);
+
       /// Getter for the wrapped function's name
       str name();
       /// Getter for the wrapped function's reported capability
@@ -108,6 +110,8 @@ namespace Gambit
       sspair quantity();
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
       str purpose();
+      /// Getter for vertex ID
+      int vertexID();
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting();
 
@@ -164,7 +168,7 @@ namespace Gambit
       void setAllowedModel(str model);
 
       /// Print function
-      virtual void print(Printers::BasePrinter*, int);
+      virtual void print(Printers::BasePrinter*);
 
     protected:
           
@@ -182,6 +186,8 @@ namespace Gambit
       str myPurpose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
+      /// Internal storage of the vertex ID number used by the printer system to identify functors
+      int myVertexID;
 
       /// List of allowed models
       std::set<str> allowedModels;
@@ -423,10 +429,10 @@ namespace Gambit
       safe_ptr<TYPE> valuePtr();
 
       /// Printer function
-      virtual void print(Printers::BasePrinter* printer, int vertex, int index);
+      virtual void print(Printers::BasePrinter* printer, int index);
 
       /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer, int vertex);
+      virtual void print(Printers::BasePrinter* printer);
 
 
     protected:

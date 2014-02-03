@@ -130,8 +130,8 @@ int main()
     function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain, so could go anywhere.)
 
     // Print the (cached) results of some module functions to the selected printer
-    nevents_dbl.print(&myPrinter,1); //FIXME the vertexIDs should be removed when they are no longer required
-    nevents_int.print(&myPrinter,2);
+    nevents_dbl.print(&myPrinter);
+    nevents_int.print(&myPrinter);
 
     // Alternatively, you can retrieve the same cached results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
     double r1 = nevents_dbl(0); 
