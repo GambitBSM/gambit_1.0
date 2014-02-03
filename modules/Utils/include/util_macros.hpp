@@ -87,7 +87,7 @@
 /// @}
 
 /// \name Empty token test macros.
-/// Macros for evaluating whether tokens are empty or not, and
+/// Macros for evaluating whether certain tokens are empty or not, and
 /// for then switching on the result.
 /// @{
 #define EMPTY_TOKEN_TESTER 1)(1
@@ -97,8 +97,8 @@
 #define IF_ELSE_EMPTY(A,B,C) BOOST_PP_IIF(IS_EMPTY(A),B,C)
 /// @}
 
-/// \name Variadic macro expanders
-/// Generic variadic macro expanders for 0 to 6 arguments.
+/// \name General variadic macro expanders
+/// Generic variadic macro expanders for 1 to 10 arguments.
 /// Example use: redirect EXAMPLE according to whether it is called 
 /// with 2, 3 or 4 arguments.
 /// \code
@@ -108,11 +108,40 @@
 /// #define EXAMPLE(...)              VARARG(EXAMPLE, __VA_ARGS__)
 /// \endcode 
 /// @{
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 5, 4, 3, 2, 1, 0)
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
+/// \name Variadic macro expanders taking 3 leading arguments 
+/// @{
+#define VA_NARGS_ABC_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
+#define VA_NARGS_ABC(...) VA_NARGS_ABC_IMPL(X,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define VARARG_ABC_IMPL2(base, A, B, C, count, ...) base##_##count(A, B, C, __VA_ARGS__)
+#define VARARG_ABC_IMPL(base, A, B, C, count, ...) VARARG_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
+#define VARARG_ABC(base, A, B, C, ...) VARARG_ABC_IMPL(base, A, B, C, VA_NARGS_ABC(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
+/// \name Variadic macro expanders for distinguishing between 1 and >1 variadic argument  
+/// @{
+#define VARARG_SWITCH_ON_GT_ONE_TESTER_1 1)(1
+#define VA_NARGS_SWITCH_ON_GT_ONE_IMPL(_1, _2, _3, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_ONE_TESTER,N,N,MORE)
+#define VA_NARGS_SWITCH_ON_GT_ONE(...) VA_NARGS_SWITCH_ON_GT_ONE_IMPL(X,##__VA_ARGS__, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
+#define VARARG_SWITCH_ON_GT_ONE_IMPL(base, count, ...) VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, __VA_ARGS__) 
+#define VARARG_SWITCH_ON_GT_ONE(base, ...) VARARG_SWITCH_ON_GT_ONE_IMPL(base, VA_NARGS_SWITCH_ON_GT_ONE(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
+/// \name Variadic macro expanders for distinguishing between 1 and >1 variadic argument, taking 3 leading arguments  
+/// @{
+#define VARARG_SWITCH_ON_GT_ONE_ABC_TESTER_1 1)(1
+#define VA_NARGS_SWITCH_ON_GT_ONE_ABC_IMPL(_1, _2, _3, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_ONE_ABC_TESTER,N,N,MORE)
+#define VA_NARGS_SWITCH_ON_GT_ONE_ABC(...) VA_NARGS_SWITCH_ON_GT_ONE_ABC_IMPL(X,##__VA_ARGS__, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, ...) base##_##count(A, B, C, __VA_ARGS__)
+#define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, count, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
+#define VARARG_SWITCH_ON_GT_ONE_ABC(base, A, B, C, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, VA_NARGS_SWITCH_ON_GT_ONE_ABC(__VA_ARGS__), __VA_ARGS__)
 /// @}
 
 /// \name Bottom-level definition-checking macros
@@ -133,7 +162,7 @@
 /// in module_macros_common.hpp for a detailed worked example.
 /// @{
 #define CHECK_N(x, n, ...) n
-#define CHECK(...) CHECK_N(__VA_ARGS__, 0)
+#define CHECK(...) CHECK_N(__VA_ARGS__, 0, 0)
 #define PROBE(x) x, 1                                                             
 #define DEFINED_PROBE(NAME)            DEFINED_PROBE_PROXY( DEFINED_##NAME )      // concatenate DEFINED_ prefix with function name
 #define DEFINED_PROBE_PROXY(...)       DEFINED_PROBE_PRIMITIVE(__VA_ARGS__)       // expand arguments
@@ -153,6 +182,19 @@
 #define IF_NOT_DEFINED(NAME,ACTION)    BOOST_PP_IF(DEFINED(NAME), , ACTION)
 /// Do IF if NAME is defined, otherwise do ELSE.
 #define IF_ELSE_DEFINED(NAME,IF,ELSE)  BOOST_PP_IF(DEFINED(NAME), IF, ELSE)
+/// @}
+
+/// \name Sneaky redefinition of \link DEFINED() DEFINED\endlink to allow testing whether specific tokens are defined.
+/// @{
+#define TOKEN_DEFINED(A) BOOST_PP_NOT(DEFINED(A))
+#define IF_TOKEN_DEFINED(A,B) BOOST_PP_IIF(DEFINED(A),BOOST_PP_EMPTY(),B)
+#define IF_TOKEN_UNDEFINED(A,B) BOOST_PP_IIF(DEFINED(A),B,BOOST_PP_EMPTY())
+#define IF_ELSE_TOKEN_DEFINED(A,B,C) BOOST_PP_IIF(DEFINED(A),C,B)
+#define DEFINED_MODULE                 ()
+#define DEFINED_CAPABILITY             ()
+#define DEFINED_FUNCTION               ()
+#define DEFINED_BACKEND_REQ            ()
+#define DEFINED_CONDITIONAL_DEPENDENCY ()
 /// @}
 
 #endif //defined __util_macros_hpp__

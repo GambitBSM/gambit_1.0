@@ -997,7 +997,7 @@ namespace Gambit
       }
 
       /// Blank print method
-      virtual void print(Printers::BasePrinter* printer, int vertex) {} 
+      virtual void print(Printers::BasePrinter*, int) {} 
 
     protected:
 

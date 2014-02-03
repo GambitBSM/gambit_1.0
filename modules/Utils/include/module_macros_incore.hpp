@@ -75,26 +75,36 @@
 /// @{
 #define IS_MODEL 1
 #define NOT_MODEL 0
+#define NEW_CAPABILITY 1
+#define OLD_CAPABILITY 0
 /// @}
 
 /// \name String definitions for IS_EQUAL macro.
 /// @{
-#define PointInit_PointInit             1)(1
+#define PointInit_PointInit       1)(1
 /// @}
 
-/// \name Sneaky redefinition of \link DEFINED() DEFINED\endlink to allow testing whether specific tokens are defined.
+
+/// \name Variadic redirectors for \link QUICK_FUNCTION() QUICK_FUNCTION\endlink function.
 /// @{
-#define TOKEN_DEFINED(A) BOOST_PP_NOT(DEFINED(A))
-#define IF_TOKEN_DEFINED(A,B) BOOST_PP_IIF(DEFINED(A),BOOST_PP_EMPTY(),B)
-#define IF_TOKEN_UNDEFINED(A,B) BOOST_PP_IIF(DEFINED(A),B,BOOST_PP_EMPTY())
-#define IF_ELSE_TOKEN_DEFINED(A,B,C) BOOST_PP_IIF(DEFINED(A),C,B)
-#define DEFINED_MODULE                 ()
-#define DEFINED_CAPABILITY             ()
-#define DEFINED_FUNCTION               ()
-#define DEFINED_BACKEND_REQ            ()
-#define DEFINED_CONDITIONAL_DEPENDENCY ()
+#define START_FUNCTION_AND_ALLOW_MODELS_MORE(MODULE, CAPABILITY, FUNCTION, TYPE, ...)        \
+ CORE_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)                                \
+ ALLOW_MODELS_ABC(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)
+#define START_FUNCTION_AND_ALLOW_MODELS_1(MODULE, CAPABILITY, FUNCTION, TYPE)                \
+ CORE_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)
+#define START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, ...)                   \
+ VARARG_SWITCH_ON_GT_ONE_ABC(START_FUNCTION_AND_ALLOW_MODELS, MODULE, CAPABILITY, FUNCTION,  \
+ __VA_ARGS__)
 /// @}
 
+/// Quick, one-line declaration of simple module functions.
+/// Allows declaration of capability, function name and type, as well as up to ten allowed 
+/// models, all in one hit.  Typically used to supplement standalone modules so that all 
+/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY
+/// flag can be either NEW_CAPABILITY or OLD_CAPABILITY.
+#define QUICK_FUNCTION(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, ...)               \
+ BOOST_PP_IIF(NEW_CAPABILITY_FLAG,CORE_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY()) \
+ START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)                                
 
 /// \name Rollcall macros (redirection within the Core).
 /// These are called from within rollcall headers in each module to 
@@ -107,13 +117,13 @@
 
 /// Registers the current \link CAPABILITY() CAPABILITY\endlink of the current 
 /// \link MODULE() MODULE\endlink.
-#define START_CAPABILITY                                  CORE_START_CAPABILITY
+#define START_CAPABILITY                                  CORE_START_CAPABILITY(MODULE, CAPABILITY)
 
 /// Registers the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink as a provider
 /// of the current \link CAPABILITY() CAPABILITY\endlink, returning a result of 
 /// type \em TYPE.
-#define DECLARE_FUNCTION(TYPE, FLAG)                      CORE_DECLARE_FUNCTION(TYPE, FLAG)
+#define DECLARE_FUNCTION(TYPE, FLAG)                      CORE_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, FLAG)
 
 /// Indicates that the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink must be managed by another function (in the same
@@ -129,7 +139,7 @@
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
 /// specific model \em MODEL.  If this is absent, all models are allowed but no 
 /// model parameters will be accessible from within the module funtion.
-#define ALLOWED_MODEL(MODEL)                              CORE_ALLOWED_MODEL(MODEL)
+#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ() 
@@ -159,6 +169,14 @@
 /// \link BACKEND_REQ() BACKEND_REQ\endlink should be activated if the model being scanned matches one of the
 /// models passed as an argument.
 #define ACTIVATE_FOR_MODELS(...)                         IF_ELSE_TOKEN_DEFINED(BACKEND_REQ, ACTIVATE_BE_MODEL, ACTIVATE_DEP_MODEL)(#__VA_ARGS__)
+/// @}
+
+/// \name Initialisation dependency switches.
+/// Macros for defining the action to be taken if a dependency on the module's 
+/// point-level initialisation function is required.
+/// @{
+#define INITDEPYES(MODULE,FUNCTION)                      CORE_DEPENDENCY(PointInit, void, MODULE, FUNCTION, NOT_MODEL)
+#define INITDEPNO(MODULE,FUNCTION) 
 /// @}
 
 
@@ -380,7 +398,7 @@
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
-#define CORE_START_CAPABILITY                                                  \
+#define CORE_START_CAPABILITY(MODULE, CAPABILITY)                              \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "START_CAPABILITY."))                                                       \
@@ -411,7 +429,7 @@
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within the core.
-#define CORE_DECLARE_FUNCTION(TYPE, FLAG)                                      \
+#define CORE_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, FLAG)        \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "START_FUNCTION."))                                                         \
@@ -479,7 +497,8 @@
   /* Every module function (except the point-level init functions themselves)  \
      depends on a module-specific point-level initialization function. */      \
   BOOST_PP_IIF(BOOST_PP_BITAND(BOOST_PP_NOT_EQUAL(FLAG, 2),                    \
-   BOOST_PP_NOT(IS_EQUAL(CAPABILITY,PointInit))), INITDEPYES, INITDEPNO)()     \
+   BOOST_PP_NOT(IS_EQUAL(CAPABILITY,PointInit))), INITDEPYES, INITDEPNO)       \
+   (MODULE,FUNCTION)                                                           \
                                                                                \
   /* If scan-level init functions are ever needed, the point-level init        \
   functions should be made to depend on them here. */                          \
@@ -507,7 +526,7 @@
     Core.registerModuleFunctor(Functown::FUNCTION);                            \
     BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
-     &Accessors::provides<Gambit::Tags::CAPABILITY>;                                   \
+     &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
   }                                                                            \
                                                                                \
@@ -696,7 +715,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within the core.
-#define CORE_ALLOWED_MODEL(MODEL)                                              \
+#define CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                   \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "ALLOWED_MODEL(S)."))                                                       \

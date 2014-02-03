@@ -46,11 +46,11 @@
 /// @{
 // Redirect the rollcall macros to their in-module variants
 #define START_MODULE                                      DUMMY
-#define START_CAPABILITY                                  DUMMY
+#define START_CAPABILITY                                  MODULE_START_CAPABILITY
 #define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
-#define ALLOWED_MODEL(MODEL)                              MODULE_ALLOWED_MODEL(MODEL)
+#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
 #define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
@@ -58,10 +58,24 @@
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
 /// @}
 
+/// \name Initialisation dependency switches.
+/// Macros for defining the action to be taken if a dependency on the module's 
+/// point-level initialisation function is required.
+/// @{
+#define INITDEPYES() DEPENDENCY(PointInit, void)
+#define INITDEPNO() 
+/// @}
+
 
 //  *******************************************************************************
 /// \name In-module rollcall macros
 /// @{
+
+/// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when 
+/// invoked from within a module.
+#define MODULE_START_CAPABILITY                                                \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_CAPABILITY."))                                                       \
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within a module.
@@ -170,7 +184,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within a module.
-#define MODULE_ALLOWED_MODEL(MODEL)                                            \
+#define MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                 \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -180,7 +194,7 @@
                                                                                \
       /* Create a safe pointer to the model parameters result. To be filled    \
       automatically at runtime when the dependency is resolved. */             \
-      namespace Pipes                                                   \
+      namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
