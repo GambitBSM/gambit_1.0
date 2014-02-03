@@ -613,7 +613,7 @@ namespace Gambit
 
     /// Hand out the internal function pointer wrapped by the functor
     template <typename TYPE, typename... ARGS>
-    backend_functor_common<TYPE, ARGS...>::funcPtrType backend_functor_common<TYPE, ARGS...>::handoutFunctionPointer() 
+    typename backend_functor_common<TYPE, ARGS...>::funcPtrType backend_functor_common<TYPE, ARGS...>::handoutFunctionPointer() 
     {
       return myFunction;
     }

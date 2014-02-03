@@ -48,10 +48,7 @@ int main()
   // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
   ModelParameters* CMSSM_primary_parameters = Models::CMSSM_I::Functown::primary_parameters.getcontentsPtr();
 
-  // Choose and set up a printer object
-  Printers::ostreamPrinter myPrinter(std::cout,true); 
-
-  // Print some diagnostics about ExampleBit_A
+  // Print some example diagnostics about ExampleBit_A
   cout << endl << "My name is " << name() << endl;
   cout << " I can calculate: " << endl << iCanDo << endl;
   cout << " ...but I may need: " << endl << iMayNeed << endl << endl;  
@@ -129,11 +126,7 @@ int main()
     nevents_int.reset_and_calculate();
     function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain, so could go anywhere.)
 
-    // Print the (cached) results of some module functions to the selected printer
-    nevents_dbl.print(&myPrinter);
-    nevents_int.print(&myPrinter);
-
-    // Alternatively, you can retrieve the same cached results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
+    // Retrieve the (cached) results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
     double r1 = nevents_dbl(0); 
     int r2 = nevents_int(0);
     cout << endl << "Retrieved results: " << r1 << ", " << r2 << endl << endl;

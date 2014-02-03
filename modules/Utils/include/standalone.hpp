@@ -19,7 +19,6 @@
 #ifndef __standalone_hpp__
 #define __standalone_hpp__
 
-#define STANDALONE
 #include "backend_rollcall.hpp"
 #include "module_macros_incore.hpp"
 #include "model_rollcall.hpp"

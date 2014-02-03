@@ -27,13 +27,29 @@
 ///  *********************************************
 
 
-#include "functors.hpp"
-#include "printers.hpp"
 #include <boost/preprocessor/seq/for_each.hpp>
+#include "functors.hpp"
+#include "all_functor_types.hpp"
+
+#define FWDPRINT(r,data,elem) virtual void print(elem const&, const int, const str, const str, const str) = 0;
 
 namespace Gambit
 {
 
+  /// Poorly declaration of Printers::BasePrinter for use in print functions; leave implementation to printer source files.
+  /// If the compiled printer sources are not linked against the compiled program, any calls to the print functions will generate
+  /// link errors.  This is how printers are removed from standalone module compilation, and calls to the print functions outlawed.
+  namespace Printers
+  {
+    class BasePrinter
+    {
+      public:
+        BOOST_PP_SEQ_FOR_EACH(FWDPRINT, _, PRINTABLE_TYPES)
+        virtual void initialise(const std::vector<int>&) = 0;
+        virtual void endline() = 0;
+    };
+  }
+   
   // Functor class methods
 
     /// Constructor
@@ -753,11 +769,7 @@ namespace Gambit
                                    str origin_name)
     : module_functor_common(func_name, func_capability, result_type, origin_name),
       myFunction  (inputFunction),
-      #ifdef STANDALONE
-        myPrintFlag (true)
-      #else 
-        myPrintFlag (false)
-      #endif
+      myPrintFlag (false)
     {
       myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
       myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in

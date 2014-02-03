@@ -52,7 +52,6 @@
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/compl.hpp>
 
-#include "graphs.hpp"
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "types_rollcall.hpp"
