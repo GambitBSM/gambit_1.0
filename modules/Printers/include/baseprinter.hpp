@@ -33,14 +33,15 @@
 #pragma message BOOST_PP_STRINGIZE(PRINTABLE_TYPES) //PRINTABLE_TYPES resides in all_functor_types.hpp 
 
 #define VPRINT(r,data,elem)                       \
-  virtual void print(elem const&, const int vertex, const std::string func_name, const std::string func_capability, const std::string origin_name)  \
+  virtual void print(elem const& value, const functor* f)  \
   {                                               \
     std::cout<<"WARNING! No print function override has been defined for this type (for whatever printer class the current printer comes from)"<<std::endl; \
     std::cout<<"  Dumping Functor info..."<<std::endl; \
-    std::cout<<"   Name       : "<<func_name<<std::endl; \
-    std::cout<<"   Capability : "<<func_capability<<std::endl; \
-    std::cout<<"   Origin     : "<<origin_name<<std::endl; \
-    std::cout<<"   Vertex ID  : "<<vertex<<std::endl; \
+    std::cout<<"   Name       : "<<f->name()<<std::endl; \
+    std::cout<<"   Capability : "<<f->capability()<<std::endl; \
+    std::cout<<"   Type       : "<<f->type()<<std::endl; \
+    std::cout<<"   Origin     : "<<f->origin()<<std::endl; \
+    std::cout<<"   Vertex ID  : "<<f->vertexID()<<std::endl; \
     exit(1);\
   }                                              
 
@@ -53,7 +54,6 @@
 // Code!
 namespace Gambit
 {
-
   namespace Printers 
   {
 

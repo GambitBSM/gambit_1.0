@@ -95,25 +95,25 @@ namespace Gambit
       void setVertexID(int vertexID);
 
       /// Getter for the wrapped function's name
-      str name();
+      str name() const;
       /// Getter for the wrapped function's reported capability
-      str capability();
+      str capability() const;
       /// Getter for the wrapped function's reported return type
-      str type();
+      str type() const;
       /// Getter for the wrapped function's origin (module or backend name)
-      str origin();
+      str origin() const;
       /// Getter for the version of the wrapped function's origin (module or backend)
-      str version();
+      str version() const;
       /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
-      int status();
+      int status() const;
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
-      sspair quantity();
+      sspair quantity() const;
       /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
-      str purpose();
+      str purpose() const;
       /// Getter for vertex ID
-      int vertexID();
+      int vertexID() const;
       /// Getter indicating if the wrapped function's result should to be printed
-      virtual bool requiresPrinting();
+      virtual bool requiresPrinting() const;
 
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool flag);

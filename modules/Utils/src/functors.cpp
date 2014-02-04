@@ -31,7 +31,7 @@
 #include "functors.hpp"
 #include "all_functor_types.hpp"
 
-#define FWDPRINT(r,data,elem) virtual void print(elem const&, const int, const str, const str, const str) = 0;
+#define FWDPRINT(r,data,elem) virtual void print(elem const&, const functor*) = 0;
 
 namespace Gambit
 {
@@ -91,25 +91,25 @@ namespace Gambit
     void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
     
     /// Getter for the wrapped function's name
-    str functor::name()        { if (this == NULL) failBigTime("name"); return myName; }
+    str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
     /// Getter for the wrapped function's reported capability
-    str functor::capability()  { if (this == NULL) failBigTime("capability"); return myCapability; }
+    str functor::capability()  const { if (this == NULL) failBigTime("capability"); return myCapability; }
     /// Getter for the wrapped function's reported return type
-    str functor::type()        { if (this == NULL) failBigTime("type"); return myType; }
+    str functor::type()        const { if (this == NULL) failBigTime("type"); return myType; }
     /// Getter for the wrapped function's origin (module or backend name)
-    str functor::origin()      { if (this == NULL) failBigTime("origin"); return myOrigin; }
+    str functor::origin()      const { if (this == NULL) failBigTime("origin"); return myOrigin; }
     /// Getter for the version of the wrapped function's origin (module or backend)
-    str functor::version()     { if (this == NULL) failBigTime("version"); return myVersion; }
+    str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
-    int functor::status()      { if (this == NULL) failBigTime("status"); return myStatus; }
+    int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
-    sspair functor::quantity() { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
+    sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
     /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
-    str functor::purpose()     { if (this == NULL) failBigTime("purpose"); return myPurpose; }
+    str functor::purpose()     const { if (this == NULL) failBigTime("purpose"); return myPurpose; }
     /// Getter for vertex ID
-    int functor::vertexID()    { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
+    int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
     /// Getter indicating if the wrapped function's result should to be printed
-    bool functor::requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return false; }
+    bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
 
     /// Setter for indicating if the wrapped function's result should to be printed
     void functor::setPrintRequirement(bool flag)
@@ -841,8 +841,12 @@ namespace Gambit
       if(myPrintFlag)
       {
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
-        // We can expand the list of stuff supplied to printers easily, but each printer will of course have to be modified to accept the new arguments.
-        printer->print(myValue[0],myVertexID,myName,myCapability,myOrigin);
+        // We now pass the 'this' pointer for this functor to the print function. In principle we could
+        // probably pass only this, but it is a little tricky because we still have to call the overload
+        // of 'print' which is appropriate for the type of 'myValue'. If the printers only expect
+        // module_functors, then we could use the template type of the pointer to do the resolution, but 
+        // it might just be more straightforward to pass 'myValue' like we are currently doing...
+        printer->print(myValue[0],this);
       }
     }
 
