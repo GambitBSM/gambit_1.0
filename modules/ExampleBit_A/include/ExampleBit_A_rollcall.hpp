@@ -39,7 +39,7 @@ START_MODULE
 
     #define FUNCTION PointInit_Default
     START_INI_FUNCTION                      // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
-    ALLOW_MODELS(CMSSM_I)                   // ALLOW_MODELS is permitted for initialisation functions, as are BACKEND_REQs. 
+    ALLOW_MODELS(CMSSM_I,NormalDist)        // ALLOW_MODELS is permitted for initialisation functions, as are BACKEND_REQs. 
     #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
 
   #undef CAPABILITY
@@ -143,7 +143,7 @@ START_MODULE
   
     #define FUNCTION damu
     START_FUNCTION(double)
-    ALLOW_MODELS(test_parent_I, NormalDist_I)
+    ALLOW_MODELS(test_parent_I, NormalDist)
 
       #define CONDITIONAL_DEPENDENCY xsection   // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
       START_CONDITIONAL_DEPENDENCY(double)
@@ -159,7 +159,7 @@ START_MODULE
   
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    ALLOW_MODELS(NormalDist_I, test_parent_I)
+    ALLOW_MODELS(NormalDist, test_parent_I)
     #undef FUNCTION
 
   #undef CAPABILITY
