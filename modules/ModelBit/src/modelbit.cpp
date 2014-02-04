@@ -32,6 +32,9 @@
 ///  *********************************************
 
 #include "modelbit.hpp"
+#include "graphs.hpp"
+#include "gambit_core.hpp"
+#include "util_types.hpp"
 
 namespace Gambit
 {

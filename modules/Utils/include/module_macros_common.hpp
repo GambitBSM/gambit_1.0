@@ -72,24 +72,39 @@
 ///Simple alias for ACTIVATE_FOR_MODEL/S
 #define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
 
-/// \name Variadic redirection macro for ALLOW_MODELS([MODELS])
+/// \name Variadic redirection macros for ALLOW_MODELS([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may
 /// only be used with the listed models.  The current maximum number
 /// of models that can be indicated this way is 10; if more models
 /// should be allowed, ALLOW_MODELS can be called multiple times.
 /// If ALLOW_MODELS is not present, all models are considered to be
 /// allowed.
-#define ALLOW_MODELS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8) ALLOWED_MODEL(_9) ALLOWED_MODEL(_10)
-#define ALLOW_MODELS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8) ALLOWED_MODEL(_9) 
-#define ALLOW_MODELS_8(_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7) ALLOWED_MODEL(_8)
-#define ALLOW_MODELS_7(_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6) ALLOWED_MODEL(_7)
-#define ALLOW_MODELS_6(_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5) ALLOWED_MODEL(_6)
-#define ALLOW_MODELS_5(_1, _2, _3, _4, _5)                       ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) ALLOWED_MODEL(_5)
-#define ALLOW_MODELS_4(_1, _2, _3, _4)                           ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) ALLOWED_MODEL(_4) 
-#define ALLOW_MODELS_3(_1, _2, _3)                               ALLOWED_MODEL(_1) ALLOWED_MODEL(_2) ALLOWED_MODEL(_3) 
-#define ALLOW_MODELS_2(_1, _2)                                   ALLOWED_MODEL(_1) ALLOWED_MODEL(_2)  
-#define ALLOW_MODELS_1(_1)                                       ALLOWED_MODEL(_1) 
-#define ALLOW_MODELS(...)                                        VARARG(ALLOW_MODELS, __VA_ARGS__)
+/// @{
+#define ALLOW_MODELS_10(A,B,C,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
+                                                                       ALLOWED_MODEL(A,B,C,_7) ALLOWED_MODEL(A,B,C,_8) ALLOWED_MODEL(A,B,C,_9) \
+                                                                       ALLOWED_MODEL(A,B,C,_10)
+#define ALLOW_MODELS_9(A,B,C,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
+                                                                       ALLOWED_MODEL(A,B,C,_7) ALLOWED_MODEL(A,B,C,_8) ALLOWED_MODEL(A,B,C,_9) 
+#define ALLOW_MODELS_8(A,B,C,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
+                                                                       ALLOWED_MODEL(A,B,C,_7) ALLOWED_MODEL(A,B,C,_8)
+#define ALLOW_MODELS_7(A,B,C,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
+                                                                       ALLOWED_MODEL(A,B,C,_7)
+#define ALLOW_MODELS_6(A,B,C,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6)
+#define ALLOW_MODELS_5(A,B,C,_1, _2, _3, _4, _5)                       ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5)
+#define ALLOW_MODELS_4(A,B,C,_1, _2, _3, _4)                           ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
+                                                                       ALLOWED_MODEL(A,B,C,_4) 
+#define ALLOW_MODELS_3(A,B,C,_1, _2, _3)                               ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) 
+#define ALLOW_MODELS_2(A,B,C,_1, _2)                                   ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2)  
+#define ALLOW_MODELS_1(A,B,C,_1)                                       ALLOWED_MODEL(A,B,C,_1) 
+#define ALLOW_MODELS_ABC(A,B,C,...)                                    VARARG_ABC(ALLOW_MODELS, A, B, C, __VA_ARGS__)
+#define ALLOW_MODELS(...)                                              ALLOW_MODELS_ABC(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)
+/// @}
 
 
 /// \name Variadic redirection macros for BACKEND_OPTION(BACKEND, [VERSIONS])
@@ -133,14 +148,5 @@
                                        (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 2))\
                                        (__VA_ARGS__)
 /// @}
-
-/// \name Initialisation dependency switches.
-/// Macros for defining the action to be taken if a dependency on the module's 
-/// point-level initialisation function is required.
-/// @{
-#define INITDEPYES() DEPENDENCY(PointInit, void)
-#define INITDEPNO() 
-/// @}
-
 
 #endif // defined __module_macros_common_hpp__

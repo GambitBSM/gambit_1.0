@@ -10,41 +10,22 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Pat Scott
-///  \date 2014 Jan
+///  \date 2014 Jan, Feb
 ///
 ///  *********************************************
 
-#include "backend_rollcall.hpp"
-#include "module_macros_incore.hpp"
-#include "model_rollcall.hpp"
-#include "exceptions.hpp"
+#include "standalone.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
-using namespace Gambit;
 using namespace ExampleBit_A::Accessors;    // Helper functions that provide some info about the module
 using namespace ExampleBit_A::Functown;     // Functors wrapping the module's actual module functions
-using std::cout;
-using std::endl;
 
-// Declare ad-hoc module functions for filling dependencies not otherwise fillable by ExampleBit_A.
-// REGISTER_ADHOC_FUNCTION(ExampleBit_A, xsection, local_xsection, double, MSSM_I)
-// REGISTER_OVERRIDE_FUNCTION(ExampleBit_A, nevents, nevents_dummy, double)
-#define MODULE ExampleBit_A
-  #define CAPABILITY xsection               // Observable: cross-section for some hypothetical process
-  START_CAPABILITY
-    #define FUNCTION local_xsection         // Name of specific function providing the observable
-    START_FUNCTION(double)                  // Function calculates a double precision variable
-    ALLOW_MODELS(MSSM_I)                    // Allowed models
-    #undef FUNCTION
-  #undef CAPABILITY
-  #define CAPABILITY nevents                // This is just temporary, for filling the example dependency of the CSSM_I 
-    #define FUNCTION nevents_dummy          // eventually be removed, along with this dummy function
-    START_FUNCTION(double)                  
-    #undef FUNCTION
-  #undef CAPABILITY
-#undef MODULE
+// Register ad-hoc module functions for use; as many or as few models can be given as desired.
+// Full declaration as per regular rollcall headers such as ExampleBit_A_rollcall.hpp is also allowed.
+QUICK_FUNCTION(ExampleBit_A, xsection, NEW_CAPABILITY, local_xsection, double, MSSM_I)
+QUICK_FUNCTION(ExampleBit_A, nevents, OLD_CAPABILITY, nevents_dummy, double)
 
-// Ad-hoc function bodies for filling dependencies that cannot or should not otherwise be filled from inside ExampleBit_A.
+// Ad-hoc functions for filling dependencies that cannot or should not otherwise be filled from inside ExampleBit_A.
 namespace Gambit 
 {
   namespace ExampleBit_A
@@ -60,7 +41,6 @@ int main()
 
   ///TODO - clear Utils folder of routines not used at all, and of those only used in GAMBIT (those to go to Core folder)
   ///     - clear existing core header inclusions from all headers included from this file (e.g. ModelBit things using graphs)
-  ///     - make slick REGISTER_ADHOC_FUNCTION and REGISTER_OVERRIDE_FUNCTION macros
 
   cout << endl << "Start ExampleBit_A standalone example" << endl;
   cout << "----------" << endl;
@@ -68,10 +48,7 @@ int main()
   // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
   ModelParameters* CMSSM_primary_parameters = Models::CMSSM_I::Functown::primary_parameters.getcontentsPtr();
 
-  // Choose and set up a printer object
-  Printers::ostreamPrinter myPrinter(std::cout,true); 
-
-  // Print some diagnostics about ExampleBit_A
+  // Print some example diagnostics about ExampleBit_A
   cout << endl << "My name is " << name() << endl;
   cout << " I can calculate: " << endl << iCanDo << endl;
   cout << " ...but I may need: " << endl << iMayNeed << endl << endl;  
@@ -89,7 +66,9 @@ int main()
   // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
   function_pointer_retriever.resolveBackendReq(&Backends::LibFortran::Functown::externalFunction);
   
-  // Notify the module functions of the models being scanned FIXME this needs to be made more elegant with loops over lists
+  // Notify any module functions that care of the model(s) being scanned.
+  // 'Care' means where they depend on model parameters directly, or have dependencies or backend requirements that are
+  // conditional on the model being analysed. 
   Models::CMSSM_I::Functown::MSSM_I_parameters.notifyOfModel("CMSSM_I");
   local_xsection.notifyOfModel("CMSSM_I");
 
@@ -145,13 +124,9 @@ int main()
     local_xsection.reset_and_calculate();
     nevents_dbl.reset_and_calculate();
     nevents_int.reset_and_calculate();
-    function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain.)
+    function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain, so could go anywhere.)
 
-    // Print the (cached) results of some module functions to the selected printer
-    nevents_dbl.print(&myPrinter,1); //FIXME the vertexIDs should be removed when they are no longer required
-    nevents_int.print(&myPrinter,2);
-
-    // Retrieve the same cached results of the module functions directly.  The argument is the thread index; everything except '0' is just temp data.
+    // Retrieve the (cached) results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
     double r1 = nevents_dbl(0); 
     int r2 = nevents_int(0);
     cout << endl << "Retrieved results: " << r1 << ", " << r2 << endl << endl;
