@@ -34,13 +34,15 @@
 START_MODULE
 
 // Init functions:
-// - are required as default dependence of all module functions on the
-//   capability MODULE_PointInit
-// - should not have module-function dependencies
-// - can have backend dependencies
 // - must have return type void
-// - must be created with INIT_FUNCTION as second argument in START_FUNCTION
-// - do not itself depend on the initialization function
+// - must be created with one of the following equivalent statements:
+//   START_INIT_FUNCTION, START_FUNCTION(void) or START_FUNCTION(void, INIT_FUNCTION)
+// - can have backend requirements
+// - cannot have module-function dependencies
+// - cannot manage loops
+// - are required as a default dependence of all module functions on the
+//   capability PointInit
+// - do not themselves depend on the initialization function
 
   #define CAPABILITY PointInit
   START_CAPABILITY
