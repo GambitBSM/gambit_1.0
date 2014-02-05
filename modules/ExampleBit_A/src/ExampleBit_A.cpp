@@ -64,7 +64,7 @@ namespace Gambit
     /// Un-normalised gaussian log-likelihood
     double logf (double x, double mu, double sig)
       {
-        return -0.5*log(sig*sig) -pow(x-mu,2)/(2*sig*sig);
+        return -0.5*log(sig*sig) -0.5*pow(x-mu,2)/(sig*sig);
       }
 
     /// @}

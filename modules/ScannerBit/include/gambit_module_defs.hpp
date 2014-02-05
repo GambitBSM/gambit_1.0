@@ -20,6 +20,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "priors.hpp"
 
 using namespace std;
 
@@ -103,5 +104,7 @@ namespace Gambit
 #define GETUPPERLIMITS() get_input_value<std::vector<double>>(1);
 #define GETLOWERLIMITS() get_input_value<std::vector<double>>(2);
 #define GETFUNCTOR(str1, str2) (Function_Base *)(get_input_value<Function_Factory_Base>(3))(str1, str2);
+//TODO: Ben - Probably a cleaner way of doing this
+#define GETPRIOR() get_input_value< ::Gambit::Priors::BasePrior* >(4);
 
 #endif

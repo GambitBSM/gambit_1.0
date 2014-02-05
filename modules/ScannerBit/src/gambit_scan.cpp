@@ -43,8 +43,8 @@ namespace Gambit
                         //abort();
                 }
                 
-                Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 
-                                : boundCore(&core), boundIniFile(&iniFile), dependencyResolver(&a), flag(0x00)
+                Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, const Priors::BasePrior* prior, Graphs::DependencyResolver &a) 
+                                : boundCore(&core), boundIniFile(&iniFile), boundPrior(prior), dependencyResolver(&a), flag(0x00)
                 {
                         //do you have xterm?
                         hasXTerm = (std::system("which xterm") == 0) ? true : false;
@@ -447,11 +447,13 @@ namespace Gambit
                                 }
                                 
                                 Scanner_Function_Factory factory(this);
-                                std::vector<void *> input(4);
+                                std::vector<void *> input(5);
                                 input[0] = (void *)(&keys);
                                 input[1] = (void *)(&upper_limits);
                                 input[2] = (void *)(&lower_limits);
                                 input[3] = (void *)(&factory);
+                                input[4] = (void *)(&boundPrior);
+                                //TODO: Ben - upper and lower limits are now no longer needed now that we pass in the prior object; we should removed them from here. I just left them for now so I didn't have to mess with the macros etc that use them. Also it might be better to pass in the prior via a real argument to 'interface'; it is a little confusing how all this works though so I leave it to you Greg to decide :).
                                 
                                 Module::Module_Interface<int ()> interface(file, name, version, boundIniFile, &input);
                                 errors = interface.printErrors();
