@@ -62,8 +62,8 @@ namespace Gambit {
   
             // Constructor
             // Possibly replace the function pointer to the prior function with something nicer, some virtual base class object or something.
-            LogLikeWrapper(::Gambit::Scanner::Function_Base* LogLike, const ::Gambit::Priors::BasePrior& prior, int ndim, const std::vector<std::string>& keys) 
-              : boundLogLike(LogLike), boundPrior(&prior), my_ndim(ndim), parameter_keys(keys)
+            LogLikeWrapper(::Gambit::Scanner::Function_Base* LogLike, const ::Gambit::Priors::BasePrior* prior, int ndim, const std::vector<std::string>& keys) 
+              : boundLogLike(LogLike), boundPrior(prior), my_ndim(ndim), parameter_keys(keys)
             { }
    
             /******************************************** loglikelihood routine ****************************************************/
@@ -237,6 +237,9 @@ SCANNER_PLUGIN (multinest)
                 // Have to discuss with Greg the best thing to do here.
                 Function_Base *LogLike             = GETFUNCTOR("Scanner_Function", "Likelihood");
                 //Function_Base *LogLike             = (Function_Base *)(get_input_value<Function_Factory_Base>(3))("Scanner_Function", get_inifile_value<std::string>("like"));
+                // TODO: Ben - just kinda hacked this in here, might be a nicer way to do it.
+                ::Gambit::Priors::BasePrior* prior = GETPRIOR()
+
                 int ma = keys.size();
 
                 // set the MultiNest sampling parameters 
@@ -275,18 +278,17 @@ SCANNER_PLUGIN (multinest)
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
                 // NOTE 2: Prior creation now shifted into ModelBit! Pointer to a prior object must wind up here somehow!
                 // WANT TO DO THIS:
-                //::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims, keys);
-                // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
-                std::vector< ::Gambit::Priors::BasePrior* > subpriors;
-                std::pair<double,double> unit_range(0,1);
-                for( std::vector<std::string>::iterator it=keys.begin(); it!=keys.end(); it++)
-                {
-                  subpriors.push_back( new ::Gambit::Priors::RangePrior1D< ::Gambit::Priors::flatprior >(*it, unit_range) );
-                }
-                ::Gambit::Priors::CompositePrior prior(subpriors);
-                // REPLACE THE ABOVE BY PRIOR CREATED BY PRIOR FACTORY USING INIFILE
-
                 ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims, keys);
+                // // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
+                // std::vector< ::Gambit::Priors::BasePrior* > subpriors;
+                // std::pair<double,double> unit_range(0,1);
+                // for( std::vector<std::string>::iterator it=keys.begin(); it!=keys.end(); it++)
+                // {
+                //   subpriors.push_back( new ::Gambit::Priors::RangePrior1D< ::Gambit::Priors::flatprior >(*it, unit_range) );
+                // }
+                // ::Gambit::Priors::CompositePrior prior(subpriors);
+                // // REPLACE THE ABOVE BY PRIOR CREATED BY PRIOR FACTORY USING INIFILE
+                //::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims, keys);
 
                 // Stick a pointer to the wrapper object into "context" so it can be retrieved by the callback functions
                 //context = &loglwrapper;

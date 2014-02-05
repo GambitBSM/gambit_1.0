@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 #include <functors.hpp>
 #include <graphs.hpp>
+#include <priors.hpp>
 #include <scanner_utils.hpp>
 #include <scanner_params.hpp>
 #include <gambit_scan.hpp>
@@ -59,6 +60,7 @@ namespace Gambit
                 protected:
                         const gambit_core *boundCore;
                         const IniParser::IniFile *boundIniFile;
+                        const Priors::BasePrior *boundPrior;
                         std::vector <double> upper_limits;
                         std::vector <double> lower_limits;
                         std::vector <std::string> keys;
@@ -72,7 +74,7 @@ namespace Gambit
                         unsigned char flag;
 			
                 public:
-                        Gambit_Scanner (const gambit_core&, const IniParser::IniFile&, Graphs::DependencyResolver&);
+                        Gambit_Scanner (const gambit_core&, const IniParser::IniFile&, const Priors::BasePrior*, Graphs::DependencyResolver&);
                         
                         //print errors and return true if there are fatal errors.
                         bool printErrors(std::string errorsin = "no errors");

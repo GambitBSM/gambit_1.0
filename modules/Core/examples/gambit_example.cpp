@@ -25,6 +25,7 @@
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
+#include "priorfactory.hpp"
 
 using namespace Gambit;
 
@@ -44,6 +45,13 @@ void beispiel()
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
+
+  // Build prior object based on inifile instructions
+  Priors::PriorManager priorManager(iniFile);
+
+  // Extract a pointer to the prior object, so that it can be passed to the Scanner.
+  // Could do this via the Core instead, perhaps.
+  Priors::BasePrior* prior = priorManager.getprior();
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
