@@ -29,10 +29,10 @@
 
 #include "util_macros.hpp"
 #include "util_types.hpp"
-#include "types_rollcall.hpp"
-#include "module_macros_incore.hpp"
-#include "create_claw.hpp"
 #include "model_functions.hpp"
+#include "module_macros_incore.hpp"
+#include "types_rollcall.hpp"
+#include "create_claw.hpp"
 
 
 // MACRO DEFINITIONS. 
