@@ -28,7 +28,6 @@ Dependency Resolver:
 
 Backends:
 * Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; before G3**)
-* Convert common block / struct access to by-pointer (**Anders; before Xmas**)
 * Implement elegant optional array reindexing scheme for Fortran arrays (**Lars & Pat; before G3**)
 * Resolve residual issues with passing strings to fortran backends (**Pat, Csaba, Ben & Anders; before G3**)
 * Implement backending of Mathematica codes (**Ben to dabble with; no time pressure**)
@@ -68,6 +67,7 @@ Done:
 * Allow conditional backend requirements (conditional on model only, not dependency)  (**Pat; before G3**)
 * Make rollcall macros throw errors if the required #defines have not been done
 * Implement standalone compilation of physics modules
+* Convert common block / struct access to by-pointer
 
 
 Models
