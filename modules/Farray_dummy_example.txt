@@ -1,0 +1,440 @@
+
+// This example shows how the new fortran array setup works and how the new backend macros involving fortran arrays expand.
+// All code is subject to change.
+
+
+
+// ********************************************
+// ************* The Farray class *************
+// ********************************************
+
+// Fortran arrays in GAMBIT are to be represented by the new Farray class located in Utils/include/util_types.hpp
+
+template <typename T, int dim>
+class Farray
+{
+// Code removed for readability
+};
+// The Farray class is templated on type and number of array dimensions.
+// The main constructor is
+Farray<T,dim>(T *in, int st[dim], int en[dim]) 
+// which takes a pointer to the first element of the fortran array as the first argument, 
+// and two arrays containing the start and end indices as the second and third arguments.
+
+// Accessing a Farray is not done using the typical square bracket operators [], but instead using the () operators.
+// The syntax is identical to the original Fortran syntax, so accessing element [1][2][3] of a 3-dimensional array
+// named 'exArray' is done through 
+exArray(1,2,3)
+
+
+
+
+
+
+
+
+
+// The necessary backend macros have been (re)written to handle Fortran arrays as well.
+// In Utils/include/backend_macros.hpp you can find an updated version of the BE_VARIABLE macro named
+// BE_VARIABLE_FULL (which will eventually be renamed and replace BE_VARIABLE).
+
+// *************************************************
+// ************* The BE_VARIABLE macro *************
+// *************************************************
+
+// The original macro is on the form
+BE_VARIABLE(NAME, TYPE, SYMBOLNAME, CAPABILITY)
+// The new macro is on the form 
+BE_VARIABLE_FULL(TYPEMACRO, SYMBOLNAME, CAPABILITY)
+// The TYPEMACRO argument now replaces NAME and TYPE, and takes one of the macros
+GENERAL_VAR(TYPE,NAME)
+FORT_ARRAY(...)
+FORT_COMMONB(FULLTYPE, NAME)
+// as input.
+
+
+// For setting up an ordinary backend variable (int, double etc. or any c/c++ class), use the 
+GENERAL_VAR(TYPE,NAME)
+// macro. Below is an example setting up an int named 'c':
+BE_VARIABLE_FULL(GENERAL_VAR(int, c), "mssmpar_", "mssmpar")
+// Like the original BE_VARIABLE, this macro expands to
+namespace Gambit 
+{ 
+    namespace Backends 
+    { 
+        namespace BACKENDNAME 
+        { 
+            int * c; 
+            int * getptrc() { return c; } 
+            namespace Functown 
+            { 
+                auto c = makeBackendFunctor<int*>( Gambit::Backends::BACKENDNAME::getptrc, "c", "mssmpar", "int*", "BACKENDNAME", "VERSION" ); 
+            } 
+            void constructVarPointer_c() 
+            { 
+                dlerror(); 
+                pSym = dlsym(pHandle, "mssmpar_"); 
+                c = reinterpret_cast<int*>(pSym); 
+                if(!present) 
+                { 
+                    Functown::c.setStatus(0); 
+                } 
+                else if(dlerror() != __null) 
+                { 
+                    std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
+                    std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
+                    Functown::c.setStatus(0); 
+                } 
+                Core.registerBackendFunctor(Functown::c); 
+            } 
+            namespace ini 
+            { 
+                ini_code c(&constructVarPointer_c); 
+            } 
+        } 
+    } 
+}
+
+
+// For setting up a backend Fortran array, use the 
+FORT_ARRAY(...)
+// macro. The first two arguments to the macro are type and name. The following arguments are bracket enclosed start/end indices (start,end).
+// Below is an example setting up a 3-dimensional array of ints named 'd' with array ranges 2-5, 0-2 and 0-1:
+BE_VARIABLE_FULL(FORT_ARRAY(int,d,(2,5),(0,2),(0,1)), "mssmpar_", "mssmpar")
+// This macro expands to
+namespace Gambit 
+{ 
+    namespace Backends 
+    { 
+        namespace BACKENDNAME 
+        { 
+        	// The user has access to the Farray version of the array
+            Farray<int,3> * d; 
+            Farray<int,3> * getptrd() { return d; } 
+            namespace Functown 
+            { 
+                auto d = makeBackendFunctor<Farray<int,3>*>( Gambit::Backends::BACKENDNAME::getptrd, "d", "mssmpar", "Farray<int,3>*", "BACKENDNAME", "VERSION" ); 
+            } 
+            void constructVarPointer_d() 
+            { 
+                dlerror(); 
+                pSym = dlsym(pHandle, "mssmpar_"); 
+                // Temporary arrays that are fed to the Farray constructor
+                int d_temp_startArray[3] = {2, 0, 0 }; 
+                int d_temp_endArray[3] = {5, 2, 1 }; 
+                // Farray constructor called using pointer to first array element and the two index arrays
+                d = Farray<int,3>(reinterpret_cast<int*>(pSym),d_temp_startArray,d_temp_endArray); 
+                if(!present) 
+                { 
+                    Functown::d.setStatus(0); 
+                } 
+                else if(dlerror() != __null) 
+                { 
+                    std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
+                    std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
+                    Functown::d.setStatus(0); 
+                } 
+                Core.registerBackendFunctor(Functown::d); 
+            } 
+            namespace ini 
+            { 
+                ini_code d(&constructVarPointer_d); 
+            } 
+        } 
+    } 
+}
+
+
+// For setting up a backend Fortran common block that contains arrays, one first needs to create the appropriate struct for extracting it.
+// The struct for extracting the data can only contain standard types, but we want the struct exposed to the user to contain Farray objects.
+// For this we need two separate structs, which can be automatically generated using the 
+GENERATE_COMMONBLOCK(TYPENAME,CB)
+// macro. The TYPENAME argument will be the name of the struct exposed to the user. 
+// The name of the struct used to extract the data will be TYPENAME_basic.
+// The CB argument should contain the constituents of the commonblock, comprised of the same FORT_ARRAY GENERAL_VAR macros as used above, but without commas between them (see below example).
+
+// The example below sets up common block structs for a commonblock containing 3 arrays and an integer.
+GENERATE_COMMONBLOCK(testBlockType, FORT_ARRAY(double,a,(-1,3))         \
+                                    FORT_ARRAY(int,b,(1,3))             \
+                                    GENERAL_VAR(int, c)                 \
+                                    FORT_ARRAY(int,d,(2,5),(0,2),(0,1)) )   
+// This macro expands to the two structs below.
+// Basic struct for extracting data.
+struct testBlockType_basic 
+{ 
+    double a[(3 -(-1)+1) * 1];
+    int b[(3 -(1)+1) * 1]; 
+    int c; 
+    int d[(5 -(2)+1) * (2 -(0)+1) * (1 -(0)+1) * 1];  // Multidimensional arrays are represented by a suitably sized 1-dimensional array.
+}; 
+// Full reindexed struct exposed to the user.
+struct testBlockType 
+{ 
+    Farray<double,1> a; 
+    Farray<int,1> b; 
+    int * c; 
+    Farray<int,3> d; 
+    testBlockType_basic * basicPointer; 
+    // Automatically generated constructor that takes the basic struct as input.
+    testBlockType (testBlockType_basic * in) 
+    { 
+        int a_temp_startArray[1] = {-1 }; 
+        int a_temp_endArray[1] = {3 }; 
+        a = Farray<double,1> (in->a, a_temp_startArray ,a_temp_endArray); 
+        int b_temp_startArray[1] = {1 }; 
+        int b_temp_endArray[1] = {3 }; 
+        b = Farray<int,1> (in->b, b_temp_startArray ,b_temp_endArray); 
+        c = &(in->c); 
+        int d_temp_startArray[3] = {2, 0, 0 }; 
+        int d_temp_endArray[3] = {5, 2, 1 }; 
+        d = Farray<int,3> (in->d, d_temp_startArray ,d_temp_endArray); basicPointer = in; 
+    } 
+};
+
+// Now that the necessary structs are in place, the BE_VARIABLE_FULL macro can be called using the
+FORT_COMMONB(FULLTYPE, NAME)
+// macro as the first argument. The fulltype argument should be the same as the TYPENAME argument used to set up the commonblock structs above.
+// Below is an example using the above commonblock structs:
+BE_VARIABLE_FULL(FORT_COMMONB(testBlockType,testBlock), "mssmpar_", "mssmpar")
+// This macro expands to
+namespace Gambit 
+{ 
+    namespace Backends 
+    { 
+        namespace BACKENDNAME 
+        { 
+        	// The user has access to the testBlockType version of the common block        
+            testBlockType * testBlock; 
+            testBlockType * getptrtestBlock() { return testBlock; } 
+            namespace Functown 
+            { 
+                auto testBlock = makeBackendFunctor<testBlockType*>( Gambit::Backends::BACKENDNAME::getptrtestBlock, "testBlock", "mssmpar", "testBlockType*", "BACKENDNAME", "VERSION" ); 
+            } 
+            void constructVarPointer_testBlock() 
+            { 
+                dlerror(); 
+                pSym = dlsym(pHandle, "mssmpar_"); 
+                // The cast is into the testBlockType_basic type for extracting the data, and then passed to the testBlockType constructor.
+                testBlock = testBlockType(reinterpret_cast<testBlockType_basic*>(pSym)); 
+                if(!present) 
+                { 
+                    Functown::testBlock.setStatus(0); 
+                } 
+                else if(dlerror() != __null) 
+                { 
+                    std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
+                    std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
+                    Functown::testBlock.setStatus(0); 
+                } 
+                Core.registerBackendFunctor(Functown::testBlock); 
+            } 
+            namespace ini 
+            { 
+                ini_code testBlock(&constructVarPointer_testBlock); 
+            } 
+        } 
+    } 
+}
+
+
+
+
+
+
+
+
+
+// *************************************************
+// ************* The BE_FUNCTION macro *************
+// *************************************************
+
+// The original macro is on the form
+BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)
+// The new macro is
+BE_FUNCTION(...)
+// and takes the same input arguments, but with an additional optional argument
+HAS_FARRAYS_AND_CAN_BE_FPTR
+// which is a 0/1 valued flag which must be set to 1 if the function has fortran array arguments, 
+// and you want to be able to send it as a function pointer argument to another backend function. 
+
+// If the argument list does not contain fortran arrays or pointers to functions with fortran array arguments, the usage is identical to the original BE_FUNCTION:
+BE_FUNCTION_FULL(theName, int, (double&, int& ), "_symName", "capab", 1)
+// Which expands to the (almost) identical
+namespace Gambit 
+{ 
+    namespace Backends 
+    { 
+        namespace BACKENDNAME 
+        { 
+            typedef int (*theName_type) (double& ,int&); 
+            typedef int (*theName_BEtype) (double& , int&); 
+            theName_type theName; 
+            namespace Functown 
+            { 
+                auto theName = backend_functor<int,double& ,int&>
+                ( 
+                    Gambit::Backends::BACKENDNAME::theName, 
+                    "theName", 
+                    "capab", 
+                    "int", 
+                    "BACKENDNAME", 
+                    "VERSION" 
+                ); 
+            } 
+            void constructFuncPointer_theName() 
+            { 
+                dlerror(); 
+                pSym = dlsym(pHandle, "_symName"); 
+                theName = reinterpret_cast<theName_type>(pSym); 
+                Functown::theName.updatePointer(theName); 
+                if(present == false) 
+                { 
+                    Functown::theName.setStatus(0); 
+                } 
+                else if(dlerror() != __null) 
+                { 
+                    std::cout << "Library symbol " << "_symName" << " not found." << std::endl; 
+                    std::cout << "The functor generated for this symbol will get status=0" << std::endl; 
+                    Functown::theName.setStatus(0); 
+                } 
+                Core.registerBackendFunctor(Functown::theName); 
+            } 
+            namespace ini 
+            { 
+                ini_code theName(&constructFuncPointer_theName); 
+            } 
+        } 
+    } 
+}
+
+//If the argument list contains fortran arrays, these arrays should be represented by the
+ARG_FARRAY(TYPE,DIMS)
+// macro, which takes type and number of array dimensions as input.
+// Pointers to functions with Fortran array arguments should be represented by the
+ARG_FARRAY_FPTR(TYPE,ARGLIST)
+// macro, which takes return type and a bracket enclosed argument list as input. 
+// All Fortran arrays in its argument list should be represented by the ARG_FARRAY macro.
+
+// When the argument list contains Fortran arguments, a wrapper function is created which takes Farray objects as input, 
+// and uses them to call the true backend function, which takes actual arrays as arguments.
+// This wrapper function is the function exposed to the user.
+
+// The case where a function has a function pointer argument is a bit more problematic in the case where the function pointer takes Fortran arrays as arguments.
+// We don't have access to the arguments of the function pointer, and since a function that takes Farray objects as input cannot be sent to a Fortran backend, a workaround was needed.
+// The current solution to this is that the BE_FUNCTION_FULL macro when given the HAS_FARRAYS_AND_CAN_BE_FPTR creates a map entry between the wrapper function and the true backend function.
+// The functions are stored as void pointers in this map in Utils/include/backend_macros.hpp:
+namespace Gambit
+{
+  namespace Backends
+  {
+    std::map<void*, void*> frontBackFuncMap;  
+  }
+}
+// When a function pointer with Farray object arguments is given, the frontBackFuncMap is used to pass the correct function with actual array arguments to the backend.
+
+// Below is an example of a function wich has a fortran array argument. We want to use this function as an argument to another function, so we set the optional HAS_FARRAYS_AND_CAN_BE_FPTR flag to 1
+BE_FUNCTION_FULL(theName, double, (double&, ARG_FARRAY(int,2),double&), "_symName", "capab",1)
+// This macro expands to
+namespace Gambit 
+{ 
+    namespace Backends 
+    { 
+        namespace BACKENDNAME 
+        { 
+        	// We need 2 functions: The true backend function and the wrapper
+            typedef double (*theName_type) (double& ,Farray <int,2>& ,double&); 
+            typedef double (*theName_BEtype) (double& , int* , double&); 
+            theName_type theName; 
+            theName_BEtype theName_unwrapped; 
+            namespace Functown 
+            { 
+                auto theName = backend_functor<double,double& ,Farray <int,2>& ,double&>( Gambit::Backends::BACKENDNAME::theName, "theName", "capab", "double", "BACKENDNAME", "VERSION" ); 
+            } 
+            // This is the wrapper function, which takes Farray arguments
+            double theName_wrapper (double& FE_arg0 ,Farray <int,2>& FE_arg1 ,double& FE_arg2) 
+            {
+            	// Call the true backend function, which takes actual array arguments
+                return theName_unwrapped (FE_arg0 , FE_arg1.getArray() , FE_arg2) ;
+            } 
+            // HAS_FARRAYS_AND_CAN_BE_FPTR has been set to 1. Create a map entry between the wrapper function and the true function.
+            frontBackFuncMap.insert(std::make_pair( reinterpret_cast<void*>(theName), reinterpret_cast<void*>(theName_unwrapped))); 
+            void constructFuncPointer_theName() 
+            { 
+                dlerror(); 
+                pSym = dlsym(pHandle, "_symName"); 
+                theName_unwrapped = reinterpret_cast<theName_BEtype>(pSym); 
+                theName = theName_wrapper; 
+                Functown::theName.updatePointer(theName); 
+                if(!present) 
+                { 
+                    Functown::theName.setStatus(0); 
+                } 
+                else if(dlerror() != __null) 
+                { 
+                    std::cout << "Library symbol " << "_symName" << " not found." << std::endl; 
+                    std::cout << "The functor generated for this symbol will get status=0" << std::endl; 
+                    Functown::theName.setStatus(0); 
+                } 
+                Core.registerBackendFunctor(Functown::theName); 
+            } 
+            namespace ini 
+            { 
+                ini_code theName(&constructFuncPointer_theName); 
+            } 
+        } 
+    } 
+}
+
+// Below is an example of a function wich has a function pointer with Fortran array arguments as an argument. 
+// Due to macro limitations, there is no automatic setup if we want to send this function as an argument to another function.
+BE_FUNCTION_FULL(theName, int, (double&, ARG_FARRAY(double,3),ARG_FARRAY_FPTR(double,(ARG_FARRAY(int,2),double&))), "_symName", "capab")
+// This macro expands to
+namespace Gambit 
+{ 
+    namespace Backends 
+    { 
+        namespace BACKENDNAME 
+        { 
+        	// We need 2 functions: The true backend function and the wrapper        
+            typedef int (*theName_type) (double& ,Farray <double,3>& ,double(*) (Farray <int,2>& ,double&)); 
+            typedef int (*theName_BEtype) (double& , double* , double(*) (int* , double&)); 
+            theName_type theName; 
+            theName_BEtype theName_unwrapped; 
+            namespace Functown 
+            { 
+                auto theName = backend_functor<int,double& ,Farray <double,3>& ,double(*) (Farray <int,2>& ,double&)>( Gambit::Backends::BACKENDNAME::theName, "theName", "capab", "int", "BACKENDNAME", "VERSION" ); 
+            } 
+            // This is the wrapper function, which takes Farray arguments and function pointers with Farray arguments            
+            int theName_wrapper (double& FE_arg0 ,Farray <double,3>& FE_arg1 ,double(*FE_arg2) (Farray <int,2>& ,double&)) 
+            {
+            	// Call the true backend function with actual arrays, and pass a function pointer with actual array arguments by lookup in the frontBackFuncMap.
+                return theName_unwrapped (FE_arg0 , FE_arg1.getArray() , reinterpret_cast<double(*)(int* , double&)>(frontBackFuncMap[reinterpret_cast<void*>(FE_arg2)])) ;
+            } 
+            void constructFuncPointer_theName() 
+            { 
+                dlerror();
+                pSym = dlsym(pHandle, "_symName"); 
+                theName_unwrapped = reinterpret_cast<theName_BEtype>(pSym); 
+                theName = theName_wrapper; 
+                Functown::theName.updatePointer(theName); 
+                if(!present) 
+                { 
+                    Functown::theName.setStatus(0); 
+                } 
+                else if(dlerror() != __null) 
+                { 
+                    std::cout << "Library symbol " << "_symName" << " not found." << std::endl; 
+                    std::cout << "The functor generated for this symbol will get status=0" << std::endl; 
+                    Functown::theName.setStatus(0); 
+                } 
+                Core.registerBackendFunctor(Functown::theName); 
+            } 
+            namespace ini 
+            { 
+                ini_code theName(&constructFuncPointer_theName); 
+            } 
+        } 
+    } 
+}
+
+
