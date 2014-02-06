@@ -37,6 +37,15 @@
 /// @{
 #define STRINGIFY(X) STRINGIFY2(X)
 #define STRINGIFY2(X) #X
+/// Stringification macros that can stringify arguments with commas
+#define SAFE_STRINGIFY(...) SAFE_STRINGIFY2(__VA_ARGS__)
+#define SAFE_STRINGIFY2(...) #__VA_ARGS__
+/// @}
+
+/// \name Macro returning all but the first argument passed
+/// @{
+#define REMFIRST(A1,...) REMFIRST_I(A1,##__VA_ARGS__)
+#define REMFIRST_I(A1,...) (__VA_ARGS__)
 /// @}
 
 /// \name Concatenation macros
@@ -50,6 +59,46 @@
 #define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
 #define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
 #define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
+/// @}
+
+/// \name Macro chain for stripping parantheses off an argument
+/// Usage: STRIP_PARENS(x). Example: STRIP_PARENS((y,z)) expands to y,z
+/// @{
+#define APPLY(macro, args) APPLY_I(macro, args) 
+#define APPLY_I(macro, args) macro args 
+#define STRIP_PARENS(x) EVAL_PAR((STRIP_PARENS_I x), x) 
+#define STRIP_PARENS_I(...) 1,1 
+#define EVAL_PAR(test, x) EVAL_PAR_I(test, x) 
+#define EVAL_PAR_I(test, x) MAYBE_STRIP_PARENS(TEST_ARITY test, x) 
+#define TEST_ARITY(...) APPLY(TEST_ARITY_I, (__VA_ARGS__, 2, 1)) 
+#define TEST_ARITY_I(a,b,c,...) c 
+#define MAYBE_STRIP_PARENS(cond, x) MAYBE_STRIP_PARENS_I(cond, x) 
+#define MAYBE_STRIP_PARENS_I(cond, x) CAT(MAYBE_STRIP_PARENS_, cond)(x) 
+#define MAYBE_STRIP_PARENS_1(x) x 
+#define MAYBE_STRIP_PARENS_2(x) APPLY(MAYBE_STRIP_PARENS_2_I, x) 
+#define MAYBE_STRIP_PARENS_2_I(...) __VA_ARGS__
+/// @}
+
+/// \name Macro chain checking if the argument has parantheses
+/// Usage: STRIP_PARENS(x). Example: STRIP_PARENS((y,z)) expands to y,z
+/// @{
+#define HAS_PARENS(x) EVAL_HASP((HAS_PARENS_I x), x) 
+#define HAS_PARENS_I(...) 1,1 
+#define EVAL_HASP(test, x) EVAL_HASP_I(test, x) 
+#define EVAL_HASP_I(test, x) CHECK_PARENS(TEST_ARITY test, x) 
+#define CHECK_PARENS(cond, x) CHECK_PARENS_I(cond, x) 
+#define CHECK_PARENS_I(cond, x) CAT(CHECK_PARENS_, cond)(x) 
+#define CHECK_PARENS_1(x) 0
+#define CHECK_PARENS_2(x) 1
+/// @}
+
+/// \name Boost 2-tuple access macros
+/// Used to avoid possible reentrancy issues with multiple use of BOOST_PP_TUPLE_ELEM.
+/// @{
+#define PAIR_ELEMENT0(TPLE) PAIR_ELEMENT0_I TPLE
+#define PAIR_ELEMENT0_I(A,B) A 
+#define PAIR_ELEMENT1(TPLE) PAIR_ELEMENT1_I TPLE
+#define PAIR_ELEMENT1_I(A,B) B 
 /// @}
 
 /// \name Type comparison macros
@@ -108,8 +157,8 @@
 /// #define EXAMPLE(...)              VARARG(EXAMPLE, __VA_ARGS__)
 /// \endcode 
 /// @{
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 5, 4, 3, 2, 1, 0)
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)

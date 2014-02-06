@@ -37,6 +37,7 @@
 // Create all the modules
 #include "ExampleBit_A_rollcall.hpp"
 #include "ExampleBit_B_rollcall.hpp"
+#include "ExampleBit_Farray_rollcall.hpp"
 #include "DarkBit_rollcall.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 #include "FlavBit_rollcall.hpp"
