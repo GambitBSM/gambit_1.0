@@ -219,6 +219,15 @@ FuncPtr FunctionBase::fixPar(int i, double x) { return FuncPtr (new FixPar(share
 FuncPtr FunctionBase::integrate(int i, double x0, double x1) { return FuncPtr (new Integrate(shared_from_this(), i, x0, x1)); }
 FuncPtr FunctionBase::rotSym(int i) { return FuncPtr (new RotSym(shared_from_this(), i)); }
 
+// Plain function that takes void* argument to FuncPtr object (for use in C-
+// and Fortran backends)
+double plainFunction(double x0,void* void_ptr) { return (**static_cast<FuncPtr*>(void_ptr))(x0); }
+double plainFunction(double x0,double x1,void* void_ptr) { return (**static_cast<FuncPtr*>(void_ptr))(x0, x1); }
+double plainFunction(double x0,double x1,double x2,void* void_ptr) { return (**static_cast<FuncPtr*>(void_ptr))(x0, x1, x2); }
+double plainFunction(double x0,double x1,double x2,double x3,void* void_ptr) { return (**static_cast<FuncPtr*>(void_ptr))(x0, x1, x2, x3); }
+double plainFunction(double x0,double x1,double x2,double x3,double x4,void* void_ptr) { return (**static_cast<FuncPtr*>(void_ptr))(x0, x1, x2, x3, x4); }
+double plainFunction(double x0,double x1,double x2,double x3,double x4,double x5,void* void_ptr) { return (**static_cast<FuncPtr*>(void_ptr))(x0, x1, x2, x3, x4, x5); }
+
 
 //
 // Implementations of physical functions
@@ -315,6 +324,10 @@ int main()
 
     // Print slice at x0 = 1, x1 = 2 position
     std::cout << (*slice)(1, 2) << std::endl;
+
+    // Using plain functions that redirect to abstract function objects
+    std::cout << plainFunction(1, 2, 2, &profile) << std::endl;
+    std::cout << plainFunction(3, &profile1D) << std::endl;
 
     std::cout << "End of main." << std::endl;
 }
