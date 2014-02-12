@@ -9,6 +9,7 @@ To represent this information, we can use a hierarchy of the form
     * DecayTable
         * Channel
         * Channel
+        * ((Channel with additional model-dependent contributions))
     * DecayTable
         * Channel
         * Channel
@@ -35,6 +36,7 @@ contains the following information
 
     Comments:
         - Use PDG MC instead
+        - Use string and table for PDG
 
   * Function for kinematic variables
 
@@ -84,6 +86,8 @@ contains the following information
     Comments:
         - DM = anti-DM
         - On-shell kinematics included
+        - What kind of look-up tables
+        - Python dictionary, string -> string, ini-file options parser
 
 Different "channels" would be combined into a "DecayTable".  This decay table
 describes all we need to know (in the DarkBit context) about the decay
@@ -105,6 +109,7 @@ initial state. They look like
 
     Comment:
         - "SM DM" should also be possible
+        - Two options for velocity dependence (a + b v^2 + c v^4) 
 
   * Particle properties
 
@@ -116,6 +121,7 @@ initial state. They look like
 
     Comments:
         - Lifetime should be included
+        - Wait for central table
 
   * List of Channels
 
@@ -195,9 +201,8 @@ Questions:
 
 Comments:
     - Need general f(x, v) dependence to accomodate all effects
+    - Boost factor f(x^3, vrel)
     - Need smoothing scale
-    - Need to put unresolved substructure somewhere
-    - Need propagation parameters
 
 At the very top level, we would then have a 
 
@@ -205,13 +210,12 @@ At the very top level, we would then have a
     * List of all main halos (of type Halo, which might have subhalos,
       subsubhalos)
 
-
 This all could be build together in what one might call a J-value layer
 structure:
 
 * Jlayers
-    * List of hierarchical Healpix maps (see previous mail) at different redshifts z,
-      together with redshift information
+    * List of hierarchical Healpix maps (see previous mail) at different
+      redshifts z, together with redshift information
 
         These healpix maps carry the results from a los integral through
         different objects (a J-value map) at the corresponding redshift, and
@@ -226,7 +230,6 @@ structure:
         essentially isotropic hierarchical healpix maps at different redshift to
         account for this component, we have an additional function Jex(z) that
         takes this into account.
-
 
 It will be straightforward to generate a Jlayers object from the Halo Catalog,
 and then - given a certain DM model - a full signal sky map from this Jlayer.
