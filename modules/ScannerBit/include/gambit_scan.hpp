@@ -61,6 +61,7 @@ namespace Gambit
                         const gambit_core *boundCore;
                         const IniParser::IniFile *boundIniFile;
                         const Priors::BasePrior *boundPrior;
+                        Prior::PriorManager priorManager;
                         std::vector <double> upper_limits;
                         std::vector <double> lower_limits;
                         std::vector <std::string> keys;
@@ -81,7 +82,7 @@ namespace Gambit
                         
                         const IniParser::IniFile *getIniFile() const {return boundIniFile;}
                         
-                        std::vector<std::string> getKeys() const {return keys;}
+                        std::vector<std::string> & getKeys() const {return keys;}
 			
                         std::vector<std::string> getPhantomKeys() const {return phantom_keys;}
 			
@@ -99,6 +100,22 @@ namespace Gambit
                                         for (std::vector<Parameter *>::iterator it2 = it->parameters.begin(); it2 != it->parameters.end(); ++it2)
                                         {
                                                 (*it2)->InputParam(vec_it);
+                                        }
+                                 }
+                                 
+                                 dup2(defout, STDOUT_FILENO);
+                        }
+                        
+                        void setParameters (std::map<std::string, double> &mapIn) 
+                        {
+                                std::vector<double>::iterator map_it = mapIn.begin();
+                                for (std::vector<Model>::iterator it = models.begin(); it != models.end(); ++it)
+                                {
+                                        dup2(it->output, STDOUT_FILENO);
+
+                                        for (std::vector<Parameter *>::iterator it2 = it->parameters.begin(); it2 != it->parameters.end(); ++it2)
+                                        {
+                                                (*it2)->InputParam(map_it);
                                         }
                                  }
                                  
@@ -137,6 +154,7 @@ namespace Gambit
                 protected:
                         std::vector<Graphs::VertexID> vertices;
                         Gambit_Scanner *parent;
+                        std::vector<double> realParameters;
 			
                 public:
                         Scanner_Function_Base(void *a, std::string purpose) : parent(static_cast<Gambit_Scanner *>(a))
@@ -157,6 +175,7 @@ namespace Gambit
                                 vertices.resize(size);
                         }
 			
+			std::vector<double> & getParameters(){return realParameters;}
                         virtual double operator () (std::vector<double> &) = 0;
                         virtual ~Scanner_Function_Base(){}
                 };
@@ -169,7 +188,24 @@ namespace Gambit
                         virtual double operator () (std::vector<double> &in)
                         {
                                 double ret = 0;
-                                parent->setParameters(in);
+                                
+                                std::map<std::string, double> mapIn;
+                                std::map<std::string, double>::const_iterator itMap = in.begin();
+                                std::vector<std::string>::const_iterator itKey = parent->getKeys().begin();
+                                for (std::vector<double>::const_iterator it  = in.begin(); it != in.end(); ++it, ++itKey)
+                                {
+                                        mapIn[*itKey] = *it;
+                                }
+                                std::map<std::string, double> parametersMap = parent->priorManager.getprior()->transform(mapIn);
+                                itKey = parent->getKeys().begin();
+                                for (std::vector<double>::const_iterator it  = realParameters.begin(); it != realParameters.end(); ++it, ++itKey)
+                                {
+                                        *it = parameterMap[*itKey];
+                                }
+                                
+                                parent->setParameters(realParameters);
+                                
+                                
                                 //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
                                 std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
                                 for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)

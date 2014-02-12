@@ -37,6 +37,7 @@ namespace Gambit
                 const unsigned char noRange = 0x10;
                 const unsigned char cyclicSames = 0x20;
                 const unsigned char badSames = 0x40;
+                const unsigned char keyNotSame = 0x80;
 
                 const unsigned char dummyParam = 0x01;
                 const unsigned char fixedParam = 0x02;

@@ -54,6 +54,8 @@ namespace Gambit
          std::vector<BasePrior*> subpriors;
          // Pointer to the CompositePrior object created by this manager
          CompositePrior* compositeprior;
+   public:
+          std::vector<std::string> & getParamList(){return parameterlist;}
    };
 
  } // end namespace Priors

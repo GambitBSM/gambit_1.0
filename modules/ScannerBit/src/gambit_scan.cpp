@@ -43,8 +43,8 @@ namespace Gambit
                         //abort();
                 }
                 
-                Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, const Priors::BasePrior* prior, Graphs::DependencyResolver &a) 
-                                : boundCore(&core), boundIniFile(&iniFile), boundPrior(prior), dependencyResolver(&a), flag(0x00)
+                Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 
+                                : boundCore(&core), boundIniFile(&iniFile), priorManager(iniFile), dependencyResolver(&a), flag(0x00)
                 {
                         //do you have xterm?
                         hasXTerm = (std::system("which xterm") == 0) ? true : false;
@@ -96,7 +96,7 @@ namespace Gambit
                                         {//loop over iniFile parameters
                                                 
                                                 if (act_param_keys.find(*it2) != act_param_keys.end())
-                                                {//is parameter in Gambi?
+                                                {//is parameter in Gambit?
                                                         if (iniFile.hasModelParameterEntry(*it, *it2, "same_as"))
                                                         {
                                                                 std::string connectedName = iniFile.getModelParameterEntry<std::string>(*it, *it2, "same_as");
@@ -319,6 +319,16 @@ namespace Gambit
                                 }
                         }
 
+                        //checking to see if ScannerBit's keys correspond to the prior's keys
+                        std::vector<std::string> priorKeys = priorManager.getParamList();
+                        for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it)
+                        {
+                                if (priorKeys.find(*it) == priorKeys.end())
+                                {
+                                        flag != keyNotSame;
+                                }
+                        }
+                        
                         //setup tracking for variable change
                         old_input = std::vector<double>(keys.size(), DBL_MAX);
                 }
@@ -373,6 +383,22 @@ namespace Gambit
                         if (bool(flag&cyclicSames))
                         {
                                 std::cout << "\e[01;33mWARNING:\e[00m  same_as:  There are parameters that point to each other.\n\n";
+                        }
+                        if (bool(flag&keyNotSame))
+                        {
+                                std::cout << "\e[00;31mERROR:\e[00m  keys do not match.  The following keys are missing in the prior:\n";
+                                
+                                cout << "model(s) not required:  [";
+                                std::vector<std::string> priorKeys = priorManager.getParamList();
+                                for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it)
+                                {
+                                        if (priorKeys.find(*it) == priorKeys.end())
+                                        {
+                                                cout << *it << ", ";
+                                        }
+                                }
+                                cout << "\033[2D]\n\n";
+                                flagTot != keyNotSame;
                         }
                         
                         for (std::vector<Model>::iterator it = models.begin(); it != models.end(); ++it)
@@ -452,7 +478,7 @@ namespace Gambit
                                 input[1] = (void *)(&upper_limits);
                                 input[2] = (void *)(&lower_limits);
                                 input[3] = (void *)(&factory);
-                                input[4] = (void *)(&boundPrior);
+                                //input[4] = (void *)(&boundPrior); GM:  Don't need this since the prior are handled at Scanner Bit level.
                                 //TODO: Ben - upper and lower limits are now no longer needed now that we pass in the prior object; we should removed them from here. I just left them for now so I didn't have to mess with the macros etc that use them. Also it might be better to pass in the prior via a real argument to 'interface'; it is a little confusing how all this works though so I leave it to you Greg to decide :).
                                 
                                 Module::Module_Interface<int ()> interface(file, name, version, boundIniFile, &input);

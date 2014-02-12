@@ -83,7 +83,7 @@ void beispiel(const char* inifilename)
   modelClaw.makeGraph();
  
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile, prior, dependencyResolver);
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
   cout << "keys = " << scanner->getKeys() << endl;
   cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();
