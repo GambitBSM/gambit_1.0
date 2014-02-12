@@ -163,10 +163,8 @@ START_MODULE
     #define FUNCTION RD_oh2_SingletDM
       START_FUNCTION(double)
       ALLOW_MODELS(SingletDM)
-      DEPENDENCY(GA_BRs, Gambit::DarkBit::BRs)
     #undef FUNCTION
   #undef CAPABILITY
-
 
   #define CAPABILITY RD_test
   START_CAPABILITY 
@@ -180,25 +178,21 @@ START_MODULE
 
   #define CAPABILITY GA_dNdE
   START_CAPABILITY
-    #define FUNCTION GA_dNdE_from_BRs
-      START_FUNCTION(Gambit::DarkBit::dNdE)
+    #define FUNCTION GA_dNdE_DarkSUSY
+      START_FUNCTION(Gambit::DarkBit::BFptr)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
-      DEPENDENCY(GA_BRs, Gambit::DarkBit::BRs)
       #define BACKEND_REQ dshayield
         START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsinit
-        START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY GA_BRs
+  #define CAPABILITY TH_ProcessCatalog
   START_CAPABILITY
-    #define FUNCTION GA_BRs_SingletDM
-      START_FUNCTION(Gambit::DarkBit::BRs)
+    #define FUNCTION TH_ProcessCatalog_SingletDM
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -207,8 +201,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
-      DEPENDENCY(GA_dNdE, Gambit::DarkBit::dNdE)
-      DEPENDENCY(GA_BRs, Gambit::DarkBit::BRs)
+      DEPENDENCY(GA_dNdE, Gambit::DarkBit::BFptr)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
     #undef FUNCTION
   #undef CAPABILITY
 

@@ -183,7 +183,7 @@ namespace Gambit {
 
       for (int i=0; i<result.n_res; i++) {
         std::cout << "res "<<i<<": " << result.E_res[i] << std::endl;
-     }
+    }
 
 //now order
       double tmp;
@@ -455,85 +455,161 @@ namespace Gambit {
 //      std::cout << "# coannihilating particles: " << specres.n_co << std::endl;
     }
 
-    bool dsinit_flag = false;
 
-    void GA_dNdE_from_BRs(Gambit::DarkBit::dNdE &result)
+
+////////////////////////////////////////
+// Part of DarkBit that actually works.
+////////////////////////////////////////
+
+    bool dsinit_flag = false;
+    void DarkBit_PointInit_Default()
     {
-      using namespace Pipes::GA_dNdE_from_BRs;
-      int flag = 0;  // CW: Does this flag have any use?
-      int ch;
-      int yieldk = 152;
-      double BR;  // Channel as understood by DS
+      std::cout << "INITIALIZATION of DarkBit" << std::endl;
+      if (not dsinit_flag) 
+      {
+          // TODO: proper initialization
+          //BEreq::dsinit();
+          dsinit_flag = true;
+      }
+    }
+
+    void GA_dNdE_DarkSUSY(Gambit::DarkBit::BFptr &result)
+    {
+      using namespace Pipes::GA_dNdE_DarkSUSY;
+      // TODO: Move to PointInit
+      int n = 1000;
+      double E0 = 0.1;
+      double E1 = 1000;
+
       std::vector<double> xgrid;
       std::vector<double> ygrid;
 
-      std::vector<std::string> BRlist = (*Dep::GA_BRs).getBRlist();
-      double mass = (*Dep::GA_BRs).DMmass;
-
-      // FIXME: Should not be hardcoded:
-      int n = 1000;
-      double E0 = 0.1;
-      double E1 = mass;
-
-      // Initialize darksusy
-      // FIXME: Move somewhere else
-      if (not dsinit_flag) 
-      {
-          BEreq::dsinit();
-          dsinit_flag = true;
-      }
-
-      // Generate grid for dNdE
+      // Generate logarithmic grid for dNdE
       for (int i = 0; i<n; i++)
       {
         xgrid.push_back(E0*pow(E1/E0, (double)i/(n-1)));
         ygrid.push_back(0);
       }
 
-      for (std::vector<std::string>::iterator it = BRlist.begin(); it!=BRlist.end(); it++)
+      // Search for annihilation process
+      TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi", (std::string)"chi");
+
+      // Get particle mass
+      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+
+      // Loop over all channels for that process
+      for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
       {
-        BR = (*Dep::GA_BRs).get(*it);
-        ch = 0;
-        if (*it == "mumu") ch = 17;
-        if (*it == "bb") ch = 25;
-        if (BR != 0 and ch == 0)  // Ignore channel if not known
-        {
-          std::cout << 
-            "DarkBit WARNING: Do not know spectrum of requested annihilation channel." 
-            << std::endl;
-          BR = 0;
-        }
-        if (BR != 0 and ch != 0)
-        {
-          for (int i = 0; i<n; i++)
+          int flag = 0;  // CW: Is this flag of any use?
+          int ch = 0;
+          int yieldk = 152;
+          double sigma;
+
+          if ( it->nFinalStates != 2 )
           {
-            ygrid[i] += BR * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
+              std::cout << "ERROR: Only support for two-body final states." << std::endl;
+              exit(1);
           }
-        }
+
+          sigma = (*it->dSigmadE)(0.);  // Differential cross-section for two-body final states in v=0 limit
+
+          // Find channel
+          if ( it->isChannel("mu+", "mu-") ) ch = 17;
+          if ( it->isChannel("b", "bbar") ) ch = 25;
+
+          // Fill dNdE
+          if ( ch > 0 )
+          {
+              for (int i = 0; i<n; i++)
+              {
+                  ygrid[i] += sigma * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
+              }
+          }
+          else
+          {
+              std::cout << "Channel not known." << std::endl;
+              exit(1);
+          }
       }
-      result = Gambit::DarkBit::dNdE(xgrid, ygrid);
+
+      // Construct base function object from interpolating the table
+      BFptr ret(new BFinterpolation(xgrid, ygrid, 1));
+      result = ret;
     }
 
-    void GA_BRs_SingletDM(Gambit::DarkBit::BRs &result)
+    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
-      using namespace Pipes::GA_BRs_SingletDM;
-      Gambit::DarkBit::BRs myBRs;
-      // Toy branching ratios for SingletDM
-      myBRs.set("mumu", 1);  
-      myBRs.set("bb", *Param["mass"]);
-      myBRs.normalize();
-      myBRs.DMmass = *Param["mass"];
-      myBRs.sigmaV = pow(*Param["lambda"], 2) * pow(*Param["mass"]/10, -2) * 3e-26;
-      result = myBRs;
+        using namespace Pipes::TH_ProcessCatalog_SingletDM;
+        std::vector<std::string> finalStates;
+
+        double mass = *Param["mass"];
+        double sigmaTot = pow(*Param["lambda"], 2);
+        double sigma;
+
+        std::cout << "1" << std::endl;
+
+        TH_ParticleProperty chiProperty(mass, 1);
+
+        std::cout << "1" << std::endl;
+        std::cout << "2" << std::endl;
+
+        TH_ProcessCatalog catalog;  // Instantiate Catalog
+        std::cout << "3" << std::endl;
+        TH_Process process((std::string)"chi", (std::string)"chi");  // Instantiate annihilation process
+        std::cout << "4" << std::endl;
+
+        std::cout << "1" << std::endl;
+
+            // Define final state vector
+            finalStates.clear();  
+            finalStates.push_back("mu+");
+            finalStates.push_back("mu-");
+
+            // Partial cross-section
+            sigma = sigmaTot/3;
+
+        std::cout << "1" << std::endl;
+
+            // Define velocity dependent partial cross-section sv(v)
+            BFptr kinematicFunction(new BFconstant(sigma, 1));  // Just constant for simplicity
+
+            // Generate channel and push it into process
+            TH_Channel channel(finalStates, kinematicFunction);
+            process.channelList.push_back(channel);
+
+            // Define final state vector
+            finalStates.clear();  
+            finalStates.push_back("b");
+            finalStates.push_back("bbar");
+
+        std::cout << "1" << std::endl;
+
+            // Partial cross-section
+            sigma = sigmaTot*2/3;
+
+            // Define velocity dependent partial cross-section sv(v)
+            kinematicFunction.reset(new BFconstant(sigma, 1));  // Just constant for simplicity
+
+            // Generate channel and push it into process
+            // TODO: loop over TH_Channel channel(finalStates, kinematicFunction);
+            process.channelList.push_back(channel);
+
+        std::cout << "1" << std::endl;
+
+        catalog.processList.push_back(process);
+        //TODO: implement catalog.particleProperties["chi"] = chiProperty;
+
+        result = catalog;
     }
 
     void lnL_FermiLATdwarfsSimple(double &result)
     {
       using namespace Pipes::lnL_FermiLATdwarfsSimple;
-      double dNdEint = (*Dep::GA_dNdE).integrate(1, 100);
-      double sigmaV = (*Dep::GA_BRs).sigmaV;
-      double mass = (*Dep::GA_BRs).DMmass;
-      double flux = dNdEint*sigmaV/pow(mass,2) * 1e23; // Toy flux
+      // CW: this does not yet work properly (should just return zero)
+      double dNdEint = (*(*Dep::GA_dNdE)->integrate(0, 1, 100))();
+      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+      double flux = dNdEint/pow(mass,2) * 1e23;
       double flux0 = 1e-3;
       result = pow(flux/flux0, 2);
     }
@@ -541,8 +617,8 @@ namespace Gambit {
     void RD_oh2_SingletDM(double &result)
     {
       using namespace Pipes::RD_oh2_SingletDM;
-      double sigmaV = (*Dep::GA_BRs).sigmaV;
-      result = 0.11/sigmaV * 3e-26;
+      //double sigmaV = (*Dep::GA_BRs).sigmaV;
+      //result = 0.11/sigmaV * 3e-26;
     }
 
     void lnL_oh2_Simple(double &result)
@@ -552,9 +628,5 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
-    void DarkBit_PointInit_Default()
-    {
-      std::cout << "INITIALIZATION of DarkBit" << std::endl;
-    }
   }
 }
