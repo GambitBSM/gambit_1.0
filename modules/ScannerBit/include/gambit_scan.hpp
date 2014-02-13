@@ -61,7 +61,7 @@ namespace Gambit
                         const gambit_core *boundCore;
                         const IniParser::IniFile *boundIniFile;
                         const Priors::BasePrior *boundPrior;
-                        Prior::PriorManager priorManager;
+                        Prior::CompositePrior prior;
                         std::vector <double> upper_limits;
                         std::vector <double> lower_limits;
                         std::vector <std::string> keys;
@@ -175,7 +175,7 @@ namespace Gambit
                                 vertices.resize(size);
                         }
 			
-			std::vector<double> & getParameters(){return realParameters;}
+			virtual std::vector<double> & getParameters(){return realParameters;}
                         virtual double operator () (std::vector<double> &) = 0;
                         virtual ~Scanner_Function_Base(){}
                 };
@@ -189,15 +189,10 @@ namespace Gambit
                         {
                                 double ret = 0;
                                 
-                                std::map<std::string, double> mapIn;
-                                std::map<std::string, double>::const_iterator itMap = in.begin();
+                                static std::map<std::string, double> parameterMap;
+                                
+                                parent->Prior().transform(in, parameterMap);
                                 std::vector<std::string>::const_iterator itKey = parent->getKeys().begin();
-                                for (std::vector<double>::const_iterator it  = in.begin(); it != in.end(); ++it, ++itKey)
-                                {
-                                        mapIn[*itKey] = *it;
-                                }
-                                std::map<std::string, double> parametersMap = parent->priorManager.getprior()->transform(mapIn);
-                                itKey = parent->getKeys().begin();
                                 for (std::vector<double>::const_iterator it  = realParameters.begin(); it != realParameters.end(); ++it, ++itKey)
                                 {
                                         *it = parameterMap[*itKey];

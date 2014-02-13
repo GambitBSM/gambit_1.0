@@ -100,9 +100,9 @@ namespace Gambit {
                       std::cout<<parameter_keys[i]<<" = "<<unitpars[parameter_keys[i]]<<std::endl;
                    }
  
-                   if (boundPrior==NULL) {std::cout<<"null pointer!"<<std::endl;}
+                   //if (boundPrior==NULL) {std::cout<<"null pointer!"<<std::endl;}
                    // Transform hypercube parameters to physical values
-                   physicalpars = boundPrior->transform(unitpars);
+                   //physicalpars = boundPrior->transform(unitpars);
    
                    // Compute log-likelihood
                    // TODO: Greg, physicalpars is now a map; can we change what boundLogLike accepts? There are probably a few things you might want to change about how this works actually. For now I'll pull the physical values out into a vector again

@@ -44,7 +44,7 @@ namespace Gambit
                 }
                 
                 Gambit_Scanner::Gambit_Scanner (const gambit_core &core, const IniParser::IniFile &iniFile, Graphs::DependencyResolver &a) 
-                                : boundCore(&core), boundIniFile(&iniFile), priorManager(iniFile), dependencyResolver(&a), flag(0x00)
+                                : boundCore(&core), boundIniFile(&iniFile), prior(iniFile), dependencyResolver(&a), flag(0x00)
                 {
                         //do you have xterm?
                         hasXTerm = (std::system("which xterm") == 0) ? true : false;
@@ -320,14 +320,7 @@ namespace Gambit
                         }
 
                         //checking to see if ScannerBit's keys correspond to the prior's keys
-                        std::vector<std::string> priorKeys = priorManager.getParamList();
-                        for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it)
-                        {
-                                if (priorKeys.find(*it) == priorKeys.end())
-                                {
-                                        flag != keyNotSame;
-                                }
-                        }
+                        prior.check(keys);
                         
                         //setup tracking for variable change
                         old_input = std::vector<double>(keys.size(), DBL_MAX);
