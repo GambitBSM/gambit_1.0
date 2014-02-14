@@ -347,6 +347,112 @@ namespace Gambit
             std::vector<double> Xgrid;
             std::vector<double> Ygrid;
     };
+
+    //
+    // Implementations of physical functions
+    //
+
+    class DMradialProfile: public BaseFunction
+    {
+        public:
+            DMradialProfile(std::string type, int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
+            {
+                if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim"
+                        " density function.");
+
+                if (type == "NFW")
+                {
+                    if (pars.size() != 2) failHard("NFW profile requires two parameters (scale radius and scale density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->ptrF = &DMradialProfile::NFW;
+                }
+
+                if (type == "Einasto")
+                {
+                    if (pars.size() != 3) failHard("Einasto profile requires three parameters (alpha, scale radius and scale"
+                            " density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->alpha = pars[2];
+                    this->ptrF = &DMradialProfile::Einasto;
+                }
+
+               if (type == "isothermal")
+                {
+                    if (pars.size() != 2) failHard("Cored isothermal profile requires two parameters (scale radius and scale density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->ptrF = &DMradialProfile::isothermal;
+                }
+
+
+               if (type == "alpha-beta-gamma")
+               {
+                   if (pars.size() != 5) failHard("alpha-beta-gamma profile requires five parameters (alpha, beta, gamma, scale radius"
+                           "and scale density).");
+                   this->rs = pars[0];
+                   this->rhos = pars[1];
+                   this->alpha = pars[2];
+                   this->beta = pars[3];
+                   this->gamma = pars[4];
+                   this->ptrF = &DMradialProfile::alphaBetaGamma;
+               }
+            }
+
+          private:
+            // Redirection to profiles
+            double value(const BFargVec &vec)
+            {
+                if (ndim == 1)
+                {
+                    return (this->*ptrF)(vec[0]);
+                }
+                else
+                {
+                    double r = 0;
+                    for (int i = 0; i < ndim; i++)
+                    {
+                        r += vec[i] * vec[i];
+                    }
+                    r = sqrt(r);
+                    return (this->*ptrF)(r);
+                }
+            }
+
+            // Dark matter profile parameters
+            double rs;  // Scale radius [kpc]
+            double rhos;  // Scale density [GeV/cm^3]
+            double alpha, beta, gamma; // Exponents
+
+            // Dimensionality (either 1 or 3)
+            int ndim;
+
+            // Pointer to member function that implements DM profile
+            double (DMradialProfile::*ptrF)(double);
+
+            // The profiles
+            double NFW(double r)
+            {
+              return (4. * rhos / (r/rs) / (1.+r/rs) / (1.+r/rs));
+            }
+
+            double Einasto(double r)
+            {
+              return (rhos * exp((-2. / alpha) * (pow((r / rs), alpha) - 1.)));
+            }
+
+            double isothermal(double r)
+            {
+              return (2. * rhos / (1. + (r/rs)*(r/rs)));
+            }
+
+            double alphaBetaGamma(double r)
+            {
+              return (pow(2., (beta - gamma) / alpha) * rhos / pow(r / rs, gamma) * pow(1 + pow(r / rs, alpha), (gamma - beta) / alpha));
+            }
+
+    };
   }
 }
 
