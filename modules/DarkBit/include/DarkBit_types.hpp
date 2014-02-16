@@ -192,8 +192,7 @@ namespace Gambit
 
         TH_ParticleProperty getParticleProperty(std::string id) const
         {
-            // TODO: Requires () constructor
-            //return particleProperties[id];
+            return particleProperties.at(id);
         }
 
     };

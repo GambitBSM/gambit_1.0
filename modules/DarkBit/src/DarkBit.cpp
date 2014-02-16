@@ -464,11 +464,11 @@ namespace Gambit {
     bool dsinit_flag = false;
     void DarkBit_PointInit_Default()
     {
+      using namespace Pipes::DarkBit_PointInit_Default;
       std::cout << "INITIALIZATION of DarkBit" << std::endl;
       if (not dsinit_flag) 
       {
-          // TODO: proper initialization
-          //BEreq::dsinit();
+          BEreq::dsinit();
           dsinit_flag = true;
       }
     }
@@ -541,64 +541,46 @@ namespace Gambit {
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
-        std::vector<std::string> finalStates;
 
         double mass = *Param["mass"];
         double sigmaTot = pow(*Param["lambda"], 2);
-        double sigma;
 
-        std::cout << "1" << std::endl;
+        // TODO: Remove hardcoded values
+        mass = 100;
+        sigmaTot = 3e-26;
 
-        TH_ParticleProperty chiProperty(mass, 1);
+        std::cout << "Generate ProcessCatalog for chi with mass=" << mass << " GeV and cs=" << sigmaTot << " cm3/s." << std::endl;
 
-        std::cout << "1" << std::endl;
-        std::cout << "2" << std::endl;
+        TH_ProcessCatalog catalog;  // Instantiate new ProcessCatalog
+        TH_Process process((std::string)"chi", (std::string)"chi");  // and annihilation process
 
-        TH_ProcessCatalog catalog;  // Instantiate Catalog
-        std::cout << "3" << std::endl;
-        TH_Process process((std::string)"chi", (std::string)"chi");  // Instantiate annihilation process
-        std::cout << "4" << std::endl;
+        // Set cross-sections
+        double sigma_mumu = 0.5 * sigmaTot;
+        double sigma_bbbar = 0.5 * sigmaTot;
 
-        std::cout << "1" << std::endl;
+        // Create associated kinematical functions (just dependent on vrel)
+        // here: s-wave, vrel independent 1-dim constant function
+        BFptr kinematicFunction_mumu(new BFconstant(sigma_mumu, 1));
+        BFptr kinematicFunction_bbbar(new BFconstant(sigma_bbbar, 1));
 
-            // Define final state vector
-            finalStates.clear();  
-            finalStates.push_back("mu+");
-            finalStates.push_back("mu-");
+        // Create channel identifier strings
+        std::vector<std::string> finalStates_mumu {"mu+", "mu-"};
+        std::vector<std::string> finalStates_bbbar {"b", "bbar"};
 
-            // Partial cross-section
-            sigma = sigmaTot/3;
+        // Create channels
+        TH_Channel channel_mumu(finalStates_mumu, kinematicFunction_mumu);
+        TH_Channel channel_bbbar(finalStates_bbbar, kinematicFunction_bbbar);
 
-        std::cout << "1" << std::endl;
+        // Push them on channel list of process
+        process.channelList.push_back(channel_mumu);
+        process.channelList.push_back(channel_bbbar);
 
-            // Define velocity dependent partial cross-section sv(v)
-            BFptr kinematicFunction(new BFconstant(sigma, 1));  // Just constant for simplicity
-
-            // Generate channel and push it into process
-            TH_Channel channel(finalStates, kinematicFunction);
-            process.channelList.push_back(channel);
-
-            // Define final state vector
-            finalStates.clear();  
-            finalStates.push_back("b");
-            finalStates.push_back("bbar");
-
-        std::cout << "1" << std::endl;
-
-            // Partial cross-section
-            sigma = sigmaTot*2/3;
-
-            // Define velocity dependent partial cross-section sv(v)
-            kinematicFunction.reset(new BFconstant(sigma, 1));  // Just constant for simplicity
-
-            // Generate channel and push it into process
-            // TODO: loop over TH_Channel channel(finalStates, kinematicFunction);
-            process.channelList.push_back(channel);
-
-        std::cout << "1" << std::endl;
-
+        // And process on processe list
         catalog.processList.push_back(process);
-        //TODO: implement catalog.particleProperties["chi"] = chiProperty;
+
+        // Finally, store properties of "chi" in particleProperty list
+        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi", chiProperty));
 
         result = catalog;
     }

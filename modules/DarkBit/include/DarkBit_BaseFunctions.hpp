@@ -204,14 +204,16 @@ namespace Gambit
         private:
             double value(const BFargVec &args)
             {
-                if (this->hasIntegrator())
+                // If integrand has its own integrator, use it
+                if (integrand->hasIntegrator())
                 {
-                    return this->integrator(args, index, x0, x1);
+                    return integrand->integrator(args, index, x0, x1);
                 }
                 else
                 {
                     // TODO: Implement integral over x_index, from x0 to x1 
-                    return 0;  
+                    std::cout << "ERROR: Integration not yet implemented in general." << std::endl;
+                    exit(1);
                 }
             }
             double x0, x1;
@@ -310,8 +312,8 @@ namespace Gambit
                 // Simple trapezoidal integration in log-log space
                 double sum = 0;
                 if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
-                int i0 = 0; for (; Xgrid[i0] > E0; i0++) {};  // E[i0] > E0
-                int i1 = 0; for (; Xgrid[i1] > E1; i1++) {};  // E[i1] > E1
+                int i0 = 0; for (; Xgrid[i0] < E0; i0++) {};  // E[i0] > E0
+                int i1 = 0; for (; Xgrid[i1] < E1; i1++) {};  // E[i1] > E1
                 double x0 = E0;
                 double y0 = this->operator()(E0);  // Get interpolated value
                 for (int i = i0; i < i1; i++)
@@ -319,14 +321,14 @@ namespace Gambit
                     double x1 = Xgrid[i];
                     double y1 = Ygrid[i];
                     sum += (x1-x0)*(y0+y1)/2;
-                    double x0 = x1;
-                    double y0 = y1;
+                    x0 = x1;
+                    y0 = y1;
                 }
                 double x1 = E1;
                 double y1 = this->operator()(E1);
-                //sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
-                double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
-                sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
+                sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
+                //double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
+                //sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
                 return sum;
             }
 
