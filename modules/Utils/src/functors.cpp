@@ -244,6 +244,12 @@ namespace Gambit
       return false;        
     }
 
+    /// Test whether the functor is allowed to be used with all models
+    bool functor::allModelsAllowed()
+    {
+      return allowedModels.empty();
+    }
+
     /// Add a model to the internal list of models for which this functor is allowed to be used.
     void functor::setAllowedModel(str model) { allowedModels.insert(model); }
 

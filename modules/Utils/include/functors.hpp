@@ -164,6 +164,9 @@ namespace Gambit
       /// Test whether the functor is allowed to be used with a given model 
       bool modelAllowed(str model);
 
+      /// Test whether the functor is allowed to be used with all models
+      bool allModelsAllowed();
+
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model);
 

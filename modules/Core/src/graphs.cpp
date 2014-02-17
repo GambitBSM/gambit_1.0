@@ -561,6 +561,25 @@ namespace Gambit
         cout << "for consistency, etc." << endl;
         exit(0); // Throw error here
       }
+      // In case of doubt (and if not explicitely disabled in the ini-file),
+      // try to remove all functors that are not model-specific.
+      if ( vertexCandidates.size() > 1 and not ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functors") and not
+           boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functors") ) )
+      {
+        std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin();
+        cout << "Removing functors that are not model-specific from candidate list." << endl;
+        while (it != vertexCandidates.end())
+        {
+          if ( masterGraph[*it]->allModelsAllowed() )
+          {
+            it = vertexCandidates.erase(it);
+          }
+          else
+          {
+            ++it;
+          }
+        }
+      }
       if ( vertexCandidates.size() > 1 ) 
       {
         cout << "ERROR: I found too many module functions that provide the requested" << endl;
