@@ -14,11 +14,11 @@
 ///
 ///  *********************************************
 
-#ifndef GAMBIT_MODULE_HPP
-#define GAMBIT_MODULE_HPP
+#ifndef GAMBIT_PLUGIN_HPP
+#define GAMBIT_PLUGIN_HPP
 
-#include <gambit_module_utils.hpp>
-#include <gambit_module_defs.hpp>
-#include <gambit_module_macros.hpp>
+#include <gambit_plugin_utils.hpp>
+#include <gambit_plugin_defs.hpp>
+#include <gambit_plugin_macros.hpp>
 
 #endif

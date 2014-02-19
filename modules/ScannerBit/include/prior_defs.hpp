@@ -75,6 +75,7 @@
    
 #include <priors.hpp>
 #include <yaml_parser.hpp>
+#include <scanner_utils.hpp>
 
 namespace Gambit
 {
@@ -164,8 +165,8 @@ namespace Gambit
                         output[param_names[0]] = Func(unitpars[0],lower,upper);
                 }
         };
-        LOAD("log", RangePrior1D<logprior>);
-        LOAD("flat", RangePrior1D<flatprior>);
+        LOAD_PRIOR("log", RangePrior1D<logprior>);
+        LOAD_PRIOR("flat", RangePrior1D<flatprior>);
 
         /// 2D Gaussian prior. Takes covariance matrix as arguments
         class Gaussian2D : public BasePrior
@@ -209,7 +210,7 @@ namespace Gambit
                         }
                 }
         };
-        LOAD(2d_gaussian, GAUSSIAN2D);
+        LOAD_PRIOR(2d_gaussian, GAUSSIAN2D);
    };
 };
 

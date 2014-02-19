@@ -1,22 +1,23 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
-//
-//  Functions for use in constructing priors for
-//  models.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Ben Farmer
-//  May, Oct, Dec 2013
-//
-//  *********************************************
-
-/// TODO: change transform functions to work with maps rather than vectors, so that scannerbit can deal with whatever order of parameters that you like.
+///  \file
+///
+///  Prior object construction routines
+///  
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 Dec
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2014 Feb
+///
+///  *********************************************
 
 #ifndef __priors_hpp__
 #define __priors_hpp__
@@ -26,7 +27,10 @@
 #include <set>
 #include <map>
 #include <algorithm>
+#include <unordered_set>
+#include <unordered_map>
 #include <yaml_parser.hpp> // for the Options class
+#include <scanner_utils.hpp>
 
 namespace Gambit {
  namespace Priors {
@@ -38,22 +42,21 @@ namespace Gambit {
    /// Virtual base class for priors
    class BasePrior
    {
-      private:
+      protected:
          std::vector<std::string> param_names;
          
       public:
          BasePrior() {}
          
-         BasePrior(std::vector<std::string> param_names) : param_names(param_names)
-         {
-            
-         }
+         BasePrior(std::vector<std::string> param_names) : param_names(param_names){}
+         
+         BasePrior(std::string name) : param_names(std::vector<std::string>(1, name)) {}
               
-         virtual std::map<std::string, double> transform(std::vector<double> &, std::map<std::string, double> &) const = 0;
+         virtual void transform(std::vector<double> &, std::map<std::string, double> &) const = 0;
 
          /// Function to check the parameter ranges supplied in the input
          inline size{return param_names.size();}
-         void checkunit(const std::string&, double) const;
+         inline std::vector<std::string> &getParameters(){return param_names;}
    };
 
    /// Special "build-a-prior" class
@@ -69,11 +72,14 @@ namespace Gambit {
          typedef std::vector<BasePrior*>::const_iterator subpriors_it;
          const IniParser::IniFile* boundIniFile;
          std::vector<BasePrior*> my_subpriors;
+         std::vector<std::string> shown_param_names;
          
       public:
       
          // Constructor
          CompositePrior(const IniParser::IniFile& iniFile);
+         
+         inline std::vector<std::string> &getShownParameters(){return shown_param_names;}
          
          // Transformation from unit hypercube to my_ranges
          void transform(const std::vector<double> &unitPars, std::map<std::string,double> &outputMap)
@@ -97,21 +103,70 @@ namespace Gambit {
                         std::string name = it->substr((pos == 0) ? 0: pos+1);
                         if(param_names.count(name) != 1)
                         {
-                                std::cout << "The priors keys and Gambit keys do not match." << std::endl;
+                                scanLog::err << "The priors keys and Gambit keys do not match." << scanLog::endl;
                                 exit(1);
                         }
                 }
                  
                 if (keys.size() != param_names.size())
                 {
-                        std::cout << "The priors keys and Gambit keys do not match." << std::endl;
+                        scanLog::err << "The priors keys and Gambit keys do not match." << scanLog::endl;
                         exit(1);
                 }
          }
          
          ~CompositePrior();
    };
- 
+
+                //if the parameter has a fixed value
+                class FixedPrior : public BasePrior
+                {
+                private:
+                        double value;
+                        std::string name;
+                        
+                public:
+                        FixedPrior(std::string name, double value) : name(name), value(value) {}
+                        void transform(std::vector<double> &unitPars, std::map<std::string, double> &outputMap)
+                        {
+                                outputMap[name] = value;
+                        }
+                };
+                
+                //if the parameter shares multiple different parameters
+                class MultiPriors: public BasicPrior
+                {
+                protected:
+                        std::string name;
+                        std::vector <std::string> names;
+                        
+                public:
+                        MultiParameter(std::string name_in)
+                        {
+                                int pos_old = 0;
+                                int pos = name_in.find("+");
+                                while (pos != std::string::npos)
+                                {
+                                        names.push_back(name_in.substr(pos_old, (pos-pos_old)));
+                                        pos_old = pos + 1;
+                                        pos = name_in.find("+");
+                                }
+                                
+                                name = name_in.substr(pos_old);
+                                names.push_back(name_in);
+                        }
+                        
+                        void transform (std::vector<double> &unitPars, std::map<std::string, double> &outputMap)
+                        {
+                                double value = outputMap[name];
+                                
+                                for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it)
+                                {
+                                        outputMap[*it] = value;
+                                }
+                        }
+                };
+                
    /// Map in which to keep factory functions for the priors (prior_creators)
    // (defined in priors.cpp)
    
@@ -130,8 +185,8 @@ namespace Gambit {
                 };
         }; 
  
- } // end namespace Priors
-} // end namespace Gambit
+ }; // end namespace Priors
+}; // end namespace Gambit
 
 // This macro registers each prior.
 #define LOAD_PRIOR(tag, ...)                                                                                    \

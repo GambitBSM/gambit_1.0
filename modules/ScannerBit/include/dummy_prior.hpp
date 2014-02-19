@@ -28,7 +28,7 @@ namespace Gambit
                 }
         };
         
-        LOAD(dummy, Dummy);
+        LOAD_PRIOR(dummy, Dummy);
    };
 };
 

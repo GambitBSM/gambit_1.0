@@ -22,8 +22,9 @@
 #include "model_rollcall.hpp"
 #include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
-#include "priorfactory.hpp"
+#include <gambit_scan.hpp>
+#include <priorfactory.hpp>
+#include <priors.hpp>
 
 using namespace Gambit;
 
@@ -82,10 +83,14 @@ void beispiel(const char* inifilename)
   // visualisation purposes only.
   modelClaw.makeGraph();
  
+  //Let's define the prior
+  Gambit::Prior::CompositePrior prior(iniFile);
+  //Let's define the scanner factory
+  Gambit::Scanner::Scanner_Function_Factory factory(Core, dependencyResolver, prior)
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
-  cout << "keys = " << scanner->getKeys() << endl;
-  cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile);
+  //cout << "keys = " << scanner->getKeys() << endl;
+  //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();
   
   // Run 100 times

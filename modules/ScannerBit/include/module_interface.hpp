@@ -31,6 +31,7 @@
 #include <functors.hpp>
 #include <graphs.hpp>
 #include <dlfcn.h>
+#include <scanner_utils>
 
 namespace Gambit
 {
@@ -186,23 +187,23 @@ namespace Gambit
                                                 
                                                 if (main == 0)
                                                 {
-                                                        std::stringstream ss;
-                                                        ss << "\e[00;31mERROR:\e[00m  Could not find main function in module \"" << name << "\".";
-                                                        errors = ss.str();
+                                                        //std::stringstream ss;
+                                                        scanLog::err << "Could not find main function in module \"" << name << "\"." << scanLog::endl;
+                                                        //errors = ss.str();
                                                 }
                                         }
                                         else
                                         {
-                                                std::stringstream ss;
-                                                ss << "\e[00;31mERROR:\e[00m  Could not find any modules in file \"" << file << "\".";
-                                                errors = ss.str();
+                                                //std::stringstream ss;
+                                                scanLog::err << "Could not find any modules in file \"" << file << "\"." << scanLog::endl;
+                                                //errors = ss.str();
                                         }
                                 }
                                 else
                                 {
-                                        std::stringstream ss;
-                                        ss << "\e[00;31mERROR:\e[00m  Cannot load " << file << ":  " << dlerror();
-                                        errors = ss.str();
+                                        //std::stringstream ss;
+                                        scanLog::err << "Cannot load " << file << ":  " << dlerror() << scanLog::endl;
+                                        //errors = ss.str();
                                         open = false;
                                 }
                         }
