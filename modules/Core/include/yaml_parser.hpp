@@ -15,10 +15,60 @@
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__
 
+
+
 namespace Gambit
 {
   namespace IniParser
   {
+    /// Just a small wrapper object for the 'options' nodes which we extract
+    /// from the prior/likelihood/auxiliaries section of the inifile
+    class Options
+    {
+      public:
+        // Constructor
+        Options(YAML::Node optionsIN) : options(optionsIN) {} 
+
+        // Default constructor
+        Options() {}
+
+        //
+        // Getters for key/value pairs (this is all the options node should contain)
+        //
+        bool hasKey(std::string key) const
+        {
+          return options[key];
+        }
+
+        template<typename TYPE> TYPE getValue(std::string key) const
+        {
+          if (options[key])
+            return options[key].as<TYPE>();
+          // else
+          std::cout << "ERROR: No options entry for " << key << std::endl;
+          std::cout << "(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)" << std::endl;
+          std::cout << "Contents of options:" << std::endl;
+          std::cout << options << std::endl;
+          exit(1);
+        }
+
+        // Dump contents of YAML::Node to cout
+        void dumpcontents()
+        {
+            std::cout<<options<<std::endl;
+        }
+
+      private:
+        YAML::Node options;
+    };
+  }
+}
+
+namespace Gambit
+{
+  namespace IniParser
+  {
+    class Options;
     // Structs corresponding to inifile
     namespace Types
     {
@@ -33,7 +83,7 @@ namespace Gambit
         std::string module;
         std::string backend;
         std::string version;
-        std::string options;
+        Gambit::IniParser::Options options;
         std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
         std::vector<Observable> backends; // ..deps of deps of deps of obs possible
       };
@@ -64,7 +114,8 @@ namespace YAML {
       READ(module)
       READ(backend)
       READ(version)
-      READ(options)
+      if (node["options"].IsDefined())
+          rhs.options = Gambit::IniParser::Options(node["options"]);
       #undef READ
       for(YAML::const_iterator it=node["dependencies"].begin();
           it!=node["dependencies"].end(); ++it)
@@ -99,45 +150,6 @@ namespace Gambit
     typedef Types::Observable ObservableType;
     // typedef Types::Parameter ParameterType;
 
-    /// Just a small wrapper object for the 'options' nodes which we extract from the prior section of the inifile
-    class Options
-    {
-      public:
-        // Constructor
-        Options(YAML::Node optionsIN) : options(optionsIN) {} 
-
-        // Default constructor
-        Options() {}
-
-        //
-        // Getters for key/value pairs (this is all the options node should contain)
-        //
-        bool hasKey(std::string key) const
-        {
-          return options[key];
-        }
-
-        template<typename TYPE> TYPE getValue(std::string key) const
-        {
-          if (options[key])
-            return options[key].as<TYPE>();
-          // else
-          std::cout << "ERROR: No options entry for " << key << std::endl;
-          std::cout << "(sorry, I can't tell you which prior this error comes from yet)" << std::endl;
-          std::cout << "Contents of options:" << std::endl;
-          std::cout << options << std::endl;
-          exit(1);
-        }
-
-        // Dump contents of YAML::Node to cout
-        void dumpcontents()
-        {
-            std::cout<<options<<std::endl;
-        }
-
-      private:
-        YAML::Node options;
-    };
 
 
     /// Main inifile class

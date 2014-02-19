@@ -235,6 +235,14 @@ namespace Gambit
       exit(1);
     }
 
+    /// Notify the functor about an instance of the options class that contains
+    /// information from its corresponding ini-file entry in the auxiliaries or
+    /// observables section.
+    void functor::notifyOfIniOptions(const IniParser::Options & opt)
+    {
+      myOptions = opt;
+    }
+
     /// Test whether the functor is allowed to be used with a given model 
     bool functor::modelAllowed(str model)
     {
