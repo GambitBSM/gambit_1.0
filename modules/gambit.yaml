@@ -71,7 +71,7 @@ adhoc:
 m0_prior:
   parameters: [CMSSM_I::M0]
   type: log
-  range: [0,1000]
+  range: [0.001,1000]
 
 m12_prior: 
   parameters: [CMSSM_I::M12]
@@ -174,10 +174,10 @@ scanner:
 #  module:  multinest
 #  file_path:  ScannerBit/lib/libmultinest_interface.so
     
-enable_redirect: false
+enable_redirect: true
 
 redirect_output:
-   CMSSM_I:  xterm
+   scanner:  xterm
     
 crapsample:
   point_number: 10

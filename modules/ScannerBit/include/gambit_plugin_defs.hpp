@@ -88,6 +88,7 @@ namespace Gambit
                         virtual std::vector<double> & getParameters() = 0;
                         virtual std::vector<std::string> & getKeys() = 0;
                         virtual double operator () (std::vector<double> &) = 0;
+                        virtual ~Function_Base() = 0;
                 };
                 
                 /*Factory inported by ScannerBit*/

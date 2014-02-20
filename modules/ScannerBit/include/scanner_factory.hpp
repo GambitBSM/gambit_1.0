@@ -104,9 +104,11 @@ namespace Gambit
                                         std::vector <std::string> paramkeys = act_it->second->getcontentsPtr()->getKeys();
                                         for (std::vector<std::string>::iterator it = paramkeys.begin(); it != paramkeys.end(); it++)
                                         {
+                                                //std::cout << (act_it->first + "::" + *it) << "   " << parameterMap[act_it->first + "::" + *it] << std::endl;
                                                 act_it->second->getcontentsPtr()->setValue(*it, parameterMap[act_it->first + "::" + *it]);
                                         }
                                 }
+                                //getchar();
                         }
                         
                         void resetAll() 
@@ -131,7 +133,7 @@ namespace Gambit
                         {
                                 double ret = 0;
                                 
-                                //outputHandler::out.defout();
+                                outputHandler::out.defout();
                                 
                                 setParameters(in);
                                 
@@ -149,7 +151,7 @@ namespace Gambit
 				
                                 resetAll();
                                 
-                                //outputHandler::out.redir("scanner");
+                                outputHandler::out.redir("scanner");
 				
                                 return ret;
                         }
