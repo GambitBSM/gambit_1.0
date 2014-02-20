@@ -32,9 +32,9 @@ namespace Gambit
                         std::cout << "********** \e[00;31mGambit Scanner Errors\e[00m **********\n";
                         std::cout << "*******************************************\n\n";
                         
-                        for (std::vector<std::ostringstream>::iterator it = errors.begin(); it != errors.end(); it++)
+                        for (std::vector<std::string>::iterator it = errors.begin(); it != errors.end(); it++)
                         {
-                                std::cout << "\e[00;31mERROR:\e[00m  " << it->str() << "\n";
+                                std::cout << "\e[00;31mERROR:\e[00m  " << *it << "\n";
                         }
                         
                         std::cout << "\n*******************************************\n";
@@ -56,9 +56,9 @@ namespace Gambit
                         out << "********** Gambit Scanner Errors **********\n";
                         out << "*******************************************\n\n";
                         
-                        for (std::vector<std::ostringstream>::iterator it = errors.begin(); it != errors.end(); it++)
+                        for (std::vector<std::string>::iterator it = errors.begin(); it != errors.end(); it++)
                         {
-                                std::cout << "ERROR:  " << it->str() << "\n";
+                                std::cout << "ERROR:  " << *it << "\n";
                         }
                         
                         out << "\n*******************************************\n";

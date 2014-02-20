@@ -159,6 +159,7 @@ namespace Gambit
                                         /// TODO: Gambit error
                                         scanLog::err << "Error building prior! Inifile instructions for prior named '"<<*priorname<<"' ask for a prior of type '"<<priortype<<"', but no entry for this type exists in the factory function map used to build the priors. This map is defined in priors.cpp; please check there that the prior you want exists, and make sure you don't have a typo in the inifile" << scanLog::endl;
                                 }
+                                else
                                 // All good, build the requested prior:
                                 // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
                                 my_subpriors.push_back( prior_creators.at(priortype)(params,options) );

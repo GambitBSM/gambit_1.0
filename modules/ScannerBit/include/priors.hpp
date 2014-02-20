@@ -124,13 +124,13 @@ namespace Gambit
                 public:
                         MultiPriors(std::string name_in)
                         {
-                                unsigned int pos_old = 0;
-                                unsigned int pos = name_in.find("+");
+                                std::string::size_type pos_old = 0;
+                                std::string::size_type pos = name_in.find("+");
                                 while (pos != std::string::npos)
                                 {
                                         names.push_back(name_in.substr(pos_old, (pos-pos_old)));
                                         pos_old = pos + 1;
-                                        pos = name_in.find("+");
+                                        pos = name_in.find("+", pos_old);
                                 }
                                 
                                 name = name_in.substr(pos_old);

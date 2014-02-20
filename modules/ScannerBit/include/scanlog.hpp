@@ -35,23 +35,24 @@ namespace Gambit
                 class ErrorLog
                 {
                 private:
-                        std::vector<std::ostringstream> errors;
-                        int index;
+                        std::vector<std::string> errors;
+                        std::ostringstream os;
                         
                 public:
-                        ErrorLog () : index(0) {}
+                        ErrorLog () {}
                         
                         template <class T>
                         ErrorLog &operator << (T in)
                         {
-                                errors[index] << in;
+                                os << in;
                                 
                                 return *this;
                         }
                         
                         ErrorLog &operator << (ErrorLog &endl(ErrorLog &in))
                         {
-                                index++;
+                                errors.push_back(os.str());
+                                os.str("");
                                 
                                 return *this;
                         }
