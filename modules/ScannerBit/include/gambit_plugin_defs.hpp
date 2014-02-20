@@ -86,6 +86,7 @@ namespace Gambit
                 public:
                         typedef Function_Base type;
                         virtual std::vector<double> & getParameters() = 0;
+                        virtual std::vector<std::string> & getKeys() = 0;
                         virtual double operator () (std::vector<double> &) = 0;
                 };
                 
@@ -93,6 +94,7 @@ namespace Gambit
                 class Function_Factory_Base
                 {
                 public:
+                        virtual std::vector<std::string> & getKeys() = 0;
                         virtual void * operator() (std::string, std::string) = 0;
                         virtual void remove(std::string, void *) = 0;
                         virtual ~Function_Factory_Base(){}

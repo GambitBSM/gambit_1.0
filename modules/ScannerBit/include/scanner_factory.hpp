@@ -123,13 +123,15 @@ namespace Gambit
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
+                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) 
+                        {
+                        }
 			
                         virtual double operator () (std::vector<double> &in)
                         {
                                 double ret = 0;
                                 
-                                outputHandler::out.defout();
+                                //outputHandler::out.defout();
                                 
                                 setParameters(in);
                                 
@@ -147,7 +149,7 @@ namespace Gambit
 				
                                 resetAll();
                                 
-                                outputHandler::out.redir("scanner");
+                                //outputHandler::out.redir("scanner");
 				
                                 return ret;
                         }
