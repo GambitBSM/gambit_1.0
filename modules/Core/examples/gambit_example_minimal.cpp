@@ -22,8 +22,9 @@
 #include "model_rollcall.hpp"
 #include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
-#include "priorfactory.hpp"
+#include <gambit_scan.hpp>
+#include <priorfactory.hpp>
+#include <priors.hpp>
 
 using namespace Gambit;
 
@@ -42,14 +43,14 @@ void beispiel(const char* inifilename)
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
-  cout << "Your selected models are: " << selectedmodels << endl;
+  //cout << "Your selected models are: " << selectedmodels << endl;
   
   // Build prior object based on inifile instructions
-  Priors::PriorManager priorManager(iniFile);
+  //Priors::PriorManager priorManager(iniFile);
 
   // Extract a pointer to the prior object, so that it can be passed to the Scanner.
   // Could do this via the Core instead, perhaps.
-  Priors::BasePrior* prior = priorManager.getprior();
+  //Priors::BasePrior* prior = priorManager.getprior();
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
@@ -82,10 +83,14 @@ void beispiel(const char* inifilename)
   // visualisation purposes only.
   modelClaw.makeGraph();
  
+  //Let's define the prior
+  Gambit::Priors::CompositePrior prior(iniFile);
+  //Let's define the scanner factory
+  Gambit::Scanner::Scanner_Function_Factory factory(Core, dependencyResolver, prior);
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile, dependencyResolver);
-  cout << "keys = " << scanner->getKeys() << endl;
-  cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(factory, iniFile);
+  //cout << "keys = " << scanner->getKeys() << endl;
+  //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();
   
   // Run 100 times

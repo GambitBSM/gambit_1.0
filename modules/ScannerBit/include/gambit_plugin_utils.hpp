@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef GAMBIT_MODULE_UTILS_HPP
-#define GAMBIT_MODULE_UTILS_HPP
+#ifndef GAMBIT_PLUGIN_UTILS_HPP
+#define GAMBIT_PLUGIN_UTILS_HPP
 
 #include <vector>
 #include <string>

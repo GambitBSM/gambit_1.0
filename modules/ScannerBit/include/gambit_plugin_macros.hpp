@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef SCANNER_MODULE_MACROS_HPP
-#define SCANNER_MODULE_MACROS_HPP
+#ifndef SCANNER_PLUGIN_MACROS_HPP
+#define SCANNER_PLUGIN_MACROS_HPP
 
 #define VERSION(...)                                                                                                    \
 namespace Gambit_Module_Namespace                                                                                       \
