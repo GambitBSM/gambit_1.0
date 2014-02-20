@@ -132,15 +132,15 @@ namespace Gambit
                                 {
                                         if (paramSet.find(*params_it) == paramSet.end())
                                         {
-                                                scanLog::err << "Parameter " << *params_it << "requested by " << *priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                                scanLog::err << "Parameter " << *params_it << " requested by " << *priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
                                         }
                                         else
                                         {
                                                 std::unordered_set<std::string>::iterator find_it = needSet.find(*params_it);
-                                                if (find_it != needSet.end())
+                                                if (find_it == needSet.end())
                                                 {
                                                         /// TODO: gambit error
-                                                        scanLog::err << "Error parsing inifile! Prior '"<<*priorname<<"' is instructed to transform parameter '"<<*params_it<<"', but this parameter has already been reserved for transformation by a different prior! Please check earlier entries in inifile for clashes! Please note the the 'range' keyword in the 'model/parameter' section is interpreted as an instruction to create a flat prior for that parameter, so these can clash with entries in the 'priors' section." << scanLog::endl;
+                                                        scanLog::err << "Parameter " << *params_it << " requested by prior '"<<*priorname<<"' is reserved by a different prior." << scanLog::endl;
                                                 }
                                                 else
                                                 {
@@ -157,12 +157,24 @@ namespace Gambit
                                 if (prior_creators.find(priortype) == prior_creators.end())
                                 {
                                         /// TODO: Gambit error
-                                        scanLog::err << "Error building prior! Inifile instructions for prior named '"<<*priorname<<"' ask for a prior of type '"<<priortype<<"', but no entry for this type exists in the factory function map used to build the priors. This map is defined in priors.cpp; please check there that the prior you want exists, and make sure you don't have a typo in the inifile" << scanLog::endl;
+                                        scanLog::err << "Prior '"<< *priorname <<"' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
                                 }
                                 else
                                 // All good, build the requested prior:
                                 // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
                                 my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                        }
+                        
+                        if (needSet.size() != 0)
+                        {
+                                scanLog::err << "Priors are not defined for the following parameters:  [";
+                                std::unordered_set<std::string>::iterator it = needSet.begin();
+                                scanLog::err << *(it++);
+                                for (; it != needSet.end(); it++)
+                                {
+                                        scanLog::err << ", "<< *it;
+                                }
+                                scanLog::err << "]" << scanLog::endl;
                         }
                         
                         std::unordered_map<std::string, std::string> keyMap;
@@ -210,7 +222,7 @@ namespace Gambit
                         {
                                 if (paramSet.find(it->first) == paramSet.end())
                                 {
-                                        scanLog::err << "same_as:  " << it->first << "is not defined in inifile." << scanLog::endl;
+                                        scanLog::err << "same_as:  " << it->first << " is not defined in inifile." << scanLog::endl;
                                 }
                                 else
                                 {
@@ -219,6 +231,8 @@ namespace Gambit
                         }
                         
                         my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
+                        
+                        scanLog::err.print();
                 }
         
                 CompositePrior::~CompositePrior()

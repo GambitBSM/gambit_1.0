@@ -174,8 +174,9 @@ namespace Gambit
                         {
                                 functorMap = *core.getActiveModelFunctors();
                                 
-                                std::vector<std::string> &priorKeys = prior.getParameters();
+                                std::vector<std::string> priorKeys = prior.getParameters();
                                 std::vector<std::string> gambitKeys;
+                                
                                 for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
                                 {
                                         std::vector <std::string> paramkeys = act_it->second->getcontentsPtr()->getKeys();
@@ -192,7 +193,7 @@ namespace Gambit
                                 {
                                         if (priorSet.find(*it) == priorSet.end())
                                         {
-                                                scanLog::err << "Parameter " << *it << "is required by gambit but is not in the inifile." << scanLog::endl;
+                                                scanLog::err << "Parameter " << " is required by gambit but is not in the inifile." << scanLog::endl;
                                         }
                                 }
                                 
@@ -200,11 +201,13 @@ namespace Gambit
                                 {
                                         if (gambitSet.find(*it) == gambitSet.end())
                                         {
-                                                scanLog::err << "Parameter " << *it << "is in the inifile but is not required by gambit." << scanLog::endl;
+                                                scanLog::err << "Parameter " << *it << " is in the inifile but is not required by gambit." << scanLog::endl;
                                         }
                                 }
                                 
                                 INPUT_SCANNER_FUNCTION (factoryMap, Scanner_Function);
+                                
+                                scanLog::err.print();
                         }
                         
                         virtual std::vector<std::string> & getKeys(){return prior->getShownParameters();}

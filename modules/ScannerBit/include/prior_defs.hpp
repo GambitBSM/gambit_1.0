@@ -165,8 +165,8 @@ namespace Gambit
                         output[param_names[0]] = Func(unitpars[0],lower,upper);
                 }
         };
-        LOAD_PRIOR("log", RangePrior1D<logprior>)
-        LOAD_PRIOR("flat", RangePrior1D<flatprior>)
+        LOAD_PRIOR(log, RangePrior1D<logprior>)
+        LOAD_PRIOR(flat, RangePrior1D<flatprior>)
 
         /// 2D Gaussian prior. Takes covariance matrix as arguments
         class Gaussian2D : public BasePrior
