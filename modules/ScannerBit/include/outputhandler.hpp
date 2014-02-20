@@ -36,43 +36,14 @@ namespace Gambit
                         class OutputHandler
                         {
                         private:
-                                static bool GAMBIT_SCANNER_EXIT;
-                                static int defOutExit;
                                 int default_out;
                                 bool hasXTerm;
                                 std::unordered_map<std::string, int> outputs;
                                 
                         public:
-                                OutputHandler()
-                                {
-                                        //do you have xterm?
-                                        hasXTerm = (std::system("which xterm") == 0) ? true : false;
+                                OutputHandler();
                                 
-                                        //saving std output
-                                        default_out = dup(STDOUT_FILENO);
-                                        
-                                        //defOutExit = default_out;
-                                        
-                                        atexit(OutputHandler::gambitScannerExit);
-                                        
-                                        GAMBIT_SCANNER_EXIT = false;
-                                }
-                                
-                                void set(std::string key, std::string file)
-                                {
-                                        GAMBIT_SCANNER_EXIT = true;
-                                        
-                                        if (file == "xterm" && hasXTerm)
-                                        {
-                                                FILE *temp = LaunchLogWindow(key);
-                                                outputs[key] = fileno(temp);
-                                        }
-                                        else
-                                        {
-                                                FILE *temp = fopen(file.c_str(), "w");
-                                                outputs[key] = fileno(temp);
-                                        }
-                                }
+                                void set(std::string key, std::string file);
                                 
                                 void redir(std::string &key)
                                 {
@@ -93,17 +64,6 @@ namespace Gambit
                                 }
                                 
                                 void defout(){dup2(default_out, STDOUT_FILENO);}
-                                
-                                static void gambitScannerExit(void)
-                                { 
-                                        if (GAMBIT_SCANNER_EXIT) 
-                                        {
-                                                dup2(dup(STDOUT_FILENO), STDOUT_FILENO); 
-                                                printf("Gambit has been terminated, please press enter to continue ... "); 
-                                                getchar();
-                                        }
-                                        //abort();
-                                }
                                 
                                 static FILE *LaunchLogWindow(std::string &file)
                                 {

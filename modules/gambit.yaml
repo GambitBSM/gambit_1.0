@@ -24,13 +24,13 @@ CMSSM_I:
     #same_as: CMSSM_I::M0
   Mstop:
     #same_as: CMSSM_I::M12
-  #sgnmu:
-  #   range: [-1, 1]
-  #   fixed_value: 1
+  sgnmu:
+     range: [-1, 1]
+     fixed_value: 1
   tanb:
 # Ben: this was in the old inifile: I don't know what it does 
-  #param_not_in_gambit:
-  #   range: [-1, 1]
+#  param_not_in_gambit:
+#     range: [-1, 1]
 
 # The "adhoc" model bypasses ModelBit and produces some model parameter nodes
 # on the fly. This can be used for testing purposes.

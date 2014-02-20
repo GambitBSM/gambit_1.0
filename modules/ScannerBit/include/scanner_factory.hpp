@@ -166,7 +166,6 @@ namespace Gambit
                         Graphs::DependencyResolver *dependencyResolver;
                         Priors::CompositePrior *prior;
                         std::map<std::string, primary_model_functor *> functorMap;
-                        
                         std::map<std::string, std::pair<void *(*)(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver *, Priors::CompositePrior *, std::string), void (*)(void *)>> factoryMap;
                        
                 public:
@@ -189,11 +188,11 @@ namespace Gambit
                                 std::unordered_set<std::string> priorSet(priorKeys.begin(), priorKeys.end());
                                 std::unordered_set<std::string> gambitSet(gambitKeys.begin(), gambitKeys.end());
                                 
-                                for (std::vector<std::string>::iterator it = gambitKeys.begin(); it != gambitKeys.end(); it++)
+                                for (std::vector<std::string>::const_iterator it = gambitKeys.begin(); it != gambitKeys.end(); it++)
                                 {
                                         if (priorSet.find(*it) == priorSet.end())
                                         {
-                                                scanLog::err << "Parameter " << " is required by gambit but is not in the inifile." << scanLog::endl;
+                                                scanLog::err << "Parameter " << *it << " is required by gambit but is not in the inifile." << scanLog::endl;
                                         }
                                 }
                                 
