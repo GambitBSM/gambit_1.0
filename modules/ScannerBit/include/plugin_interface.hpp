@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef GAMBIT_MODULE_INTERFACE_HPP
-#define GAMBIT_MODULE_INTERFACE_HPP
+#ifndef GAMBIT_PLUGIN_INTERFACE_HPP
+#define GAMBIT_PLUGIN_INTERFACE_HPP
 
 #include <vector>
 #include <unordered_map>
@@ -35,7 +35,7 @@
 
 namespace Gambit
 {
-        namespace Module
+        namespace Plugin
         {
                 const unsigned char FORCE = 0x01;
                 const std::string sblank = std::string("       \033[7D");
@@ -79,7 +79,7 @@ namespace Gambit
                 };
                 
                 template <typename T>
-                class Module_Interface
+                class Plugin_Interface
                 {
                 private:
                         bool open;
@@ -99,7 +99,7 @@ namespace Gambit
                 public:
                         T* main;
                         
-                        Module_Interface(std::string file, std::string name_in, std::string version, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL) : iniFileInterface(boundIniFile), errors(""), open(true), name(name_in), version(version)
+                        Plugin_Interface(std::string file, std::string name_in, std::string version, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL) : iniFileInterface(boundIniFile), errors(""), open(true), name(name_in), version(version)
                         {
                                 unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
@@ -212,7 +212,7 @@ namespace Gambit
                         void deleteMember(void *ptr, std::string in){rmFunc(ptr, in);}
                         const std::string printErrors() const {return errors;}
                         
-                        ~Module_Interface(){if (open) dlclose(plugin);}
+                        ~Plugin_Interface(){if (open) dlclose(plugin);}
                 };
         };
 };

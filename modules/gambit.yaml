@@ -65,22 +65,22 @@ adhoc:
 # the likelihood itself (since it is NOT a likelihood). Actually, I think we
 # decided that we can deal with this via the "purpose" system.
 
-#m0_prior:
-#  parameters: [CMSSM_I::M0]
-#  type: log
-#  range: [0,1000]
+m0_prior:
+  parameters: [CMSSM_I::M0]
+  type: log
+  range: [0,1000]
 
-#m12_prior: 
-#  parameters: [CMSSM_I::M12]
-#  type: log
-#  range: [100,2000]
+m12_prior: 
+  parameters: [CMSSM_I::M12]
+  type: log
+  range: [100,2000]
 
-#tanbMstop_prior:
-#  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
-#  type: 2d_gaussian
-#  options:
-#    cov: [[0.5, 0.1],[0.1, 0.6]]
-#    demo: 45
+tanbMstop_prior:
+  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
+  type: 2d_gaussian
+  options:
+    cov: [[0.5, 0.1],[0.1, 0.6]]
+    demo: 45
 
 ###############################
 #--- # Printer (output) setup

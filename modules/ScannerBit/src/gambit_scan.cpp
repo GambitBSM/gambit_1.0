@@ -23,7 +23,7 @@
 ///  *********************************************
 
 #include <gambit_scan.hpp>
-#include <module_interface.hpp>
+#include <plugin_interface.hpp>
 
 namespace Gambit
 {
@@ -77,7 +77,7 @@ namespace Gambit
                                 input[0] = (void *)(&factory->getKeys());
                                 input[1] = (void *)factory;
                                 
-                                Module::Module_Interface<int ()> interface(file, name, version, boundIniFile, &input);
+                                Plugin::Plugin_Interface<int ()> interface(file, name, version, boundIniFile, &input);
                                 scanLog::err.print();
 
                                 outputHandler::out.redir("scanner");
