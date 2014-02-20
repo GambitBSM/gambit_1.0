@@ -38,6 +38,7 @@
 
 #include <cmath>
 #include <gsl/gsl_integration.h>
+#include "DarkBit_BaseFunctions.hpp"
 
 namespace Gambit
 {
@@ -79,265 +80,152 @@ namespace Gambit
     typedef double(*fptr_dd)(double&);
 
 
-    // A general DarkBit energy spectrum.  It can be either constructed from a
-    // table or from a function. Energies are given in GeV.
-    class dNdE
+    /////////////////////////////////////////////////
+    // General DarkBit annihilation/decay descriptor
+    /////////////////////////////////////////////////
+    
+    // TH_Channel describes a annihilation/decay channels, e.g. 
+    // chi --> gamma gamma, chi chi --> mu+ mu-
+    //
+    // TH_Process groupes channels together according to initial states,
+    // e.g. chi --> everything, chi chi --> everything
+    //
+    // TH_ProcessCatalog describes all initial states relevant for DarkBit
+    
+
+    struct TH_ParticleProperty
     {
-      public:
-        // Dummy constructor
-        dNdE() : fromTable(false) {}
+        TH_ParticleProperty(double mass, unsigned int spin2) : mass(mass), spin2(spin2) {};
 
-        // Construction from table
-        dNdE(std::vector<double> Xgrid, std::vector<double> Ygrid) : fromTable(true)
-        {
-          this->Xgrid = Xgrid;
-          this->Ygrid = Ygrid;
-          this->Emin = Xgrid.front();
-          this->Emax = Xgrid.back();
-        };
+        double mass;
+        unsigned int spin2;  // Spin times two
+    };
 
-        // Construction from external function
-        // The first argument is a pointer to a simple double(double function,
-        // second and third argument give the boudaries, and the last argument
-        // is a vector of pairs of doubles, describing position and width of
-        // critical poles in the spectrum.
-        dNdE(double (*ptrdNdE)(double), double Emin, double Emax,
-            std::vector<std::pair<double, double> > poles) :
-            fromTable(false)
+    struct TH_Channel
+    {
+        // Constructor
+        TH_Channel(std::vector<std::string> finalStateIDs, BFptr dSigmadE) :
+            finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
+            dSigmadE(dSigmadE) 
         {
-          this->ptrdNdE = ptrdNdE;
-          this->Emin = Emin;
-          this->Emax = Emax;
-          this->polePositions = poles;
-          // TODO soon: Construct Xgrid and Ygrid from this information
-        };
-
-        // Returns energy boundaries
-        std::pair<double, double> getBounds()
-        {
-          std::pair<double, double> bounds (this->Emin, this->Emax);
-          return bounds;
-        }
-
-        // Returns proposal x grid
-        std::vector<double> getXgrid()
-        {
-          return this->Xgrid;
-        }; 
-
-        // Returns corresponding y values
-        std::vector<double> getYgrid()
-        {
-          return this->Ygrid;
-        }
-
-        // Returns critical poles and their widths for integration
-        std::vector<std::pair<double, double> > getPoles()
-        {
-          return this->polePositions;
-        }
-
-        // dNdE [1/GeV] as function of E [GeV]
-        double operator()(double energy) const
-        {
-          if (not this->fromTable)
-          {
-            return (*(this->ptrdNdE))(energy);
-          }
-          else
-          {
-            if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
-            int i = 0; for (; Xgrid[i] > energy; i++) {};  // Find index
-            // Simple linear interpolation in log-log space
-            double x0 = Xgrid[i];
-            double x1 = Xgrid[i+1];
-            double y0 = Ygrid[i];
-            double y1 = Ygrid[i+1];
-            return y0 * exp(log(y1/y0) * log(energy/x0) / log(x1/x0));
-            // TODO later: Add optional spline interpolation
-          }
-        };  
-
-        // dNdE integrate over interval E0, E1
-        double integrate(double E0, double E1) const
-        {
-          if (fromTable)
-          {
-            // Simple trapezoidal integration in log-log space
-            double sum = 0;
-            if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
-            int i0 = 0; for (; Xgrid[i0] > E0; i0++) {};  // E[i0] > E0
-            int i1 = 0; for (; Xgrid[i1] > E1; i1++) {};  // E[i1] > E1
-            double x0 = E0;
-            double y0 = this->operator()(E0);  // Get interpolated value
-            for (int i = i0; i < i1; i++)
+            if ( nFinalStates < 2 )
             {
-              double x1 = Xgrid[i];
-              double y1 = Ygrid[i];
-              sum += (x1-x0)*(y0+y1)/2;
-              double x0 = x1;
-              double y0 = y1;
+                std::cout << "ERROR: Need at least two final state particles. " << std::endl;
+                exit(1);
             }
-            double x1 = E1;
-            double y1 = this->operator()(E1);
-            //sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
-            double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
-            sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
-            return sum;
-          }
-          else
-          {
-            std::cout << "dNdE integration for functions not implemented yet." << std::endl; exit(1);
-            // TODO soon: Implement integration routine
-          }
         }
 
-      private:
-        // The boundaries of the valid region
-        double Emin;  // Minimum energy [GeV]
-        double Emax;  // Maximum energy [GeV]
+        // Final state identifiers
+        std::vector<std::string> finalStateIDs;
 
-        // A proposal grid for fast integration with trapez methods.  It should
-        // be denser around poles.
-        std::vector<double> Xgrid;  // Proposal energy grid [GeV] 
-        std::vector<double> Ygrid;  // dNdE values at grid points [1/GeV]
+        // Energy dependence of final state particles
+        // Includes v_rel as last argument in case of annihilation
+        // TODO: Implement checks
+        BFptr dSigmadE;  
 
-        // Position (first) and width (second) of poles and breaks in the
-        // spectrum to guide integration routines [GeV].
-        std::vector<std::pair<double,double> > polePositions;
+        // Compare final states
+        bool isChannel(std::string p0, std::string p1, std::string p2 =
+                "", std::string p3 = "")
+        {
+            if ( nFinalStates == 2 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] ) return true;
+            if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
+            if ( nFinalStates == 4 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] and p3 == finalStateIDs[3] ) return true;
+            return false;
+        }
 
-        // Pointer to external dNdE function
-        double (*ptrdNdE)(double);
+        // Generic flags
+        std::map<std::string, bool> flags;
 
-        // Constructed from table or function?
-        bool fromTable;
+        // Number of final state particles in this channel
+        int nFinalStates;
     };
 
-    // A general DarkBit annihilation/decay descriptor.
-    struct BRs
+    struct TH_Process
     {
-      public:
-        // Renormalize branching fractions to sum up to one
-        void normalize()
+        // Constructor for decay process
+        TH_Process(std::string particleID) : isAnnihilation(false), particle1ID(particle1ID) {}
+
+        // Constructor for annihilation process
+        TH_Process(std::string particle1ID, std::string particle2ID) :
+            isAnnihilation(true), particle1ID(particle1ID),
+            particle2ID(particle2ID)
         {
-          double sum = 0;
-          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
-              != BRmap.end(); it++)
-          {
-            sum += it->second;
-          }
-          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
-              != BRmap.end(); it++)
-          {
-            it->second = it->second/sum;
-          }
+            if (particle1ID.compare(particle2ID) > 0)
+            {
+                std::cout << "ERROR: particle identifiers should be in alphabetical order." << std::endl;
+                exit(1);
+            }
         }
 
-        // Set branching fraction
-        void set(std::string key, double BR)
+        // Compare initial states
+        bool isProcess(std::string p1, std::string p2 = "") const
         {
-          if (BR >= 0)
-          {
-            BRmap[key] = BR;
-          }
-          else
-          {
-            std::cout << "DarkBit WARNING: I am ignoring a negative value for BR " 
-            << key << " :" << BR << " !" << std::endl;
-          }
+            return (p1 == this->particle1ID and p2 == this->particle2ID);
         }
 
-        // Get list of non-zero branching fraction keys
-        std::vector<std::string> getBRlist() const
-        {
-          std::vector<std::string> list;
-          for (std::map<std::string, double>::const_iterator it = BRmap.begin(); it
-              != BRmap.end(); it++)
-          {
-            list.push_back(it->first);
-          }
-          return list;
-        }
+        // Decaying particle or particle pair
+        std::string particle1ID = "";
+        std::string particle2ID = "";
 
-        // Read branching fraction
-        double get(std::string key) const
-        {
-          std::map<std::string, double>::const_iterator it = BRmap.find(key);
-          if (it != BRmap.end())
-          {
-            return it->second;
-          }
-          else
-          {
-            return 0;  // Returns zero by default
-          }
-        }
+        // Annihilation or decay?
+        bool isAnnihilation; 
 
-        // Check whether normalized
-        bool isNormalized() 
-        {
-          double sum = 0;
-          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
-              != BRmap.end(); it++)
-          {
-            sum += it->second;
-          }
-          return (abs(sum-1) < 1e-6);
-        }
+        // Generic flags
+        std::map<std::string, bool> flags;
 
-        // DM mass
-        double DMmass;
-
-        // Annihilation cross-section averaged over relative velocity
-        double sigmaV;
-
-      private:
-        // Map with branching ratios
-        std::map<std::string, double> BRmap;
+        // List of channels
+        std::vector<TH_Channel> channelList;
     };
 
-    struct Triple
+    struct TH_ProcessCatalog
     {
-      double x, y, z;
+        std::vector<TH_Process> processList;
+        std::map<std::string, TH_ParticleProperty> particleProperties;
+
+        TH_Process getProcess(std::string id1, std::string id2 = "") const
+        {
+            for (std::vector<TH_Process>::const_iterator it = processList.begin(); it != processList.end(); ++it)
+                if ( it -> isProcess(id1, id2) ) return processList[0];
+            std::cout << "Process with initial states " << id1 << " " << id2 << " missing." << std::endl;
+            exit(1);
+        }
+
+        TH_ParticleProperty getParticleProperty(std::string id) const
+        {
+            return particleProperties.at(id);
+        }
+
     };
+
+
+    //////////////////////////////////////////////
+    // General Dark Matter Halos and Halo Catalog
+    //////////////////////////////////////////////
 
     struct DMhalo
     {
-      // Dummy constructor doing nothing
-      DMhalo() {}
+        public:
+            // Dummy constructor doing nothing
+            DMhalo() {}
 
-      DMhalo(std::string name, Triple r0)
-      {
-        this->name = name;
-        this->r0 = r0;
-      }
+            DMhalo(std::string name, double r0, BFptr rho, BFptr drho2dv)
+            {
+                this->name = name;
+                this->r0 = r0;
+                this->rho = rho;
+                this->drho2dv= drho2dv;
+                // TODO: Add smoothing scale
+            }
 
-      std::string getName() {return name;}
+            std::string getName() {return name;}
+            BFptr getDensity() {return rho;}
+            BFptr getDensitySquared() {return drho2dv;}
 
-      // without velocity dependence
-      double rho(Triple r)
-      {
-        return 0;
-      }
-
-      // including velocity dependence
-      double rho(Triple r, Triple v)
-      {
-        return 0;
-      }
-
-      int getSymmetryFlag()
-      {
-        return symmetryFlag;
-      }
-
-      private:
-        std::string name;  // Name of this halo (Milky Way, M31, ...)
-        Triple r0;  // Position in comoving Galactic coordinates (l [-180...180 deg], b [deg], R [kpc])
-        int symmetryFlag;  // Bit 0: spherically symmetric, bit 1: velocity isotropic
-        std::vector<double> Rgrid;
-        std::vector<double> Rhogrid;
-        bool fromTable;  // Constructed by table or function?
+        private:
+            std::string name;  // Name of this halo (Milky Way, M31, ...)
+            double r0;  // Position in comoving Galactic coordinates (l [-180...180 deg], b [deg], R [kpc])
+            BFptr rho;
+            BFptr drho2dv;
     };
 
     // This catalog is supposed to contain all DM halos that are relevant for a
@@ -349,94 +237,229 @@ namespace Gambit
       public:
         DMhaloCatalog() {}  // Dummy constructor
 
-        bool addDMhalo(DMhalo newHalo)
+        bool addDMhalo(shared_ptr<DMhalo> newHalo)
         {
           this->myHalos.push_back(newHalo);
         }
 
+        std::vector<shared_ptr<DMhalo>> getHaloList() {return myHalos;}
+
+        void show()
+        {
+            std::cout << "List of registered halos:" << std::endl;
+            for(std::vector<shared_ptr<DMhalo>>::iterator it = myHalos.begin(); it != myHalos.end(); ++it)
+            {
+                std::cout << (*it)->getName() << std::endl;
+            }
+        }
+
       private:
-        std::vector<DMhalo> myHalos;
+        std::vector<shared_ptr<DMhalo>> myHalos;
     };
 
-    // Gamma-ray maps
-    struct GammaMaps
+
+    /////////////////////
+    // Sky maps and sums
+    /////////////////////
+
+    struct SuperHealpix
     {
-      // General 2d gamma-ray maps with arbitrary projection and dynamical
-      // resolution
+        // TODO: Implement normal healpix for now
     };
 
-    // Gamma-ray map catalog
-    struct GammaMapsCatalog
+    struct Jlayer
     {
-      // List of gamma-ray maps
-    };
+        Jlayer() {}  // Dummy constructor
 
-    // J-values
-    struct JvalueMaps
-    {
-      // Same structure as gamma-ray maps - including z-dependence?
+        Jlayer(shared_ptr<SuperHealpix> map, double redshift)
+        {
+            this->myHealpix = map;
+            this->redshift = redshift;
+        }
+
+        shared_ptr<SuperHealpix> getMap() {return myHealpix;}
+
+        double getRedshift() {return redshift;}
+
+        private:
+            shared_ptr<SuperHealpix> myHealpix;
+            double redshift;  // redshift z
     };
 
     // J-value catalog
-    struct JvalueCatalog
+    struct JlayerCatalog
     {
-      // Catalog of JvalueMaps
+        public:
+            void addJlayer(shared_ptr<Jlayer> J)
+            {
+                this->myJlayers.push_back(J);
+            }
+
+            void setJfunc(shared_ptr<double> func)
+            {
+                this->Jfunc = func;
+            }
+
+        private:
+            std::vector<shared_ptr<Jlayer>> myJlayers;
+            shared_ptr<double> Jfunc;
     };
 
-    // Abstract base class for 3D functions
-    class Funct3D
+
+    //////////////////////////
+    // Physics implementation 
+    //////////////////////////
+
+    class BFdmradialProfile: public BaseFunction
     {
-      public:
-        virtual double operator() (double x, double y, double z) = 0;
-        double LineOfSightIntegral(double D, double phi, double theta);  
-        // TODO: Implement LOS integral (z points away from us)
-        // D: distance to object (in units of x, y & z)
-        // theta & phi: polar coordinates in (x, y) plane at z=0
-    };
+        public:
+            BFdmradialProfile(std::string type, int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
+            {
+                if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim density function.");
 
-    // Abstract base class for spherical 3D functions
-    class SpheFunct3D : Funct3D
-    {
-      public:
-        virtual double operator() (double r) = 0;  // To be overwritten by daughter class
-        virtual double operator() (double x, double y, double z)
-        {
-          return this->operator()(sqrt(x*x + y*y + z*z));
-        };
-    };
+                if (type == "NFW")
+                {
+                    if (pars.size() != 2) failHard("NFW profile requires two parameters (scale radius and scale density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->ptrF = &BFdmradialProfile::NFW;
+                }
+                // TODO: Implement 
+                // - Einasto profile
+                // - cored isothermal profile
+                // - alpha-beta-gamma profile
+            }
 
-    class StandardDMprofiles : public SpheFunct3D
-    {
-      public:
-        StandardDMprofiles(std::string type, std::vector<double> pars)
-        {
-          if (type == "NFW")
-          {
-            this->rs = pars[0];
-            this->rhos = pars[1];
-            this->ptrF = &StandardDMprofiles::NFW;
-          }
-          // TODO: Implement Einasto profile, cored isothermal profile,
-          // alpha-beta-gamma profile, ...
-        }
+        private:
+            // Redirection to profiles
+            double value(const BFargVec &vec)
+            {
+                if (ndim == 1)
+                {
+                    return (this->*ptrF)(vec[0]);
+                }
+                else
+                {
+                    double r = 0;
+                    for (int i = 0; i < ndim; i++)
+                    {
+                        r += vec[i] * vec[i];
+                    }
+                    r = sqrt(r);
+                    return (this->*ptrF)(r);
+                }
+            }
 
-        double operator() (double r)
-        {
-          return (this->*ptrF)(r);
-        }
+            // Dark matter profile parameters
+            double rs;  // Scale radius [kpc]
+            double rhos;  // Scale density [GeV/cm^3]
 
-      private:
-        double rs;  // Scale radius [kpc]
-        double rhos;  // Scale density [GeV/cm^3]
-        // Pointer to member function that implements DM profile
-        double (StandardDMprofiles::*ptrF)(double);  
+            // Dimensionality (either 1 or 3)
+            int ndim;
 
-        double NFW(double r)
-        {
-          return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
-        }
+            // Pointer to member function that implements DM profile
+            double (BFdmradialProfile::*ptrF)(double);  
+
+            // The profiles
+            double NFW(double r)
+            {
+            return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
+            }
     };
   }
 }
 
 #endif // defined __DarkBit_types_hpp__
+
+
+
+// Old code
+
+    // TODO:
+    // - add access functions
+    // - add ini functions
+    // TODO later:
+    // - select convention for energy dependence
+    // - select relevant particle properties
+
+//    struct Decay
+//    {
+//      public:
+//        // Renormalize branching fractions to sum up to one
+//        void normalize()
+//        {
+//          double sum = 0;
+//          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
+//              != BRmap.end(); it++)
+//          {
+//            sum += it->second;
+//          }
+//          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
+//              != BRmap.end(); it++)
+//          {
+//            it->second = it->second/sum;
+//          }
+//        }
+//
+//        // Set branching fraction
+//        void set(std::string key, double BR)
+//        {
+//          if (BR >= 0)
+//          {
+//            BRmap[key] = BR;
+//          }
+//          else
+//          {
+//            std::cout << "DarkBit WARNING: I am ignoring a negative value for BR " 
+//            << key << " :" << BR << " !" << std::endl;
+//          }
+//        }
+//
+//        // Get list of non-zero branching fraction keys
+//        std::vector<std::string> getBRlist() const
+//        {
+//          std::vector<std::string> list;
+//          for (std::map<std::string, double>::const_iterator it = BRmap.begin(); it
+//              != BRmap.end(); it++)
+//          {
+//            list.push_back(it->first);
+//          }
+//          return list;
+//        }
+//
+//        // Read branching fraction
+//        double get(std::string key) const
+//        {
+//          std::map<std::string, double>::const_iterator it = BRmap.find(key);
+//          if (it != BRmap.end())
+//          {
+//            return it->second;
+//          }
+//          else
+//          {
+//            return 0;  // Returns zero by default
+//          }
+//        }
+//
+//        // Check whether normalized
+//        bool isNormalized() 
+//        {
+//          double sum = 0;
+//          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
+//              != BRmap.end(); it++)
+//          {
+//            sum += it->second;
+//          }
+//          return (abs(sum-1) < 1e-6);
+//        }
+//
+//        // DM mass
+//        double DMmass;
+//
+//        // Annihilation cross-section averaged over relative velocity
+//        double sigmaV;
+//
+//      private:
+//        // Map with branching ratios
+//        std::map<std::string, double> BRmap;
+//    };

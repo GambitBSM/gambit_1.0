@@ -112,7 +112,7 @@ namespace Gambit
         void addFunctors();
 
         // Resolution of individual module function dependencies
-        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
+        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
           resolveDependency(Graphs::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree

@@ -486,13 +486,14 @@ namespace Gambit
     }
 
     /// Resolve dependency
-    std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
+    std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
       DependencyResolver::resolveDependency(
         Graphs::VertexID toVertex, sspair quantity)
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       const IniParser::ObservableType *auxEntry = NULL;
       const IniParser::ObservableType *depEntry = NULL;
+      const IniParser::ObservableType *optEntry = NULL;
       std::vector<Graphs::VertexID> vertexCandidates;
       bool entryExists = false;
 
@@ -506,6 +507,7 @@ namespace Gambit
       if ( toVertex == OMEGA_VERTEXID)
       {
         depEntry = findIniEntry(quantity, boundIniFile->getObservables());
+        optEntry = depEntry;
         entryExists = true;
       }
       // for all other vertices use the auxiliaries entries
@@ -515,7 +517,10 @@ namespace Gambit
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 
+        {
           entryExists = true;
+          optEntry = auxEntry;
+        }
       }
 
       // Loop over all available vertices in masterGraph, and make a list of
@@ -561,6 +566,25 @@ namespace Gambit
         cout << "for consistency, etc." << endl;
         exit(0); // Throw error here
       }
+      // In case of doubt (and if not explicitely disabled in the ini-file),
+      // try to remove all functors that are not model-specific.
+      if ( vertexCandidates.size() > 1 and not ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functors") and not
+           boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functors") ) )
+      {
+        std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin();
+        cout << "Removing functors that are not model-specific from candidate list." << endl;
+        while (it != vertexCandidates.end())
+        {
+          if ( masterGraph[*it]->allModelsAllowed() )
+          {
+            it = vertexCandidates.erase(it);
+          }
+          else
+          {
+            ++it;
+          }
+        }
+      }
       if ( vertexCandidates.size() > 1 ) 
       {
         cout << "ERROR: I found too many module functions that provide the requested" << endl;
@@ -568,7 +592,7 @@ namespace Gambit
         cout << "for consistency, etc." << endl;
         exit(0); // Throw error here
       }
-      return std::tie(depEntry, auxEntry, vertexCandidates[0]);
+      return std::tie(depEntry, auxEntry, optEntry, vertexCandidates[0]);
     }
 
     /// Set up dependency tree
@@ -587,6 +611,9 @@ namespace Gambit
       // Inifile entry to relevant auxiliary entry (required for backend
       // resolution)
       const IniParser::ObservableType * auxEntry; 
+      // Inifile option entry to relevant auxiliary or observable entry (passed
+      // to module function
+      const IniParser::ObservableType * optEntry;
       bool ok;
       sspair quantity;
       int dependency_type;
@@ -618,7 +645,7 @@ namespace Gambit
         }
 
         // Resolve dependency
-        std::tie(iniEntry, auxEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        std::tie(iniEntry, auxEntry, optEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
         cout << "Resolved by: [";
@@ -684,10 +711,18 @@ namespace Gambit
             cout << "Activating for model: " << *it << endl;
           }
           resolveVertexBackend(fromVertex);
+          // Generate options object from ini-file entry that corresponds to
+          // fromVertex (optEntry) and pass it to the fromVertex for later use
+          if ( optEntry != NULL )
+          {
+            IniParser::Options myOptions(optEntry->options);
+            masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
+          }
+          // Fill parameter queue with dependencies of fromVertex
           fillParQueue(&parQueue, fromVertex);
         }
 
-        // Conclude.
+        // Done.
         cout << endl;
         parQueue.pop();
       }

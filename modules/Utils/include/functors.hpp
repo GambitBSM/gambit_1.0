@@ -41,6 +41,7 @@
 #include "util_functions.hpp"
 #include "model_types.hpp"
 #include "model_functions.hpp"
+#include "yaml_parser.hpp"
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
@@ -161,8 +162,16 @@ namespace Gambit
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
       virtual void notifyOfModel(str);
 
+      /// Notify the functor about an instance of the options class that contains
+      /// information from its corresponding ini-file entry in the auxiliaries or
+      /// observables section.
+      void notifyOfIniOptions(const IniParser::Options &);
+
       /// Test whether the functor is allowed to be used with a given model 
       bool modelAllowed(str model);
+
+      /// Test whether the functor is allowed to be used with all models
+      bool allModelsAllowed();
 
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model);
@@ -188,6 +197,9 @@ namespace Gambit
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
+
+      /// Options class
+      IniParser::Options myOptions;
 
       /// List of allowed models
       std::set<str> allowedModels;
