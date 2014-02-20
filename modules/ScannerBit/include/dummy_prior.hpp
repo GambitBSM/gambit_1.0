@@ -14,7 +14,7 @@ namespace Gambit
                 
         public: 
                 // Constructor
-                Gaussian2D(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param)
+                Dummy(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param)
                 { 
                 }
                 
@@ -28,8 +28,8 @@ namespace Gambit
                 }
         };
         
-        LOAD_PRIOR(dummy, Dummy);
-   };
-};
+        LOAD_PRIOR(dummy, Dummy)
+   }
+}
 
 #endif

@@ -43,14 +43,14 @@ void beispiel(const char* inifilename)
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
-  cout << "Your selected models are: " << selectedmodels << endl;
+  //cout << "Your selected models are: " << selectedmodels << endl;
   
   // Build prior object based on inifile instructions
-  Priors::PriorManager priorManager(iniFile);
+  //Priors::PriorManager priorManager(iniFile);
 
   // Extract a pointer to the prior object, so that it can be passed to the Scanner.
   // Could do this via the Core instead, perhaps.
-  Priors::BasePrior* prior = priorManager.getprior();
+  //Priors::BasePrior* prior = priorManager.getprior();
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
@@ -84,11 +84,11 @@ void beispiel(const char* inifilename)
   modelClaw.makeGraph();
  
   //Let's define the prior
-  Gambit::Prior::CompositePrior prior(iniFile);
+  Gambit::Priors::CompositePrior prior(iniFile);
   //Let's define the scanner factory
-  Gambit::Scanner::Scanner_Function_Factory factory(Core, dependencyResolver, prior)
+  Gambit::Scanner::Scanner_Function_Factory factory(Core, dependencyResolver, prior);
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile);
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(factory, iniFile);
   //cout << "keys = " << scanner->getKeys() << endl;
   //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();

@@ -24,6 +24,6 @@ namespace Gambit
                 namespace outputHandler
                 {
                         OutputHandler out;
-                };
-        };
-};
+                }
+        }
+}

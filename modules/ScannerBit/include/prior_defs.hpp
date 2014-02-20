@@ -90,7 +90,7 @@ namespace Gambit
         // 'flat' prior
         // Transforms x to a sample from the uniform interval [a,b].
         
-        double flatprior (double x, double a, double b) 
+        inline double flatprior (double x, double a, double b) 
         { 
                 return x*(b-a) + a;
         }
@@ -98,7 +98,7 @@ namespace Gambit
         // 'log' prior
         // Transforms x=log(y) to a sample from the uniform interval [log(a),log(b)].
         // The base is irrelevant since it is just a scaling factor which normalises out
-        double logprior (double x, double a, double b) 
+        inline double logprior (double x, double a, double b) 
         {   
                 return exp( x*(log(b)-log(a)) + log(a) );
         }
@@ -117,7 +117,7 @@ namespace Gambit
         public:
         
                 // Constructor
-                RangePrior1D(std::vector<std::string>& param, IniParser::Options&) : BasePrior(param)
+                RangePrior1D(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param)
                 {
                         // Read the entries we need from the options
                         if ( not options.hasKey("range") )
@@ -133,10 +133,10 @@ namespace Gambit
                                 range.first = range.second;
                                 range.second = temp;
                         }
-                        if (myparametersIN.size()!=1)
+                        if (param.size()!=1)
                         {
                                 /// TODO: insert proper gambit error
-                                std::cout << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size="<<myparametersIN.size()<<")"<< std::endl;
+                                std::cout << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size="<<param.size()<<")"<< std::endl;
                                 exit(1);
                         }
                         lower = range.first;
@@ -160,13 +160,13 @@ namespace Gambit
                 
                 // Transformation from unit interval to specified range
                 // (need to use vectors to be compatible with BasePrior virtual function)
-                void transform(std::vector<double> &unitpars, std::map<std::string,double>&output) const
+                void transform(std::vector<double> &unitpars, std::map<std::string,double>&output)
                 {
                         output[param_names[0]] = Func(unitpars[0],lower,upper);
                 }
         };
-        LOAD_PRIOR("log", RangePrior1D<logprior>);
-        LOAD_PRIOR("flat", RangePrior1D<flatprior>);
+        LOAD_PRIOR("log", RangePrior1D<logprior>)
+        LOAD_PRIOR("flat", RangePrior1D<flatprior>)
 
         /// 2D Gaussian prior. Takes covariance matrix as arguments
         class Gaussian2D : public BasePrior
@@ -182,7 +182,7 @@ namespace Gambit
                         if (param_names.size()!=2)
                         {
                                 /// TODO: insert proper gambit error
-                                std::cout << "Invalid input to Gaussian2D (prior) constructor: 'myparameters' must be a vector of size 2! (has size="<<myparameters.size()<<")"<< std::endl;
+                                std::cout << "Invalid input to Gaussian2D (prior) constructor: 'myparameters' must be a vector of size 2! (has size="<<param.size()<<")"<< std::endl;
                                 exit(1);
                         }
 
@@ -210,8 +210,8 @@ namespace Gambit
                         }
                 }
         };
-        LOAD_PRIOR(2d_gaussian, GAUSSIAN2D);
-   };
-};
+        LOAD_PRIOR(2d_gaussian, Gaussian2D)
+   }
+}
 
 #endif

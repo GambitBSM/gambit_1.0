@@ -61,7 +61,7 @@ namespace Gambit
                 // the full prior.
                 
                 // Constructor
-                CompositePrior::CompositePrior(const IniParser::IniFile& iniFile)
+                CompositePrior::CompositePrior(const IniParser::IniFile& iniFile) : boundIniFile(&iniFile)
                 {       
                         std::unordered_map<std::string, std::string> sameMap;
                         std::vector<BasePrior *> phantomPriors;
@@ -71,8 +71,6 @@ namespace Gambit
                         std::vector <std::string> modelNames = iniFile.getModelNames();
                         
                         //main loop to enter in parameter values
-                        int msize = 0;
-                        std::vector<Scanner::Model>::iterator mod_it = models.begin();
                         for (std::vector<std::string>::iterator it = modelNames.begin(); it != modelNames.end(); ++it)
                         {//loop over iniFile models
                                 std::vector <std::string> parameterNames = iniFile.getModelParameters(*it);
@@ -84,7 +82,7 @@ namespace Gambit
                                         if (iniFile.hasModelParameterEntry(*it, *it2, "same_as"))
                                         {
                                                 std::string connectedName = iniFile.getModelParameterEntry<std::string>(*it, *it2, "same_as");
-                                                int pos = connectedName.rfind("::");
+                                                unsigned int pos = connectedName.rfind("::");
                                                 if (pos == std::string::npos)
                                                 {
                                                         connectedName += std::string("::") + *it2;
@@ -95,15 +93,15 @@ namespace Gambit
                                         else if (iniFile.hasModelParameterEntry(*it, *it2, "fixed_value"))
                                         {
                                                 phantomPriors.push_back(new FixedPrior(*it + std::string("::") + *it2, iniFile.getModelParameterEntry<double>(*it, *it2, "fixed_value")));
-                                                phantom_keys.push_back(*it + std::string("::") + *it2);
                                         }
                                         else   
                                         {
-                                                shown_param_names.push_back(*it + std::string("::") + *it2);
+                                                std::string joined_parname = *it + std::string("::") + *it2;
+                                                shown_param_names.push_back(joined_parname);
                                                 
-                                                if (iniFile.hasModelParameterEntry(*model, *param, "range"))
+                                                if (iniFile.hasModelParameterEntry(*it, *it2, "range"))
                                                 {
-                                                        std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(*model, *param, "range");
+                                                        std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(*it, *it2, "range");
                                                         if (range.first > range.second)
                                                         {
                                                                 double temp = range.first;
@@ -115,7 +113,7 @@ namespace Gambit
                                                 }
                                                 else 
                                                 {
-                                                        needSet.insert(*it + std::string("::") + *it2);
+                                                        needSet.insert(joined_parname);
                                                 }
                                         }
                                 }
@@ -134,7 +132,7 @@ namespace Gambit
                                 {
                                         if (paramSet.find(*params_it) == paramSet.end())
                                         {
-                                                scanLog::err << "Parameter " << *params_it << "requested by " << *priorName << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                                scanLog::err << "Parameter " << *params_it << "requested by " << *priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
                                         }
                                         else
                                         {
@@ -168,7 +166,7 @@ namespace Gambit
                         
                         std::unordered_map<std::string, std::string> keyMap;
                         std::string index, result;
-                        int reps;
+                        unsigned int reps;
                         for (std::unordered_map<std::string, std::string>::iterator it = sameMap.begin(); it != sameMap.end(); it++)
                         {
                                 index = it->first;
@@ -190,6 +188,7 @@ namespace Gambit
                                                 scanLog::err << "Parameter's \"same as\"'s are loop in on each other." << scanLog::endl;
                                                 break;
                                         }
+                                        reps++;
                                 }
                                 
                                 if (keyMap.find(result) == keyMap.end())
@@ -206,7 +205,7 @@ namespace Gambit
                                 }
                         }
                         
-                        for (std::unordered_map<std::string, std::string>::iterator it = keyMap.begin(), it != keyMap.end(); it++)
+                        for (std::unordered_map<std::string, std::string>::iterator it = keyMap.begin(); it != keyMap.end(); it++)
                         {
                                 if (paramSet.find(it->first) == paramSet.end())
                                 {
@@ -214,7 +213,7 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        phantomPriors.push_back(new MultiPrior(it->second));
+                                        phantomPriors.push_back(new MultiPriors(it->second));
                                 }
                         }
                         
@@ -230,6 +229,6 @@ namespace Gambit
                                 delete *prior;
                         }
                 }    
-        }; // end namespace Priors
-}; // end namespace Gambit
+        } // end namespace Priors
+} // end namespace Gambit
 

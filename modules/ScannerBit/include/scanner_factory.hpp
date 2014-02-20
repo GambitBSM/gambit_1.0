@@ -22,8 +22,8 @@
 ///
 ///  *********************************************
 
-#ifndef __gambit_scan_hpp__
-#define __gambit_scan_hpp__
+#ifndef __scanner_factory_hpp__
+#define __scanner_factory_hpp__
 
 #include <vector>
 #include <unordered_map>
@@ -57,12 +57,12 @@ namespace Gambit
                         std::vector<Graphs::VertexID> vertices;
                         Graphs::DependencyResolver *dependencyResolver;
                         std::vector<double> realParameters;
-                        Prior::CompositePrior *prior;
+                        Priors::CompositePrior *prior;
                         std::map<std::string, double> parameterMap;
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Prior::CompositePrior *prior, std::string purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior)
+                        Scanner_Function_Base(std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior)
                         {
                                 // Find subset of vertices that match requested purpose
                                 vertices = dependencyResolver->getObsLikeOrder();
@@ -93,15 +93,15 @@ namespace Gambit
                         void setParameters (std::vector<double> &vec) 
                         {
                                 prior->transform(vec, parameterMap);
-                                std::vector<std::string>::const_iterator itKey = prior->getParameters().begin();
-                                for (std::vector<double>::const_iterator it  = realParameters.begin(); it != realParameters.end(); ++it, ++itKey)
+                                std::vector<std::string>::iterator itKey = prior->getParameters().begin();
+                                for (std::vector<double>::iterator it  = realParameters.begin(); it != realParameters.end(); ++it, ++itKey)
                                 {
                                         *it = parameterMap[*itKey];
                                 }
                                 
                                 for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
                                 {
-                                        std::vector <std::string> &paramkeys = act_it->second->getcontentsPtr()->getKeys();
+                                        std::vector <std::string> paramkeys = act_it->second->getcontentsPtr()->getKeys();
                                         for (std::vector<std::string>::iterator it = paramkeys.begin(); it != paramkeys.end(); it++)
                                         {
                                                 act_it->second->getcontentsPtr()->setValue(*it, parameterMap[act_it->first + "::" + *it]);
@@ -115,7 +115,7 @@ namespace Gambit
                         }
 			
                         virtual std::vector<double> & getParameters(){return realParameters;}
-                        virtual std::vector<std::string> & getKeys{return prior->getShownParameters();}
+                        virtual std::vector<std::string> & getKeys(){return prior->getShownParameters();}
                         virtual double operator () (std::vector<double> &) = 0;
                         virtual ~Scanner_Function_Base(){}
                 };
@@ -123,7 +123,7 @@ namespace Gambit
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-                        Scanner_Function (void *a, std::string purpose) : Scanner_Function_Base (a, purpose) {}
+                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
 			
                         virtual double operator () (std::vector<double> &in)
                         {
@@ -156,7 +156,7 @@ namespace Gambit
                 template <class T>
                 struct factory_template
                 {
-                        static void *factory(std::map<std::string, primary_model_functor *> &a, Graphs::DependencyResolver *b, Prior::CompositePrior *c, std::string purpose){return new T(a, b, c, purpose);}
+                        static void *factory(std::map<std::string, primary_model_functor *> &a, Graphs::DependencyResolver *b, Priors::CompositePrior *c, std::string purpose){return new T(a, b, c, purpose);}
                         static void remove(void *a){delete (T *)a;}
                 };
                 
@@ -164,15 +164,15 @@ namespace Gambit
                 {
                 private:
                         Graphs::DependencyResolver *dependencyResolver;
-                        Prior::CompositePrior *prior;
+                        Priors::CompositePrior *prior;
                         std::map<std::string, primary_model_functor *> functorMap;
                         
-                        std::map<std::string, std::pair<void *(*)(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver *, Prior::CompositePrior *, std::string), void (*)(void *)>> factoryMap;
+                        std::map<std::string, std::pair<void *(*)(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver *, Priors::CompositePrior *, std::string), void (*)(void *)>> factoryMap;
                        
                 public:
-                        Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Prior::CompositePrior &prior) : dependencyResolver(&dependencyResolver), prior(&prior)
+                        Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior) : dependencyResolver(&dependencyResolver), prior(&prior)
                         {
-                                functorMap = core.getActiveModelFunctors();
+                                functorMap = *core.getActiveModelFunctors();
                                 
                                 std::vector<std::string> &priorKeys = prior.getParameters();
                                 std::vector<std::string> gambitKeys;
@@ -188,26 +188,26 @@ namespace Gambit
                                 std::unordered_set<std::string> priorSet(priorKeys.begin(), priorKeys.end());
                                 std::unordered_set<std::string> gambitSet(gambitKeys.begin(), gambitKeys.end());
                                 
-                                for (std::vector<std::string>::iterator it = gambitKeys.begin(), it != gambitKeys.end(); it++)
+                                for (std::vector<std::string>::iterator it = gambitKeys.begin(); it != gambitKeys.end(); it++)
                                 {
                                         if (priorSet.find(*it) == priorSet.end())
                                         {
-                                                std::cout << "Parameter " << *it << "is required by gambit but is not in the inifile."
+                                                scanLog::err << "Parameter " << *it << "is required by gambit but is not in the inifile." << scanLog::endl;
                                         }
                                 }
                                 
-                                for (std::vector<std::string>::iterator it = priorKeys.begin(), it != priorKeys.end(); it++)
+                                for (std::vector<std::string>::iterator it = priorKeys.begin(); it != priorKeys.end(); it++)
                                 {
                                         if (gambitSet.find(*it) == gambitSet.end())
                                         {
-                                                std::cout << "Parameter " << *it << "is in the inifile but is not required by gambit."
+                                                scanLog::err << "Parameter " << *it << "is in the inifile but is not required by gambit." << scanLog::endl;
                                         }
                                 }
                                 
                                 INPUT_SCANNER_FUNCTION (factoryMap, Scanner_Function);
                         }
                         
-                        virtual std::vector<std::string> & getKeys{return prior->getShownParameters();}
+                        virtual std::vector<std::string> & getKeys(){return prior->getShownParameters();}
                         
                         virtual void * operator() (std::string in, std::string purpose)
                         {
@@ -221,7 +221,7 @@ namespace Gambit
                         
                         virtual ~Scanner_Function_Factory(){}
                 };               
-        };
-};
+        }
+}
 
 #endif

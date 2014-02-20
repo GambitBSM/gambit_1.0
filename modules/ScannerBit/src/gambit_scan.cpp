@@ -28,8 +28,8 @@
 namespace Gambit
 {
         namespace Scanner
-        {       
-                Gambit_Scanner::Gambit_Scanner (Scanner_Function_Factory &factory, IniParser::IniFile &iniFile) 
+        {
+                Gambit_Scanner::Gambit_Scanner (Scanner_Function_Factory &factory, const IniParser::IniFile &iniFile) 
                                 : factory(&factory), boundIniFile(&iniFile), flag(0x00)
                 {       
                         bool redirect = false;
@@ -44,7 +44,7 @@ namespace Gambit
                                 {
                                         std::string file = iniFile.getValue<std::string>("redirect_output", "scanner");
                                         
-                                        outputHandler::out.set("scanner", file)
+                                        outputHandler::out.set("scanner", file);
                                 }
                         }
                 }
@@ -73,9 +73,8 @@ namespace Gambit
                                         name = "";
                                 }
                                 
-                                Scanner_Function_Factory factory(this);
                                 std::vector<void *> input(2);
-                                input[0] = (void *)(factory->getKeys());
+                                input[0] = (void *)(&factory->getKeys());
                                 input[1] = (void *)factory;
                                 
                                 Module::Module_Interface<int ()> interface(file, name, version, boundIniFile, &input);
@@ -121,6 +120,6 @@ namespace Gambit
                         return 0;
                 }
                 
-                Gambit_Scanner::~Gambit_Scanner(){GAMBIT_SCANNER_EXIT = false;}
+                Gambit_Scanner::~Gambit_Scanner(){}
         };
 };

@@ -31,7 +31,7 @@
 #include <functors.hpp>
 #include <graphs.hpp>
 #include <dlfcn.h>
-#include <scanner_utils>
+#include <scanner_utils.hpp>
 
 namespace Gambit
 {

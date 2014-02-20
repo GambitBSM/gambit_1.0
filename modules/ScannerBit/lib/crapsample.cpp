@@ -21,7 +21,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <gambit_module.hpp>
+#include <gambit_plugin.hpp>
 #include <typeinfo>
 #include <cxxabi.h>
   
@@ -83,7 +83,7 @@ SCANNER_PLUGIN (crapsample)
                         total++;
                         for (int i = 0; i < ma; i++)
                         {
-                                aNext[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
+                                aNext[i] = gDev.Doub();
                         }
 
                         chisqnext = (*LogLike)(aNext);
@@ -138,7 +138,7 @@ SCANNER_PLUGIN (loopsample)
                 {
                         for (int i = 0; i < ma; i++)
                         {
-                                a[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
+                                a[i] = gDev.Doub();
                                 out << a[i] << "   ";
                         }
                         out << (*LogLike)(a) << endl;

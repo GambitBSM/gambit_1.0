@@ -31,12 +31,12 @@
 namespace Gambit
 {
         namespace Scanner
-        {
+        {       
                 class Gambit_Scanner
                 {
                 private:
-                        Scanner_Function_Factory *factory;
-                        IniParser::IniFile *boundIniFile;
+                        Gambit::Scanner::Scanner_Function_Factory *factory;
+                        const IniParser::IniFile *boundIniFile;
                         unsigned char flag;
 			
                 public:
@@ -46,7 +46,7 @@ namespace Gambit
                         
                         ~Gambit_Scanner();
                 };             
-        };
-};
+        }
+}
 
 #endif

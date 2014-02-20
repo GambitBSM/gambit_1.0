@@ -21,59 +21,58 @@
 #include <iostream>
 #include <ostream>
 #include <fstream>
+#include <vector>
+#include <sstream>
 
 namespace Gambit
 {
-        namespace Scanner
-        {
-                namespace scanLog
-                {      
-                        class ErrorLog;
+        namespace scanLog
+        {      
+                class ErrorLog;
+                
+                inline ErrorLog &endl(ErrorLog &in){return in;}
+                
+                class ErrorLog
+                {
+                private:
+                        std::vector<std::ostringstream> errors;
+                        int index;
                         
-                        ErrorLog &endl(ErrorLog &in){return in;}
+                public:
+                        ErrorLog () : index(0) {}
                         
-                        class ErrorLog
+                        template <class T>
+                        ErrorLog &operator << (T in)
                         {
-                        private:
-                                std::vector<ostringstream> errors;
-                                int index;
+                                errors[index] << in;
                                 
-                        public:
-                                ErrorLog () : index(0) {}
+                                return *this;
+                        }
+                        
+                        ErrorLog &operator << (ErrorLog &endl(ErrorLog &in))
+                        {
+                                index++;
                                 
-                                template <class T>
-                                ErrorLog &operator << (T &in)
-                                {
-                                        errors[index] << in;
-                                        
-                                        return *this;
-                                }
-                                
-                                ErrorLog &operator << (ErrorLog &endl(ErrorLog &in))
-                                {
-                                        index++;
-                                        
-                                        return *this;
-                                }
-                                
-                                void print(std::string file)
-                                {
-                                        ofstream out(file.c_str());
-                                        print(out);
-                                }
-                                
-                                void print(char *file)
-                                {
-                                        ofstream out(file);
-                                        print(out);
-                                }
-                                
-                                void print();
-                                
-                                void print (ostream &out);
-                        };
+                                return *this;
+                        }
+                        
+                        void print(std::string file)
+                        {
+                                std::ofstream out(file.c_str());
+                                print(out);
+                        }
+                        
+                        void print(char *file)
+                        {
+                                std::ofstream out(file);
+                                print(out);
+                        }
+                        
+                        void print();
+                        
+                        void print (std::ostream &out);
                 };
-        };
-};
+        }
+}
 
 #endif

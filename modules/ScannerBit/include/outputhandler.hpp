@@ -15,7 +15,7 @@
 //
 //  *********************************************
 
-#ifdef OUTPUTHANDLER_HPP
+#ifndef OUTPUTHANDLER_HPP
 #define OUTPUTHANDLER_HPP
 
 #include <string>
@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unordered_map>
 
 namespace Gambit
 {
@@ -37,9 +38,9 @@ namespace Gambit
                         private:
                                 static bool GAMBIT_SCANNER_EXIT;
                                 static int defOutExit;
-                                int defout;
+                                int default_out;
                                 bool hasXTerm;
-                                unordered_map<std::string, int> outputs;
+                                std::unordered_map<std::string, int> outputs;
                                 
                         public:
                                 OutputHandler()
@@ -48,11 +49,13 @@ namespace Gambit
                                         hasXTerm = (std::system("which xterm") == 0) ? true : false;
                                 
                                         //saving std output
-                                        defout = dup(STDOUT_FILENO);
+                                        default_out = dup(STDOUT_FILENO);
                                         
-                                        defOutExit = defout;
+                                        //defOutExit = default_out;
                                         
                                         atexit(OutputHandler::gambitScannerExit);
+                                        
+                                        GAMBIT_SCANNER_EXIT = false;
                                 }
                                 
                                 void set(std::string key, std::string file)
@@ -73,29 +76,29 @@ namespace Gambit
                                 
                                 void redir(std::string &key)
                                 {
-                                        unordered_map<std::string, int>::iterator it = outputs.find(key);
+                                        std::unordered_map<std::string, int>::iterator it = outputs.find(key);
                                         if (it == outputs.end())
-                                                dup2(defout, STDOUT_FILENO);
+                                                dup2(default_out, STDOUT_FILENO);
                                         else
                                                 dup2(it->second, STDOUT_FILENO);
                                 }
                                 
                                 void redir(const char *key)
                                 {
-                                        unordered_map<std::string, int>::iterator it = outputs.find(std::string(key));
+                                        std::unordered_map<std::string, int>::iterator it = outputs.find(std::string(key));
                                         if (it == outputs.end())
-                                                dup2(defout, STDOUT_FILENO);
+                                                dup2(default_out, STDOUT_FILENO);
                                         else
                                                 dup2(it->second, STDOUT_FILENO);
                                 }
                                 
-                                void defout(){dup2(defout, STDOUT_FILENO);}
+                                void defout(){dup2(default_out, STDOUT_FILENO);}
                                 
                                 static void gambitScannerExit(void)
                                 { 
                                         if (GAMBIT_SCANNER_EXIT) 
                                         {
-                                                dup2(defOutExit, STDOUT_FILENO); 
+                                                dup2(dup(STDOUT_FILENO), STDOUT_FILENO); 
                                                 printf("Gambit has been terminated, please press enter to continue ... "); 
                                                 getchar();
                                         }
@@ -115,10 +118,8 @@ namespace Gambit
                                         return fopen(name, "w");
                                 }
                         };
-                        
-                        bool OutputHandler::GAMBIT_SCANNER_EXIT = false;
-                }; 
-        };
-};
+                }
+        }
+}
 
 #endif

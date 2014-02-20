@@ -17,7 +17,7 @@
 
 #ifndef __priorfactory_hpp__
 #define __priorfactory_hpp__
-
+/*
 #include <priors.hpp>
 #include <yaml_parser.hpp>
 
@@ -61,7 +61,7 @@ namespace Gambit
  } // end namespace Priors
 } // end namespace Gambit
 
-
+*/
 #endif /* defined(__priorfactory_hpp__) */
 
  

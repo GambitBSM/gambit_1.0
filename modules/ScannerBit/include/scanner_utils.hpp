@@ -28,13 +28,13 @@ namespace Gambit
                 namespace outputHandler
                 {
                         extern OutputHandler out;
-                };
-                
-                namespace scanLog
-                {
-                        extern ErrorLog err;
-                };
-        };
-};
+                }
+        }
+        
+        namespace scanLog
+        {
+                extern ErrorLog err;
+        }
+}
 
 #endif
