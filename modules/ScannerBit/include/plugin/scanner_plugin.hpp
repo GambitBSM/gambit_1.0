@@ -18,6 +18,7 @@
 #define SCANNER_PLUGIN_HPP
 
 #include <plugin/gambit_plugin.hpp>
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 
@@ -47,17 +48,17 @@ namespace Gambit
                         virtual ~Function_Base() = 0;
                 };
                 
-                /*Factory inported by ScannerBit*/
+                /*Factory imported by ScannerBit*/
                 class Function_Factory_Base
                 {
                 public:
                         virtual std::vector<std::string> & getKeys() = 0;
                         virtual void * operator() (std::string, std::string) = 0;
                         virtual void remove(std::string, void *) = 0;
-                        virtual ~Function_Factory_Base(){}
+                        virtual ~Function_Factory_Base() = 0;
                 };
-        };
-};
+        }
+}
 
 #define GETKEYS() get_input_value<std::vector<std::string>>(0);
 #define GETFUNCTOR(str1, str2) (Function_Base *)(get_input_value<Function_Factory_Base>(1))(str1, str2);
@@ -70,9 +71,8 @@ T get_inifile_value(std::string in)                                             
         std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
         if (temp != "")                                                                                                 \
         {                                                                                                               \
-                T ret;                                                                                                  \
-                Gambit::Plugin::convert<T>(ret, temp);                                                                  \
-                return ret;                                                                                             \
+                YAML::Node conv = YAML::Load(temp);                                                                     \
+                return conv.as<T>();                                                                                    \
         }                                                                                                               \
         else                                                                                                            \
         {                                                                                                               \
@@ -88,9 +88,8 @@ T get_inifile_value(std::string in, T defaults)                                 
         std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
         if (temp != "")                                                                                                 \
         {                                                                                                               \
-                T ret;                                                                                                  \
-                Gambit::Plugin::convert<T>(ret, temp);                                                                  \
-                return ret;                                                                                             \
+                YAML::Node conv = YAML::Load(temp);                                                                     \
+                return conv.as<T>();                                                                                    \
         }                                                                                                               \
         else                                                                                                            \
         {                                                                                                               \

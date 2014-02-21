@@ -1,9 +1,6 @@
 #ifndef DUMMY_PRIOR_HPP
 #define DUMMY_PRIOR_HPP
 
-#include <priors.hpp>
-#include <yaml_parser.hpp>
-
 namespace Gambit
 {
    namespace Priors
@@ -11,10 +8,10 @@ namespace Gambit
         class Dummy : public BasePrior
         {
         private:
-                
+                std::vector<std::string> param_names;
         public: 
                 // Constructor
-                Dummy(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param)
+                Dummy(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), param_names(param)
                 { 
                 }
                 

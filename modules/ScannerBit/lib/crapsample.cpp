@@ -50,13 +50,9 @@ class Ran
 };  
 
 SCANNER_PLUGIN (crapsample)
-{
-        VERSION(1.0-beta);
-        
-        using namespace Gambit::Scanner;
-        
+{      
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        int PLUGIN_MAIN (int input_int)
+        int PLUGIN_MAIN (void)
         {
                 std::vector<std::string> &keys     = GETKEYS();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
@@ -119,8 +115,6 @@ SCANNER_PLUGIN (crapsample)
 
 SCANNER_PLUGIN (loopsample)
 {
-        using namespace Gambit::Scanner;
-        
         int PLUGIN_MAIN ()
         {
                 std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
@@ -143,6 +137,7 @@ SCANNER_PLUGIN (loopsample)
                         }
                         out << (*LogLike)(a) << endl;
                 }
+                
                 return 0;
         }
         
@@ -160,5 +155,7 @@ SCANNER_PLUGIN (classtest)
                 
                 cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << ", " << testing.baseNum2(2.0) << std::endl;
                 getchar();
+                
+                return 0;
         }
 };

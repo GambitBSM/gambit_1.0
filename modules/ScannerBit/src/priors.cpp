@@ -82,7 +82,7 @@ namespace Gambit
                                         if (iniFile.hasModelParameterEntry(*it, *it2, "same_as"))
                                         {
                                                 std::string connectedName = iniFile.getModelParameterEntry<std::string>(*it, *it2, "same_as");
-                                                unsigned int pos = connectedName.rfind("::");
+                                                std::string::size_type pos = connectedName.rfind("::");
                                                 if (pos == std::string::npos)
                                                 {
                                                         connectedName += std::string("::") + *it2;
@@ -230,9 +230,12 @@ namespace Gambit
                                 }
                         }
                         
-                        my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
+                        for (subpriors_it subprior = my_subpriors.begin(); subprior != my_subpriors.end(); ++subprior)
+                        {
+                                param_size += (*subprior)->size();
+                        }
                         
-                        //scanLog::err.print();
+                        my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
                 }
         
                 CompositePrior::~CompositePrior()

@@ -45,20 +45,19 @@ namespace Gambit
                 class BasePrior
                 {
                 protected:
-                        std::vector<std::string> param_names;
+                        unsigned int param_size;
                         
                 public:
-                        BasePrior() {}
+                        BasePrior() : param_size(0) {}
                         
-                        BasePrior(std::vector<std::string> param_names) : param_names(param_names){}
-                        
-                        BasePrior(std::string name) : param_names(std::vector<std::string>(1, name)) {}
+                        BasePrior(const int param_size) : param_size(param_size) {}
                         
                         virtual void transform(std::vector<double> &, std::map<std::string, double> &) = 0;
 
                         /// Function to check the parameter ranges supplied in the input
-                        inline int size(){return param_names.size();}
-                        inline std::vector<std::string> &getParameters(){return param_names;}
+                        inline int size(){return param_size;}
+                        
+                        virtual ~BasePrior(){}
                 };
 
                 /// Special "build-a-prior" class
@@ -75,6 +74,7 @@ namespace Gambit
                         const IniParser::IniFile* boundIniFile;
                         std::vector<BasePrior*> my_subpriors;
                         std::vector<std::string> shown_param_names;
+                        std::vector<std::string> param_names;
                         
                 public:
                 
@@ -82,6 +82,8 @@ namespace Gambit
                         CompositePrior(const IniParser::IniFile& iniFile);
                         
                         inline std::vector<std::string> &getShownParameters(){return shown_param_names;}
+                        
+                        inline std::vector<std::string> &getParameters(){return param_names;}
                         
                         // Transformation from unit hypercube to my_ranges
                         void transform(std::vector<double> &unitPars, std::map<std::string,double> &outputMap)

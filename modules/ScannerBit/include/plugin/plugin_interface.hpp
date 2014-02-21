@@ -200,7 +200,7 @@ namespace Gambit
                         
                         ~Plugin_Interface(){if (open) dlclose(plugin);}
                 };
-        };
-};
+        }
+}
 
 #endif

@@ -72,10 +72,6 @@
    /// Map in which to keep factory functions for the priors
    // Whenever you add a new prior, you need to add an entry here in order to
    // have it accessible via the inifile (by whatever name you specify here).
-   
-#include <priors.hpp>
-#include <yaml_parser.hpp>
-#include <scanner_utils.hpp>
 
 namespace Gambit
 {
@@ -117,7 +113,7 @@ namespace Gambit
         public:
         
                 // Constructor
-                RangePrior1D(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param)
+                RangePrior1D(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(1), myparameter(param[0])
                 {
                         // Read the entries we need from the options
                         if ( not options.hasKey("range") )
@@ -144,7 +140,7 @@ namespace Gambit
                 }
         
                 // Constructor (for auto creation of flat prior; other priors don't need this kind of constructor! It won't hurt the other 1D range priors to have this though)
-                RangePrior1D(std::string &param, std::pair<double, double>& range) : BasePrior(param)
+                RangePrior1D(std::string &param, std::pair<double, double>& range) : BasePrior(1), myparameter(param)
                 {
                         if (range.first > range.second)
                         {
@@ -162,55 +158,12 @@ namespace Gambit
                 // (need to use vectors to be compatible with BasePrior virtual function)
                 void transform(std::vector<double> &unitpars, std::map<std::string,double>&output)
                 {
-                        output[param_names[0]] = Func(unitpars[0],lower,upper);
+                        output[myparameter] = Func(unitpars[0],lower,upper);
                 }
         };
+        
         LOAD_PRIOR(log, RangePrior1D<logprior>)
         LOAD_PRIOR(flat, RangePrior1D<flatprior>)
-
-        /// 2D Gaussian prior. Takes covariance matrix as arguments
-        class Gaussian2D : public BasePrior
-        {
-        private:
-                // Covariance matrix
-                std::vector<std::vector<double>> cov;
-                
-        public: 
-                // Constructor
-                Gaussian2D(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param)
-                { 
-                        if (param_names.size()!=2)
-                        {
-                                /// TODO: insert proper gambit error
-                                std::cout << "Invalid input to Gaussian2D (prior) constructor: 'myparameters' must be a vector of size 2! (has size="<<param.size()<<")"<< std::endl;
-                                exit(1);
-                        }
-
-                        // Check if cov exists first!
-
-                        // Read the entries we need from the options
-                        cov = options.getValue< std::vector<std::vector<double>> >("cov");
-                        
-                        // Check that covariance matrix is 2x2
-                        if (cov.size() != 2 or cov[0].size() != 2 or cov[1].size() != 2)
-                        {
-                                std::cout << "Invalid options to Gaussian2D (prior) constructor: 'cov' option must be transformable by YAML to a vector of vectors, of size 2x2! Please check your inifile for errors." << std::endl;
-                        } 
-                }
-                
-                // Transformation from unit interval to the Gaussian
-                void transform(std::vector<double>&unitpars, std::map<std::string,double>&outputMap)
-                {
-                        
-                        // Insert code needed to do this transformation here...       
-                        
-                        for (std::vector<std::string>::iterator it = param_names.begin(); it != param_names.end(); it++)
-                        {
-                                outputMap[*it] = 0.0; // For lack of a better solution lol
-                        }
-                }
-        };
-        LOAD_PRIOR(2d_gaussian, Gaussian2D)
    }
 }
 
