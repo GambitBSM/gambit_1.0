@@ -21,7 +21,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <gambit_plugin.hpp>
+#include <scanner_plugin.hpp>
 #include <typeinfo>
 #include <cxxabi.h>
   

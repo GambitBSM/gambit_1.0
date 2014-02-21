@@ -35,12 +35,11 @@ namespace Gambit
                 class Gambit_Scanner
                 {
                 private:
-                        Gambit::Scanner::Scanner_Function_Factory *factory;
-                        const IniParser::IniFile *boundIniFile;
-                        unsigned char flag;
+                        Factory_Base *factory;
+                        IniFileInterface_Base *interface;
 			
                 public:
-                        Gambit_Scanner (Scanner_Function_Factory &, const IniParser::IniFile &);
+                        Gambit_Scanner (Factory_Base *, IniFileInterface_Base *);
 
                         int Run();
                         

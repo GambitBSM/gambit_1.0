@@ -24,7 +24,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <gambit_module.hpp>
+#include <scanner_plugin.hpp>
 #include "priors.hpp"
 #include <typeinfo>
 #include <cxxabi.h>
@@ -222,9 +222,6 @@ namespace Gambit {
 
 SCANNER_PLUGIN (multinest)
 {
-        VERSION(1.0-beta);
-        using namespace Gambit::Scanner;
-
         int PLUGIN_MAIN ()
         {
                 std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
@@ -306,5 +303,5 @@ SCANNER_PLUGIN (multinest)
                 return 0;
 
         }  //end module_main
-};
+}
 

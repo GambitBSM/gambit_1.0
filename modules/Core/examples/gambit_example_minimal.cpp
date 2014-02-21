@@ -87,8 +87,10 @@ void beispiel(const char* inifilename)
   Gambit::Priors::CompositePrior prior(iniFile);
   //Let's define the scanner factory
   Gambit::Scanner::Scanner_Function_Factory factory(Core, dependencyResolver, prior);
+  //Let's define the iniFile interface
+  Gambit::Scanner::IniFileInterface interface(iniFile);
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(factory, iniFile);
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(&factory, &interface);
   //cout << "keys = " << scanner->getKeys() << endl;
   //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();

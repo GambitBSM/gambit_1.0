@@ -29,94 +29,55 @@ namespace Gambit
 {
         namespace Scanner
         {
-                Gambit_Scanner::Gambit_Scanner (Scanner_Function_Factory &factory, const IniParser::IniFile &iniFile) 
-                                : factory(&factory), boundIniFile(&iniFile), flag(0x00)
+                Gambit_Scanner::Gambit_Scanner (Factory_Base *factory, IniFileInterface_Base *interface) : factory(factory), interface(interface)
                 {       
-                        bool redirect = false;
-                        if (iniFile.hasKey("enable_redirect"))
-                        {
-                                redirect = iniFile.getValue<bool>("enable_redirect");
-                        }
-
-                        if (redirect)
-                        {
-                                if (iniFile.hasKey("redirect_output", "scanner"))
-                                {
-                                        std::string file = iniFile.getValue<std::string>("redirect_output", "scanner");
-                                        
-                                        outputHandler::out.set("scanner", file);
-                                }
-                        }
                 }
                 
                 int Gambit_Scanner::Run()
                 {
-                        if (boundIniFile->hasKey("scanner", "file_path"))
+                        if (interface->fileName() == "")
                         {
-                                std::string file = boundIniFile->getValue<std::string>("scanner", "file_path");
-                                std::string name, errors, version;
-                                if (boundIniFile->hasKey("scanner", "module")) 
-                                {
-                                        name = boundIniFile->getValue<std::string>("scanner", "module");
-                                        
-                                        if (boundIniFile->hasKey("scanner", "version"))
-                                        {
-                                                std::string version = boundIniFile->getValue<std::string>("scanner", "version");
-                                        }
-                                        else
-                                        {
-                                                version = "";
-                                        }
-                                }
-                                else
-                                {
-                                        name = "";
-                                }
-                                
-                                std::vector<void *> input(2);
-                                input[0] = (void *)(&factory->getKeys());
-                                input[1] = (void *)factory;
-                                
-                                Plugin::Plugin_Interface<int ()> interface(file, name, version, boundIniFile, &input);
-                                scanLog::err.print();
-
-                                outputHandler::out.redir("scanner");
-                                interface.main();
-                                outputHandler::out.defout();
-                                
-                                  //could do this ...
-                                  
-                                  //let's use the "LogLikelihood" function from crapsample! ...
-                                  //std::vector<double> some_vector;
-                                  //typedef double (*funcType)(std::vector<double> &);
-                                  //funcType func = (funcType) interface.getMember("func");
-                                  //double some_value = func(some_vector); 
-                                  
-                                  //Or let's use the ran_export class from crapsample! ...
-                                  
-                                  //typedef class {public: virtual double Num()=0;} randomClass;
-                                  //randomClass *ptr = (randomClass *)interface.getMember("random");
-                                  //double some_value2 = ptr->Num();
-                                  //interface.deleteMember((void *)ptr, "random"); 
-                                  
-                                  //std::cout << "real value = " << ptr->Num() << "   " << ptr->Num() << std::endl;
-                                  
-                                  //or this get the interger ...
-                                
-                                  //int *ptrt = (int *)interface.getMember("temp");
-                                  
-                                  //and output stuff
-                                
-                                  //std::cout << "temp = " << some_value2 << "   " << (*ptrt) << "   " << some_value << std::endl;
-                                 
-                        }
-                        else
-                        {
-                                //std::stringstream ss;
                                 scanLog::err << "Did not specify module library path." << scanLog::endl;
                                 scanLog::err.print();
                         }
+                        std::string version = "";
+                        std::vector<void *> input(3);
+                        input[0] = (void *)(&factory->getKeys());
+                        input[1] = (void *)factory;
+                        input[2] = (void *)interface;
                         
+                        Plugin::Plugin_Interface<int ()> plugin_interface(interface->fileName(), interface->pluginName(), version, &input);
+                        scanLog::err.print();
+
+                        outputHandler::out.redir("scanner");
+                        plugin_interface.main();
+                        outputHandler::out.defout();
+                        
+                                //could do this ...
+                                
+                                //let's use the "LogLikelihood" function from crapsample! ...
+                                //std::vector<double> some_vector;
+                                //typedef double (*funcType)(std::vector<double> &);
+                                //funcType func = (funcType) interface.getMember("func");
+                                //double some_value = func(some_vector); 
+                                
+                                //Or let's use the ran_export class from crapsample! ...
+                                
+                                //typedef class {public: virtual double Num()=0;} randomClass;
+                                //randomClass *ptr = (randomClass *)interface.getMember("random");
+                                //double some_value2 = ptr->Num();
+                                //interface.deleteMember((void *)ptr, "random"); 
+                                
+                                //std::cout << "real value = " << ptr->Num() << "   " << ptr->Num() << std::endl;
+                                
+                                //or this get the interger ...
+                        
+                                //int *ptrt = (int *)interface.getMember("temp");
+                                
+                                //and output stuff
+                        
+                                //std::cout << "temp = " << some_value2 << "   " << (*ptrt) << "   " << some_value << std::endl;
+                
                         return 0;
                 }
                 

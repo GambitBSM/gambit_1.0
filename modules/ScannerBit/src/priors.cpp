@@ -232,7 +232,7 @@ namespace Gambit
                         
                         my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
                         
-                        scanLog::err.print();
+                        //scanLog::err.print();
                 }
         
                 CompositePrior::~CompositePrior()

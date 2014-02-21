@@ -25,7 +25,7 @@ using namespace std;
 
 namespace Gambit
 {
-        namespace Module
+        namespace Plugin
         {
                 struct factoryBase
                 {
@@ -50,18 +50,11 @@ namespace Gambit
                         void remove(void *in){delete (T *) in;}
                 };
                 
-                struct IniFileInterface
-                {       
-                        virtual bool hasKey(std::string name, std::string in) = 0;
-                        virtual std::string getValue(std::string name, std::string in) = 0;                
-                };
-                
                 /*Structure that contains all the data inputed by ScannerBit*/
                 struct gambitData
                 {
                         std::string name;
                         std::string version;
-                        IniFileInterface *iniFile;
                         std::vector<void *> inputData;
                         std::vector <void (*)(gambitData &)> inits;
                         std::map<std::string, factoryBase *> outputFuncs;
@@ -75,37 +68,7 @@ namespace Gambit
                                 }
                         }
                 };  
-        };
-        
-        /*ScannerBit specific stuff.*/
-        namespace Scanner
-        {       
-                /*Generic Functor*/
-                class Function_Base
-                {
-                public:
-                        typedef Function_Base type;
-                        virtual std::vector<double> & getParameters() = 0;
-                        virtual std::vector<std::string> & getKeys() = 0;
-                        virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Function_Base() = 0;
-                };
-                
-                /*Factory inported by ScannerBit*/
-                class Function_Factory_Base
-                {
-                public:
-                        virtual std::vector<std::string> & getKeys() = 0;
-                        virtual void * operator() (std::string, std::string) = 0;
-                        virtual void remove(std::string, void *) = 0;
-                        virtual ~Function_Factory_Base(){}
-                };
-        };
-};
-
-#define GETKEYS() get_input_value<std::vector<std::string>>(0);
-#define GETFUNCTOR(str1, str2) (Function_Base *)(get_input_value<Function_Factory_Base>(1))(str1, str2);
-//TODO: Ben - Probably a cleaner way of doing this
-//#define GETPRIOR() get_input_value< ::Gambit::Priors::BasePrior* >(4);
+        }
+}
 
 #endif

@@ -164,7 +164,19 @@ namespace Gambit
                         static void remove(void *a){delete (T *)a;}
                 };
                 
-                class Scanner_Function_Factory
+                class Factory_Base
+                {
+                public:
+                        virtual std::vector<std::string> & getKeys() = 0;
+                        
+                        virtual void * operator() (std::string in, std::string purpose) = 0;
+                        
+                        virtual void remove(std::string in, void *a) = 0;
+                        
+                        virtual ~Factory_Base(){};
+                };
+                
+                class Scanner_Function_Factory : public Factory_Base
                 {
                 private:
                         Graphs::DependencyResolver *dependencyResolver;
@@ -210,23 +222,97 @@ namespace Gambit
                                 
                                 INPUT_SCANNER_FUNCTION (factoryMap, Scanner_Function);
                                 
-                                scanLog::err.print();
+                                //scanLog::err.print();
                         }
                         
-                        virtual std::vector<std::string> & getKeys(){return prior->getShownParameters();}
+                        std::vector<std::string> & getKeys(){return prior->getShownParameters();}
                         
-                        virtual void * operator() (std::string in, std::string purpose)
+                        void * operator() (std::string in, std::string purpose)
                         {
                                 return (*factoryMap[in].first)(functorMap, dependencyResolver, prior, purpose);
                         }
                         
-                        virtual void remove(std::string in, void *a)
+                        void remove(std::string in, void *a)
                         {
                                 (*factoryMap[in].second)(a);
                         }
                         
-                        virtual ~Scanner_Function_Factory(){}
-                };               
+                        ~Scanner_Function_Factory(){}
+                };
+                
+                class IniFileInterface_Base
+                {
+                public:
+                        virtual std::string pluginName() = 0;
+                        virtual std::string fileName() = 0;
+                        virtual std::string getValue(std::string in) = 0;
+                        virtual ~IniFileInterface_Base(){};
+                };
+                
+                class IniFileInterface : public IniFileInterface_Base
+                {
+                private:
+                        const IniParser::IniFile *boundIniFile;
+                        std::string file;
+                        std::string name;
+                        
+                public:
+                        IniFileInterface(const IniParser::IniFile &iniFile) : boundIniFile(&iniFile)
+                        {       
+                                bool redirect = false;
+                                if (iniFile.hasKey("enable_redirect"))
+                                {
+                                        redirect = iniFile.getValue<bool>("enable_redirect");
+                                }
+
+                                if (redirect)
+                                {
+                                        if (iniFile.hasKey("redirect_output", "scanner"))
+                                        {
+                                                std::string file = iniFile.getValue<std::string>("redirect_output", "scanner");
+                                                
+                                                outputHandler::out.set("scanner", file);
+                                        }
+                                }
+                                
+                                if (iniFile.hasKey("scanner", "file_path"))
+                                {
+                                        file = iniFile.getValue<std::string>("scanner", "file_path");
+
+                                        if (boundIniFile->hasKey("scanner", "module")) 
+                                        {
+                                                name = iniFile.getValue<std::string>("scanner", "module");
+                                        }
+                                        else
+                                        {
+                                                name = "";
+                                        }
+                                }
+                                else
+                                {
+                                        file = "";
+                                        name = "";
+                                }
+                        }
+                        
+                        std::string pluginName(){return name;};
+                        
+                        std::string fileName(){return file;};
+                        
+                        std::string getValue(std::string in)
+                        {
+                                if (boundIniFile->hasKey(name.c_str(), in.c_str()))
+                                {
+                                        return boundIniFile->getValue<std::string>(name.c_str(), in.c_str());
+                                }
+                                else
+                                {
+                                        return std::string("");
+                                }
+                        }
+                        
+                        ~IniFileInterface(){}
+                };
         }
 }
 

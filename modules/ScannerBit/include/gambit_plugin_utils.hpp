@@ -27,7 +27,7 @@ using namespace std;
 
 namespace Gambit
 {
-        namespace Module
+        namespace Plugin
         {       
                 namespace
                 {
@@ -63,7 +63,7 @@ namespace Gambit
                                 a = in;
                         } 
                 };
-        };
-};
+        }
+}
 
 #endif

@@ -18,7 +18,7 @@
 #define SCANNER_PLUGIN_MACROS_HPP
 
 #define VERSION(...)                                                                                                    \
-namespace Gambit_Module_Namespace                                                                                       \
+namespace Gambit_Plugin_Namespace                                                                                       \
 {                                                                                                                       \
         namespace VersionTags                                                                                           \
         {                                                                                                               \
@@ -32,20 +32,20 @@ namespace Gambit_Module_Namespace                                               
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &moduleData)                                                               \
+                        interface(gambitData &pluginData)                                                               \
                         {                                                                                               \
-                                moduleData.version = #__VA_ARGS__;                                                      \
+                                pluginData.version = #__VA_ARGS__;                                                      \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <VersionTags::version> reg_init <VersionTags::version>::reg(moduleData);                                  \
+                interface <VersionTags::version> reg_init <VersionTags::version>::reg(pluginData);                                  \
         };                                                                                                              \
 };   
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
-namespace Gambit_Module_Namespace                                                                                       \
+namespace Gambit_Plugin_Namespace                                                                                       \
 {                                                                                                                       \
         namespace LoadTags                                                                                              \
         {                                                                                                               \
@@ -59,25 +59,25 @@ namespace Gambit_Module_Namespace                                               
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &moduleData)                                                               \
+                        interface(gambitData &pluginData)                                                               \
                         {                                                                                               \
-                                moduleData.inits.push_back(interface <LoadTags::name>::init);                           \
+                                pluginData.inits.push_back(interface <LoadTags::name>::init);                           \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &moduleData)                                                        \
+                        static void init(gambitData &pluginData)                                                        \
                         {                                                                                               \
-                                moduleData.outputFuncs[#name] = new Gambit::Module::classFactory<__VA_ARGS__>;          \
+                                pluginData.outputFuncs[#name] = new Gambit::Plugin::classFactory<__VA_ARGS__>;          \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <LoadTags::name> reg_init <LoadTags::name>::reg(moduleData);                                  \
+                interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
         };                                                                                                              \
 };                                                                                                                      \
    
 /*Allows Gambit to use object "obj" of type "..."*/
 #define EXPORT_OBJECT(name, ...)                                                                                        \
-namespace Gambit_Module_Namespace                                                                                       \
+namespace Gambit_Plugin_Namespace                                                                                       \
 {                                                                                                                       \
         namespace LoadTags                                                                                              \
         {                                                                                                               \
@@ -91,20 +91,20 @@ namespace Gambit_Module_Namespace                                               
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &moduleData)                                                               \
+                        interface(gambitData &pluginData)                                                               \
                         {                                                                                               \
-                                moduleData.inits.push_back(interface <LoadTags::name>::init);                           \
+                                pluginData.inits.push_back(interface <LoadTags::name>::init);                           \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &moduleData)                                                        \
+                        static void init(gambitData &pluginData)                                                        \
                         {                                                                                               \
-                                moduleData.outputFuncs[#name]                                                           \
-                                        = new Gambit::Module::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
+                                pluginData.outputFuncs[#name]                                                           \
+                                        = new Gambit::Plugin::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <LoadTags::name> reg_init <LoadTags::name>::reg(moduleData);                                  \
+                interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
         };                                                                                                              \
 };                                                                                                                      \
 
@@ -112,7 +112,7 @@ namespace Gambit_Module_Namespace                                               
 #define PLUGIN_MAIN(...)                                                                                                \
  __scanner_module_ret_val__;                                                                                            \
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__);                                             \
-namespace Gambit_Module_Namespace                                                                                       \
+namespace Gambit_Plugin_Namespace                                                                                       \
 {                                                                                                                       \
         namespace MainTags                                                                                              \
         {                                                                                                               \
@@ -126,31 +126,31 @@ namespace Gambit_Module_Namespace                                               
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &moduleData)                                                               \
+                        interface(gambitData &pluginData)                                                               \
                         {                                                                                               \
-                                moduleData.inits.push_back(interface <MainTags::main>::init);                           \
+                                pluginData.inits.push_back(interface <MainTags::main>::init);                           \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &moduleData)                                                        \
+                        static void init(gambitData &pluginData)                                                        \
                         {                                                                                               \
-                                moduleData.outputFuncs[moduleData.name] = new Gambit::Module::funcFactory               \
+                                pluginData.outputFuncs[pluginData.name] = new Gambit::Plugin::funcFactory               \
                                         <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);  \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <MainTags::main> reg_init <MainTags::main>::reg(moduleData);                                  \
+                interface <MainTags::main> reg_init <MainTags::main>::reg(pluginData);                                  \
         };                                                                                                              \
 };                                                                                                                      \
 decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__)                                              \
                                                                                                                                 
-/*Defines a Gambit module*/
-#define SCANNER_PLUGIN(mod_name)                                                                                         \
-namespace __gambit_module_ ## mod_name ##  _namespace__                                                                 \
+/*Defines a Gambit plugin*/
+#define GAMBIT_PLUGIN(mod_name)                                                                                         \
+namespace __gambit_plugin_ ## mod_name ##  _namespace__                                                                 \
 {                                                                                                                       \
-        namespace Gambit_Module_Namespace                                                                               \
+        namespace Gambit_Plugin_Namespace                                                                               \
         {                                                                                                               \
-                using Gambit::Module::gambitData;                                                                       \
+                using Gambit::Plugin::gambitData;                                                                       \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
                 {                                                                                                       \
@@ -159,7 +159,7 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
-                        gambitData moduleData( #mod_name );                                                             \
+                        gambitData pluginData( #mod_name );                                                             \
                                                                                                                         \
                         template <class T>                                                                              \
                         class interface {};                                                                             \
@@ -171,25 +171,24 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                         };                                                                                              \
                 };                                                                                                      \
                                                                                                                         \
-                extern "C" void __gambit_module_moduleInit_ ## mod_name ## __(std::vector<void *> *input, void * ini)   \
+                extern "C" void __gambit_module_moduleInit_ ## mod_name ## __(std::vector<void *> *input)               \
                 {                                                                                                       \
-                        moduleData.iniFile = (Gambit::Module::IniFileInterface*)ini;                                    \
                         if (input != 0)                                                                                 \
-                                moduleData.inputData = *input;                                                          \
+                                pluginData.inputData = *input;                                                          \
                                                                                                                         \
                         std::vector <void (*)(gambitData &)>::iterator iit;                                             \
-                        for (iit = moduleData.inits.begin(); iit != moduleData.inits.end(); iit++)                      \
+                        for (iit = pluginData.inits.begin(); iit != pluginData.inits.end(); iit++)                      \
                         {                                                                                               \
-                                (*iit)(moduleData);                                                                     \
+                                (*iit)(pluginData);                                                                     \
                         }                                                                                               \
-                        moduleData.inits.clear();                                                                       \
+                        pluginData.inits.clear();                                                                       \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void * __gambit_module_getMember_ ## mod_name ## __(std::string in)                          \
                 {                                                                                                       \
-                        if (moduleData.outputFuncs.find(in) != moduleData.outputFuncs.end())                            \
+                        if (pluginData.outputFuncs.find(in) != pluginData.outputFuncs.end())                            \
                         {                                                                                               \
-                                return (*moduleData.outputFuncs[in])();                                                 \
+                                return (*pluginData.outputFuncs[in])();                                                 \
                         }                                                                                               \
                         else                                                                                            \
                                 return NULL;                                                                            \
@@ -197,51 +196,17 @@ namespace __gambit_module_ ## mod_name ##  _namespace__                         
                                                                                                                         \
                 extern "C" void __gambit_module_rmMember_ ## mod_name ## __(void *ptr, std::string in)                  \
                 {                                                                                                       \
-                        if (moduleData.outputFuncs.find(in) != moduleData.outputFuncs.end())                            \
-                                moduleData.outputFuncs[in]->remove(ptr);                                                \
-                }                                                                                                       \
-        };                                                                                                              \
-                                                                                                                        \
-        template <typename T>                                                                                           \
-        T get_inifile_value(std::string in)                                                                             \
-        {                                                                                                               \
-                if (Gambit_Module_Namespace::moduleData.iniFile->hasKey(#mod_name, in))                                 \
-                {                                                                                                       \
-                        std::string temp = Gambit_Module_Namespace::moduleData.iniFile->getValue(#mod_name, in);        \
-                        T ret;                                                                                          \
-                        Gambit::Module::convert<T>(ret, temp);                                                          \
-                        return ret;                                                                                     \
-                }                                                                                                       \
-                else                                                                                                    \
-                {                                                                                                       \
-                        std::cout << "\e[00;31mERROR:\e[00m  Missing iniFile entry needed by plugin \""                 \
-                                        << Gambit_Module_Namespace::moduleData.name << "\":  " << in << std::endl;      \
-                        exit(-1);                                                                                       \
-                }                                                                                                       \
-        };                                                                                                              \
-                                                                                                                        \
-        template <typename T>                                                                                           \
-        T get_inifile_value(std::string in, T defaults)                                                                 \
-        {                                                                                                               \
-                if (Gambit_Module_Namespace::moduleData.iniFile->hasKey(#mod_name, in))                                 \
-                {                                                                                                       \
-                        std::string temp = Gambit_Module_Namespace::moduleData.iniFile->getValue(#mod_name, in);        \
-                        T ret;                                                                                          \
-                        Gambit::Module::convert<T>(ret, temp);                                                          \
-                        return ret;                                                                                     \
-                }                                                                                                       \
-                else                                                                                                    \
-                {                                                                                                       \
-                        return defaults;                                                                                \
+                        if (pluginData.outputFuncs.find(in) != pluginData.outputFuncs.end())                            \
+                                pluginData.outputFuncs[in]->remove(ptr);                                                \
                 }                                                                                                       \
         };                                                                                                              \
                                                                                                                         \
         template <typename T>                                                                                           \
         T &get_input_value(int i)                                                                                       \
         {                                                                                                               \
-                return *static_cast<T*>(Gambit_Module_Namespace::moduleData.inputData[i]);                              \
+                return *static_cast<T*>(Gambit_Plugin_Namespace::pluginData.inputData[i]);                              \
         }                                                                                                               \
 };                                                                                                                      \
-namespace __gambit_module_ ## mod_name ## _namespace__                                                                  \
+namespace __gambit_plugin_ ## mod_name ## _namespace__                                                                  \
 
 #endif

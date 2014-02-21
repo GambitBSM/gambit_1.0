@@ -65,19 +65,6 @@ namespace Gambit
                         while (c != '\n' && c != EOF);
                 }
                 
-                class IniFileInterface
-                {
-                private:
-                        const IniParser::IniFile *boundIniFile;
-                        
-                public:
-                        IniFileInterface(const IniParser::IniFile *boundIniFile) : boundIniFile(boundIniFile) {}
-                        
-                        virtual bool hasKey(std::string name, std::string in) {return boundIniFile->hasKey(name, in);}
-                        
-                        virtual std::string getValue(std::string name, std::string in) {return boundIniFile->getValue<std::string>(name, in);}
-                };
-                
                 template <typename T>
                 class Plugin_Interface
                 {
@@ -88,8 +75,7 @@ namespace Gambit
                         std::string name;
                         std::string version;
                         std::vector<std::string> mod_names;
-                        IniFileInterface iniFileInterface;
-                        typedef void (*initFuncType)(std::vector<void *> *, void *);                              
+                        typedef void (*initFuncType)(std::vector<void *> *);                              
                         typedef void * (*getFuncType)(std::string);
                         typedef void (*rmFuncType)(void *, std::string);
                         initFuncType initFunc;
@@ -99,7 +85,7 @@ namespace Gambit
                 public:
                         T* main;
                         
-                        Plugin_Interface(std::string file, std::string name_in, std::string version, const IniParser::IniFile *boundIniFile = NULL, std::vector<void*> *input = NULL) : iniFileInterface(boundIniFile), errors(""), open(true), name(name_in), version(version)
+                        Plugin_Interface(std::string file, std::string name_in, std::string version, std::vector<void*> *input = NULL) : errors(""), open(true), name(name_in), version(version)
                         {
                                 unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
@@ -182,7 +168,7 @@ namespace Gambit
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_module_getMember_") + name + std::string("__")).c_str());
                                                 rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_module_rmMember_") + name + std::string("__")).c_str());
 
-                                                initFunc(input, (void *)(&iniFileInterface));
+                                                initFunc(input);
                                                 main = (T *)getFunc(name);
                                                 
                                                 if (main == 0)
