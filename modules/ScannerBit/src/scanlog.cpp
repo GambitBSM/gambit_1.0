@@ -23,7 +23,7 @@ namespace Gambit
         {
                 ErrorLog err;
                 
-                void ErrorLog::print()
+                void ErrorLog::print_cout()
                 {
                         if (errors.size() == 0)
                                 return;
@@ -58,7 +58,7 @@ namespace Gambit
                         
                         for (std::vector<std::string>::iterator it = errors.begin(); it != errors.end(); it++)
                         {
-                                std::cout << "ERROR:  " << *it << "\n";
+                                out << "ERROR:  " << *it << "\n";
                         }
                         
                         out << "\n*******************************************\n";

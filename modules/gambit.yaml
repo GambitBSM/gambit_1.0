@@ -29,7 +29,7 @@ CMSSM_I:
      fixed_value: 1
   tanb:
 # Ben: this was in the old inifile: I don't know what it does 
-  #param_not_in_gambit:
+#  param_not_in_gambit:
     # range: [-1, 1]
 
 # The "adhoc" model bypasses ModelBit and produces some model parameter nodes
@@ -167,7 +167,7 @@ another_key:
     subsubkey1: value2
 
 scanner:
-  module:  crapsample
+  plugin:  crapsample
   file_path:  ScannerBit/lib/libsample.so
 
 #scanner:
@@ -178,6 +178,7 @@ enable_redirect: true
 
 redirect_output:
    scanner:  xterm
+#   error:  test_errors
     
 crapsample:
   point_number: 10

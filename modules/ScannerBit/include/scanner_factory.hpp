@@ -273,15 +273,20 @@ namespace Gambit
                                                 
                                                 outputHandler::out.set("scanner", file);
                                         }
+                                        if (iniFile.hasKey("redirect_output", "error"))
+                                        {
+                                                std::string file = iniFile.getValue<std::string>("redirect_output", "error");
+                                                scanLog::err << scanLog::set_output(file);
+                                        }
                                 }
                                 
                                 if (iniFile.hasKey("scanner", "file_path"))
                                 {
                                         file = iniFile.getValue<std::string>("scanner", "file_path");
 
-                                        if (boundIniFile->hasKey("scanner", "module")) 
+                                        if (boundIniFile->hasKey("scanner", "plugin")) 
                                         {
-                                                name = iniFile.getValue<std::string>("scanner", "module");
+                                                name = iniFile.getValue<std::string>("scanner", "plugin");
                                         }
                                         else
                                         {
