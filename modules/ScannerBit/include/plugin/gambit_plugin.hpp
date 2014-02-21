@@ -17,8 +17,8 @@
 #ifndef GAMBIT_PLUGIN_HPP
 #define GAMBIT_PLUGIN_HPP
 
-#include <gambit_plugin_utils.hpp>
-#include <gambit_plugin_defs.hpp>
-#include <gambit_plugin_macros.hpp>
+#include <plugin/gambit_plugin_utils.hpp>
+#include <plugin/gambit_plugin_defs.hpp>
+#include <plugin/gambit_plugin_macros.hpp>
 
 #endif

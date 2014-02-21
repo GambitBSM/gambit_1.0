@@ -24,7 +24,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <scanner_plugin.hpp>
+#include <plugin/scanner_plugin.hpp>
 #include "priors.hpp"
 #include <typeinfo>
 #include <cxxabi.h>

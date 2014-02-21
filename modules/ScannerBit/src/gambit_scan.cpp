@@ -23,7 +23,7 @@
 ///  *********************************************
 
 #include <gambit_scan.hpp>
-#include <plugin_interface.hpp>
+#include <plugin/plugin_interface.hpp>
 
 namespace Gambit
 {

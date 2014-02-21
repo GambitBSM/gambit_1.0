@@ -192,8 +192,7 @@ namespace                                                                       
         create_prior < __VA_ARGS__ > reg_init < __VA_ARGS__ >::reg(0);                                          \
 }                                                                                                               \
 
-#include<dummy_prior.hpp>
-#include<prior_defs.hpp>
+#include<priors/prior_list.hpp>
 
 #endif /* defined(__priors_hpp__) */
 
