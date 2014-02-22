@@ -13,6 +13,10 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 Dec
 ///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date Feb 2014
+///
 ///  *********************************************
 
 #ifndef PRIOR_GAUSSIAN_HPP
@@ -71,7 +75,7 @@ namespace Gambit
                                         return true;
                                 }
                                 
-                                void ElMult (std::vector<double> &y)
+                                void ElMult (std::vector<double> &y) const
                                 {
                                         int i, j;
                                         int num = el.size();
@@ -155,14 +159,14 @@ namespace Gambit
                         }
                         
                         // Transformation from unit interval to the Gaussian
-                        void transform(std::vector<double>&unitpars, std::map<std::string,double>&outputMap)
+                        void transform(std::vector<double>&unitpars, std::map<std::string,double>&outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
                                 std::transform(unitpars.begin(), unitpars.end(), vec.begin(), [](double x)->double{return SQRT2*boost::math::erf_inv(2.0*x-1.0);});
                                 col.ElMult(vec);
                                 
                                 std::vector<double>::iterator v_it = vec.begin();
-                                for (std::vector<std::string>::iterator it = param.begin(); it != param.end(); it++, v_it++)
+                                for (std::vector<std::string>::const_iterator it = param.begin(); it != param.end(); it++, v_it++)
                                 {
                                         outputMap[*it] = *v_it;
                                 }

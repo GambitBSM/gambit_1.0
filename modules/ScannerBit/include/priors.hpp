@@ -52,10 +52,10 @@ namespace Gambit
                         
                         BasePrior(const int param_size) : param_size(param_size) {}
                         
-                        virtual void transform(std::vector<double> &, std::map<std::string, double> &) = 0;
+                        virtual void transform(std::vector<double> &, std::map<std::string, double> &) const = 0;
 
                         /// Function to check the parameter ranges supplied in the input
-                        inline int size(){return param_size;}
+                        inline int size() const {return param_size;}
                         
                         virtual ~BasePrior(){}
                 };
@@ -81,12 +81,12 @@ namespace Gambit
                         // Constructor
                         CompositePrior(const IniParser::IniFile& iniFile);
                         
-                        inline std::vector<std::string> &getShownParameters(){return shown_param_names;}
+                        inline std::vector<std::string> & getShownParameters() {return shown_param_names;}
                         
-                        inline std::vector<std::string> &getParameters(){return param_names;}
+                        inline std::vector<std::string> &getParameters() {return param_names;}
                         
                         // Transformation from unit hypercube to my_ranges
-                        void transform(std::vector<double> &unitPars, std::map<std::string,double> &outputMap)
+                        void transform(std::vector<double> &unitPars, std::map<std::string,double> &outputMap) const
                         {
                                 std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
                                 for (subpriors_it subprior = my_subpriors.begin(); subprior != my_subpriors.end(); ++subprior)
@@ -99,55 +99,6 @@ namespace Gambit
                         }
                         
                         ~CompositePrior();
-                };
-
-                //if the parameter has a fixed value
-                class FixedPrior : public BasePrior
-                {
-                private:
-                        double value;
-                        std::string name;
-                        
-                public:
-                        FixedPrior(std::string name, double value) : value(value), name(name) {}
-                        void transform(std::vector<double> &unitPars, std::map<std::string, double> &outputMap)
-                        {
-                                outputMap[name] = value;
-                        }
-                };
-                
-                //if the parameter shares multiple different parameters
-                class MultiPriors : public BasePrior
-                {
-                private:
-                        std::string name;
-                        std::vector <std::string> names;
-                        
-                public:
-                        MultiPriors(std::string name_in)
-                        {
-                                std::string::size_type pos_old = 0;
-                                std::string::size_type pos = name_in.find("+");
-                                while (pos != std::string::npos)
-                                {
-                                        names.push_back(name_in.substr(pos_old, (pos-pos_old)));
-                                        pos_old = pos + 1;
-                                        pos = name_in.find("+", pos_old);
-                                }
-                                
-                                name = name_in.substr(pos_old);
-                                names.push_back(name_in);
-                        }
-                        
-                        void transform (std::vector<double> &unitPars, std::map<std::string, double> &outputMap)
-                        {
-                                double value = outputMap[name];
-                                
-                                for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it)
-                                {
-                                        outputMap[*it] = value;
-                                }
-                        }
                 };
                 
                 /// Map in which to keep factory functions for the priors (prior_creators)

@@ -26,6 +26,7 @@
 #define __gambit_scan_hpp__
 
 #include <scanner_factory.hpp>
+#include <inifile_interface.hpp>
 #include <yaml_parser.hpp>
 
 namespace Gambit

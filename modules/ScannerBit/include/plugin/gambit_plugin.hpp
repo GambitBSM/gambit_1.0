@@ -10,7 +10,7 @@
 //
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 August 2013
+///  \date 2013 August 2013 Feb 2014
 ///
 ///  *********************************************
 

@@ -97,10 +97,33 @@ namespace Gambit
                                         else   
                                         {
                                                 std::string joined_parname = *it + std::string("::") + *it2;
-                                                shown_param_names.push_back(joined_parname);
                                                 
-                                                if (iniFile.hasModelParameterEntry(*it, *it2, "range"))
+                                                if (iniFile.hasModelParameterEntry(*it, *it2, "prior_type"))
                                                 {
+                                                        IniParser::Options options = iniFile.getParameterOptions(*it, *it2);
+                                                        std::string priortype = iniFile.getModelParameterEntry<std::string>(*it, *it2, "prior_type");
+                                                        
+                                                        if(priortype == "same_as")
+                                                        {
+                                                                if (options.hasKey("same_as"))
+                                                                        sameMap[joined_parname] = options.getValue<std::string>("same_as");
+                                                        }
+                                                        else
+                                                        {
+                                                                my_subpriors.push_back( prior_creators.at(priortype)(std::vector<std::string>(1, joined_parname),options) );
+                                                                if (priortype != "fixed")
+                                                                {
+                                                                        shown_param_names.push_back(joined_parname);
+                                                                }
+                                                                else
+                                                                {
+                                                                        scanLog::err << "Same_as prior for parameter \"" << *it2 << "\" in model \""<< *it << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                }
+                                                        }
+                                                }
+                                                else if (iniFile.hasModelParameterEntry(*it, *it2, "range"))
+                                                {
+                                                        shown_param_names.push_back(joined_parname);
                                                         std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(*it, *it2, "range");
                                                         if (range.first > range.second)
                                                         {
@@ -113,6 +136,7 @@ namespace Gambit
                                                 }
                                                 else 
                                                 {
+                                                        shown_param_names.push_back(joined_parname);
                                                         needSet.insert(joined_parname);
                                                 }
                                         }
@@ -151,7 +175,7 @@ namespace Gambit
                                 // Get the options for this prior
                                 IniParser::Options options = iniFile.getPriorOptions(*priorname);
                                 // Get the 'type' of prior requested (flat, log, etc.)
-                                std::string priortype = iniFile.getPriorEntry<std::string>(*priorname, "type");
+                                std::string priortype = iniFile.getPriorEntry<std::string>(*priorname, "prior_type");
                                 // Build the prior using the factory function map
                                 // (first check if the requested entry exist)
                                 if (prior_creators.find(priortype) == prior_creators.end())
@@ -160,9 +184,43 @@ namespace Gambit
                                         scanLog::err << "Prior '"<< *priorname <<"' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
                                 }
                                 else
-                                // All good, build the requested prior:
-                                // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
-                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                {
+                                        // All good, build the requested prior:
+                                        // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
+                                        if (priortype == "fixed")
+                                        {
+                                                std::vector<std::string>::iterator it_find;
+                                                for (std::vector<std::string>::iterator it = params.begin(); it < params.end(); it++)
+                                                {
+                                                        it_find = std::find(shown_param_names.begin(), shown_param_names.end(), *it);
+                                                        shown_param_names.erase(it_find);
+                                                }
+                                                
+                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                        }
+                                        else if (priortype == "same_as")
+                                        {
+                                                if (options.hasKey("same_as"))
+                                                {
+                                                        std::string same_name = options.getValue<std::string>("same_as");
+                                                        std::vector<std::string>::iterator it_find;
+                                                        for (std::vector<std::string>::iterator it = params.begin(); it < params.end(); it++)
+                                                        {
+                                                                it_find = std::find(shown_param_names.begin(), shown_param_names.end(), *it);
+                                                                shown_param_names.erase(it_find);
+                                                                sameMap[*it] = same_name;
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                        scanLog::err << "Same_as prior \"" << *priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                }
+                                        }
+                                        else
+                                        {
+                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                        }
+                                }
                         }
                         
                         if (needSet.size() != 0)

@@ -13,6 +13,10 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2013 Dec
 ///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date Feb 2014
+///
 ///  *********************************************
 
 #ifndef PRIOR_DEFS_HPP
@@ -136,7 +140,7 @@ namespace Gambit
                                 exit(1);
                         }
                         lower = range.first;
-                        upper = range.second;                  
+                        upper = range.second;            
                 }
         
                 // Constructor (for auto creation of flat prior; other priors don't need this kind of constructor! It won't hurt the other 1D range priors to have this though)
@@ -156,7 +160,7 @@ namespace Gambit
                 
                 // Transformation from unit interval to specified range
                 // (need to use vectors to be compatible with BasePrior virtual function)
-                void transform(std::vector<double> &unitpars, std::map<std::string,double>&output)
+                void transform(std::vector<double> &unitpars, std::map<std::string,double>&output) const
                 {
                         output[myparameter] = Func(unitpars[0],lower,upper);
                 }

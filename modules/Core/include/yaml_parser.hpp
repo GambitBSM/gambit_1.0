@@ -5,6 +5,8 @@
 // Christoph Weniger (c.weniger@uva.nl)
 // June 2013
 //
+// modified: Gregory Martinez Feb 2014
+//
 //////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -272,6 +274,20 @@ namespace Gambit
           return result;
         }
 
+        // Greg:  added getParameterOptions function
+        const Options getParameterOptions(std::string model, std::string param) const
+        {
+          Options options; 
+
+          if (hasModelParameterEntry(model, param, "options"))
+          {
+            return Options(parametersNode[model][param]["options"]);
+          }
+          else
+          {
+            return Options(parametersNode[model][param]);
+          }
+        }
         // Ben: added 'priors' section. Need to extract this format of data:
 
         // m12_prior: 

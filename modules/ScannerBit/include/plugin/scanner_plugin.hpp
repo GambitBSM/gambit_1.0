@@ -10,7 +10,7 @@
 //
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 August 2013
+///  \date 2013 August 2013 Feb 2014
 ///
 ///  *********************************************
 
@@ -31,9 +31,9 @@ namespace Gambit
                 class IniFileInterface
                 {
                 public:
-                        virtual std::string pluginName() = 0;
-                        virtual std::string fileName() = 0;
-                        virtual std::string getValue(std::string in) = 0;
+                        virtual const std::string pluginName() const = 0;
+                        virtual const std::string fileName() const = 0;
+                        virtual const std::string getValue(std::string in) const = 0;
                         virtual ~IniFileInterface() = 0;
                 };
                 
