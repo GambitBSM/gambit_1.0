@@ -106,18 +106,27 @@ namespace Gambit
                                                         if(priortype == "same_as")
                                                         {
                                                                 if (options.hasKey("same_as"))
-                                                                        sameMap[joined_parname] = options.getValue<std::string>("same_as");
-                                                        }
-                                                        else
-                                                        {
-                                                                my_subpriors.push_back( prior_creators.at(priortype)(std::vector<std::string>(1, joined_parname),options) );
-                                                                if (priortype != "fixed")
                                                                 {
-                                                                        shown_param_names.push_back(joined_parname);
+                                                                        sameMap[joined_parname] = options.getValue<std::string>("same_as");
                                                                 }
                                                                 else
                                                                 {
                                                                         scanLog::err << "Same_as prior for parameter \"" << *it2 << "\" in model \""<< *it << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                }
+                                                        }
+                                                        else
+                                                        {
+                                                                if (prior_creators.find(priortype) == prior_creators.end())
+                                                                {
+                                                                        scanLog::err << "Parameter '"<< *it2 <<"' of model '" << *it1 << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
+                                                                }
+                                                                else
+                                                                {
+                                                                        my_subpriors.push_back( prior_creators.at(priortype)(std::vector<std::string>(1, joined_parname),options) );
+                                                                        if (priortype != "fixed")
+                                                                        {
+                                                                                shown_param_names.push_back(joined_parname);
+                                                                        }
                                                                 }
                                                         }
                                                 }
@@ -163,7 +172,6 @@ namespace Gambit
                                                 std::unordered_set<std::string>::iterator find_it = needSet.find(*params_it);
                                                 if (find_it == needSet.end())
                                                 {
-                                                        /// TODO: gambit error
                                                         scanLog::err << "Parameter " << *params_it << " requested by prior '"<<*priorname<<"' is reserved by a different prior." << scanLog::endl;
                                                 }
                                                 else
@@ -180,7 +188,6 @@ namespace Gambit
                                 // (first check if the requested entry exist)
                                 if (prior_creators.find(priortype) == prior_creators.end())
                                 {
-                                        /// TODO: Gambit error
                                         scanLog::err << "Prior '"<< *priorname <<"' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
                                 }
                                 else
