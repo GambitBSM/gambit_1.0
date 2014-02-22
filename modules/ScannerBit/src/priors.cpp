@@ -118,7 +118,7 @@ namespace Gambit
                                                         {
                                                                 if (prior_creators.find(priortype) == prior_creators.end())
                                                                 {
-                                                                        scanLog::err << "Parameter '"<< *it2 <<"' of model '" << *it1 << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
+                                                                        scanLog::err << "Parameter '"<< *it2 <<"' of model '" << *it << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
                                                                 }
                                                                 else
                                                                 {
