@@ -22,7 +22,6 @@
 #ifndef PRIOR_GAUSSIAN_HPP
 #define PRIOR_GAUSSIAN_HPP
 
-#include <iostream>
 #include <vector>
 #include <boost/math/special_functions/erf.hpp>
 #include <algorithm>
@@ -33,6 +32,7 @@ namespace Gambit
         {
                 namespace
                 {
+                        // Cholesky decomposition class
                         class Cholesky
                         {
                         private:

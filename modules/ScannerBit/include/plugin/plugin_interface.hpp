@@ -28,8 +28,6 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <functors.hpp>
-#include <graphs.hpp>
 #include <dlfcn.h>
 #include <scanner_utils.hpp>
 

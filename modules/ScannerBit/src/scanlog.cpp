@@ -25,9 +25,6 @@ namespace Gambit
                 
                 void ErrorLog::print_cout()
                 {
-                        if (errors.size() == 0)
-                                return;
-                        
                         std::cout << "\n*******************************************\n";
                         std::cout << "********** \e[00;31mGambit Scanner Errors\e[00m **********\n";
                         std::cout << "*******************************************\n\n";
@@ -40,17 +37,12 @@ namespace Gambit
                         std::cout << "\n*******************************************\n";
                         std::cout << "*********** \e[00;31mEnd Scanner Errors\e[00m ************\n";
                         std::cout << "*******************************************\n" << std::endl;
-                        
-                        exit(1);
                 }
                 
                 void ErrorLog::print (std::ostream &out)
                 {
-                        if (errors.size() == 0)
-                                return;
-                        
                         if (out == std::cout)
-                                print();
+                                print_cout();
                         
                         out << "\n*******************************************\n";
                         out << "********** Gambit Scanner Errors **********\n";
@@ -64,8 +56,6 @@ namespace Gambit
                         out << "\n*******************************************\n";
                         out << "*********** End Scanner Errors ************\n";
                         out << "*******************************************\n" << std::endl;
-                        
-                        exit(1);
                 }
         }
 }

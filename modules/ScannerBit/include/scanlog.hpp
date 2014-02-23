@@ -99,6 +99,16 @@ namespace Gambit
                         void print_cout();
                         
                         void print (std::ostream &out);
+                        
+                        void check() 
+                        {
+                                if (errors.size() == 0)
+                                        return;
+                                
+                                print();
+                                errors.clear();
+                                exit(1);
+                        }
                 };
         }
 }

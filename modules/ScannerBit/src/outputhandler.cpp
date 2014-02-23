@@ -16,9 +16,15 @@
 //  *********************************************
 
 #include <outputhandler.hpp>
+#include <scanlog.hpp>
 
 namespace Gambit
 {
+        namespace scanLog
+        {
+                extern ErrorLog err;
+        }
+        
         namespace Scanner
         {       
                 namespace outputHandler
@@ -27,7 +33,7 @@ namespace Gambit
                         int defOutExit;
                         
                         void gambitScannerExit(void)
-                        { 
+                        {
                                 if (GAMBIT_SCANNER_EXIT) 
                                 {
                                         dup2(defOutExit, STDOUT_FILENO); 

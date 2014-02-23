@@ -47,7 +47,7 @@ namespace Gambit
                         input[2] = (void *)interface;
                         
                         Plugin::Plugin_Interface<int ()> plugin_interface(interface->fileName(), interface->pluginName(), version, &input);
-                        scanLog::err.print();
+                        scanLog::err.check();
 
                         outputHandler::out.redir("scanner");
                         plugin_interface.main();

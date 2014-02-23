@@ -19,8 +19,6 @@
 #define OUTPUTHANDLER_HPP
 
 #include <string>
-#include <cstdio>
-#include <cstdlib>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>

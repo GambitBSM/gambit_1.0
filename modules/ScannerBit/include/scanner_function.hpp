@@ -30,18 +30,10 @@
 #include <unordered_set>
 #include <set>
 #include <string>
-#include <cfloat>
-#include <cstdio>
-#include <cstdlib>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <functors.hpp>
 #include <graphs.hpp>
 #include <priors.hpp>
 #include <scanner_utils.hpp>
-#include <dlfcn.h>
 
 namespace Gambit
 {
