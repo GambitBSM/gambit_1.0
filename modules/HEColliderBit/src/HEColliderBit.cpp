@@ -22,8 +22,8 @@
 #include <numeric>
 
 #include "gambit_module_headers.hpp"
-#include "HEColliderBit_rollcall.hpp"
 #include "HEColliderBit_types.hpp"
+#include "HEColliderBit_rollcall.hpp"
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
