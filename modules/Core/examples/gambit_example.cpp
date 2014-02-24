@@ -25,7 +25,7 @@
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
-#include "priorfactory.hpp"
+#include "priors.hpp"
 
 using namespace Gambit;
 
@@ -53,7 +53,9 @@ void beispiel()
   // Extract a pointer to the prior object, so that it can be passed to the Scanner.
   // Could do this via the Core instead, perhaps.
   // comment out until fixed - Aldo
-  //Priors::BasePrior* prior = priorManager.getprior();
+  // Greg: Since the composite prior has the prior manager's constructor, you can call make 
+  //    composite prior directly.
+  Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);

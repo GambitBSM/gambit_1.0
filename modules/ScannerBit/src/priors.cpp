@@ -71,37 +71,37 @@ namespace Gambit
                         std::vector <std::string> modelNames = iniFile.getModelNames();
                         
                         //main loop to enter in parameter values
-                        for (std::vector<std::string>::iterator it = modelNames.begin(); it != modelNames.end(); ++it)
+                        for (auto &mod : modelNames)
                         {//loop over iniFile models
-                                std::vector <std::string> parameterNames = iniFile.getModelParameters(*it);
+                                std::vector <std::string> parameterNames = iniFile.getModelParameters(mod);
                                 
-                                for (std::vector<std::string>::iterator it2 = parameterNames.begin(); it2 != parameterNames.end(); ++it2)
+                                for (auto &par : parameterNames)
                                 {//loop over iniFile parameters
-                                        param_names.push_back(*it + std::string("::") + *it2);
+                                        param_names.push_back(mod + std::string("::") + par);
                                         
-                                        if (iniFile.hasModelParameterEntry(*it, *it2, "same_as"))
+                                        if (iniFile.hasModelParameterEntry(mod, par, "same_as"))
                                         {
-                                                std::string connectedName = iniFile.getModelParameterEntry<std::string>(*it, *it2, "same_as");
+                                                std::string connectedName = iniFile.getModelParameterEntry<std::string>(mod, par, "same_as");
                                                 std::string::size_type pos = connectedName.rfind("::");
                                                 if (pos == std::string::npos)
                                                 {
-                                                        connectedName += std::string("::") + *it2;
+                                                        connectedName += std::string("::") + par;
                                                 }
                                                 
-                                                sameMap[*it + std::string("::") + *it2] = connectedName;
+                                                sameMap[mod + std::string("::") + par] = connectedName;
                                         }
-                                        else if (iniFile.hasModelParameterEntry(*it, *it2, "fixed_value"))
+                                        else if (iniFile.hasModelParameterEntry(mod, par, "fixed_value"))
                                         {
-                                                phantomPriors.push_back(new FixedPrior(*it + std::string("::") + *it2, iniFile.getModelParameterEntry<double>(*it, *it2, "fixed_value")));
+                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par, iniFile.getModelParameterEntry<double>(mod, par, "fixed_value")));
                                         }
                                         else   
                                         {
-                                                std::string joined_parname = *it + std::string("::") + *it2;
+                                                std::string joined_parname = mod + std::string("::") + par;
                                                 
-                                                if (iniFile.hasModelParameterEntry(*it, *it2, "prior_type"))
+                                                if (iniFile.hasModelParameterEntry(mod, par, "prior_type"))
                                                 {
-                                                        IniParser::Options options = iniFile.getParameterOptions(*it, *it2);
-                                                        std::string priortype = iniFile.getModelParameterEntry<std::string>(*it, *it2, "prior_type");
+                                                        IniParser::Options options = iniFile.getParameterOptions(mod, par);
+                                                        std::string priortype = iniFile.getModelParameterEntry<std::string>(mod, par, "prior_type");
                                                         
                                                         if(priortype == "same_as")
                                                         {
@@ -111,14 +111,14 @@ namespace Gambit
                                                                 }
                                                                 else
                                                                 {
-                                                                        scanLog::err << "Same_as prior for parameter \"" << *it2 << "\" in model \""<< *it << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                        scanLog::err << "Same_as prior for parameter \"" << mod << "\" in model \""<< par << "\" has no \"same_as\" entry." << scanLog::endl;
                                                                 }
                                                         }
                                                         else
                                                         {
                                                                 if (prior_creators.find(priortype) == prior_creators.end())
                                                                 {
-                                                                        scanLog::err << "Parameter '"<< *it2 <<"' of model '" << *it << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
+                                                                        scanLog::err << "Parameter '"<< mod <<"' of model '" << par << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
                                                                 }
                                                                 else
                                                                 {
@@ -130,10 +130,10 @@ namespace Gambit
                                                                 }
                                                         }
                                                 }
-                                                else if (iniFile.hasModelParameterEntry(*it, *it2, "range"))
+                                                else if (iniFile.hasModelParameterEntry(mod, par, "range"))
                                                 {
                                                         shown_param_names.push_back(joined_parname);
-                                                        std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(*it, *it2, "range");
+                                                        std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(mod, par, "range");
                                                         if (range.first > range.second)
                                                         {
                                                                 double temp = range.first;
@@ -156,23 +156,23 @@ namespace Gambit
                         std::vector<std::string> priorNames = iniFile.getPriorNames();
                         std::unordered_set<std::string> paramSet(shown_param_names.begin(), shown_param_names.end()); 
 
-                        for (std::vector<std::string>::iterator priorname = priorNames.begin(); priorname != priorNames.end(); ++priorname)
+                        for (auto &priorname : priorNames)
                         {
                                 // Get the parameter list for this prior
-                                std::vector<std::string> params = iniFile.getPriorEntry< std::vector<std::string> >(*priorname, "parameters");
+                                std::vector<std::string> params = iniFile.getPriorEntry< std::vector<std::string> >(priorname, "parameters");
                                 // Check for clashes between these params and the ones already 'in use' by other prior objects.
-                                for (std::vector<std::string>::iterator params_it = params.begin(); params_it != params.end(); ++params_it)
+                                for (auto &par : params)
                                 {
-                                        if (paramSet.find(*params_it) == paramSet.end())
+                                        if (paramSet.find(par) == paramSet.end())
                                         {
-                                                scanLog::err << "Parameter " << *params_it << " requested by " << *priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                                scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
                                         }
                                         else
                                         {
-                                                std::unordered_set<std::string>::iterator find_it = needSet.find(*params_it);
+                                                auto find_it = needSet.find(par);
                                                 if (find_it == needSet.end())
                                                 {
-                                                        scanLog::err << "Parameter " << *params_it << " requested by prior '"<<*priorname<<"' is reserved by a different prior." << scanLog::endl;
+                                                        scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
                                                 }
                                                 else
                                                 {
@@ -181,14 +181,14 @@ namespace Gambit
                                         }
                                 }
                                 // Get the options for this prior
-                                IniParser::Options options = iniFile.getPriorOptions(*priorname);
+                                IniParser::Options options = iniFile.getPriorOptions(priorname);
                                 // Get the 'type' of prior requested (flat, log, etc.)
-                                std::string priortype = iniFile.getPriorEntry<std::string>(*priorname, "prior_type");
+                                std::string priortype = iniFile.getPriorEntry<std::string>(priorname, "prior_type");
                                 // Build the prior using the factory function map
                                 // (first check if the requested entry exist)
                                 if (prior_creators.find(priortype) == prior_creators.end())
                                 {
-                                        scanLog::err << "Prior '"<< *priorname <<"' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
+                                        scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map." << scanLog::endl;
                                 }
                                 else
                                 {
@@ -196,11 +196,11 @@ namespace Gambit
                                         // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
                                         if (priortype == "fixed")
                                         {
-                                                for (auto it = params.begin(), end = params.end(); it < end; it++)
+                                                for (auto &par : params)
                                                 {
                                                         shown_param_names.erase
                                                         (
-                                                                std::find(shown_param_names.begin(), shown_param_names.end(), *it)
+                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
                                                         );
                                                 }
                                                 
@@ -211,18 +211,18 @@ namespace Gambit
                                                 if (options.hasKey("same_as"))
                                                 {
                                                         std::string same_name = options.getValue<std::string>("same_as");
-                                                        for (auto it = params.begin(), end = params.end(); it < end; it++)
+                                                        for (auto &par : params)
                                                         {
                                                                 shown_param_names.erase
                                                                 (
-                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), *it)
+                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), par)
                                                                 );
-                                                                sameMap[*it] = same_name;
+                                                                sameMap[par] = same_name;
                                                         }
                                                 }
                                                 else
                                                 {
-                                                        scanLog::err << "Same_as prior \"" << *priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                        scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
                                                 }
                                         }
                                         else
@@ -247,19 +247,19 @@ namespace Gambit
                         std::unordered_map<std::string, std::string> keyMap;
                         std::string index, result;
                         unsigned int reps;
-                        for (std::unordered_map<std::string, std::string>::iterator it = sameMap.begin(); it != sameMap.end(); it++)
+                        for (auto &strMap : sameMap)
                         {
-                                index = it->first;
-                                result = it->second;
+                                index = strMap.first;
+                                result = strMap.second;
                                 reps = 0;
                                 while (sameMap.find(result) != sameMap.end())
                                 {
                                         index = result;
                                         result = sameMap[index];
                                         
-                                        if (result == it->first)
+                                        if (result == strMap.first)
                                         {
-                                                scanLog::err << "Parameter " << it->first << " is \"same as\" itself." << scanLog::endl;
+                                                scanLog::err << "Parameter " << strMap.first << " is \"same as\" itself." << scanLog::endl;
                                                 break;
                                         }
                                         
@@ -272,34 +272,34 @@ namespace Gambit
                                 }
                                 
                                 if (keyMap.find(result) == keyMap.end())
-                                        keyMap[result] = it->first + std::string("+") + result;
+                                        keyMap[result] = strMap.first + std::string("+") + result;
                                 else
-                                        keyMap[result] = it->first + std::string("+") + keyMap[result];
+                                        keyMap[result] = strMap.first + std::string("+") + keyMap[result];
                         }
                         
-                        for (std::vector<std::string>::iterator it = shown_param_names.begin(); it != shown_param_names.end(); ++it)
+                        for (auto &str : shown_param_names)
                         {
-                                if (keyMap.find(*it) != keyMap.end())
+                                if (keyMap.find(str) != keyMap.end())
                                 {
-                                        *it = keyMap[*it];
+                                        str = keyMap[str];
                                 }
                         }
                         
-                        for (std::unordered_map<std::string, std::string>::iterator it = keyMap.begin(); it != keyMap.end(); it++)
+                        for (auto &key : keyMap)
                         {
-                                if (paramSet.find(it->first) == paramSet.end())
+                                if (paramSet.find(key.first) == paramSet.end())
                                 {
-                                        scanLog::err << "same_as:  " << it->first << " is not defined in inifile." << scanLog::endl;
+                                        scanLog::err << "same_as:  " << key.first << " is not defined in inifile." << scanLog::endl;
                                 }
                                 else
                                 {
-                                        phantomPriors.push_back(new MultiPriors(it->second));
+                                        phantomPriors.push_back(new MultiPriors(key.second));
                                 }
                         }
                         
-                        for (subpriors_it subprior = my_subpriors.begin(); subprior != my_subpriors.end(); ++subprior)
+                        for (auto &subprior : my_subpriors)
                         {
-                                param_size += (*subprior)->size();
+                                param_size += subprior->size();
                         }
                         
                         my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());

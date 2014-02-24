@@ -89,12 +89,12 @@ namespace Gambit
                         void transform(std::vector<double> &unitPars, std::map<std::string,double> &outputMap) const
                         {
                                 std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
-                                for (subpriors_it subprior = my_subpriors.begin(); subprior != my_subpriors.end(); ++subprior)
+                                for (auto &subprior : my_subpriors)
                                 {
-                                        unit_next = unit_it + (*subprior)->size();
+                                        unit_next = unit_it + subprior->size();
                                         std::vector<double> subUnit(unit_it, unit_next);
                                         unit_it = unit_next;
-                                        (*subprior)->transform(subUnit, outputMap);
+                                        subprior->transform(subUnit, outputMap);
                                 }
                         }
                         

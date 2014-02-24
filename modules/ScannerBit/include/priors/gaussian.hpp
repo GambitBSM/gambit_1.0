@@ -169,10 +169,10 @@ namespace Gambit
                                 
                                 col.ElMult(vec);
                                 
-                                std::vector<double>::iterator v_it = vec.begin();
-                                for (std::vector<std::string>::const_iterator it = param.begin(); it != param.end(); it++, v_it++)
+                                auto v_it = vec.begin();
+                                for (auto &str : param)
                                 {
-                                        outputMap[*it] = *v_it;
+                                        outputMap[str] = *(v_it++);
                                 }
                         }
                 };
