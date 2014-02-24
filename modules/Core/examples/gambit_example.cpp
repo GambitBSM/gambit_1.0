@@ -47,11 +47,13 @@ void beispiel()
   cout << "Your selected models are: " << selectedmodels << endl;
 
   // Build prior object based on inifile instructions
-  Priors::PriorManager priorManager(iniFile);
+  // comment out until fixed - Aldo
+  //Priors::PriorManager priorManager(iniFile);
 
   // Extract a pointer to the prior object, so that it can be passed to the Scanner.
   // Could do this via the Core instead, perhaps.
-  Priors::BasePrior* prior = priorManager.getprior();
+  // comment out until fixed - Aldo
+  //Priors::BasePrior* prior = priorManager.getprior();
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
@@ -74,7 +76,7 @@ void beispiel()
   // Examples for getting information from the key/value section of the
   // inifile
   cout << iniFile.getValue<double>("my_key") << endl;
-  cout << iniFile.getValue<str>("another_key", "subkey3", "subsubkey1") << endl;
+  cout << iniFile.getValue<Gambit::str>("another_key", "subkey3", "subsubkey1") << endl;
 
   // Examples for getting information from the parameter section
 
@@ -351,7 +353,7 @@ int main( int, const char*[] )
   // (currently just function wrapped in a functor, provided PARENT parameter 
   // object as a CAPABILITY)
   // I guess the core needs to do something like this:
-  str model = "CMSSM_I";
+  Gambit::str model = "CMSSM_I";
   cout<<"Am I a descendant of MSSM_I?..."<<endl;
   if (model<="MSSM_I")
   {
