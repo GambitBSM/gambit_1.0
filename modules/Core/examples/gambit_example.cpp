@@ -76,7 +76,7 @@ void beispiel()
   // Examples for getting information from the key/value section of the
   // inifile
   cout << iniFile.getValue<double>("my_key") << endl;
-  cout << iniFile.getValue<Gambit::str>("another_key", "subkey3", "subsubkey1") << endl;
+  cout << iniFile.getValue<str>("another_key", "subkey3", "subsubkey1") << endl;
 
   // Examples for getting information from the parameter section
 
@@ -353,7 +353,7 @@ int main( int, const char*[] )
   // (currently just function wrapped in a functor, provided PARENT parameter 
   // object as a CAPABILITY)
   // I guess the core needs to do something like this:
-  Gambit::str model = "CMSSM_I";
+  str model = "CMSSM_I";
   cout<<"Am I a descendant of MSSM_I?..."<<endl;
   if (model<="MSSM_I")
   {
