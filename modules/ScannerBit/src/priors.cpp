@@ -196,11 +196,12 @@ namespace Gambit
                                         // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
                                         if (priortype == "fixed")
                                         {
-                                                std::vector<std::string>::iterator it_find;
-                                                for (std::vector<std::string>::iterator it = params.begin(); it < params.end(); it++)
+                                                for (auto it = params.begin(), end = params.end(); it < end; it++)
                                                 {
-                                                        it_find = std::find(shown_param_names.begin(), shown_param_names.end(), *it);
-                                                        shown_param_names.erase(it_find);
+                                                        shown_param_names.erase
+                                                        (
+                                                                std::find(shown_param_names.begin(), shown_param_names.end(), *it)
+                                                        );
                                                 }
                                                 
                                                 my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
@@ -210,11 +211,12 @@ namespace Gambit
                                                 if (options.hasKey("same_as"))
                                                 {
                                                         std::string same_name = options.getValue<std::string>("same_as");
-                                                        std::vector<std::string>::iterator it_find;
-                                                        for (std::vector<std::string>::iterator it = params.begin(); it < params.end(); it++)
+                                                        for (auto it = params.begin(), end = params.end(); it < end; it++)
                                                         {
-                                                                it_find = std::find(shown_param_names.begin(), shown_param_names.end(), *it);
-                                                                shown_param_names.erase(it_find);
+                                                                shown_param_names.erase
+                                                                (
+                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), *it)
+                                                                );
                                                                 sameMap[*it] = same_name;
                                                         }
                                                 }

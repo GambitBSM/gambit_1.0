@@ -162,7 +162,11 @@ namespace Gambit
                         void transform(std::vector<double>&unitpars, std::map<std::string,double>&outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
-                                std::transform(unitpars.begin(), unitpars.end(), vec.begin(), [](double x)->double{return SQRT2*boost::math::erf_inv(2.0*x-1.0);});
+                                std::transform(unitpars.begin(), unitpars.end(), vec.begin(), [](double x)->double
+                                {
+                                        return SQRT2*boost::math::erf_inv(2.0*x-1.0);      
+                                });
+                                
                                 col.ElMult(vec);
                                 
                                 std::vector<double>::iterator v_it = vec.begin();
