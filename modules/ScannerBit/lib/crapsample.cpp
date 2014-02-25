@@ -140,8 +140,6 @@ SCANNER_PLUGIN (loopsample)
                 
                 return 0;
         }
-        
-        extern "C" void fuck(){__scanner_module_main__();}
 };
 
 #include <test-recon.h>

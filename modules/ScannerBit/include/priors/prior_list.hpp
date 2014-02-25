@@ -21,5 +21,6 @@
 #include <priors/gaussian.hpp>
 #include <priors/dummy.hpp>
 #include <priors/fixed_same_as.hpp>
+#include <priors/cauchy.hpp>
 
 #endif

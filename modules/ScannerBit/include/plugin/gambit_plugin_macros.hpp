@@ -18,7 +18,7 @@
 #define SCANNER_PLUGIN_MACROS_HPP
 
 #define VERSION(...)                                                                                                    \
-namespace Gambit_Plugin_Namespace                                                                                       \
+namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
         namespace VersionTags                                                                                           \
         {                                                                                                               \
@@ -45,7 +45,7 @@ namespace Gambit_Plugin_Namespace                                               
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
-namespace Gambit_Plugin_Namespace                                                                                       \
+namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
         namespace LoadTags                                                                                              \
         {                                                                                                               \
@@ -77,7 +77,7 @@ namespace Gambit_Plugin_Namespace                                               
    
 /*Allows Gambit to use object "obj" of type "..."*/
 #define EXPORT_OBJECT(name, ...)                                                                                        \
-namespace Gambit_Plugin_Namespace                                                                                       \
+namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
         namespace LoadTags                                                                                              \
         {                                                                                                               \
@@ -110,9 +110,9 @@ namespace Gambit_Plugin_Namespace                                               
 
 /*Declared the "main" for the module.  This is function that will be ran by module interface*/
 #define PLUGIN_MAIN(...)                                                                                                \
- __scanner_module_ret_val__;                                                                                            \
-decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__);                                             \
-namespace Gambit_Plugin_Namespace                                                                                       \
+ __gambit_plugin_ret_val__;                                                                                             \
+decltype(__gambit_plugin_ret_val__) __gambit_plugin_main__ (__VA_ARGS__);                                               \
+namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
         namespace MainTags                                                                                              \
         {                                                                                                               \
@@ -134,7 +134,7 @@ namespace Gambit_Plugin_Namespace                                               
                         static void init(gambitData &pluginData)                                                        \
                         {                                                                                               \
                                 pluginData.outputFuncs[pluginData.name] = new Gambit::Plugin::funcFactory               \
-                                        <decltype(__scanner_module_ret_val__) (__VA_ARGS__)>(__scanner_module_main__);  \
+                                        <decltype(__gambit_plugin_ret_val__) (__VA_ARGS__)>(__gambit_plugin_main__);    \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -142,24 +142,24 @@ namespace Gambit_Plugin_Namespace                                               
                 interface <MainTags::main> reg_init <MainTags::main>::reg(pluginData);                                  \
         }                                                                                                               \
 }                                                                                                                       \
-decltype(__scanner_module_ret_val__) __scanner_module_main__ (__VA_ARGS__)                                              \
+decltype(__gambit_plugin_ret_val__) __gambit_plugin_main__ (__VA_ARGS__)                                                \
                                                                                                                                 
 /*Defines a Gambit plugin*/
-#define GAMBIT_PLUGIN(mod_name)                                                                                         \
-namespace __gambit_plugin_ ## mod_name ##  _namespace__                                                                 \
+#define GAMBIT_PLUGIN(plug_name)                                                                                        \
+namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
 {                                                                                                                       \
-        namespace Gambit_Plugin_Namespace                                                                               \
+        namespace __gambit_plugin_namespace__                                                                           \
         {                                                                                                               \
                 using Gambit::Plugin::gambitData;                                                                       \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
                 {                                                                                                       \
-                        struct mod_name{};                                                                              \
+                        struct plug_name{};                                                                             \
                 }                                                                                                       \
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
-                        gambitData pluginData( #mod_name );                                                             \
+                        gambitData pluginData( #plug_name );                                                            \
                                                                                                                         \
                         template <class T>                                                                              \
                         class interface {};                                                                             \
@@ -171,20 +171,19 @@ namespace __gambit_plugin_ ## mod_name ##  _namespace__                         
                         };                                                                                              \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void __gambit_module_moduleInit_ ## mod_name ## __(std::vector<void *> *input)               \
+                extern "C" void __gambit_plugin_moduleInit_ ## plug_name ## __(std::vector<void *> *input)              \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
                                 pluginData.inputData = *input;                                                          \
                                                                                                                         \
-                        std::vector <void (*)(gambitData &)>::iterator iit;                                             \
-                        for (iit = pluginData.inits.begin(); iit != pluginData.inits.end(); iit++)                      \
+                        for (auto func : pluginData.inits)                                                              \
                         {                                                                                               \
-                                (*iit)(pluginData);                                                                     \
+                                func(pluginData);                                                                       \
                         }                                                                                               \
                         pluginData.inits.clear();                                                                       \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void * __gambit_module_getMember_ ## mod_name ## __(std::string in)                          \
+                extern "C" void * __gambit_plugin_getMember_ ## plug_name ## __(std::string in)                         \
                 {                                                                                                       \
                         if (pluginData.outputFuncs.find(in) != pluginData.outputFuncs.end())                            \
                         {                                                                                               \
@@ -194,7 +193,7 @@ namespace __gambit_plugin_ ## mod_name ##  _namespace__                         
                                 return NULL;                                                                            \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void __gambit_module_rmMember_ ## mod_name ## __(void *ptr, std::string in)                  \
+                extern "C" void __gambit_plugin_rmMember_ ## plug_name ## __(void *ptr, std::string in)                 \
                 {                                                                                                       \
                         if (pluginData.outputFuncs.find(in) != pluginData.outputFuncs.end())                            \
                                 pluginData.outputFuncs[in]->remove(ptr);                                                \
@@ -204,9 +203,9 @@ namespace __gambit_plugin_ ## mod_name ##  _namespace__                         
         template <typename T>                                                                                           \
         T &get_input_value(int i)                                                                                       \
         {                                                                                                               \
-                return *static_cast<T*>(Gambit_Plugin_Namespace::pluginData.inputData[i]);                              \
+                return *static_cast<T*>(__gambit_plugin_namespace__::pluginData.inputData[i]);                          \
         }                                                                                                               \
 }                                                                                                                       \
-namespace __gambit_plugin_ ## mod_name ## _namespace__                                                                  \
+namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
 #endif

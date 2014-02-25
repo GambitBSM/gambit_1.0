@@ -89,7 +89,7 @@ namespace Gambit
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
                                 std::string str;
                                 
-                                if (FILE* f = popen((std::string("nm ") + file + std::string(" | grep \"__gambit_module_moduleInit_\"")).c_str(), "r"))
+                                if (FILE* f = popen((std::string("nm ") + file + std::string(" | grep \"__gambit_plugin_moduleInit_\"")).c_str(), "r"))
                                 {
                                         char buffer[1024];
                                         int n;
@@ -99,7 +99,7 @@ namespace Gambit
                                                 std::stringstream ss(std::string(buffer, n));
                                                 while(getline(ss, str))
                                                 {
-                                                        int pos = str.find("__gambit_module_moduleInit_");
+                                                        int pos = str.find("__gambit_plugin_moduleInit_");
                                                         int posLast = str.rfind("__");
                                                         mod_names.push_back(str.substr(pos + 27, posLast - pos - 27));
                                                 }
@@ -162,32 +162,26 @@ namespace Gambit
                                                         name = mod_names[iin];
                                                 }
                                         
-                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_module_moduleInit_") + name + std::string("__")).c_str());
-                                                getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_module_getMember_") + name + std::string("__")).c_str());
-                                                rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_module_rmMember_") + name + std::string("__")).c_str());
+                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_moduleInit_") + name + std::string("__")).c_str());
+                                                getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + name + std::string("__")).c_str());
+                                                rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_plugin_rmMember_") + name + std::string("__")).c_str());
 
                                                 initFunc(input);
                                                 main = (T *)getFunc(name);
                                                 
                                                 if (main == 0)
                                                 {
-                                                        //std::stringstream ss;
                                                         scanLog::err << "Could not find main function in module \"" << name << "\"." << scanLog::endl;
-                                                        //errors = ss.str();
                                                 }
                                         }
                                         else
                                         {
-                                                //std::stringstream ss;
                                                 scanLog::err << "Could not find any modules in file \"" << file << "\"." << scanLog::endl;
-                                                //errors = ss.str();
                                         }
                                 }
                                 else
                                 {
-                                        //std::stringstream ss;
                                         scanLog::err << "Cannot load " << file << ":  " << dlerror() << scanLog::endl;
-                                        //errors = ss.str();
                                         open = false;
                                 }
                         }

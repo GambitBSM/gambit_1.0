@@ -41,7 +41,6 @@ namespace Gambit
                 class Function_Base
                 {
                 public:
-                        typedef Function_Base type;
                         virtual std::vector<double> & getParameters() = 0;
                         virtual std::vector<std::string> & getKeys() = 0;
                         virtual double operator () (std::vector<double> &) = 0;

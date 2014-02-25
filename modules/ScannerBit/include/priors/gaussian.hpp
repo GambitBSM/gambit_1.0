@@ -24,87 +24,23 @@
 
 #include <vector>
 #include <boost/math/special_functions/erf.hpp>
-#include <algorithm>
+#include <cholesky.hpp>
    
 namespace Gambit
 {
         namespace Priors
         {
-                namespace
-                {
-                        // Cholesky decomposition class
-                        class Cholesky
-                        {
-                        private:
-                                std::vector<std::vector<double>> el;
-                                
-                        public:
-                                Cholesky(const int num) : el(num, std::vector<double>(num)) {}
-                                      
-                                bool EnterMat(std::vector<std::vector<double>> &a)
-                                {
-                                        int num = el.size();
-                                        double sum = 0;
-                                        int i, j, k;
-
-                                        el = a;
-                                        
-                                        for (i = 0; i < num; i++)
-                                        {
-                                                for (j = i; j < num; j++)
-                                                {
-                                                        for(sum = el[i][j], k = i - 1; k >= 0; k--)
-                                                                sum -= el[i][k]*el[j][k];
-                                                        if(i ==j)
-                                                        {
-                                                                if(sum <= 0.0)
-                                                                {
-                                                                        return false;
-                                                                }
-                                                                el[i][i] = sqrt(sum);
-                                                        }
-                                                        else
-                                                                el[j][i] = sum/el[i][i];
-                                                }
-                                        }
-                                        
-                                        for (i = 0; i < num; i++)
-                                                for (j = 0; j < i; j++)
-                                                        el[j][i] = 0.0;
-                                                
-                                        return true;
-                                }
-                                
-                                void ElMult (std::vector<double> &y) const
-                                {
-                                        int i, j;
-                                        int num = el.size();
-                                        std::vector<double> b(num);
-                                        for(i = 0; i < num; i++)
-                                        {
-                                                b[i] = 0.0;
-                                                for (j = 0; j <= i; j++)
-                                                {
-                                                        b[i] += el[i][j]*y[j];
-                                                }
-                                        }
-                                        
-                                        y = b;
-                                }
-                        };
-                        const double SQRT2 = 1.414213562373095048801688;
-                }
-                
-                /// 2D Gaussian prior. Takes covariance matrix as arguments
+                // 2D Gaussian prior. Takes covariance matrix as arguments
                 class Gaussian : public BasePrior
                 {
                 private:
-                        std::vector<std::string> param;
+                        std::vector <std::string> param;
+                        std::vector <double> mean;
                         Cholesky col;
                         
                 public: 
                         // Constructor
-                        Gaussian(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), col(param.size()), param(param)
+                        Gaussian(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
                         { 
                                 std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                              
@@ -131,7 +67,7 @@ namespace Gambit
                                 }
                                 else if (options.hasKey("sigs"))
                                 {
-                                        std::vector<double> sigs = options.getValue<std::vector<double>>("sigs");
+                                        std::vector <double> sigs = options.getValue <std::vector <double>> ("sigs");
                                         if (sigs.size() != param.size())
                                         {
                                                 good = false;
@@ -141,7 +77,7 @@ namespace Gambit
                                         {
                                                 for (int i = 0; i < sigs.size(); i++)
                                                 {
-                                                        cov[i][i] = 1.0/sigs[i]/sigs[i];
+                                                        cov[i][i] = sigs[i]*sigs[i];
                                                 }
                                         }
                                 }
@@ -149,6 +85,20 @@ namespace Gambit
                                 {
                                         good = false;
                                         scanLog::err << "Gaussian (prior):  Covariance matrix is not defined in inifile." << scanLog::endl;
+                                }
+                                
+                                if (options.hasKey("mean"))
+                                {
+                                        std::vector <double> temp = options.getValue <std::vector <double>> ("mean");
+                                        if (temp.size() == mean.size())
+                                        {
+                                                mean = temp;
+                                        }
+                                        else
+                                        {
+                                                good = false;
+                                                scanLog::err << "Gaussian (prior):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
+                                        }
                                 }
                                 
                                 if (good)
@@ -159,20 +109,22 @@ namespace Gambit
                         }
                         
                         // Transformation from unit interval to the Gaussian
-                        void transform(std::vector<double>&unitpars, std::map<std::string,double>&outputMap) const
+                        void transform(std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
-                                std::transform(unitpars.begin(), unitpars.end(), vec.begin(), [](double x)->double
+                                auto u_it = unitpars.begin();
+                                for (auto &elem : vec)
                                 {
-                                        return SQRT2*boost::math::erf_inv(2.0*x-1.0);      
-                                });
+                                        elem = M_SQRT2*boost::math::erf_inv(2.0*(*(u_it++))-1.0);      
+                                }
                                 
                                 col.ElMult(vec);
                                 
                                 auto v_it = vec.begin();
+                                auto m_it = mean.begin();
                                 for (auto &str : param)
                                 {
-                                        outputMap[str] = *(v_it++);
+                                        outputMap[str] = *(v_it++) + *(m_it++);
                                 }
                         }
                 };

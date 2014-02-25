@@ -82,7 +82,7 @@ m12_prior:
 
 tanbMstop_prior:
   parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
-  prior_type: gaussian
+  prior_type: cauchy
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
     demo: 45

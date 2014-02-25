@@ -55,16 +55,16 @@ namespace Gambit
                 {
                         std::string name;
                         std::string version;
-                        std::vector<void *> inputData;
+                        std::vector <void *> inputData;
                         std::vector <void (*)(gambitData &)> inits;
                         std::map<std::string, factoryBase *> outputFuncs;
                         
                         gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
-                                for (std::map<std::string, factoryBase *>::iterator it = outputFuncs.begin(); it != outputFuncs.end(); it++)
+                                for (auto &outputMap : outputFuncs)
                                 {
-                                        delete it->second;
+                                        delete outputMap.second;
                                 }
                         }
                 };  
