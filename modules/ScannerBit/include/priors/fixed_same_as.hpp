@@ -26,10 +26,10 @@ namespace Gambit
                 {
                 private:
                         double value;
-                        std::string name;
+                        std::vector<std::string> names;
                         
                 public:
-                        FixedPrior(std::vector<std::string>& param, IniParser::Options& options) : name(param[0])
+                        FixedPrior(std::vector<std::string>& param, IniParser::Options& options) : names(param)
                         {
                                 if (options.hasKey("fixed_value"))
                                 {
@@ -37,27 +37,16 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "Did not give fixed_value for parameter " << name << scanLog::endl;
-                                }
-                                
-                                if (param.size() != 1)
-                                {
-                                        scanLog::err << "Can not fix one value at a time: [";
-                                        std::vector<std::string>::iterator it = param.begin();
-                                        scanLog::err << *(it++);
-                                        for (; it < param.end(); it++)
-                                        {
-                                                scanLog::err << ", " << *it;
-                                        }
-                                        scanLog::err << "]" << scanLog::endl;
+                                        scanLog::err << "Did not give fixed_value for parameter " << names[0] << "..." << scanLog::endl;
                                 }
                         }
                         
-                        FixedPrior(std::string name, double value) : value(value), name(name) {}
+                        FixedPrior(std::string name, double value) : value(value), names(1, name) {}
                         
                         void transform(std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
                         {
-                                outputMap[name] = value;
+                                for (auto &name : names)
+                                        outputMap[name] = value;
                         }
                 };
                 
@@ -102,9 +91,9 @@ namespace Gambit
                         {
                                 double value = outputMap[name];
                                 
-                                for (std::vector<std::string>::const_iterator it = names.begin(); it != names.end(); ++it)
+                                for (auto &nam : names)
                                 {
-                                        outputMap[*it] = value;
+                                        outputMap[nam] = value;
                                 }
                         }
                 };

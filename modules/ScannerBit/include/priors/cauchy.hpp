@@ -19,19 +19,19 @@
 ///
 ///  *********************************************
 
-#ifndef PRIOR_GAUSSIAN_HPP
-#define PRIOR_GAUSSIAN_HPP
+#ifndef PRIOR_CAUCHY_HPP
+#define PRIOR_CAUCHY_HPP
+//#define _USE_MATH_DEFINES
 
 #include <vector>
-#include <boost/math/special_functions/erf.hpp>
-#include <cholesky.hpp>
-   
+#include <cmath>
+
 namespace Gambit
 {
         namespace Priors
         {
-                // Gaussian prior. Takes covariance matrix as arguments
-                class Gaussian : public BasePrior
+                /// 2D Gaussian prior. Takes covariance matrix as arguments
+                class Cauchy : public BasePrior
                 {
                 private:
                         std::vector <std::string> param;
@@ -40,7 +40,7 @@ namespace Gambit
                         
                 public: 
                         // Constructor
-                        Gaussian(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
+                        Cauchy(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
                         { 
                                 std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                              
@@ -53,7 +53,7 @@ namespace Gambit
                                         if (cov.size() != param.size())
                                         {
                                                 good = false;
-                                                scanLog::err << "Gaussian (prior):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
+                                                scanLog::err << "Cauchy (prior):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
                                         }
                                         
                                         for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
@@ -61,7 +61,7 @@ namespace Gambit
                                                 if (it->size() != cov.size())
                                                 {
                                                         good = false;
-                                                        scanLog::err << "Gaussian (prior):  Covariance matrix is not square." << scanLog::endl;
+                                                        scanLog::err << "Cauchy (prior):  Covariance matrix is not square." << scanLog::endl;
                                                 }
                                         }
                                 }
@@ -71,7 +71,7 @@ namespace Gambit
                                         if (sigs.size() != param.size())
                                         {
                                                 good = false;
-                                                scanLog::err << "Gaussian (prior):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
+                                                scanLog::err << "Cauchy (prior):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
                                         }
                                         else
                                         {
@@ -84,7 +84,7 @@ namespace Gambit
                                 else
                                 {
                                         good = false;
-                                        scanLog::err << "Gaussian (prior):  Covariance matrix is not defined in inifile." << scanLog::endl;
+                                        scanLog::err << "Cauchy (prior):  Covariance matrix is not defined in inifile." << scanLog::endl;
                                 }
                                 
                                 if (options.hasKey("mean"))
@@ -97,14 +97,14 @@ namespace Gambit
                                         else
                                         {
                                                 good = false;
-                                                scanLog::err << "Gaussian (prior):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
+                                                scanLog::err << "Cauchy (prior):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
                                         }
                                 }
                                 
                                 if (good)
                                 {
                                         if (!col.EnterMat(cov))
-                                                scanLog::err << "Gaussian (prior):  Covariance matrix is not postive definite." << scanLog::endl;
+                                                scanLog::err << "Cauchy (prior):  Covariance matrix is not postive definite." << scanLog::endl;
                                 }
                         }
                         
@@ -115,7 +115,7 @@ namespace Gambit
                                 auto u_it = unitpars.begin();
                                 for (auto &elem : vec)
                                 {
-                                        elem = M_SQRT2*boost::math::erf_inv(2.0*(*(u_it++))-1.0);      
+                                        elem = std::tan(M_PI*(*(u_it++) - 0.5));      
                                 }
                                 
                                 col.ElMult(vec);
@@ -129,7 +129,7 @@ namespace Gambit
                         }
                 };
         
-                LOAD_PRIOR(gaussian, Gaussian)
+                LOAD_PRIOR(cauchy, Cauchy)
         }
 }
 
