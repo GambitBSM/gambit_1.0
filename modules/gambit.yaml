@@ -194,3 +194,9 @@ loopsample:
   
 multnest:
   output_file:  output
+  
+enable_testing: false
+test_function: uniform
+
+uniform:
+  dim: 2

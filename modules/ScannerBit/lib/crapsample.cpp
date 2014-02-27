@@ -49,10 +49,10 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-SCANNER_PLUGIN (crapsample)
+scanner_plugin (crapsample)
 {      
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        int PLUGIN_MAIN (void)
+        int plugin_main (void)
         {
                 std::vector<std::string> &keys     = GETKEYS();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");

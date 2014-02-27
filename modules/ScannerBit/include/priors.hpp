@@ -104,49 +104,16 @@ namespace Gambit
                 /// Map in which to keep factory functions for the priors (prior_creators)
                 // (defined in priors.cpp)
         
-                namespace
+                registry
                 { 
-                        typedef BasePrior* create_prior_function(std::vector<std::string>, IniParser::Options);
+                        typedef BasePrior* create_prior_function(const std::vector<std::string> &, IniParser::Options &);
                         std::map<std::string, create_prior_function*> prior_creators;
-                        
-                        template <class T>  
-                        class create_prior {}; 
-                        
-                        template <class T>
-                        struct reg_init
-                        {
-                                static create_prior <T> reg; 
-                        };
                 }
- 
         } // end namespace Priors
 } // end namespace Gambit
 
 // This macro registers each prior.
-#define LOAD_PRIOR(tag, ...)                                                                                    \
-namespace                                                                                                       \
-{                                                                                                               \
-        template<>                                                                                              \
-        class create_prior < __VA_ARGS__ >                                                                      \
-        {                                                                                                       \
-        private:                                                                                                \
-                typedef BasePrior* create_prior_function(std::vector<std::string>, IniParser::Options);         \
-                                                                                                                \
-        public:                                                                                                 \
-                create_prior(std::map<std::string, create_prior_function*> &prior_creators)                     \
-                {                                                                                               \
-                        prior_creators[ #tag ] = create_prior< __VA_ARGS__ >::init;                             \
-                }                                                                                               \
-                                                                                                                \
-                static BasePrior* init(std::vector<std::string> params, IniParser::Options options)             \
-                {                                                                                               \
-                        return new __VA_ARGS__ (params, options);                                               \
-                }                                                                                               \
-        };                                                                                                      \
-                                                                                                                \
-        template <>                                                                                             \
-        create_prior < __VA_ARGS__ > reg_init < __VA_ARGS__ >::reg(prior_creators);                             \
-}                                                                                                               \
+#define LOAD_PRIOR(tag, ...) REGISTER(prior_creators, tag, __VA_ARGS__)
 
 #include<priors/prior_list.hpp>
 
