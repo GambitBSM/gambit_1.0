@@ -3,7 +3,7 @@ module testmodule
 
   double precision, dimension(-2:0) :: a = (/-2.2, -1.1, 0.0/)
   double precision, dimension(3) :: b = (/1.1,2.2,3.3/)   
-  integer :: c = 3
+  integer :: c = 1
   integer, dimension(1:3,0:1,-1:0) :: d = (reshape((/ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, &
   0, 0/), [3,2,2]))  
   common /commonBlock/ a,b,c,d
@@ -44,13 +44,13 @@ contains
         double precision, dimension(3), intent(in) :: y
       end function func
     end interface AFunc
-    write(*,*) " This is externalRoutine called with arguments:",i,j,"and a function pointer."
+    write(*,*) " This is fptrRoutine called with arguments:",i,j,"and a function pointer."
     i(3) = func(i)+i(j)
   end subroutine fptrRoutine
 
   double precision function doubleFuncArray1(i)
     double precision, dimension(3), intent(in) :: i
-    write(*,*) " This is doubleFuncArray called with arguments:",i
+    write(*,*) " This is doubleFuncArray1 called with arguments:",i
     doubleFuncArray1 = i(1)
     return
   end function

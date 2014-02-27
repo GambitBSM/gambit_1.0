@@ -22,6 +22,7 @@
 #include "DarkSUSY_types.hpp"
 #include "fakeSoftSUSY_types.hpp"
 #include "SuperIso_types.hpp"
+#include "libFarrayTest_types.hpp"
 
 #endif //__backend_types_rollcall_hpp__
 

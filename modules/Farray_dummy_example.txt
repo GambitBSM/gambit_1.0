@@ -104,44 +104,46 @@ BE_VARIABLE_FULL(FORT_ARRAY(int,d,(2,5),(0,2),(0,1)), "mssmpar_", "mssmpar")
 // This macro expands to
 namespace Gambit 
 { 
-    namespace Backends 
-    { 
-        namespace BACKENDNAME 
-        { 
-        	// The user has access to the Farray version of the array
-            Farray<int,3> * d; 
-            Farray<int,3> * getptrd() { return d; } 
-            namespace Functown 
-            { 
-                auto d = makeBackendFunctor<Farray<int,3>*>( Gambit::Backends::BACKENDNAME::getptrd, "d", "mssmpar", "Farray<int,3>*", "BACKENDNAME", "VERSION" ); 
-            } 
-            void constructVarPointer_d() 
-            { 
-                dlerror(); 
-                pSym = dlsym(pHandle, "mssmpar_"); 
-                // Temporary arrays that are fed to the Farray constructor
-                int d_temp_startArray[3] = {2, 0, 0 }; 
-                int d_temp_endArray[3] = {5, 2, 1 }; 
-                // Farray constructor called using pointer to first array element and the two index arrays
-                d = Farray<int,3>(reinterpret_cast<int*>(pSym),d_temp_startArray,d_temp_endArray); 
-                if(!present) 
-                { 
-                    Functown::d.setStatus(0); 
-                } 
-                else if(dlerror() != __null) 
-                { 
-                    std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
-                    std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
-                    Functown::d.setStatus(0); 
-                } 
-                Core.registerBackendFunctor(Functown::d); 
-            } 
-            namespace ini 
-            { 
-                ini_code d(&constructVarPointer_d); 
-            } 
-        } 
-    } 
+	namespace Backends 
+	{ 
+		namespace BACKENDNAME 
+		{
+		    // The user has access to the Farray version of the array. Need an actual instance in addition to the pointer.
+			Gambit::Farray<int,3> d_keeper; 
+			Gambit::Farray<int,3> * d; 
+			Gambit::Farray<int,3> * getptrd() {return d;} 
+			namespace Functown 
+			{ 
+				auto d = makeBackendFunctor<Gambit::Farray<int,3>*>( Gambit::Backends::BACKENDNAME::getptrd, "d", "mssmpar", "Gambit::Farray<int,3>*", "BACKENDNAME", "VERSION" ); 
+			} 
+			void constructVarPointer_d() 
+			{ 
+				dlerror(); 
+				pSym = dlsym(pHandle, "mssmpar_"); 
+                // Temporary arrays that are fed to the Farray constructor				
+				int d_temp_startArray[3] = {2, 0, 0 }; 
+				int d_temp_endArray[3] = {5, 2, 1 }; 
+                // Farray constructor called using pointer to first array element and the two index arrays				
+				d_keeper = Gambit::Farray<int,3>(reinterpret_cast<int*>(pSym),d_temp_startArray,d_temp_endArray); 
+				d = &d_keeper; 
+				if(!present) 
+				{ 
+					Functown::d.setStatus(0); 
+				} 
+				else if(dlerror() != __null) 
+				{ 
+					std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
+					std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
+					Functown::d.setStatus(0); 
+				} 
+				Core.registerBackendFunctor(Functown::d); 
+			} 
+			namespace ini 
+			{ 
+				ini_code d(&constructVarPointer_d); 
+			} 
+		} 
+	} 
 }
 
 
@@ -187,7 +189,8 @@ struct testBlockType
         c = &(in->c); 
         int d_temp_startArray[3] = {2, 0, 0 }; 
         int d_temp_endArray[3] = {5, 2, 1 }; 
-        d = Farray<int,3> (in->d, d_temp_startArray ,d_temp_endArray); basicPointer = in; 
+        d = Farray<int,3> (in->d, d_temp_startArray ,d_temp_endArray); 
+        basicPointer = in; 
     } 
 };
 
@@ -199,47 +202,44 @@ BE_VARIABLE_FULL(FORT_COMMONB(testBlockType,testBlock), "mssmpar_", "mssmpar")
 // This macro expands to
 namespace Gambit 
 { 
-    namespace Backends 
-    { 
-        namespace BACKENDNAME 
-        { 
-        	// The user has access to the testBlockType version of the common block        
-            testBlockType * testBlock; 
-            testBlockType * getptrtestBlock() { return testBlock; } 
-            namespace Functown 
-            { 
-                auto testBlock = makeBackendFunctor<testBlockType*>( Gambit::Backends::BACKENDNAME::getptrtestBlock, "testBlock", "mssmpar", "testBlockType*", "BACKENDNAME", "VERSION" ); 
-            } 
-            void constructVarPointer_testBlock() 
-            { 
-                dlerror(); 
-                pSym = dlsym(pHandle, "mssmpar_"); 
-                // The cast is into the testBlockType_basic type for extracting the data, and then passed to the testBlockType constructor.
-                testBlock = testBlockType(reinterpret_cast<testBlockType_basic*>(pSym)); 
-                if(!present) 
-                { 
-                    Functown::testBlock.setStatus(0); 
-                } 
-                else if(dlerror() != __null) 
-                { 
-                    std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
-                    std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
-                    Functown::testBlock.setStatus(0); 
-                } 
-                Core.registerBackendFunctor(Functown::testBlock); 
-            } 
-            namespace ini 
-            { 
-                ini_code testBlock(&constructVarPointer_testBlock); 
-            } 
-        } 
-    } 
+	namespace Backends 
+	{ 
+		namespace BACKENDNAME 
+		{
+			// Need an actual instance of testBlockType as well as the pointer
+			testBlockType testBlock_keeper; 
+			testBlockType * testBlock; 
+			testBlockType * getptrtestBlock() {return testBlock;} 
+			namespace Functown 
+			{ 
+				auto testBlock = makeBackendFunctor<testBlockType*>( Gambit::Backends::BACKENDNAME::getptrtestBlock, "testBlock", "mssmpar", "testBlockType*", "BACKENDNAME", "VERSION" ); 
+			} 
+			void constructVarPointer_testBlock() 
+			{ 
+				dlerror(); 
+				pSym = dlsym(pHandle, "mssmpar_"); 
+				// The cast is into the testBlockType_basic type for extracting the data, and then passed to the testBlockType constructor.
+				testBlock_keeper = testBlockType(reinterpret_cast<testBlockType_basic*>(pSym)); 
+				testBlock = &testBlock_keeper; 
+				if(!present) 
+				{ 
+					Functown::testBlock.setStatus(0); 
+				} 
+				else if(dlerror() != __null) 
+				{ 
+					std::cout << "Library symbol " << "mssmpar_" << " not found." << std::endl; 
+					std::cout << "The functor generated for this symbol " << "will get status=0" << std::endl; 
+					Functown::testBlock.setStatus(0); 
+				} 
+				Core.registerBackendFunctor(Functown::testBlock); 
+			} 
+			namespace ini 
+			{ 
+				ini_code testBlock(&constructVarPointer_testBlock); 
+			} 
+		} 
+	} 
 }
-
-
-
-
-
 
 
 

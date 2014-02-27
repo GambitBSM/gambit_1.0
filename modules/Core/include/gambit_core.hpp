@@ -25,7 +25,6 @@
 
 namespace Gambit
 {
- 
   /// Master driver class for a GAMBIT scan.
   class gambit_core
   {

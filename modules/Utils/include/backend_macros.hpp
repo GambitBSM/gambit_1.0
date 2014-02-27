@@ -54,7 +54,7 @@
 #include "create_core.hpp"
 #include "util_macros.hpp"
 #include "util_types.hpp"
-#include "shared_types.hpp"
+#include "backend_type_macros.hpp"
 
 #if !BOOST_PP_VARIADICS
   #error Variadic Boost preprocessor macros required. BOOST_PP_VARIADICS must be set to 1.
@@ -188,9 +188,9 @@ namespace Gambit                                                            \
 
 /* Macros for getting the type exposed to the user */   
 #define BE_VAR_GETTYPE(TYPEMACRO) CAT(BE_VAR_TYPE,BOOST_PP_TUPLE_ELEM(2,TYPEMACRO))(TYPEMACRO)
-#define BE_VAR_TYPE0(TYPEMACRO) (Farray<BOOST_PP_TUPLE_ELEM(0,TYPEMACRO),BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))>)   // Fortran Array
-#define BE_VAR_TYPE1(TYPEMACRO) (BOOST_PP_TUPLE_ELEM(0,TYPEMACRO))                                                                // General variable
-#define BE_VAR_TYPE2(TYPEMACRO) (BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))                                                                // Fortran Common Block
+#define BE_VAR_TYPE0(TYPEMACRO) (Gambit::Farray<BOOST_PP_TUPLE_ELEM(0,TYPEMACRO),BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))>)     // Fortran Array
+#define BE_VAR_TYPE1(TYPEMACRO) (BOOST_PP_TUPLE_ELEM(0,TYPEMACRO))                                                                          // General variable
+#define BE_VAR_TYPE2(TYPEMACRO) (BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))                                                                          // Fortran Common Block
 
 /* Macros for producing arrays necessary for the Farray constructor */   
 #define BE_VAR_GETPRECONSTR(TYPEMACRO) CAT(BE_VAR_GETPRECONSTR,BOOST_PP_TUPLE_ELEM(2,TYPEMACRO))(TYPEMACRO)
@@ -209,10 +209,23 @@ namespace Gambit                                                            \
 #define BE_VAR_GETCONSTRARG22(TYPEMACRO)                                                                      // Fortran Common Block
 
 /* Macros for calling the appropriate constructor */    
-#define BE_VAR_CONSTRUCT(TYPEOPT,TYPE,ARG,EXTRA1,EXTRA2) CAT(BE_VAR_CONSTRUCT,TYPEOPT)(TYPE,ARG,EXTRA1,EXTRA2)
-#define BE_VAR_CONSTRUCT0(TYPE,ARG,EXTRA1,EXTRA2) STRIP_PARENS(TYPE)(ARG,EXTRA1,EXTRA2);                      // Fortran Array
-#define BE_VAR_CONSTRUCT1(TYPE,ARG,EXTRA1,EXTRA2) ARG;                                                        // General variable
-#define BE_VAR_CONSTRUCT2(TYPE,ARG,EXTRA1,EXTRA2) STRIP_PARENS(TYPE)(ARG);                                    // Fortran Common Block
+#define BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,ARG,EXTRA1,EXTRA2) CAT(BE_VAR_CONSTRUCT,TYPEOPT)(NAME,TYPE,ARG,EXTRA1,EXTRA2)
+/* Fortran Array */
+#define BE_VAR_CONSTRUCT0(NAME,TYPE,ARG,EXTRA1,EXTRA2)                      \
+  CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG,EXTRA1,EXTRA2);                \
+  NAME = &CAT(NAME,_keeper);
+/* General variable */
+#define BE_VAR_CONSTRUCT1(NAME,TYPE,ARG,EXTRA1,EXTRA2) NAME = ARG;                                                 
+/* Fortran Common Block */
+#define BE_VAR_CONSTRUCT2(NAME,TYPE,ARG,EXTRA1,EXTRA2)                      \
+  CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG);                              \
+  NAME = &CAT(NAME,_keeper);
+
+/* For Fortran Arrays and Common Blocks we need an instance of the frontend object */    
+#define BE_VAR_INSTANCE(TYPEOPT,TYPE,NAME) CAT(BE_VAR_INSTANCE,TYPEOPT)(TYPE,NAME)
+#define BE_VAR_INSTANCE0(TYPE,NAME) STRIP_PARENS(TYPE) CAT(NAME,_keeper);                                     // Fortran Array
+#define BE_VAR_INSTANCE1(TYPE,NAME)                                                                           // General variable
+#define BE_VAR_INSTANCE2(TYPE,NAME) STRIP_PARENS(TYPE) CAT(NAME,_keeper);                                     // Fortran Common Block
 
 #define BE_VARIABLE_FULL_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)  \
 namespace Gambit                                                            \
@@ -222,6 +235,7 @@ namespace Gambit                                                            \
     namespace BACKENDNAME                                                   \
     {                                                                       \
                                                                             \
+      BE_VAR_INSTANCE(TYPEOPT,TYPE,NAME)                                    \
       STRIP_PARENS(TYPE) * NAME;                                            \
                                                                             \
       /* Construct 'getptr' function */                                     \
@@ -249,7 +263,7 @@ namespace Gambit                                                            \
         /* -- Obtain pointer from symbol */                                 \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         STRIP_PARENS(PRECONSTR)                                             \
-        NAME = BE_VAR_CONSTRUCT(TYPEOPT,TYPE,reinterpret_cast<BASETYPE*>(pSym), CONSTRARG1, CONSTRARG2)   \
+        BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,reinterpret_cast<BASETYPE*>(pSym), CONSTRARG1, CONSTRARG2)   \
         /* -- Disable the functor if the library is not present             \
               or the symbol not found. */                                   \
         if(!present)                                                        \
@@ -455,6 +469,18 @@ namespace Gambit
   namespace Backends
   {
     std::map<void*, void*> frontBackFuncMap;  
+    void* accessFrontBackFuncMap(void* frontFunc)
+    {
+        if(frontBackFuncMap.count(frontFunc) > 0)
+        {
+          return frontBackFuncMap[frontFunc];
+        }
+        else
+        {
+          cout << "Error: Trying to pass a function pointer with no valid backend equivalent to a backend function." << endl;
+          throw 0;
+        }
+    }
   }
 }
   
@@ -487,7 +513,7 @@ namespace Gambit
 #define BE_FUNC_GET_ARGS_FE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_ARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BE_FUNC_GET_ARGS_FE_I0(ARG,IDX) ,ARG
 #define BE_FUNC_GET_ARGS_FE_I1(ARG,IDX) CAT(BE_FUNC_GET_ARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BE_FUNC_GET_ARGS_FE_II0(ARG,IDX) ,Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
+#define BE_FUNC_GET_ARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
 #define BE_FUNC_GET_ARGS_FE_II1(ARG,IDX) ,BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(3,ARG)
 
 /* Expands to the argument list of the backend function in the library. */  
@@ -503,7 +529,7 @@ namespace Gambit
 #define BE_FUNC_GET_CALLARGS_FE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_CALLARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_FE_I0(ARG,IDX) ,ARG FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_FE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BE_FUNC_GET_CALLARGS_FE_II0(ARG,IDX) ,Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>& FE_arg##IDX
+#define BE_FUNC_GET_CALLARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>& FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_FE_II1(ARG,IDX) ,BOOST_PP_TUPLE_ELEM(1,ARG)(*FE_arg##IDX) BOOST_PP_TUPLE_ELEM(3,ARG)
 
 /* Expands to the argument list passed by the wrapper function to the backend function. Contains conversion of named input arguments. */  
@@ -512,14 +538,14 @@ namespace Gambit
 #define BE_FUNC_GET_CALLARGS_BE_I0(ARG,IDX) , FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_BE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_BE_II0(ARG,IDX) , FE_arg##IDX.getArray()
-#define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) , reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(frontBackFuncMap[reinterpret_cast<void*>(FE_arg##IDX)])
+#define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) , reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(accessFrontBackFuncMap(reinterpret_cast<void*>(FE_arg##IDX)))
 
 /* Expands to the argument list of a function pointer argument in the (frontend) function exposed to the user. */  
 #define BEF_FPTR_CALLARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_FE_I,x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BEF_FPTR_CALLARGS_FE_I(X,Y,IDX,ARG) CAT(BEF_FPTR_CALLARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BEF_FPTR_CALLARGS_FE_I0(ARG,IDX) ,ARG
 #define BEF_FPTR_CALLARGS_FE_I1(ARG,IDX) CAT(BEF_FPTR_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BEF_FPTR_CALLARGS_FE_II0(ARG,IDX) ,Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
+#define BEF_FPTR_CALLARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
 
 /* Expands to the argument list of a function pointer argument in the backend function in the library. */  
 #define BEF_FPTR_CALLARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
@@ -562,7 +588,7 @@ namespace Gambit                                                                
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \
-        auto NAME = backend_functor<TYPE,STRIP_PARENS(FE_ARGS)>(                                \
+        auto NAME = backend_functor<TYPE INSERT_NONEMPTY(STRIP_PARENS(FE_ARGS)) >(              \
          Gambit::Backends::BACKENDNAME::NAME,                                                   \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
@@ -574,8 +600,6 @@ namespace Gambit                                                                
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
          them to call the backend function with appropriate translated args */                  \
       BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS)                    \
-      /* Add function to frontBackFuncMap to give correct conversion when sent as an argument */\
-      BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),BE_FUNC_ADD_TO_FPTR_MAP(NAME), ) \
                                                                                                 \
       void CAT(constructFuncPointer_,NAME)()                                                    \
       {                                                                                         \
@@ -585,6 +609,8 @@ namespace Gambit                                                                
         /* -- Obtain pointer from symbol */                                                     \
         pSym = dlsym(pHandle, SYMBOLNAME);                                                      \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
+        /* Add function to frontBackFuncMap to give correct conversion when sent as an argument */        \
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),BE_FUNC_ADD_TO_FPTR_MAP(NAME), ) \        
         Functown::NAME.updatePointer(NAME);                                                     \
         /* -- Disable the functor if the library is not present or the symbol not found. */     \
         if(!present)                                                                            \
@@ -684,133 +710,4 @@ namespace Gambit                                                            \
 } /* end namespace Gambit */                                                \
 /// @}
 
-
-
-// --------------------------------------------------------------------------   
-//                  Fortran common block macros
-// --------------------------------------------------------------------------
-
-/// \name Macros for building a basic Fortran common block struct
-///
-/// @{
-/* Create basic struct for reading in common block */
-#define GENERATE_CB_BASIC_STRUCT(NAME,CB)                                                       \
-  struct NAME##_basic                                                                           \
-  {                                                                                             \
-    BOOST_PP_SEQ_FOR_EACH(ADD_CB_BASIC_STRUCT_CONTENT,x, CB)                                    \
-  };
-    
-/* Add content to basic commonblock struct. R and D are passed by the BOOST macro, but not used here. */ 
-#define ADD_CB_BASIC_STRUCT_CONTENT(R,D,VAR)                                                    \
-  BOOST_PP_IIF( BOOST_PP_TUPLE_ELEM(2,VAR), ADD_CB_BASIC_STRUCT_VAR(VAR),  ADD_CB_BASIC_STRUCT_ARRAY(VAR))
-
-/* Add variable to basic common block struct */
-#define ADD_CB_BASIC_STRUCT_VAR(VAR)                                                            \
-  BOOST_PP_TUPLE_ELEM(0,VAR) BOOST_PP_TUPLE_ELEM(1,VAR);       
-
-/* Add array to basic common block struct */
-#define ADD_CB_BASIC_STRUCT_ARRAY(VAR)                                                          \
-  BOOST_PP_TUPLE_ELEM(0,VAR) BOOST_PP_TUPLE_ELEM(1,VAR)[FARRAY_ARRAY_SIZE(BOOST_PP_TUPLE_ELEM(3,VAR))];         
-
-/* Macros for calculating size of (multidimensional) arrays */
-#define FARRAY_SUM_INDEX(R,D,VAR) (PAIR_ELEMENT1(VAR)-(PAIR_ELEMENT0(VAR))+1) *
-#define FARRAY_ARRAY_SIZE(VAR) BOOST_PP_LIST_FOR_EACH(FARRAY_SUM_INDEX,,VAR) 1
-/// @}
-
-
-/// \name Macros for building a Fortran common block struct containing Farray objects
-///
-/// @{
-/* Create re-indexed common block struct for the user */
-#define GENERATE_CB_REINDEXED_STRUCT(NAME,CB)                                                   \
-  struct NAME                                                                                   \
-  {                                                                                             \
-    BOOST_PP_SEQ_FOR_EACH(ADD_CB_REINDEXED_STRUCT_CONTENT,NAME, CB)                             \
-    ADD_CB_BASIC_POINTER(NAME)                                                                  \
-    ADD_CB_REINDEXED_STRUCT_CONSTRUCTOR(NAME,CB)                                                \
-  };
-
-/* Add content to reindexed commonblock struct. R and NAME are passed by the BOOST macro, but not used here. */
-#define ADD_CB_REINDEXED_STRUCT_CONTENT(R,NAME,VAR)                                             \
-  STRIP_PARENS(BOOST_PP_IIF(BOOST_PP_TUPLE_ELEM(2,VAR)        ,                                 \
-                            ADD_CB_REINDEXED_STRUCT_VAR(VAR)  ,                                 \
-                            ADD_CB_REINDEXED_STRUCT_ARRAY(VAR)))  
-
-/* Add variable to reindexed common block struct */ 
-#define ADD_CB_REINDEXED_STRUCT_VAR(VAR)                                                        \
-  (BOOST_PP_TUPLE_ELEM(0,VAR) * BOOST_PP_TUPLE_ELEM(1,VAR);)                                                                                                
-
-/* Add Farray to reindexed common block struct */
-#define ADD_CB_REINDEXED_STRUCT_ARRAY(VAR)                                                      \
-  (Farray<BOOST_PP_TUPLE_ELEM(0,VAR),BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,VAR))>            \
-    BOOST_PP_TUPLE_ELEM(1,VAR);                                                                 \
-  )
-
-/* Add pointer to basic commonblock struct */
-#define ADD_CB_BASIC_POINTER(NAME)                                                              \
-  NAME##_basic * basicPointer;
-    
-/* Add constructor and destructor for reindexed commonblock struct. */
-#define ADD_CB_REINDEXED_STRUCT_CONSTRUCTOR(NAME,CB)                                            \
-  NAME (NAME##_basic * in)                                                                      \
-  {                                                                                             \
-    BOOST_PP_SEQ_FOR_EACH(ADD_CB_REINDEXED_STRUCT_INIT,NAME, CB)                                \
-    basicPointer = in;                                                                          \
-  }    
-    
-/* Add content to constructor of reindexed commonblock struct. R and NAME are passed by the BOOST macro, but not used here. */
-#define ADD_CB_REINDEXED_STRUCT_INIT(R,NAME,VAR)                                                \
-  STRIP_PARENS(BOOST_PP_IIF(BOOST_PP_TUPLE_ELEM(2,VAR)              ,                           \
-                            ADD_CB_REINDEXED_STRUCT_VAR_INIT(VAR)   ,                           \
-                            ADD_CB_REINDEXED_STRUCT_ARRAY_INIT(VAR)))      
-    
-/* Add variable initialization to constructor of reindexed common block struct */   
-#define ADD_CB_REINDEXED_STRUCT_VAR_INIT(VAR)                                                   \
-  (BOOST_PP_TUPLE_ELEM(1,VAR) = &(in->BOOST_PP_TUPLE_ELEM(1,VAR));)                                                                                                
-
-/* Add array initialization to constructor ofreindexed common block struct */ 
-#define ADD_CB_REINDEXED_STRUCT_ARRAY_INIT(VAR)                                                 \
-  (                                                                                             \
-    ADD_FARRAY_CONSTRUCTOR_ARRAYS(BOOST_PP_TUPLE_ELEM(1,VAR),                                   \
-                                  BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,VAR)),               \
-                                  BOOST_PP_TUPLE_ELEM(3,VAR))                                   \
-    BOOST_PP_TUPLE_ELEM(1,VAR) =                                                                \
-    Farray<BOOST_PP_TUPLE_ELEM(0,VAR),BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,VAR))>           \
-    ( in->BOOST_PP_TUPLE_ELEM(1,VAR)                  ,                                         \
-      CAT(BOOST_PP_TUPLE_ELEM(1,VAR),_temp_startArray),                                         \
-      CAT(BOOST_PP_TUPLE_ELEM(1,VAR),_temp_endArray)                                            \
-    );                                                                                          \
-  )
-
-/* Add temporary arrays containing the array limits. To be passed to the Farray constructor. */
-#define ADD_FARRAY_CONSTRUCTOR_ARRAYS(NAME,DIM,INDICES)                                         \
-  int CAT(NAME,_temp_startArray[DIM]) =                                                         \
-    {BOOST_PP_SEQ_ENUM(BOOST_PP_LIST_FOR_EACH(FARRAY_CONSTRUCTOR_ARRAY_INDEX,PAIR_ELEMENT0,INDICES))};  \
-  int CAT(NAME,_temp_endArray[DIM])   =                                                         \
-    {BOOST_PP_SEQ_ENUM(BOOST_PP_LIST_FOR_EACH(FARRAY_CONSTRUCTOR_ARRAY_INDEX,PAIR_ELEMENT1,INDICES))};
-       
-#define FARRAY_CONSTRUCTOR_ARRAY_INDEX(R,MACRO,VAR) (MACRO(VAR))
-/// @}
-
-
-/// \name User macros for setting up Fortran commonblocks
-///
-/// @{
-/* Macros for adding content to commonblock */
-#define GENERAL_VAR(TYPE,NAME) ((TYPE,NAME,1, ))
-#define FORT_ARRAY(...) ((                                                                      \
-                            BOOST_PP_TUPLE_ELEM(0,(__VA_ARGS__)),                               \
-                            BOOST_PP_TUPLE_ELEM(1,(__VA_ARGS__)),                               \
-                            0,                                                                  \
-                            BOOST_PP_LIST_REST_N(2,BOOST_PP_TUPLE_TO_LIST((__VA_ARGS__)))       \
-                        ))
-
-/* Main macro for generating the commonblock setup */
-#define GENERATE_COMMONBLOCK(TYPENAME,CB)                                                       \
-  GENERATE_CB_BASIC_STRUCT(TYPENAME,CB)                                                         \
-  GENERATE_CB_REINDEXED_STRUCT(TYPENAME,CB)                                 
-    
-#define FORT_COMMONB(FULLTYPE, NAME) ((FULLTYPE##_basic,NAME,2,FULLTYPE))    
-/// @}
-
-#endif // __BACKEND_GENERAL_HPP__
+#endif // __BACKEND_MACROS_HPP__
