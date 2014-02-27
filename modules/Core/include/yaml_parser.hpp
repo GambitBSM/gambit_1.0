@@ -274,11 +274,22 @@ namespace Gambit
           return result;
         }
 
+        // Greg: added getOptions
+        const Options getOptions(std::string key) const
+        {
+          if (hasKey(key, "options"))
+          {
+            return Options(keyValuePairNode[key]["options"]);
+          }
+          else
+          {
+            return Options(keyValuePairNode[key]);
+          }
+        }
+        
         // Greg:  added getParameterOptions function
         const Options getParameterOptions(std::string model, std::string param) const
         {
-          Options options; 
-
           if (hasModelParameterEntry(model, param, "options"))
           {
             return Options(parametersNode[model][param]["options"]);

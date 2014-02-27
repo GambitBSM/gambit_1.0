@@ -34,12 +34,22 @@
 #include <graphs.hpp>
 #include <priors.hpp>
 #include <scanner_utils.hpp>
+#include <gambit_scan.hpp>
 
 namespace Gambit
 {
         namespace Scanner
         {
-                class Scanner_Function_Base
+                class Function_Base
+                {
+                public:
+                        virtual std::vector<double> & getParameters() = 0;
+                        virtual std::vector<std::string> & getKeys() = 0;
+                        virtual double operator () (std::vector<double> &) = 0;
+                        virtual ~Function_Base(){}
+                };
+                
+                class Scanner_Function_Base : public Function_Base
                 {
                 protected:
                         std::vector<Graphs::VertexID> vertices;
@@ -103,11 +113,9 @@ namespace Gambit
                         {
                                 dependencyResolver->resetAll();
                         }
-			
-                        virtual std::vector<double> & getParameters(){return realParameters;}
-                        virtual std::vector<std::string> & getKeys(){return prior->getShownParameters();}
-                        virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Scanner_Function_Base(){}
+                        
+                        std::vector<double> & getParameters(){return realParameters;}
+                        std::vector<std::string> & getKeys(){return prior->getShownParameters();}
                 };
 		
                 class Scanner_Function : public Scanner_Function_Base

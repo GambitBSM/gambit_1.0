@@ -35,6 +35,7 @@
 #include <priors.hpp>
 #include <scanner_utils.hpp>
 #include <scanner_function.hpp>
+#include <gambit_scan.hpp>
 
 #define INPUT_SCANNER_FUNCTION(map, func) \
 map[ #func ].first = factory_template <func>::factory; \
@@ -49,18 +50,6 @@ namespace Gambit
                 {
                         static void *factory(std::map<std::string, primary_model_functor *> &a, Graphs::DependencyResolver *b, Priors::CompositePrior *c, std::string purpose){return new T(a, b, c, purpose);}
                         static void remove(void *a){delete (T *)a;}
-                };
-                
-                class Factory_Base
-                {
-                public:
-                        virtual std::vector<std::string> & getKeys() = 0;
-                        
-                        virtual void * operator() (std::string in, std::string purpose) = 0;
-                        
-                        virtual void remove(std::string in, void *a) = 0;
-                        
-                        virtual ~Factory_Base(){};
                 };
                 
                 class Scanner_Function_Factory : public Factory_Base

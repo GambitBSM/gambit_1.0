@@ -117,7 +117,7 @@ namespace Gambit
         public:
         
                 // Constructor
-                RangePrior1D(std::vector<std::string>& param, IniParser::Options& options) : BasePrior(1), myparameter(param[0])
+                RangePrior1D(const std::vector<std::string>& param, IniParser::Options& options) : BasePrior(1), myparameter(param[0])
                 {
                         // Read the entries we need from the options
                         if ( not options.hasKey("range") )
@@ -144,7 +144,7 @@ namespace Gambit
                 }
         
                 // Constructor (for auto creation of flat prior; other priors don't need this kind of constructor! It won't hurt the other 1D range priors to have this though)
-                RangePrior1D(std::string &param, std::pair<double, double>& range) : BasePrior(1), myparameter(param)
+                RangePrior1D(const std::string &param, std::pair<double, double>& range) : BasePrior(1), myparameter(param)
                 {
                         if (range.first > range.second)
                         {

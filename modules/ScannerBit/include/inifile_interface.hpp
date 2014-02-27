@@ -37,15 +37,6 @@ namespace Gambit
 {
         namespace Scanner
         {
-                class IniFileInterface_Base
-                {
-                public:
-                        virtual const std::string pluginName() const = 0;
-                        virtual const std::string fileName() const = 0;
-                        virtual const std::string getValue(std::string in) const = 0;
-                        virtual ~IniFileInterface_Base(){};
-                };
-                
                 class IniFileInterface : public IniFileInterface_Base
                 {
                 private:
