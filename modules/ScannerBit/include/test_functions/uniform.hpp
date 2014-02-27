@@ -19,9 +19,9 @@
 
 namespace Gambit
 {
-        namespace Scanner
+        namespace Scanner_Testing
         {
-                class Test_Uniform : public Function_Base
+                class Test_Uniform : public Scanner::Function_Base
                 {
                 private:
                         std::vector<std::string> keys;

@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include <unordered_set>
 #include <set>
 #include <string>
@@ -34,22 +35,27 @@
 #include <graphs.hpp>
 #include <priors.hpp>
 #include <scanner_utils.hpp>
-#include <scanner_function.hpp>
 #include <gambit_scan.hpp>
 
-#define INPUT_SCANNER_FUNCTION(map, func) \
-map[ #func ].first = factory_template <func>::factory; \
-map[ #func ].second = factory_template <func>::remove; \
+#define LOAD_SCANNER_FUNCTION(tag, ...) REGISTER(__scanner_factories__, tag, __VA_ARGS__)
 
 namespace Gambit
 {
         namespace Scanner
         {
-                template <class T>
-                struct factory_template
+                registry
                 {
-                        static void *factory(std::map<std::string, primary_model_functor *> &a, Graphs::DependencyResolver *b, Priors::CompositePrior *c, std::string purpose){return new T(a, b, c, purpose);}
-                        static void remove(void *a){delete (T *)a;}
+                        typedef void* factory_def(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, std::string &purpose);
+                        std::map<std::string, factory_def *> __scanner_factories__;
+                }
+                
+                class Function_Base
+                {
+                public:
+                        virtual std::vector<double> & getParameters() = 0;
+                        virtual std::vector<std::string> & getKeys() = 0;
+                        virtual double operator () (std::vector<double> &) = 0;
+                        virtual ~Function_Base(){}
                 };
                 
                 class Scanner_Function_Factory : public Factory_Base
@@ -95,25 +101,25 @@ namespace Gambit
                                                 scanLog::err << "Parameter " << *it << " is in the inifile but is not required by gambit." << scanLog::endl;
                                         }
                                 }
-                                
-                                INPUT_SCANNER_FUNCTION (factoryMap, Scanner_Function);
                         }
                         
                         std::vector<std::string> & getKeys(){return prior->getShownParameters();}
                         
                         void * operator() (std::string in, std::string purpose)
                         {
-                                return (*factoryMap[in].first)(functorMap, dependencyResolver, prior, purpose);
+                                return __scanner_factories__[in](functorMap, *dependencyResolver, *prior, purpose);
                         }
                         
                         void remove(std::string in, void *a)
                         {
-                                (*factoryMap[in].second)(a);
+                                delete (Function_Base *)a;
                         }
                         
                         ~Scanner_Function_Factory(){}
                 };
         }
 }
+
+#include <scanner_functions/scanner_function_list.hpp>
 
 #endif

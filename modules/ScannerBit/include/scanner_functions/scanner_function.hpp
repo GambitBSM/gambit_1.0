@@ -25,30 +25,10 @@
 #ifndef __scanner_function_hpp__
 #define __scanner_function_hpp__
 
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <set>
-#include <string>
-#include <functors.hpp>
-#include <graphs.hpp>
-#include <priors.hpp>
-#include <scanner_utils.hpp>
-#include <gambit_scan.hpp>
-
 namespace Gambit
 {
         namespace Scanner
-        {
-                class Function_Base
-                {
-                public:
-                        virtual std::vector<double> & getParameters() = 0;
-                        virtual std::vector<std::string> & getKeys() = 0;
-                        virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Function_Base(){}
-                };
-                
+        {       
                 class Scanner_Function_Base : public Function_Base
                 {
                 protected:
@@ -60,14 +40,14 @@ namespace Gambit
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior)
+                        Scanner_Function_Base(std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, std::string &purpose) : functorMap(functorMap), dependencyResolver(&dependencyResolver), prior(&prior)
                         {
                                 // Find subset of vertices that match requested purpose
-                                vertices = dependencyResolver->getObsLikeOrder();
+                                vertices = dependencyResolver.getObsLikeOrder();
                                 int size = 0;
                                 for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
                                 {
-                                        if (dependencyResolver->getIniEntry(*it)->purpose == purpose)
+                                        if (dependencyResolver.getIniEntry(*it)->purpose == purpose)
                                         {
                                                 *it2 = *it;
                                                 it2++;
@@ -121,11 +101,11 @@ namespace Gambit
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) 
+                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) 
                         {
                         }
 			
-                        virtual double operator () (std::vector<double> &in)
+                        double operator () (std::vector<double> &in)
                         {
                                 double ret = 0;
                                 
@@ -152,6 +132,8 @@ namespace Gambit
                                 return ret;
                         }
                 };
+                
+                LOAD_SCANNER_FUNCTION(Scanner_Function, Scanner_Function)
         }
 }
 

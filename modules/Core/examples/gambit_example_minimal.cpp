@@ -92,7 +92,7 @@ void beispiel(const char* inifilename)
   auto factory_func = [&]()->Gambit::Scanner::Factory_Base *
   {
     if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-      return new Gambit::Scanner::Test_Function_Factory(iniFile);
+      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile);
     else
       return new Gambit::Scanner::Scanner_Function_Factory (Core, dependencyResolver, prior);
   };
