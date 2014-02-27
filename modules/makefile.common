@@ -507,17 +507,17 @@ $(YAMLDIR)/libyaml-cpp.a:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
 
 gambit_example: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 ExampleBit_A_standalone: $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) \
- $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so
+ $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
 	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
 	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
@@ -532,6 +532,10 @@ $(BACKENDDIR)/lib/libfirst.so: $(BACKENDDIR)/lib/libfirst.cpp
 $(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o  
+
+$(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
+	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
+	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 	
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/lib/crapsample.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/crapsample.cpp -o $(SCANDIR)/lib/crapsample.o
