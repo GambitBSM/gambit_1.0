@@ -38,7 +38,7 @@ namespace                                                                       
                 template<typename T, typename... args>                                                  \
                 static T *init(args&&... params)                                                        \
                 {                                                                                       \
-                        return static_cast<T1 *>(new __VA_ARGS__ (std::forward<args>(params)...));      \
+                        return static_cast<T *>(new __VA_ARGS__ (std::forward<args>(params)...));       \
                 }                                                                                       \
         };                                                                                              \
                                                                                                         \

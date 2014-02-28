@@ -22,8 +22,8 @@
 #include <map>
 #include <string>
 #include <scanner_utils.hpp>
-#include <scanner_function.hpp>
 #include <gambit_scan.hpp>
+#include <scanner_factory.hpp>
 #include <sstream>
 #include <yaml_parser.hpp>
 
@@ -31,18 +31,18 @@
 
 namespace Gambit
 {
-        namespace Scanner
+        namespace Scanner_Testing
         {
                 registry
                 {
-                        typedef Function_Base *func(const IniParser::Options &);
+                        typedef Scanner::Function_Base *func(const IniParser::Options &);
                         std::map<std::string, func*> __test_functor_map__;
                 }
                 
-                class Test_Function_Factory : public Factory_Base
+                class Test_Function_Factory : public Scanner::Factory_Base
                 {
                 private:
-                        Function_Base *func;
+                        Scanner::Function_Base *func;
                         
                 public:
                         Test_Function_Factory(IniParser::IniFile &iniFile)

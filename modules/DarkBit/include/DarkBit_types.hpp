@@ -143,7 +143,7 @@ namespace Gambit
     struct TH_Process
     {
         // Constructor for decay process
-        TH_Process(std::string particleID) : isAnnihilation(false), particle1ID(particle1ID) {}
+        TH_Process(std::string particleID) : isAnnihilation(false), particle1ID(particle1ID), particle2ID("") {}
 
         // Constructor for annihilation process
         TH_Process(std::string particle1ID, std::string particle2ID) :
@@ -164,8 +164,8 @@ namespace Gambit
         }
 
         // Decaying particle or particle pair
-        std::string particle1ID = "";
-        std::string particle2ID = "";
+        std::string particle1ID;
+        std::string particle2ID;
 
         // Annihilation or decay?
         bool isAnnihilation; 
@@ -242,19 +242,19 @@ namespace Gambit
           this->myHalos.push_back(newHalo);
         }
 
-        std::vector<shared_ptr<DMhalo>> getHaloList() {return myHalos;}
+        std::vector<shared_ptr<DMhalo> > getHaloList() {return myHalos;}
 
         void show()
         {
             std::cout << "List of registered halos:" << std::endl;
-            for(std::vector<shared_ptr<DMhalo>>::iterator it = myHalos.begin(); it != myHalos.end(); ++it)
+            for(std::vector<shared_ptr<DMhalo> >::iterator it = myHalos.begin(); it != myHalos.end(); ++it)
             {
                 std::cout << (*it)->getName() << std::endl;
             }
         }
 
       private:
-        std::vector<shared_ptr<DMhalo>> myHalos;
+        std::vector<shared_ptr<DMhalo> > myHalos;
     };
 
 
@@ -301,7 +301,7 @@ namespace Gambit
             }
 
         private:
-            std::vector<shared_ptr<Jlayer>> myJlayers;
+            std::vector<shared_ptr<Jlayer> > myJlayers;
             shared_ptr<double> Jfunc;
     };
 
