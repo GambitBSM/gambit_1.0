@@ -448,7 +448,7 @@ namespace Gambit                                                                
         pSym = dlsym(pHandle, SYMBOLNAME);                                                      \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
         /* Add function to frontBackFuncMap to give correct conversion when sent as an argument */        \
-        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),BE_FUNC_ADD_TO_FPTR_MAP(NAME), ) \        
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),BE_FUNC_ADD_TO_FPTR_MAP(NAME), ) \
         Functown::NAME.updatePointer(NAME);                                                     \
         /* -- Disable the functor if the library is not present or the symbol not found. */     \
         if(!present)                                                                            \
