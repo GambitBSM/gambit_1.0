@@ -564,8 +564,12 @@ namespace Gambit {
         BFptr kinematicFunction_bbbar(new BFconstant(sigma_bbbar, 1));
 
         // Create channel identifier strings
-        std::vector<std::string> finalStates_mumu {"mu+", "mu-"};
-        std::vector<std::string> finalStates_bbbar {"b", "bbar"};
+        std::vector<std::string> finalStates_mumu;// {"mu+", "mu-"};
+        finalStates_mumu.push_back("mu+");
+        finalStates_mumu.push_back("mu-");
+        std::vector<std::string> finalStates_bbbar;// {"b", "bbar"};
+        finalStates_bbbar.push_back("b");
+        finalStates_bbbar.push_back("bbar");
 
         // Create channels
         TH_Channel channel_mumu(finalStates_mumu, kinematicFunction_mumu);
