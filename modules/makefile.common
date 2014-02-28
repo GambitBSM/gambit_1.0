@@ -95,7 +95,7 @@ LN = $(CC)
 ifdef SHH
   CFLAGS += -O3 -g -fPIC -fopenmp -std=c++0x 
 else
-  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x -std=c++11
+  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x
 endif
 FFLAGS = -O3 -fPIC
 
