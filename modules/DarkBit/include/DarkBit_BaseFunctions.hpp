@@ -45,7 +45,7 @@ namespace Gambit
     {
         public:
             // Verbose constructor and destructor
-            BaseFunction(std::string name, int ndim)
+            BaseFunction(std::string name, int ndim) : cachingFlag(false), integratorFlag(false)
             {  
                 this->name = name;
                 this->ndim = ndim;
@@ -125,8 +125,8 @@ namespace Gambit
             }
 
             // Internal flags.
-            bool cachingFlag = false;  // TODO: Implement caching (at GAMBIT level)
-            bool integratorFlag = false;  // True if implementation of abstract base class has its own integrator
+            bool cachingFlag;  // TODO: Implement caching (at GAMBIT level)
+            bool integratorFlag;  // True if implementation of abstract base class has its own integrator
 
             // Number of dimensions
             int ndim;

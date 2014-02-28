@@ -143,7 +143,7 @@ namespace Gambit
     struct TH_Process
     {
         // Constructor for decay process
-        TH_Process(std::string particleID) : isAnnihilation(false), particle1ID(particle1ID) {}
+        TH_Process(std::string particleID) : isAnnihilation(false), particle1ID(particle1ID), particle2ID("") {}
 
         // Constructor for annihilation process
         TH_Process(std::string particle1ID, std::string particle2ID) :
@@ -164,8 +164,8 @@ namespace Gambit
         }
 
         // Decaying particle or particle pair
-        std::string particle1ID = "";
-        std::string particle2ID = "";
+        std::string particle1ID;
+        std::string particle2ID;
 
         // Annihilation or decay?
         bool isAnnihilation; 
