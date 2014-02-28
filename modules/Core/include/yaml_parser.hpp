@@ -41,6 +41,11 @@ namespace Gambit
         {
           return options[key];
         }
+        
+        bool hasKey(std::string key1, std::string key2) const
+        {
+          return options[key1][key2];
+        }
 
         template<typename TYPE> TYPE getValue(std::string key) const
         {
@@ -55,11 +60,47 @@ namespace Gambit
         }
 
         // Dump contents of YAML::Node to cout
-        void dumpcontents()
+        void dumpcontents() const
         {
             std::cout<<options<<std::endl;
         }
-
+        
+        template<typename TYPE> TYPE getValue(std::string key1, std::string key2) const
+        {
+          if (options[key1][key2])
+            return options[key1][key2].as<TYPE>();
+          // else
+          std::cout << "ERROR: No options entry for " << key1 << " and " << key2 << std::endl;
+          std::cout << "(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)" << std::endl;
+          std::cout << "Contents of options:" << std::endl;
+          std::cout << options << std::endl;
+          exit(1);
+        }
+        
+        //Greg:  add a recursive option function for testing purposes.
+        const Options getOptions(std::string key) const
+        {
+          if (options[key]["options"])
+          {
+            return Options(options[key]["options"]);
+          }
+          else
+          {
+            return Options(options[key]);
+          }
+        }
+        
+        //Greg:  another function for recursion
+        const std::vector<std::string> getPriorNames() const
+        {
+          std::vector<std::string> result;
+          for (auto &node : options)
+          {
+            result.push_back( node.first.as<std::string>() );
+          }
+          return result;
+        }
+        
       private:
         YAML::Node options;
     };

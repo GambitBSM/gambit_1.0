@@ -46,7 +46,7 @@ namespace Gambit
                 registry
                 {
                         typedef void* factory_def(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, std::string &purpose);
-                        std::map<std::string, factory_def *> __scanner_factories__;
+                        reg_elem <factory_def> __scanner_factories__;
                 }
                 
                 class Function_Base

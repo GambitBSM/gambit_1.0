@@ -61,7 +61,7 @@ namespace Gambit
                 // the full prior.
                 
                 // Constructor
-                CompositePrior::CompositePrior(const IniParser::IniFile& iniFile) : boundIniFile(&iniFile)
+                CompositePrior::CompositePrior(const IniParser::IniFile& iniFile)
                 {       
                         std::unordered_map<std::string, std::string> sameMap;
                         std::vector<BasePrior *> phantomPriors;
@@ -118,7 +118,7 @@ namespace Gambit
                                                         {
                                                                 if (prior_creators.find(priortype) == prior_creators.end())
                                                                 {
-                                                                        scanLog::err << "Parameter '"<< mod <<"' of model '" << par << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map." << scanLog::endl;
+                                                                        scanLog::err << "Parameter '"<< mod <<"' of model '" << par << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
                                                                 }
                                                                 else
                                                                 {
@@ -159,7 +159,7 @@ namespace Gambit
                         for (auto &priorname : priorNames)
                         {
                                 // Get the parameter list for this prior
-                                std::vector<std::string> params = iniFile.getPriorEntry< std::vector<std::string> >(priorname, "parameters");
+                                auto params = iniFile.getPriorEntry< std::vector<std::string> >(priorname, "parameters");
                                 // Check for clashes between these params and the ones already 'in use' by other prior objects.
                                 for (auto &par : params)
                                 {
@@ -181,19 +181,18 @@ namespace Gambit
                                         }
                                 }
                                 // Get the options for this prior
-                                IniParser::Options options = iniFile.getPriorOptions(priorname);
+                                auto options = iniFile.getPriorOptions(priorname);
                                 // Get the 'type' of prior requested (flat, log, etc.)
-                                std::string priortype = iniFile.getPriorEntry<std::string>(priorname, "prior_type");
+                                auto priortype = iniFile.getPriorEntry<std::string>(priorname, "prior_type");
                                 // Build the prior using the factory function map
                                 // (first check if the requested entry exist)
                                 if (prior_creators.find(priortype) == prior_creators.end())
                                 {
-                                        scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map." << scanLog::endl;
+                                        scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
                                 }
                                 else
                                 {
                                         // All good, build the requested prior:
-                                        // (note, cannot use the [] way of accessing the prior_creators map, because it is const (and [] can add stuff to the map) Use 'at' instead)
                                         if (priortype == "fixed")
                                         {
                                                 for (auto &par : params)
@@ -235,7 +234,7 @@ namespace Gambit
                         if (needSet.size() != 0)
                         {
                                 scanLog::err << "Priors are not defined for the following parameters:  [";
-                                std::unordered_set<std::string>::iterator it = needSet.begin();
+                                auto it = needSet.begin();
                                 scanLog::err << *(it++);
                                 for (; it != needSet.end(); it++)
                                 {
@@ -279,9 +278,10 @@ namespace Gambit
                         
                         for (auto &str : shown_param_names)
                         {
-                                if (keyMap.find(str) != keyMap.end())
+                                auto it = keyMap.find(str);
+                                if (it != keyMap.end())
                                 {
-                                        str = keyMap[str];
+                                        str = it->second;
                                 }
                         }
                         
@@ -297,23 +297,170 @@ namespace Gambit
                                 }
                         }
                         
+                        int param_size = 0;
                         for (auto &subprior : my_subpriors)
                         {
                                 param_size += subprior->size();
                         }
                         
+                        setSize(param_size);
+                        
                         my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
-                }
-        
-                CompositePrior::~CompositePrior()
-                {
-                        // Need to destroy all the prior objects that we created using 'new'
-                        for (std::vector<BasePrior*>::iterator prior = my_subpriors.begin(); prior != my_subpriors.end(); ++prior)
-                        {  
-                                // Delete prior object
-                                delete *prior;
+                }  
+                
+                CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const IniParser::Options &options_in) : param_names(params_in), shown_param_names(params_in)
+                {       
+                        std::unordered_map<std::string, std::string> sameMap;
+                        std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());
+                        std::unordered_set<std::string> paramSet(params_in.begin(), params_in.end()); 
+
+                        auto priorNames = options_in.getPriorNames();
+                        
+                        for (auto &priorname : priorNames)
+                        {
+                                auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
+                                
+                                for (auto &par : params)
+                                {
+                                        if (paramSet.find(par) == paramSet.end())
+                                        {
+                                                scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                        }
+                                        else
+                                        {
+                                                auto find_it = needSet.find(par);
+                                                if (find_it == needSet.end())
+                                                {
+                                                        scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                }
+                                                else
+                                                {
+                                                        needSet.erase(find_it);
+                                                }
+                                        }
+                                }
+
+                                auto options = options_in.getOptions(priorname);
+                                auto priortype = options_in.getValue<std::string>(priorname, "prior_type");
+                                
+                                if (prior_creators.find(priortype) == prior_creators.end())
+                                {
+                                        scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
+                                }
+                                else
+                                {
+                                        if (priortype == "fixed")
+                                        {
+                                                for (auto &par : params)
+                                                {
+                                                        shown_param_names.erase
+                                                        (
+                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                        );
+                                                }
+                                                
+                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                        }
+                                        else if (priortype == "same_as")
+                                        {
+                                                if (options.hasKey("same_as"))
+                                                {
+                                                        std::string same_name = options.getValue<std::string>("same_as");
+                                                        for (auto &par : params)
+                                                        {
+                                                                shown_param_names.erase
+                                                                (
+                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                );
+                                                                sameMap[par] = same_name;
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                        scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                }
+                                        }
+                                        else
+                                        {
+                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                        }
+                                }
                         }
-                }    
+                        
+                        if (needSet.size() != 0)
+                        {
+                                scanLog::err << "Priors are not defined for the following parameters:  [";
+                                auto it = needSet.begin();
+                                scanLog::err << *(it++);
+                                for (; it != needSet.end(); it++)
+                                {
+                                        scanLog::err << ", "<< *it;
+                                }
+                                scanLog::err << "]" << scanLog::endl;
+                        }
+                        
+                        std::unordered_map<std::string, std::string> keyMap;
+                        std::string index, result;
+                        unsigned int reps;
+                        for (auto &strMap : sameMap)
+                        {
+                                index = strMap.first;
+                                result = strMap.second;
+                                reps = 0;
+                                while (sameMap.find(result) != sameMap.end())
+                                {
+                                        index = result;
+                                        result = sameMap[index];
+                                        
+                                        if (result == strMap.first)
+                                        {
+                                                scanLog::err << "Parameter " << strMap.first << " is \"same as\" itself." << scanLog::endl;
+                                                break;
+                                        }
+                                        
+                                        if (reps > sameMap.size())
+                                        {
+                                                scanLog::err << "Parameter's \"same as\"'s are loop in on each other." << scanLog::endl;
+                                                break;
+                                        }
+                                        reps++;
+                                }
+                                
+                                if (keyMap.find(result) == keyMap.end())
+                                        keyMap[result] = strMap.first + std::string("+") + result;
+                                else
+                                        keyMap[result] = strMap.first + std::string("+") + keyMap[result];
+                        }
+                        
+                        for (auto &str : shown_param_names)
+                        {
+                                auto it = keyMap.find(str);
+                                if (it != keyMap.end())
+                                {
+                                        str = it->second;
+                                }
+                        }
+                        
+                        for (auto &key : keyMap)
+                        {
+                                if (paramSet.find(key.first) == paramSet.end())
+                                {
+                                        scanLog::err << "same_as:  " << key.first << " is not defined in inifile." << scanLog::endl;
+                                }
+                                else
+                                {
+                                        my_subpriors.push_back(new MultiPriors(key.second));
+                                }
+                        }
+                        
+                        int param_size = 0;
+                        for (auto &subprior : my_subpriors)
+                        {
+                                param_size += subprior->size();
+                        }
+                        
+                        setSize(param_size);
+                }
         } // end namespace Priors
 } // end namespace Gambit
 

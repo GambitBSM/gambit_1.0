@@ -17,6 +17,8 @@
 #ifndef __test_uniform_hpp__
 #define __test_uniform_hpp__
 
+#include <priors.hpp>
+
 namespace Gambit
 {
         namespace Scanner_Testing
@@ -26,9 +28,11 @@ namespace Gambit
                 private:
                         std::vector<std::string> keys;
                         std::vector<double> params;
+                        Priors::BasePrior * prior;
+                        std::map<std::string, double> param_map;
                         
                 public:
-                        Test_Uniform (const IniParser::Options &options)
+                        Test_Uniform (const IniParser::Options &options) : prior(0)
                         {
                                 if (options.hasKey("dim"))
                                 {
@@ -40,6 +44,11 @@ namespace Gambit
                                                 std::stringstream ss;
                                                 ss << i++;
                                                 ss >> key;
+                                        }
+                                        
+                                        if (options.hasKey("priors"))
+                                        {
+                                                prior = Priors::prior_creators["composite"](keys, options.getOptions("priors"));
                                         }
                                 }
                                 else
@@ -53,8 +62,28 @@ namespace Gambit
                         
                         double operator() (std::vector<double> &unit)
                         {
-                                params = unit;
+                                if (prior == 0)
+                                {
+                                        params = unit;
+                                }
+                                else
+                                {
+                                        prior->transform(unit, param_map);
+                                        
+                                        auto it = params.begin();
+                                        for (auto &key : keys)
+                                        {
+                                                *(it++) = param_map[key];
+                                        }
+                                }
+                                
                                 return 0.0;
+                        }
+                        
+                        ~Test_Uniform()
+                        {
+                                if (prior != 0)
+                                        delete prior;
                         }
                 };
                 

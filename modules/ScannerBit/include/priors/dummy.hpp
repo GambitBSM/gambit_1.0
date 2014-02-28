@@ -28,16 +28,16 @@ namespace Gambit
                 
         public: 
                 // Constructor
-                Dummy(const std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), param_names(param)
+                Dummy(const std::vector<std::string>& param, const IniParser::Options& options) : BasePrior(param.size()), param_names(param)
                 { 
                 }
                 
-                void transform(std::vector<double>&unitpars, std::map<std::string,double>&outputMap) const
+                void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
                 {
-                        std::vector<double>::iterator it_vec = unitpars.begin();
-                        for (std::vector<std::string>::const_iterator it = param_names.begin(); it != param_names.end(); it++, it_vec++)
+                        auto it_vec = unitpars.begin();
+                        for (auto &par : param_names)
                         {
-                                outputMap[*it] = *it_vec;
+                                outputMap[par] = *(it_vec++);
                         }
                 }
         };

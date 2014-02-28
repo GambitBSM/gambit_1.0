@@ -36,7 +36,7 @@ namespace Gambit
                 registry
                 {
                         typedef Scanner::Function_Base *func(const IniParser::Options &);
-                        std::map<std::string, func*> __test_functor_map__;
+                        reg_elem <func> __test_functor_map__;
                 }
                 
                 class Test_Function_Factory : public Scanner::Factory_Base

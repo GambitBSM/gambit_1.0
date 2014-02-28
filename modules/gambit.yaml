@@ -200,3 +200,8 @@ test_function: uniform
 
 uniform:
   dim: 2
+  priors:
+    gauss_prior:
+      parameters: [0, 1]
+      options:
+        cov: [[1, 0], [0, 1]]

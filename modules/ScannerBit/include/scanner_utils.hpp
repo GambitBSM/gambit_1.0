@@ -22,6 +22,8 @@
 #include <outputhandler.hpp>
 #include <type_traits>
 #include <utility>
+#include <ostream>
+#include <sstream>
 
 #define REGISTER(reg_map, tag, ...)                                                                     \
 namespace                                                                                               \
@@ -63,6 +65,26 @@ namespace                                                       \
 
 namespace Gambit
 {
+        template <typename T>
+        class reg_elem : public std::map<std::string, T *>
+        {
+        private:
+                
+        public:
+                std::string print()
+                {
+                        std::ostringstream out;
+                        
+                        out << "The options are:  \n";
+                        for (auto &elem : *this)
+                        {
+                                out << "\t" << elem.first << "\n";
+                        }
+                        
+                        return out.str();
+                }
+        };
+        
         namespace Scanner
         {       
                 namespace outputHandler

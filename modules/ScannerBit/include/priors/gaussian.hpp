@@ -40,7 +40,7 @@ namespace Gambit
                         
                 public: 
                         // Constructor
-                        Gaussian(const std::vector<std::string>& param, IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
+                        Gaussian(const std::vector<std::string>& param, const IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
                         { 
                                 std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                              
@@ -109,7 +109,7 @@ namespace Gambit
                         }
                         
                         // Transformation from unit interval to the Gaussian
-                        void transform(std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
+                        void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
                                 auto u_it = unitpars.begin();
