@@ -13,6 +13,7 @@
 #include <fstream>
 #include <string>
 #include <yaml-cpp/yaml.h>
+#include <variadic_functions.hpp>
 
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__
@@ -37,22 +38,19 @@ namespace Gambit
         //
         // Getters for key/value pairs (this is all the options node should contain)
         //
-        bool hasKey(std::string key) const
+        template <typename... args>
+        bool hasKey(args... keys) const
         {
-          return options[key];
-        }
-        
-        bool hasKey(std::string key1, std::string key2) const
-        {
-          return options[key1][key2];
+          return getVariadicNode(options, keys...);
         }
 
-        template<typename TYPE> TYPE getValue(std::string key) const
+        template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
-          if (options[key])
-            return options[key].as<TYPE>();
+          YAML::Node node = getVariadicNode(options, keys...);
+          if (node)
+            return node.as<TYPE>();
           // else
-          std::cout << "ERROR: No options entry for " << key << std::endl;
+          std::cout << "ERROR: No options entry for " << stringifyVariadic(keys...) << std::endl;
           std::cout << "(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)" << std::endl;
           std::cout << "Contents of options:" << std::endl;
           std::cout << options << std::endl;
@@ -63,18 +61,6 @@ namespace Gambit
         void dumpcontents() const
         {
             std::cout<<options<<std::endl;
-        }
-        
-        template<typename TYPE> TYPE getValue(std::string key1, std::string key2) const
-        {
-          if (options[key1][key2])
-            return options[key1][key2].as<TYPE>();
-          // else
-          std::cout << "ERROR: No options entry for " << key1 << " and " << key2 << std::endl;
-          std::cout << "(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)" << std::endl;
-          std::cout << "Contents of options:" << std::endl;
-          std::cout << options << std::endl;
-          exit(1);
         }
         
         //Greg:  add a recursive option function for testing purposes.
@@ -193,8 +179,6 @@ namespace Gambit
     typedef Types::Observable ObservableType;
     // typedef Types::Parameter ParameterType;
 
-
-
     /// Main inifile class
     class IniFile
     {
@@ -218,58 +202,20 @@ namespace Gambit
         //
         // Getters for key/value section
         //
-        bool hasKey(std::string key) const
+        
+        template <typename... args>
+        bool hasKey(args... keys) const
         {
-          return keyValuePairNode[key];
+                return getVariadicNode(keyValuePairNode, keys...);
         }
 
-        bool hasKey(std::string s1, std::string s2) const
+        template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
-          return keyValuePairNode[s1][s2];
-        }
+          YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
+          if (node)
+            return node.as<TYPE>();
 
-        bool hasKey(std::string s1, std::string s2, std::string s3) const
-        {
-          return keyValuePairNode[s1][s2][s3];
-        }
-
-        bool hasKey(std::string s1, std::string s2, std::string s3, std::string s4) const
-        {
-          return keyValuePairNode[s1][s2][s3][s4];
-        }
-
-        template<typename TYPE> TYPE getValue(std::string key) const
-        {
-          if (keyValuePairNode[key])
-            return keyValuePairNode[key].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " << key << std::endl;
-          exit(1);
-        }
-
-        template<typename TYPE> TYPE getValue(std::string key, std::string subkey) const
-        {
-          if (keyValuePairNode[key][subkey])
-            return keyValuePairNode[key][subkey].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " <<
-            key << "." << subkey << std::endl;
-          exit(1);
-        }
-
-        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3) const
-        {
-          if (keyValuePairNode[s1][s2][s3])
-            return keyValuePairNode[s1][s2][s3].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " << 
-            s1 << "." << s2 << "." << s3 << std::endl;
-          exit(1);
-        }
-
-        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4) const
-        {
-          if (keyValuePairNode[s1][s2][s3][s4])
-            return keyValuePairNode[s1][s2][s3][s4].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " << 
-            s1 << "." << s2 << "." << s3 << "." << s4 << std::endl;
+          std::cout << "ERROR: No inifile entry for [" << stringifyVariadic(keys...) << "]" << std::endl;
           exit(1);
         }
 

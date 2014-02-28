@@ -46,6 +46,7 @@ namespace Gambit
                              
                                 bool good = true;
                               
+                                //std::cout << "line:  " << options.getLine("cov") << std::endl; getchar();
                                 if (options.hasKey("cov"))
                                 {
                                         cov = options.getValue< std::vector<std::vector<double>> >("cov");

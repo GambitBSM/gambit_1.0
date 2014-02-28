@@ -78,7 +78,7 @@ void beispiel()
   // Examples for getting information from the key/value section of the
   // inifile
   cout << iniFile.getValue<double>("my_key") << endl;
-  cout << iniFile.getValue<str>("another_key", "subkey3", "subsubkey1") << endl;
+  cout << iniFile.getValue<std::string>("another_key", "subkey3", "subsubkey1") << endl;
 
   // Examples for getting information from the parameter section
 

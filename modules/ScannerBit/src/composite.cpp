@@ -159,75 +159,82 @@ namespace Gambit
                         for (auto &priorname : priorNames)
                         {
                                 // Get the parameter list for this prior
-                                auto params = iniFile.getPriorEntry< std::vector<std::string> >(priorname, "parameters");
-                                // Check for clashes between these params and the ones already 'in use' by other prior objects.
-                                for (auto &par : params)
+                                if (iniFile.hasPriorEntry(priorname, "parameters") && iniFile.hasPriorEntry(priorname, "prior_type"))
                                 {
-                                        if (paramSet.find(par) == paramSet.end())
+                                        auto params = iniFile.getPriorEntry< std::vector<std::string> >(priorname, "parameters");
+                                        // Check for clashes between these params and the ones already 'in use' by other prior objects.
+                                        for (auto &par : params)
                                         {
-                                                scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
-                                        }
-                                        else
-                                        {
-                                                auto find_it = needSet.find(par);
-                                                if (find_it == needSet.end())
+                                                if (paramSet.find(par) == paramSet.end())
                                                 {
-                                                        scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                        scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
                                                 }
                                                 else
                                                 {
-                                                        needSet.erase(find_it);
+                                                        auto find_it = needSet.find(par);
+                                                        if (find_it == needSet.end())
+                                                        {
+                                                                scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                        }
+                                                        else
+                                                        {
+                                                                needSet.erase(find_it);
+                                                        }
                                                 }
                                         }
-                                }
-                                // Get the options for this prior
-                                auto options = iniFile.getPriorOptions(priorname);
-                                // Get the 'type' of prior requested (flat, log, etc.)
-                                auto priortype = iniFile.getPriorEntry<std::string>(priorname, "prior_type");
-                                // Build the prior using the factory function map
-                                // (first check if the requested entry exist)
-                                if (prior_creators.find(priortype) == prior_creators.end())
-                                {
-                                        scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
-                                }
-                                else
-                                {
-                                        // All good, build the requested prior:
-                                        if (priortype == "fixed")
+                                        // Get the options for this prior
+                                        auto options = iniFile.getPriorOptions(priorname);
+                                        // Get the 'type' of prior requested (flat, log, etc.)
+                                        auto priortype = iniFile.getPriorEntry<std::string>(priorname, "prior_type");
+                                        // Build the prior using the factory function map
+                                        // (first check if the requested entry exist)
+                                        if (prior_creators.find(priortype) == prior_creators.end())
                                         {
-                                                for (auto &par : params)
-                                                {
-                                                        shown_param_names.erase
-                                                        (
-                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
-                                                        );
-                                                }
-                                                
-                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                                scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
                                         }
-                                        else if (priortype == "same_as")
+                                        else
                                         {
-                                                if (options.hasKey("same_as"))
+                                                // All good, build the requested prior:
+                                                if (priortype == "fixed")
                                                 {
-                                                        std::string same_name = options.getValue<std::string>("same_as");
                                                         for (auto &par : params)
                                                         {
                                                                 shown_param_names.erase
                                                                 (
                                                                         std::find(shown_param_names.begin(), shown_param_names.end(), par)
                                                                 );
-                                                                sameMap[par] = same_name;
+                                                        }
+                                                        
+                                                        my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                                }
+                                                else if (priortype == "same_as")
+                                                {
+                                                        if (options.hasKey("same_as"))
+                                                        {
+                                                                std::string same_name = options.getValue<std::string>("same_as");
+                                                                for (auto &par : params)
+                                                                {
+                                                                        shown_param_names.erase
+                                                                        (
+                                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                        );
+                                                                        sameMap[par] = same_name;
+                                                                }
+                                                        }
+                                                        else
+                                                        {
+                                                                scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
                                                         }
                                                 }
                                                 else
                                                 {
-                                                        scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                        my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
                                                 }
                                         }
-                                        else
-                                        {
-                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
-                                        }
+                                }
+                                else
+                                {
+                                        scanLog::err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scanLog::endl;
                                 }
                         }
                         
@@ -318,72 +325,79 @@ namespace Gambit
                         
                         for (auto &priorname : priorNames)
                         {
-                                auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
-                                
-                                for (auto &par : params)
+                                if (options_in.hasKey(priorname, "parameters") && options_in.hasKey(priorname, "prior_type"))
                                 {
-                                        if (paramSet.find(par) == paramSet.end())
+                                        auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
+                                        
+                                        for (auto &par : params)
                                         {
-                                                scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
-                                        }
-                                        else
-                                        {
-                                                auto find_it = needSet.find(par);
-                                                if (find_it == needSet.end())
+                                                if (paramSet.find(par) == paramSet.end())
                                                 {
-                                                        scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                        scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
                                                 }
                                                 else
                                                 {
-                                                        needSet.erase(find_it);
+                                                        auto find_it = needSet.find(par);
+                                                        if (find_it == needSet.end())
+                                                        {
+                                                                scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                        }
+                                                        else
+                                                        {
+                                                                needSet.erase(find_it);
+                                                        }
                                                 }
                                         }
-                                }
 
-                                auto options = options_in.getOptions(priorname);
-                                auto priortype = options_in.getValue<std::string>(priorname, "prior_type");
-                                
-                                if (prior_creators.find(priortype) == prior_creators.end())
-                                {
-                                        scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
-                                }
-                                else
-                                {
-                                        if (priortype == "fixed")
+                                        auto options = options_in.getOptions(priorname);
+                                        auto priortype = options_in.getValue<std::string>(priorname, "prior_type");
+                                        
+                                        if (prior_creators.find(priortype) == prior_creators.end())
                                         {
-                                                for (auto &par : params)
-                                                {
-                                                        shown_param_names.erase
-                                                        (
-                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
-                                                        );
-                                                }
-                                                
-                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                                scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
                                         }
-                                        else if (priortype == "same_as")
+                                        else
                                         {
-                                                if (options.hasKey("same_as"))
+                                                if (priortype == "fixed")
                                                 {
-                                                        std::string same_name = options.getValue<std::string>("same_as");
                                                         for (auto &par : params)
                                                         {
                                                                 shown_param_names.erase
                                                                 (
                                                                         std::find(shown_param_names.begin(), shown_param_names.end(), par)
                                                                 );
-                                                                sameMap[par] = same_name;
+                                                        }
+                                                        
+                                                        my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
+                                                }
+                                                else if (priortype == "same_as")
+                                                {
+                                                        if (options.hasKey("same_as"))
+                                                        {
+                                                                std::string same_name = options.getValue<std::string>("same_as");
+                                                                for (auto &par : params)
+                                                                {
+                                                                        shown_param_names.erase
+                                                                        (
+                                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                        );
+                                                                        sameMap[par] = same_name;
+                                                                }
+                                                        }
+                                                        else
+                                                        {
+                                                                scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
                                                         }
                                                 }
                                                 else
                                                 {
-                                                        scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                        my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
                                                 }
                                         }
-                                        else
-                                        {
-                                                my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
-                                        }
+                                }
+                                else
+                                {
+                                        scanLog::err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scanLog::endl;
                                 }
                         }
                         

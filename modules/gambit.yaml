@@ -77,10 +77,14 @@ adhoc:
 
 m12_prior: 
   parameters: [CMSSM_I::M12]
-  prior_type: log
-  range: [100,2000]
+  prior_type: composite
+  options: 
+    new_prior: 
+      parameters: [CMSSM_I::M12]
+      prior_type: log
+      range: [100,2000]
 
-tanbMstop_prior:
+tanbMstop_prior: 
   parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
   prior_type: cauchy
   options:

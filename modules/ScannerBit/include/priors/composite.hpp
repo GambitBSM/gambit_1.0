@@ -48,7 +48,7 @@ namespace Gambit
                         
                 public:
                 
-                        // Constructors defined in prior.cpp
+                        // Constructors defined in composite.cpp
                         CompositePrior(const IniParser::IniFile& iniFile);
                         
                         CompositePrior(const std::vector<std::string> &params, const IniParser::Options &options);
@@ -86,4 +86,3 @@ namespace Gambit
 } // end namespace Gambit
 
 #endif
-

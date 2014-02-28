@@ -1,0 +1,48 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  variadic utilty functions.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date Feb 2014
+///
+///  *********************************************
+
+#ifndef VARIADIC_FUNCTIONS_HPP
+#define VARIADIC_FUNCTIONS_HPP
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <yaml-cpp/yaml.h>
+
+namespace Gambit
+{
+        //Greg:  getVariaticNode is used for the variadic versions of hasKey and getValue
+        namespace
+        {
+                const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
+                {
+                        return node[key];
+                }
+
+                template <typename... args>
+                const YAML::Node getVariadicNode(const YAML::Node &node, std::string key, args... keys)
+                {
+                        return getVariadicNode(node[key], keys...);
+                }
+                
+                std::string stringifyVariadic(std::string str) {return str;}
+                
+                template<typename... args>
+                std::string stringifyVariadic(std::string str, args... strs) {return str + ", " + stringifyVariadic(strs...);}
+        }
+}
+
+#endif
