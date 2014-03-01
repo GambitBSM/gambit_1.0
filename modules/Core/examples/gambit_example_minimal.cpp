@@ -101,7 +101,7 @@ void beispiel(const char* inifilename)
   //Let's define the iniFile interface
   Gambit::Scanner::IniFileInterface interface(iniFile);
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(factory, &interface);
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
   //cout << "keys = " << scanner->getKeys() << endl;
   //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();

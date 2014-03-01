@@ -55,19 +55,19 @@ namespace Gambit
                         virtual const std::vector<double> & getParameters() const = 0;
                         virtual const std::vector<std::string> & getKeys() const = 0;
                         virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Function_Base(){}
+                        virtual ~Function_Base() = default;
                 };
                 
                 class Scanner_Function_Factory : public Factory_Base
                 {
                 private:
-                        Graphs::DependencyResolver *dependencyResolver;
-                        Priors::CompositePrior *prior;
+                        Graphs::DependencyResolver &dependencyResolver;
+                        Priors::CompositePrior &prior;
                         std::map<std::string, primary_model_functor *> functorMap;
                         std::map<std::string, std::pair<void *(*)(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver *, Priors::CompositePrior *, std::string), void (*)(void *)>> factoryMap;
                        
                 public:
-                        Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior) : dependencyResolver(&dependencyResolver), prior(&prior)
+                        Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior) : dependencyResolver(dependencyResolver), prior(prior)
                         {
                                 functorMap = *core.getActiveModelFunctors();
                                 
@@ -103,13 +103,13 @@ namespace Gambit
                                 }
                         }
                         
-                        const std::vector<std::string> & getKeys() const {return prior->getShownParameters();}
+                        const std::vector<std::string> & getKeys() const {return prior.getShownParameters();}
                         
-                        unsigned int getDim() const {return prior->size();}
+                        unsigned int getDim() const {return prior.size();}
                         
                         void * operator() (const std::string &in, const std::string &purpose) const
                         {
-                                return __scanner_factories__[in](functorMap, *dependencyResolver, *prior, purpose);
+                                return __scanner_factories__[in](functorMap, dependencyResolver, prior, purpose);
                         }
                         
                         void remove(void *a) const

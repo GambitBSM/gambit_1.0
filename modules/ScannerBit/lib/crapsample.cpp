@@ -116,9 +116,9 @@ scanner_plugin (crapsample)
         }
 };
 
-SCANNER_PLUGIN (loopsample)
+scanner_plugin (loopsample)
 {
-        int PLUGIN_MAIN ()
+        int plugin_main ()
         {
                 std::vector<std::string> &keys     = get_keys();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");

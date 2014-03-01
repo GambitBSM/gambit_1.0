@@ -48,21 +48,21 @@ namespace Gambit
                 class BasePrior
                 {
                 private:
-                        unsigned int param_size;
+                        unsigned int param_size = 0;
                         
                 public:
-                        BasePrior() : param_size(0) {}
+                        BasePrior() = default;
                         
                         BasePrior(const int param_size) : param_size(param_size) {}
                         
                         virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
 
                         /// Function to check the parameter ranges supplied in the input
-                        inline int size() const {return param_size;}
+                        inline unsigned int size() const {return param_size;}
                         
                         inline void setSize(const unsigned int size){param_size = size;}
                         
-                        virtual ~BasePrior(){}
+                        virtual ~BasePrior() = default;
                 };
    
                 /// Map in which to keep factory functions for the priors (prior_creators)

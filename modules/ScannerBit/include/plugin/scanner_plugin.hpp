@@ -60,14 +60,14 @@ namespace Gambit
         }
 }
 
-#define get_dimension() GETDIMENSION()
-#define get_keys() GETKEYS()
-#define get_functor(str1, str2) GETFUNCTOR(str1, str2)
+#define get_dimension() GET_DIMENSION()
+#define get_keys() GET_KEYS()
+#define get_functor(...) GET_FUNCTOR( __VA_ARGS__ )
 #define scanner_plugin(...) SCANNER_PLUGIN( __VA_ARGS__ )
 
-#define GETDIMENSION() get_input_value<unsigned int>(0)
-#define GETKEYS() get_input_value<std::vector<std::string>>(1)
-#define GETFUNCTOR(str1, str2) (Function_Base *)(get_input_value<Function_Factory_Base>(2))(str1, str2)
+#define GET_DIMENSION() get_input_value<unsigned int>(0)
+#define GET_KEYS() get_input_value<std::vector<std::string>>(1)
+#define GET_FUNCTOR(str1, str2) (Function_Base *)(get_input_value<Function_Factory_Base>(2))(str1, str2)
 
 #define SCANNER_SETUP                                                                                                   \
 using namespace Gambit::Scanner;                                                                                        \

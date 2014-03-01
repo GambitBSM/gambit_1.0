@@ -24,6 +24,7 @@
 #include <utility>
 #include <ostream>
 #include <sstream>
+#include <unordered_map>
 
 #define REGISTER(reg_map, tag, ...)                                                                             \
 namespace __gambit_registry__                                                                                   \
@@ -72,7 +73,7 @@ namespace                                                       \
 namespace Gambit
 {
         template <typename T>
-        class reg_elem : public std::map<std::string, T *>
+        class reg_elem : public std::unordered_map<std::string, T *>
         {
         private:
                 

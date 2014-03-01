@@ -199,16 +199,16 @@ namespace Gambit {
 
 // Interface to ScannerBit
 
-SCANNER_PLUGIN (multinest)
+scanner_plugin (multinest)
 {
-        int PLUGIN_MAIN ()
+        int plugin_main ()
         {
-                std::vector<std::string> &keys     = GETKEYS;
+                std::vector<std::string> &keys     = get_keys();
 
                 //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
 
                 // Have to discuss with Greg the best thing to do here.
-                Function_Base *LogLike             = GETFUNCTOR("Scanner_Function", "Likelihood");
+                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
                 int ma = keys.size();
 
                 // set the MultiNest sampling parameters 
