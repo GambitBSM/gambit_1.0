@@ -61,13 +61,69 @@ namespace Gambit
 
             // Call by list of arguments; up to six dimensions for now (for
             // convenience)
-            double operator() () { assertNdim(0); BFargVec v {}; return this->value(v); }
-            double operator() (double x0) { assertNdim(1); BFargVec v {x0}; return this->value(v); }
-            double operator() (double x0, double x1) { assertNdim(2); BFargVec v {x0, x1}; return this->value(v); }
-            double operator() (double x0, double x1, double x2) { assertNdim(3); BFargVec v {x0, x1, x2}; return this->value(v); }
-            double operator() (double x0, double x1, double x2, double x3) { assertNdim(4); BFargVec v {x0, x1, x2, x3}; return this->value(v); }
-            double operator() (double x0, double x1, double x2, double x3, double x4) { assertNdim(5); BFargVec v {x0, x1, x2, x3, x4}; return this->value(v); }
-            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) { assertNdim(6); BFargVec v {x0, x1, x2, x3, x4, x5}; return this->value(v); }
+            double operator() () 
+            { 
+                assertNdim(0); 
+                BFargVec v; 
+                return this->value(v); 
+            }
+            double operator() (double x0) 
+            { 
+                assertNdim(1); 
+                BFargVec v;
+                v.push_back(x0); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1)
+            { 
+                assertNdim(2); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2)
+            { 
+                assertNdim(3); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3)
+            { 
+                assertNdim(4); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3, double x4) 
+            { 
+                assertNdim(5); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                v.push_back(x4); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) 
+            { 
+                assertNdim(6); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                v.push_back(x4); 
+                v.push_back(x5); 
+                return this->value(v); 
+            }
 
             // Returns a copy of the shared pointer object.
             BFptr getCopy()  { return shared_from_this(); }  
