@@ -46,7 +46,7 @@ namespace Gambit
 
         template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
-          YAML::Node node = getVariadicNode(options, keys...);
+          const YAML::Node node = getVariadicNode(options, keys...);
           if (node)
             return node.as<TYPE>();
           // else
@@ -211,7 +211,7 @@ namespace Gambit
 
         template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
-          YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
+          const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
           if (node)
             return node.as<TYPE>();
 
@@ -372,12 +372,45 @@ namespace Gambit
           }
           return result;
         }
+        
+        //
+        // Getters for scanner section
+        //
+        
+        template <typename... args>
+        bool hasScannerKey(args... keys) const
+        {
+          return getVariadicNode(scannerNode, keys...);
+        }
+
+        template<typename TYPE, typename... args> TYPE getScannerValue(args... keys) const
+        {
+          const YAML::Node node = getVariadicNode(scannerNode, keys...);
+          if (node)
+            return node.as<TYPE>();
+
+          std::cout << "ERROR: No inifile entry for [" << stringifyVariadic(keys...) << "]" << std::endl;
+          exit(1);
+        }
+        
+        const Options getScannerOptions(std::string key) const
+        {
+          if (hasKey(key, "options"))
+          {
+            return Options(scannerNode[key]["options"]);
+          }
+          else
+          {
+            return Options(scannerNode[key]);
+          }
+        }
 
 
       private:
         YAML::Node keyValuePairNode;
         YAML::Node parametersNode;
         YAML::Node priorsNode;
+        YAML::Node scannerNode;
         // Central inifile structures: observables and scan parameteres 
         ObservablesType observables;
         ObservablesType auxiliaries;

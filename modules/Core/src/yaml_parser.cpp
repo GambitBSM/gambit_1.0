@@ -23,9 +23,10 @@ namespace Gambit
       // Set central nodes
       parametersNode = roots[0];
       priorsNode = roots[1];
-      YAML::Node outputNode = roots[2];
-      YAML::Node auxNode = roots[3];
-      keyValuePairNode = roots[4];
+      scannerNode = roots[2];
+      YAML::Node outputNode = roots[3];
+      YAML::Node auxNode = roots[4];
+      keyValuePairNode = roots[5];
 
       // Read likelihood/observables
       for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)
