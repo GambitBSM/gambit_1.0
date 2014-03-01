@@ -17,6 +17,12 @@
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
+#define export_abstract(name, ...) EXPORT_ABSTRACT(name, __VA_ARGS__) static union{}
+#define export_object(name, ...) EXPORT_OBJECT(name, __VA_ARGS__) static union{}
+#define initialize(name, ...) INITIALIZE(name, __VA_ARGS__) static union{}
+#define plugin_main(...) PLUGIN_MAIN( __VA_ARGS__ )
+#define gambit_plugin(...) GAMBIT_PLUGIN( __VA_ARGS__ )
+
 #define VERSION(...)                                                                                                    \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
@@ -109,7 +115,7 @@ namespace __gambit_plugin_namespace__                                           
 }                                                                                                                       \
 
 //initalizes global variable
-#define INITIALIZE(name, ...)                                                                                        \
+#define INITIALIZE(name, ...)                                                                                           \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
         namespace InitTags                                                                                              \
@@ -139,9 +145,6 @@ namespace __gambit_plugin_namespace__                                           
                 interface <InitTags::name> reg_init <InitTags::name>::reg(pluginData);                                  \
         }                                                                                                               \
 }                                                                                                                       \
-
-#define plugin_main(...) PLUGIN_MAIN( __VA_ARGS__ )
-#define gambit_plugin(...) GAMBIT_PLUGIN( __VA_ARGS__ )
 
 /*Declared the "main" for the module.  This is function that will be ran by module interface*/
 #define PLUGIN_MAIN(...)                                                                                                \

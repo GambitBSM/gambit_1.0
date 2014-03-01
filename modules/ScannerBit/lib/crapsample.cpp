@@ -52,7 +52,7 @@ class Ran
 scanner_plugin (crapsample)
 {      
         int N;
-        INITIALIZE(N, get_inifile_value<int>("point_number", 10))
+        initialize(N, get_inifile_value<int>("point_number", 10));
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
         int plugin_main (void)
