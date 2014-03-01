@@ -34,9 +34,10 @@ namespace Gambit
                 class Factory_Base
                 {
                 public:
-                        virtual std::vector<std::string> & getKeys() = 0;
-                        virtual void * operator() (std::string in, std::string purpose) = 0;
-                        virtual void remove(std::string in, void *a) = 0;
+                        virtual const std::vector<std::string> & getKeys() const = 0;
+                        virtual unsigned int getDim() const = 0;
+                        virtual void * operator() (const std::string &in, const std::string &purpose) const = 0;
+                        virtual void remove(void *a) const = 0;
                         virtual ~Factory_Base(){};
                 };
                 
@@ -45,7 +46,7 @@ namespace Gambit
                 public:
                         virtual const std::string pluginName() const = 0;
                         virtual const std::string fileName() const = 0;
-                        virtual const std::string getValue(std::string in) const = 0;
+                        virtual const std::string getValue(const std::string &in) const = 0;
                         virtual ~IniFileInterface_Base(){};
                 };
                 

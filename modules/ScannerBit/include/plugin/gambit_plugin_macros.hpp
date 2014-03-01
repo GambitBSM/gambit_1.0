@@ -108,8 +108,39 @@ namespace __gambit_plugin_namespace__                                           
         }                                                                                                               \
 }                                                                                                                       \
 
+//initalizes global variable
+#define INITIALIZE(name, ...)                                                                                        \
+namespace __gambit_plugin_namespace__                                                                                   \
+{                                                                                                                       \
+        namespace InitTags                                                                                              \
+        {                                                                                                               \
+                struct name{};                                                                                          \
+        }                                                                                                               \
+                                                                                                                        \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <InitTags::name>                                                                        \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(gambitData &pluginData)                                                               \
+                        {                                                                                               \
+                                pluginData.inits.push_back(interface <InitTags::name>::init);                           \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(gambitData &pluginData)                                                        \
+                        {                                                                                               \
+                                name = __VA_ARGS__;                                                                     \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <InitTags::name> reg_init <InitTags::name>::reg(pluginData);                                  \
+        }                                                                                                               \
+}                                                                                                                       \
+
 #define plugin_main(...) PLUGIN_MAIN( __VA_ARGS__ )
-#define scanner_plugin(...) SCANNER_PLUGIN( __VA_ARGS__ )
 #define gambit_plugin(...) GAMBIT_PLUGIN( __VA_ARGS__ )
 
 /*Declared the "main" for the module.  This is function that will be ran by module interface*/

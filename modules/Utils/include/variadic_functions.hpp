@@ -24,25 +24,22 @@
 
 namespace Gambit
 {
-        //Greg:  getVariaticNode is used for the variadic versions of hasKey and getValue
-        namespace
+        //getVariaticNode is used for the variadic versions of hasKey and getValue
+        inline const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
         {
-                const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
-                {
-                        return node[key];
-                }
-
-                template <typename... args>
-                const YAML::Node getVariadicNode(const YAML::Node &node, const std::string &key, const args&... keys)
-                {
-                        return getVariadicNode(node[key], keys...);
-                }
-                
-                const std::string stringifyVariadic(const std::string &str) {return str;}
-                
-                template<typename... args>
-                std::string stringifyVariadic(const std::string &str, const args&... strs) {return str + ", " + stringifyVariadic(strs...);}
+                return node[key];
         }
+
+        template <typename... args>
+        inline const YAML::Node getVariadicNode(const YAML::Node &node, const std::string &key, const args&... keys)
+        {
+                return getVariadicNode(node[key], keys...);
+        }
+        
+        inline const std::string stringifyVariadic(const std::string &str) {return str;}
+        
+        template<typename... args>
+        inline const std::string stringifyVariadic(const std::string &str, const args&... strs) {return str + ", " + stringifyVariadic(strs...);}
 }
 
 #endif

@@ -57,8 +57,8 @@ namespace Gambit
                                 }
                         }
                         
-                        std::vector<std::string> &getKeys(){return keys;}
-                        std::vector<double> &getParameters(){return params;}
+                        const std::vector<std::string> &getKeys() const {return keys;}
+                        const std::vector<double> &getParameters() const {return params;}
                         
                         double operator() (std::vector<double> &unit)
                         {

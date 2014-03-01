@@ -69,20 +69,17 @@ namespace Gambit
                                 }
                         }
                         
-                        std::vector<std::string> & getKeys(){return func->getKeys();}
+                        const std::vector<std::string> & getKeys() const {return func->getKeys();}
                         
-                        void * operator() (std::string in, std::string purpose)
+                        unsigned int getDim() const {return func->getKeys().size();}
+                        
+                        void * operator() (const std::string &in, const std::string &purpose) const
                         {
                                 return func;
                         }
                         
-                        void remove(std::string in, void *a)
+                        void remove(void *a) const
                         {
-                                if (func != 0)
-                                {
-                                        delete a;
-                                        func = 0;
-                                }
                         }
                         
                         ~Test_Function_Factory()

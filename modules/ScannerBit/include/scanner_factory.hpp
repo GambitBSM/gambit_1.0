@@ -45,15 +45,15 @@ namespace Gambit
         {
                 registry
                 {
-                        typedef void* factory_def(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, std::string &purpose);
+                        typedef void* factory_def(const std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
                         reg_elem <factory_def> __scanner_factories__;
                 }
                 
                 class Function_Base
                 {
                 public:
-                        virtual std::vector<double> & getParameters() = 0;
-                        virtual std::vector<std::string> & getKeys() = 0;
+                        virtual const std::vector<double> & getParameters() const = 0;
+                        virtual const std::vector<std::string> & getKeys() const = 0;
                         virtual double operator () (std::vector<double> &) = 0;
                         virtual ~Function_Base(){}
                 };
@@ -103,14 +103,16 @@ namespace Gambit
                                 }
                         }
                         
-                        std::vector<std::string> & getKeys(){return prior->getShownParameters();}
+                        const std::vector<std::string> & getKeys() const {return prior->getShownParameters();}
                         
-                        void * operator() (std::string in, std::string purpose)
+                        unsigned int getDim() const {return prior->size();}
+                        
+                        void * operator() (const std::string &in, const std::string &purpose) const
                         {
                                 return __scanner_factories__[in](functorMap, *dependencyResolver, *prior, purpose);
                         }
                         
-                        void remove(std::string in, void *a)
+                        void remove(void *a) const
                         {
                                 delete (Function_Base *)a;
                         }

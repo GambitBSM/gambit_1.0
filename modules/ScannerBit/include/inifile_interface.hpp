@@ -92,7 +92,7 @@ namespace Gambit
                         
                         const std::string fileName() const {return file;};
                         
-                        const std::string getValue(std::string in) const
+                        const std::string getValue(const std::string &in) const
                         {
                                 if (boundIniFile->hasScannerKey(name.c_str(), in.c_str()))
                                 {

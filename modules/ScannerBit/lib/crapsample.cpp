@@ -51,15 +51,18 @@ class Ran
 
 scanner_plugin (crapsample)
 {      
+        int N;
+        INITIALIZE(N, get_inifile_value<int>("point_number", 10))
+        
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
         int plugin_main (void)
         {
-                std::vector<std::string> &keys     = GETKEYS();
+                std::vector<std::string> &keys     = get_keys();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
-                int N                              = get_inifile_value<int>("point_number", 10);
-                Function_Base *LogLike             = GETFUNCTOR("Scanner_Function", "Likelihood");
+                //int N                              = get_inifile_value<int>("point_number", 10);
+                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
 
-                int ma = keys.size();
+                int ma = get_dimension();
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
@@ -117,10 +120,10 @@ SCANNER_PLUGIN (loopsample)
 {
         int PLUGIN_MAIN ()
         {
-                std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
+                std::vector<std::string> &keys     = get_keys();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);
-                Function_Base *LogLike             = (Function_Base *)(get_input_value<Function_Factory_Base>(1))("Scanner_Function", get_inifile_value<std::string>("like"));
+                Function_Base *LogLike             = get_functor("Scanner_Function", get_inifile_value<std::string>("like"));
                 typedef void (*func)(double a);
                 std::ofstream out(output_file.c_str());
                 int ma = keys.size();

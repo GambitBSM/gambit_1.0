@@ -40,7 +40,7 @@ namespace Gambit
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, std::string &purpose) : functorMap(functorMap), dependencyResolver(&dependencyResolver), prior(&prior)
+                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : functorMap(functorMap), dependencyResolver(&dependencyResolver), prior(&prior)
                         {
                                 // Find subset of vertices that match requested purpose
                                 vertices = dependencyResolver.getObsLikeOrder();
@@ -94,14 +94,14 @@ namespace Gambit
                                 dependencyResolver->resetAll();
                         }
                         
-                        std::vector<double> & getParameters(){return realParameters;}
-                        std::vector<std::string> & getKeys(){return prior->getShownParameters();}
+                        const std::vector<double> & getParameters() const {return realParameters;}
+                        const std::vector<std::string> & getKeys() const {return prior->getShownParameters();}
                 };
 		
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) 
+                        Scanner_Function (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) 
                         {
                         }
 			
