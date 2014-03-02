@@ -32,7 +32,11 @@ namespace Gambit
                         std::map<std::string, double> param_map;
                         
                 public:
+#ifndef NO_GCC_4_7
+                        Test_Uniform (const IniParser::Options &options) : prior(nullptr)
+#else
                         Test_Uniform (const IniParser::Options &options) : prior(0)
+#endif
                         {
                                 if (options.hasKey("dim"))
                                 {
@@ -62,7 +66,11 @@ namespace Gambit
                         
                         double operator() (std::vector<double> &unit)
                         {
+#ifndef NO_GCC_4_7
+                                if (prior == nullptr)
+#else
                                 if (prior == 0)
+#endif
                                 {
                                         params = unit;
                                 }
@@ -82,7 +90,11 @@ namespace Gambit
                         
                         ~Test_Uniform()
                         {
+#ifndef NO_GCC_4_7
+                                if (prior != nullptr)
+#else
                                 if (prior != 0)
+#endif
                                         delete prior;
                         }
                 };

@@ -16,7 +16,7 @@ ifdef HAVE_MAC
   HAVE_MAC = iMissUbuntuAlready
 endif
 
-# if your compiler doesn't support all of C++11, some things might now compile.
+# if your compiler doesn't support all of C++11, some things might not compile.
 # if you don't have at least GCC 4.7 you can define NO_GCC_4_7
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx NO_GCC_4_7=whatever

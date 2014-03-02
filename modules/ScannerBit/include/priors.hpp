@@ -48,11 +48,17 @@ namespace Gambit
                 class BasePrior
                 {
                 private:
+#ifndef NO_GCC_4_7
                         unsigned int param_size = 0;
-                        
+#else
+                        unsigned int param_size;
+#endif
                 public:
+#ifndef NO_GCC_4_7
                         BasePrior() = default;
-                        
+#else
+                        BasePrior() : param_size(0) {}
+#endif
                         BasePrior(const int param_size) : param_size(param_size) {}
                         
                         virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;

@@ -51,18 +51,27 @@ class Ran
 
 scanner_plugin (crapsample)
 {      
-        int N;
-        initialize(N, get_inifile_value<int>("point_number", 10));
+        int N, ma;
+        Function_Base *LogLike;
+        std::vector<std::string> keys;
+        std::string output_file;
+        void hiFunc(){std::cout << "This is crapsample " << std::endl;}
+        
+        init_inifile_value(N, "point_numer", 10);
+        init_inifile_value(output_file, "output_file", "default_output");
+        init_dimension(ma);
+        init_functor(LogLike, "Scanner_Function", "Likelihood");
+        run_function(hiFunc);
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
         int plugin_main (void)
         {
-                std::vector<std::string> &keys     = get_keys();
-                std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
+                //std::vector<std::string> &keys     = get_keys();
+                //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 //int N                              = get_inifile_value<int>("point_number", 10);
-                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
-
-                int ma = get_dimension();
+                //Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                //int ma                             = get_dimension();
+                
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;

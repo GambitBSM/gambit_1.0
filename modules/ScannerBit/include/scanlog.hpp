@@ -109,6 +109,11 @@ namespace Gambit
                                 errors.clear();
                                 exit(1);
                         }
+                        
+                        ~ErrorLog()
+                        {
+                                check();
+                        }
                 };
         }
 }

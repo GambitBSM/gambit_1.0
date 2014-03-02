@@ -17,11 +17,12 @@
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
-#define export_abstract(name, ...) EXPORT_ABSTRACT(name, __VA_ARGS__) static union{}
-#define export_object(name, ...) EXPORT_OBJECT(name, __VA_ARGS__) static union{}
-#define initialize(name, ...) INITIALIZE(name, __VA_ARGS__) static union{}
-#define plugin_main(...) PLUGIN_MAIN( __VA_ARGS__ )
-#define gambit_plugin(...) GAMBIT_PLUGIN( __VA_ARGS__ )
+#define export_abstract(name, ...)      EXPORT_ABSTRACT(name, __VA_ARGS__) static union{}
+#define export_object(name, ...)        EXPORT_OBJECT(name, __VA_ARGS__) static union{}
+#define initialize(name, ...)           INITIALIZE(name, __VA_ARGS__) static union{}
+#define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__) static union{}
+#define plugin_main(...)                PLUGIN_MAIN( __VA_ARGS__ )
+#define gambit_plugin(...)              GAMBIT_PLUGIN( __VA_ARGS__ )
 
 #define VERSION(...)                                                                                                    \
 namespace __gambit_plugin_namespace__                                                                                   \
@@ -111,6 +112,38 @@ namespace __gambit_plugin_namespace__                                           
                                                                                                                         \
                 template <>                                                                                             \
                 interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
+        }                                                                                                               \
+}                                                                                                                       \
+
+//initalizes global variable
+#define RUN_FUNCTION(name, ...)                                                                                         \
+namespace __gambit_plugin_namespace__                                                                                   \
+{                                                                                                                       \
+        namespace RunTags                                                                                               \
+        {                                                                                                               \
+                struct name{};                                                                                          \
+        }                                                                                                               \
+                                                                                                                        \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <RunTags::name>                                                                         \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(gambitData &pluginData)                                                               \
+                        {                                                                                               \
+                                pluginData.inits.push_back(interface <RunTags::name>::init);                            \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(gambitData &pluginData)                                                        \
+                        {                                                                                               \
+                                name( __VA_ARGS__ );                                                                    \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <RunTags::name> reg_init <RunTags::name>::reg(pluginData);                                    \
         }                                                                                                               \
 }                                                                                                                       \
 
