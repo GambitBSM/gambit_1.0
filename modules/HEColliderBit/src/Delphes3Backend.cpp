@@ -12,6 +12,8 @@
 //  //
 //  //  Abram Krislock
 //  //  2013 Apr 19, Apr 23, May 9
+//  //  Aldo Saavedra
+//  //  2014 March 2nd
 //  //
 //  //  ********************************************
 //
@@ -75,7 +77,7 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::processEvent(const PythiaEvent& eventIn, Event &eventOut) {
+    void Delphes3Backend::processEvent(const PythiaEvent& eventIn, HEP_Simple_Lib::Event &eventOut) {
       try {
         modularDelphes->Clear();
         convertInput(eventIn);
@@ -129,17 +131,17 @@ namespace Gambit {
 
     // ReconstructedEvent is a boring class in the HEColliderBit namespace
     // See the DelphesGambit.hpp file for details
-    void Delphes3Backend::convertOutput(Event &event) {
+    void Delphes3Backend::convertOutput(HEP_Simple_Lib::Event &event) {
       event.clear();
 
-      Particle *recoParticle;
-      Jet *recoJet;
+      HEP_Simple_Lib::Particle *recoParticle;
+      HEP_Simple_Lib::Jet *recoJet;
       // Delphes particle arrays: Post-Detector Sim
       //    MISSING ET:
       const TObjArray *arrayMissingET = modularDelphes->ImportArray("MissingET/momentum");
       if ((candidate = static_cast<Candidate*>(arrayMissingET->At(0)))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        event.set_missingmom(P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
+        event.set_missingmom(HEP_Simple_Lib::P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
       }
 
       // Delphes particle arrays: Post-Detector Sim
@@ -149,8 +151,8 @@ namespace Gambit {
       iteratorPhotons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.),
-                                    PID::PHOTON);
+        recoParticle = new HEP_Simple_Lib::Particle(HEP_Simple_Lib::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.),
+                                    HEP_Simple_Lib::PID::PHOTON);
         recoParticle->set_prompt(true);
         event.add_particle(recoParticle);
       }
@@ -162,8 +164,8 @@ namespace Gambit {
       iteratorElectrons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
-                                    -sign(candidate->Charge) * PID::ELECTRON);
+        recoParticle = new HEP_Simple_Lib::Particle(HEP_Simple_Lib::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
+                                    -HEP_Simple_Lib::sign(candidate->Charge) * HEP_Simple_Lib::PID::ELECTRON);
         recoParticle->set_prompt(true);
         event.add_particle(recoParticle);
       }
@@ -175,8 +177,8 @@ namespace Gambit {
       iteratorMuons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
-                                    -sign(candidate->Charge) * PID::MUON);
+        recoParticle = new HEP_Simple_Lib::Particle(HEP_Simple_Lib::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
+                                    -HEP_Simple_Lib::sign(candidate->Charge) * HEP_Simple_Lib::PID::MUON);
         recoParticle->set_prompt(true);
         event.add_particle(recoParticle);
       }
@@ -189,14 +191,14 @@ namespace Gambit {
       while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
         if (candidate->TauTag) {
-          recoParticle = new Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
-                                      -sign(candidate->Charge) * PID::TAU);
+          recoParticle = new HEP_Simple_Lib::Particle(HEP_Simple_Lib::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
+                                      -HEP_Simple_Lib::sign(candidate->Charge) * HEP_Simple_Lib::PID::TAU);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
           //continue;
         }
         else {
-          recoJet = new Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
+          recoJet = new HEP_Simple_Lib::Jet(HEP_Simple_Lib::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
                             candidate->PID, candidate->BTag);
           event.addJet(recoJet);
         }

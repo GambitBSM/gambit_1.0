@@ -1,8 +1,10 @@
 #include "Particle.hpp"
-#include "TRandom.h"
 
-namespace Gambit {
-  namespace HEColliderBit {
+#include <stdlib.h>  /*srand, rand */
+#include <time.h>
+
+
+namespace fast_sim {
 
 
 // the base class of the Detector Response
@@ -15,14 +17,13 @@ class DetectorResponse
     double _photon_resolution;
     double _jet_resolution;
 
-    TRandom _rndm;
 
   public:
     DetectorResponse();
-    virtual void MuonResponse(Particle& muon) { };
-    virtual void PhotonResponse(Particle& ph) {};
-    virtual void ElectronResponse(Particle& ele) {};
-    virtual void JetResponse(Particle& jet) {};
+    virtual void MuonResponse(HEP_Simple_Lib::Particle& muon) { };
+    virtual void PhotonResponse(HEP_Simple_Lib::Particle& ph) {};
+    virtual void ElectronResponse(HEP_Simple_Lib::Particle& ele) {};
+    virtual void JetResponse(HEP_Simple_Lib::Particle& jet) {};
 };
 
 class ATLAS_Simple_Response: public DetectorResponse
@@ -30,10 +31,10 @@ class ATLAS_Simple_Response: public DetectorResponse
 
   public:
     ATLAS_Simple_Response();
-    void MuonResponse(Particle& muon);
-    void PhotonResponse(Particle& ph);
-    void ElectronResponse(Particle& ele);
-    void JetResponse(Particle& jet);
+    void MuonResponse(HEP_Simple_Lib::Particle& muon);
+    void PhotonResponse(HEP_Simple_Lib::Particle& ph);
+    void ElectronResponse(HEP_Simple_Lib::Particle& ele);
+    void JetResponse(HEP_Simple_Lib::Particle& jet);
 };
 
 
@@ -64,5 +65,4 @@ double RESHAD(double e, double eta, double Caloth){
 //}
 */
 
-  }
 }

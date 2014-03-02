@@ -31,6 +31,9 @@
 #include "backend_DarkSUSY.hpp"
 #include "backend_SuperIso.hpp"
 
+//Aldo
+#include "backend_FastSim.hpp"
+
 // Get a bit fancy and include duplicate backends 
 
 //#define BACKENDRENAME LibSecond

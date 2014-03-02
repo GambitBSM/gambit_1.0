@@ -4,8 +4,7 @@
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_Lib {
 
 
     /// Simple jet class, encapsulating a momentum 4-vector and with some extra b-tag info
@@ -103,5 +102,4 @@ namespace Gambit {
     }
 
 
-  }
 }

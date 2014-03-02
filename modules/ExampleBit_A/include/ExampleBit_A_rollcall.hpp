@@ -111,6 +111,16 @@ START_MODULE
 
   #undef CAPABILITY
 
+/*  #define CAPABILITY fastsim                // calling fastsim
+  START_CAPABILITY
+
+    #define FUNCTION fastsim          //
+    START_FUNCTION(int)                  //
+    #undef FUNCTION
+
+  #undef CAPABILITY
+*/
+
 
   #define CAPABILITY function_pointer
   START_CAPABILITY

@@ -4,8 +4,7 @@
 #include "MathUtils.hpp"
 #include "Vectors.hpp"
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_Lib {
 
 
     /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
@@ -119,5 +118,4 @@ namespace Gambit {
     };
 
 
-  }
 }

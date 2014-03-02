@@ -1,5 +1,9 @@
 #include "DetectorResponse.hpp"
 
+namespace fast_sim {
+
+  using namespace HEP_Simple_Lib;
+
 DetectorResponse::DetectorResponse() {
 
   _muon_resolution = 1.0;
@@ -7,6 +11,7 @@ DetectorResponse::DetectorResponse() {
   _photon_resolution = 1.0;
   _jet_resolution = 1.0;
 
+  srand(time(NULL));
 }
 
 
@@ -25,7 +30,8 @@ void ATLAS_Simple_Response::MuonResponse(Particle& muon){
 
   double newpx,newpy,newpz,newe; //,newpt;
 
-  double distr = _rndm.Gaus(0,1);
+  //double distr = _rndm.Gaus(0,1);
+  double distr = rand();
   double sigma = distr*_muon_resolution*muon.mom().rho();
 
   newpx = muon.mom().px()/(1+sigma);
@@ -35,7 +41,7 @@ void ATLAS_Simple_Response::MuonResponse(Particle& muon){
 
   P4 newp(newpx,newpy,newpz,newe);
 
-  muon.setMom(newp);
+  muon.set_mom(newp);
 //  muon.mom().setPM(newpx,newpy,newpz,0.1057);
 
 
@@ -52,7 +58,7 @@ void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
   if (photon.mom().E() <= 0)
     return ;
 
-  double distr = _rndm.Gaus(0,1);
+  double distr = rand();
   double sigma = distr*_photon_resolution/sqrt(photon.mom().E());
 
   newpx = photon.mom().px()/(1+sigma);
@@ -68,7 +74,7 @@ void ATLAS_Simple_Response::PhotonResponse(Particle& photon){
 //  printf(" oldeta %.2f old phi %.2f\n",oldeta,oldphi);
 
   P4 newp = P4::mkXYZM(newpx,newpy,newpz,0);
-  photon.setMom(newp);
+  photon.set_mom(newp);
 
 //  printf("new Photon px = %f  py = %f pz = %f newe %f\n",
 //      photon.mom().px(),photon.mom().py(),photon.mom().pz(),photon.mom().E());
@@ -87,7 +93,7 @@ void ATLAS_Simple_Response::ElectronResponse(Particle& electron){
   if (electron.mom().E() <= 0)
     return;
 
-  double distr = _rndm.Gaus(0,1);
+  double distr = rand();
   double sigma = distr*_electron_resolution*1.0/sqrt(electron.mom().E());
 
   newpx = electron.mom().px()/(1+sigma);
@@ -96,7 +102,7 @@ void ATLAS_Simple_Response::ElectronResponse(Particle& electron){
   newe = electron.mom().E()/(1+sigma);
 
   P4 newp(newpx,newpy,newpz,newe);
-  electron.setMom(newp);
+  electron.set_mom(newp);
 
 //  electron.mom().setPM(newpx,newpy,newpz,0.0);
 //  Particle newelectron(newpx,newpy,newpz,0.0,electron.pid());
@@ -150,4 +156,4 @@ double RESHAD(double e, double eta, double Caloth){
 
 //}
 */
-
+}
