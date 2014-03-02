@@ -6,9 +6,7 @@
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 
-namespace Gambit {
-  namespace HEColliderBit {
-
+namespace HEP_Simple_Lib {
 
     /// @name Converters to/from the Gambit 4-vector
     //@{
@@ -48,5 +46,4 @@ namespace Gambit {
     }
 
 
-  }
 }

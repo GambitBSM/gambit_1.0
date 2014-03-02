@@ -138,7 +138,21 @@ namespace Gambit
       }
       
       result = loglTotal;
-    }  
+    }
+
+    /// Fastsim test function
+    /// 
+    /*void fastsim (int value)
+    {
+      //using namespace Pipes::fastsim;      
+
+
+      cout<<"  calling fastsim "<<endl;
+    } 
+    */
+
+
+
 
     /// \name Loopmanager Examples
     /// Some example functions for using loops within the dependency structure 

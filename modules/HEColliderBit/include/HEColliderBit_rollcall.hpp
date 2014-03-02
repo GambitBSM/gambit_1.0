@@ -18,6 +18,8 @@
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Dec
+//  Aldo Saavedra
+//  2014 March 2nd
 ///  
 ///  *********************************************
 
@@ -155,7 +157,7 @@ START_MODULE
   START_CAPABILITY
     /// Detector simulators which directly produce the standard event format
     #define FUNCTION reconstructDelphesEvent
-    START_FUNCTION(Event)
+    START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(hardScatteringEvent, PythiaEvent)
     DEPENDENCY(readiedDetectorSim, Delphes3Backend*)
@@ -163,7 +165,7 @@ START_MODULE
 
     /// Event converters to the standard Gambit collider event format
     #define FUNCTION convertPythia8Event
-    START_FUNCTION(Event)
+    START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
     DEPENDENCY(hardScatteringEvent, PythiaEvent)
     #undef FUNCTION
@@ -205,7 +207,7 @@ START_MODULE
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
-    DEPENDENCY(GambitColliderEvent, Event)
+    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
     DEPENDENCY(scaleFactor, double)
     #undef FUNCTION
   #undef CAPABILITY

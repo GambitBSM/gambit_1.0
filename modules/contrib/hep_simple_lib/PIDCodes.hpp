@@ -3,8 +3,7 @@
 /// @file Convenience names for PDG ID codes, for cleaner code
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_Lib {
     namespace PID {
 
 
@@ -145,5 +144,4 @@ namespace Gambit {
 
 
     }
-  }
 }

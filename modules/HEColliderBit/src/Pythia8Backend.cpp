@@ -15,6 +15,8 @@
 //  //  2013 Apr 19, Apr 23
 //  //  Andy Buckley
 //  //  2013 July 18
+//  //  Aldo Saavedra
+//  //  2014 March 2nd
 //  //
 //  //  ********************************************
 
@@ -70,7 +72,7 @@ namespace Gambit {
     }
 
 
-    void Pythia8Backend::nextEvent(Event& event) {
+    void Pythia8Backend::nextEvent(HEP_Simple_Lib::Event& event) {
       // Automatically initialize when a first event is requested
       if (!_initialized) {
         _pythiaInstance->init();
@@ -84,7 +86,7 @@ namespace Gambit {
 
 
     /// Fill a Gambit::HECollider::Event from a Pythia8 event
-    void Pythia8Backend::convertOutput(const PythiaEvent& pevt, Event& gevt) const {
+    void Pythia8Backend::convertOutput(const PythiaEvent& pevt, HEP_Simple_Lib::Event& gevt) const {
       Pythia8::Vec4 ptot;
       vector<fastjet::PseudoJet> jetparticles;
       vector<fastjet::PseudoJet> bhadrons, taus;
@@ -103,7 +105,7 @@ namespace Gambit {
         /// @todo Only accept hadronically decaying taus?
         if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
           taus.push_back(vec4_to_pseudojet(p.p()));
-          Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
+          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(vec4_to_p4(p.p()), p.id());
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         }
@@ -124,7 +126,7 @@ namespace Gambit {
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
-          Particle* gp = new Particle(vec4_to_p4(p.p()), p.id());
+          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(vec4_to_p4(p.p()), p.id());
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         } else {
@@ -155,7 +157,7 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        gevt.addJet(new Jet(pseudojet_to_p4(pj), isB));
+        gevt.addJet(new HEP_Simple_Lib::Jet(HEP_Simple_Lib::pseudojet_to_p4(pj), isB));
       }
 
       // cout << 4 << endl;

@@ -6,8 +6,7 @@
 #include <boost/serialization/vector.hpp>
 #include <algorithm>
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_Lib {
 
 
     /// Simple event class, separating into various classes of particle
@@ -248,5 +247,4 @@ namespace Gambit {
     };
 
 
-  }
 }

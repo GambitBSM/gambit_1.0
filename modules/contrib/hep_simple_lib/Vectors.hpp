@@ -9,8 +9,7 @@
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_Lib {
 
 
     // /// Use fastjet implicitly
@@ -531,5 +530,4 @@ namespace Gambit {
     //@}
 
 
-  }
 }

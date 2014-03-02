@@ -5,8 +5,7 @@
 #include <cstdlib>
 #include <vector>
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_Lib {
 
 
     /// @name Numerical helpers
@@ -127,5 +126,4 @@ namespace Gambit {
     //@}
 
 
-  }
 }

@@ -5,12 +5,11 @@
 #include "Vectors.hpp"
 #include "Event.hpp"
 #include "Particle.hpp"
-#include "FastJetUtils.hpp"
-#include "Py8Utils.hpp"
+//#include "FastJetUtils.hpp"
+//#include "Py8Utils.hpp"
 
 
-namespace Gambit {
-  namespace HEColliderBit {
+namespace HEP_Simple_lib {
 
 
     /// @name PID stuff
@@ -33,5 +32,4 @@ namespace Gambit {
     //@}
 
 
-  }
 }

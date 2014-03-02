@@ -19,6 +19,8 @@
 //  //  2013 June 14
 //  //  Andy Buckley
 //  //  2013 July 18
+//  //  Aldo Saavedra
+//  //  2014 March 2nd
 //  //
 //  //  ********************************************
 
@@ -65,10 +67,10 @@ namespace Gambit {
       /// Make the next event and fill it into the Py8::Event
       void nextEvent(PythiaEvent& event);
       /// Make the next event and directly fill a Gambit event (no Py8::Event copy)
-      void nextEvent(Event& event);
+      void nextEvent(HEP_Simple_Lib::Event& event);
 
       /// Convert the supplied Py8 event into a Gambit event
-      void convertOutput(const PythiaEvent& pevt, Event& gevt) const;
+      void convertOutput(const PythiaEvent& pevt, HEP_Simple_Lib::Event& gevt) const;
 
       /// @name Get the number of events requested / errors permitted in a run
       //@{

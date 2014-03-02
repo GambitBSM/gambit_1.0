@@ -78,6 +78,8 @@ EXAMPLEBDIR = ExampleBit_B
 EXSUSYSPECDIR = Example_SUSYspecBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
+HEPSIMPLEDIR = contrib/hep_simple_lib
+FASTSIMDIR = contrib/fast_sim
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -97,6 +99,8 @@ CFLAGS= -I$(COREDIR)/include \
 	-I$(EXSUSYSPECDIR)/include \
 	-I$(FLAVDIR)/include \
 	-I$(YAMLDIR)/include \
+	-I$(HEPSIMPLEDIR) \
+	-I$(FASTSIMDIR)/include \
 	-I$(MULTINESTINC)
 
 LN = $(CC)

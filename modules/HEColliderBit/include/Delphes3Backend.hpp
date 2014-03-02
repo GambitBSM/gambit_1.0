@@ -18,6 +18,8 @@
 //  //
 //  //  Abram Krislock
 //  //  2013 Apr 19, Apr 23, May 9
+//  //  Aldo Saavedra
+//  //  2014 March 2nd
 //  //
 //  //  ********************************************
 //
@@ -55,9 +57,9 @@ namespace Gambit {
       Delphes3Backend(string configFileName);
       ~Delphes3Backend();
 
-      void processEvent(const PythiaEvent& eventIn, Event& eventOut);
+      void processEvent(const PythiaEvent& eventIn, HEP_Simple_Lib::Event& eventOut);
       void convertInput(const PythiaEvent& event);
-      void convertOutput(Event& event);
+      void convertOutput(HEP_Simple_Lib::Event& event);
 
     private:
       // To read Delphes Config File

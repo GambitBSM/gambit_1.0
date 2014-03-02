@@ -32,6 +32,9 @@
 #include "backend_SuperIso.hpp"
 #include "backend_libFarrayTest.hpp"
 
+//Aldo
+#include "backend_FastSim.hpp"
+
 // Get a bit fancy and include duplicate backends 
 
 //#define BACKENDRENAME LibSecond
