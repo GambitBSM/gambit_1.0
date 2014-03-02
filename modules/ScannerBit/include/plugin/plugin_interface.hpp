@@ -89,7 +89,7 @@ namespace Gambit
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
                                 std::string str;
                                 
-                                if (FILE* f = popen((std::string("nm ") + file + std::string(" | grep \"__gambit_plugin_moduleInit_\"")).c_str(), "r"))
+                                if (FILE* f = popen((std::string("nm ") + file + std::string(" | grep \"__gambit_plugin_pluginInit_\"")).c_str(), "r"))
                                 {
                                         char buffer[1024];
                                         int n;
@@ -99,7 +99,7 @@ namespace Gambit
                                                 std::stringstream ss(std::string(buffer, n));
                                                 while(getline(ss, str))
                                                 {
-                                                        int pos = str.find("__gambit_plugin_moduleInit_");
+                                                        int pos = str.find("__gambit_plugin_pluginInit_");
                                                         int posLast = str.rfind("__");
                                                         mod_names.push_back(str.substr(pos + 27, posLast - pos - 27));
                                                 }
@@ -162,7 +162,7 @@ namespace Gambit
                                                         name = mod_names[iin];
                                                 }
                                         
-                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_moduleInit_") + name + std::string("__")).c_str());
+                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + name + std::string("__")).c_str());
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + name + std::string("__")).c_str());
                                                 rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_plugin_rmMember_") + name + std::string("__")).c_str());
 

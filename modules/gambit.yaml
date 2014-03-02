@@ -77,16 +77,51 @@ adhoc:
 
 m12_prior: 
   parameters: [CMSSM_I::M12]
-  prior_type: log
-  range: [100,2000]
+  prior_type: composite
+  options: 
+    new_prior: 
+      parameters: [CMSSM_I::M12]
+      prior_type: log
+      range: [100,2000]
 
-tanbMstop_prior:
+tanbMstop_prior: 
   parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
   prior_type: cauchy
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
     demo: 45
 
+##############################
+--- # Scanner setup
+##############################
+
+scanner:
+  plugin:  crapsample
+  file_path:  ScannerBit/lib/libsample.so
+
+#scanner:
+#  module:  multinest
+#  file_path:  ScannerBit/lib/libmultinest_interface.so
+    
+enable_redirect: true
+
+redirect_output:
+   scanner:  xterm
+#   error:  test_errors
+    
+crapsample:
+  point_number: 10
+  output_file:  output
+  like:  Likelihood
+
+loopsample:
+  point_number: 10
+  output_file:  output
+  like:  Likelihood
+  
+multnest:
+  output_file:  output
+    
 ###############################
 #--- # Printer (output) setup
 ###############################
@@ -168,29 +203,13 @@ another_key:
   subkey3:
     subsubkey1: value2
 
-scanner:
-  plugin:  crapsample
-  file_path:  ScannerBit/lib/libsample.so
-
-#scanner:
-#  module:  multinest
-#  file_path:  ScannerBit/lib/libmultinest_interface.so
+enable_testing: false
+test_function: uniform
     
-enable_redirect: true
-
-redirect_output:
-   scanner:  xterm
-#   error:  test_errors
-    
-crapsample:
-  point_number: 10
-  output_file:  output
-  like:  Likelihood
-
-loopsample:
-  point_number: 10
-  output_file:  output
-  like:  Likelihood
-  
-multnest:
-  output_file:  output
+uniform:
+  dim: 2
+  priors:
+    gauss_prior:
+      parameters: [0, 1]
+      options:
+        cov: [[1, 0], [0, 1]]

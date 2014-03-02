@@ -25,6 +25,9 @@
 #include <gambit_scan.hpp>
 #include <priorfactory.hpp>
 #include <priors.hpp>
+#include <scanner_factory.hpp>
+#include <inifile_interface.hpp>
+#include <test_factory.hpp>
 
 using namespace Gambit;
 
@@ -86,11 +89,19 @@ void beispiel(const char* inifilename)
   //Let's define the prior
   Gambit::Priors::CompositePrior prior(iniFile);
   //Let's define the scanner factory
-  Gambit::Scanner::Scanner_Function_Factory factory(Core, dependencyResolver, prior);
+  auto factory_func = [&]()->Gambit::Scanner::Factory_Base *
+  {
+    if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
+      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile);
+    else
+      return new Gambit::Scanner::Scanner_Function_Factory (Core, dependencyResolver, prior);
+  };
+  
+  Gambit::Scanner::Factory_Base *factory = factory_func();
   //Let's define the iniFile interface
   Gambit::Scanner::IniFileInterface interface(iniFile);
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(&factory, &interface);
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
   //cout << "keys = " << scanner->getKeys() << endl;
   //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();

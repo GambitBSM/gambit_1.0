@@ -29,7 +29,7 @@ namespace Gambit
                         std::vector<std::string> names;
                         
                 public:
-                        FixedPrior(std::vector<std::string>& param, IniParser::Options& options) : names(param)
+                        FixedPrior(const std::vector<std::string>& param, const IniParser::Options& options) : names(param)
                         {
                                 if (options.hasKey("fixed_value"))
                                 {
@@ -43,7 +43,7 @@ namespace Gambit
                         
                         FixedPrior(std::string name, double value) : value(value), names(1, name) {}
                         
-                        void transform(std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
+                        void transform(const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
                         {
                                 for (auto &name : names)
                                         outputMap[name] = value;
@@ -58,7 +58,7 @@ namespace Gambit
                         std::vector <std::string> names;
                         
                 public:
-                        MultiPriors(std::vector<std::string>& param, IniParser::Options& options)
+                        MultiPriors(const std::vector<std::string>& param, const IniParser::Options& options)
                         {
                                 if (options.hasKey("same_as"))
                                 {
@@ -87,7 +87,7 @@ namespace Gambit
                                 names.push_back(name_in);
                         }
                         
-                        void transform (std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
+                        void transform (const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
                         {
                                 double value = outputMap[name];
                                 

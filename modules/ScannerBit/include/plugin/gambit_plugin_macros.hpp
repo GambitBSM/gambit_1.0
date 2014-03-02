@@ -17,6 +17,12 @@
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
+#define export_abstract(name, ...) EXPORT_ABSTRACT(name, __VA_ARGS__) static union{}
+#define export_object(name, ...) EXPORT_OBJECT(name, __VA_ARGS__) static union{}
+#define initialize(name, ...) INITIALIZE(name, __VA_ARGS__) static union{}
+#define plugin_main(...) PLUGIN_MAIN( __VA_ARGS__ )
+#define gambit_plugin(...) GAMBIT_PLUGIN( __VA_ARGS__ )
+
 #define VERSION(...)                                                                                                    \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
@@ -74,7 +80,7 @@ namespace __gambit_plugin_namespace__                                           
                 interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
         }                                                                                                               \
 }                                                                                                                       \
-   
+
 /*Allows Gambit to use object "obj" of type "..."*/
 #define EXPORT_OBJECT(name, ...)                                                                                        \
 namespace __gambit_plugin_namespace__                                                                                   \
@@ -105,6 +111,38 @@ namespace __gambit_plugin_namespace__                                           
                                                                                                                         \
                 template <>                                                                                             \
                 interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
+        }                                                                                                               \
+}                                                                                                                       \
+
+//initalizes global variable
+#define INITIALIZE(name, ...)                                                                                           \
+namespace __gambit_plugin_namespace__                                                                                   \
+{                                                                                                                       \
+        namespace InitTags                                                                                              \
+        {                                                                                                               \
+                struct name{};                                                                                          \
+        }                                                                                                               \
+                                                                                                                        \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <InitTags::name>                                                                        \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(gambitData &pluginData)                                                               \
+                        {                                                                                               \
+                                pluginData.inits.push_back(interface <InitTags::name>::init);                           \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(gambitData &pluginData)                                                        \
+                        {                                                                                               \
+                                name = __VA_ARGS__;                                                                     \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <InitTags::name> reg_init <InitTags::name>::reg(pluginData);                                  \
         }                                                                                                               \
 }                                                                                                                       \
 
@@ -143,7 +181,7 @@ namespace __gambit_plugin_namespace__                                           
         }                                                                                                               \
 }                                                                                                                       \
 decltype(__gambit_plugin_ret_val__) __gambit_plugin_main__ (__VA_ARGS__)                                                \
-                                                                                                                                
+
 /*Defines a Gambit plugin*/
 #define GAMBIT_PLUGIN(plug_name)                                                                                        \
 namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
@@ -171,7 +209,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         };                                                                                              \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void __gambit_plugin_moduleInit_ ## plug_name ## __(std::vector<void *> *input)              \
+                extern "C" void __gambit_plugin_pluginInit_ ## plug_name ## __(std::vector<void *> *input)              \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
                                 pluginData.inputData = *input;                                                          \

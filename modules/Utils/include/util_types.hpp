@@ -24,6 +24,10 @@
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Nov
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Jan
 ///  *********************************************
 
 #ifndef __util_types_hpp__
@@ -180,6 +184,145 @@ namespace Gambit
 
   };
 
+  /// Reindexed array type. \todo: Proper error handling
+  template <typename T, int dim>
+  class Farray
+  {
+    private:
+      T *array;
+      int start[dim], end[dim], size[dim];
+    public:
+      Farray<T,dim>(T *in, int st[dim], int en[dim]) 
+      { 
+        array = in; 
+        for (int i = 0; i < dim; ++i) 
+        {      
+          start[i] = st[i]; 
+          end[i] = en[i]; 
+          size[i] = end[i]-start[i]+1;
+        }
+      }  
+      Farray<T,dim>() {array = NULL;}
+      Farray<T,dim>& operator= (const Farray<T,dim> &orig)
+      {
+        if (this == &orig) return *this;
+        // Allow assignment of different size Farray only if this Farray is not fully initialized
+        if(array != NULL)
+        {    
+          for (int i = 0; i < dim; ++i) 
+          {
+            if(orig.size[i] != size[i]) 
+            {
+              cout << "Error: Using assignment operator on different size Farrays." << endl;
+              throw 0;
+            }
+          }
+        }
+        else
+        {
+          for (int i = 0; i < dim; ++i) 
+          {
+             size[i] = orig.size[i];
+          }        
+        }
+        for (int i = 0; i < dim; ++i) 
+        {      
+          start[i] = orig.start[i];
+          end[i] = orig.end[i];   
+        }  
+        array = orig.array;
+        return *this;
+      }    
+      template <typename ... Args>
+      const T& operator () (Args ... a) const
+      {      
+        int len = sizeof...(a);
+        if(len != dim) 
+        {
+          cout << "Error: Trying to access "<<dim<<"-dimensional Farray using "<<len<<" arguments." << endl;
+          throw 0;
+        }         
+        if(array == NULL)
+        { 
+          cout << "Error: Trying to access uninitialized Farray." << endl;          
+          throw 0;
+        }  
+        int indices[] = {a...};             
+        int idx = 0;
+        // Calculate index for array access
+        for (int i = 0; i < dim; ++i) 
+        {
+          int idx_i = indices[i];
+          if(idx_i<start[i] || idx_i>end[i])
+          { 
+            cout << "Error: Farray index out of range." << endl;            
+            throw 0;
+          }
+          idx_i -= start[i];				
+          for (int j=0; j<i; j++) idx_i *= size[j];
+          idx += idx_i;
+        }   
+        return array[idx];   
+      }      
+      template <typename ... Args>
+      T& operator () (Args ... a)
+      {      
+        int len = sizeof...(a);
+        if(len != dim) 
+        {
+          cout << "Error: Trying to access "<<dim<<"-dimensional Farray using "<<len<<" arguments." << endl;
+          throw 0;
+        }         
+        if(array == NULL)
+        { 
+          cout << "Error: Trying to access uninitialized Farray." << endl;          
+          throw 0;
+        }  
+        int indices[] = {a...};             
+        int idx = 0;
+        // Calculate index for array access      
+        for (int i = 0; i < dim; ++i) 
+        {
+          int idx_i = indices[i];
+          if(idx_i<start[i] || idx_i>end[i])
+          { 
+            cout << "Error: Farray index out of range." << endl;            
+            throw 0;
+          }
+          idx_i -= start[i];				
+          for (int j=0; j<i; j++) idx_i *= size[j];
+          idx += idx_i;
+        }   
+        return array[idx];   
+      }    
+      T* getArray() 
+      { 
+        if(array == NULL) 
+        {
+          cout << "Error: getArray() called on uninitialized Farray." << endl;
+          throw 0;
+        } 
+        return array;}
+      void setLimits(int st[dim], int en[dim]) 
+      {
+        for (int i = 0; i < dim; ++i) 
+        {
+          if((en[i]-st[i])==(end[i]-start[i]))
+          {
+            start[i]=st[i]; 
+            end[i]=en[i];
+          }  
+          else 
+          {
+            cout << "Error: Wrong size array(s) sent to Farray setLimits function." << endl;
+            throw 0;
+          }
+        }
+      }
+      int* getStart(){return start;}
+      int* getEnd(){return end;}
+      int* getSize(){return size;}
+  };
 
 }
 #endif //defined __util_types_hpp__

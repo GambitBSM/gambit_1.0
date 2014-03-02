@@ -25,22 +25,41 @@
 #ifndef __gambit_scan_hpp__
 #define __gambit_scan_hpp__
 
-#include <scanner_factory.hpp>
-#include <inifile_interface.hpp>
 #include <yaml_parser.hpp>
 
 namespace Gambit
 {
         namespace Scanner
         {       
+                class Factory_Base
+                {
+                public:
+                        virtual const std::vector<std::string> & getKeys() const = 0;
+                        virtual unsigned int getDim() const = 0;
+                        virtual void * operator() (const std::string &in, const std::string &purpose) const = 0;
+                        virtual void remove(void *a) const = 0;
+                        virtual ~Factory_Base() = default;
+                };
+                
+                class IniFileInterface_Base
+                {
+                public:
+                        virtual const std::string pluginName() const = 0;
+                        virtual const std::string fileName() const = 0;
+                        virtual const std::string getValue(const std::string &in) const = 0;
+                        virtual ~IniFileInterface_Base() = default;
+                };
+                
                 class Gambit_Scanner
                 {
                 private:
-                        Factory_Base *factory;
-                        IniFileInterface_Base *interface;
+                        const Factory_Base &factory;
+                        const IniFileInterface_Base &interface;
 			
                 public:
-                        Gambit_Scanner (Factory_Base *, IniFileInterface_Base *);
+                        Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface) : factory(factory), interface(interface)
+                        {       
+                        }
 
                         int Run();
                         

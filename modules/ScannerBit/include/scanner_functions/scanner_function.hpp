@@ -25,42 +25,32 @@
 #ifndef __scanner_function_hpp__
 #define __scanner_function_hpp__
 
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <set>
-#include <string>
-#include <functors.hpp>
-#include <graphs.hpp>
-#include <priors.hpp>
-#include <scanner_utils.hpp>
-
 namespace Gambit
 {
         namespace Scanner
-        {
-                class Scanner_Function_Base
+        {       
+                class Scanner_Function_Base : public Function_Base
                 {
                 protected:
                         std::vector<Graphs::VertexID> vertices;
-                        Graphs::DependencyResolver *dependencyResolver;
+                        Graphs::DependencyResolver &dependencyResolver;
                         std::vector<double> realParameters;
-                        Priors::CompositePrior *prior;
+                        Priors::CompositePrior &prior;
                         std::map<std::string, double> parameterMap;
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior)
+                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior)
                         {
                                 // Find subset of vertices that match requested purpose
-                                vertices = dependencyResolver->getObsLikeOrder();
+                                vertices = dependencyResolver.getObsLikeOrder();
                                 int size = 0;
-                                for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(), it2 = vertices.begin(); it != vertices.end(); ++it)
+                                auto it = vertices.begin();
+                                for (auto &vert : vertices)
                                 {
-                                        if (dependencyResolver->getIniEntry(*it)->purpose == purpose)
+                                        if (dependencyResolver.getIniEntry(vert)->purpose == purpose)
                                         {
-                                                *it2 = *it;
-                                                it2++;
+                                                *(it++) = vert;
                                                 size++;
                                         }
                                 }
@@ -70,30 +60,30 @@ namespace Gambit
 			
                         inline void calcObsLike(Graphs::VertexID &it)
                         {
-                                dependencyResolver->calcObsLike(it);
+                                dependencyResolver.calcObsLike(it);
                         }
 
                         inline double getObsLike(Graphs::VertexID &it)
                         {
-                                return dependencyResolver->getObsLike(it);
+                                return dependencyResolver.getObsLike(it);
                         }
                         
                         void setParameters (std::vector<double> &vec) 
                         {
-                                prior->transform(vec, parameterMap);
-                                std::vector<std::string>::iterator itKey = prior->getParameters().begin();
-                                for (std::vector<double>::iterator it  = realParameters.begin(); it != realParameters.end(); ++it, ++itKey)
+                                prior.transform(vec, parameterMap);
+                                auto itKey = prior.getParameters().begin();
+                                for (auto &par : realParameters)
                                 {
-                                        *it = parameterMap[*itKey];
+                                        par = parameterMap[*(itKey++)];
                                 }
                                 
-                                for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
+                                for (auto &act : functorMap)
                                 {
-                                        std::vector <std::string> paramkeys = act_it->second->getcontentsPtr()->getKeys();
-                                        for (std::vector<std::string>::iterator it = paramkeys.begin(); it != paramkeys.end(); it++)
+                                        auto paramkeys = act.second->getcontentsPtr()->getKeys();
+                                        for (auto &par : paramkeys)
                                         {
                                                 //std::cout << (act_it->first + "::" + *it) << "   " << parameterMap[act_it->first + "::" + *it] << std::endl;
-                                                act_it->second->getcontentsPtr()->setValue(*it, parameterMap[act_it->first + "::" + *it]);
+                                                act.second->getcontentsPtr()->setValue(par, parameterMap[act.first + "::" + par]);
                                         }
                                 }
                                 //getchar();
@@ -101,23 +91,22 @@ namespace Gambit
                         
                         void resetAll() 
                         {
-                                dependencyResolver->resetAll();
+                                dependencyResolver.resetAll();
                         }
-			
-                        virtual std::vector<double> & getParameters(){return realParameters;}
-                        virtual std::vector<std::string> & getKeys(){return prior->getShownParameters();}
-                        virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Scanner_Function_Base(){}
+                        
+                        const std::vector<double> & getParameters() const {return realParameters;}
+                        const std::vector<std::string> & getKeys() const {return prior.getShownParameters();}
                 };
 		
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-                        Scanner_Function (std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver *dependencyResolver, Priors::CompositePrior *prior, std::string purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) 
-                        {
-                        }
-			
-                        virtual double operator () (std::vector<double> &in)
+#ifndef NO_GCC_4_7
+                        using Scanner_Function_Base::Scanner_Function_Base;
+#else                        
+                        Scanner_Function (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
+#endif			
+                        double operator () (std::vector<double> &in)
                         {
                                 double ret = 0;
                                 
@@ -144,6 +133,8 @@ namespace Gambit
                                 return ret;
                         }
                 };
+                
+                LOAD_SCANNER_FUNCTION(Scanner_Function, Scanner_Function)
         }
 }
 

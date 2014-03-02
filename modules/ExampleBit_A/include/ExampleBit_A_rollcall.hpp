@@ -174,6 +174,40 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY doFarrayStuff 
+  START_CAPABILITY   
+    #define FUNCTION do_Farray_stuff
+    START_FUNCTION(double)
+      #define BACKEND_REQ libFarrayTestCommonBlock
+        START_BACKEND_REQ(libFarrayTest_CB_type, VAR)
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ libFarrayTest_printStuff
+        START_BACKEND_REQ(void)      
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ      
+      #define BACKEND_REQ libFarrayTest_set_d
+        START_BACKEND_REQ(void)      
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ      
+      #define BACKEND_REQ libFarrayTest_fptrRoutine
+        START_BACKEND_REQ(void)      
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ     
+      #define BACKEND_REQ libFarrayTest_doubleFuncArray1
+        START_BACKEND_REQ(double)      
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ    
+      #define BACKEND_REQ libFarrayTest_doubleFuncArray2
+        START_BACKEND_REQ(double)      
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ             
+      #define BACKEND_REQ libFarrayTest_doubleFunc
+        START_BACKEND_REQ(double)      
+        BACKEND_OPTION(LibFarrayTest)
+      #undef BACKEND_REQ                           
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

@@ -28,25 +28,24 @@
 namespace Gambit
 {
         namespace Scanner
-        {
-                Gambit_Scanner::Gambit_Scanner (Factory_Base *factory, IniFileInterface_Base *interface) : factory(factory), interface(interface)
-                {       
-                }
-                
+        { 
                 int Gambit_Scanner::Run()
                 {
-                        if (interface->fileName() == "")
+                        if (interface.fileName() == "")
                         {
                                 scanLog::err << "Did not specify module library path." << scanLog::endl;
-                                scanLog::err.print();
                         }
-                        std::string version = "";
-                        std::vector<void *> input(3);
-                        input[0] = (void *)(&factory->getKeys());
-                        input[1] = (void *)factory;
-                        input[2] = (void *)interface;
                         
-                        Plugin::Plugin_Interface<int ()> plugin_interface(interface->fileName(), interface->pluginName(), version, &input);
+                        std::string version = "";
+                        unsigned int dim = factory.getDim();
+                        auto keys = factory.getKeys();
+                        std::vector<void *> input(4);
+                        input[0] = (void *)(&dim);
+                        input[1] = (void *)(&keys);
+                        input[2] = (void *)&factory;
+                        input[3] = (void *)&interface;
+                        
+                        Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), version, &input);
                         scanLog::err.check();
 
                         outputHandler::out.redir("scanner");
