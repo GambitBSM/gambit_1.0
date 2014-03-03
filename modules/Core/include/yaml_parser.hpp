@@ -97,7 +97,7 @@ namespace Gambit
             result.push_back( node.first.as<std::string>() );
           }
 #else
-          for (auto it = options.begin(), end = options.end; it != end; ++it)
+          for (auto it = options.begin(), end = options.end(); it != end; ++it)
           {
             result.push_back( it->first.as<std::string>() );
           }
