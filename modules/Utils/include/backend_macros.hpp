@@ -36,6 +36,12 @@
 #include <dlfcn.h>
 #include <map>
 
+#include "util_macros.hpp"
+#include "util_types.hpp"
+#include "functors.hpp"
+#include "create_core.hpp"
+#include "backend_type_macros.hpp"
+
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/list/for_each.hpp>
 #include <boost/preprocessor/list/rest_n.hpp>
@@ -49,12 +55,6 @@
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/seq/to_tuple.hpp>
-
-#include "functors.hpp"
-#include "create_core.hpp"
-#include "util_macros.hpp"
-#include "util_types.hpp"
-#include "backend_type_macros.hpp"
 
 #if !BOOST_PP_VARIADICS
   #error Variadic Boost preprocessor macros required. BOOST_PP_VARIADICS must be set to 1.

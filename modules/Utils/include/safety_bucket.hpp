@@ -17,9 +17,9 @@
 #ifndef __safety_bucket_hpp__
 #define __safety_bucket_hpp__
 
-
 #include <iostream>
 #include <omp.h>
+
 #include "extern_core.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"

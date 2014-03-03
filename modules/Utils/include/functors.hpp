@@ -37,6 +37,7 @@
 #include <sstream>
 #include <algorithm>
 #include <omp.h>
+
 #include "util_types.hpp"
 #include "util_functions.hpp"
 #include "model_types.hpp"

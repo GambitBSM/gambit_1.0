@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  variadic utilty functions.
+///  Variadic utilty functions.
 ///
 ///  *********************************************
 ///
@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
 #include <yaml-cpp/yaml.h>
 
 namespace Gambit

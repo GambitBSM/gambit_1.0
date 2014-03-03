@@ -16,8 +16,8 @@
 ///
 ///  *********************************************
 
-#include "graphs.hpp"
 #include "backend_rollcall.hpp"
+#include "graphs.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "exceptions.hpp"
