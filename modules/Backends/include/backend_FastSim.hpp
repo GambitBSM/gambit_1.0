@@ -37,7 +37,9 @@ LOAD_LIBRARY
  * If left out (as done in some of the examples below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability") */
 
-BE_FUNCTION(initialize, void, (fast_sim::DetectorType), "_ZN8fast_sim7FastSim4initENS_12DetectorTypeE")
+//Greg:  Some wierd with this BE_FUNCTION call.  Will not compile, throws:
+//            error: expected constructor, destructor, or type conversion before ‘(’ token
+//BE_FUNCTION(initialize, void, (fast_sim::DetectorType), "_ZN8fast_sim7FastSim4initENS_12DetectorTypeE")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
 //BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 //BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
