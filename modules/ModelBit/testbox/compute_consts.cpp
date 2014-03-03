@@ -4,8 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-typedef std::string str;
+#include "util_types.hpp"
 
 template < class Type >
 inline std::ostream& operator << (std::ostream& os, const std::vector<Type>& v) 

@@ -48,6 +48,10 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkBit_PointInit_Default
       START_FUNCTION(void)
+      #define BACKEND_REQ dsinit
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY
 

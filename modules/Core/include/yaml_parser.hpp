@@ -5,20 +5,99 @@
 // Christoph Weniger (c.weniger@uva.nl)
 // June 2013
 //
+// modified: Gregory Martinez Feb 2014
+//
 //////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <yaml-cpp/yaml.h>
+#include <variadic_functions.hpp>
 
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__
+
+
 
 namespace Gambit
 {
   namespace IniParser
   {
+    /// Just a small wrapper object for the 'options' nodes which we extract
+    /// from the prior/likelihood/auxiliaries section of the inifile
+    class Options
+    {
+      public:
+        // Constructor
+        Options(YAML::Node optionsIN) : options(optionsIN) {} 
+
+        // Default constructor
+        Options() {}
+
+        //
+        // Getters for key/value pairs (this is all the options node should contain)
+        //
+        template <typename... args>
+        bool hasKey(args... keys) const
+        {
+          return getVariadicNode(options, keys...);
+        }
+
+        template<typename TYPE, typename... args> TYPE getValue(args... keys) const
+        {
+          const YAML::Node node = getVariadicNode(options, keys...);
+          if (node)
+            return node.as<TYPE>();
+          // else
+          std::cout << "ERROR: No options entry for " << stringifyVariadic(keys...) << std::endl;
+          std::cout << "(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)" << std::endl;
+          std::cout << "Contents of options:" << std::endl;
+          std::cout << options << std::endl;
+          exit(1);
+        }
+
+        // Dump contents of YAML::Node to cout
+        void dumpcontents() const
+        {
+            std::cout<<options<<std::endl;
+        }
+        
+        //Greg:  add a recursive option function for testing purposes.
+        const Options getOptions(std::string key) const
+        {
+          if (options[key]["options"])
+          {
+            return Options(options[key]["options"]);
+          }
+          else
+          {
+            return Options(options[key]);
+          }
+        }
+        
+        //Greg:  another function for recursion
+        const std::vector<std::string> getPriorNames() const
+        {
+          std::vector<std::string> result;
+          for (auto &node : options)
+          {
+            result.push_back( node.first.as<std::string>() );
+          }
+          return result;
+        }
+        
+      private:
+        YAML::Node options;
+    };
+  }
+}
+
+namespace Gambit
+{
+  namespace IniParser
+  {
+    class Options;
     // Structs corresponding to inifile
     namespace Types
     {
@@ -33,7 +112,7 @@ namespace Gambit
         std::string module;
         std::string backend;
         std::string version;
-        std::string options;
+        Gambit::IniParser::Options options;
         std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
         std::vector<Observable> backends; // ..deps of deps of deps of obs possible
       };
@@ -64,7 +143,8 @@ namespace YAML {
       READ(module)
       READ(backend)
       READ(version)
-      READ(options)
+      if (node["options"].IsDefined())
+          rhs.options = Gambit::IniParser::Options(node["options"]);
       #undef READ
       for(YAML::const_iterator it=node["dependencies"].begin();
           it!=node["dependencies"].end(); ++it)
@@ -99,47 +179,6 @@ namespace Gambit
     typedef Types::Observable ObservableType;
     // typedef Types::Parameter ParameterType;
 
-    /// Just a small wrapper object for the 'options' nodes which we extract from the prior section of the inifile
-    class Options
-    {
-      public:
-        // Constructor
-        Options(YAML::Node optionsIN) : options(optionsIN) {} 
-
-        // Default constructor
-        Options() {}
-
-        //
-        // Getters for key/value pairs (this is all the options node should contain)
-        //
-        bool hasKey(std::string key) const
-        {
-          return options[key];
-        }
-
-        template<typename TYPE> TYPE getValue(std::string key) const
-        {
-          if (options[key])
-            return options[key].as<TYPE>();
-          // else
-          std::cout << "ERROR: No options entry for " << key << std::endl;
-          std::cout << "(sorry, I can't tell you which prior this error comes from yet)" << std::endl;
-          std::cout << "Contents of options:" << std::endl;
-          std::cout << options << std::endl;
-          exit(1);
-        }
-
-        // Dump contents of YAML::Node to cout
-        void dumpcontents()
-        {
-            std::cout<<options<<std::endl;
-        }
-
-      private:
-        YAML::Node options;
-    };
-
-
     /// Main inifile class
     class IniFile
     {
@@ -163,58 +202,20 @@ namespace Gambit
         //
         // Getters for key/value section
         //
-        bool hasKey(std::string key) const
+        
+        template <typename... args>
+        bool hasKey(args... keys) const
         {
-          return keyValuePairNode[key];
+                return getVariadicNode(keyValuePairNode, keys...);
         }
 
-        bool hasKey(std::string s1, std::string s2) const
+        template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
-          return keyValuePairNode[s1][s2];
-        }
+          const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
+          if (node)
+            return node.as<TYPE>();
 
-        bool hasKey(std::string s1, std::string s2, std::string s3) const
-        {
-          return keyValuePairNode[s1][s2][s3];
-        }
-
-        bool hasKey(std::string s1, std::string s2, std::string s3, std::string s4) const
-        {
-          return keyValuePairNode[s1][s2][s3][s4];
-        }
-
-        template<typename TYPE> TYPE getValue(std::string key) const
-        {
-          if (keyValuePairNode[key])
-            return keyValuePairNode[key].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " << key << std::endl;
-          exit(1);
-        }
-
-        template<typename TYPE> TYPE getValue(std::string key, std::string subkey) const
-        {
-          if (keyValuePairNode[key][subkey])
-            return keyValuePairNode[key][subkey].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " <<
-            key << "." << subkey << std::endl;
-          exit(1);
-        }
-
-        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3) const
-        {
-          if (keyValuePairNode[s1][s2][s3])
-            return keyValuePairNode[s1][s2][s3].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " << 
-            s1 << "." << s2 << "." << s3 << std::endl;
-          exit(1);
-        }
-
-        template<typename TYPE> TYPE getValue(std::string s1, std::string s2, std::string s3, std::string s4) const
-        {
-          if (keyValuePairNode[s1][s2][s3][s4])
-            return keyValuePairNode[s1][s2][s3][s4].as<TYPE>();
-          std::cout << "ERROR: No inifile entry for " << 
-            s1 << "." << s2 << "." << s3 << "." << s4 << std::endl;
+          std::cout << "ERROR: No inifile entry for [" << stringifyVariadic(keys...) << "]" << std::endl;
           exit(1);
         }
 
@@ -260,6 +261,31 @@ namespace Gambit
           return result;
         }
 
+        // Greg: added getOptions
+        const Options getOptions(std::string key) const
+        {
+          if (hasKey(key, "options"))
+          {
+            return Options(keyValuePairNode[key]["options"]);
+          }
+          else
+          {
+            return Options(keyValuePairNode[key]);
+          }
+        }
+        
+        // Greg:  added getParameterOptions function
+        const Options getParameterOptions(std::string model, std::string param) const
+        {
+          if (hasModelParameterEntry(model, param, "options"))
+          {
+            return Options(parametersNode[model][param]["options"]);
+          }
+          else
+          {
+            return Options(parametersNode[model][param]);
+          }
+        }
         // Ben: added 'priors' section. Need to extract this format of data:
 
         // m12_prior: 
@@ -346,12 +372,45 @@ namespace Gambit
           }
           return result;
         }
+        
+        //
+        // Getters for scanner section
+        //
+        
+        template <typename... args>
+        bool hasScannerKey(args... keys) const
+        {
+          return getVariadicNode(scannerNode, keys...);
+        }
+
+        template<typename TYPE, typename... args> TYPE getScannerValue(args... keys) const
+        {
+          const YAML::Node node = getVariadicNode(scannerNode, keys...);
+          if (node)
+            return node.as<TYPE>();
+
+          std::cout << "ERROR: No inifile entry for [" << stringifyVariadic(keys...) << "]" << std::endl;
+          exit(1);
+        }
+        
+        const Options getScannerOptions(std::string key) const
+        {
+          if (hasKey(key, "options"))
+          {
+            return Options(scannerNode[key]["options"]);
+          }
+          else
+          {
+            return Options(scannerNode[key]);
+          }
+        }
 
 
       private:
         YAML::Node keyValuePairNode;
         YAML::Node parametersNode;
         YAML::Node priorsNode;
+        YAML::Node scannerNode;
         // Central inifile structures: observables and scan parameteres 
         ObservablesType observables;
         ObservablesType auxiliaries;

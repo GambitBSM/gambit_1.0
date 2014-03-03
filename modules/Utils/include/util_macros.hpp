@@ -37,6 +37,15 @@
 /// @{
 #define STRINGIFY(X) STRINGIFY2(X)
 #define STRINGIFY2(X) #X
+/// Stringification macros that can stringify arguments with commas
+#define SAFE_STRINGIFY(...) SAFE_STRINGIFY2(__VA_ARGS__)
+#define SAFE_STRINGIFY2(...) #__VA_ARGS__
+/// @}
+
+/// \name Macro returning all but the first argument passed
+/// @{
+#define REMFIRST(A1,...) REMFIRST_I(A1,##__VA_ARGS__)
+#define REMFIRST_I(A1,...) (__VA_ARGS__)
 /// @}
 
 /// \name Concatenation macros
@@ -50,6 +59,90 @@
 #define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
 #define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
 #define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
+/// @}
+
+/// \name Macro chain for stripping parantheses off an argument
+/// Usage: STRIP_PARENS(x). Example: STRIP_PARENS((y,z)) expands to y,z
+/// @{
+#define APPLY(macro, args) APPLY_I(macro, args) 
+#define APPLY_I(macro, args) macro args 
+#define STRIP_PARENS(x) EVAL_PAR((STRIP_PARENS_I x), x) 
+#define STRIP_PARENS_I(...) 1,1 
+#define EVAL_PAR(test, x) EVAL_PAR_I(test, x) 
+#define EVAL_PAR_I(test, x) MAYBE_STRIP_PARENS(TEST_ARITY test, x) 
+#define TEST_ARITY(...) APPLY(TEST_ARITY_I, (__VA_ARGS__, 2, 1)) 
+#define TEST_ARITY_I(a,b,c,...) c 
+#define MAYBE_STRIP_PARENS(cond, x) MAYBE_STRIP_PARENS_I(cond, x) 
+#define MAYBE_STRIP_PARENS_I(cond, x) CAT(MAYBE_STRIP_PARENS_, cond)(x) 
+#define MAYBE_STRIP_PARENS_1(x) x 
+#define MAYBE_STRIP_PARENS_2(x) APPLY(MAYBE_STRIP_PARENS_2_I, x) 
+#define MAYBE_STRIP_PARENS_2_I(...) __VA_ARGS__
+/// @}
+
+/// \name Macro chain checking if the argument has parantheses
+/// Usage: STRIP_PARENS(x). Example: STRIP_PARENS((y,z)) expands to y,z
+/// @{
+#define HAS_PARENS(x) EVAL_HASP((HAS_PARENS_I x), x) 
+#define HAS_PARENS_I(...) 1,1 
+#define EVAL_HASP(test, x) EVAL_HASP_I(test, x) 
+#define EVAL_HASP_I(test, x) CHECK_PARENS(TEST_ARITY test, x) 
+#define CHECK_PARENS(cond, x) CHECK_PARENS_I(cond, x) 
+#define CHECK_PARENS_I(cond, x) CAT(CHECK_PARENS_, cond)(x) 
+#define CHECK_PARENS_1(x) 0
+#define CHECK_PARENS_2(x) 1
+/// @}
+
+/// \name Macro chain checking if the argument(s) passed has commas. Accepts up to 128 arguments.
+/// Example: HAS_COMMA(1,2,3) expands to 1; HAS_COMMA(1) expands to 0
+/// @{
+#define _ARG128(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, 						\
+_16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, 							\
+_32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, 							\
+_48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, 							\
+_64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75, _76, _77, _78, _79, 							\
+_80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, _92, _93, _94, _95, 							\
+_96, _97, _98, _99, _100, _101, _102, _103, _104, _105, _106, _107, _108, _109, 							\
+_110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127, ...) _127
+
+#define HAS_COMMA(...) _ARG128(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,									\
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 												\
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+/// @}
+
+/// \name Macro chain checking if the argument passed is empty
+/// Example: ISEMPTY() expands to 1; ISEMPTY(1,2,3) expands to 0
+/// @{
+#define ISEMPTY(...) _ISEMPTY( 	HAS_COMMA(__VA_ARGS__), HAS_COMMA(_TRIGGER_PARENTHESIS_ __VA_ARGS__),       \
+          						HAS_COMMA(__VA_ARGS__ ()), HAS_COMMA(_TRIGGER_PARENTHESIS_ __VA_ARGS__ ()))
+
+#define _TRIGGER_PARENTHESIS_(...) ,
+#define PASTE5(_0, _1, _2, _3, _4) _0 ## _1 ## _2 ## _3 ## _4
+#define _ISEMPTY(_0, _1, _2, _3) HAS_COMMA(PASTE5(_IS_EMPTY_CASE_, _0, _1, _2, _3))
+#define _IS_EMPTY_CASE_0001 ,
+/// @}
+
+/// \name Macro that expands to the argument list with a comma in front if the argument list is not empty.
+/// If the agrument list is empty, expands to nothing.
+/// @{
+#define INSERT_NONEMPTY(...) CAT(INSERT_NONEMPTY_I,ISEMPTY(__VA_ARGS__))(__VA_ARGS__)
+#define INSERT_NONEMPTY_I0(...) ,__VA_ARGS__
+#define INSERT_NONEMPTY_I1(...)
+/// @}
+
+
+
+
+/// \name Boost 2-tuple access macros
+/// Used to avoid possible reentrancy issues with multiple use of BOOST_PP_TUPLE_ELEM.
+/// @{
+#define PAIR_ELEMENT0(TPLE) PAIR_ELEMENT0_I TPLE
+#define PAIR_ELEMENT0_I(A,B) A 
+#define PAIR_ELEMENT1(TPLE) PAIR_ELEMENT1_I TPLE
+#define PAIR_ELEMENT1_I(A,B) B 
 /// @}
 
 /// \name Type comparison macros

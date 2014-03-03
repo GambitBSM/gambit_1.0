@@ -11,52 +11,99 @@
 //  (add name and date if you modify)
 //
 ///  \author Gregory Martinez (gregory.david.martinez@gmail.com)
-///  \date July 2013
+///  \date July 2013/feb 2014
 //
 //  *********************************************
 
 #ifndef __scanner_utils_hpp__
 #define __scanner_utils_hpp__
 
-#include <string>
-#include <cstdio>
-#include <cstdlib>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <scanlog.hpp>
+#include <outputhandler.hpp>
+#include <type_traits>
+#include <utility>
+#include <ostream>
+#include <sstream>
+#include <unordered_map>
+
+#define REGISTER(reg_map, tag, ...)                                                                             \
+namespace __gambit_registry__                                                                                   \
+{                                                                                                               \
+        namespace                                                                                               \
+        {                                                                                                       \
+                template<>                                                                                      \
+                class __create_class__ < __VA_ARGS__ >                                                          \
+                {                                                                                               \
+                public:                                                                                         \
+                        __create_class__(decltype(reg_map) &creators)                                           \
+                        {                                                                                       \
+                                creators[ #tag ] = __create_class__< __VA_ARGS__ >::init;                       \
+                        }                                                                                       \
+                                                                                                                \
+                        template<typename T, typename... args>                                                  \
+                        static T *init(args&&... params)                                                        \
+                        {                                                                                       \
+                                return static_cast<T *>(new __VA_ARGS__ (std::forward<args>(params)...));       \
+                        }                                                                                       \
+                };                                                                                              \
+                                                                                                                \
+                template <>                                                                                     \
+                __create_class__ < __VA_ARGS__ > __reg_init__ < __VA_ARGS__ >::reg(reg_map);                    \
+        }                                                                                                       \
+}                                                                                                               \
+
+#define registry                                                \
+namespace __gambit_registry__                                   \
+{                                                               \
+        namespace                                               \
+        {                                                       \
+                template <class T>                              \
+                class __create_class__ {};                      \
+                                                                \
+                template <class T>                              \
+                struct __reg_init__                             \
+                {                                               \
+                        static __create_class__ <T> reg;        \
+                };                                              \
+        }                                                       \
+}                                                               \
+                                                                \
+namespace                                                       \
 
 namespace Gambit
 {
-        namespace Scanner
+        template <typename T>
+        class reg_elem : public std::unordered_map<std::string, T *>
         {
-                const unsigned char missingParameter = 0x01;
-                const unsigned char missingModel = 0x02;
-                const unsigned char tooManyModels = 0x04;
-                const unsigned char tooManyParamters = 0x08;
-                const unsigned char noRange = 0x10;
-                const unsigned char cyclicSames = 0x20;
-                const unsigned char badSames = 0x40;
-
-                const unsigned char dummyParam = 0x01;
-                const unsigned char fixedParam = 0x02;
-                const unsigned char singleParam = 0x04;
-                const unsigned char multiParam = 0x08;
-                const unsigned char fixedMultiParam = 0x10;
+        private:
                 
-                inline FILE *LaunchLogWindow(std::string &file)
+        public:
+                std::string print()
                 {
-                        char *name = tempnam(NULL, NULL);
-                        mkfifo(name, 0777);
-                        if(fork() == 0)
+                        std::ostringstream out;
+                        
+                        out << "The options are:  \n";
+                        for (auto &elem : *this)
                         {
-                                std::string cmd = std::string("xterm -T ") + file +  std::string(" -e cat ") + std::string(name);
-                                std::system(cmd.c_str());
-                                abort();
+                                out << "\t" << elem.first << "\n";
                         }
-                        return fopen(name, "w");
+                        
+                        return out.str();
                 }
         };
-};
+        
+        namespace Scanner
+        {       
+                namespace outputHandler
+                {
+                        extern OutputHandler out;
+                }
+        }
+        
+        namespace scanLog
+        {
+                extern ErrorLog err;
+        }
+}
 
 #endif

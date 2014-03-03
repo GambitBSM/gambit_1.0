@@ -24,10 +24,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <gambit_module.hpp>
-#include "priors.hpp"
-#include <typeinfo>
-#include <cxxabi.h>
+#include <plugin/scanner_plugin.hpp>
 
 // Auxilliary classes and functions needed by multinest
 // (cloned largely from eggbox.cc, and modified to use cwrapper.f90 interface instead of multinest.h)
@@ -50,8 +47,6 @@ namespace Gambit {
          private:
             // Pointer to a ScannerBit::Function_Base
             ::Gambit::Scanner::Function_Base *boundLogLike;
-            // Pointer to the object containing the prior transformation
-            const ::Gambit::Priors::BasePrior *boundPrior;
             // Number of free parameters
             int my_ndim;
             // Parameter keys (names)
@@ -62,8 +57,8 @@ namespace Gambit {
   
             // Constructor
             // Possibly replace the function pointer to the prior function with something nicer, some virtual base class object or something.
-            LogLikeWrapper(::Gambit::Scanner::Function_Base* LogLike, const ::Gambit::Priors::BasePrior* prior, int ndim, const std::vector<std::string>& keys) 
-              : boundLogLike(LogLike), boundPrior(prior), my_ndim(ndim), parameter_keys(keys)
+            LogLikeWrapper(::Gambit::Scanner::Function_Base* LogLike, int ndim, const std::vector<std::string>& keys) 
+              : boundLogLike(LogLike), my_ndim(ndim), parameter_keys(keys)
             { }
    
             /******************************************** loglikelihood routine ****************************************************/
@@ -85,42 +80,26 @@ namespace Gambit {
             double LogLike(double *Cube, int ndim, int npars)
             {
                    // We need to get the unit interval parameters out of "Cube", transform them to their physical values, and then pass them to the Scanner LogLike function to compute the log likelihood value
-                   std::map<std::string,double> unitpars; 
+                   std::map<std::string,double> unitpars(Cube, Cube + ndim); //convert C style array to C++ vector class
                    std::map<std::string,double> physicalpars;
                    double lnew;
                    int i;
                    // TODO: error
                    if (ndim!=my_ndim) {std::cout<<"ndim!=my_ndim in multinest LogLike function!"<<std::endl; exit(1);}
                    if (ndim!=parameter_keys.size()) {std::cout<<"ndim!=parameter_keys.size() in multinest LogLike function!"<<std::endl; exit(1);}
-
-                   // Extra unit hypercube parameters from Cube
-                   for(i = 0; i < ndim; i++)
-                   {
-                      unitpars[parameter_keys[i]] = Cube[i];
-                      std::cout<<parameter_keys[i]<<" = "<<unitpars[parameter_keys[i]]<<std::endl;
-                   }
- 
-                   if (boundPrior==NULL) {std::cout<<"null pointer!"<<std::endl;}
-                   // Transform hypercube parameters to physical values
-                   physicalpars = boundPrior->transform(unitpars);
-   
-                   // Compute log-likelihood
-                   // TODO: Greg, physicalpars is now a map; can we change what boundLogLike accepts? There are probably a few things you might want to change about how this works actually. For now I'll pull the physical values out into a vector again
-                   std::vector<double> phys_vals_as_vector;
-                   for( std::map<std::string,double>::iterator it = physicalpars.begin(); it != physicalpars.end(); ++it ) {
-    	              phys_vals_as_vector.push_back( it->second );
-                   }
-
+                   
                    // WANT TO DO THIS:
              	   //lnew = (*boundLogLike)(physicalpars);
                    // BUT FOR NOW HAVE TO DO THIS:
-                   lnew = (*boundLogLike)(phys_vals_as_vector); 
+                   lnew = boundLogLike(unitpars); 
+                   //get transformed parameters.
+                   physicalpars = boundLogLike->getParameters();
 
                    // Write the physical parameters back into Cube for multinest to write to output file (no other purpose)
                    // (at this point any extra observables that have been computed could also be added to Cube for transfer to the multinest-controlled output files. Must be sufficiently many slots reserved in Cube for this.
                    for(i = 0; i < ndim; i++)
                    {
-                      Cube[i] = physicalpars[parameter_keys[i]];
+                      Cube[i] = physicalpars[i];
                    }
 
                    // Done! (lnew will be used by MultiNest to guide the search)
@@ -220,26 +199,16 @@ namespace Gambit {
 
 // Interface to ScannerBit
 
-SCANNER_PLUGIN (multinest)
+scanner_plugin (multinest)
 {
-        VERSION(1.0-beta);
-        using namespace Gambit::Scanner;
-
-        int PLUGIN_MAIN ()
+        int plugin_main ()
         {
-                std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
-                std::vector<double> &upper_limits  = get_input_value<std::vector<double>>(1);
-                std::vector<double> &lower_limits  = get_input_value<std::vector<double>>(2);
-                std::vector<std::pair<double,double>> ranges; //Stick limits in here
+                std::vector<std::string> &keys     = get_keys();
 
                 //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
 
                 // Have to discuss with Greg the best thing to do here.
-                Function_Base *LogLike             = GETFUNCTOR("Scanner_Function", "Likelihood");
-                //Function_Base *LogLike             = (Function_Base *)(get_input_value<Function_Factory_Base>(3))("Scanner_Function", get_inifile_value<std::string>("like"));
-                // TODO: Ben - just kinda hacked this in here, might be a nicer way to do it.
-                ::Gambit::Priors::BasePrior* prior = GETPRIOR()
-
+                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
                 int ma = keys.size();
 
                 // set the MultiNest sampling parameters 
@@ -278,7 +247,7 @@ SCANNER_PLUGIN (multinest)
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
                 // NOTE 2: Prior creation now shifted into ModelBit! Pointer to a prior object must wind up here somehow!
                 // WANT TO DO THIS:
-                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, prior, ndims, keys);
+                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, ndims, keys);
                 // // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
                 // std::vector< ::Gambit::Priors::BasePrior* > subpriors;
                 // std::pair<double,double> unit_range(0,1);
@@ -306,5 +275,5 @@ SCANNER_PLUGIN (multinest)
                 return 0;
 
         }  //end module_main
-};
+}
 

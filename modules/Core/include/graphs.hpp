@@ -34,12 +34,14 @@
 #include "functors.hpp"
 #include "yaml_parser.hpp"
 
-using namespace boost;
+//using namespace boost;
 
 namespace Gambit
 {
   namespace Graphs
   {
+
+    using namespace boost;
     // Typedefs for central boost graph
     typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
@@ -112,7 +114,7 @@ namespace Gambit
         void addFunctors();
 
         // Resolution of individual module function dependencies
-        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
+        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
           resolveDependency(Graphs::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree

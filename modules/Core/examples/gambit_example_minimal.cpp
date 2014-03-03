@@ -22,8 +22,12 @@
 #include "model_rollcall.hpp"
 #include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
-#include "priorfactory.hpp"
+#include <gambit_scan.hpp>
+#include <priorfactory.hpp>
+#include <priors.hpp>
+#include <scanner_factory.hpp>
+#include <inifile_interface.hpp>
+#include <test_factory.hpp>
 
 using namespace Gambit;
 
@@ -42,14 +46,14 @@ void beispiel(const char* inifilename)
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
-  cout << "Your selected models are: " << selectedmodels << endl;
+  //cout << "Your selected models are: " << selectedmodels << endl;
   
   // Build prior object based on inifile instructions
-  Priors::PriorManager priorManager(iniFile);
+  //Priors::PriorManager priorManager(iniFile);
 
   // Extract a pointer to the prior object, so that it can be passed to the Scanner.
   // Could do this via the Core instead, perhaps.
-  Priors::BasePrior* prior = priorManager.getprior();
+  //Priors::BasePrior* prior = priorManager.getprior();
 
   // Activate "primary" model functors
   modelClaw.activatePrimaryModels(selectedmodels);
@@ -82,10 +86,24 @@ void beispiel(const char* inifilename)
   // visualisation purposes only.
   modelClaw.makeGraph();
  
+  //Let's define the prior
+  Gambit::Priors::CompositePrior prior(iniFile);
+  //Let's define the scanner factory
+  auto factory_func = [&]()->Gambit::Scanner::Factory_Base *
+  {
+    if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
+      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile);
+    else
+      return new Gambit::Scanner::Scanner_Function_Factory (Core, dependencyResolver, prior);
+  };
+  
+  Gambit::Scanner::Factory_Base *factory = factory_func();
+  //Let's define the iniFile interface
+  Gambit::Scanner::IniFileInterface interface(iniFile);
   //Let's run the scanner!
-  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(Core, iniFile, prior, dependencyResolver);
-  cout << "keys = " << scanner->getKeys() << endl;
-  cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+  Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
+  //cout << "keys = " << scanner->getKeys() << endl;
+  //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
   scanner->Run();
   
   // Run 100 times

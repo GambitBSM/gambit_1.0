@@ -22,6 +22,10 @@
 #include "SLHA_types.hpp"
 #include "DarkSUSY_types.hpp"
 #include "SuperIso_types.hpp"
+#include "libFarrayTest_types.hpp"
+
+// by Aldo
+#include "FastSim_types.hpp"
 
 #endif //__backend_types_rollcall_hpp__
 

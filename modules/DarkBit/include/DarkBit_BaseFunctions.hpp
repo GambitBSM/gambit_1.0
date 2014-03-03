@@ -45,7 +45,7 @@ namespace Gambit
     {
         public:
             // Verbose constructor and destructor
-            BaseFunction(std::string name, int ndim)
+            BaseFunction(std::string name, int ndim) : cachingFlag(false), integratorFlag(false)
             {  
                 this->name = name;
                 this->ndim = ndim;
@@ -61,13 +61,69 @@ namespace Gambit
 
             // Call by list of arguments; up to six dimensions for now (for
             // convenience)
-            double operator() () { assertNdim(0); BFargVec v {}; return this->value(v); }
-            double operator() (double x0) { assertNdim(1); BFargVec v {x0}; return this->value(v); }
-            double operator() (double x0, double x1) { assertNdim(2); BFargVec v {x0, x1}; return this->value(v); }
-            double operator() (double x0, double x1, double x2) { assertNdim(3); BFargVec v {x0, x1, x2}; return this->value(v); }
-            double operator() (double x0, double x1, double x2, double x3) { assertNdim(4); BFargVec v {x0, x1, x2, x3}; return this->value(v); }
-            double operator() (double x0, double x1, double x2, double x3, double x4) { assertNdim(5); BFargVec v {x0, x1, x2, x3, x4}; return this->value(v); }
-            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) { assertNdim(6); BFargVec v {x0, x1, x2, x3, x4, x5}; return this->value(v); }
+            double operator() () 
+            { 
+                assertNdim(0); 
+                BFargVec v; 
+                return this->value(v); 
+            }
+            double operator() (double x0) 
+            { 
+                assertNdim(1); 
+                BFargVec v;
+                v.push_back(x0); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1)
+            { 
+                assertNdim(2); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2)
+            { 
+                assertNdim(3); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3)
+            { 
+                assertNdim(4); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3, double x4) 
+            { 
+                assertNdim(5); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                v.push_back(x4); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) 
+            { 
+                assertNdim(6); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                v.push_back(x4); 
+                v.push_back(x5); 
+                return this->value(v); 
+            }
 
             // Returns a copy of the shared pointer object.
             BFptr getCopy()  { return shared_from_this(); }  
@@ -125,8 +181,8 @@ namespace Gambit
             }
 
             // Internal flags.
-            bool cachingFlag = false;  // TODO: Implement caching (at GAMBIT level)
-            bool integratorFlag = false;  // True if implementation of abstract base class has its own integrator
+            bool cachingFlag;  // TODO: Implement caching (at GAMBIT level)
+            bool integratorFlag;  // True if implementation of abstract base class has its own integrator
 
             // Number of dimensions
             int ndim;
@@ -204,14 +260,16 @@ namespace Gambit
         private:
             double value(const BFargVec &args)
             {
-                if (this->hasIntegrator())
+                // If integrand has its own integrator, use it
+                if (integrand->hasIntegrator())
                 {
-                    return this->integrator(args, index, x0, x1);
+                    return integrand->integrator(args, index, x0, x1);
                 }
                 else
                 {
                     // TODO: Implement integral over x_index, from x0 to x1 
-                    return 0;  
+                    std::cout << "ERROR: Integration not yet implemented in general." << std::endl;
+                    exit(1);
                 }
             }
             double x0, x1;
@@ -310,8 +368,8 @@ namespace Gambit
                 // Simple trapezoidal integration in log-log space
                 double sum = 0;
                 if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
-                int i0 = 0; for (; Xgrid[i0] > E0; i0++) {};  // E[i0] > E0
-                int i1 = 0; for (; Xgrid[i1] > E1; i1++) {};  // E[i1] > E1
+                int i0 = 0; for (; Xgrid[i0] < E0; i0++) {};  // E[i0] > E0
+                int i1 = 0; for (; Xgrid[i1] < E1; i1++) {};  // E[i1] > E1
                 double x0 = E0;
                 double y0 = this->operator()(E0);  // Get interpolated value
                 for (int i = i0; i < i1; i++)
@@ -319,14 +377,14 @@ namespace Gambit
                     double x1 = Xgrid[i];
                     double y1 = Ygrid[i];
                     sum += (x1-x0)*(y0+y1)/2;
-                    double x0 = x1;
-                    double y0 = y1;
+                    x0 = x1;
+                    y0 = y1;
                 }
                 double x1 = E1;
                 double y1 = this->operator()(E1);
-                //sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
-                double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
-                sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
+                sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
+                //double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
+                //sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
                 return sum;
             }
 
@@ -346,6 +404,112 @@ namespace Gambit
 
             std::vector<double> Xgrid;
             std::vector<double> Ygrid;
+    };
+
+    //
+    // Implementations of physical functions
+    //
+
+    class DMradialProfile: public BaseFunction
+    {
+        public:
+            DMradialProfile(std::string type, int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
+            {
+                if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim"
+                        " density function.");
+
+                if (type == "NFW")
+                {
+                    if (pars.size() != 2) failHard("NFW profile requires two parameters (scale radius and scale density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->ptrF = &DMradialProfile::NFW;
+                }
+
+                if (type == "Einasto")
+                {
+                    if (pars.size() != 3) failHard("Einasto profile requires three parameters (alpha, scale radius and scale"
+                            " density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->alpha = pars[2];
+                    this->ptrF = &DMradialProfile::Einasto;
+                }
+
+               if (type == "isothermal")
+                {
+                    if (pars.size() != 2) failHard("Cored isothermal profile requires two parameters (scale radius and scale density).");
+                    this->rs = pars[0];
+                    this->rhos = pars[1];
+                    this->ptrF = &DMradialProfile::isothermal;
+                }
+
+
+               if (type == "alpha-beta-gamma")
+               {
+                   if (pars.size() != 5) failHard("alpha-beta-gamma profile requires five parameters (alpha, beta, gamma, scale radius"
+                           "and scale density).");
+                   this->rs = pars[0];
+                   this->rhos = pars[1];
+                   this->alpha = pars[2];
+                   this->beta = pars[3];
+                   this->gamma = pars[4];
+                   this->ptrF = &DMradialProfile::alphaBetaGamma;
+               }
+            }
+
+          private:
+            // Redirection to profiles
+            double value(const BFargVec &vec)
+            {
+                if (ndim == 1)
+                {
+                    return (this->*ptrF)(vec[0]);
+                }
+                else
+                {
+                    double r = 0;
+                    for (int i = 0; i < ndim; i++)
+                    {
+                        r += vec[i] * vec[i];
+                    }
+                    r = sqrt(r);
+                    return (this->*ptrF)(r);
+                }
+            }
+
+            // Dark matter profile parameters
+            double rs;  // Scale radius [kpc]
+            double rhos;  // Scale density [GeV/cm^3]
+            double alpha, beta, gamma; // Exponents
+
+            // Dimensionality (either 1 or 3)
+            int ndim;
+
+            // Pointer to member function that implements DM profile
+            double (DMradialProfile::*ptrF)(double);
+
+            // The profiles
+            double NFW(double r)
+            {
+              return (4. * rhos / (r/rs) / (1.+r/rs) / (1.+r/rs));
+            }
+
+            double Einasto(double r)
+            {
+              return (rhos * exp((-2. / alpha) * (pow((r / rs), alpha) - 1.)));
+            }
+
+            double isothermal(double r)
+            {
+              return (2. * rhos / (1. + (r/rs)*(r/rs)));
+            }
+
+            double alphaBetaGamma(double r)
+            {
+              return (pow(2., (beta - gamma) / alpha) * rhos / pow(r / rs, gamma) * pow(1 + pow(r / rs, alpha), (gamma - beta) / alpha));
+            }
+
     };
   }
 }

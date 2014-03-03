@@ -12,6 +12,8 @@
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///    \date 2013 Dec
+//  //  Aldo Saavedra
+//  //  2014 March 2nd
 ///
 ///  *********************************************
 
@@ -22,8 +24,8 @@
 #include <numeric>
 
 #include "gambit_module_headers.hpp"
-#include "HEColliderBit_rollcall.hpp"
 #include "HEColliderBit_types.hpp"
+#include "HEColliderBit_rollcall.hpp"
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
@@ -139,7 +141,7 @@ namespace Gambit {
     }
 
     /// Standard Event Format Functions
-    void reconstructDelphesEvent(Event &result) {
+    void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
       result.clear();
       /// Feed the Pythia8 event to Delphes for detector simulation
@@ -151,7 +153,7 @@ namespace Gambit {
       }
     }
 
-    void convertPythia8Event(Event &result) {
+    void convertPythia8Event(HEP_Simple_Lib::Event &result) {
       using namespace Pipes::convertPythia8Event;
       result.clear();
       /// Feed the Pythia8 event to the converter

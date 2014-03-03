@@ -235,6 +235,14 @@ namespace Gambit
       exit(1);
     }
 
+    /// Notify the functor about an instance of the options class that contains
+    /// information from its corresponding ini-file entry in the auxiliaries or
+    /// observables section.
+    void functor::notifyOfIniOptions(const IniParser::Options & opt)
+    {
+      myOptions = opt;
+    }
+
     /// Test whether the functor is allowed to be used with a given model 
     bool functor::modelAllowed(str model)
     {
@@ -242,6 +250,12 @@ namespace Gambit
       str parent = find_allowed_parent_model(model);
       if (allowedModels.find(parent) != allowedModels.end()) return true;
       return false;        
+    }
+
+    /// Test whether the functor is allowed to be used with all models
+    bool functor::allModelsAllowed()
+    {
+      return allowedModels.empty();
     }
 
     /// Add a model to the internal list of models for which this functor is allowed to be used.

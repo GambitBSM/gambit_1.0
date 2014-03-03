@@ -18,23 +18,21 @@
 
 CMSSM_I:
   A0:
-    fixed: true
     range: [-1000, 1000]
   M0:
-    fixed: true
+    prior_type: log
+    range: [0.001,1000]
   M12:
-    fixed: true
-    same_as: CMSSM_I::M0
+    #same_as: CMSSM_I::M0
   Mstop:
-    fixed: true
-    same_as: CMSSM_I::M12
+    #same_as: CMSSM_I::M12
   sgnmu:
-    fixed: true
-    fixed_value: 1.5
+     range: [-1, 1]
+     fixed_value: 1
   tanb:
-    fixed: true
 # Ben: this was in the old inifile: I don't know what it does 
-  param_not_in_gambit:
+#  param_not_in_gambit:
+    # range: [-1, 1]
 
 # The "adhoc" model bypasses ModelBit and produces some model parameter nodes
 # on the fly. This can be used for testing purposes.
@@ -72,23 +70,58 @@ adhoc:
 # the likelihood itself (since it is NOT a likelihood). Actually, I think we
 # decided that we can deal with this via the "purpose" system.
 
-m0_prior:
-  parameters: [CMSSM_I::M0]
-  type: log
-  range: [0,1000]
+#m0_prior:
+#  parameters: [CMSSM_I::M0]
+#  prior_type: log
+#  range: [0.001,1000]
 
 m12_prior: 
   parameters: [CMSSM_I::M12]
-  type: log
-  range: [100,2000]
+  prior_type: composite
+  options: 
+    new_prior: 
+      parameters: [CMSSM_I::M12]
+      prior_type: log
+      range: [100,2000]
 
-tanbMstop_prior:
+tanbMstop_prior: 
   parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
-  type: 2d_gaussian
+  prior_type: cauchy
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
     demo: 45
 
+##############################
+--- # Scanner setup
+##############################
+
+scanner:
+  plugin:  crapsample
+  file_path:  ScannerBit/lib/libsample.so
+
+#scanner:
+#  module:  multinest
+#  file_path:  ScannerBit/lib/libmultinest_interface.so
+    
+enable_redirect: true
+
+redirect_output:
+   scanner:  xterm
+#   error:  test_errors
+    
+crapsample:
+  point_number: 10
+  output_file:  output
+  like:  Likelihood
+
+loopsample:
+  point_number: 10
+  output_file:  output
+  like:  Likelihood
+  
+multnest:
+  output_file:  output
+    
 ###############################
 #--- # Printer (output) setup
 ###############################
@@ -170,28 +203,13 @@ another_key:
   subkey3:
     subsubkey1: value2
 
-scanner:
-  module:  crapsample
-  file_path:  ScannerBit/lib/libsample.so
-
-#scanner:
-#  module:  multinest
-#  file_path:  ScannerBit/lib/libmultinest_interface.so
+enable_testing: false
+test_function: uniform
     
-enable_redirect: false
-
-redirect_output:
-   CMSSM_I:  xterm
-    
-crapsample:
-  point_number: 10
-  output_file:  output
-  like:  Likelihood
-
-loopsample:
-  point_number: 10
-  output_file:  output
-  like:  Likelihood
-  
-multnest:
-  output_file:  output
+uniform:
+  dim: 2
+  priors:
+    gauss_prior:
+      parameters: [0, 1]
+      options:
+        cov: [[1, 0], [0, 1]]

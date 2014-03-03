@@ -1,0 +1,49 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  declaration for scanner module
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+//
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date Feb 2014
+///
+///  *********************************************
+
+#ifndef DUMMY_PRIOR_HPP
+#define DUMMY_PRIOR_HPP
+
+namespace Gambit
+{
+   namespace Priors
+   {
+        class Dummy : public BasePrior
+        {
+        private:
+                std::vector<std::string> param_names;
+                
+        public: 
+                // Constructor
+                Dummy(const std::vector<std::string>& param, const IniParser::Options& options) : BasePrior(param.size()), param_names(param)
+                { 
+                }
+                
+                void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
+                {
+                        auto it_vec = unitpars.begin();
+                        for (auto &par : param_names)
+                        {
+                                outputMap[par] = *(it_vec++);
+                        }
+                }
+        };
+        
+        LOAD_PRIOR(dummy, Dummy)
+   }
+}
+
+#endif

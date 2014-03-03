@@ -138,7 +138,21 @@ namespace Gambit
       }
       
       result = loglTotal;
-    }  
+    }
+
+    /// Fastsim test function
+    /// 
+    /*void fastsim (int value)
+    {
+      //using namespace Pipes::fastsim;      
+
+
+      cout<<"  calling fastsim "<<endl;
+    } 
+    */
+
+
+
 
     /// \name Loopmanager Examples
     /// Some example functions for using loops within the dependency structure 
@@ -222,6 +236,60 @@ namespace Gambit
         cout<<"  I have thread index: "<<omp_get_thread_num();
         cout<<"  Current total counts is: "<<result<<endl;
       }
+    }
+
+    double testFunc(Farray<double,1>&)
+    {
+        return 0.0;
+    }
+
+    void do_Farray_stuff (double &result)          
+    {
+      using namespace Pipes::do_Farray_stuff;
+      using std::cout;
+      using std::endl;
+      
+      cout << "do_Farray_stuff has been summoned!" << endl;
+      cout << "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn" << endl << endl;
+      cout << "Calling printStuff..." << endl;
+      BEreq::libFarrayTest_printStuff();
+      cout << "Calling set_d() to fill values in 3-dimensional array d..." << endl;
+      BEreq::libFarrayTest_set_d();     
+      cout << "Calling printStuff again..." << endl;
+      BEreq::libFarrayTest_printStuff();
+      cout << "Setting d(2,0,-1) = 99 and d(1,1,0) = 77 " << endl;
+      libFarrayTest_CB_type commonBlock = *BEreq::libFarrayTestCommonBlock;
+      commonBlock.d(2,0,-1) = 99;
+      commonBlock.d(1,1,0) = 77;      
+      cout << "Calling printStuff again..." << endl;
+      BEreq::libFarrayTest_printStuff();    
+              
+      cout << endl << "Calling doubleFunc with argument 100.10..." << endl;
+      double tmp = 100.10;
+      double tmp2 = BEreq::libFarrayTest_doubleFunc(tmp);   
+      cout << "Returned value: " << tmp2 << endl;     
+
+      cout << endl << "Retrieving pointer to doubleFuncArray1..." << endl;      
+      double (*function_pointer)(Farray<double,1>&) = BEreq::libFarrayTest_doubleFuncArray1.pointer<Farray<double,1>&>();
+      cout << "Calling doubleFuncArray1 with commonblock element a as argument..." << endl;            
+      tmp = function_pointer(commonBlock.a);
+      cout << "Returned value: " << tmp << endl;          
+      
+      cout << endl << "Retrieving pointer to fptrRoutine..." << endl;      
+      void (*function_pointer2)(Gambit::Farray <double,1>& ,int& ,double(*) (Gambit::Farray <double,1>&)) 
+            = BEreq::libFarrayTest_fptrRoutine.pointer<Gambit::Farray <double,1>& ,int& ,double(*) (Gambit::Farray <double,1>&)>();
+            
+      cout << endl << "Calling fptrRoutine commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
+      function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);             
+
+      cout << endl << "Calling fptrRoutine commonblock elements a and c and function doubleFuncArray2 as arguments..." << endl;
+      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer<Farray<double,1>&>());    
+ 
+      // Uncomment to pass an illegal function pointer (a function pointer with no fortran equivalent registered in frontBackFuncMap)
+      //double (*function_pointer3)(Farray<double,1>&) = testFunc;
+      //cout << endl << "Calling fptrRoutine commonblock elements a and c and an illegal function as arguments..." << endl;
+      //function_pointer2(commonBlock.a,*commonBlock.c,function_pointer3);    
+      
     }
 
     /// @} @}

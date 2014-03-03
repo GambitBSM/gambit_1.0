@@ -21,7 +21,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <gambit_module.hpp>
+#include <plugin/scanner_plugin.hpp>
 #include <typeinfo>
 #include <cxxabi.h>
   
@@ -49,23 +49,29 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-SCANNER_PLUGIN (crapsample)
-{
-        VERSION(1.0-beta);
+scanner_plugin (crapsample)
+{      
+        int N, ma;
+        Function_Base *LogLike;
+        std::vector<std::string> keys;
+        std::string output_file;
+        void hiFunc(){std::cout << "This is crapsample " << std::endl;}
         
-        using namespace Gambit::Scanner;
+        init_inifile_value(N, "point_numer", 10);
+        init_inifile_value(output_file, "output_file", "default_output");
+        init_dimension(ma);
+        init_functor(LogLike, "Scanner_Function", "Likelihood");
+        run_function(hiFunc);
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        int PLUGIN_MAIN (int input_int)
+        int plugin_main (void)
         {
-                std::vector<std::string> &keys     = GETKEYS();
-                std::vector<double> &upper_limits  = GETUPPERLIMITS();
-                std::vector<double> &lower_limits  = GETLOWERLIMITS();
-                std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
-                int N                              = get_inifile_value<int>("point_number", 10);
-                Function_Base *LogLike             = GETFUNCTOR("Scanner_Function", "Likelihood");
-
-                int ma = keys.size();
+                //std::vector<std::string> &keys     = get_keys();
+                //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
+                //int N                              = get_inifile_value<int>("point_number", 10);
+                //Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                //int ma                             = get_dimension();
+                
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
@@ -85,7 +91,7 @@ SCANNER_PLUGIN (crapsample)
                         total++;
                         for (int i = 0; i < ma; i++)
                         {
-                                aNext[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
+                                aNext[i] = gDev.Doub();
                         }
 
                         chisqnext = (*LogLike)(aNext);
@@ -119,18 +125,14 @@ SCANNER_PLUGIN (crapsample)
         }
 };
 
-SCANNER_PLUGIN (loopsample)
+scanner_plugin (loopsample)
 {
-        using namespace Gambit::Scanner;
-        
-        int PLUGIN_MAIN ()
+        int plugin_main ()
         {
-                std::vector<std::string> &keys     = get_input_value<std::vector<std::string>>(0);
-                std::vector<double> &upper_limits  = get_input_value<std::vector<double>>(1);
-                std::vector<double> &lower_limits  = get_input_value<std::vector<double>>(2);
+                std::vector<std::string> &keys     = get_keys();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);
-                Function_Base *LogLike             = (Function_Base *)(get_input_value<Function_Factory_Base>(3))("Scanner_Function", get_inifile_value<std::string>("like"));
+                Function_Base *LogLike             = get_functor("Scanner_Function", get_inifile_value<std::string>("like"));
                 typedef void (*func)(double a);
                 std::ofstream out(output_file.c_str());
                 int ma = keys.size();
@@ -142,15 +144,14 @@ SCANNER_PLUGIN (loopsample)
                 {
                         for (int i = 0; i < ma; i++)
                         {
-                                a[i] = lower_limits[i] + (upper_limits[i] - lower_limits[i])*gDev.Doub();
+                                a[i] = gDev.Doub();
                                 out << a[i] << "   ";
                         }
                         out << (*LogLike)(a) << endl;
                 }
+                
                 return 0;
         }
-        
-        extern "C" void fuck(){__scanner_module_main__();}
 };
 
 #include <test-recon.h>
@@ -164,5 +165,7 @@ SCANNER_PLUGIN (classtest)
                 
                 cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << ", " << testing.baseNum2(2.0) << std::endl;
                 getchar();
+                
+                return 0;
         }
 };

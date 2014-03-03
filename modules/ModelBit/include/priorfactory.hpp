@@ -17,7 +17,7 @@
 
 #ifndef __priorfactory_hpp__
 #define __priorfactory_hpp__
-
+/*
 #include <priors.hpp>
 #include <yaml_parser.hpp>
 
@@ -54,12 +54,14 @@ namespace Gambit
          std::vector<BasePrior*> subpriors;
          // Pointer to the CompositePrior object created by this manager
          CompositePrior* compositeprior;
+   public:
+          std::vector<std::string> & getParamList(){return parameterlist;}
    };
 
  } // end namespace Priors
 } // end namespace Gambit
 
-
+*/
 #endif /* defined(__priorfactory_hpp__) */
 
  

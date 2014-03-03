@@ -78,20 +78,30 @@ BE_FUNCTION(dshayield, double, (double&,double&,int&,int&,int&), "dshayield_", "
 
 
 /* Syntax for BE_VARIABLE:
- * BE_VARIABLE([choose variable name], [type], "[exact symbol name]", "[choose capability name]")  */
+ * BE_VARIABLE([type macro], "[exact symbol name]", "[choose capability name]")  
+ * Valid type macros are:
+ * GENERAL_VAR([type],[choose variable name])
+ * for ordinary variables (int, double, classes).
+ * FORTRAN_ARRAY([type], [choose array name], ([lower index, dimension 1],[upper index, dimension 1]), [upper/lower index pairs for higher array dimensions] )
+ * for arrays in Fortran backends. 
+ * FORT_COMMONB([commonblock struct type], [choose commonblock name])
+ * for Fortran commonblocks.
+ * */
+ 
+// TODO: Replace darksusy types with appropriate commonblock representations and use FORT_COMMONB macros here
 
-BE_VARIABLE(mssmpar, DS_MSSMPAR, "mssmpar_", "mssmpar")
-BE_VARIABLE(mspctm, DS_MSPCTM, "mspctm_", "mspctm")
-BE_VARIABLE(intdof, DS_INTDOF, "intdof_", "intdof")
-BE_VARIABLE(pacodes, DS_PACODES, "pacodes_", "pacodes")
-BE_VARIABLE(widths, DS_WIDTHS, "widths_", "widths")
-BE_VARIABLE(rdmgev, DS_RDMGEV, "rdmgev_", "rdmgev")
-BE_VARIABLE(rdpth, DS_RDPTH, "rdpth_", "rdpth")
-BE_VARIABLE(rddof, DS_RDDOF, "rddof_", "rddof")
-BE_VARIABLE(rdpars, DS_RDPARS, "rdpars_", "rdpars")
-BE_VARIABLE(rdswitch, DS_RDSWITCH, "rdswitch_", "rdswitch")
-BE_VARIABLE(rdlun, DS_RDLUN, "rdlun_", "rdlun")
-BE_VARIABLE(rdpadd, DS_RDPADD, "rdpadd_", "rdpadd")
+BE_VARIABLE(GENERAL_VAR(DS_MSSMPAR, mssmpar),   "mssmpar_",   "mssmpar")
+BE_VARIABLE(GENERAL_VAR(DS_MSPCTM, mspctm),     "mspctm_",    "mspctm")
+BE_VARIABLE(GENERAL_VAR(DS_INTDOF, intdof),     "intdof_",    "intdof")
+BE_VARIABLE(GENERAL_VAR(DS_PACODES, pacodes),   "pacodes_",   "pacodes")
+BE_VARIABLE(GENERAL_VAR(DS_WIDTHS, widths),     "widths_",    "widths")
+BE_VARIABLE(GENERAL_VAR(DS_RDMGEV, rdmgev),     "rdmgev_",    "rdmgev")
+BE_VARIABLE(GENERAL_VAR(DS_RDPTH, rdpth),       "rdpth_",     "rdpth")
+BE_VARIABLE(GENERAL_VAR(DS_RDDOF, rddof),       "rddof_",     "rddof")
+BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")
+BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
+BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
+BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 
 
 // BE_VARIABLE(SomeInt, int, "someInt")
