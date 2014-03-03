@@ -87,8 +87,11 @@ namespace Gambit
                                 
                                 return 0.0;
                         }
-                        
+#ifndef NO_GCC_4_7
+                        ~Test_Uniform() noexcept
+#else
                         ~Test_Uniform()
+#endif
                         {
 #ifndef NO_GCC_4_7
                                 if (prior != nullptr)

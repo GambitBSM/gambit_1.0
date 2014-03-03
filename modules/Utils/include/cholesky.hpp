@@ -28,7 +28,7 @@ namespace Gambit
                 std::vector<std::vector<double>> el;
                 
         public:
-                Cholesky() = default;
+                //Cholesky() = default;
                 
                 Cholesky(const int num) : el(num, std::vector<double>(num)) {}
                         

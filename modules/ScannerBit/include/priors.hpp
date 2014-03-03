@@ -68,7 +68,7 @@ namespace Gambit
                         
                         inline void setSize(const unsigned int size){param_size = size;}
 #ifndef NO_GCC_4_7
-                        virtual ~BasePrior() = default;
+                        virtual ~BasePrior () = default;
 #else
                         virtual ~BasePrior(){};
 #endif

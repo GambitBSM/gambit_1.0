@@ -88,6 +88,7 @@ void beispiel(const char* inifilename)
  
   //Let's define the prior
   Gambit::Priors::CompositePrior prior(iniFile);
+  
   //Let's define the scanner factory
   auto factory_func = [&]()->Gambit::Scanner::Factory_Base *
   {
