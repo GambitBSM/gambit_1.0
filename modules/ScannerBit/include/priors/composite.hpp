@@ -27,6 +27,8 @@
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
+#include <iostream>
 
 namespace Gambit 
 {
@@ -61,23 +63,27 @@ namespace Gambit
                         void transform(const std::vector<double> &unitPars, std::map<std::string,double> &outputMap) const
                         {
                                 std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
-                                for (auto &subprior : my_subpriors)
+                                std::for_each (my_subpriors.begin(), my_subpriors.end(), [&] (BasePrior* subprior)
                                 {
                                         unit_next = unit_it + subprior->size();
                                         std::vector<double> subUnit(unit_it, unit_next);
                                         unit_it = unit_next;
                                         subprior->transform(subUnit, outputMap);
-                                }
+                                });
                         }
                         
+#ifndef NO_GCC_4_7
+                        ~CompositePrior() noexcept
+#else
                         ~CompositePrior()
+#endif
                         {
                                 // Need to destroy all the prior objects that we created using 'new'
-                                for (auto &prior : my_subpriors)
+                                std::for_each (my_subpriors.begin(), my_subpriors.end(), [] (BasePrior* &prior)
                                 {  
                                         // Delete prior object
                                         delete prior;
-                                }
+                                });
                         }  
                 };
                 

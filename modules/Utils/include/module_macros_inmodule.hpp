@@ -37,6 +37,7 @@
 #include "util_macros.hpp"
 #include "safety_bucket.hpp"
 #include "module_macros_common.hpp"
+
 #include <boost/preprocessor/control/if.hpp>
 
 /// \name Rollcall macros

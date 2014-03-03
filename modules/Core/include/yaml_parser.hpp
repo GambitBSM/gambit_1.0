@@ -1,19 +1,30 @@
-//////////////////////////////////////////////////////////
-// GAMBIT
-// INI-file parser based on yaml-cpp
-//
-// Christoph Weniger (c.weniger@uva.nl)
-// June 2013
-//
-// modified: Gregory Martinez Feb 2014
-//
-//////////////////////////////////////////////////////////
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+/// INI-file parser based on yaml-cpp
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 June 2013
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2014 Feb
+///
+///  *********************************************
 
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#include "variadic_functions.hpp"
+
 #include <yaml-cpp/yaml.h>
-#include <variadic_functions.hpp>
 
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__
@@ -80,10 +91,18 @@ namespace Gambit
         const std::vector<std::string> getPriorNames() const
         {
           std::vector<std::string> result;
+#ifndef NO_GCC_4_7
           for (auto &node : options)
           {
             result.push_back( node.first.as<std::string>() );
           }
+#else
+          for (auto it = options.begin(), end = options.end(); it != end; ++it)
+          {
+            result.push_back( it->first.as<std::string>() );
+          }
+#endif
+
           return result;
         }
         

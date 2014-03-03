@@ -40,20 +40,20 @@ namespace Gambit
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior)
+                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior), realParameters(prior.getShownParameters().size())
                         {
                                 // Find subset of vertices that match requested purpose
                                 vertices = dependencyResolver.getObsLikeOrder();
                                 int size = 0;
                                 auto it = vertices.begin();
-                                for (auto &vert : vertices)
+                                std::for_each (vertices.begin(), vertices.end(), [&] (Graphs::VertexID &vert)
                                 {
                                         if (dependencyResolver.getIniEntry(vert)->purpose == purpose)
                                         {
                                                 *(it++) = vert;
                                                 size++;
                                         }
-                                }
+                                });
 
                                 vertices.resize(size);
                         }
@@ -71,21 +71,21 @@ namespace Gambit
                         void setParameters (std::vector<double> &vec) 
                         {
                                 prior.transform(vec, parameterMap);
-                                auto itKey = prior.getParameters().begin();
-                                for (auto &par : realParameters)
-                                {
-                                        par = parameterMap[*(itKey++)];
-                                }
                                 
-                                for (auto &act : functorMap)
+                                std::transform (prior.getShownParameters().begin(), prior.getShownParameters().end(), realParameters.begin(), [&] (const std::string &par) -> double
+                                {
+                                        return parameterMap[par];
+                                });
+                                
+                                std::for_each (functorMap.begin(), functorMap.end(), [&] (std::pair<std::string, primary_model_functor *> act)
                                 {
                                         auto paramkeys = act.second->getcontentsPtr()->getKeys();
-                                        for (auto &par : paramkeys)
+                                        std::for_each (paramkeys.begin(), paramkeys.end(), [&] (std::string &par)
                                         {
                                                 //std::cout << (act_it->first + "::" + *it) << "   " << parameterMap[act_it->first + "::" + *it] << std::endl;
                                                 act.second->getcontentsPtr()->setValue(par, parameterMap[act.first + "::" + par]);
-                                        }
-                                }
+                                        });
+                                });
                                 //getchar();
                         }
                         
@@ -116,7 +116,7 @@ namespace Gambit
                                 
                                 //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
                                 std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
-                                for (std::vector<Graphs::VertexID>::iterator it = vertices.begin(); it != vertices.end(); ++it)
+                                for (auto it = vertices.begin(), end = vertices.end(); it != end; ++it)
                                 {
                                         std::cout << "__________calculating vertex " << *it << std::endl;
                                         calcObsLike(*it);

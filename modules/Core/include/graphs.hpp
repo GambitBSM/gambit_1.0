@@ -21,8 +21,6 @@
 #ifndef __graphs_hpp__
 #define __graphs_hpp__
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
 #include <string>
 #include <list>
 #include <vector>
@@ -33,6 +31,9 @@
 #include "printers.hpp"
 #include "functors.hpp"
 #include "yaml_parser.hpp"
+
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/topological_sort.hpp>
 
 //using namespace boost;
 

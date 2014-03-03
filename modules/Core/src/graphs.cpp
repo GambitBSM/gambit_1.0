@@ -23,13 +23,14 @@
 ///
 ///  *********************************************
 
-#include <boost/format.hpp>
-#include <boost/graph/graphviz.hpp>
-#include <extern_claw.hpp>
 // #include <regex>
 
 #include "graphs.hpp"
 #include "printers.hpp"
+#include "extern_claw.hpp"
+
+#include <boost/format.hpp>
+#include <boost/graph/graphviz.hpp>
 
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc

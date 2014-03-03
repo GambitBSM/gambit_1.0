@@ -20,6 +20,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -62,10 +63,10 @@ namespace Gambit
                         gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
-                                for (auto &outputMap : outputFuncs)
+                                std::for_each (outputFuncs.begin(), outputFuncs.end(), [] (std::pair<std::string, factoryBase *> outputMap)
                                 {
                                         delete outputMap.second;
-                                }
+                                });
                         }
                 };  
         }
