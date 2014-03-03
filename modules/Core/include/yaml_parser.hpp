@@ -91,10 +91,18 @@ namespace Gambit
         const std::vector<std::string> getPriorNames() const
         {
           std::vector<std::string> result;
+#ifndef NO_GCC_4_7
           for (auto &node : options)
           {
             result.push_back( node.first.as<std::string>() );
           }
+#else
+          for (auto it = options.begin(), end = options.end; it != end; ++it)
+          {
+            result.push_back( it->first.as<std::string>() );
+          }
+#endif
+
           return result;
         }
         
