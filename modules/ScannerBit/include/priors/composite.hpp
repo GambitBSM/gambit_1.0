@@ -69,8 +69,11 @@ namespace Gambit
                                         subprior->transform(subUnit, outputMap);
                                 }
                         }
-                        
+#ifndef NO_GCC_4_7
+                        ~CompositePrior() noexcept
+#else
                         ~CompositePrior()
+#endif
                         {
                                 // Need to destroy all the prior objects that we created using 'new'
                                 for (auto &prior : my_subpriors)
