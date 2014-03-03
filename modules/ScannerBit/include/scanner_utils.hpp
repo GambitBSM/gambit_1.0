@@ -83,10 +83,10 @@ namespace Gambit
                         std::ostringstream out;
                         
                         out << "The options are:  \n";
-                        for (auto &elem : *this)
+                        std::for_each (this->begin(), this->end(), [&] (std::pair<std::string, T*> elem)
                         {
                                 out << "\t" << elem.first << "\n";
-                        }
+                        });
                         
                         return out.str();
                 }

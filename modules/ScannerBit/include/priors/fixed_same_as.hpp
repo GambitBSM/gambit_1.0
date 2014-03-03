@@ -17,6 +17,8 @@
 #ifndef FIXED_SAME_AS_PRIOR_HPP
 #define FIXED_SAME_AS_PRIOR_HPP
 
+#include <algorithm>
+
 namespace Gambit
 {
         namespace Priors
@@ -45,8 +47,10 @@ namespace Gambit
                         
                         void transform(const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
                         {
-                                for (auto &name : names)
+                                std::for_each (names.begin(), names.end(), [&] (const std::string &name)
+                                {
                                         outputMap[name] = value;
+                                });
                         }
                 };
                 
@@ -91,10 +95,10 @@ namespace Gambit
                         {
                                 double value = outputMap[name];
                                 
-                                for (auto &nam : names)
+                                std::for_each (names.begin(), names.end(), [&] (const std::string &nam)
                                 {
                                         outputMap[nam] = value;
-                                }
+                                });
                         }
                 };
                 

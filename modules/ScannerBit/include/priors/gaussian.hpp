@@ -25,6 +25,7 @@
 #include <vector>
 #include <boost/math/special_functions/erf.hpp>
 #include <cholesky.hpp>
+#include <algorithm>
    
 namespace Gambit
 {
@@ -112,20 +113,20 @@ namespace Gambit
                         void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
-                                auto u_it = unitpars.begin();
-                                for (auto &elem : vec)
+                                
+                                std::transform (unitpars.begin(), unitpars.end(), vec.begin(), [] (const double &elem) -> double
                                 {
-                                        elem = M_SQRT2*boost::math::erf_inv(2.0*(*(u_it++))-1.0);      
-                                }
+                                        return M_SQRT2*boost::math::erf_inv(2.0*elem - 1.0);      
+                                });
                                 
                                 col.ElMult(vec);
                                 
                                 auto v_it = vec.begin();
                                 auto m_it = mean.begin();
-                                for (auto &str : param)
+                                std::for_each (param.begin(), param.end(), [&] (const std::string &str)
                                 {
                                         outputMap[str] = *(v_it++) + *(m_it++);
-                                }
+                                });
                         }
                 };
         

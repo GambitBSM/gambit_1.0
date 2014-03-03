@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 namespace Gambit
 {
@@ -113,20 +114,20 @@ namespace Gambit
                         void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
-                                auto u_it = unitpars.begin();
-                                for (auto &elem : vec)
+                                
+                                std::transform (unitpars.begin(), unitpars.end(), vec.begin(), [] (const double &elem) -> double
                                 {
-                                        elem = std::tan(M_PI*(*(u_it++) - 0.5));      
-                                }
+                                        return std::tan(M_PI*(elem - 0.5));      
+                                });
                                 
                                 col.ElMult(vec);
                                 
                                 auto v_it = vec.begin();
                                 auto m_it = mean.begin();
-                                for (auto &str : param)
+                                std::for_each (param.begin(), param.end(), [&] (const std::string &str)
                                 {
                                         outputMap[str] = *(v_it++) + *(m_it++);
-                                }
+                                });
                         }
                 };
         
