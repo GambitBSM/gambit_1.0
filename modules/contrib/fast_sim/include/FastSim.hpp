@@ -19,6 +19,9 @@
 //
 //
 
+#ifndef __FASTSIM_HPP__
+#define __FASTSIM_HPP__
+
 #include "Particle.hpp"
 #include "Jet.hpp"
 #include "Event.hpp"                 // Gambit's event interface
@@ -201,3 +204,5 @@ namespace fast_sim {
 //  }
 
 }
+
+#endif

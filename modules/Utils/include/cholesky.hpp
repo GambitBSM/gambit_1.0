@@ -28,15 +28,16 @@ namespace Gambit
                 std::vector<std::vector<double>> el;
                 
         public:
+                Cholesky() = default;
+                
                 Cholesky(const int num) : el(num, std::vector<double>(num)) {}
                         
                 bool EnterMat(std::vector<std::vector<double>> &a)
                 {
+                        el = a;
                         int num = el.size();
                         double sum = 0;
                         int i, j, k;
-
-                        el = a;
                         
                         for (i = 0; i < num; i++)
                         {
@@ -79,6 +80,26 @@ namespace Gambit
                         }
                         
                         y = b;
+                }
+                
+                double Square(std::vector<double> &y, std::vector<double> &y0)
+                {
+                        int i, j, num = y.size();
+                        double sum;
+                        std::vector<double> x;
+                        
+                        for (i = 0; i < num; i++)
+                        {
+                                for (sum = (y[i]-y0[i]), j=0; j < i; j++)
+                                        sum -= el[i][j]*x[j];
+                                x[i]=sum/el[i][i];
+                        }
+                        
+                        sum = 0.0;
+                        for (i = 0; i < num; i++)
+                                sum += x[i]*x[i];
+                        
+                        return sum;
                 }
         };
 }

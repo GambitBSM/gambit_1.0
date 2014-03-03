@@ -67,8 +67,11 @@ namespace Gambit
                         inline unsigned int size() const {return param_size;}
                         
                         inline void setSize(const unsigned int size){param_size = size;}
-                        
+#ifndef NO_GCC_4_7
                         virtual ~BasePrior() = default;
+#else
+                        virtual ~BasePrior(){};
+#endif
                 };
    
                 /// Map in which to keep factory functions for the priors (prior_creators)
