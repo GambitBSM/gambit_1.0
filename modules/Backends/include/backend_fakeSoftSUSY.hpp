@@ -35,17 +35,18 @@ namespace Gambit
       know how that is supposed to be achieved yet. So here we will just place
       function which "retrieve" the MSSM spectrum for specific models */
       
-      // Get the low scale CMSSM spectrum for a chosen model point
+      // Get the CMSSM spectrum at scale Qout for a chosen model point
+      // QGUT is the unification scale; make this optional?
       MSSMspecQ getCMSSMspectrum(SMpars &smpars,
-             double m0, double m12, double tanb, double a0, int sgnmu)
+             double m0, double m12, double tanb, double a0, int sgnmu, double QGUT, double Qout)
       {
         MSSMspecQ spectrum; // GAMBIT format spectrum object.
         /* run SoftSUSY, stick results into spectrum object */
         return spectrum;
       };
       
-      // Get the low scale MSSM spectrum from general MSSM soft masses.
-      MSSMspecQ getgenMSSMspectrum(SMpars &smpars, MSSMsoftmassesQ &softmasses)
+      // Get the MSSM spectrum at scale Qout, from general MSSM soft masses at scale Qin
+      MSSMspecQ getgenMSSMspectrum(SMpars &smpars, MSSMsoftmassesQ &softmasses, double Qin, double Qout)
       {
         MSSMspecQ spectrum; // GAMBIT format spectrum object.
         /* run SoftSUSY, stick results into spectrum object */

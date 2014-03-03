@@ -70,6 +70,7 @@ EXAMPLEBDIR = ExampleBit_B
 EXSUSYSPECDIR = Example_SUSYspecBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
+SLHAPy8DIR = contrib/SLHAPy8
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -89,6 +90,7 @@ CFLAGS= -I$(COREDIR)/include \
 	-I$(EXSUSYSPECDIR)/include \
 	-I$(FLAVDIR)/include \
 	-I$(YAMLDIR)/include \
+        -I$(SLHAPy8DIR) \
 	-I$(MULTINESTINC)
 
 LN = $(CC)
@@ -144,7 +146,7 @@ ifndef SHH
 endif
 CFLAGS += $(BOOST_CXXFLAGS)
 
-LNFLAGS = -L$(YAMLDIR) -lyaml-cpp $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
@@ -311,6 +313,7 @@ clean:
 	@rm -rf $(TARGETS) 
 	@rm -rf */build/* 
 	@cd contrib/yaml-cpp-0.5.1; make clean
+	@cd contrib/SLHAPy8; make clean
 	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
 	@rm -rf $(COREDIR)/build/.minihelp 
 	@rm -f _*.txt
@@ -467,25 +470,25 @@ $(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(GAMBITINC) $(EXSUSYSPEC
 
 ifdef COLLIDE
 	# Analysis...:
-  $(HECOLLIDERDIR)/build/mt2_bisect.o: $(HECOLLIDERDIR)/src/analyses/mt2_bisect.cpp \
+$(HECOLLIDERDIR)/build/mt2_bisect.o: $(HECOLLIDERDIR)/src/analyses/mt2_bisect.cpp \
    $(HECOLLIDERDIR)/src/analyses/mt2_bisect.h
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
 
-  $(HECOLLIDERDIR)/build/Anal%.o: $(HECOLLIDERDIR)/src/analyses/Anal%.cpp
+$(HECOLLIDERDIR)/build/Anal%.o: $(HECOLLIDERDIR)/src/analyses/Anal%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 	# Delphes modules...:
-  $(HECOLLIDERDIR)/build/%Module.o: $(HECOLLIDERDIR)/src/delphes/%Module.cc
+$(HECOLLIDERDIR)/build/%Module.o: $(HECOLLIDERDIR)/src/delphes/%Module.cc
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
 
-  $(HECOLLIDERDIR)/build/%Module_dict.o: $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc
+$(HECOLLIDERDIR)/build/%Module_dict.o: $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
 
-  $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
+$(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
    $(HECOLLIDERDIR)/src/delphes/%Module.h \
    $(HECOLLIDERDIR)/src/delphes/%ModuleLinkDef.h
 	@echo ___________Generating Dictionary from $^:
@@ -497,7 +500,7 @@ ifdef COLLIDE
 	@mv temp_dict.h $(patsubst %.cc,%.h,$@)
 
 	# HEColliderBit
-  $(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp
+$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
@@ -506,12 +509,16 @@ $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
 
-gambit_example: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
+$(SLHAPy8DIR)/libslhapy8.a:
+	@echo ___________Building SLHA interface library \(from Pythia 8\):
+	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
+
+gambit_example: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
+gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
