@@ -39,211 +39,814 @@
 
 #pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
 
-# if 0//GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
-#   include <boost/preprocessor/variadic/size.hpp>
-#   include <boost/preprocessor/tuple/to_seq.hpp>
-# else
 
-/// BOOST_PP_VARIADIC_SIZE; Returns the number of arguments passed.
-/// 
-/// ****************************************************************************
-///                                                                           
-///      (C) Copyright Edward Diener 2011.                                    
-///      (C) Copyright Paul Mensonides 2011.                                  
-///      Distributed under the Boost Software License, Version 1.0. (See      
-///      accompanying file LICENSE_1_0.txt or copy at                         
-///      http://www.boost.org/LICENSE_1_0.txt)                                
-///                                                                           
-/// ****************************************************************************
-///
-/// See http://www.boost.org for most recent version.
+// Test if the boost version supports variadics or not.
+#if BOOST_PP_VARIADICS
 
-# ifndef BOOST_PREPROCESSOR_VARIADIC_SIZE_HPP
-# define BOOST_PREPROCESSOR_VARIADIC_SIZE_HPP
+  // It does, so just include the relevant headers that only exist in such versions.
+  #pragma message "Boost version supports variadics."
+  #include <boost/preprocessor/variadic/size.hpp>
 
-# include <boost/preprocessor/cat.hpp>
-# include <boost/preprocessor/config/config.hpp>
-
-#    if BOOST_PP_VARIADICS_MSVC
-#        define BOOST_PP_VARIADIC_SIZE(...) BOOST_PP_CAT(BOOST_PP_VARIADIC_SIZE_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,),)
-#    else
-#        define BOOST_PP_VARIADIC_SIZE(...) BOOST_PP_VARIADIC_SIZE_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,)
-#    endif
-#    define BOOST_PP_VARIADIC_SIZE_I(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63, size, ...) size
-# endif
-
-
-/// Ben: perhaps we can redesign my macro to not need this, but for now it is
-/// pretty handy to have so I have added it here. Main downside is that it is
-/// pretty damn huge due to the way it takes care of many many arguments.
-
-/// Whoops, to use TUPLE_TO_SEQ we also need OVERLOAD. 
-/// This is small, fortunately.
-
-///  BOOST_PP_OVERLOAD
-/// /* **************************************************************************
-///  *                                                                          *
-///  *     (C) Copyright Paul Mensonides 2002-2011.                             *
-///  *     (C) Copyright Edward Diener 2011.                                    *
-///  *     Distributed under the Boost Software License, Version 1.0. (See      *
-///  *     accompanying file LICENSE_1_0.txt or copy at                         *
-///  *     http://www.boost.org/LICENSE_1_0.txt)                                *
-///  *                                                                          *
-///  ************************************************************************** */
-
-# ifndef BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
-# define BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
-
-//# include <boost/preprocessor/cat.hpp> //have this already
-//# include <boost/preprocessor/variadic/size.hpp> //have this already
-
-//# if BOOST_PP_VARIADICS
-#    define BOOST_PP_OVERLOAD(prefix, ...) BOOST_PP_CAT(prefix, BOOST_PP_VARIADIC_SIZE(__VA_ARGS__))
-//# endif
-#
-# endif
-
-/// BOOST_PP_TUPLE_TO_SEQ ; Converts a tuple into a boost sequence
-/// /* **************************************************************************
-///  *                                                                          *
-///  *     (C) Copyright Paul Mensonides 2002-2011.                             *
-///  *     (C) Copyright Edward Diener 2011.                                    *
-///  *     Distributed under the Boost Software License, Version 1.0. (See      *
-///  *     accompanying file LICENSE_1_0.txt or copy at                         *
-///  *     http://www.boost.org/LICENSE_1_0.txt)                                *
-///  *                                                                          *
-///  ************************************************************************** */
-///
-
-// debugging: check if BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP already defined
-#ifdef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
-#   pragma message "BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP = defined"
 #else
-#   pragma message "BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP = not defined"
-#endif
 
-// Ben: Removed this check, because we indeed want to overwrite old versions!
-//# ifndef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
-# define BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
+  /// Compensate for the case where Boost version is too old to have variadic macros.
+  #pragma message "Boost version does not support variadics.  Redefining relevant macros."
 
-//# include <boost/preprocessor/cat.hpp> // have this above!
-//# include <boost/preprocessor/config/config.hpp> // have this above!
-//# include <boost/preprocessor/facilities/overload.hpp> // have this above!
-//# include <boost/preprocessor/variadic/size.hpp>  // have this above!
+  /// BOOST_PP_VARIADIC_SIZE; Returns the number of arguments passed.
+  /// 
+  /// ****************************************************************************
+  ///                                                                           
+  ///      (C) Copyright Edward Diener 2011.                                    
+  ///      (C) Copyright Paul Mensonides 2011.                                  
+  ///      Distributed under the Boost Software License, Version 1.0. (See      
+  ///      accompanying file LICENSE_1_0.txt or copy at                         
+  ///      http://www.boost.org/LICENSE_1_0.txt)                                
+  ///                                                                           
+  /// ****************************************************************************
+  ///
+  /// See http://www.boost.org for most recent version.
 
-//Ben: temporary debugging junk
-#include <boost/preprocessor/stringize.hpp>
-#pragma message "stringize test=" BOOST_PP_STRINGIZE(BOOST_PP_CAT(a, b))
-#ifdef BOOST_PP_VARIADICS
-#   pragma message "BOOST_PP_VARIADICS=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS)
-#else
-#   pragma message "BOOST_PP_VARIADICS= not defined"
-#endif
-#ifdef BOOST_PP_VARIADICS_MSVC
-#   pragma message "BOOST_PP_VARIADICS_MSVC=" BOOST_PP_STRINGIZE(BOOST_PP_VARIADICS_MSVC)
-#else
-#   pragma message "BOOST_PP_VARIADICS_MSVC= not defined"
-#endif
-#pragma message "BOOST_PP_CONFIG_FLAGS=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_FLAGS())
-#pragma message "BOOST_PP_CONFIG_MWCC=" BOOST_PP_STRINGIZE(BOOST_PP_CONFIG_MWCC())
+  # ifndef BOOST_PREPROCESSOR_VARIADIC_SIZE_HPP
+  # define BOOST_PREPROCESSOR_VARIADIC_SIZE_HPP
 
-//# if BOOST_PP_VARIADICS
-#    if BOOST_PP_VARIADICS_MSVC
-#        define BOOST_PP_TUPLE_TO_SEQ(...) BOOST_PP_TUPLE_TO_SEQ_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_SEQ_O_, __VA_ARGS__), (__VA_ARGS__))
-#        define BOOST_PP_TUPLE_TO_SEQ_I(m, args) BOOST_PP_TUPLE_TO_SEQ_II(m, args)
-#        define BOOST_PP_TUPLE_TO_SEQ_II(m, args) BOOST_PP_CAT(m ## args,)
-#    else
-#        define BOOST_PP_TUPLE_TO_SEQ(...) BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_SEQ_O_, __VA_ARGS__)(__VA_ARGS__)
-#    endif
-#    define BOOST_PP_TUPLE_TO_SEQ_O_1(tuple) BOOST_PP_CAT(BOOST_PP_TUPLE_TO_SEQ_, BOOST_PP_VARIADIC_SIZE tuple) tuple
-#    define BOOST_PP_TUPLE_TO_SEQ_O_2(size, tuple) BOOST_PP_TUPLE_TO_SEQ_O_1(tuple)
-//# else
-//#    if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_MWCC()
-//#        define BOOST_PP_TUPLE_TO_SEQ(size, tuple) BOOST_PP_TUPLE_TO_SEQ_I(size, tuple)
-//#        if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_MSVC()
-//#            define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_ ## s t
-//#        else
-//#            define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_II(BOOST_PP_TUPLE_TO_SEQ_ ## s t)
-//#            define BOOST_PP_TUPLE_TO_SEQ_II(res) res
-//#        endif
-//#    else
-//#        define BOOST_PP_TUPLE_TO_SEQ(size, tuple) BOOST_PP_TUPLE_TO_SEQ_OO((size, tuple))
-//#        define BOOST_PP_TUPLE_TO_SEQ_OO(par) BOOST_PP_TUPLE_TO_SEQ_I ## par
-//#        define BOOST_PP_TUPLE_TO_SEQ_I(s, t) BOOST_PP_TUPLE_TO_SEQ_ ## s ## t
-//#    endif
-//# endif
-#
-# define BOOST_PP_TUPLE_TO_SEQ_1(e0) (e0)
-# define BOOST_PP_TUPLE_TO_SEQ_2(e0, e1) (e0)(e1)
-# define BOOST_PP_TUPLE_TO_SEQ_3(e0, e1, e2) (e0)(e1)(e2)
-# define BOOST_PP_TUPLE_TO_SEQ_4(e0, e1, e2, e3) (e0)(e1)(e2)(e3)
-# define BOOST_PP_TUPLE_TO_SEQ_5(e0, e1, e2, e3, e4) (e0)(e1)(e2)(e3)(e4)
-# define BOOST_PP_TUPLE_TO_SEQ_6(e0, e1, e2, e3, e4, e5) (e0)(e1)(e2)(e3)(e4)(e5)
-# define BOOST_PP_TUPLE_TO_SEQ_7(e0, e1, e2, e3, e4, e5, e6) (e0)(e1)(e2)(e3)(e4)(e5)(e6)
-# define BOOST_PP_TUPLE_TO_SEQ_8(e0, e1, e2, e3, e4, e5, e6, e7) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)
-# define BOOST_PP_TUPLE_TO_SEQ_9(e0, e1, e2, e3, e4, e5, e6, e7, e8) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)
-# define BOOST_PP_TUPLE_TO_SEQ_10(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)
-# define BOOST_PP_TUPLE_TO_SEQ_11(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)
-# define BOOST_PP_TUPLE_TO_SEQ_12(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)
-# define BOOST_PP_TUPLE_TO_SEQ_13(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)
-# define BOOST_PP_TUPLE_TO_SEQ_14(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)
-# define BOOST_PP_TUPLE_TO_SEQ_15(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)
-# define BOOST_PP_TUPLE_TO_SEQ_16(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)
-# define BOOST_PP_TUPLE_TO_SEQ_17(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)
-# define BOOST_PP_TUPLE_TO_SEQ_18(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)
-# define BOOST_PP_TUPLE_TO_SEQ_19(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)
-# define BOOST_PP_TUPLE_TO_SEQ_20(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)
-# define BOOST_PP_TUPLE_TO_SEQ_21(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)
-# define BOOST_PP_TUPLE_TO_SEQ_22(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)
-# define BOOST_PP_TUPLE_TO_SEQ_23(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)
-# define BOOST_PP_TUPLE_TO_SEQ_24(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)
-# define BOOST_PP_TUPLE_TO_SEQ_25(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)
-# define BOOST_PP_TUPLE_TO_SEQ_26(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)
-# define BOOST_PP_TUPLE_TO_SEQ_27(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)
-# define BOOST_PP_TUPLE_TO_SEQ_28(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)
-# define BOOST_PP_TUPLE_TO_SEQ_29(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)
-# define BOOST_PP_TUPLE_TO_SEQ_30(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)
-# define BOOST_PP_TUPLE_TO_SEQ_31(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)
-# define BOOST_PP_TUPLE_TO_SEQ_32(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)
-# define BOOST_PP_TUPLE_TO_SEQ_33(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)
-# define BOOST_PP_TUPLE_TO_SEQ_34(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)
-# define BOOST_PP_TUPLE_TO_SEQ_35(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)
-# define BOOST_PP_TUPLE_TO_SEQ_36(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)
-# define BOOST_PP_TUPLE_TO_SEQ_37(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)
-# define BOOST_PP_TUPLE_TO_SEQ_38(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)
-# define BOOST_PP_TUPLE_TO_SEQ_39(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)
-# define BOOST_PP_TUPLE_TO_SEQ_40(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)
-# define BOOST_PP_TUPLE_TO_SEQ_41(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)
-# define BOOST_PP_TUPLE_TO_SEQ_42(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)
-# define BOOST_PP_TUPLE_TO_SEQ_43(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)
-# define BOOST_PP_TUPLE_TO_SEQ_44(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)
-# define BOOST_PP_TUPLE_TO_SEQ_45(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)
-# define BOOST_PP_TUPLE_TO_SEQ_46(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)
-# define BOOST_PP_TUPLE_TO_SEQ_47(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)
-# define BOOST_PP_TUPLE_TO_SEQ_48(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)
-# define BOOST_PP_TUPLE_TO_SEQ_49(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)
-# define BOOST_PP_TUPLE_TO_SEQ_50(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)
-# define BOOST_PP_TUPLE_TO_SEQ_51(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)
-# define BOOST_PP_TUPLE_TO_SEQ_52(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)
-# define BOOST_PP_TUPLE_TO_SEQ_53(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)
-# define BOOST_PP_TUPLE_TO_SEQ_54(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)
-# define BOOST_PP_TUPLE_TO_SEQ_55(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)
-# define BOOST_PP_TUPLE_TO_SEQ_56(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)
-# define BOOST_PP_TUPLE_TO_SEQ_57(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)
-# define BOOST_PP_TUPLE_TO_SEQ_58(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)
-# define BOOST_PP_TUPLE_TO_SEQ_59(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)
-# define BOOST_PP_TUPLE_TO_SEQ_60(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)
-# define BOOST_PP_TUPLE_TO_SEQ_61(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)
-# define BOOST_PP_TUPLE_TO_SEQ_62(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)(e61)
-# define BOOST_PP_TUPLE_TO_SEQ_63(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)(e61)(e62)
-# define BOOST_PP_TUPLE_TO_SEQ_64(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)(e61)(e62)(e63)
-#
-//# endif //ifndef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
+  # include <boost/preprocessor/cat.hpp>
+  # include <boost/preprocessor/config/config.hpp>
 
-# endif //GAMBIT_CONFIG_FLAG_boost_is_at_least_v1_49
+  #    if BOOST_PP_VARIADICS_MSVC
+  #        define BOOST_PP_VARIADIC_SIZE(...) BOOST_PP_CAT(BOOST_PP_VARIADIC_SIZE_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, \
+           52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20,   \
+           19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,),)
+  #    else
+  #        define BOOST_PP_VARIADIC_SIZE(...) BOOST_PP_VARIADIC_SIZE_I(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50,  \
+           49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17,   \
+           16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,)
+  #    endif
+  #    define BOOST_PP_VARIADIC_SIZE_I(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22,  \
+       e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49,    \
+       e50, e51, e52, e53, e54, e55, e56, e57, e58, e59,  e60, e61, e62, e63, size, ...) size
 
-//Ben: temporary debugging junk
-#pragma message "TUPLE_TO_SEQ test=" BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_TO_SEQ((1,2,3,4,5)))
+  # endif
+
+  ///  BOOST_PP_OVERLOAD
+  /// /* **************************************************************************
+  ///  *                                                                          *
+  ///  *     (C) Copyright Paul Mensonides 2002-2011.                             *
+  ///  *     (C) Copyright Edward Diener 2011.                                    *
+  ///  *     Distributed under the Boost Software License, Version 1.0. (See      *
+  ///  *     accompanying file LICENSE_1_0.txt or copy at                         *
+  ///  *     http://www.boost.org/LICENSE_1_0.txt)                                *
+  ///  *                                                                          *
+  ///  ************************************************************************** */
+
+  # ifndef BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
+  # define BOOST_PREPROCESSOR_FACILITIES_OVERLOAD_HPP
+
+  #    define BOOST_PP_OVERLOAD(prefix, ...) BOOST_PP_CAT(prefix, BOOST_PP_VARIADIC_SIZE(__VA_ARGS__))
+
+  # endif
+
+  /// BOOST_PP_TUPLE_TO_SEQ ; Converts a tuple into a boost sequence
+  /// /* **************************************************************************
+  ///  *                                                                          *
+  ///  *     (C) Copyright Paul Mensonides 2002-2011.                             *
+  ///  *     (C) Copyright Edward Diener 2011.                                    *
+  ///  *     Distributed under the Boost Software License, Version 1.0. (See      *
+  ///  *     accompanying file LICENSE_1_0.txt or copy at                         *
+  ///  *     http://www.boost.org/LICENSE_1_0.txt)                                *
+  ///  *                                                                          *
+  ///  ************************************************************************** */
+
+  // Wipe the previous version of the macro.
+  #    ifndef BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
+  #       define BOOST_PREPROCESSOR_TUPLE_TO_SEQ_HPP
+  #    endif
+  #    ifdef BOOST_PP_TUPLE_TO_SEQ
+  #       undef BOOST_PP_TUPLE_TO_SEQ
+  #       undef BOOST_PP_TUPLE_TO_SEQ_O_1
+  #       undef BOOST_PP_TUPLE_TO_SEQ_O_2
+  #       if BOOST_PP_VARIADICS_MSVC
+  #          undef BOOST_PP_TUPLE_TO_SEQ_I
+  #          undef BOOST_PP_TUPLE_TO_SEQ_II
+  #       endif
+  #    endif
+
+  // Redefine it
+  #    if BOOST_PP_VARIADICS_MSVC
+  #        define BOOST_PP_TUPLE_TO_SEQ(...) BOOST_PP_TUPLE_TO_SEQ_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_SEQ_O_, __VA_ARGS__), (__VA_ARGS__))
+  #        define BOOST_PP_TUPLE_TO_SEQ_I(m, args) BOOST_PP_TUPLE_TO_SEQ_II(m, args)
+  #        define BOOST_PP_TUPLE_TO_SEQ_II(m, args) BOOST_PP_CAT(m ## args,)
+  #    else
+  #        define BOOST_PP_TUPLE_TO_SEQ(...) BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_SEQ_O_, __VA_ARGS__)(__VA_ARGS__)
+  #    endif
+  #    define BOOST_PP_TUPLE_TO_SEQ_O_1(tuple) BOOST_PP_CAT(BOOST_PP_TUPLE_TO_SEQ_, BOOST_PP_VARIADIC_SIZE tuple) tuple
+  #    define BOOST_PP_TUPLE_TO_SEQ_O_2(size, tuple) BOOST_PP_TUPLE_TO_SEQ_O_1(tuple)
+
+  // Wipe the previous versions of the variadics
+  # undef BOOST_PP_TUPLE_TO_SEQ_1
+  # undef BOOST_PP_TUPLE_TO_SEQ_2
+  # undef BOOST_PP_TUPLE_TO_SEQ_3
+  # undef BOOST_PP_TUPLE_TO_SEQ_4
+  # undef BOOST_PP_TUPLE_TO_SEQ_5
+  # undef BOOST_PP_TUPLE_TO_SEQ_6
+  # undef BOOST_PP_TUPLE_TO_SEQ_7
+  # undef BOOST_PP_TUPLE_TO_SEQ_8
+  # undef BOOST_PP_TUPLE_TO_SEQ_9
+  # undef BOOST_PP_TUPLE_TO_SEQ_10
+  # undef BOOST_PP_TUPLE_TO_SEQ_11
+  # undef BOOST_PP_TUPLE_TO_SEQ_12
+  # undef BOOST_PP_TUPLE_TO_SEQ_13
+  # undef BOOST_PP_TUPLE_TO_SEQ_14
+  # undef BOOST_PP_TUPLE_TO_SEQ_15
+  # undef BOOST_PP_TUPLE_TO_SEQ_16
+  # undef BOOST_PP_TUPLE_TO_SEQ_17
+  # undef BOOST_PP_TUPLE_TO_SEQ_18
+  # undef BOOST_PP_TUPLE_TO_SEQ_19
+  # undef BOOST_PP_TUPLE_TO_SEQ_20
+  # undef BOOST_PP_TUPLE_TO_SEQ_21
+  # undef BOOST_PP_TUPLE_TO_SEQ_22
+  # undef BOOST_PP_TUPLE_TO_SEQ_23
+  # undef BOOST_PP_TUPLE_TO_SEQ_24
+  # undef BOOST_PP_TUPLE_TO_SEQ_25
+  # undef BOOST_PP_TUPLE_TO_SEQ_26
+  # undef BOOST_PP_TUPLE_TO_SEQ_27
+  # undef BOOST_PP_TUPLE_TO_SEQ_28
+  # undef BOOST_PP_TUPLE_TO_SEQ_29
+  # undef BOOST_PP_TUPLE_TO_SEQ_30
+  # undef BOOST_PP_TUPLE_TO_SEQ_31
+  # undef BOOST_PP_TUPLE_TO_SEQ_32
+  # undef BOOST_PP_TUPLE_TO_SEQ_33
+  # undef BOOST_PP_TUPLE_TO_SEQ_34
+  # undef BOOST_PP_TUPLE_TO_SEQ_35
+  # undef BOOST_PP_TUPLE_TO_SEQ_36
+  # undef BOOST_PP_TUPLE_TO_SEQ_37
+  # undef BOOST_PP_TUPLE_TO_SEQ_38
+  # undef BOOST_PP_TUPLE_TO_SEQ_39
+  # undef BOOST_PP_TUPLE_TO_SEQ_40
+  # undef BOOST_PP_TUPLE_TO_SEQ_41
+  # undef BOOST_PP_TUPLE_TO_SEQ_42
+  # undef BOOST_PP_TUPLE_TO_SEQ_43
+  # undef BOOST_PP_TUPLE_TO_SEQ_44
+  # undef BOOST_PP_TUPLE_TO_SEQ_45
+  # undef BOOST_PP_TUPLE_TO_SEQ_46
+  # undef BOOST_PP_TUPLE_TO_SEQ_47
+  # undef BOOST_PP_TUPLE_TO_SEQ_48
+  # undef BOOST_PP_TUPLE_TO_SEQ_49
+  # undef BOOST_PP_TUPLE_TO_SEQ_50
+  # undef BOOST_PP_TUPLE_TO_SEQ_51
+  # undef BOOST_PP_TUPLE_TO_SEQ_52
+  # undef BOOST_PP_TUPLE_TO_SEQ_53
+  # undef BOOST_PP_TUPLE_TO_SEQ_54
+  # undef BOOST_PP_TUPLE_TO_SEQ_55
+  # undef BOOST_PP_TUPLE_TO_SEQ_56
+  # undef BOOST_PP_TUPLE_TO_SEQ_57
+  # undef BOOST_PP_TUPLE_TO_SEQ_58
+  # undef BOOST_PP_TUPLE_TO_SEQ_59
+  # undef BOOST_PP_TUPLE_TO_SEQ_60
+  # undef BOOST_PP_TUPLE_TO_SEQ_61
+  # undef BOOST_PP_TUPLE_TO_SEQ_62
+  # undef BOOST_PP_TUPLE_TO_SEQ_63
+  # undef BOOST_PP_TUPLE_TO_SEQ_64
+
+  // Redefine them
+  # define BOOST_PP_TUPLE_TO_SEQ_1(e0) (e0)
+  # define BOOST_PP_TUPLE_TO_SEQ_2(e0, e1) (e0)(e1)
+  # define BOOST_PP_TUPLE_TO_SEQ_3(e0, e1, e2) (e0)(e1)(e2)
+  # define BOOST_PP_TUPLE_TO_SEQ_4(e0, e1, e2, e3) (e0)(e1)(e2)(e3)
+  # define BOOST_PP_TUPLE_TO_SEQ_5(e0, e1, e2, e3, e4) (e0)(e1)(e2)(e3)(e4)
+  # define BOOST_PP_TUPLE_TO_SEQ_6(e0, e1, e2, e3, e4, e5) (e0)(e1)(e2)(e3)(e4)(e5)
+  # define BOOST_PP_TUPLE_TO_SEQ_7(e0, e1, e2, e3, e4, e5, e6) (e0)(e1)(e2)(e3)(e4)(e5)(e6)
+  # define BOOST_PP_TUPLE_TO_SEQ_8(e0, e1, e2, e3, e4, e5, e6, e7) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)
+  # define BOOST_PP_TUPLE_TO_SEQ_9(e0, e1, e2, e3, e4, e5, e6, e7, e8) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)
+  # define BOOST_PP_TUPLE_TO_SEQ_10(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)
+  # define BOOST_PP_TUPLE_TO_SEQ_11(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)
+  # define BOOST_PP_TUPLE_TO_SEQ_12(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)
+  # define BOOST_PP_TUPLE_TO_SEQ_13(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)
+  # define BOOST_PP_TUPLE_TO_SEQ_14(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)
+  # define BOOST_PP_TUPLE_TO_SEQ_15(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)
+  # define BOOST_PP_TUPLE_TO_SEQ_16(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)
+  # define BOOST_PP_TUPLE_TO_SEQ_17(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)
+  # define BOOST_PP_TUPLE_TO_SEQ_18(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)
+  # define BOOST_PP_TUPLE_TO_SEQ_19(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)
+  # define BOOST_PP_TUPLE_TO_SEQ_20(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)
+  # define BOOST_PP_TUPLE_TO_SEQ_21(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)
+  # define BOOST_PP_TUPLE_TO_SEQ_22(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)
+  # define BOOST_PP_TUPLE_TO_SEQ_23(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)
+  # define BOOST_PP_TUPLE_TO_SEQ_24(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)
+  # define BOOST_PP_TUPLE_TO_SEQ_25(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)
+  # define BOOST_PP_TUPLE_TO_SEQ_26(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)
+  # define BOOST_PP_TUPLE_TO_SEQ_27(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)
+  # define BOOST_PP_TUPLE_TO_SEQ_28(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)
+  # define BOOST_PP_TUPLE_TO_SEQ_29(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)
+  # define BOOST_PP_TUPLE_TO_SEQ_30(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)
+  # define BOOST_PP_TUPLE_TO_SEQ_31(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)
+  # define BOOST_PP_TUPLE_TO_SEQ_32(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)
+  # define BOOST_PP_TUPLE_TO_SEQ_33(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)
+  # define BOOST_PP_TUPLE_TO_SEQ_34(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)
+  # define BOOST_PP_TUPLE_TO_SEQ_35(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)
+  # define BOOST_PP_TUPLE_TO_SEQ_36(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)
+  # define BOOST_PP_TUPLE_TO_SEQ_37(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)
+  # define BOOST_PP_TUPLE_TO_SEQ_38(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)
+  # define BOOST_PP_TUPLE_TO_SEQ_39(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)
+  # define BOOST_PP_TUPLE_TO_SEQ_40(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)
+  # define BOOST_PP_TUPLE_TO_SEQ_41(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)
+  # define BOOST_PP_TUPLE_TO_SEQ_42(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)
+  # define BOOST_PP_TUPLE_TO_SEQ_43(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)
+  # define BOOST_PP_TUPLE_TO_SEQ_44(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)
+  # define BOOST_PP_TUPLE_TO_SEQ_45(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)
+  # define BOOST_PP_TUPLE_TO_SEQ_46(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)  (e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)
+  # define BOOST_PP_TUPLE_TO_SEQ_47(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)
+  # define BOOST_PP_TUPLE_TO_SEQ_48(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)
+  # define BOOST_PP_TUPLE_TO_SEQ_49(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)
+  # define BOOST_PP_TUPLE_TO_SEQ_50(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)
+  # define BOOST_PP_TUPLE_TO_SEQ_51(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)
+  # define BOOST_PP_TUPLE_TO_SEQ_52(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)
+  # define BOOST_PP_TUPLE_TO_SEQ_53(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)
+  # define BOOST_PP_TUPLE_TO_SEQ_54(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)
+  # define BOOST_PP_TUPLE_TO_SEQ_55(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)
+  # define BOOST_PP_TUPLE_TO_SEQ_56(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)
+  # define BOOST_PP_TUPLE_TO_SEQ_57(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)
+  # define BOOST_PP_TUPLE_TO_SEQ_58(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)H
+  # define BOOST_PP_TUPLE_TO_SEQ_59(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)
+  # define BOOST_PP_TUPLE_TO_SEQ_60(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)
+  # define BOOST_PP_TUPLE_TO_SEQ_61(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)
+  # define BOOST_PP_TUPLE_TO_SEQ_62(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)(e61)
+  # define BOOST_PP_TUPLE_TO_SEQ_63(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)(e61)(e62)
+  # define BOOST_PP_TUPLE_TO_SEQ_64(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63) (e0)(e1)(e2)(e3)(e4)(e5)(e6)(e7)(e8)(e9)(e10)(e11)(e12)(e13)(e14)(e15)(e16)(e17)(e18)(e19)(e20)(e21)(e22)(e23)(e24)(e25)(e26)(e27)(e28)(e29)(e30)(e31)(e32)(e33)(e34)(e35)(e36)(e37)(e38)(e39)(e40)(e41)(e42)(e43)(e44)(e45)(e46)(e47)(e48)(e49)(e50)(e51)(e52)(e53)(e54)(e55)(e56)(e57)(e58)(e59)(e60)(e61)(e62)(e63)
+
+
+  // BOOST_PP_VARIADIC_ELEM
+  // **************************************************************************
+  //                                                                          *
+  //     (C) Copyright Edward Diener 2011.                                    *
+  //     (C) Copyright Paul Mensonides 2011.                                  *
+  //     Distributed under the Boost Software License, Version 1.0. (See      *
+  //     accompanying file LICENSE_1_0.txt or copy at                         *
+  //     http://www.boost.org/LICENSE_1_0.txt)                                *
+  //                                                                          *
+  //************************************************************************* *
+  //
+  // See http://www.boost.org for most recent version. 
+
+  // Wipe the previous version of the macro.
+  #    ifndef BOOST_PREPROCESSOR_VARIADIC_ELEM_HPP
+  #       define BOOST_PREPROCESSOR_VARIADIC_ELEM_HPP
+  #    endif
+  #    ifdef BOOST_PP_VARIADIC_ELEM
+  #       undef BOOST_PP_VARIADIC_ELEM
+  #       if BOOST_PP_VARIADICS_MSVC
+  #          undef BOOST_PP_VARIADIC_ELEM_I
+  #       endif
+  #    endif
+
+  // Redefine it
+  #    if BOOST_PP_VARIADICS_MSVC
+  #        define BOOST_PP_VARIADIC_ELEM(n, ...) BOOST_PP_VARIADIC_ELEM_I(n,__VA_ARGS__)
+  #        define BOOST_PP_VARIADIC_ELEM_I(n, ...) BOOST_PP_CAT(BOOST_PP_CAT(BOOST_PP_VARIADIC_ELEM_, n)(__VA_ARGS__,),)
+  #    else
+  #        define BOOST_PP_VARIADIC_ELEM(n, ...) BOOST_PP_CAT(BOOST_PP_VARIADIC_ELEM_, n)(__VA_ARGS__,)
+  #    endif
+
+  // Wipe the previous versions of the variadics
+  # undef BOOST_VARIADIC_ELEM_1
+  # undef BOOST_VARIADIC_ELEM_2
+  # undef BOOST_VARIADIC_ELEM_3
+  # undef BOOST_VARIADIC_ELEM_4
+  # undef BOOST_VARIADIC_ELEM_5
+  # undef BOOST_VARIADIC_ELEM_6
+  # undef BOOST_VARIADIC_ELEM_7
+  # undef BOOST_VARIADIC_ELEM_8
+  # undef BOOST_VARIADIC_ELEM_9
+  # undef BOOST_VARIADIC_ELEM_10
+  # undef BOOST_VARIADIC_ELEM_11
+  # undef BOOST_VARIADIC_ELEM_12
+  # undef BOOST_VARIADIC_ELEM_13
+  # undef BOOST_VARIADIC_ELEM_14
+  # undef BOOST_VARIADIC_ELEM_15
+  # undef BOOST_VARIADIC_ELEM_16
+  # undef BOOST_VARIADIC_ELEM_17
+  # undef BOOST_VARIADIC_ELEM_18
+  # undef BOOST_VARIADIC_ELEM_19
+  # undef BOOST_VARIADIC_ELEM_20
+  # undef BOOST_VARIADIC_ELEM_21
+  # undef BOOST_VARIADIC_ELEM_22
+  # undef BOOST_VARIADIC_ELEM_23
+  # undef BOOST_VARIADIC_ELEM_24
+  # undef BOOST_VARIADIC_ELEM_25
+  # undef BOOST_VARIADIC_ELEM_26
+  # undef BOOST_VARIADIC_ELEM_27
+  # undef BOOST_VARIADIC_ELEM_28
+  # undef BOOST_VARIADIC_ELEM_29
+  # undef BOOST_VARIADIC_ELEM_30
+  # undef BOOST_VARIADIC_ELEM_31
+  # undef BOOST_VARIADIC_ELEM_32
+  # undef BOOST_VARIADIC_ELEM_33
+  # undef BOOST_VARIADIC_ELEM_34
+  # undef BOOST_VARIADIC_ELEM_35
+  # undef BOOST_VARIADIC_ELEM_36
+  # undef BOOST_VARIADIC_ELEM_37
+  # undef BOOST_VARIADIC_ELEM_38
+  # undef BOOST_VARIADIC_ELEM_39
+  # undef BOOST_VARIADIC_ELEM_40
+  # undef BOOST_VARIADIC_ELEM_41
+  # undef BOOST_VARIADIC_ELEM_42
+  # undef BOOST_VARIADIC_ELEM_43
+  # undef BOOST_VARIADIC_ELEM_44
+  # undef BOOST_VARIADIC_ELEM_45
+  # undef BOOST_VARIADIC_ELEM_46
+  # undef BOOST_VARIADIC_ELEM_47
+  # undef BOOST_VARIADIC_ELEM_48
+  # undef BOOST_VARIADIC_ELEM_49
+  # undef BOOST_VARIADIC_ELEM_50
+  # undef BOOST_VARIADIC_ELEM_51
+  # undef BOOST_VARIADIC_ELEM_52
+  # undef BOOST_VARIADIC_ELEM_53
+  # undef BOOST_VARIADIC_ELEM_54
+  # undef BOOST_VARIADIC_ELEM_55
+  # undef BOOST_VARIADIC_ELEM_56
+  # undef BOOST_VARIADIC_ELEM_57
+  # undef BOOST_VARIADIC_ELEM_58
+  # undef BOOST_VARIADIC_ELEM_59
+  # undef BOOST_VARIADIC_ELEM_60
+  # undef BOOST_VARIADIC_ELEM_61
+  # undef BOOST_VARIADIC_ELEM_62
+  # undef BOOST_VARIADIC_ELEM_63
+  # undef BOOST_VARIADIC_ELEM_64
+
+  // Redefine them
+  #    define BOOST_PP_VARIADIC_ELEM_0(e0, ...) e0
+  #    define BOOST_PP_VARIADIC_ELEM_1(e0, e1, ...) e1
+  #    define BOOST_PP_VARIADIC_ELEM_2(e0, e1, e2, ...) e2
+  #    define BOOST_PP_VARIADIC_ELEM_3(e0, e1, e2, e3, ...) e3
+  #    define BOOST_PP_VARIADIC_ELEM_4(e0, e1, e2, e3, e4, ...) e4
+  #    define BOOST_PP_VARIADIC_ELEM_5(e0, e1, e2, e3, e4, e5, ...) e5
+  #    define BOOST_PP_VARIADIC_ELEM_6(e0, e1, e2, e3, e4, e5, e6, ...) e6
+  #    define BOOST_PP_VARIADIC_ELEM_7(e0, e1, e2, e3, e4, e5, e6, e7, ...) e7
+  #    define BOOST_PP_VARIADIC_ELEM_8(e0, e1, e2, e3, e4, e5, e6, e7, e8, ...) e8
+  #    define BOOST_PP_VARIADIC_ELEM_9(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, ...) e9
+  #    define BOOST_PP_VARIADIC_ELEM_10(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, ...) e10
+  #    define BOOST_PP_VARIADIC_ELEM_11(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, ...) e11
+  #    define BOOST_PP_VARIADIC_ELEM_12(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, ...) e12
+  #    define BOOST_PP_VARIADIC_ELEM_13(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, ...) e13
+  #    define BOOST_PP_VARIADIC_ELEM_14(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, ...) e14
+  #    define BOOST_PP_VARIADIC_ELEM_15(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, ...) e15
+  #    define BOOST_PP_VARIADIC_ELEM_16(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, ...) e16
+  #    define BOOST_PP_VARIADIC_ELEM_17(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, ...) e17
+  #    define BOOST_PP_VARIADIC_ELEM_18(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, ...) e18
+  #    define BOOST_PP_VARIADIC_ELEM_19(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, ...) e19
+  #    define BOOST_PP_VARIADIC_ELEM_20(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, ...) e20
+  #    define BOOST_PP_VARIADIC_ELEM_21(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, ...) e21
+  #    define BOOST_PP_VARIADIC_ELEM_22(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, ...) e22
+  #    define BOOST_PP_VARIADIC_ELEM_23(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, ...) e23
+  #    define BOOST_PP_VARIADIC_ELEM_24(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, ...) e24
+  #    define BOOST_PP_VARIADIC_ELEM_25(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, ...) e25
+  #    define BOOST_PP_VARIADIC_ELEM_26(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, ...) e26
+  #    define BOOST_PP_VARIADIC_ELEM_27(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, ...) e27
+  #    define BOOST_PP_VARIADIC_ELEM_28(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, ...) e28
+  #    define BOOST_PP_VARIADIC_ELEM_29(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, ...) e29
+  #    define BOOST_PP_VARIADIC_ELEM_30(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, ...) e30
+  #    define BOOST_PP_VARIADIC_ELEM_31(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, ...) e31
+  #    define BOOST_PP_VARIADIC_ELEM_32(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, ...) e32
+  #    define BOOST_PP_VARIADIC_ELEM_33(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, ...) e33
+  #    define BOOST_PP_VARIADIC_ELEM_34(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, ...) e34
+  #    define BOOST_PP_VARIADIC_ELEM_35(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, ...) e35
+  #    define BOOST_PP_VARIADIC_ELEM_36(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, ...) e36
+  #    define BOOST_PP_VARIADIC_ELEM_37(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, ...) e37
+  #    define BOOST_PP_VARIADIC_ELEM_38(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, ...) e38
+  #    define BOOST_PP_VARIADIC_ELEM_39(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, ...) e39
+  #    define BOOST_PP_VARIADIC_ELEM_40(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, ...) e40
+  #    define BOOST_PP_VARIADIC_ELEM_41(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, ...) e41
+  #    define BOOST_PP_VARIADIC_ELEM_42(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, ...) e42
+  #    define BOOST_PP_VARIADIC_ELEM_43(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, ...) e43
+  #    define BOOST_PP_VARIADIC_ELEM_44(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, ...) e44
+  #    define BOOST_PP_VARIADIC_ELEM_45(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, ...) e45
+  #    define BOOST_PP_VARIADIC_ELEM_46(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, ...) e46
+  #    define BOOST_PP_VARIADIC_ELEM_47(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, ...) e47
+  #    define BOOST_PP_VARIADIC_ELEM_48(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, ...) e48
+  #    define BOOST_PP_VARIADIC_ELEM_49(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, ...) e49
+  #    define BOOST_PP_VARIADIC_ELEM_50(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, ...) e50
+  #    define BOOST_PP_VARIADIC_ELEM_51(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, ...) e51
+  #    define BOOST_PP_VARIADIC_ELEM_52(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, ...) e52
+  #    define BOOST_PP_VARIADIC_ELEM_53(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, ...) e53
+  #    define BOOST_PP_VARIADIC_ELEM_54(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, ...) e54
+  #    define BOOST_PP_VARIADIC_ELEM_55(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, ...) e55
+  #    define BOOST_PP_VARIADIC_ELEM_56(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, ...) e56
+  #    define BOOST_PP_VARIADIC_ELEM_57(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, ...) e57
+  #    define BOOST_PP_VARIADIC_ELEM_58(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, ...) e58
+  #    define BOOST_PP_VARIADIC_ELEM_59(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, ...) e59
+  #    define BOOST_PP_VARIADIC_ELEM_60(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, ...) e60
+  #    define BOOST_PP_VARIADIC_ELEM_61(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, ...) e61
+  #    define BOOST_PP_VARIADIC_ELEM_62(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, ...) e62
+  #    define BOOST_PP_VARIADIC_ELEM_63(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63, ...) e63
+
+  //BOOST_PP_REM, BOOST_PP_TUPLE_REM, BOOST_PP_TUPLE_REM_CTOR
+  //* **************************************************************************
+  //*                                                                          *
+  //*     (C) Copyright Paul Mensonides 2002-2011.                             *
+  //*     (C) Copyright Edward Diener 2011.                                    *
+  //*     Distributed under the Boost Software License, Version 1.0. (See      *
+  //*     accompanying file LICENSE_1_0.txt or copy at                         *
+  //*     http://www.boost.org/LICENSE_1_0.txt)                                *
+  //*                                                                          *
+  //************************************************************************** *
+  //
+  // See http://www.boost.org for most recent version. 
+
+  // Wipe the previous versions of the macros.
+  #    ifndef BOOST_PREPROCESSOR_TUPLE_REM_HPP
+  #       define BOOST_PREPROCESSOR_TUPLE_REM_HPP
+  #    endif
+  #    ifdef BOOST_PP_REM
+  #       undef BOOST_PP_REM
+  #    endif
+  #    ifdef BOOST_PP_TUPLE_REM
+  #       undef BOOST_PP_TUPLE_REM
+  #    endif  
+  #    ifdef BOOST_PP_TUPLE_REM_CTOR
+  #       undef BOOST_PP_TUPLE_REM_CTOR
+  #       undef BOOST_PP_TUPLE_REM_CTOR_O_1
+  #       undef BOOST_PP_TUPLE_REM_CTOR_O_2
+  #       if BOOST_PP_VARIADICS_MSVC
+  #          undef BOOST_PP_TUPLE_REM_CTOR_I
+  #          undef BOOST_PP_TUPLE_REM_CTOR_II
+  #       endif
+  #    endif
+
+  // Redefine BOOST_PP_REM
+  #    define BOOST_PP_REM(...) __VA_ARGS__
+
+  // Redefine BOOST_PP_TUPLE_REM
+  #    define BOOST_PP_TUPLE_REM(size) BOOST_PP_REM
+
+  // Wipe the previous versions of the variadics
+  # undef BOOST_PP_TUPLE_REM_1
+  # undef BOOST_PP_TUPLE_REM_2
+  # undef BOOST_PP_TUPLE_REM_3
+  # undef BOOST_PP_TUPLE_REM_4
+  # undef BOOST_PP_TUPLE_REM_5
+  # undef BOOST_PP_TUPLE_REM_6
+  # undef BOOST_PP_TUPLE_REM_7
+  # undef BOOST_PP_TUPLE_REM_8
+  # undef BOOST_PP_TUPLE_REM_9
+  # undef BOOST_PP_TUPLE_REM_10
+  # undef BOOST_PP_TUPLE_REM_11
+  # undef BOOST_PP_TUPLE_REM_12
+  # undef BOOST_PP_TUPLE_REM_13
+  # undef BOOST_PP_TUPLE_REM_14
+  # undef BOOST_PP_TUPLE_REM_15
+  # undef BOOST_PP_TUPLE_REM_16
+  # undef BOOST_PP_TUPLE_REM_17
+  # undef BOOST_PP_TUPLE_REM_18
+  # undef BOOST_PP_TUPLE_REM_19
+  # undef BOOST_PP_TUPLE_REM_20
+  # undef BOOST_PP_TUPLE_REM_21
+  # undef BOOST_PP_TUPLE_REM_22
+  # undef BOOST_PP_TUPLE_REM_23
+  # undef BOOST_PP_TUPLE_REM_24
+  # undef BOOST_PP_TUPLE_REM_25
+  # undef BOOST_PP_TUPLE_REM_26
+  # undef BOOST_PP_TUPLE_REM_27
+  # undef BOOST_PP_TUPLE_REM_28
+  # undef BOOST_PP_TUPLE_REM_29
+  # undef BOOST_PP_TUPLE_REM_30
+  # undef BOOST_PP_TUPLE_REM_31
+  # undef BOOST_PP_TUPLE_REM_32
+  # undef BOOST_PP_TUPLE_REM_33
+  # undef BOOST_PP_TUPLE_REM_34
+  # undef BOOST_PP_TUPLE_REM_35
+  # undef BOOST_PP_TUPLE_REM_36
+  # undef BOOST_PP_TUPLE_REM_37
+  # undef BOOST_PP_TUPLE_REM_38
+  # undef BOOST_PP_TUPLE_REM_39
+  # undef BOOST_PP_TUPLE_REM_40
+  # undef BOOST_PP_TUPLE_REM_41
+  # undef BOOST_PP_TUPLE_REM_42
+  # undef BOOST_PP_TUPLE_REM_43
+  # undef BOOST_PP_TUPLE_REM_44
+  # undef BOOST_PP_TUPLE_REM_45
+  # undef BOOST_PP_TUPLE_REM_46
+  # undef BOOST_PP_TUPLE_REM_47
+  # undef BOOST_PP_TUPLE_REM_48
+  # undef BOOST_PP_TUPLE_REM_49
+  # undef BOOST_PP_TUPLE_REM_50
+  # undef BOOST_PP_TUPLE_REM_51
+  # undef BOOST_PP_TUPLE_REM_52
+  # undef BOOST_PP_TUPLE_REM_53
+  # undef BOOST_PP_TUPLE_REM_54
+  # undef BOOST_PP_TUPLE_REM_55
+  # undef BOOST_PP_TUPLE_REM_56
+  # undef BOOST_PP_TUPLE_REM_57
+  # undef BOOST_PP_TUPLE_REM_58
+  # undef BOOST_PP_TUPLE_REM_59
+  # undef BOOST_PP_TUPLE_REM_60
+  # undef BOOST_PP_TUPLE_REM_61
+  # undef BOOST_PP_TUPLE_REM_62
+  # undef BOOST_PP_TUPLE_REM_63
+  # undef BOOST_PP_TUPLE_REM_64
+
+  // Redefine them
+  # define BOOST_PP_TUPLE_REM_1(e0) e0
+  # define BOOST_PP_TUPLE_REM_2(e0, e1) e0, e1
+  # define BOOST_PP_TUPLE_REM_3(e0, e1, e2) e0, e1, e2
+  # define BOOST_PP_TUPLE_REM_4(e0, e1, e2, e3) e0, e1, e2, e3
+  # define BOOST_PP_TUPLE_REM_5(e0, e1, e2, e3, e4) e0, e1, e2, e3, e4
+  # define BOOST_PP_TUPLE_REM_6(e0, e1, e2, e3, e4, e5) e0, e1, e2, e3, e4, e5
+  # define BOOST_PP_TUPLE_REM_7(e0, e1, e2, e3, e4, e5, e6) e0, e1, e2, e3, e4, e5, e6
+  # define BOOST_PP_TUPLE_REM_8(e0, e1, e2, e3, e4, e5, e6, e7) e0, e1, e2, e3, e4, e5, e6, e7
+  # define BOOST_PP_TUPLE_REM_9(e0, e1, e2, e3, e4, e5, e6, e7, e8) e0, e1, e2, e3, e4, e5, e6, e7, e8
+  # define BOOST_PP_TUPLE_REM_10(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9
+  # define BOOST_PP_TUPLE_REM_11(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10
+  # define BOOST_PP_TUPLE_REM_12(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11
+  # define BOOST_PP_TUPLE_REM_13(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12
+  # define BOOST_PP_TUPLE_REM_14(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13
+  # define BOOST_PP_TUPLE_REM_15(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14
+  # define BOOST_PP_TUPLE_REM_16(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15
+  # define BOOST_PP_TUPLE_REM_17(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16
+  # define BOOST_PP_TUPLE_REM_18(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17
+  # define BOOST_PP_TUPLE_REM_19(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18
+  # define BOOST_PP_TUPLE_REM_20(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19
+  # define BOOST_PP_TUPLE_REM_21(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20
+  # define BOOST_PP_TUPLE_REM_22(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21
+  # define BOOST_PP_TUPLE_REM_23(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22
+  # define BOOST_PP_TUPLE_REM_24(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23
+  # define BOOST_PP_TUPLE_REM_25(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24
+  # define BOOST_PP_TUPLE_REM_26(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25
+  # define BOOST_PP_TUPLE_REM_27(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26
+  # define BOOST_PP_TUPLE_REM_28(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27
+  # define BOOST_PP_TUPLE_REM_29(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28
+  # define BOOST_PP_TUPLE_REM_30(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29
+  # define BOOST_PP_TUPLE_REM_31(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30
+  # define BOOST_PP_TUPLE_REM_32(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31
+  # define BOOST_PP_TUPLE_REM_33(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32
+  # define BOOST_PP_TUPLE_REM_34(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33
+  # define BOOST_PP_TUPLE_REM_35(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34
+  # define BOOST_PP_TUPLE_REM_36(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35
+  # define BOOST_PP_TUPLE_REM_37(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36
+  # define BOOST_PP_TUPLE_REM_38(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37
+  # define BOOST_PP_TUPLE_REM_39(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38
+  # define BOOST_PP_TUPLE_REM_40(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39
+  # define BOOST_PP_TUPLE_REM_41(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40
+  # define BOOST_PP_TUPLE_REM_42(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41
+  # define BOOST_PP_TUPLE_REM_43(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42
+  # define BOOST_PP_TUPLE_REM_44(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43
+  # define BOOST_PP_TUPLE_REM_45(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44
+  # define BOOST_PP_TUPLE_REM_46(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45
+  # define BOOST_PP_TUPLE_REM_47(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46
+  # define BOOST_PP_TUPLE_REM_48(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47
+  # define BOOST_PP_TUPLE_REM_49(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48
+  # define BOOST_PP_TUPLE_REM_50(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49
+  # define BOOST_PP_TUPLE_REM_51(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50
+  # define BOOST_PP_TUPLE_REM_52(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51
+  # define BOOST_PP_TUPLE_REM_53(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52
+  # define BOOST_PP_TUPLE_REM_54(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53
+  # define BOOST_PP_TUPLE_REM_55(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54
+  # define BOOST_PP_TUPLE_REM_56(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55
+  # define BOOST_PP_TUPLE_REM_57(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56
+  # define BOOST_PP_TUPLE_REM_58(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57
+  # define BOOST_PP_TUPLE_REM_59(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58
+  # define BOOST_PP_TUPLE_REM_60(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59
+  # define BOOST_PP_TUPLE_REM_61(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60
+  # define BOOST_PP_TUPLE_REM_62(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61
+  # define BOOST_PP_TUPLE_REM_63(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62
+  # define BOOST_PP_TUPLE_REM_64(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63) e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63
+
+  // Redefine BOOST_PP_TUPLE_REM_CTOR
+  #    if BOOST_PP_VARIADICS_MSVC
+  #        define BOOST_PP_TUPLE_REM_CTOR(...) BOOST_PP_TUPLE_REM_CTOR_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_REM_CTOR_O_, __VA_ARGS__), (__VA_ARGS__))
+  #        define BOOST_PP_TUPLE_REM_CTOR_I(m, args) BOOST_PP_TUPLE_REM_CTOR_II(m, args)
+  #        define BOOST_PP_TUPLE_REM_CTOR_II(m, args) BOOST_PP_CAT(m ## args,)
+  #    else
+  #        define BOOST_PP_TUPLE_REM_CTOR(...) BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_REM_CTOR_O_, __VA_ARGS__)(__VA_ARGS__)
+  #    endif
+  #    define BOOST_PP_TUPLE_REM_CTOR_O_1(tuple) BOOST_PP_REM tuple
+  #    define BOOST_PP_TUPLE_REM_CTOR_O_2(size, tuple) BOOST_PP_TUPLE_REM_CTOR_O_1(tuple)
+
+  // BOOST_PP_TUPLE_ELEM
+  //*****************************************************************
+  // Copyright (C) 2001
+  // Housemarque Oy
+  // http://www.housemarque.com
+  //
+  // Distributed under the Boost Software License, Version 1.0. (See
+  // accompanying file LICENSE_1_0.txt or copy at
+  // http://www.boost.org/LICENSE_1_0.txt)
+  //
+  // Revised by Paul Mensonides (2002-2011) */
+  // Revised by Edward Diener (2011) */
+  //
+  // See http://www.boost.org for most recent version. */
+  //*****************************************************************
+
+  // Wipe the previous version of the macro.
+  #    ifndef BOOST_PREPROCESSOR_TUPLE_ELEM_HPP
+  #       define BOOST_PREPROCESSOR_TUPLE_ELEM_HPP
+  #    endif
+  #    ifdef BOOST_PP_TUPLE_ELEM
+  #       undef BOOST_PP_TUPLE_ELEM
+  #       undef BOOST_PP_TUPLE_ELEM_O_1
+  #       undef BOOST_PP_TUPLE_ELEM_O_2
+  #       undef BOOST_PP_TUPLE_ELEM_O_3
+  #       if BOOST_PP_VARIADICS_MSVC
+  #          undef BOOST_PP_TUPLE_ELEM_I
+  #          undef BOOST_PP_TUPLE_ELEM_II
+  #       endif
+  #    endif
+
+  // Redefine it
+  #    if BOOST_PP_VARIADICS_MSVC
+  #        define BOOST_PP_TUPLE_ELEM(...) BOOST_PP_TUPLE_ELEM_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_ELEM_O_, __VA_ARGS__), (__VA_ARGS__))
+  #        define BOOST_PP_TUPLE_ELEM_I(m, args) BOOST_PP_TUPLE_ELEM_II(m, args)
+  #        define BOOST_PP_TUPLE_ELEM_II(m, args) BOOST_PP_CAT(m ## args,)
+  #    else
+  #        define BOOST_PP_TUPLE_ELEM(...) BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_ELEM_O_, __VA_ARGS__)(__VA_ARGS__)
+  #    endif
+  #    define BOOST_PP_TUPLE_ELEM_O_2(n, tuple) BOOST_PP_VARIADIC_ELEM(n, BOOST_PP_REM tuple)
+  #    define BOOST_PP_TUPLE_ELEM_O_3(size, n, tuple) BOOST_PP_TUPLE_ELEM_O_2(n, tuple)
+
+  // Directly used elsewhere in Boost; may be required if other variadics replacements are added to this header.
+  //# define BOOST_PP_TUPLE_ELEM_1_0(a) a
+  //# define BOOST_PP_TUPLE_ELEM_2_0(a, b) a
+  //# define BOOST_PP_TUPLE_ELEM_2_1(a, b) b
+  //# define BOOST_PP_TUPLE_ELEM_3_0(a, b, c) a
+  //# define BOOST_PP_TUPLE_ELEM_3_1(a, b, c) b
+  //# define BOOST_PP_TUPLE_ELEM_3_2(a, b, c) c
+
+
+  // BOOST_PP_TUPLE_TO_LIST
+  //*****************************************************************
+  // Copyright (C) 2001
+  // Housemarque Oy
+  // http://www.housemarque.com
+  //
+  // Distributed under the Boost Software License, Version 1.0. (See
+  // accompanying file LICENSE_1_0.txt or copy at
+  // http://www.boost.org/LICENSE_1_0.txt)
+  //
+  // Revised by Paul Mensonides (2002-2011)
+  // Revised by Edward Diener (2011)
+  //
+  // See http://www.boost.org for most recent version.
+  //*****************************************************************
+
+  // Wipe the previous version of the macro.
+  #    ifndef BOOST_PREPROCESSOR_TUPLE_TO_LIST_HPP
+  #       define BOOST_PREPROCESSOR_TUPLE_TO_LIST_HPP
+  #    endif
+  #    ifdef BOOST_PP_TUPLE_ELEM
+  #       undef BOOST_PP_TUPLE_TO_LIST
+  #       undef BOOST_PP_TUPLE_TO_LIST_O_1
+  #       undef BOOST_PP_TUPLE_TO_LIST_O_2
+  #       undef BOOST_PP_TUPLE_TO_LIST_O_3
+  #       if BOOST_PP_VARIADICS_MSVC
+  #          undef BOOST_PP_TUPLE_TO_LIST_I
+  #          undef BOOST_PP_TUPLE_TO_LIST_II
+  #       endif
+  #    endif
+
+  // Redefine it
+  #    if BOOST_PP_VARIADICS_MSVC
+  #        define BOOST_PP_TUPLE_TO_LIST(...) BOOST_PP_TUPLE_TO_LIST_I(BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_LIST_O_, __VA_ARGS__), (__VA_ARGS__))
+  #        define BOOST_PP_TUPLE_TO_LIST_I(m, args) BOOST_PP_TUPLE_TO_LIST_II(m, args)
+  #        define BOOST_PP_TUPLE_TO_LIST_II(m, args) BOOST_PP_CAT(m ## args,)
+  #    else
+  #        define BOOST_PP_TUPLE_TO_LIST(...) BOOST_PP_OVERLOAD(BOOST_PP_TUPLE_TO_LIST_O_, __VA_ARGS__)(__VA_ARGS__)
+  #    endif
+  #    define BOOST_PP_TUPLE_TO_LIST_O_1(tuple) BOOST_PP_CAT(BOOST_PP_TUPLE_TO_LIST_, BOOST_PP_VARIADIC_SIZE tuple) tuple
+  #    define BOOST_PP_TUPLE_TO_LIST_O_2(size, tuple) BOOST_PP_TUPLE_TO_LIST_O_1(tuple)
+
+  // Wipe the previous versions of the variadics
+  # undef BOOST_PP_TUPLE_TO_LIST_1
+  # undef BOOST_PP_TUPLE_TO_LIST_2
+  # undef BOOST_PP_TUPLE_TO_LIST_3
+  # undef BOOST_PP_TUPLE_TO_LIST_4
+  # undef BOOST_PP_TUPLE_TO_LIST_5
+  # undef BOOST_PP_TUPLE_TO_LIST_6
+  # undef BOOST_PP_TUPLE_TO_LIST_7
+  # undef BOOST_PP_TUPLE_TO_LIST_8
+  # undef BOOST_PP_TUPLE_TO_LIST_9
+  # undef BOOST_PP_TUPLE_TO_LIST_10
+  # undef BOOST_PP_TUPLE_TO_LIST_11
+  # undef BOOST_PP_TUPLE_TO_LIST_12
+  # undef BOOST_PP_TUPLE_TO_LIST_13
+  # undef BOOST_PP_TUPLE_TO_LIST_14
+  # undef BOOST_PP_TUPLE_TO_LIST_15
+  # undef BOOST_PP_TUPLE_TO_LIST_16
+  # undef BOOST_PP_TUPLE_TO_LIST_17
+  # undef BOOST_PP_TUPLE_TO_LIST_18
+  # undef BOOST_PP_TUPLE_TO_LIST_19
+  # undef BOOST_PP_TUPLE_TO_LIST_20
+  # undef BOOST_PP_TUPLE_TO_LIST_21
+  # undef BOOST_PP_TUPLE_TO_LIST_22
+  # undef BOOST_PP_TUPLE_TO_LIST_23
+  # undef BOOST_PP_TUPLE_TO_LIST_24
+  # undef BOOST_PP_TUPLE_TO_LIST_25
+  # undef BOOST_PP_TUPLE_TO_LIST_26
+  # undef BOOST_PP_TUPLE_TO_LIST_27
+  # undef BOOST_PP_TUPLE_TO_LIST_28
+  # undef BOOST_PP_TUPLE_TO_LIST_29
+  # undef BOOST_PP_TUPLE_TO_LIST_30
+  # undef BOOST_PP_TUPLE_TO_LIST_31
+  # undef BOOST_PP_TUPLE_TO_LIST_32
+  # undef BOOST_PP_TUPLE_TO_LIST_33
+  # undef BOOST_PP_TUPLE_TO_LIST_34
+  # undef BOOST_PP_TUPLE_TO_LIST_35
+  # undef BOOST_PP_TUPLE_TO_LIST_36
+  # undef BOOST_PP_TUPLE_TO_LIST_37
+  # undef BOOST_PP_TUPLE_TO_LIST_38
+  # undef BOOST_PP_TUPLE_TO_LIST_39
+  # undef BOOST_PP_TUPLE_TO_LIST_40
+  # undef BOOST_PP_TUPLE_TO_LIST_41
+  # undef BOOST_PP_TUPLE_TO_LIST_42
+  # undef BOOST_PP_TUPLE_TO_LIST_43
+  # undef BOOST_PP_TUPLE_TO_LIST_44
+  # undef BOOST_PP_TUPLE_TO_LIST_45
+  # undef BOOST_PP_TUPLE_TO_LIST_46
+  # undef BOOST_PP_TUPLE_TO_LIST_47
+  # undef BOOST_PP_TUPLE_TO_LIST_48
+  # undef BOOST_PP_TUPLE_TO_LIST_49
+  # undef BOOST_PP_TUPLE_TO_LIST_50
+  # undef BOOST_PP_TUPLE_TO_LIST_51
+  # undef BOOST_PP_TUPLE_TO_LIST_52
+  # undef BOOST_PP_TUPLE_TO_LIST_53
+  # undef BOOST_PP_TUPLE_TO_LIST_54
+  # undef BOOST_PP_TUPLE_TO_LIST_55
+  # undef BOOST_PP_TUPLE_TO_LIST_56
+  # undef BOOST_PP_TUPLE_TO_LIST_57
+  # undef BOOST_PP_TUPLE_TO_LIST_58
+  # undef BOOST_PP_TUPLE_TO_LIST_59
+  # undef BOOST_PP_TUPLE_TO_LIST_60
+  # undef BOOST_PP_TUPLE_TO_LIST_61
+  # undef BOOST_PP_TUPLE_TO_LIST_62
+  # undef BOOST_PP_TUPLE_TO_LIST_63
+  # undef BOOST_PP_TUPLE_TO_LIST_64
+
+  // Redefine them
+  # define BOOST_PP_TUPLE_TO_LIST_1(e0) (e0, BOOST_PP_NIL)
+  # define BOOST_PP_TUPLE_TO_LIST_2(e0, e1) (e0, (e1, BOOST_PP_NIL))
+  # define BOOST_PP_TUPLE_TO_LIST_3(e0, e1, e2) (e0, (e1, (e2, BOOST_PP_NIL)))
+  # define BOOST_PP_TUPLE_TO_LIST_4(e0, e1, e2, e3) (e0, (e1, (e2, (e3, BOOST_PP_NIL))))
+  # define BOOST_PP_TUPLE_TO_LIST_5(e0, e1, e2, e3, e4) (e0, (e1, (e2, (e3, (e4, BOOST_PP_NIL)))))
+  # define BOOST_PP_TUPLE_TO_LIST_6(e0, e1, e2, e3, e4, e5) (e0, (e1, (e2, (e3, (e4, (e5, BOOST_PP_NIL))))))
+  # define BOOST_PP_TUPLE_TO_LIST_7(e0, e1, e2, e3, e4, e5, e6) (e0, (e1, (e2, (e3, (e4, (e5, (e6, BOOST_PP_NIL)))))))
+  # define BOOST_PP_TUPLE_TO_LIST_8(e0, e1, e2, e3, e4, e5, e6, e7) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, BOOST_PP_NIL))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_9(e0, e1, e2, e3, e4, e5, e6, e7, e8) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, BOOST_PP_NIL)))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_10(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, BOOST_PP_NIL))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_11(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, BOOST_PP_NIL)))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_12(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, BOOST_PP_NIL))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_13(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, BOOST_PP_NIL)))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_14(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, BOOST_PP_NIL))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_15(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, BOOST_PP_NIL)))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_16(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, BOOST_PP_NIL))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_17(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, BOOST_PP_NIL)))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_18(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, BOOST_PP_NIL))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_19(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, BOOST_PP_NIL)))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_20(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, BOOST_PP_NIL))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_21(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, BOOST_PP_NIL)))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_22(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, BOOST_PP_NIL))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_23(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, BOOST_PP_NIL)))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_24(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, BOOST_PP_NIL))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_25(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, BOOST_PP_NIL)))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_26(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, BOOST_PP_NIL))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_27(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, BOOST_PP_NIL)))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_28(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, BOOST_PP_NIL))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_29(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, BOOST_PP_NIL)))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_30(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, BOOST_PP_NIL))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_31(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, BOOST_PP_NIL)))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_32(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, BOOST_PP_NIL))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_33(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, BOOST_PP_NIL)))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_34(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, BOOST_PP_NIL))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_35(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_36(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_37(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_38(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_39(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_40(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_41(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_42(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_43(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_44(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_45(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_46(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_47(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_48(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_49(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_50(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_51(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_52(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_53(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_54(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_55(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_56(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_57(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_58(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_59(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, (e58, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_60(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, (e58, (e59, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_61(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, (e58, (e59, (e60, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_62(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, (e58, (e59, (e60, (e61, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_63(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, (e58, (e59, (e60, (e61, (e62, BOOST_PP_NIL)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  # define BOOST_PP_TUPLE_TO_LIST_64(e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28, e29, e30, e31, e32, e33, e34, e35, e36, e37, e38, e39, e40, e41, e42, e43, e44, e45, e46, e47, e48, e49, e50, e51, e52, e53, e54, e55, e56, e57, e58, e59, e60, e61, e62, e63) (e0, (e1, (e2, (e3, (e4, (e5, (e6, (e7, (e8, (e9, (e10, (e11, (e12, (e13, (e14, (e15, (e16, (e17, (e18, (e19, (e20, (e21, (e22, (e23, (e24, (e25, (e26, (e27, (e28, (e29, (e30, (e31, (e32, (e33, (e34, (e35, (e36, (e37, (e38, (e39, (e40, (e41, (e42, (e43, (e44, (e45, (e46, (e47, (e48, (e49, (e50, (e51, (e52, (e53, (e54, (e55, (e56, (e57, (e58, (e59, (e60, (e61, (e62, (e63, BOOST_PP_NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+# endif //BOOST_PP_VARIADICS
 
 # endif //__boost_fallbacks_hpp__
 

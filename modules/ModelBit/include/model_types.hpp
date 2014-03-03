@@ -32,11 +32,12 @@
 #ifndef gambit_modelparameters_hpp_
 #define gambit_modelparameters_hpp_ 1
 
-#include "ModelParametersBase.hpp"
-#include "shared_ptr.hpp"
 #include <map>
 #include <iostream>
 #include <sstream>
+
+#include "ModelParametersBase.hpp"
+#include "shared_ptr.hpp"
 #include "logs.hpp"
 
 namespace Gambit {

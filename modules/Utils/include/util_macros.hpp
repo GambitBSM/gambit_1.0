@@ -18,10 +18,10 @@
 #ifndef __util_macros_hpp__
 #define __util_macros_hpp__
 
+#include "boost_fallbacks.hpp"
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
-#include <boost_fallbacks.hpp>
  
 /// \name Compile-time error macro.
 #define FAIL(x) static_assert(false,"GAMBIT precompiler error: " x);
@@ -132,9 +132,6 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define INSERT_NONEMPTY_I0(...) ,__VA_ARGS__
 #define INSERT_NONEMPTY_I1(...)
 /// @}
-
-
-
 
 /// \name Boost 2-tuple access macros
 /// Used to avoid possible reentrancy issues with multiple use of BOOST_PP_TUPLE_ELEM.
