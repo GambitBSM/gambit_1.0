@@ -305,8 +305,9 @@ namespace Gambit
 {
   namespace Backends
   {
-    std::map<void*, void*> frontBackFuncMap;  
-    void* accessFrontBackFuncMap(void* frontFunc)
+    typedef void(*voidFptr)();
+    std::map<voidFptr, voidFptr> frontBackFuncMap;  
+    voidFptr accessFrontBackFuncMap(voidFptr frontFunc)
     {
         if(frontBackFuncMap.count(frontFunc) > 0)
         {
@@ -378,7 +379,7 @@ namespace Gambit
 #define BE_FUNC_GET_CALLARGS_BE_I0(ARG,IDX) , FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_BE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_BE_II0(ARG,IDX) , FE_arg##IDX.getArray()
-#define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) , reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(accessFrontBackFuncMap(reinterpret_cast<void*>(FE_arg##IDX)))
+#define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) , reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(accessFrontBackFuncMap(reinterpret_cast<voidFptr>(FE_arg##IDX)))
 
 /* Expands to the argument list of a function pointer argument in the (frontend) function exposed to the user. */  
 #define BEF_FPTR_CALLARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_FE_I,x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
@@ -409,7 +410,7 @@ namespace Gambit
   NAME = NAME##_wrapper;             
 
 /* Adds function to frontBackFuncMap */ 
-#define BE_FUNC_ADD_TO_FPTR_MAP(NAME) frontBackFuncMap.insert(std::make_pair( reinterpret_cast<void*>(NAME), reinterpret_cast<void*>(NAME##_unwrapped)));
+#define BE_FUNC_ADD_TO_FPTR_MAP(NAME) frontBackFuncMap.insert(std::make_pair( reinterpret_cast<voidFptr>(NAME), reinterpret_cast<voidFptr>(NAME##_unwrapped)));
 
 #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)\
 namespace Gambit                                                                                \
