@@ -18,6 +18,10 @@
 #define __test_uniform_hpp__
 
 #include <priors.hpp>
+#include <algorithm>
+#include <cmath>
+#include <yaml_parser.hpp>
+#include <scanner_utils.hpp>
 
 namespace Gambit
 {
@@ -32,11 +36,7 @@ namespace Gambit
                         std::map<std::string, double> param_map;
                         
                 public:
-#ifndef NO_GCC_4_7
                         Test_Uniform (const IniParser::Options &options) : prior(nullptr)
-#else
-                        Test_Uniform (const IniParser::Options &options) : prior(0)
-#endif
                         {
                                 if (options.hasKey("dim"))
                                 {
@@ -66,11 +66,7 @@ namespace Gambit
                         
                         double operator() (std::vector<double> &unit)
                         {
-#ifndef NO_GCC_4_7
                                 if (prior == nullptr)
-#else
-                                if (prior == 0)
-#endif
                                 {
                                         params = unit;
                                 }
@@ -86,17 +82,10 @@ namespace Gambit
                                 
                                 return 0.0;
                         }
-#ifndef NO_GCC_4_7
+
                         ~Test_Uniform() noexcept
-#else
-                        ~Test_Uniform()
-#endif
                         {
-#ifndef NO_GCC_4_7
                                 if (prior != nullptr)
-#else
-                                if (prior != 0)
-#endif
                                         delete prior;
                         }
                 };

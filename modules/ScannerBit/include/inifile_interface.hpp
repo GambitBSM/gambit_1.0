@@ -28,10 +28,9 @@
 #include <vector>
 #include <string>
 #include <scanner_utils.hpp>
-
-#define INPUT_SCANNER_FUNCTION(map, func) \
-map[ #func ].first = factory_template <func>::factory; \
-map[ #func ].second = factory_template <func>::remove; \
+#include <yaml_parser.hpp>
+#include <algorithm>
+#include <gambit_scan.hpp>
 
 namespace Gambit
 {
@@ -45,48 +44,7 @@ namespace Gambit
                         std::string name;
                         
                 public:
-                        IniFileInterface(const IniParser::IniFile &iniFile) : boundIniFile(&iniFile)
-                        {       
-                                bool redirect = false;
-                                if (iniFile.hasScannerKey("enable_redirect"))
-                                {
-                                        redirect = iniFile.getScannerValue<bool>("enable_redirect");
-                                }
-
-                                if (redirect)
-                                {
-                                        if (iniFile.hasScannerKey("redirect_output", "scanner"))
-                                        {
-                                                std::string file = iniFile.getScannerValue<std::string>("redirect_output", "scanner");
-                                                
-                                                outputHandler::out.set("scanner", file);
-                                        }
-                                        if (iniFile.hasScannerKey("redirect_output", "error"))
-                                        {
-                                                std::string file = iniFile.getScannerValue<std::string>("redirect_output", "error");
-                                                scanLog::err << scanLog::set_output(file);
-                                        }
-                                }
-                                
-                                if (iniFile.hasScannerKey("scanner", "file_path"))
-                                {
-                                        file = iniFile.getScannerValue<std::string>("scanner", "file_path");
-
-                                        if (boundIniFile->hasScannerKey("scanner", "plugin")) 
-                                        {
-                                                name = iniFile.getScannerValue<std::string>("scanner", "plugin");
-                                        }
-                                        else
-                                        {
-                                                name = "";
-                                        }
-                                }
-                                else
-                                {
-                                        file = "";
-                                        name = "";
-                                }
-                        }
+                        IniFileInterface(const IniParser::IniFile &iniFile);
                         
                         const std::string pluginName() const {return name;};
                         
