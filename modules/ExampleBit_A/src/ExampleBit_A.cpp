@@ -294,6 +294,19 @@ namespace Gambit
 
     /// @} @}
 
+
+    /// \name SLHA Examples
+    /// Some example functions for getting and manipulating SLHA-style information
+    /// @{
+ 
+    /// Calculate some random thing which requires a low energy MSSM spectrum
+    // void BRstopneutralino(int &result)
+    // {
+    //   using namespace Pipes::BRstopneutralino;
+
+    // }
+
+    /// @}
   }
 
 }

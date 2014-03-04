@@ -47,7 +47,6 @@ void beispiel()
   cout << "Your selected models are: " << selectedmodels << endl;
 
   // Build prior object based on inifile instructions
-  // comment out until fixed - Aldo
   //Priors::PriorManager priorManager(iniFile);
 
   // Extract a pointer to the prior object, so that it can be passed to the Scanner.
