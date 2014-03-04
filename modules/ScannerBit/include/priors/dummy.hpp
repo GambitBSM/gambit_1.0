@@ -17,6 +17,8 @@
 #ifndef DUMMY_PRIOR_HPP
 #define DUMMY_PRIOR_HPP
 
+#include <algorithm>
+
 namespace Gambit
 {
    namespace Priors
@@ -35,10 +37,10 @@ namespace Gambit
                 void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
                 {
                         auto it_vec = unitpars.begin();
-                        for (auto &par : param_names)
+                        std::for_each (param_names.begin(), param_names.end(), [&] (const std::string &par)
                         {
                                 outputMap[par] = *(it_vec++);
-                        }
+                        });
                 }
         };
         

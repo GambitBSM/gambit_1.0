@@ -105,11 +105,17 @@ CFLAGS= -I$(COREDIR)/include \
 
 LN = $(CC)
 ifdef SHH
-  CFLAGS += -O3 -g -fPIC -fopenmp -std=c++0x 
+  CFLAGS += -O3 -g -fPIC -fopenmp 
 else
-  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp -std=c++0x  #-std=c++11  CW: not present in gcc 4.5.4
+  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp
 endif
 FFLAGS = -O3 -fPIC
+
+ifdef NO_GCC_4_7
+  CFLAGS += -DNO_GCC_4_7 -std=c++0x
+else
+  CFLAGS += -std=c++11
+endif
 
 # CoreBit/include/logs.hpp:
 # hard disable (via macros) of low-level gambit debugging.

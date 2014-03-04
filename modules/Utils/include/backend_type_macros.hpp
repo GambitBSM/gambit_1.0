@@ -13,6 +13,10 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Feb
 ///
+///  \author Pat Scott  
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Feb
+///
 ///  *********************************************
 
 #ifndef __BACKEND_TYPE_MACROS_HPP__
@@ -23,6 +27,9 @@
 #include <dlfcn.h>
 #include <map>
 
+#include "util_macros.hpp"
+#include "util_types.hpp"
+
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/list/for_each.hpp>
 #include <boost/preprocessor/list/rest_n.hpp>
@@ -32,12 +39,9 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/tuple/to_list.hpp>
 
-#include "util_macros.hpp"
-#include "util_types.hpp"
-
-#if !BOOST_PP_VARIADICS
-  #error Variadic Boost preprocessor macros required. BOOST_PP_VARIADICS must be set to 1.
-#endif
+//#if !BOOST_PP_VARIADICS
+//  #error Variadic Boost preprocessor macros required. BOOST_PP_VARIADICS must be set to 1.
+//#endif
 
 
 // --------------------------------------------------------------------------   

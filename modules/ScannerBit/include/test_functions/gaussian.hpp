@@ -2,16 +2,11 @@
 //  *********************************************
 ///  \file
 ///
-///  Prior object construction routines
-///  
+///  test functions implementations.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Ben Farmer
-///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 Dec
 ///
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
@@ -19,35 +14,31 @@
 ///
 ///  *********************************************
 
-#ifndef PRIOR_CAUCHY_HPP
-#define PRIOR_CAUCHY_HPP
-//#define _USE_MATH_DEFINES
+#ifndef __test_gaussian_hpp__
+#define __test_gaussian_hpp__
 
-#include <vector>
-#include <cmath>
-#include <algorithm>
+#include <priors.hpp>
+#include <cholesky.hpp>
 
 namespace Gambit
 {
-        namespace Priors
+        namespace Scanner_Testing
         {
-                /// 2D Gaussian prior. Takes covariance matrix as arguments
-                class Cauchy : public BasePrior
+                class Test_Gaussian : public Test_Uniform
                 {
                 private:
-                        std::vector <std::string> param;
+                        const std::vector <std::string> &param;
+                        const std::vector <double> &values;
                         std::vector <double> mean;
                         Cholesky col;
                         
-                public: 
-                        // Constructor
-                        Cauchy(const std::vector<std::string>& param, const IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
-                        { 
+                public:
+                        Test_Gaussian (const IniParser::Options &options) : Test_Uniform(options), param(getKeys()), values(getParameters()), col(getKeys().size())
+                        {
                                 std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                              
                                 bool good = true;
                               
-                                //std::cout << "line:  " << options.getLine("cov") << std::endl; getchar();
                                 if (options.hasKey("cov"))
                                 {
                                         cov = options.getValue< std::vector<std::vector<double>> >("cov");
@@ -55,7 +46,7 @@ namespace Gambit
                                         if (cov.size() != param.size())
                                         {
                                                 good = false;
-                                                scanLog::err << "Cauchy (prior):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
+                                                scanLog::err << "Gaussian (test):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
                                         }
                                         
                                         for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
@@ -63,7 +54,7 @@ namespace Gambit
                                                 if (it->size() != cov.size())
                                                 {
                                                         good = false;
-                                                        scanLog::err << "Cauchy (prior):  Covariance matrix is not square." << scanLog::endl;
+                                                        scanLog::err << "Gaussian (test):  Covariance matrix is not square." << scanLog::endl;
                                                 }
                                         }
                                 }
@@ -73,7 +64,7 @@ namespace Gambit
                                         if (sigs.size() != param.size())
                                         {
                                                 good = false;
-                                                scanLog::err << "Cauchy (prior):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
+                                                scanLog::err << "Gaussian (test):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
                                         }
                                         else
                                         {
@@ -86,7 +77,7 @@ namespace Gambit
                                 else
                                 {
                                         good = false;
-                                        scanLog::err << "Cauchy (prior):  Covariance matrix is not defined in inifile." << scanLog::endl;
+                                        scanLog::err << "Gaussian (test):  Covariance matrix is not defined in inifile." << scanLog::endl;
                                 }
                                 
                                 if (options.hasKey("mean"))
@@ -99,39 +90,28 @@ namespace Gambit
                                         else
                                         {
                                                 good = false;
-                                                scanLog::err << "Cauchy (prior):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
+                                                scanLog::err << "Gaussian (test):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
                                         }
                                 }
                                 
                                 if (good)
                                 {
                                         if (!col.EnterMat(cov))
-                                                scanLog::err << "Cauchy (prior):  Covariance matrix is not postive definite." << scanLog::endl;
+                                                scanLog::err << "Gaussian (test):  Covariance matrix is not postive definite." << scanLog::endl;
                                 }
                         }
                         
-                        // Transformation from unit interval to the Gaussian
-                        void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
+                        double operator() (std::vector<double> &unit)
                         {
-                                std::vector<double> vec(unitpars.size());
+                                this->Test_Uniform::(unit);
                                 
-                                std::transform (unitpars.begin(), unitpars.end(), vec.begin(), [] (const double &elem) -> double
-                                {
-                                        return std::tan(M_PI*(elem - 0.5));      
-                                });
-                                
-                                col.ElMult(vec);
-                                
-                                auto v_it = vec.begin();
-                                auto m_it = mean.begin();
-                                std::for_each (param.begin(), param.end(), [&] (const std::string &str)
-                                {
-                                        outputMap[str] = *(v_it++) + *(m_it++);
-                                });
+                                return chol.Square(values, mean);
                         }
+                        
+                        ~Test_Gaussian() = default;
                 };
-        
-                LOAD_PRIOR(cauchy, Cauchy)
+                
+                LOAD_TEST_FUNCTOR(gaussian, Test_Gaussian)
         }
 }
 

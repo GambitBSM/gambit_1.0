@@ -17,6 +17,15 @@
   \item module functions in \begin{verbatim}GAMBIT::<module_name>\end{verbatim}
 \end{itemize}
 
+\subsubsection{Header inclusion ordering} 
+\begin{enumerate}
+  \item C/C++ standard headers
+  \item GAMBIT headers
+  \item Boost headers
+  \item Other required or contributed headers (e.g. yaml-cpp)
+\end{enumerate}
+This helps ensure that the GAMBIT overwrites of some of the Boost headers get applied universally (in the cases where they are actually invoked).
+
 \subsubsection{Whitespaces} 
 \begin{itemize} 
   \item No explicit TABs in files (spaces only)
@@ -95,7 +104,15 @@ The model and scanner `modules' will essentially just be abstract model and scan
 
 These versions to be discussed and ratified/changed at GAMBIT III, March 2014.
 
-\subsubsection{Build system}
+\subsection{Library requirements/compatibilities}
+
+\begin{itemize}
+\item[]\textbf{Boost} v1.42 and later
+\end{itemize}
+
+Maybe make yaml-cpp and HepMC required libs rather than contributed libs at some point too.
+
+\subsection{Build system}
 
 GNU autotools to start with.  Probably cmake later.
 

@@ -43,12 +43,12 @@ namespace Gambit
                                         int dim = options.getValue<int>("dim");
                                         keys.resize(dim);
                                         int i = 0;
-                                        for (auto &key : keys)
+                                        std::for_each (keys.begin(), keys.end(), [&] (std::string &key)
                                         {
                                                 std::stringstream ss;
                                                 ss << i++;
                                                 ss >> key;
-                                        }
+                                        });
                                         
                                         if (options.hasKey("priors"))
                                         {
@@ -78,17 +78,19 @@ namespace Gambit
                                 {
                                         prior->transform(unit, param_map);
                                         
-                                        auto it = params.begin();
-                                        for (auto &key : keys)
+                                        std::transform (keys.begin(), keys.end(), params.begin(), [&] (std::string &key) -> double
                                         {
-                                                *(it++) = param_map[key];
-                                        }
+                                                return param_map[key];
+                                        });
                                 }
                                 
                                 return 0.0;
                         }
-                        
+#ifndef NO_GCC_4_7
+                        ~Test_Uniform() noexcept
+#else
                         ~Test_Uniform()
+#endif
                         {
 #ifndef NO_GCC_4_7
                                 if (prior != nullptr)
