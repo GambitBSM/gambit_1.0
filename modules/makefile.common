@@ -79,7 +79,7 @@ EXSUSYSPECDIR = Example_SUSYspecBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
 HEPSIMPLEDIR = contrib/hep_simple_lib
-FASTSIMDIR = contrib/fast_sim
+FASTSIMDIR = ../extras/fast_sim
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
