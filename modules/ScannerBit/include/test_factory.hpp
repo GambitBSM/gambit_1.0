@@ -45,29 +45,7 @@ namespace Gambit
                         Scanner::Function_Base *func;
                         
                 public:
-                        Test_Function_Factory(IniParser::IniFile &iniFile)
-                        {
-
-                                if (iniFile.hasKey("test_function"))
-                                {
-                                        std::string choice = iniFile.getValue<std::string>("test_function");
-                                        auto it = __test_functor_map__.find(choice);
-                                        if (it != __test_functor_map__.end())
-                                        {
-                                                IniParser::Options options = iniFile.getOptions(choice);
-                                                func = it->second(options);
-                                        }
-                                        else
-                                        {
-                                                func = 0;
-                                                scanLog::err << "Test function \"" << choice << "\" requested, but not defined in iniFile" << scanLog::endl;
-                                        }
-                                }
-                                else
-                                {
-                                        scanLog::err << "Test function was not specified (in inifile, use test_function:)." << scanLog::endl;
-                                }
-                        }
+                        Test_Function_Factory(IniParser::IniFile &iniFile);
                         
                         const std::vector<std::string> & getKeys() const {return func->getKeys();}
                         
@@ -81,8 +59,12 @@ namespace Gambit
                         void remove(void *a) const
                         {
                         }
-                        
+
+                        #ifndef NO_GCC_4_7
+                        ~Test_Function_Factory() noexcept
+			#else
                         ~Test_Function_Factory()
+			#endif
                         {
                                 if (func != 0)
                                         delete func;

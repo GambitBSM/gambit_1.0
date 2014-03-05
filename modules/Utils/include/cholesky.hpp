@@ -82,7 +82,7 @@ namespace Gambit
                         y = b;
                 }
                 
-                double Square(std::vector<double> &y, std::vector<double> &y0)
+                double Square(const std::vector<double> &y, const std::vector<double> &y0)
                 {
                         int i, j, num = y.size();
                         double sum;

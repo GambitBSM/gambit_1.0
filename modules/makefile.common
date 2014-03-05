@@ -114,7 +114,7 @@ endif
 FFLAGS = -O3 -fPIC
 
 ifdef NO_GCC_4_7
-  CFLAGS += -DNO_GCC_4_7 -std=c++0x
+  CFLAGS += -DNO_GCC_4_7 -Dnullptr=0 -std=c++0x
 else
   CFLAGS += -std=c++11
 endif

@@ -17,8 +17,16 @@
 #ifndef __test_gaussian_hpp__
 #define __test_gaussian_hpp__
 
-#include <priors.hpp>
+#include <vector>
+#include <boost/math/special_functions/erf.hpp>
 #include <cholesky.hpp>
+#include <algorithm>
+#include <cmath>
+#include <yaml_parser.hpp>
+#include <scanner_utils.hpp>
+#include <priors.hpp>
+#include <test_factory.hpp>
+#include <test_functions/uniform.hpp>
 
 namespace Gambit
 {
@@ -30,80 +38,15 @@ namespace Gambit
                         const std::vector <std::string> &param;
                         const std::vector <double> &values;
                         std::vector <double> mean;
-                        Cholesky col;
+                        Cholesky chol;
                         
                 public:
-                        Test_Gaussian (const IniParser::Options &options) : Test_Uniform(options), param(getKeys()), values(getParameters()), col(getKeys().size())
-                        {
-                                std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
-                             
-                                bool good = true;
-                              
-                                if (options.hasKey("cov"))
-                                {
-                                        cov = options.getValue< std::vector<std::vector<double>> >("cov");
-                                        
-                                        if (cov.size() != param.size())
-                                        {
-                                                good = false;
-                                                scanLog::err << "Gaussian (test):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
-                                        }
-                                        
-                                        for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
-                                        {
-                                                if (it->size() != cov.size())
-                                                {
-                                                        good = false;
-                                                        scanLog::err << "Gaussian (test):  Covariance matrix is not square." << scanLog::endl;
-                                                }
-                                        }
-                                }
-                                else if (options.hasKey("sigs"))
-                                {
-                                        std::vector <double> sigs = options.getValue <std::vector <double>> ("sigs");
-                                        if (sigs.size() != param.size())
-                                        {
-                                                good = false;
-                                                scanLog::err << "Gaussian (test):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
-                                        }
-                                        else
-                                        {
-                                                for (int i = 0; i < sigs.size(); i++)
-                                                {
-                                                        cov[i][i] = sigs[i]*sigs[i];
-                                                }
-                                        }
-                                }
-                                else
-                                {
-                                        good = false;
-                                        scanLog::err << "Gaussian (test):  Covariance matrix is not defined in inifile." << scanLog::endl;
-                                }
-                                
-                                if (options.hasKey("mean"))
-                                {
-                                        std::vector <double> temp = options.getValue <std::vector <double>> ("mean");
-                                        if (temp.size() == mean.size())
-                                        {
-                                                mean = temp;
-                                        }
-                                        else
-                                        {
-                                                good = false;
-                                                scanLog::err << "Gaussian (test):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
-                                        }
-                                }
-                                
-                                if (good)
-                                {
-                                        if (!col.EnterMat(cov))
-                                                scanLog::err << "Gaussian (test):  Covariance matrix is not postive definite." << scanLog::endl;
-                                }
-                        }
+                        //constructor defined in gaussian.cpp
+                        Test_Gaussian (const IniParser::Options &options);
                         
                         double operator() (std::vector<double> &unit)
                         {
-                                this->Test_Uniform::(unit);
+                                this->Test_Uniform::operator()(unit);
                                 
                                 return chol.Square(values, mean);
                         }
