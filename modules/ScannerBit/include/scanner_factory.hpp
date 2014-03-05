@@ -82,11 +82,11 @@ namespace Gambit
                         {
                                 delete (Function_Base *)a;
                         }
-                        #ifndef NO_GCC_4_7
-                        ~Scanner_Function_Factory() noexcept {}
-			#else
+                        //#ifndef NO_GCC_4_7
+                        //~Scanner_Function_Factory() noexcept {}
+			//#else
                         ~Scanner_Function_Factory(){}
-			#endif
+			//#endif
                 };
         }
 }

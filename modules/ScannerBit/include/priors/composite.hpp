@@ -72,7 +72,8 @@ namespace Gambit
                                 });
                         }
                         
-                        ~CompositePrior() noexcept
+                        //~CompositePrior() noexcept
+                        ~CompositePrior()
                         {
                                 // Need to destroy all the prior objects that we created using 'new'
                                 std::for_each (my_subpriors.begin(), my_subpriors.end(), [] (BasePrior* prior)

@@ -61,11 +61,11 @@ namespace Gambit
                                         return std::string("");
                                 }
                         }
-                        #ifndef NO_GCC_4_7
-                        ~IniFileInterface() noexcept {}
-			#else
+                        //#ifndef NO_GCC_4_7
+                        //~IniFileInterface() noexcept {}
+			//#else
                         ~IniFileInterface(){}
-			#endif
+			//#endif
                 };
         }
 }
