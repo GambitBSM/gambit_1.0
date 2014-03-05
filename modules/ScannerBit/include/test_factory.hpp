@@ -35,8 +35,8 @@ namespace Gambit
         {
                 registry
                 {
-                        typedef Scanner::Function_Base *func(const IniParser::Options &);
-                        reg_elem <func> __test_functor_map__;
+                        typedef Scanner::Function_Base *func_type(const IniParser::Options &);
+                        reg_elem <func_type> __test_functor_map__;
                 }
                 
                 class Test_Function_Factory : public Scanner::Factory_Base

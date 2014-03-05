@@ -45,8 +45,8 @@ namespace Gambit
         {
                 registry
                 {
-                        typedef void* factory_def(const std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
-                        reg_elem <factory_def> __scanner_factories__;
+                        typedef void* factory_type(const std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
+                        reg_elem <factory_type> __scanner_factories__;
                 }
                 
                 class Function_Base
@@ -67,8 +67,7 @@ namespace Gambit
                         Graphs::DependencyResolver &dependencyResolver;
                         Priors::CompositePrior &prior;
                         std::map<std::string, primary_model_functor *> functorMap;
-                        std::map<std::string, std::pair<void *(*)(std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver *, Priors::CompositePrior *, std::string), void (*)(void *)>> factoryMap;
-                       
+                        
                 public:
                         Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior);
                         
