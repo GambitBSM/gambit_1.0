@@ -249,6 +249,9 @@ namespace Gambit
       using std::cout;
       using std::endl;
       
+      typedef double(*fptrType1)(Farray<double,1>&);
+      typedef void (*fptrType2)(Gambit::Farray <double,1>& ,int& ,fptrType1);
+      
       cout << "do_Farray_stuff has been summoned!" << endl;
       cout << "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn" << endl << endl;
       cout << "Calling printStuff..." << endl;
@@ -270,14 +273,13 @@ namespace Gambit
       cout << "Returned value: " << tmp2 << endl;     
 
       cout << endl << "Retrieving pointer to doubleFuncArray1..." << endl;      
-      double (*function_pointer)(Farray<double,1>&) = BEreq::libFarrayTest_doubleFuncArray1.pointer<Farray<double,1>&>();
+      fptrType1 function_pointer = BEreq::libFarrayTest_doubleFuncArray1.pointer<Farray<double,1>&>();
       cout << "Calling doubleFuncArray1 with commonblock element a as argument..." << endl;            
       tmp = function_pointer(commonBlock.a);
       cout << "Returned value: " << tmp << endl;          
       
       cout << endl << "Retrieving pointer to fptrRoutine..." << endl;      
-      void (*function_pointer2)(Gambit::Farray <double,1>& ,int& ,double(*) (Gambit::Farray <double,1>&)) 
-            = BEreq::libFarrayTest_fptrRoutine.pointer<Gambit::Farray <double,1>& ,int& ,double(*) (Gambit::Farray <double,1>&)>();
+      fptrType2 function_pointer2 = BEreq::libFarrayTest_fptrRoutine.pointer<Gambit::Farray <double,1>& ,int& , fptrType1>();
             
       cout << endl << "Calling fptrRoutine commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
       function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);             

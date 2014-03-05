@@ -21,6 +21,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July
+///  \date 2014 Jan
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -43,22 +44,11 @@
 #include "backend_type_macros.hpp"
 
 #include <boost/preprocessor/control/iif.hpp>
-#include <boost/preprocessor/list/for_each.hpp>
-#include <boost/preprocessor/list/rest_n.hpp>
+#include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/list/size.hpp>
-#include <boost/preprocessor/seq/enum.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
-#include <boost/preprocessor/tuple/size.hpp>
-#include <boost/preprocessor/tuple/to_list.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>
-#include <boost/preprocessor/logical/bitand.hpp>
-#include <boost/preprocessor/seq/for_each_i.hpp>
-#include <boost/preprocessor/seq/to_tuple.hpp>
-
-#if !BOOST_PP_VARIADICS
-  #error Variadic Boost preprocessor macros required. BOOST_PP_VARIADICS must be set to 1.
-#endif
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
