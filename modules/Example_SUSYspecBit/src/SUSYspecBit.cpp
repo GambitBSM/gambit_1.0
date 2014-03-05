@@ -27,6 +27,7 @@
 #include "Pythia8/SusyLesHouches.h"
 
 #include "gambit_module_headers.hpp"
+#include "SLHA_types.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 
 namespace Gambit {

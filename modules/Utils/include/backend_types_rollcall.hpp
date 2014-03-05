@@ -19,9 +19,7 @@
 #define __backend_types_rollcall_hpp__
 
 // Include all the type headers from the different backends
-//#include "SLHA_types.hpp" //Greg:  I think someone forgot to do "git add SLHA_types.hpp" lol
-struct MSSMsoftmassesQ {struct {double M1; double M2;} softmasses;}; //Greg:: added these type structs so that Gambit will compile.
-struct MSSMspecQ {struct {double stop1; double neut1;} MASS;};
+#include "SLHA_types.hpp"
 #include "DarkSUSY_types.hpp"
 #include "SuperIso_types.hpp"
 #include "libFarrayTest_types.hpp"

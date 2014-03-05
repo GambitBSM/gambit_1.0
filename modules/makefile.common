@@ -105,6 +105,10 @@ CFLAGS= -I$(COREDIR)/include \
 	-I$(FASTSIMDIR)/include \
 	-I$(MULTINESTINC)
 
+ifdef CPPFLAGS
+   CFLAGS += $(CPPFLAGS)
+endif
+
 LN = $(CC)
 ifdef SHH
   CFLAGS += -O3 -g -fPIC -fopenmp 
