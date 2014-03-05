@@ -40,6 +40,8 @@ namespace Gambit
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
+                        Scanner_Function_Base() = default;
+                        
                         Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior), realParameters(prior.getShownParameters().size())
                         {
                                 // Find subset of vertices that match requested purpose
@@ -101,7 +103,6 @@ namespace Gambit
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-                        Scanner_Function() = default; //to see if gcc 4.5 + icc 13 supports it.
 			//#ifndef NO_GCC_4_7
                         Scanner_Function (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
 			//#else                        
