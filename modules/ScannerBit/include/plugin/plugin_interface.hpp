@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <dlfcn.h>
 #include <scanner_utils.hpp>
+#include <plugin/plugin_exception.hpp>
 
 namespace Gambit
 {
