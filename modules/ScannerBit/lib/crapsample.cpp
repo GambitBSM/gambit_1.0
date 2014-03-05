@@ -71,7 +71,7 @@ scanner_plugin (crapsample)
                 //int N                              = get_inifile_value<int>("point_number", 10);
                 //Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
                 //int ma                             = get_dimension();
-                int na = get_inifile_value<int>("not_there");
+                //int na = get_inifile_value<int>("not_there");
                 std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
