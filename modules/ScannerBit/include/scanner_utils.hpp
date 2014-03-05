@@ -25,6 +25,7 @@
 #include <ostream>
 #include <sstream>
 #include <unordered_map>
+#include <algorithm>
 
 #define REGISTER(reg_map, tag, ...)                                                                             \
 namespace __gambit_registry__                                                                                   \

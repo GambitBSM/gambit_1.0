@@ -9,6 +9,7 @@
 /* Specify the path to the shared library along with a backend name. */
 
 /* #define LIBPATH      "Backends/lib/softsusy-3.3.8/.libs/libsoft.so" */
+
 #include <SLHA_types.hpp>
 #include <shared_types.hpp>
 
