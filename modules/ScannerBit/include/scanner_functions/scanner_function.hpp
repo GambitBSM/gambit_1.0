@@ -101,11 +101,12 @@ namespace Gambit
                 class Scanner_Function : public Scanner_Function_Base
                 {
                 public:
-#ifndef NO_GCC_4_7
-                        using Scanner_Function_Base::Scanner_Function_Base;
-#else                        
+			#ifndef NO_GCC_4_7
                         Scanner_Function (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
-#endif			
+			#else                        
+                        using Scanner_Function_Base::Scanner_Function_Base;
+			#endif			
+
                         double operator () (std::vector<double> &in)
                         {
                                 double ret = 0;

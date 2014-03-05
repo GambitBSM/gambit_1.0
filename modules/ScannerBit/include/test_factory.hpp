@@ -81,8 +81,12 @@ namespace Gambit
                         void remove(void *a) const
                         {
                         }
-                        
+
+                        #ifndef NO_GCC_4_7
+                        ~Test_Function_Factory() noexcept
+			#else
                         ~Test_Function_Factory()
+			#endif
                         {
                                 if (func != 0)
                                         delete func;

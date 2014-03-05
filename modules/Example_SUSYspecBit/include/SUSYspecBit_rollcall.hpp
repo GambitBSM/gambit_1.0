@@ -27,7 +27,21 @@
 
 #define MODULE SUSYspecBit
 START_MODULE
-  
+ 
+  #define CAPABILITY PointInit
+  START_CAPABILITY
+    #define FUNCTION PointInit_Default
+    START_INI_FUNCTION                      // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
+    #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
+  #undef CAPABILITY
+ 
+  #define CAPABILITY testSLHA               // Test "observable", for running Pythia8 SLHA reader
+  START_CAPABILITY
+    #define FUNCTION testSLHA               // Name of specific function providing the observable
+    START_FUNCTION(int)                     // Returns int 
+    #undef FUNCTION
+  #undef CAPABILITY
+ 
   #define CAPABILITY MSSMspectrum           // Observable: low-scale MSSM spectrum
   START_CAPABILITY
 

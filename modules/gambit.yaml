@@ -110,16 +110,16 @@ redirect_output:
 #   error:  test_errors
     
 crapsample:
-  point_number: 10
+  point_number: 2
   output_file:  output
   like:  Likelihood
 
 loopsample:
-  point_number: 10
+  point_number: 2
   output_file:  output
   like:  Likelihood
   
-multnest:
+multinest:
   output_file:  output
     
 ###############################
@@ -163,13 +163,17 @@ multnest:
   module:       ""
 
 # Test loop manager
-- purpose:      Likelihood
-  capability:   nevents_like
-  type:         double
+#- purpose:      Likelihood
+#  capability:   nevents_like
+#  type:         double
 
 # Uncomment to test FlavBit
 #- purpose:      Likelihood
 #  capability:   SI_bsgamma
+
+# Test Pythia8 SLHA reader
+- purpose:      Likelihood
+  capability:   testSLHA
 
 #########################
 --- # Auxiliary entries

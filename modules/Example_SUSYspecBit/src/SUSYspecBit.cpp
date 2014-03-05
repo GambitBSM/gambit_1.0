@@ -23,6 +23,9 @@
 #include <string>
 #include <iostream>
 
+// from contrib/SLHAPy8
+#include "Pythia8/SusyLesHouches.h"
+
 #include "gambit_module_headers.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 
@@ -35,7 +38,12 @@ namespace Gambit {
     // protect the user from its badness...
     // void *SMobj; //pointer to softsusy object tracking the SM parameter values
     // void *r;     //pointer to softsusy object which does the RGE running etc.
-    
+
+    // Ben: Sticking this as a global variable for testing purposes...    
+    Pythia8::SusyLesHouches testSLHAobj(1);
+
+    //************************************************************
+
     // Initialization routine
     void initialize ()
     {
@@ -47,8 +55,36 @@ namespace Gambit {
       // Run initialisation routine, which in turn runs the init routine for 
       // the softsusy backend.
       // initMSSMspec(SMobj,r); 
-      
+
+      // Ben: using this to test the Pythia8 SLHA reader/writer
+      testSLHAobj.readFile("Example_SUSYspecBit/spectrsp.dat");
     }
+
+    //************************************************************
+
+    /// Initialisation function, called anew for each new model point before all other module functions are called.
+    void PointInit_Default()
+    {
+      cout<<"  Initialising Example_SUSYspecBit for current point."<<endl;
+    }
+
+    //************************************************************
+
+
+    /// Testing SLHA reader
+    void testSLHA (int &result)
+    {
+      using namespace Pipes::testSLHA;
+
+      // Ben: using this to test the Pythia8 SLHA reader/writer
+      testSLHAobj.printHeader();   // print Header
+      testSLHAobj.printFooter();   // print Footer
+      testSLHAobj.printSpectrum(); // print Spectrum
+      exit(0);
+
+      //result = ??;
+    }
+    
 
     // Module functions
     /* removed; making placeholder versions.
