@@ -60,11 +60,11 @@ namespace Gambit
                         {
                         }
 
-                        #ifndef NO_GCC_4_7
-                        ~Test_Function_Factory() noexcept
-			#else
+                        //#ifndef NO_GCC_4_7
+                        //~Test_Function_Factory() noexcept
+			//#else
                         ~Test_Function_Factory()
-			#endif
+			//#endif
                         {
                                 if (func != 0)
                                         delete func;

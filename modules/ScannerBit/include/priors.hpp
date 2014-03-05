@@ -62,7 +62,8 @@ namespace Gambit
                         
                         inline void setSize(const unsigned int size){param_size = size;}
 
-                        virtual ~BasePrior () = default;
+                        //virtual ~BasePrior () = default;
+                        virtual ~BasePrior () {}
                 };
    
                 /// Map in which to keep factory functions for the priors (prior_creators)

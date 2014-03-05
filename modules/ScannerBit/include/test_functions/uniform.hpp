@@ -83,7 +83,8 @@ namespace Gambit
                                 return 0.0;
                         }
 
-                        ~Test_Uniform() noexcept
+                        //~Test_Uniform() noexcept
+                        ~Test_Uniform()
                         {
                                 if (prior != nullptr)
                                         delete prior;

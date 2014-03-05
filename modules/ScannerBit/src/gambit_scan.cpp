@@ -49,8 +49,16 @@ namespace Gambit
                         scanLog::err.check();
 
                         outputHandler::out.redir("scanner");
-                        plugin_interface.main();
+                        try
+                        {
+                                plugin_interface.main();
+                        }
+                        catch (const char *msg)
+                        {
+                                scanLog::err << msg << scanLog::endl;
+                        }
                         outputHandler::out.defout();
+                        scanLog::err.check();
                         
                                 //could do this ...
                                 
