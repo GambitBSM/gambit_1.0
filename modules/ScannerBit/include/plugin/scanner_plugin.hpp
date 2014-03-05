@@ -92,7 +92,7 @@ T get_inifile_value(std::string in)                                             
         else                                                                                                            \
         {                                                                                                               \
                 std::ostringstream ss;                                                                                  \
-                ss << "\e[00;31mERROR:\e[00m  Missing iniFile entry needed by plugin \""                                \
+                ss << "Missing iniFile entry needed by plugin \""                                                       \
                                 << (__gambit_plugin_namespace__::pluginData.name) << "\":  " << in;                     \
                 throw ss.str().c_str();                                                                                 \
         }                                                                                                               \
