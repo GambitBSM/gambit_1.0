@@ -55,9 +55,12 @@ namespace Gambit
                         virtual const std::vector<double> & getParameters() const = 0;
                         virtual const std::vector<std::string> & getKeys() const = 0;
                         virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Function_Base() = default;
+                        //virtual ~Function_Base() = default;
+                        virtual ~Function_Base() = 0; 
                 };
-                
+                //bjf> added this...
+                inline Function_Base::~Function_Base() = default;
+
                 class Scanner_Function_Factory : public Factory_Base
                 {
                 private:

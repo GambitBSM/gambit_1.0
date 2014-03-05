@@ -25,6 +25,8 @@
 #ifndef __SUSYspecBit_rollcall_hpp__
 #define __SUSYspecBit_rollcall_hpp__
 
+#include<SLHA_types.hpp>
+
 #define MODULE SUSYspecBit
 START_MODULE
  
