@@ -103,7 +103,7 @@ scanner:
 #  module:  multinest
 #  file_path:  ScannerBit/lib/libmultinest_interface.so
     
-enable_redirect: true
+enable_redirect: false
 
 redirect_output:
    scanner:  xterm
