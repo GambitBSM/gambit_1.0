@@ -51,6 +51,11 @@ namespace Gambit
                 this->ndim = ndim;
                 std::cout << "Constructing: " << this->name << std::endl; 
             }
+
+            /// TODO: Ben - I am getting warnings like this a lot:
+            // /usr/local/boost/1.50.0/include/boost/checked_delete.hpp:34:5: warning: deleting object of polymorphic class type ‘Gambit::DarkBit::BFtabularize’ which has non-virtual destructor might cause undefined behaviour [-Wdelete-non-virtual-dtor]
+            // I think it might be complaining that this destructor in the base class isn't virtual?
+            // Haven't changed anything, just flagging possible problem...
             ~BaseFunction() 
             { 
                 std::cout << "Destructing: " << this->name << std::endl; 

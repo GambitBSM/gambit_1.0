@@ -53,9 +53,9 @@ namespace Gambit
                         {
                                 plugin_interface.main();
                         }
-                        catch (const char *msg)
+                        catch (Plugin::PluginException exception)
                         {
-                                scanLog::err << msg << scanLog::endl;
+                                scanLog::err << exception.Print() << scanLog::endl;
                         }
                         outputHandler::out.defout();
                         scanLog::err.check();
