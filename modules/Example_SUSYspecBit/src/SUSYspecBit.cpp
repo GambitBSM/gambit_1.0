@@ -21,10 +21,13 @@
 ///  *********************************************
 
 #include <string>
+#include <fstream>
 #include <iostream>
 
 // from contrib/SLHAPy8
-#include "Pythia8/SusyLesHouches.h"
+//#include "Pythia8/SusyLesHouches.h"
+// doesn't handle duplicate blocks at different scales properly, trying slhaea...
+#include "slhaea.h"
 
 #include "gambit_module_headers.hpp"
 #include "SLHA_types.hpp"
@@ -41,7 +44,8 @@ namespace Gambit {
     // void *r;     //pointer to softsusy object which does the RGE running etc.
 
     // Ben: Sticking this as a global variable for testing purposes...    
-    Pythia8::SusyLesHouches testSLHAobj(1);
+    // Pythia8::SusyLesHouches testSLHAobj(1);
+    SLHAea::Coll testinput;
 
     //************************************************************
 
@@ -66,7 +70,9 @@ namespace Gambit {
       cout<<"  Initialising Example_SUSYspecBit for current point."<<endl;
 
       // Ben: using this to test the Pythia8 SLHA reader/writer
-      testSLHAobj.readFile("Example_SUSYspecBit/spectrsp.dat");
+      //testSLHAobj.readFile("Example_SUSYspecBit/spectrsp.dat");
+      std::ifstream ifs("Example_SUSYspecBit/spectrsp.dat");
+      testinput.read(ifs);
     }
 
     //************************************************************
@@ -78,9 +84,11 @@ namespace Gambit {
       using namespace Pipes::testSLHA;
 
       // Ben: using this to test the Pythia8 SLHA reader/writer
-      testSLHAobj.printHeader();   // print Header
-      testSLHAobj.printFooter();   // print Footer
-      testSLHAobj.printSpectrum(); // print Spectrum
+      //testSLHAobj.printHeader();   // print Header
+      //testSLHAobj.printFooter();   // print Footer
+      //testSLHAobj.printSpectrum(); // print Spectrum
+      std::cout<<testinput;      
+
       exit(0);
 
       //result = ??;

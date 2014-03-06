@@ -79,6 +79,7 @@ EXSUSYSPECDIR = Example_SUSYspecBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
 SLHAPy8DIR = contrib/SLHAPy8
+SLHAEADIR = contrib/slhaea
 HEPSIMPLEDIR = contrib/hep_simple_lib
 FASTSIMDIR = contrib/fast_sim
 
@@ -101,6 +102,7 @@ CFLAGS= -I$(COREDIR)/include \
 	-I$(FLAVDIR)/include \
 	-I$(YAMLDIR)/include \
         -I$(SLHAPy8DIR) \
+        -I$(SLHAEADIR) \
 	-I$(HEPSIMPLEDIR) \
 	-I$(FASTSIMDIR)/include \
 	-I$(MULTINESTINC)
@@ -530,6 +532,11 @@ endif
 $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
+
+# Force rebuild of library...
+slhapy8:
+	@echo ___________Rebuilding slhapy8 library...
+	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
 $(SLHAPy8DIR)/libslhapy8.a:
 	@echo ___________Building SLHA interface library \(from Pythia 8\):

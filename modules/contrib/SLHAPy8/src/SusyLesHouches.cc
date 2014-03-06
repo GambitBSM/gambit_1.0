@@ -175,7 +175,9 @@ int SusyLesHouches::readFile(string slhaFileIn, int verboseIn,
       int nameBegin=6 ;
       int nameEnd=blockIn.find(" ",7);
       blockName=blockIn.substr(nameBegin,nameEnd-nameBegin);
-      
+      std::cout<<"ben: "<<line<<std::endl;
+      std::cout<<"ben: "<<blockName<<std::endl;     
+ 
       // Copy input file as generic blocks (containing strings)
       // (more will be done with SLHA1 & 2 specific blocks below, this is 
       //  just to make sure we have a complete copy of the input file, 
@@ -244,6 +246,7 @@ int SusyLesHouches::readFile(string slhaFileIn, int verboseIn,
         double q=0.0;
         qstream >> q;
         if (qstream) {
+          std::cout<<"ben: Setting Q="<<q<<std::endl; 
           // SLHA1 running blocks
           if (blockName=="hmix") hmix.setq(q);
           if (blockName=="yu") yu.setq(q);
