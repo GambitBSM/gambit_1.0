@@ -56,9 +56,6 @@ namespace Gambit {
       // Run initialisation routine, which in turn runs the init routine for 
       // the softsusy backend.
       // initMSSMspec(SMobj,r); 
-
-      // Ben: using this to test the Pythia8 SLHA reader/writer
-      testSLHAobj.readFile("Example_SUSYspecBit/spectrsp.dat");
     }
 
     //************************************************************
@@ -67,6 +64,9 @@ namespace Gambit {
     void PointInit_Default()
     {
       cout<<"  Initialising Example_SUSYspecBit for current point."<<endl;
+
+      // Ben: using this to test the Pythia8 SLHA reader/writer
+      testSLHAobj.readFile("Example_SUSYspecBit/spectrsp.dat");
     }
 
     //************************************************************
