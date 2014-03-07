@@ -7,7 +7,7 @@
 # Dec 2013
 #
 
-###################################
+############################
 --- # Input parameter declarations
 ###################################
 
@@ -17,6 +17,21 @@
 # properly in the "priors" section.
 
 CMSSM_I:
+  # SM pars
+  MZ:
+    fixed_value: 80
+  Mbot:
+    fixed_value: 90
+  Mtop:
+    fixed_value: 170
+  g1:
+    fixed_value: 0.001
+  g2:
+    fixed_value: 0.003
+  g3:
+    fixed_value: 0.1
+
+  # CMSSM pars
   A0:
     range: [-1000, 1000]
   M0:
@@ -30,6 +45,7 @@ CMSSM_I:
      range: [-1, 1]
      fixed_value: 1
   tanb:
+
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
     # range: [-1, 1]
@@ -172,8 +188,9 @@ multinest:
 #  capability:   SI_bsgamma
 
 # Test Pythia8 SLHA reader
-- purpose:      Likelihood
-  capability:   testSLHA
+#- purpose:      Likelihood
+#  capability:   MSSMspectrum
+#  printme:      false
 
 #########################
 --- # Auxiliary entries

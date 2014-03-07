@@ -11,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Ben Farmer
-//  2013 May 01
+//  2013 May, ???, 2014 Mar
 //  Pat Scott
 //  2013 Sep
 //
@@ -33,10 +33,21 @@
   DEFINEPARS(mu,sigma)
 #undef MODEL
 
+// Will have to think carefully about how we do this, since the SM is contained inside
+// the MSSM, etc, yet we'd kind of like to define the MSSM as a conjunction of SM parameters
+// plus new parameters....
+// Perhaps something like the below macro is the easiest...
+#define SMPARS MZ,Mtop,Mbot,g1,g2,g3
+
+#define MODEL Standard_Model
+  START_MODEL
+  DEFINEPARS(SMPARS)
+#undef MODEL
+
 #define MODEL MSSM_I
 #define PARENT test_parent_I
   START_MODEL
-  DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
+  DEFINEPARS(SMPARS,M1,M2,M3,AU1,AU2,AU3)
   INTERPRET_AS_PARENT__BEGIN
   INTERPRET_AS_PARENT__DEFINE(MSSM_I_IAPfunc)
   namespace Gambit{ namespace Models{ namespace MSSM_I{
@@ -80,7 +91,7 @@
 #define MODEL CMSSM_I
 #define PARENT MSSM_I
   START_MODEL
-  DEFINEPARS(M0, M12, A0, tanb, sgnmu)
+  DEFINEPARS(SMPARS, M0, M12, A0, tanb, sgnmu)
   
     // Add in a sensibly named capability for good measure
     // -> convert to having ModelParameters as a dependency, no individual functors
