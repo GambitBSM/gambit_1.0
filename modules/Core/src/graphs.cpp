@@ -420,7 +420,7 @@ namespace Gambit
         //      threads other than the main one need to be accessed with 
         //        masterGraph[*it]->print(boundPrinter,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        masterGraph[*it]->print(boundPrinter);
+        if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter);
       }
     }
 
