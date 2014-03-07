@@ -10,7 +10,8 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr-July, Dec-Jan '14
+///  \date 2013 Apr-July, Dec
+///  \date 2014 Jan, Mar
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -62,6 +63,7 @@ namespace Gambit
      myType          (result_type),
      myOrigin        (origin_name),
      myStatus        (1),
+     verbose         (false),    // For debugging.
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      needs_recalculating (true) {}
     
@@ -243,13 +245,19 @@ namespace Gambit
       myOptions = opt;
     }
 
-    /// Test whether the functor is allowed to be used with a given model 
+    /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
     bool functor::modelAllowed(str model)
     {
       if (allowedModels.empty()) return true;
-      str parent = find_allowed_parent_model(model);
-      if (allowedModels.find(parent) != allowedModels.end()) return true;
+      if (allowed_parent_model_exists(model)) return true;
       return false;        
+    }
+
+    /// Test whether the functor has been explictly allowed to be used with a given model 
+    bool functor::modelExplicitlyAllowed(str model)
+    {
+      if (allowedModels.find(model) != allowedModels.end()) return true;
+      return false;
     }
 
     /// Test whether the functor is allowed to be used with all models
@@ -285,17 +293,17 @@ namespace Gambit
         /// FIXME \todo throw real error here                             
     }
 
-    /// Try to find a parent model in the functor's allowedModels list
-    str functor::find_allowed_parent_model(str model)
+    /// Test if a model has a parent model in the functor's allowedModels list
+    bool functor::allowed_parent_model_exists(str model)
     {
       for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
       {
         if (model_is_registered(*it))
         {
-          if (descendant_of(model, *it)) return *it;
+          if (descendant_of(model, *it)) return true;
         } 
       }    
-      return "";    
+      return false;    
     }
 
     /// Try to find a parent model in some user-supplied map from models to sspair vectors
@@ -739,10 +747,10 @@ namespace Gambit
       }
       //If this model fits any conditional backend requirements (or is a descendent of a model that fits any), then activate them.
       std::vector<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
-      cout << "model: " << model << endl;
+      if (verbose) cout << "model: " << model << endl;
       for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
       {
-        cout << "req: " << it->first << " " << it->second << endl;
+        if (verbose) cout << "req: " << it->first << " " << it->second << endl;
         myBackendReqs.push_back(*it);        
       }
     }

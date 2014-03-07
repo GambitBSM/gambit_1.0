@@ -23,6 +23,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -111,8 +112,6 @@ namespace Gambit
         /// Add lineage vector to the lineage database
         void add_lineage (const str &, const std::vector<str> &);
 
-        // FIXME PS: do we really need both 'lineage' and 'parents'??
-
         /// Add model as a descendent to the descendants and is-descendant-of databases
         void add_descendant (const str &, const LineageFunction);
 
@@ -131,6 +130,9 @@ namespace Gambit
         /// Retrieve the descendants for a given model
         std::vector<str> get_descendants (const str &);
         
+        /// Retrieve the parents for a given model
+        std::vector<str> get_parents (const str&);
+
         /// Check if model 1 is descended from model 2
         bool descended_from (const str &, const str &);
 

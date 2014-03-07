@@ -114,6 +114,9 @@ namespace Gambit
         // Adds list of functor pointers to master graph
         void addFunctors();
 
+        /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
+        void makeFunctorsModelCompatible();
+
         // Resolution of individual module function dependencies
         std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
           resolveDependency(Graphs::VertexID toVertex, sspair quantity);
