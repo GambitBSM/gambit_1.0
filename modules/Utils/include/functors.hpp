@@ -10,7 +10,8 @@
 ///   
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr-July, Dec-Jan '14
+///  \date 2013 Apr-July, Dec
+///  \date 2014 Jan, Mar
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -168,8 +169,11 @@ namespace Gambit
       /// observables section.
       void notifyOfIniOptions(const IniParser::Options &);
 
-      /// Test whether the functor is allowed to be used with a given model 
+      /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
       bool modelAllowed(str model);
+
+      /// Test whether the functor has been explictly allowed to be used with a given model 
+      bool modelExplicitlyAllowed(str model);
 
       /// Test whether the functor is allowed to be used with all models
       bool allModelsAllowed();
@@ -211,11 +215,14 @@ namespace Gambit
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime(str method);
 
-      /// Try to find a parent model in the functor's allowedModels list
-      str find_allowed_parent_model(str model);
+      /// Test if a model has a parent model in the functor's allowedModels list
+      bool allowed_parent_model_exists(str model);
 
       /// Try to find a parent model in some user-supplied map from models to sspair vectors
       str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
+
+      /// Debug flag
+      bool verbose;
 
   };
 

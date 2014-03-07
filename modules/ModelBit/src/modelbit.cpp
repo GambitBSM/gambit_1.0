@@ -28,6 +28,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug, Sep
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -303,15 +304,20 @@ namespace Gambit
 
     /// Retrieve the lineage for a given model
     std::vector<str> ModelFunctorClaw::get_lineage (const str &model)
-    {
-      return myLineageDB[model];
+    {      
+      return myLineageDB.find(model) == myLineageDB.end() ? std::vector<str>() : myLineageDB[model];
     }
-
 
     /// Retrieve the descendants for a given model
     std::vector<str> ModelFunctorClaw::get_descendants (const str &model)
     {
-      return myDescendantsDB[model];
+      return myDescendantsDB.find(model) == myDescendantsDB.end() ? std::vector<str>() : myDescendantsDB[model];
+    }
+
+    /// Retrieve the parents for a given model
+    std::vector<str> ModelFunctorClaw::get_parents (const str &model)
+    {
+      return myParentsDB.find(model) == myParentsDB.end() ? std::vector<str>() : myParentsDB[model];
     }
 
     /// Check if model 1 is descended from model 2

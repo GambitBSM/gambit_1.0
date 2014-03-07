@@ -218,11 +218,14 @@ multinest:
 --- # Name/Value Section
 ##########################
 
-# Some exemplary keys and subkeys
+# Some example keys and subkeys
 my_key: 123
 another_key:
   subkey3:
     subsubkey1: value2
+
+dependency_resolution:
+  prefer_model_specific_functions: true
 
 enable_testing: false
 test_function: uniform

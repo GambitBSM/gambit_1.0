@@ -16,6 +16,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July, Aug, Sep
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -55,6 +56,12 @@ namespace Gambit
   {
     if (model1 == model2) return false;
     return ancestor_of(model1, model2);
+  }
+
+  /// Short function to allow retrieval of a model's parents
+  std::vector<str> parents (const str& model)
+  {
+    return modelClaw.get_parents(model);
   }
 
   /// Function to help static initialisation of our const data member vectors.
