@@ -188,8 +188,8 @@ multinest:
 #  capability:   SI_bsgamma
 
 # Test Pythia8 SLHA reader
-#- purpose:      Likelihood
-#  capability:   MSSMspectrum
+- purpose:      Likelihood
+  capability:   MSSMspectrum
 #  printme:      false
 
 #########################

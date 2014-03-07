@@ -131,7 +131,7 @@ namespace Gambit
         std::string module;
         std::string backend;
         std::string version;
-        //bool printme; // Instruction to printer as to whether to write result to disk
+        bool printme; // Instruction to printer as to whether to write result to disk
         Gambit::IniParser::Options options;
         std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
         std::vector<Observable> backends; // ..deps of deps of deps of obs possible

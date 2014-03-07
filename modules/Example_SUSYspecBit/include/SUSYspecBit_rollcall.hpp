@@ -53,7 +53,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION MSSMspectrum             
     START_FUNCTION(SLHA_MSSM)                     
-    ALLOW_MODELS(CMSSM_I,MSSM_I)
+    //ALLOW_MODELS(CMSSM_I,MSSM_I)
     #undef FUNCTION
   #undef CAPABILITY
 

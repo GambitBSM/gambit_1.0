@@ -112,7 +112,7 @@ namespace Gambit {
 
       // Extract physical, i.e. low scale particle masses and couplings
 
-      result.spectrum = newspectrum;
+      //result.spectrum = newspectrum;
     }
     
     /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
@@ -127,7 +127,7 @@ namespace Gambit {
       SLHA_container newspectrum(1);
       newspectrum.readFile("Example_SUSYspecBit/spectrsp_noGUT.dat");
 
-      result.spectrum = newspectrum;
+      //result.spectrum = newspectrum;
     }
  
     // Old stuff...

@@ -226,6 +226,7 @@ namespace Gambit
         queueEntry.first.first = (*it).capability;
         queueEntry.first.second = (*it).type;
         queueEntry.second = OMEGA_VERTEXID;
+        queueEntry.printme = (*it).printme;
         parQueue.push(queueEntry);
       }
       makeFunctorsModelCompatible();
@@ -673,6 +674,7 @@ namespace Gambit
       bool ok;
       sspair quantity;
       int dependency_type;
+      bool printme;
 
       cout << endl << "Dependency resolution" << endl;
       cout <<         "---------------------" << endl;
@@ -683,6 +685,7 @@ namespace Gambit
         quantity = parQueue.front().first;
         toVertex = parQueue.front().second;
         dependency_type = parQueue.front().third;
+        printme = parQueue.front().printme;
 
         // Print information
         if ( toVertex != OMEGA_VERTEXID )
@@ -712,7 +715,7 @@ namespace Gambit
         // the things we want to output to the printer system.  Turn printing on for these.
         // Ben: I had to change this back because otherwise you turn off printing for the model
         // parameters functors, which modelbit previously turned on. 
-        if ( toVertex == OMEGA_VERTEXID )
+        if ( printme and (toVertex==OMEGA_VERTEXID) )
         {
            masterGraph[fromVertex]->setPrintRequirement(true);
            cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO TRUE" << endl;
@@ -784,6 +787,7 @@ namespace Gambit
         std::queue<QueueEntry> *parQueue,
         Graphs::VertexID vertex) 
     {
+      bool printme_default = false; // for parQueue constructor
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
       if (vec.size() > 0)
@@ -793,7 +797,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         cout << (*it).first << " (" << (*it).second << ")" << endl;
-        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY)));
+        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default)));
       }
       // Digest capability of loop manager (if defined)
       str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
@@ -802,7 +806,7 @@ namespace Gambit
         cout << "Adding module function loop manager to resolution queue:" << endl;
         cout << loopManagerCapability << " ()" << endl;
         (*parQueue).push(*(new QueueEntry (*(new sspair
-                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY)));
+                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
       }
     }
 

@@ -64,15 +64,17 @@ namespace Gambit
     struct QueueEntry
     {
       QueueEntry() {}
-      QueueEntry(sspair a, Graphs::VertexID b, int c)
+      QueueEntry(sspair a, Graphs::VertexID b, int c, bool d)
       {
         first = a;
         second = b;
         third = c;
+        printme = d;
       }
       sspair first;
       Graphs::VertexID second;
       int third;
+      bool printme;
     };
 
     // Main dependency resolver
