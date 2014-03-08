@@ -437,6 +437,7 @@ namespace Gambit
       // the 'final result' when more than one thread has run the functor, and is the 
       // only result when the functor has not been run in parallel); accessing the results
       // from any other threads requires passing the desired thread index explicity instead of 0.
+      std::cout<<"ben: bug here?"<<std::endl;
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 

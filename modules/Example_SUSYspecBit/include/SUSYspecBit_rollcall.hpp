@@ -42,20 +42,29 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY NMSSMspectrum          // Retrieves physical NMSSM spectrum
+  #define CAPABILITY NMSSMslha              // Retrieves physical NMSSM spectrum
   START_CAPABILITY
     #define FUNCTION NMSSMspectrum             
     START_FUNCTION(SLHA_NMSSM)                     
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY MSSMspectrum           // Retrieves physical MSSM spectrum
+  #define CAPABILITY MSSMslha               // Retrieves physical MSSM spectrum
   START_CAPABILITY
     #define FUNCTION MSSMspectrum             
     START_FUNCTION(SLHA_MSSM)                     
-    //ALLOW_MODELS(CMSSM_I,MSSM_I)
+    ALLOW_MODELS(CMSSM_I,MSSM_I)
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY MSSMslha_testLogL      // Dummy function for testing the MSSMspectrum function
+  START_CAPABILITY
+    #define FUNCTION MSSMtestLogL             
+    START_FUNCTION(double)                     
+    DEPENDENCY(MSSMslha, SLHA_MSSM)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Old stuff...
 

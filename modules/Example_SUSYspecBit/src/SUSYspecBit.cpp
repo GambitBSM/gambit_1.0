@@ -70,9 +70,9 @@ namespace Gambit {
       cout<<"  Initialising Example_SUSYspecBit for current point."<<endl;
 
       // Ben: using this to test the Pythia8 SLHA reader/writer
-      testSLHAobj.readFile("Example_SUSYspecBit/spectrsp_noGUT.dat");
+      // testSLHAobj.readFile("Example_SUSYspecBit/spectrsp_noGUT.dat");
       // Testing slhaea
-      std::ifstream ifs("Example_SUSYspecBit/spectrsp_noGUT.dat");
+       // std::ifstream ifs("Example_SUSYspecBit/spectrsp_noGUT.dat");
 
     }
 
@@ -112,7 +112,8 @@ namespace Gambit {
 
       // Extract physical, i.e. low scale particle masses and couplings
 
-      //result.spectrum = newspectrum;
+      // There is probably some unnecessary copy happening here, not sure if we can avoid it...
+      result.spectrum = newspectrum;
     }
     
     /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
@@ -127,9 +128,43 @@ namespace Gambit {
       SLHA_container newspectrum(1);
       newspectrum.readFile("Example_SUSYspecBit/spectrsp_noGUT.dat");
 
-      //result.spectrum = newspectrum;
+      result.spectrum = newspectrum;
     }
+
+    /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
+    void MSSMtestLogL (double &result)
+    {
+      using namespace Pipes::MSSMtestLogL;
+      // Make a nice const reference for easy use
+      const SLHA_container &spec = (*Dep::MSSMslha).spectrum;
+
+      // Could instead copy the object; some of the spectrum object functions are not const (even though they don't modify the
+      // object), so might have to do this in some cases. 
+      SLHA_container spec_copy = (*Dep::MSSMslha).spectrum;
+
+      // Might as well test dependency retrieval, check out the spectum object
+      // (the below functions cannot be made const (I tried) so the object will have to be copied in
+      //  order to call them)
+      spec_copy.printHeader();
+      spec_copy.printFooter();
+      spec_copy.printSpectrum();
+
+      // Demo of retrieving things from a block; see contrib/SLHApy8/Pythia8/SusyLesHouches.h for more block names
+      std::cout<<"Testing retrieval from SLHA blocks:"<<std::endl;
+      std::cout<<"sminputs(4) (MZ)  :"<<spec.sminputs(4)<<std::endl;
+      std::cout<<"sminputs(6) (Mtop):"<<spec.sminputs(6)<<std::endl;
+
+      // Any blocks outside the SLHA standard must be retrieved like this (multiple indices allowed, getEntry is overloaded)
+      std::cout<<"Alternative method:"<<std::endl;
+      double tmpvar; //getEntry needs somewhere to stick its result. The return value is just true/false for success/failure
+      spec_copy.getEntry("sminputs",4,tmpvar);
+      std::cout<<"sminputs(4) (MZ)  :"<<tmpvar<<std::endl;
+      spec_copy.getEntry("sminputs",6,tmpvar);
+      std::cout<<"sminputs(6) (Mtop):"<<tmpvar<<std::endl;
  
+      result = 4.0e1; //dummy loglikelihood value
+    }
+
     // Old stuff...
 
     // Module functions
