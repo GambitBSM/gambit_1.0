@@ -60,10 +60,10 @@ namespace Gambit
         }
 }
 
-#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) static union{}
-#define init_dimension(exp)             INIT_DIMENSION(exp) static union{}
-#define init_keys(exp)                  INIT_KEYS(exp) static union{}
-#define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__) static union{}
+#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
+#define init_dimension(exp)             INIT_DIMENSION(exp) enum{}
+#define init_keys(exp)                  INIT_KEYS(exp) enum{}
+#define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__) enum{}
 #define get_dimension()                 GET_DIMENSION()
 #define get_keys()                      GET_KEYS()
 #define get_functor(...)                GET_FUNCTOR( __VA_ARGS__ )
@@ -96,7 +96,7 @@ T get_inifile_value(std::string in)                                             
                                 << (__gambit_plugin_namespace__::pluginData.name) << "\":  " << in;                     \
                 throw Gambit::Plugin::PluginException(ss.str());                                                        \
         }                                                                                                               \
-};                                                                                                                      \
+}                                                                                                                       \
                                                                                                                         \
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in, T defaults)                                                                         \
@@ -111,7 +111,7 @@ T get_inifile_value(std::string in, T defaults)                                 
         {                                                                                                               \
                 return defaults;                                                                                        \
         }                                                                                                               \
-};                                                                                                                      \
+}                                                                                                                       \
 
 #define SCANNER_PLUGIN(mod_name)                                                                                        \
 GAMBIT_PLUGIN(mod_name)                                                                                                 \

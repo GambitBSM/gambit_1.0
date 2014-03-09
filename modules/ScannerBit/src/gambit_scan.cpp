@@ -51,7 +51,7 @@ namespace Gambit
                         outputHandler::out.redir("scanner");
                         try
                         {
-                                plugin_interface.main();
+                                plugin_interface();
                         }
                         catch (Plugin::PluginException exception)
                         {

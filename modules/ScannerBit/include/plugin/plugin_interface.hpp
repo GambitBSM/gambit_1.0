@@ -80,10 +80,9 @@ namespace Gambit
                         initFuncType initFunc;
                         getFuncType getFunc;
                         rmFuncType rmFunc;
-                        
-                public:
                         T* main;
                         
+                public:
                         Plugin_Interface(std::string file, std::string name_in, std::string version, std::vector<void*> *input = NULL) : errors(""), open(true), name(name_in), version(version)
                         {
                                 unsigned char flag = 0x00;
@@ -185,6 +184,12 @@ namespace Gambit
                                         scanLog::err << "Cannot load " << file << ":  " << dlerror() << scanLog::endl;
                                         open = false;
                                 }
+                        }
+                        
+                        template <typename... args>
+                        auto operator() (const args&... params) -> decltype(main(params...))
+                        {
+                                return main(params...);
                         }
                         
                         void *getMember(std::string in){return getFunc(in);}

@@ -40,7 +40,7 @@ namespace Gambit
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : functorMap(functorMap), dependencyResolver(dependencyResolver), prior(prior), realParameters(prior.getShownParameters().size())
+                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : dependencyResolver(dependencyResolver), realParameters(prior.getShownParameters().size()), prior(prior), functorMap(functorMap)
                         {
                                 // Find subset of vertices that match requested purpose
                                 vertices = dependencyResolver.getObsLikeOrder();

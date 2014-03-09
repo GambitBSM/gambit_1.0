@@ -28,7 +28,7 @@ using namespace std;
 namespace Gambit
 {
         namespace Plugin
-        {                
+        {
                 struct factoryBase
                 {
                         virtual void *operator()() = 0;
