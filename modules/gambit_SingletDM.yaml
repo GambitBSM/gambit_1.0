@@ -76,4 +76,4 @@ multnest:
   output_file:  output
 
 dependency_resolution:
-  prefer_model_specific_functors: false
+  prefer_model_specific_functions: false

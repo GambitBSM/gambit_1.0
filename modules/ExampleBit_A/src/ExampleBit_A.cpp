@@ -281,16 +281,20 @@ namespace Gambit
       cout << endl << "Retrieving pointer to fptrRoutine..." << endl;      
       fptrType2 function_pointer2 = BEreq::libFarrayTest_fptrRoutine.pointer<Gambit::Farray <double,1>& ,int& , fptrType1>();
             
-      cout << endl << "Calling fptrRoutine commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
+      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
       function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);             
 
-      cout << endl << "Calling fptrRoutine commonblock elements a and c and function doubleFuncArray2 as arguments..." << endl;
+      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray2 as arguments..." << endl;
       BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer<Farray<double,1>&>());    
  
       // Uncomment to pass an illegal function pointer (a function pointer with no fortran equivalent registered in frontBackFuncMap)
       //double (*function_pointer3)(Farray<double,1>&) = testFunc;
       //cout << endl << "Calling fptrRoutine commonblock elements a and c and an illegal function as arguments..." << endl;
       //function_pointer2(commonBlock.a,*commonBlock.c,function_pointer3);    
+      
+      // Uncomment to provoke a mysterious bug
+      //cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that mysteriously fails..." << endl;
+      //BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,function_pointer);      
       
     }
 

@@ -64,15 +64,17 @@ namespace Gambit
     struct QueueEntry
     {
       QueueEntry() {}
-      QueueEntry(sspair a, Graphs::VertexID b, int c)
+      QueueEntry(sspair a, Graphs::VertexID b, int c, bool d)
       {
         first = a;
         second = b;
         third = c;
+        printme = d;
       }
       sspair first;
       Graphs::VertexID second;
       int third;
+      bool printme;
     };
 
     // Main dependency resolver
@@ -113,6 +115,9 @@ namespace Gambit
       private:
         // Adds list of functor pointers to master graph
         void addFunctors();
+
+        /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
+        void makeFunctorsModelCompatible();
 
         // Resolution of individual module function dependencies
         std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>

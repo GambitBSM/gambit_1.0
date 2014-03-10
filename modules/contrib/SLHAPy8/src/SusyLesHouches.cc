@@ -4,6 +4,17 @@
 // PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
+// Ben: list of issues to fix if we want to use this:
+// 1. out-of-box SusyLesHouches class only has one of each block; however,
+//    some blocks can be defined at multiple scales in the one SLHA file.
+//    This read just overwrites the first instance of the block if a second
+//    one is found. This is rather bad for us.
+// 2. Warnings from programs that have a hash in them will be corrupted, since
+//    this reader strips out "comments" from lines and stores them seperately.
+//    Not to mention that it converts everything to lowercase, which reduces
+//    the readability of such warnings and errors. This is less important but
+//    should be fixed.
+
 #include "Pythia8/SusyLesHouches.h"
 
 // GZIP support.
@@ -175,8 +186,6 @@ int SusyLesHouches::readFile(string slhaFileIn, int verboseIn,
       int nameBegin=6 ;
       int nameEnd=blockIn.find(" ",7);
       blockName=blockIn.substr(nameBegin,nameEnd-nameBegin);
-      std::cout<<"ben: "<<line<<std::endl;
-      std::cout<<"ben: "<<blockName<<std::endl;     
  
       // Copy input file as generic blocks (containing strings)
       // (more will be done with SLHA1 & 2 specific blocks below, this is 
@@ -246,7 +255,6 @@ int SusyLesHouches::readFile(string slhaFileIn, int verboseIn,
         double q=0.0;
         qstream >> q;
         if (qstream) {
-          std::cout<<"ben: Setting Q="<<q<<std::endl; 
           // SLHA1 running blocks
           if (blockName=="hmix") hmix.setq(q);
           if (blockName=="yu") yu.setq(q);
@@ -468,7 +476,9 @@ int SusyLesHouches::readFile(string slhaFileIn, int verboseIn,
 
         if (linestream) {
           if ( i == 3 ) {
+            std::cout<<"ben: "<<line;
             string warning=line.substr(line.find("3")+1,line.length());
+            std::cout<<"ben: "<<warning;
             message(1,"readFile","(from "+blockStr+" program): "+warning,0);
             if (blockName == "spinfo") spinfo3.set(warning);
             else dcinfo3.set(warning);

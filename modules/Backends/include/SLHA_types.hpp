@@ -24,8 +24,18 @@
 #ifndef __SLHA_types_hpp__
 #define __SLHA_types_hpp__
 
+// Pythia8 SLHA reader classes
+#include "Pythia8/SusyLesHouches.h"
+
 namespace Gambit
 {
+  // Define some containers for the Pythia spectrum objects so that we can
+  // gain the benefits of strong typing, which simple typedefs would not give us
+  typedef ::Pythia8::SusyLesHouches SLHA_container;
+  struct SLHA_MSSM { SLHA_container spectrum; };
+  struct SLHA_NMSSM { SLHA_container spectrum; };
+
+  // Probably the below will all be tossed out. Just using the Pythia8 classes for now
 
   /// SLHA format placeholder "MSSM" low-energy spectrum object. 
   /// Defined at scale Q.

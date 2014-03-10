@@ -428,11 +428,7 @@ int main( int, const char*[] )
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample2);
   
-  SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setSMpars);
-  SUSYspecBit::Functown::genMSSMspec.resolveDependency(&SUSYspecBit::Functown::setsoftmasses);
-  SUSYspecBit::Functown::genMSSMspec.resolveBackendReq(&Gambit::Backends::FakeSoftSUSY::Functown::getgenMSSMspectrum);
-
-  //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
+   //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::Accessors::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::Accessors::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_A::Accessors::iMayNeed << endl;
@@ -580,22 +576,24 @@ int main( int, const char*[] )
   // Example_SUSYspecBit test code
   // ****************
 
-  cout <<  endl;
-  cout << "My name is " << SUSYspecBit::Accessors::name() << endl;
-  cout << " I can calculate: " << endl << SUSYspecBit::Accessors::iCanDo << endl;
-  cout << " ...but I may need: " << endl << SUSYspecBit::Accessors::iMayNeed << endl;
-  cout << endl;
-  cout << "I can do MSSMspectrum " << SUSYspecBit::Accessors::provides("MSSMspectrum") << endl;
-  cout << "(the following are temporary capabilities that will be shifted to ModelBit)" <<endl;
-  cout << "I can do SMparameters " << SUSYspecBit::Accessors::provides("SMparameters") << endl;
-  cout << "I can do CMSSMparameters " << SUSYspecBit::Accessors::provides("CMSSMparameters") << endl;
-  cout << "I can do MSSMsoftmasses " << SUSYspecBit::Accessors::provides("MSSMsoftmasses") << endl;
-  
-  cout << "Core says: tell me about MSSMspectrum!" << endl;
-  deps =  SUSYspecBit::Functown::genMSSMspec.dependencies();
-  cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
-  reqs =  SUSYspecBit::Functown::genMSSMspec.backendreqs();
-  cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl;
+  // OBSOLETE! Probably just delete it...
+
+  // cout <<  endl;
+  // cout << "My name is " << SUSYspecBit::Accessors::name() << endl;
+  // cout << " I can calculate: " << endl << SUSYspecBit::Accessors::iCanDo << endl;
+  // cout << " ...but I may need: " << endl << SUSYspecBit::Accessors::iMayNeed << endl;
+  // cout << endl;
+  // cout << "I can do MSSMspectrum " << SUSYspecBit::Accessors::provides("MSSMspectrum") << endl;
+  // cout << "(the following are temporary capabilities that will be shifted to ModelBit)" <<endl;
+  // cout << "I can do SMparameters " << SUSYspecBit::Accessors::provides("SMparameters") << endl;
+  // cout << "I can do CMSSMparameters " << SUSYspecBit::Accessors::provides("CMSSMparameters") << endl;
+  // cout << "I can do MSSMsoftmasses " << SUSYspecBit::Accessors::provides("MSSMsoftmasses") << endl;
+  // 
+  // cout << "Core says: tell me about MSSMspectrum!" << endl;
+  // deps =  SUSYspecBit::Functown::genMSSMspec.dependencies();
+  // cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
+  // reqs =  SUSYspecBit::Functown::genMSSMspec.backendreqs();
+  // cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl;
 
   /* I am having trouble figuring out the "by-hand" dependency resolution for
      this, so cutting it out for now

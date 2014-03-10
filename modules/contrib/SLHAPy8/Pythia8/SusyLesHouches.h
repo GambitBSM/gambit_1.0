@@ -9,6 +9,14 @@
 // be re-used stand-alone or merged into other applications, subject to 
 // the MCnet Guidelines mentioned above.
 
+// Ben: I have modified the const-ness of some of these functions to make them
+// more correct, so that they work with gambit better.
+// Quite a few functions that one might expect to be const-able are not, because
+// they set flags of various kinds in the object. E.g. 'printHeader' sets a flag,
+// 'message' sets a flag, 'getEntry' calls 'message', and so on. So none of these 
+// functions can be used for 'const' versions of spectrum object.  
+
+
 #ifndef SLHA_H
 #define SLHA_H
 
@@ -44,7 +52,7 @@ namespace Pythia8 {
     LHblock<T>() : idnow(0) {} ;    
     
     //Does block exist?
-    bool exists() { return int(entry.size()) == 0 ? false : true ; };
+    bool exists() const { return int(entry.size()) == 0 ? false : true ; };
     //Clear block
     void clear() { entry.clear(); };    
     
@@ -74,19 +82,19 @@ namespace Pythia8 {
     void set(T valIn) { entry[0]=valIn; };
 
     // Does entry i already exist in this block?
-    bool exists(int iIn) {return entry.find(iIn) != entry.end() 
+    bool exists(int iIn) const {return entry.find(iIn) != entry.end() 
       ? true : false;};
 
     // Indexing with (). Output only.
-    T operator()() {
-      if (exists(0)) {return entry[0];} else {T dummy(0); return dummy;};
+    T operator()() const {
+      if (exists(0)) {return entry.at(0);} else {T dummy(0); return dummy;};
     };
-    T operator()(int iIn) {
-      if (exists(iIn)) {return entry[iIn];} else {T dummy(0); return dummy;};
+    T operator()(int iIn) const {
+      if (exists(iIn)) {return entry.at(iIn);} else {T dummy(0); return dummy;};
     };
 
     // Size of map
-    int size() {return int(entry.size());};
+    int size() const {return int(entry.size());};
 
     // First and next key code
     int first() { idnow = entry.begin()->first; return idnow; };
@@ -355,7 +363,7 @@ namespace Pythia8 {
     }
 
     // Function to return number of decay channels
-    int size() {return int(table.size());}
+    int size() const {return int(table.size());}
 
     // Function to return a branching ratio
     double getBrat(int iChannel) {
@@ -744,18 +752,18 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, T& val) {
 	    +blockName);
     return false;
   }
-  if (genericBlocks[blockName].size() == 0) {
+  if (genericBlocks.at(blockName).size() == 0) {
     message(1,"getEntry","attempting to extract entry from zero-size block "
 	    +blockName);
     return false;
   }
-  if (genericBlocks[blockName].size() >= 2) {
+  if (genericBlocks.at(blockName).size() >= 2) {
     message(1,"getEntry","attempting to extract un-indexed entry "
       "from multi-entry block "+blockName);
     return false;
   }
   // Attempt to extract value as class T 
-  LHgenericBlock block = genericBlocks[blockName];
+  LHgenericBlock block = genericBlocks.at(blockName);
   istringstream linestream(block(0));
   linestream >> val; 
   if ( !linestream ) {
@@ -781,13 +789,13 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
 	    +blockName);
     return false;
   }
-  if (genericBlocks[blockName].size() == 0) {
+  if (genericBlocks.at(blockName).size() == 0) {
     message(1,"getEntry","attempting to extract entry from zero-size block "
 	    +blockName);
     return false;
   }
   // Attempt to extract indexed value as class T 
-  LHgenericBlock block = genericBlocks[blockName];
+  LHgenericBlock block = genericBlocks.at(blockName);
   // Loop over block contents, search for indexed entry with index i
   for (int jEntry = 0; jEntry < block.size(); jEntry++) {
     istringstream linestream(block(jEntry));
@@ -820,13 +828,13 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
 	    +blockName);
     return false;
   }
-  if (genericBlocks[blockName].size() == 0) {
+  if (genericBlocks.at(blockName).size() == 0) {
     message(1,"getEntry","attempting to extract entry from zero-size block "
 	    +blockName);
     return false;
   }
   // Attempt to extract matrix-indexed value as class T 
-  LHgenericBlock block = genericBlocks[blockName];
+  LHgenericBlock block = genericBlocks.at(blockName);
   // Loop over block contents, search for indexed entry with indices i, j
   for (int jEntry = 0; jEntry < block.size(); jEntry++) {
     istringstream linestream(block(jEntry));
@@ -859,13 +867,13 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
 	    +blockName);
     return false;
   }
-  if (genericBlocks[blockName].size() == 0) {
+  if (genericBlocks.at(blockName).size() == 0) {
     message(1,"getEntry","attempting to extract entry from zero-size block "
 	    +blockName);
     return false;
   }
   // Attempt to extract tensor-indexed value as class T 
-  LHgenericBlock block = genericBlocks[blockName];
+  LHgenericBlock block = genericBlocks.at(blockName);
   // Loop over block contents, search for indexed entry with indices i, j, k
   for (int jEntry = 0; jEntry < block.size(); jEntry++) {
     istringstream linestream(block(jEntry));

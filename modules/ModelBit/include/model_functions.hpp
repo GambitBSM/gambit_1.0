@@ -16,6 +16,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July, Aug
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -39,6 +40,9 @@ namespace Gambit
   bool strict_descendant_of (const str&, const str&); 
   bool strict_ancestor_of (const str&, const str&); 
   /// @}
+
+  /// Short function to allow retrieval of a model's parents
+  std::vector<str> parents (const str&);
 
   /// Short function to allow quick test of the existence of a model, without
   /// knowledge of the modelClaw

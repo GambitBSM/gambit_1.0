@@ -12,3 +12,15 @@ done
 
 # Make plot
 dot graph.gv -Tps > graph.ps
+
+# Ben: Do same thing for modelgraph.gv
+
+for i in {1..200}
+do
+  gvpr -c 'N[$.degree==0]{delete(0,$);}' modelgraph.gv > modelgraph.gv.temp
+  mv modelgraph.gv.temp modelgraph.gv
+done
+
+# Make plot
+dot modelgraph.gv -Tps > modelgraph.ps
+

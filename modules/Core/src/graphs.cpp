@@ -11,11 +11,12 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 May, Jun, Jul, Sep
+///  \date 2014 Feb
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Jul, Aug, Nov
-///  \date 2014 Jan
+///  \date 2014 Jan, Mar
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu)
@@ -225,8 +226,10 @@ namespace Gambit
         queueEntry.first.first = (*it).capability;
         queueEntry.first.second = (*it).type;
         queueEntry.second = OMEGA_VERTEXID;
+        queueEntry.printme = (*it).printme;
         parQueue.push(queueEntry);
       }
+      makeFunctorsModelCompatible();
       generateTree(parQueue);
       function_order = run_topological_sort();
 
@@ -272,6 +275,8 @@ namespace Gambit
         masterGraph[*vi]->setVertexID(index[*vi]);  
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
+        // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
+        //       how it should be in the end.
         if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
         {
           functors_to_print.push_back(index[*vi]);
@@ -432,6 +437,7 @@ namespace Gambit
       // the 'final result' when more than one thread has run the functor, and is the 
       // only result when the functor has not been run in parallel); accessing the results
       // from any other threads requires passing the desired thread index explicity instead of 0.
+      std::cout<<"ben: bug here?"<<std::endl;
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 
@@ -475,13 +481,27 @@ namespace Gambit
           it != boundCore->getModuleFunctors()->end();
           ++it)
       {
-        // Ben: Added check to ignore functors with status set to 0 (i.e. never
-        // add them to the graph). If you don't want the value 0 to mean this,
-        // we can use -1 or something instead. I am doing this so that we can
-        // ignore primary_model_functors which are not to be used for the scan.
+        // Ignore functors with status set to 0 in order to ignore primary_model_functors 
+        // that are not to be used for the scan.
         if ( (*it)->status() != 0 ) 
         {
           boost::add_vertex(*it, this->masterGraph);
+        }
+      }
+    }
+
+    /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
+    /// Also activate the model-conditional dependencies and backend requirements of those
+    /// functors that are allowed to be used with the model(s) being scanned.
+    void DependencyResolver::makeFunctorsModelCompatible()
+    {
+      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      std::vector<str> modelList = modelClaw.get_activemodels();
+      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      {
+        for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+        {
+          masterGraph[*vi]->modelAllowed(*it) ? masterGraph[*vi]->notifyOfModel(*it) : masterGraph[*vi]->setStatus(0);
         }
       }
     }
@@ -528,21 +548,25 @@ namespace Gambit
       // functors that fulfill the dependency requirement.
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
-        // Without inifile entry, just match capabilities and types (no type
-        // comparison when no types are given; this should only happen for
-        // output nodes)
-        if ( ( (*masterGraph[*vi]).capability() == quantity.first and
-              ( (*masterGraph[*vi]).type() == quantity.second  or quantity.second == "" ) )
-        // with inifile entry, we check capability, type, function name and
-        // module name.
-          and ( entryExists ?  funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
+        // Don't allow resolution by deactivated functors
+        if (masterGraph[*vi]->status() != 0)
         {
-        // Add to vertex candidate list
-          vertexCandidates.push_back(*vi);
+          // Without inifile entry, just match capabilities and types (no type
+          // comparison when no types are given; this should only happen for
+          // output nodes)
+          if ( ( masterGraph[*vi]->capability() == quantity.first and
+                ( masterGraph[*vi]->type() == quantity.second  or quantity.second == "" ) )
+          // with inifile entry, we check capability, type, function name and
+          // module name.
+            and ( entryExists ?  funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
+          {
+          // Add to vertex candidate list
+            vertexCandidates.push_back(*vi);
+          }
         }
       }
       // Special treatment of dependence on point-level initialization
-      // functions, which can only be resolved within a given module.
+      // functions, which can only be resolved from within a given module.
       if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
       {
         std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin();
@@ -560,39 +584,72 @@ namespace Gambit
           }
         }
       }
+
+      // Die if there is no way to fulfill this dependency.
       if ( vertexCandidates.size() == 0 ) 
       {
-        cout << "ERROR: I could not find any module function that provides the requested" << endl;
-        cout << "capability with the requested type. Check your inifile for typos, your modules" << endl;
+        cout << "ERROR: I could not find any module function that provides capability " << quantity.first << endl;
+        cout << "with type " << quantity.second << ". Check your inifile for typos, your modules" << endl;
         cout << "for consistency, etc." << endl;
-        exit(0); // Throw error here
+        exit(0); // TODO: Throw error here
       }
-      // In case of doubt (and if not explicitely disabled in the ini-file),
-      // try to remove all functors that are not model-specific.
-      if ( vertexCandidates.size() > 1 and not ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functors") and not
-           boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functors") ) )
+
+      // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
+      // that are more specifically tailored for the model being scanned.
+      if ( vertexCandidates.size() > 1 and not ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
+           boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") ) )
       {
-        std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin();
-        cout << "Removing functors that are not model-specific from candidate list." << endl;
-        while (it != vertexCandidates.end())
+        // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
+        // found at a given level in the hierarchy.
+        std::vector<Graphs::VertexID> newVertexCandidates;
+        std::vector<str> parentModelList = modelClaw.get_activemodels();
+        while (newVertexCandidates.size() == 0 and not parentModelList.empty())
         {
-          if ( masterGraph[*it]->allModelsAllowed() )
-          {
-            it = vertexCandidates.erase(it);
+          for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)
+          {            
+            // Test each vertex candidate to see if it has been explicitly set up to work with the model *mit
+            for (std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+            {
+              if ( masterGraph[*it]->modelExplicitlyAllowed(*mit) ) newVertexCandidates.push_back(*it);
+            }
+            // Step up a level in the model hierarchy for this model.
+            std::vector<str> pvec = parents(*mit);
+            if (pvec.size() > 1)
+            {
+              cout << "ERROR: Multi-parent models cannot be used in cases where model specific functor rules need to be invoked." << endl;
+              cout << "Please specify your required dependencies more fully in your inifile." << endl;
+              exit(0); // TODO Throw error here
+            }
+            else if (pvec.size() == 0) 
+            {
+             *mit = "none";
+            }
+            else 
+            {
+             *mit = pvec[0];
+            }
           }
-          else
-          {
-            ++it;
-          }
+          parentModelList.erase(std::remove(parentModelList.begin(), parentModelList.end(), "none"), parentModelList.end());
         }
+        if (newVertexCandidates.size() != 0) vertexCandidates = newVertexCandidates;
       }
+
       if ( vertexCandidates.size() > 1 ) 
       {
-        cout << "ERROR: I found too many module functions that provide the requested" << endl;
-        cout << "capability with the requested type. Check your inifile for typos, your modules" << endl;
-        cout << "for consistency, etc." << endl;
-        exit(0); // Throw error here
+        cout << "ERROR: I found too many module functions that provide capability " << quantity.first << endl;
+        cout << "with type " << quantity.second << ". " << endl; 
+        cout << "Check your inifile for typos, your modules for consistency, etc." << endl;
+        if ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
+         boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
+         cout << "Also consider turning on prefer_model_specific_functions in your inifile." << endl;
+        cout << "Candidate module functions are: " << endl;
+        for (std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+        {
+          cout << "  " << masterGraph[*it]->origin() << "::" << masterGraph[*it]->name() << endl;
+        }
+        exit(0); // TODO Throw error here
       }
+
       return std::tie(depEntry, auxEntry, optEntry, vertexCandidates[0]);
     }
 
@@ -618,6 +675,7 @@ namespace Gambit
       bool ok;
       sspair quantity;
       int dependency_type;
+      bool printme;
 
       cout << endl << "Dependency resolution" << endl;
       cout <<         "---------------------" << endl;
@@ -628,6 +686,7 @@ namespace Gambit
         quantity = parQueue.front().first;
         toVertex = parQueue.front().second;
         dependency_type = parQueue.front().third;
+        printme = parQueue.front().printme;
 
         // Print information
         if ( toVertex != OMEGA_VERTEXID )
@@ -657,7 +716,7 @@ namespace Gambit
         // the things we want to output to the printer system.  Turn printing on for these.
         // Ben: I had to change this back because otherwise you turn off printing for the model
         // parameters functors, which modelbit previously turned on. 
-        if ( toVertex == OMEGA_VERTEXID )
+        if ( printme and (toVertex==OMEGA_VERTEXID) )
         {
            masterGraph[fromVertex]->setPrintRequirement(true);
            cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO TRUE" << endl;
@@ -703,14 +762,9 @@ namespace Gambit
         }
 
         // Is fromVertex already activated?
-        if ( (*masterGraph[fromVertex]).status() != 2 ) {
-          std::vector<str> modelList = modelClaw.get_activemodels();
+        if ( (*masterGraph[fromVertex]).status() != 2 )
+        {
           cout << "Adding new module function to dependency tree..." << endl;
-          for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
-          {
-            masterGraph[fromVertex]->notifyOfModel(*it);
-            cout << "Activating for model: " << *it << endl;
-          }
           resolveVertexBackend(fromVertex);
           // Generate options object from ini-file entry that corresponds to
           // fromVertex (optEntry) and pass it to the fromVertex for later use
@@ -734,6 +788,7 @@ namespace Gambit
         std::queue<QueueEntry> *parQueue,
         Graphs::VertexID vertex) 
     {
+      bool printme_default = false; // for parQueue constructor
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
       if (vec.size() > 0)
@@ -743,7 +798,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         cout << (*it).first << " (" << (*it).second << ")" << endl;
-        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY)));
+        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default)));
       }
       // Digest capability of loop manager (if defined)
       str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
@@ -752,7 +807,7 @@ namespace Gambit
         cout << "Adding module function loop manager to resolution queue:" << endl;
         cout << loopManagerCapability << " ()" << endl;
         (*parQueue).push(*(new QueueEntry (*(new sspair
-                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY)));
+                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
       }
     }
 

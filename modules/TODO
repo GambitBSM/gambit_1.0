@@ -9,7 +9,7 @@ Core
 
 Rollcall:
 * Implement scan-level and point-level initialisation functions in backends (**Pat & Chistoph; before G3**)
-* Allow grouping of backend requirements into blocks  (**Pat; before G3**)
+* Allow grouping of backend requirements into blocks, maybe declaration of parameters  (**Pat; discussion with whole collab needed at G3**)
 * Tracking of config files -> lists in module/backend rollcall headers (**Pat; before G3**)
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
@@ -22,13 +22,11 @@ IniFile:
 * Support alternative ini format(s)
 
 Dependency Resolver:
-* Make dependency resolver more model-aware; at the moment it apparently cannot choose between two otherwise-valid functor options for filling a dependency, based only on the model being scanned.  (**Christoph; before G3**)
-* Modify model checks in dependency resolver so that all observables are parsed and their dependencies resolved before concluding that some model is not used for anything, and throwing an error (put FlavBit test obervables first in gambit.yaml to see this error)  (**Christoph & Ben; before G3**)
 * Make dependency resolver errors more informative (**Christoph; no major time pressure**)
+* Modify model checks in dependency resolver so that all observables are parsed and their dependencies resolved before concluding that some model is not used for anything, and throwing an error (put FlavBit test observables first in gambit.yaml to see this error)
 
 Backends:
 * Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; before G3**)
-* Implement elegant optional array reindexing scheme for Fortran arrays (**Lars & Pat; before G3**)
 * Resolve residual issues with passing strings to fortran backends (**Pat, Csaba, Ben & Anders; before G3**)
 * Implement backending of Mathematica codes (**Ben to dabble with; no time pressure**)
 * Implement backending of Python codes (**Ben to dabble with; no time pressure**)
@@ -55,8 +53,7 @@ Recent decisions impacting upcoming development:
 Done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
 * Separate gambit_example.cpps
-* Fix naming conventions
-  - GAMBIT->Gambit
+* Fix naming convention GAMBIT->Gambit
 * Create shorthand for parameter access from within module functions (e.g. Params["M0"])
 * Module-specific types in module directories, but common return types in Utils/include/shared_types.hpp
 * Make functors thread-safe
@@ -68,6 +65,8 @@ Done:
 * Make rollcall macros throw errors if the required #defines have not been done
 * Implement standalone compilation of physics modules
 * Convert common block / struct access to by-pointer
+* Make dependency resolver more model-aware; now it can choose between two otherwise-valid functor options for filling a dependency, based only on the model being scanned.
+* Implement elegant optional array reindexing scheme for Fortran arrays
 
 
 Models
@@ -79,13 +78,11 @@ Ongoing:
   - If not, throw an error to say that they are wasting their CPU time with the unused parameters.  
   - This entry is the same as one on the Core::Dependency Resolver part of the TODO list 
 
-* Sort out 'warning redefined' warnings from BOOST about TUPLE_TO_SEQ. (**Ben; before G3**)
-  - Need to check if variadics exists before bothering to redefine the macro, or something.
-
 Done:
 * Reunify model macros with module macros as much as possible (dependency macro in particular)
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
+* Sort out 'warning redefined' warnings from BOOST about TUPLE_TO_SEQ.
 
 
 HE Collider

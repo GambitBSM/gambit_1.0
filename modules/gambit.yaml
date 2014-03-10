@@ -7,7 +7,7 @@
 # Dec 2013
 #
 
-###################################
+############################
 --- # Input parameter declarations
 ###################################
 
@@ -17,6 +17,21 @@
 # properly in the "priors" section.
 
 CMSSM_I:
+  # SM pars
+  MZ:
+    fixed_value: 80
+  Mbot:
+    fixed_value: 90
+  Mtop:
+    fixed_value: 170
+  g1:
+    fixed_value: 0.001
+  g2:
+    fixed_value: 0.003
+  g3:
+    fixed_value: 0.1
+
+  # CMSSM pars
   A0:
     range: [-1000, 1000]
   M0:
@@ -30,6 +45,7 @@ CMSSM_I:
      range: [-1, 1]
      fixed_value: 1
   tanb:
+
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
     # range: [-1, 1]
@@ -156,11 +172,11 @@ multinest:
 #   capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-- purpose:      Likelihood
-  capability:   lnL_ExampleBitB
-  type:         double
-  function:     ""
-  module:       ""
+#- purpose:      Likelihood
+#  capability:   lnL_ExampleBitB
+#  type:         double
+#  function:     ""
+#  module:       ""
 
 # Test loop manager
 #- purpose:      Likelihood
@@ -173,11 +189,14 @@ multinest:
 
 # Test Pythia8 SLHA reader
 - purpose:      Likelihood
-  capability:   testSLHA
+  capability:   MSSMslha_testLogL
+#  printme:      false
 
 #########################
 --- # Auxiliary entries
 #########################
+
+- capability:   "MSSMspectrum"
 
 - capability:   "omega_DM"
   type:         ""
@@ -201,11 +220,14 @@ multinest:
 --- # Name/Value Section
 ##########################
 
-# Some exemplary keys and subkeys
+# Some example keys and subkeys
 my_key: 123
 another_key:
   subkey3:
     subsubkey1: value2
+
+dependency_resolution:
+  prefer_model_specific_functions: true
 
 enable_testing: false
 test_function: uniform

@@ -57,7 +57,7 @@ namespace Gambit
                                 errors.push_back(os.str());
                                 os.str("");
                                 
-                                return *this;
+                                return endl(*this);
                         }
                         
                         ErrorLog &operator << (output_struct in)

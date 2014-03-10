@@ -1,3 +1,6 @@
+# This script checks for possible cyclic includes.
+# Currently does not ignore comments, and might therefore give false positives
+
 import os
 
 IncludeDirs = [
@@ -31,6 +34,9 @@ def checkLoop(fle, ref, prev):
             if loop != None:
                 return loop
     return None
+    
+print 'Checking for cyclic includes...'
+print 'Note: Comments are currently not ignored. Might give false positives.'
 
 files = []
 for d in IncludeDirs:
@@ -60,7 +66,7 @@ for f in includes:
     loop = checkLoop(f,f,prev)
     if loop != None:
         if loop[0] == loop[-1]:
-            print 'Loop found in '+f+':'
+            print 'Possible cyclic include found in '+f+':'
             print loop
             print
 
