@@ -43,7 +43,7 @@ namespace Gambit
                 
                 inline bool vector_elem_check(std::vector<std::string> &vec, std::string elem)
                 {
-                        for (std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); it++)
+                        for (auto it = vec.begin(); it != vec.end(); it++)
                         {
                                 if ((*it) == elem)
                                 {
@@ -64,28 +64,27 @@ namespace Gambit
                         while (c != '\n' && c != EOF);
                 }
                 
-                template <typename T>
-                class Plugin_Interface
+                template <typename T> class Plugin_Interface;
+                
+                template <typename ret, typename... args>
+                class Plugin_Interface <ret (args...)>
                 {
                 private:
-                        bool open;
                         void *plugin;
-                        std::string errors;
                         std::string name;
-                        std::string version;
                         std::vector<std::string> mod_names;
                         typedef void (*initFuncType)(std::vector<void *> *);                              
                         typedef void * (*getFuncType)(std::string);
                         typedef void (*rmFuncType)(void *, std::string);
+                        typedef ret (*mainFuncType)(args...);
                         initFuncType initFunc;
                         getFuncType getFunc;
                         rmFuncType rmFunc;
-                        T* main;
+                        mainFuncType main;
                         
                 public:
-                        Plugin_Interface(std::string file, std::string name_in, std::string version, std::vector<void*> *input = NULL) : errors(""), open(true), name(name_in), version(version)
+                        Plugin_Interface(std::string file, std::string name, std::vector<void*> *input = NULL) : name(name)
                         {
-                                unsigned char flag = 0x00;
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
                                 std::string str;
                                 
@@ -110,42 +109,20 @@ namespace Gambit
                                 
                                 if (bool(plugin))
                                 {
-                                        if (mod_names.size() == 0)
+                                        if (mod_names.size() > 0)
                                         {
-                                                char con;
-                                                bool is_not_char;
-                                                std::cout << std::endl << std::endl;
-                                                do
-                                                {
-                                                        std::cout << "\e[00;31mERROR:\e[00m  Could not find any modules in file \"" << file << "\".  "
-                                                        << "It could be that you are on Ben's computer.  If so, would you like to continue loading module \""
-                                                        << name << "\" (y/n)?  " << std::flush;
-                                                        std::getline(std::cin, str);
-                                                        std::istringstream ss(str);
-                                                        is_not_char = !(ss >> con);
-                                                }
-                                                while(!(con == 'y' || con == 'Y' || con == 'n' || con == 'N') || is_not_char);
-                                                
-                                                if (con == 'Y' || con == 'y')
-                                                        flag = FORCE;
-                                                else
-                                                        flag = 0x00;
-                                        }
-                                        
-                                        if (mod_names.size() > 0 || bool(flag&FORCE))
-                                        {
-                                                if (!vector_elem_check(mod_names, name) && !bool(flag&FORCE))
+                                                if (!vector_elem_check(mod_names, name))
                                                 {
                                                         
                                                         if (name !=  "")
-                                                                std::cout << "\n\e[01;33mWARNING:\e[00m  Module \"" << name << "\" is not in file \"" << file << "\".\n\n";
+                                                                std::cout << "\n\e[01;33mWARNING:\e[00m  Plugin \"" << name << "\" is not in file \"" << file << "\".\n\n";
                                                         else
-                                                                std::cout << "\n\e[01;33mWARNING:\e[00m  Module was not specified in ini-file.\n\n";
+                                                                std::cout << "\n\e[01;33mWARNING:\e[00m  Plugin was not specified in ini-file.\n\n";
                                                         
-                                                        std::cout << "Modules in \"" << file << "\" are:\n";
+                                                        std::cout << "Plugins in \"" << file << "\" are:\n";
                                                         for (int i = 0; i < mod_names.size(); i++)
                                                         {
-                                                                std::cout << "   Module " << i << ":  " << mod_names[i] << "\n";
+                                                                std::cout << "   Plugin " << i << ":  " << mod_names[i] << "\n";
                                                         }
                                                         std::cout << "\nPlease choose a module number:  " << std::flush;
                                                         int iin;
@@ -167,36 +144,40 @@ namespace Gambit
                                                 rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_plugin_rmMember_") + name + std::string("__")).c_str());
 
                                                 initFunc(input);
-                                                main = (T *)getFunc(name);
+                                                main = (mainFuncType)getFunc(name);
                                                 
                                                 if (main == 0)
                                                 {
-                                                        scanLog::err << "Could not find main function in module \"" << name << "\"." << scanLog::endl;
+                                                        ostringstream ss;
+                                                        ss << "Could not find main function in plugin \"" << name << "\".";
+                                                        throw Gambit::Plugin::PluginException(ss.str());
                                                 }
                                         }
                                         else
                                         {
-                                                scanLog::err << "Could not find any modules in file \"" << file << "\"." << scanLog::endl;
+                                                ostringstream ss;
+                                                ss << "Could not find any modules in file \"" << file << "\".";
+                                                throw Gambit::Plugin::PluginException(ss.str()); 
                                         }
                                 }
                                 else
                                 {
-                                        scanLog::err << "Cannot load " << file << ":  " << dlerror() << scanLog::endl;
-                                        open = false;
+                                        ostringstream ss;
+                                        ss << "Cannot load " << file << ":  " << dlerror();
+                                        plugin = 0;
+                                        throw Gambit::Plugin::PluginException(ss.str()); 
                                 }
                         }
                         
-                        template <typename... args>
-                        auto operator() (const args&... params) -> decltype(main(params...))
+                        ret operator() (const args&... params) 
                         {
                                 return main(params...);
                         }
                         
                         void *getMember(std::string in){return getFunc(in);}
                         void deleteMember(void *ptr, std::string in){rmFunc(ptr, in);}
-                        const std::string printErrors() const {return errors;}
                         
-                        ~Plugin_Interface(){if (open) dlclose(plugin);}
+                        ~Plugin_Interface(){if (plugin != 0) dlclose(plugin);}
                 };
         }
 }
