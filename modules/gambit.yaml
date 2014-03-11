@@ -172,11 +172,11 @@ multinest:
 #   capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-#- purpose:      Likelihood
-#  capability:   lnL_ExampleBitB
-#  type:         double
-#  function:     ""
-#  module:       ""
+- purpose:      Likelihood
+  capability:   lnL_ExampleBitB
+  type:         double
+  function:     ""
+  module:       ""
 
 # Test loop manager
 #- purpose:      Likelihood
