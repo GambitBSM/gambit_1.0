@@ -59,7 +59,6 @@ namespace Gambit
   namespace Printers { class BasePrinter; }
 
   /// Function wrapper (functor) base class
-
   class functor
   {
 

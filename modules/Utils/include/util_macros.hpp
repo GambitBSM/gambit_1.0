@@ -12,6 +12,7 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -22,7 +23,11 @@
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
- 
+#include <boost/current_function.hpp> 
+
+/// \name Local information macro.
+#define LOCAL_INFO std::string("line ") + STRINGIFY(__LINE__) + " in function " + BOOST_CURRENT_FUNCTION + " of " + __FILE__
+
 /// \name Compile-time error macro.
 #define FAIL(x) static_assert(false,"GAMBIT precompiler error: " x);
 

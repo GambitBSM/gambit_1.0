@@ -16,10 +16,9 @@
 ///
 ///  *********************************************
 
-
+#include "error_handlers.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
-#include "exceptions.hpp"
 #include "yaml_parser.hpp"
 #include "gambit_scan.hpp"
 #include "module_rollcall.hpp"
@@ -609,11 +608,7 @@ int main( int, const char*[] )
   
 
   // Logging example 
-  try{
-    GAMBIT_MSG_LOG("GAMBIT example");
-  }catch( exceptions::GAMBIT_exception_base & e){
-    GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
-  }
+  GAMBIT_MSG_LOG("GAMBIT example");
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::commonBlock);

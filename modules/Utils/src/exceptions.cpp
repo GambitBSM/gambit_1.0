@@ -1,128 +1,98 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Exception class definitions.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
+///
+///  Distantly inspired by SUFIT classes of the 
+///  same name by Johan Lundberg, Aug 2011.
+///
+///  *********************************************
+
 #include "exceptions.hpp"
-#include <iostream>
-#include <boost/exception/all.hpp>
-#include <boost/exception/info.hpp>
-#include <boost/units/detail/utility.hpp>
-#include <sstream>
-#include <algorithm>
+#include "util_macros.hpp"
 
-#include <cxxabi.h>
-#include <execinfo.h>
-#include "logs.hpp"
+namespace Gambit
+{
 
-namespace Gambit{
+  /// Exception errors
+  extern error exceptions_internal_error;
+  /// Exception warnings
+  extern warning exceptions_internal_warning;
 
-  namespace exceptions{
 
-    i_trace i_trace_do() throw(){
-      return i_trace(logsetup::stacktrace());
+  // Public members of GAMBIT exception base class.
+
+  /// Constructor
+  exception::exception(str kind, str message, str inikey, bool fatal) :
+   myKind                (kind),
+   myMessage             (message),
+   isFatal               (fatal)
+  {
+    exception_map[inikey] = this;
+    cout << myKind << endl;
+  }
+
+  /// Setter for the fatal flag of this instance.
+  void exception::set_fatal(bool fatal)
+  {
+    isFatal = fatal;
+  }
+
+  /// Setter for the fatal flag of the instance corresponding to a given iniFile key.
+  void exception::set_fatal(str inikey, bool fatal)
+  {
+    if (exception_map.find(inikey) != exception_map.end() )
+    {
+      exception_map[inikey]->set_fatal(fatal);
     }
-
-    std::string get_exception_origin(boost::exception const & e){
-      std::stringstream tmp;
-      if ( char const*const *mi =boost::get_error_info<boost::throw_file>(e) ) {
-        tmp<<std::string(*mi);
-      }
-      if ( int const* mi =boost::get_error_info<boost::throw_line>(e) ) {
-        tmp<<"#"<<int(*mi)<<" ";
-      }
-      if ( char const*const *mi =boost::get_error_info<boost::throw_function>(e) ) {
-        tmp<<std::string(*mi);
-      }
-      return tmp.str();
-    }
-
-    std::string get_exception_trace(boost::exception const & e){
-      if( std::string const * mi=boost::get_error_info<i_trace>(e) )
-        return *mi;
-      return std::string("");
-    }
-    std::string get_exception_text(boost::exception const & e){
-      if( std::string const * mi=boost::get_error_info<i_text>(e) )
-        return *mi;
-      return std::string("");
-    }
-    std::string get_exception_name(boost::exception const & e){
-      if( std::string const * mi=boost::get_error_info<i_text>(e) )
-        return *mi;
-      return std::string("");
-    }
-
-    std::string get_exception_dump(boost::exception const & e,unsigned int detail){
-      std::stringstream out;
-
-      bool needendl=0;
-      std::string tmp;
-      if(const GAMBIT_exception_base *tmp=dynamic_cast<const GAMBIT_exception_base*>(&e)){
-        out<<tmp->getName();
-        needendl=1;
-      }
-      tmp=get_exception_text(e);
-      if(!tmp.empty()) {
-        if(needendl) out<<std::endl;
-        out<<tmp;
-        needendl=1;
-      }
-      if(detail>0){
-        tmp=get_exception_origin(e);
-        if(!tmp.empty()) {
-          if(needendl) out<<std::endl;
-          out<<tmp;
-          needendl=1;
-        }
-      }
-      if(detail>1){
-        tmp=get_exception_trace(e);
-        if(!tmp.empty()) {
-          if(needendl) out<<std::endl;
-          out<<tmp;
-          needendl=1;
-        }
-      }
-      if(detail>2){
-        if(needendl) out<<std::endl;
-        out<<tmp;
-        out<<"full diagnostic dump:"<<boost::diagnostic_information(e);
-      }
-      return out.str();
+    else
+    {
+      str error_msg = "No known GAMBIT exception type matches iniFile key "; 
+      error_msg += inikey + ".\n Please check your inifile and exception declarations.";
+      exceptions_internal_error.raise(LOCAL_INFO,error_msg);
     }
   }
+
+  /// Raise the exception.
+  /// Log the exception and, if it is considered fatal, actually throw it. 
+  /// This is the regular way to trigger a GAMBIT error or warning. 
+  void exception::raise(str origin, str specific_message)
+  {
+    //log(myMessage "\n" "Raised at " origin "\n" specific_message)
+    cout << myKind << ": " << myMessage << "\n" << "Raised at " << origin << ".\n" << specific_message;
+    if (isFatal) throw(this);
+  }
+
+  /// Log the exception and throw it regardless of whether is is fatal or not.
+  void exception::forced_throw(str origin, str specific_message)
+  {
+    //log(myMessage "\n" "Raised at " origin "\n" specific_message)
+    cout << myKind << ": " << myMessage << "\n" << "Raised at " << origin << ".\n" << specific_message;
+    throw(this);
+  }
+
+  /// As per forced_throw but without logging.
+  void exception::silent_forced_throw()
+  {
+    throw(this);
+  }
+
+
+  /// GAMBIT error class constructor
+  error::error(str message, str inikey) : exception("ERROR", message, inikey, true) {cout << "in error"<<endl;}
+
+  /// GAMBIT warning class constructor
+  warning::warning(str message, str inikey) : exception("WARNING", message, inikey, false) {cout << "in warning"<<endl;}
+
 }
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-/*
 
-  Additional code for optional debug messages from exceptions
 
-  public:
-  GAMBIT_exception_base() throw() {
-  //GAMBIT_MSG_INFO(exception_origin(*this));
-  }
-  GAMBIT_exception_base(const GAMBIT_exception_base& rhs)throw(){
-  boost::exception::operator=(rhs);
-  std::exception::operator=(rhs);
-  try {
-  std::string tmp;
-  tmp=get_exception_origin(*this);
-  if(!tmp.empty()) GAMBIT_MSG_DEBUG("copying exception. origin:"<<tmp,2);
-  tmp=get_exception_text(*this);
-  if(!tmp.empty()) GAMBIT_MSG_DEBUG("copying exception. text  :"<<tmp,3);
-  tmp=get_exception_trace(*this);
-  if(!tmp.empty()) GAMBIT_MSG_DEBUG("copying exception. trace :"<<tmp,4);
-  }catch(...){
-  try{
-  std::cerr<<"error copying exception from "<<get_exception_origin(*this)<<" "<< get_exception_text(*this)<<" "<<get_exception_trace(*this);
-  }catch(...){}
-  }
-  }
-  virtual ~GAMBIT_exception_base() throw(){
-  }
-  virtual GAMBIT_exception_base & operator=(const GAMBIT_exception_base& rhs)throw(){
-  std::exception::operator=(rhs);
-  boost::exception::operator=(rhs);
-  return (*this);
-  }
-  #endif
-  #endif
-  };
-*/
-#endif

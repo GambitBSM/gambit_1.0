@@ -16,18 +16,19 @@
 ///
 ///  *********************************************
 
+#include "error_handlers.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include <gambit_scan.hpp>
-#include <priorfactory.hpp>
-#include <priors.hpp>
-#include <scanner_factory.hpp>
-#include <inifile_interface.hpp>
-#include <test_factory.hpp>
+#include "gambit_scan.hpp"
+#include "priorfactory.hpp"
+#include "priors.hpp"
+#include "scanner_factory.hpp"
+#include "inifile_interface.hpp"
+#include "test_factory.hpp"
 
 using namespace Gambit;
 
@@ -150,10 +151,10 @@ void beispiel(const char* inifilename)
 
 int main( int argc, const char* argv[] )
 {
-     const char* inifilename;
+  const char* inifilename;
          
-    std::streambuf *coutbuf = std::cout.rdbuf(); 
-    std::cout.rdbuf(coutbuf);
+  std::streambuf *coutbuf = std::cout.rdbuf(); 
+  std::cout.rdbuf(coutbuf);
    
   // Parse command line arguments
   if (argc < 2) { // Check the value of argc. If not enough parameters have been passed, inform user and exit.

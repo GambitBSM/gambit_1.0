@@ -24,7 +24,7 @@
 #include "backend_rollcall.hpp"
 #include "module_macros_incore.hpp"
 #include "model_rollcall.hpp"
-#include "exceptions.hpp"
+#include "standalone_error_handlers.hpp"
 
 using namespace Gambit;
 using std::cout;

@@ -28,14 +28,22 @@
 ///  *********************************************
 
 
-#include <boost/preprocessor/seq/for_each.hpp>
 #include "functors.hpp"
+#include "exceptions.hpp"
 #include "all_functor_types.hpp"
+
+#include <boost/preprocessor/seq/for_each.hpp>
 
 #define FWDPRINT(r,data,elem) virtual void print(elem const&, const functor*) = 0;
 
 namespace Gambit
 {
+
+  /// Utility errors
+  extern error utils_error;
+  /// Utility warnings
+  extern warning utils_warning;
+
 
   /// Poorly declaration of Printers::BasePrinter for use in print functions; leave implementation to printer source files.
   /// If the compiled printer sources are not linked against the compiled program, any calls to the print functions will generate
@@ -50,6 +58,7 @@ namespace Gambit
         virtual void endline() = 0;
     };
   }
+
    
   // Functor class methods
 
@@ -68,7 +77,7 @@ namespace Gambit
      needs_recalculating (true) {}
     
     /// Virtual calculate(); needs to be redefined in daughters.
-    void functor::calculate() {};
+    void functor::calculate() {}
 
     /// Interfaces for runtime optimization
     /// Need to be implemented by daughters
@@ -272,25 +281,30 @@ namespace Gambit
     /// Print function
     void functor::print(Printers::BasePrinter*)
     { 
-       // TODO: throw real GAMBIT Error
-       std::cout<<"Warning: this is the functor base class print function! This should not be used; print "
-        << "function should be redefined in daughter functor classes. If this is running there is a problem "
-        << "somewhere (from functor "<<myName<<")."<<std::endl;
-       std::cout<<"Currently only functors derived from module_functor_common<!=void> are allowed to try to print "
-        << "themselves; i.e. backend and void functors may not do this (they inherit this default message)"<<std::endl;
+      str warn_msg = "This is the functor base class print function! This should not\n";
+      warn_msg += "be used; the print function should be redefined in daughter\n"
+                  "functor classes. If this is running there is a problem somewhere.\n"
+                  "Currently only functors derived from module_functor_common<!=void>\n"
+                  "are allowed to try to print themselves; i.e. backend and void\n"
+                  "functors may not do this (they inherit this default message).";
+      utils_warning.raise(LOCAL_INFO,warn_msg);
+      cout << LOCAL_INFO << warn_msg << endl;
+      exit(1);
+      
     }    
-
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
     {
-        cout << endl << "Error in module function!  Attempted to use a conditional " << endl;
-        cout << "dependency that has not been activated, or a model parameter " << endl;
-        cout << "that is not defined in the model for which this function has " << endl;
-        cout << "been invoked.  Please check your module function source code. " << endl;
-        cout << "Method invoked: " << method << endl;
-        exit(1);
-        /// FIXME \todo throw real error here                             
+      str error_msg = "Error in module function!  Attempted to use a conditional\n";
+      error_msg += "dependency that has not been activated, or a model parameter\n"    
+                   "that is not defined in the model for which this function has\n"   
+                   "been invoked.  Please check your module function source code.\n"
+                   "Method invoked: " + method + ".";
+      utils_error.raise(LOCAL_INFO,error_msg);
+      cout << LOCAL_INFO << error_msg << endl;
+      exit(1);
+      
     }
 
     /// Test if a model has a parent model in the functor's allowedModels list
