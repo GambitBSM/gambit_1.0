@@ -51,9 +51,9 @@ namespace Gambit
                                 Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), &input);
                                 plugin_interface();
                         }
-                        catch (Plugin::PluginException exception)
+                        catch (std::exception &exception)
                         {
-                                scanLog::err << exception.Print() << scanLog::endl;
+                                scanLog::err << exception.what() << scanLog::endl;
                         }
                         outputHandler::out.defout();
                         scanLog::err.check();

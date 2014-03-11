@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <string>
+#include <exception>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ namespace Gambit
 {
         namespace Plugin
         {
-                class PluginException
+                class PluginException : public std::exception
                 {
                 private:
                         std::string mssg;
@@ -34,7 +35,10 @@ namespace Gambit
                 public:
                         PluginException(const std::string &in) : mssg(in) {}
                         
-                        std::string Print(){return mssg;}
+                        virtual const char* what() const throw()
+                        {
+                                return mssg.c_str();
+                        }
                 };
         }
 }
