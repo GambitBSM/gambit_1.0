@@ -51,6 +51,7 @@
 #include <map>
 
 #include "functors.hpp"
+#include "exceptions.hpp"
 #include "create_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
@@ -196,6 +197,12 @@
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
+      /* Module errors */                                                      \
+      error CAT(MODULE,_error)("A problem has been raised by "STRINGIFY(MODULE)\
+                        ".", STRINGIFY(MODULE) "_error");                      \
+      /* Module warnings */                                                    \
+      warning CAT(MODULE,_warning)("A problem has been raised by "             \
+                        STRINGIFY(MODULE) ".", STRINGIFY(MODULE) "_warning");  \
       CORE_START_MODULE_COMMON(MODULE)                                         \
     }                                                                          \
   }                                                                            \
@@ -635,13 +642,12 @@
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          cout<<"Error: Null returned from dynamic cast of "<< endl;           \
-          cout<<"dependency functor in MODULE::resolve_dependency, for"<< endl;\
-          cout<<"dependency DEP of function FUNCTION.  Attempt was to "<< endl;\
-          cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
-          cout<<dep_functor->origin()<<"."<<endl;                              \
-          exit(1);                                                             \
-          /** FIXME \todo throw real error here */                             \
+          str errmsg = "Error: Null returned from dynamic cast of";            \
+          errmsg +=  "\ndependency functor in MODULE::resolve_dependency, for" \
+                     "\ndependency DEP of function FUNCTION.  Attempt was to"  \
+                     "\nresolve to " + dep_functor->name() + " in " +          \
+                     dep_functor->origin() + ".";                              \
+          core_error.raise(LOCAL_INFO,errmsg);                                 \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -767,13 +773,12 @@
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
-          cout<<"MODULE::resolve_dependency, for model"<< endl;                \
-          cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;       \
-          cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;        \
-          cout<<params_functor->origin()<<"."<<endl;                           \
-          exit(1);                                                             \
-          /** FIXME \todo throw real error here */                             \
+          str errmsg = "Error: Null returned from dynamic cast in";            \
+          errmsg +=  "\nMODULE::resolve_dependency, for model"                 \
+                     "\nMODEL with function FUNCTION.  Attempt was to"         \
+                     "\nresolve to " + params_functor->name() + " in " +       \
+                     params_functor->origin() + ".";                           \
+          core_error.raise(LOCAL_INFO,errmsg);                                 \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \

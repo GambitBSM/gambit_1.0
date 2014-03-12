@@ -21,17 +21,25 @@ namespace Gambit
 {
 
   /// Map of pointers to all instances of the exception class.
-  std::map<str,exception*> exception::exception_map;
+  std::map<const char*,exception*> exception::exception_map;
 
   /// Utility errors
   error utils_error("A problem has been raised by one of the utility codes.","utils_error");
   /// Utility warnings
   warning utils_warning("A problem has been raised by one of the utility codes.","utils_warning");
 
-  /// Exception errors
-  error exceptions_internal_error("A problem has occurred in the exceptions system.","exceptions_internal_error");
-  /// Exception warnings
-  warning exceptions_internal_warning("A problem has occurred in the exceptions system.","exceptions_internal_warning");
+  /// Logging errors
+  error logging_error("A problem has occurred in the logging utilities.","logging_error");
+  /// Logging warnings
+  warning logging_warning("A problem has occurred in the logging utilities.","logging_warning");
+
+  namespace Printers
+  {
+    /// Printer errors
+    error printer_error("A problem has occurred in the printer utilities.","printer_error");
+    /// Printer warnings
+    warning printer_warning("A problem has occurred in the printer utilities.","printer_warning");
+  }
 
 }
 

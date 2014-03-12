@@ -588,10 +588,10 @@ namespace Gambit
       // Die if there is no way to fulfill this dependency.
       if ( vertexCandidates.size() == 0 ) 
       {
-        cout << "ERROR: I could not find any module function that provides capability " << quantity.first << endl;
-        cout << "with type " << quantity.second << ". Check your inifile for typos, your modules" << endl;
-        cout << "for consistency, etc." << endl;
-        exit(0); // TODO: Throw error here
+        str errmsg = "I could not find any module function that provides capability\n";
+        errmsg += quantity.first + " with type " + quantity.second + ".";
+               +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+        dependency_resolver_error.raise(LOCAL_INFO,errmsg);
       }
 
       // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
@@ -616,9 +616,9 @@ namespace Gambit
             std::vector<str> pvec = parents(*mit);
             if (pvec.size() > 1)
             {
-              cout << "ERROR: Multi-parent models cannot be used in cases where model specific functor rules need to be invoked." << endl;
-              cout << "Please specify your required dependencies more fully in your inifile." << endl;
-              exit(0); // TODO Throw error here
+              str errmsg = "Multi-parent models cannot be used in cases where model specific functor rules need";
+              errmsg += "to be invoked. Please specify your required dependencies more fully in your inifile.";
+              dependency_resolver_error.raise(LOCAL_INFO,errmsg);
             }
             else if (pvec.size() == 0) 
             {
@@ -636,18 +636,18 @@ namespace Gambit
 
       if ( vertexCandidates.size() > 1 ) 
       {
-        cout << "ERROR: I found too many module functions that provide capability " << quantity.first << endl;
-        cout << "with type " << quantity.second << ". " << endl; 
-        cout << "Check your inifile for typos, your modules for consistency, etc." << endl;
+        str errmsg = "I found too many module functions that provide capability\n";
+        errmsg += quantity.first + " with type " + quantity.second + ".\n";
+               +  "Check your inifile for typos, your modules for consistency, etc.";
         if ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
          boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
-         cout << "Also consider turning on prefer_model_specific_functions in your inifile." << endl;
-        cout << "Candidate module functions are: " << endl;
+         errmsg += "\nAlso consider turning on prefer_model_specific_functions in your inifile.";
+        errmsg += "\nCandidate module functions are:";
         for (std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
         {
-          cout << "  " << masterGraph[*it]->origin() << "::" << masterGraph[*it]->name() << endl;
+          errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
         }
-        exit(0); // TODO Throw error here
+        dependency_resolver_error.raise(LOCAL_INFO,errmsg);
       }
 
       return std::tie(depEntry, auxEntry, optEntry, vertexCandidates[0]);
@@ -677,6 +677,7 @@ namespace Gambit
       int dependency_type;
       bool printme;
 
+      //FIXME this output all needs to be redirected to the logs instead of stdout.
       cout << endl << "Dependency resolution" << endl;
       cout <<         "---------------------" << endl;
       cout <<         "CAPABILITY (TYPE) [FUNCTION, MODULE]" << endl << endl;
@@ -733,9 +734,9 @@ namespace Gambit
             // Check whether fromVertex is allowed to manage loops
             if (not masterGraph[fromVertex]->canBeLoopManager())
             {
-              cout << "ERROR: Trying to resolve dependency on loop manager" << endl;
-              cout << "with module function that is not declared as loop manager." << endl;
-              exit(1); //FIXME: Throw real error here
+              str errmsg = "Trying to resolve dependency on loop manager with";
+              errmsg += "\nmodule function that is not declared as loop manager.";
+              dependency_resolver_error.raise(LOCAL_INFO,errmsg);
             }
             std::set<Graphs::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
@@ -837,8 +838,7 @@ namespace Gambit
       if ( auxEntryCandidates.size() == 1 ) return auxEntryCandidates[0];
       else
       {
-        cout << "ERROR: Found multiple matching auxiliary entries for the same vertex." << endl;
-        exit(0);
+        dependency_resolver_error.raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex.");
       }
     }
 
@@ -859,9 +859,9 @@ namespace Gambit
       if ( obsEntryCandidates.size() == 1 ) return obsEntryCandidates[0];
       else
       {
-        cout << "ERROR: Multiple matches for identical capability in inifile." << endl;
-        cout << "Capability: " << quantity.first << " (" << quantity.second << ")" << endl;
-        exit(0);
+        str errmsg = "Multiple matches for identical capability in inifile.";
+        errmsg += "\nCapability: " + quantity.first + " (" + quantity.second + ")";
+        dependency_resolver_error.raise(LOCAL_INFO,errmsg);
       }
     }
 
@@ -927,24 +927,22 @@ namespace Gambit
 
         if (vertexCandidates.size() == 0)
         {
-          cout << "ERROR: Found no candidates for backend requirement." << endl;
+          str errmsg = "Found no candidates for backend requirement.";
           if (disabledVertexCandidates.size() != 0)
           {
-            cout << "Note that viable candidates exist but have been disabled:" << endl;
-            printGenericFunctorList(&disabledVertexCandidates);
-            cout << "Please check that all shared objects exist for the" << endl;
-            cout << "necessary backends, and that they contain all the " << endl;
-            cout << "necessary functions required for this scan. " << endl;
+            errmsg += "\nNote that viable candidates exist but have been disabled:";
+            //printGenericFunctorList(&disabledVertexCandidates);  FIXME this needs to return a string, not just print
+                   +  "\nPlease check that all shared objects exist for the";
+                   +  "\necessary backends, and that they contain all the";
+                   +  "\nnecessary functions required for this scan.";
           }
-          exit(0);
-          //FIXME throw a real error here
+          dependency_resolver_error.raise(LOCAL_INFO,errmsg);
         }
 
         // One candidate...
         if (vertexCandidates.size() > 1)
         {
-          cout << "ERROR: Found too many candidates for backend requirement." << endl;
-          exit(0);
+          dependency_resolver_error.raise(LOCAL_INFO,"Found too many candidates for backend requirement.");
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);

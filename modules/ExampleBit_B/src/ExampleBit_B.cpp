@@ -63,6 +63,11 @@ namespace Gambit
       cout << "  M12: " << *Param["M12"] << endl;
       cout << "  A0: "  << *Param["A0"] << endl;
       result = 5.e10; 
+
+      //Example of how to raise an error from a module function.
+      //str errormsg = "Damn, this xsection is bad.";
+      //ExampleBit_B_error.raise(LOCAL_INFO,errormsg);
+
     }
 
     void nevents_postcuts (int &result)          

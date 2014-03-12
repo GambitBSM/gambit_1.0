@@ -35,14 +35,18 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
 
-//using namespace boost;
-
 namespace Gambit
 {
   namespace Graphs
   {
 
     using namespace boost;
+
+    /// Dependency resolver errors
+    extern error dependency_resolver_error;
+    /// Dependency resolver warnings
+    extern warning dependency_resolver_warning;
+
     // Typedefs for central boost graph
     typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;

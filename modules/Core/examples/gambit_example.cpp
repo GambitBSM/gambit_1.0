@@ -122,6 +122,10 @@ void beispiel()
 
 int main( int, const char*[] )
 {
+
+  try
+  {
+
   beispiel();
 
   cout<<endl;
@@ -620,6 +624,14 @@ int main( int, const char*[] )
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
     
-  return 1;
+
+  }
+
+  catch (std::exception& e)
+  {
+    cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+  }
+
+  return 0;
 
 }

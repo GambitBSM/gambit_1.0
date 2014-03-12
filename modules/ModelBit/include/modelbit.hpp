@@ -44,11 +44,14 @@
 namespace Gambit
 {
 
+  /// Model errors
+  extern error model_error;
+  /// Model warnings
+  extern warning model_warning;
+
   namespace ModelBit
   {
      
-    typedef std::map < str, std::vector<str> > map_of_vectors;
-    
     /// ModelBit object which performs initialisation and checking operations
     /// on the Core's primary_model_functor list.
     class ModelFunctorClaw
@@ -119,7 +122,7 @@ namespace Gambit
         bool model_exists (const str &); 
 
         /// List all the models recognised by GAMBIT
-        void list_models();
+        str list_models();
 
         /// Return vector of the active models;
         std::vector<str> get_activemodels();

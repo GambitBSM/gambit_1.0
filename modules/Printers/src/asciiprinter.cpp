@@ -89,6 +89,7 @@ namespace Gambit
     // Tell printer to start a new line of the ascii output file
     void asciiPrinter::endline()
     {
+
       std::cout<<"In acsiiPrinter: starting new printer line!"<<std::endl; 
 
       // Move buffer location index to the next line
@@ -117,9 +118,7 @@ namespace Gambit
         {
           if (lineindexrecord!=newlineindexrecord)
           {
-            //TODO: raise proper gambit error
-            std::cout<<"Error! Output format has changed during run! The asciiPrinter cannot handle this!"<<std::endl;
-            std::exit(1);
+            printer_error.raise(LOCAL_INFO,"Error! Output format has changed during run! The asciiPrinter cannot handle this!");
           }
         }
         else

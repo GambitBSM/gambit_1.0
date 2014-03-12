@@ -2,30 +2,38 @@
 //  *********************************************
 /// \file
 ///  Utility Functions for the Gambit Scanner
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-///  \author Gregory Martinez (gregory.david.martinez@gmail.com)
-///  \date July 2013/feb 2014
-//
-//  *********************************************
+///
+///  *********************************************
+///
+///  Authors
+///  =======
+///
+///  (add name and date if you modify)
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2013 July
+///  \date 2014 Feb
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
+///
+///  *********************************************
 
 #ifndef __scanner_utils_hpp__
 #define __scanner_utils_hpp__
 
-#include <scanlog.hpp>
-#include <outputhandler.hpp>
 #include <type_traits>
 #include <utility>
 #include <ostream>
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
+
+#include "scanlog.hpp"
+#include "outputhandler.hpp"
+#include "exceptions.hpp"
 
 #define REGISTER(reg_map, tag, ...)                                                                             \
 namespace __gambit_registry__                                                                                   \
@@ -71,8 +79,18 @@ namespace __gambit_registry__                                   \
                                                                 \
 namespace                                                       \
 
+
 namespace Gambit
 {
+
+        namespace Scanner
+        {
+                /// Scanner errors
+                extern error scan_error;
+                /// Scanner warnings
+                extern warning scan_warning;
+        }
+
         template <typename T>
         class reg_elem : public std::unordered_map<std::string, T *>
         {

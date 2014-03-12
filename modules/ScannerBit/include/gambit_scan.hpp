@@ -25,7 +25,7 @@
 #ifndef __gambit_scan_hpp__
 #define __gambit_scan_hpp__
 
-#include <yaml_parser.hpp>
+#include "yaml_parser.hpp"
 
 namespace Gambit
 {
@@ -57,7 +57,7 @@ namespace Gambit
                 private:
                         const Factory_Base &factory;
                         const IniFileInterface_Base &interface;
-			
+
                 public:
                         Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface) : factory(factory), interface(interface)
                         {       
@@ -67,6 +67,7 @@ namespace Gambit
                         
                         ~Gambit_Scanner();
                 };             
+
         }
 }
 

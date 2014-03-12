@@ -2,21 +2,26 @@
 //   *********************************************
 ///  \file
 ///
-///  GAMBIT Core driver class implementation.
-///  Nothing to see here.  Move along please.
+///  External declaration of utility exceptions.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
 ///   
-///  \author Pat Scott
-///  \date 2013 Aug
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
-#include "gambit_core.hpp"
+#include "exceptions.hpp"
 
 namespace Gambit
 {
+
+  /// Utility errors
+  extern error utils_error;
+  /// Utility warnings
+  extern warning utils_warning;
 
 }

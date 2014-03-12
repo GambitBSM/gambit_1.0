@@ -294,12 +294,14 @@ namespace Gambit
     }
 
     /// List all the models recognised by GAMBIT
-    void ModelFunctorClaw::list_models()
+    str ModelFunctorClaw::list_models()
     {
+      str temp = "";
       for (std::set<str>::iterator it = allmodelnames.begin(); it != allmodelnames.end(); ++it)
       {
-        cout << *it << endl;
+        temp += "\n" + *it; 
       } 
+      return temp;
     }
 
     /// Retrieve the lineage for a given model

@@ -17,15 +17,16 @@
 #ifndef __test_factory_hpp__
 #define __test_factory_hpp__
 
-#include <vector>
-#include <unordered_map>
 #include <map>
+#include <vector>
 #include <string>
-#include <scanner_utils.hpp>
-#include <gambit_scan.hpp>
-#include <scanner_factory.hpp>
+#include <unordered_map>
 #include <sstream>
-#include <yaml_parser.hpp>
+
+#include "scanner_utils.hpp"
+#include "gambit_scan.hpp"
+#include "scanner_factory.hpp"
+#include "yaml_parser.hpp"
 
 #define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )                                                                                              \
 

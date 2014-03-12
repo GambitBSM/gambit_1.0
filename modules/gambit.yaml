@@ -229,6 +229,14 @@ another_key:
 dependency_resolution:
   prefer_model_specific_functions: true
 
+#By default, errors are fatal and warnings non-fatal
+exceptions:
+  dependency_resolver_error: fatal
+  dependency_resolver_warning: non-fatal
+  core_warning: fatal
+  scan_error: non-fatal 
+  ExampleBit_B_error: fatal
+
 enable_testing: false
 test_function: uniform
     

@@ -156,24 +156,35 @@ int main( int argc, const char* argv[] )
   std::streambuf *coutbuf = std::cout.rdbuf(); 
   std::cout.rdbuf(coutbuf);
    
-  // Parse command line arguments
-  if (argc < 2) { // Check the value of argc. If not enough parameters have been passed, inform user and exit.
-    std::cout << "Error! No inifile specified!" << std::endl;
-    std::cout << "Usage is: gambit_example_minimal <inifile>" << std::endl; // Inform the user of how to use the program
-    std::cout << "  e.g.  : gambit_example_minimal gambit.yaml" << std::endl;
-    std::cout << "        : gambit_example_minimal modelbit_test.yaml" << std::endl;
-    exit(0);
-  } 
-  else { // if we got enough parameters...
-    std::cout << argv[0];
-    inifilename = argv[1];
-  }
+  try
+  {
+
+    // Parse command line arguments
+    if (argc < 2) { // Check the value of argc. If not enough parameters have been passed, inform user and exit.
+      str errmsg = "Error! No input file specified!";
+      // Inform the user of how to use the program
+      errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
+                 "\n  e.g.  : gambit_example_minimal gambit.yaml"
+                 "\n        : gambit_example_minimal modelbit_test.yaml";
+      core_error.raise(LOCAL_INFO,errmsg);
+    } 
+    else { // if we got enough parameters...
+      std::cout << argv[0];
+      inifilename = argv[1];
+    }
   
-  beispiel(inifilename);
+    beispiel(inifilename);
  
-  std::cout << "Gambit has finished successfully! Any errors following this message ";
-  std::cout << "are probably caused by cleanup problems, i.e in destructors etc."<<std::endl;
-   
-  return 1;
+    std::cout << "GAMBIT has finished successfully! Any errors following this message ";
+    std::cout << "are probably caused by cleanup problems, i.e in destructors etc."<<std::endl;
+  
+  }
+
+  catch (std::exception& e)
+  {
+    cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+  }
+
+  return 0;
 
 }

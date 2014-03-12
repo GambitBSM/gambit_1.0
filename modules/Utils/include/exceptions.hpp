@@ -21,9 +21,10 @@
 #define __exceptions_hpp__
 
 #include <map>
+#include <string>
 #include <exception>
 
-#include "util_types.hpp"
+#include "util_macros.hpp"
 
 namespace Gambit
 {
@@ -35,45 +36,48 @@ namespace Gambit
     public:
 
       /// Constructor
-      exception(str, str, str, bool);
+      exception(const char*, const char*, const char*, const char*, bool);
 
       /// Destructor
       ~exception() throw() {};
 
-      /// Setter for the fatal flag of this instance.
+      /// Setter for the fatal flag.
       void set_fatal(bool);
 
-      /// Setter for the fatal flag of the instance corresponding to a given iniFile key.
-      void set_fatal(str, bool fatal);
+      /// Retrieve the identity of the exception.
+      virtual const char* what() const noexcept;
 
       /// Raise the exception.
       /// Log the exception and, if it is considered fatal, actually throw it. 
       /// This is the canonical way to trigger a GAMBIT error or warning. 
-      void raise(str, str);
+      void raise(std::string, std::string);
 
       /// Force a throw of the exception.
       /// These should only be used inside a try block, i.e. if you plan to catch the exception.
       /// @{
       /// Log the exception and throw it regardless of whether is is fatal or not.
-      void forced_throw(str, str);
+      void forced_throw(std::string, std::string);
       /// As per forced_throw but without logging.
       void silent_forced_throw();
       /// @}
 
+      /// Map of pointers to all instances of this class.
+      static std::map<const char*,exception*> exception_map;
+    
     private:
 
-      /// The kind of exception (error, warning, etc).
-      str myKind;
+      /// The kind of exception (error, warning, etc; for logging).
+      const char* myKind;
+
+      /// What sort of exception this is (for returning with what method).
+      const char* myWhat;
 
       /// The message to be logged when this exception is raised.
-      str myMessage;
+      const char* myMessage;
 
       /// Flag indicating if this exception should be considered fatal or not.
       bool isFatal;
 
-      /// Map of pointers to all instances of this class.
-      static std::map<str,exception*> exception_map;
-    
   };
 
 
@@ -82,7 +86,7 @@ namespace Gambit
   {
     public:
       /// Constructor
-      error(str, str);
+      error(const char*, const char*);
   };
 
   /// GAMBIT warning class.
@@ -90,7 +94,7 @@ namespace Gambit
   {
     public:
       /// Constructor
-      warning(str, str);
+      warning(const char*, const char*);
   };
 
 }

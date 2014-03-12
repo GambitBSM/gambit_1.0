@@ -14,11 +14,13 @@
 //
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 July/August 2013/Feb 2014
+///  \date 2013 July, Aug
+///  \date 2014 Feb
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -29,6 +31,11 @@ namespace Gambit
 {
         namespace Scanner
         { 
+                /// Scanner errors
+                error scan_error("A problem has been raised by ScannerBit.","scan_error");
+                /// Scanner warnings
+                warning scan_warning("A problem has been raised by ScannerBit.","scan_warning");
+
                 int Gambit_Scanner::Run()
                 {
                         if (interface.fileName() == "")
