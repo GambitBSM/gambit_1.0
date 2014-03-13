@@ -168,7 +168,6 @@ void beispiel(const char* inifilename)
 int main( int argc, const char* argv[] )
 {
   const char* inifilename;
-//  char* inifilename;
 
   std::streambuf *coutbuf = std::cout.rdbuf(); 
   std::cout.rdbuf(coutbuf);
