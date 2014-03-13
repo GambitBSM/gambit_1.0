@@ -38,7 +38,7 @@
 
 #include "ModelParametersBase.hpp"
 #include "shared_ptr.hpp"
-#include "logs.hpp"
+//DEPRECIATED #include "logs.hpp"
 
 namespace Gambit {
 
@@ -66,7 +66,8 @@ namespace Gambit {
 
       void assert_contains(std::string inkey) const
       {
-        if(_values.count(inkey)!=1) { GAMBIT_MSG_FATAL("key not found"+inkey); }
+        // TODO: gambit error
+        // if(_values.count(inkey)!=1) { GAMBIT_MSG_FATAL("key not found"+inkey); }
       }
 
     public:

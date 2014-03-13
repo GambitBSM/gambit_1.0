@@ -31,6 +31,7 @@
 #include "functors.hpp"
 #include "all_functor_types.hpp"
 #include "standalone_error_handlers.hpp"
+#include "log.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -310,8 +311,7 @@ namespace Gambit
       return "";    
     }
 
-
-  // Module_functor_common class methods
+    // Module_functor_common class methods
 
     /// Constructor
     module_functor_common::module_functor_common(str func_name,
@@ -331,6 +331,16 @@ namespace Gambit
       globlMaxThreads    (omp_get_max_threads())
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
+
+      // Determine LogTag number
+      myLogTag = Logging::str2tag(myOrigin);
+      // Check for failure
+      if(myLogTag==-1)
+      {
+        std::ostringstream ss;
+        ss << "Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
+        logger().send(ss.str(),warn,nonfatal);
+      }
     }
 
     /// Getter for averaged runtime
@@ -765,7 +775,7 @@ namespace Gambit
     }
 
 
-  /// Class methods for actual module functors for TYPE != void
+    /// Class methods for actual module functors for TYPE != void
 
     template <typename TYPE>
     module_functor<TYPE>::module_functor(void (*inputFunction)(TYPE &),
@@ -816,10 +826,12 @@ namespace Gambit
     {
       if (needs_recalculating)
       {
+        logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);                       //Begin timing function evaluation
         this->myFunction(myValue[omp_get_thread_num()]);   //Run and place result in the appropriate slot in myValue
         this->finishTiming(nsec,sec);                      //Stop timing function evaluation
+        logger().leaving_module();
       }
     }
 
@@ -877,10 +889,12 @@ namespace Gambit
     {
       if (needs_recalculating)
       {
+        logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);
         this->myFunction();
         this->finishTiming(nsec,sec);
+        logger().leaving_module();
       }
     }
 

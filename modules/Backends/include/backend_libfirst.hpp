@@ -9,6 +9,7 @@
  * Pat Scott 2013-04-22
  * Anders Kvellestad 2013, Nov
  */
+#include "log.hpp"
 
 /* Specify the path to the shared library along with a backend name. */
 
@@ -98,6 +99,7 @@ namespace Gambit
 
       double awesomenessByAnders(int a)
       {
+        logger().send("Message from 'awesomenessByAnders' backend convenience function in libfirst wrapper",info);
         initialize(a);
         someFunction();
         return returnResult();
