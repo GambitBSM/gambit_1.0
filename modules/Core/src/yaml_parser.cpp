@@ -24,6 +24,7 @@
 
 #include "util_types.hpp"
 #include "yaml_parser.hpp"
+#include "log.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -42,7 +43,8 @@ namespace Gambit
       scannerNode = roots[2];
       YAML::Node outputNode = roots[3];
       YAML::Node auxNode = roots[4];
-      keyValuePairNode = roots[5];
+      YAML::Node logNode = roots[5];
+      keyValuePairNode = roots[6];
 
       // Set fatality of exceptions
       if (hasKey("exceptions"))
@@ -54,6 +56,8 @@ namespace Gambit
           // Check if the exception has an entry in the YAML file
           if (hasKey("exceptions",iter->first))
           { 
+
+            std::cout << "Found exceptions, " << iter->first;
             // Retrieve the entry and set the exception's 'fatal' flag accordingly.
             str value = getValue<str>("exceptions",iter->first);
             if (value == "fatal")
@@ -67,7 +71,7 @@ namespace Gambit
             else
             {
               str error_msg = "Unrecognised entry \"" + value + "\" for exceptions key \"" + iter->first + "\" in input file.";
-              inifile_error.raise(LOCAL_INFO,error_msg);
+              inifile_error().raise(LOCAL_INFO,error_msg);
             }
           }
         }
@@ -85,6 +89,28 @@ namespace Gambit
         auxiliaries.push_back((*it).as<Types::Observable>());
       }
 
+      // Parse the logging setup node, and initialise the LogMaster object
+
+      YAML::Node redir = logNode["redirection"];
+      // map storing info used to set up logger objects
+      std::map<std::set<std::string>,std::string> loggerinfo;
+      for(YAML::const_iterator it=redir.begin(); it!=redir.end(); ++it) 
+      {
+          std::set<std::string> tags;
+          std::string filename;
+          // Iterate through tags and add them to the set 
+          YAML::Node yamltags = it->first;
+          for(YAML::const_iterator it2=yamltags.begin();it2!=yamltags.end();++it2)         
+          {
+            tags.insert( it2->as<std::string>() );
+          }
+          filename = (it->second).as<std::string>();
+    
+          // Add entry to the loggerinfo map
+          loggerinfo[tags] = filename;
+      }
+      // Initialise global LogMaster object
+      logger().initialise(loggerinfo);
     }
   }
 }

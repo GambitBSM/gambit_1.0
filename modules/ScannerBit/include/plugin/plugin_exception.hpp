@@ -34,7 +34,9 @@ namespace Gambit
                         
                 public:
                         PluginException(const std::string &in) : mssg(in) {}
-                        
+
+                        virtual ~PluginException() throw() {}
+
                         virtual const char* what() const throw()
                         {
                                 return mssg.c_str();

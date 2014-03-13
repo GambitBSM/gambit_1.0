@@ -56,6 +56,7 @@
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
+#include "logging.hpp"
 
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/compl.hpp>
@@ -197,13 +198,51 @@
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
+                                                                               \
       /* Module errors */                                                      \
-      error CAT(MODULE,_error)("A problem has been raised by "STRINGIFY(MODULE)\
-                        ".", STRINGIFY(MODULE) "_error");                      \
+      error& CAT(MODULE,_error)()                                              \
+      {                                                                        \
+        static error local("A problem has been raised by " STRINGIFY(MODULE)   \
+                           ".", STRINGIFY(MODULE) "_error");                   \
+        return local;                                                          \
+      }                                                                        \
+                                                                               \
       /* Module warnings */                                                    \
-      warning CAT(MODULE,_warning)("A problem has been raised by "             \
-                        STRINGIFY(MODULE) ".", STRINGIFY(MODULE) "_warning");  \
+      warning& CAT(MODULE,_warning)()                                          \
+      {                                                                        \
+        static warning local("A problem has been raised by " STRINGIFY(MODULE) \
+                           ".", STRINGIFY(MODULE) "_warning");                 \
+        return local;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Register module errors and warnings */                                \
+      namespace Ini                                                            \
+      {                                                                        \
+        void CAT_3(register_,MODULE,_handlers)()                               \
+        {                                                                      \
+          error e = CAT(MODULE,_error)();                                      \
+          warning w = CAT(MODULE,_warning)();                                  \
+        }                                                                      \
+        ini_code CAT(MODULE,_handlers)(&CAT_3(register_,MODULE,_handlers));    \
+      }                                                                        \
+                                                                               \
       CORE_START_MODULE_COMMON(MODULE)                                         \
+                                                                               \
+      /* Runtime registeration of module with the log system */                \
+      /* Not in CORE_START_MODULE_COMMON because we don't want models to have
+         their own logging tags... probably */                                 \
+      void rt_register_module_with_log ()                                      \
+      {                                                                        \
+        int mytag = Logging::getfreetag();                                     \
+        Logging::get_tag2str()[mytag] = STRINGIFY(MODULE);                     \
+        Logging::get_components().insert(mytag);                               \         
+      }                                                                        \
+                                                                               \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code register_module_with_log (&rt_register_module_with_log);      \
+      }                                                                        \
+                                                                               \ 
     }                                                                          \
   }                                                                            \
 
@@ -402,6 +441,7 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this conditional backend requirement for this function.";  \
       }                                                                        \
+                                                                               \
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
@@ -647,7 +687,7 @@
                      "\ndependency DEP of function FUNCTION.  Attempt was to"  \
                      "\nresolve to " + dep_functor->name() + " in " +          \
                      dep_functor->origin() + ".";                              \
-          core_error.raise(LOCAL_INFO,errmsg);                                 \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -778,7 +818,7 @@
                      "\nMODEL with function FUNCTION.  Attempt was to"         \
                      "\nresolve to " + params_functor->name() + " in " +       \
                      params_functor->origin() + ".";                           \
-          core_error.raise(LOCAL_INFO,errmsg);                                 \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -802,13 +842,15 @@
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
-            cout<<"Error in MODULE::resolve_dependency, for model"<< endl;     \
-            cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;     \
-            cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;      \
-            cout<<params_functor->origin()<<"."<<endl;                         \
-            cout<<"You have tried to scan two models simultaneously"<< endl;   \
-            cout<<"that have one or more parameters in common. "<< endl;       \
-            cout<<"Problem parameter: "<<it->first<<endl;                      \
+            str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_dependency,";\
+            errmsg +=    " for model " STRINGIFY(MODEL) " with function\n"       \
+                         STRINGIFY(FUNCTION) ".  Attempt was to resolve to\n" + \
+                         params_functor->name() + " in " +                     \
+                         params_functor->origin() + ".\nYou have tried to scan"\
+                         "two models simultaneously that have one or more\n"   \
+                         "parameters in common.\nProblem parameter: " +        \
+                         it->first;                                            \
+            utils_error().raise(LOCAL_INFO,errmsg);                            \
           }                                                                    \
         }                                                                      \
       }                                                                        \

@@ -24,18 +24,13 @@
 ///
 ///  *********************************************
 
-#include <gambit_scan.hpp>
-#include <plugin/plugin_interface.hpp>
+#include "scan.hpp"
+#include "plugin/plugin_interface.hpp"
 
 namespace Gambit
 {
         namespace Scanner
         { 
-                /// Scanner errors
-                error scan_error("A problem has been raised by ScannerBit.","scan_error");
-                /// Scanner warnings
-                warning scan_warning("A problem has been raised by ScannerBit.","scan_warning");
-
                 int Gambit_Scanner::Run()
                 {
                         if (interface.fileName() == "")
@@ -69,5 +64,5 @@ namespace Gambit
                 }
                 
                 Gambit_Scanner::~Gambit_Scanner(){}
-        };
-};
+        }
+}

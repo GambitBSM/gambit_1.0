@@ -29,9 +29,9 @@
 
 
 #include "functors.hpp"
-#include "exceptions.hpp"
 #include "all_functor_types.hpp"
-#include "util_exceptions.hpp"
+#include "standalone_error_handlers.hpp"
+#include "log.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -122,52 +122,54 @@ namespace Gambit
     {
       if (flag)
       {
-        utils_error.raise(LOCAL_INFO,"The setPrintRequirement method has not been defined in this class.");
+        utils_error().raise(LOCAL_INFO,"The setPrintRequirement method has not been defined in this class.");
       }
     }
 
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void functor::setNestedList (std::vector<functor*>&)
     { 
-      utils_error.raise(LOCAL_INFO,"The setNestedList method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The setNestedList method has not been defined in this class.");
     } 
 
     /// Set the iteration number in a loop in which this functor runs
     void functor::setIteration (int)
     { 
-      utils_error.raise(LOCAL_INFO,"The setIteration method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The setIteration method has not been defined in this class.");
     }
 
     /// Getter for revealing whether this is permitted to be a manager functor
     bool functor::canBeLoopManager()
     {
-      utils_error.raise(LOCAL_INFO,"The canBeLoopManager method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The canBeLoopManager method has not been defined in this class.");
+      return false;
     }
 
     /// Getter for revealing the required capability of the wrapped function's loop manager
     str functor::loopManagerCapability()
     {
-      utils_error.raise(LOCAL_INFO,"The loopManagerCapability method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The loopManagerCapability method has not been defined in this class.");
+      return "none";
     }
 
     /// Getter for listing currently activated dependencies
     std::vector<sspair> functor::dependencies()          
     { 
-      utils_error.raise(LOCAL_INFO,"The dependencies method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The dependencies method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
     /// Getter for listing backend requirements
     std::vector<sspair> functor::backendreqs()                   
     {
-      utils_error.raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
     /// Getter for listing permitted backends
     std::vector<sspair> functor::backendspermitted(sspair) 
     { 
-      utils_error.raise(LOCAL_INFO,"The backendspermitted method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The backendspermitted method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
@@ -175,7 +177,7 @@ namespace Gambit
     /// Getter for listing backend-specific conditional dependencies (4-string version)
     std::vector<sspair> functor::backend_conditional_dependencies (str, str, str, str)  
     { 
-      utils_error.raise(LOCAL_INFO,"The backend_conditional_dependencies method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The backend_conditional_dependencies method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
@@ -196,7 +198,7 @@ namespace Gambit
     /// Getter for listing model-specific conditional dependencies
     std::vector<sspair> functor::model_conditional_dependencies (str)
     { 
-      utils_error.raise(LOCAL_INFO,"The model_conditional_dependencies method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The model_conditional_dependencies method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
@@ -204,7 +206,7 @@ namespace Gambit
     /// Getter for listing model-specific conditional backend requirements
     std::vector<sspair> functor::model_conditional_backend_reqs (str)
     { 
-      utils_error.raise(LOCAL_INFO,"The model_conditional_backend_reqs method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The model_conditional_backend_reqs method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
@@ -212,19 +214,19 @@ namespace Gambit
     /// Resolve a dependency using a pointer to another functor object
     void functor::resolveDependency (functor*)
     {
-      utils_error.raise(LOCAL_INFO,"The resolveDependency method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The resolveDependency method has not been defined in this class.");
     }
 
     /// Resolve a backend requirement using a pointer to another functor object
     void functor::resolveBackendReq (functor*)
     {
-      utils_error.raise(LOCAL_INFO,"The resolveBackendReq method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The resolveBackendReq method has not been defined in this class.");
     }
 
     /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
     void functor::notifyOfModel(str)
     {
-      utils_error.raise(LOCAL_INFO,"The notifyOfModel method has not been defined in this class.");
+      utils_error().raise(LOCAL_INFO,"The notifyOfModel method has not been defined in this class.");
     }
 
     /// Notify the functor about an instance of the options class that contains
@@ -268,7 +270,7 @@ namespace Gambit
                   "Currently only functors derived from module_functor_common<!=void>\n"
                   "are allowed to try to print themselves; i.e. backend and void\n"
                   "functors may not do this (they inherit this default message).";
-      utils_warning.raise(LOCAL_INFO,warn_msg);
+      utils_warning().raise(LOCAL_INFO,warn_msg);
     }    
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
@@ -280,7 +282,7 @@ namespace Gambit
                     "\nin the model for which this function has been invoked."   
                     "\nPlease check your module function source code."
                     "\nMethod invoked: " + method + ".";
-      utils_error.raise(LOCAL_INFO,error_msg);
+      utils_error().raise(LOCAL_INFO,error_msg);
     }
 
     /// Test if a model has a parent model in the functor's allowedModels list
@@ -309,8 +311,7 @@ namespace Gambit
       return "";    
     }
 
-
-  // Module_functor_common class methods
+    // Module_functor_common class methods
 
     /// Constructor
     module_functor_common::module_functor_common(str func_name,
@@ -329,7 +330,17 @@ namespace Gambit
       myLoopManagerOrigin     ("none"),
       globlMaxThreads    (omp_get_max_threads())
     {
-      if (globlMaxThreads == 0) utils_error.raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
+      if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
+
+      // Determine LogTag number
+      myLogTag = Logging::str2tag(myOrigin);
+      // Check for failure
+      if(myLogTag==-1)
+      {
+        std::ostringstream ss;
+        ss << "Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
+        logger().send(ss.str(),warn,nonfatal);
+      }
     }
 
     /// Getter for averaged runtime
@@ -395,9 +406,9 @@ namespace Gambit
     /// Getter for revealing the required capability of the wrapped function's loop manager
     str module_functor_common::loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerCapability; }
     /// Getter for revealing the name of the wrapped function's assigned loop manager
-    str module_functor_common::loopManagerName() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerName; }
+    str module_functor_common::loopManagerName() { if (this == NULL) failBigTime("loopManagerName"); return myLoopManagerName; }
     /// Getter for revealing the module of the wrapped function's assigned loop manager
-    str module_functor_common::loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerOrigin; }
+    str module_functor_common::loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerOrigin"); return myLoopManagerOrigin; }
 
     /// Getter for listing currently activated dependencies
     std::vector<sspair> module_functor_common::dependencies() { return myDependencies; }
@@ -514,7 +525,7 @@ namespace Gambit
         errmsg +=  "\nThe type of the backend requirement " + req + "on which the" 
                    "\ndependency " + dep + " is conditional has not been set.  This"
                    "\nis " + this->name() + " in " + this->origin() + ".";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
       if (myBackendConditionalDependencies.find(quad) == myBackendConditionalDependencies.end())
       {
@@ -614,7 +625,7 @@ namespace Gambit
         errmsg += "\nThe return type of the backend requirement " + req + "is not set." 
                   "\nThis probably means the backend requirement has not been declared."
                   "\nThis is " + this->name() + " in " + this->origin() + ".";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
       sspair vector_entry (be,  ver);
       if (permitted_map.find(key) == permitted_map.end())
@@ -637,7 +648,7 @@ namespace Gambit
         str errmsg = "This module functor is not permitted to manage";
         errmsg +=  "\nloops, so you cannot set its nested functor list."
                    "\nThis is " + this->name() + " in " + this->origin() + ".";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
     } 
 
@@ -650,7 +661,7 @@ namespace Gambit
         str errmsg = "Cannot resolve dependency:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not depend on"
                    "\ncapability " + key.first + " with type " = key.second + ".";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
       else
       {
@@ -699,7 +710,7 @@ namespace Gambit
           errmsg +=  "\nBackend capability " + key.first + " with type " + key.second + "."
                      "\nrequired by function " + myName + " in " + myOrigin + " is not permitted"
                      "\nto use " + proposal.first + ", version " + proposal.second + ".";
-          utils_error.raise(LOCAL_INFO,errmsg);
+          utils_error().raise(LOCAL_INFO,errmsg);
         } 
       }
       else
@@ -707,7 +718,7 @@ namespace Gambit
         str errmsg = "Cannot resolve backend requirement:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not require"
                    "\nbackend capability " + key.first + " with type " + key.second + ".";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }        
     }
 
@@ -720,7 +731,7 @@ namespace Gambit
         str errmsg = "Problem encountered when notifying functor of model:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " cannot be used"
                    "\nwith model " + model + ".  Check module header or input file for errors.";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }        
       //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
       std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
@@ -764,7 +775,7 @@ namespace Gambit
     }
 
 
-  /// Class methods for actual module functors for TYPE != void
+    /// Class methods for actual module functors for TYPE != void
 
     template <typename TYPE>
     module_functor<TYPE>::module_functor(void (*inputFunction)(TYPE &),
@@ -815,10 +826,12 @@ namespace Gambit
     {
       if (needs_recalculating)
       {
+        logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);                       //Begin timing function evaluation
         this->myFunction(myValue[omp_get_thread_num()]);   //Run and place result in the appropriate slot in myValue
         this->finishTiming(nsec,sec);                      //Stop timing function evaluation
+        logger().leaving_module();
       }
     }
 
@@ -876,10 +889,12 @@ namespace Gambit
     {
       if (needs_recalculating)
       {
+        logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);
         this->myFunction();
         this->finishTiming(nsec,sec);
+        logger().leaving_module();
       }
     }
 

@@ -27,7 +27,7 @@
 #include <string>
 
 #include "util_types.hpp"
-#include "exceptions.hpp"
+#include "error_handlers.hpp"
 #include "variadic_functions.hpp"
 
 #include <yaml-cpp/yaml.h>
@@ -41,11 +41,6 @@ namespace Gambit
 
   namespace IniParser
   {
-
-    /// IniFile errors
-    extern error inifile_error;
-    /// IniFile warnings
-    extern warning inifile_warning;
 
     /// Just a small wrapper object for the 'options' nodes which we extract
     /// from the prior/likelihood/auxiliaries section of the inifile
@@ -76,7 +71,7 @@ namespace Gambit
             errmsg +=     stringifyVariadic(keys...) +
                        "\n(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)"
                        "\nFIXME to dump contents of options!!\n";// + options; FIXME
-            inifile_error.raise(LOCAL_INFO,errmsg);
+            inifile_error().raise(LOCAL_INFO,errmsg);
           }
           return node.as<TYPE>();
         }
@@ -104,17 +99,15 @@ namespace Gambit
         const std::vector<std::string> getPriorNames() const
         {
           std::vector<std::string> result;
-#ifndef NO_GCC_4_7
-          for (auto &node : options)
-          {
-            result.push_back( node.first.as<std::string>() );
-          }
-#else
+          //C++11 version; unsuported with gcc 4.5.
+          //for (auto &node : options)
+          //{
+          //  result.push_back( node.first.as<std::string>() );
+          //}
           for (auto it = options.begin(), end = options.end(); it != end; ++it)
           {
             result.push_back( it->first.as<std::string>() );
           }
-#endif
 
           return result;
         }
@@ -245,7 +238,7 @@ namespace Gambit
         template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
           const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
-          if (not node) inifile_error.raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
+          if (not node) inifile_error().raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
           return node.as<TYPE>();
         }
 
@@ -255,7 +248,7 @@ namespace Gambit
         template<typename TYPE> TYPE getModelParameterEntry(std::string model,
             std::string param, std::string key) const
         {
-          if (not parametersNode[model][param][key]) inifile_error.raise(LOCAL_INFO,model + "." + param + "." + key + "not found in inifile.");
+          if (not parametersNode[model][param][key]) inifile_error().raise(LOCAL_INFO,model + "." + param + "." + key + "not found in inifile.");
           return parametersNode[model][param][key].as<TYPE>();
         }
 
@@ -336,7 +329,7 @@ namespace Gambit
         template<typename TYPE> TYPE getPriorEntry(std::string priorname,
             std::string key) const
         {
-          if (not priorsNode[priorname][key]) inifile_error.raise(LOCAL_INFO,priorname + "." + key + "not found in inifile");
+          if (not priorsNode[priorname][key]) inifile_error().raise(LOCAL_INFO,priorname + "." + key + "not found in inifile");
           return priorsNode[priorname][key].as<TYPE>();
         }
 
@@ -365,7 +358,7 @@ namespace Gambit
                        "\n'Range' is merely a convenience keyoword which triggers the "
                        "\nauto-creation of an options section containing only a 'range' entry.";
                        "\nFIXME to dump contents of YAML::Node!!\n";// + priorsNode[priorname]; FIXME
-            inifile_error.raise(LOCAL_INFO,errmsg);
+            inifile_error().raise(LOCAL_INFO,errmsg);
           }
           // Auto-create options section if 'range' keyword found
           if ( hasPriorEntry(priorname,"range") )
@@ -416,7 +409,7 @@ namespace Gambit
         template<typename TYPE, typename... args> TYPE getScannerValue(args... keys) const
         {
           const YAML::Node node = getVariadicNode(scannerNode, keys...);
-          if (not node) inifile_error.raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
+          if (not node) inifile_error().raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
           return node.as<TYPE>();
         }
         

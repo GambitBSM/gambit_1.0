@@ -22,7 +22,7 @@
 
 #include "extern_core.hpp"
 #include "util_types.hpp"
-#include "util_exceptions.hpp"
+#include "standalone_error_handlers.hpp"
 #include "functors.hpp"
 
 
@@ -63,7 +63,7 @@ namespace Gambit
                    "\nthat has not been initialized with a non-zero functor pointer. Bad idea."
                    "\nProbably you tried to retrieve a backend or module dependency"
                    "\nthat has not been activated.";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
   };
 
@@ -297,7 +297,7 @@ namespace Gambit
                        "\n" + name() + " from backend " + backend() + "."
                        "\nProbably you have passed arguments of the "  
                        "\nwrong type(s) when calling this function."; 
-            utils_error.raise(LOCAL_INFO,errmsg);    
+            utils_error().raise(LOCAL_INFO,errmsg);    
           }                                                              
         }                                                                
         else                                                             

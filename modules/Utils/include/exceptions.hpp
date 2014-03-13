@@ -39,13 +39,13 @@ namespace Gambit
       exception(const char*, const char*, const char*, const char*, bool);
 
       /// Destructor
-      ~exception() throw() {};
+      virtual ~exception() throw() {}
 
       /// Setter for the fatal flag.
       void set_fatal(bool);
 
       /// Retrieve the identity of the exception.
-      virtual const char* what() const noexcept;
+      virtual const char* what() const throw();
 
       /// Raise the exception.
       /// Log the exception and, if it is considered fatal, actually throw it. 

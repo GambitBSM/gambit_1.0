@@ -37,7 +37,8 @@
 #include <iostream>
 #include <omp.h>
 
-#include "util_exceptions.hpp"
+#include "ini_code_struct.hpp"
+#include "standalone_error_handlers.hpp"
 
 namespace Gambit
 {
@@ -51,13 +52,6 @@ namespace Gambit
   using std::cout;
   using std::endl;
 
-  /// A container for a function that needs to be constructed at compile
-  /// and executed as initialisation code at startup.
-  struct ini_code
-  {
-    ini_code(void (*unroll)()) { (*unroll)(); }
-  };
-  
   /// A safe pointer that throws an informative error if you try to dereference
   /// it when nullified, and cannot be used to overwrite the thing it points to.
   template <typename TYPE> 
@@ -107,7 +101,7 @@ namespace Gambit
                    "\nhas not been met, or you tried to access a model parameter for a model"
                    "\nthat you are not actually scanning.  This means there is a bug in one"
                    "\nof your module functions.";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
 
   };
@@ -182,7 +176,7 @@ namespace Gambit
         errmsg +=  "\nNULL.  Bad idea.  Probably you tried to retrieve a conditional"
                    "\ndependency that has not been activated because the necessary condition"
                    "\nhas not been met.";
-        utils_error.raise(LOCAL_INFO,errmsg);
+        utils_error().raise(LOCAL_INFO,errmsg);
       } 
 
   };

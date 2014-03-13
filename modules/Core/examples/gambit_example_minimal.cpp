@@ -16,19 +16,19 @@
 ///
 ///  *********************************************
 
-#include "error_handlers.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
-#include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
+#include "scannerbit.hpp"
 #include "priorfactory.hpp"
 #include "priors.hpp"
 #include "scanner_factory.hpp"
+#include "register_error_handlers.hpp"
 #include "inifile_interface.hpp"
 #include "test_factory.hpp"
+#include "log.hpp"
 
 using namespace Gambit;
 
@@ -41,9 +41,25 @@ void beispiel(const char* inifilename)
   cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
     Core.getBackendFunctors()->size() << endl;
 
+  // Check the logging tags were registered correctly (for testing)
+  Logging::checktags();
+
+  // Test some logging messages
+  // (should be cached by the logger since it doesn't know where to send them yet)
+  logger().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
+ 
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile(inifilename);
+ 
+  // Reading the inifile will also have initialised the LogMaster object, which is
+  // already available here  due to including log.hpp
+
+  // Test some logging messages
+  logger().send("First log message ever!");
+  logger().send("First log message with a tag!",err);
+  logger().send("First log message with two tags!",err,core);
+  logger().send("First log message with three tags!",def,err,core);
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
@@ -167,7 +183,8 @@ int main( int argc, const char* argv[] )
       errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
                  "\n  e.g.  : gambit_example_minimal gambit.yaml"
                  "\n        : gambit_example_minimal modelbit_test.yaml";
-      core_error.raise(LOCAL_INFO,errmsg);
+      core_error().raise(LOCAL_INFO,errmsg);
+      inifilename = "";
     } 
     std::cout << argv[0];
     inifilename = argv[1];

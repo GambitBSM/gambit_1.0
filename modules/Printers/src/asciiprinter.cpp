@@ -118,7 +118,7 @@ namespace Gambit
         {
           if (lineindexrecord!=newlineindexrecord)
           {
-            printer_error.raise(LOCAL_INFO,"Error! Output format has changed during run! The asciiPrinter cannot handle this!");
+            printer_error().raise(LOCAL_INFO,"Error! Output format has changed during run! The asciiPrinter cannot handle this!");
           }
         }
         else

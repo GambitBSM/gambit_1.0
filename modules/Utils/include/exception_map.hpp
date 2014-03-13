@@ -2,7 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  External declaration of utility exceptions.
+///  Initialisation of the map of all instances of
+///  the exceptions class.
 ///
 ///  *********************************************
 ///
@@ -14,14 +15,16 @@
 ///
 ///  *********************************************
 
-#include "exceptions.hpp"
+#ifndef __exception_map_hpp__
+#define __exception_map_hpp__
 
 namespace Gambit
 {
 
-  /// Utility errors
-  extern error utils_error;
-  /// Utility warnings
-  extern warning utils_warning;
+  /// Map of pointers to all instances of the exception class.
+  std::map<const char*,exception*> exception::exception_map;
 
 }
+
+#endif //#ifndef __exception_map_hpp__
+

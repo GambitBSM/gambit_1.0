@@ -27,8 +27,8 @@
 // #include <regex>
 
 #include "graphs.hpp"
-#include "printers.hpp"
 #include "extern_claw.hpp"
+#include "log.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -415,7 +415,10 @@ namespace Gambit
       {
         if (verbose)
         {
-          cout << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "..." << endl;
+          std::ostringstream ss;
+          ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
+          cout << ss.str() << endl;;
+          logger().send(ss.str(),info,depres);
         }
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
@@ -591,7 +594,7 @@ namespace Gambit
         str errmsg = "I could not find any module function that provides capability\n";
         errmsg += quantity.first + " with type " + quantity.second + ".";
                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
-        dependency_resolver_error.raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
@@ -618,7 +621,7 @@ namespace Gambit
             {
               str errmsg = "Multi-parent models cannot be used in cases where model specific functor rules need";
               errmsg += "to be invoked. Please specify your required dependencies more fully in your inifile.";
-              dependency_resolver_error.raise(LOCAL_INFO,errmsg);
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
             }
             else if (pvec.size() == 0) 
             {
@@ -647,7 +650,7 @@ namespace Gambit
         {
           errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
         }
-        dependency_resolver_error.raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       return std::tie(depEntry, auxEntry, optEntry, vertexCandidates[0]);
@@ -736,7 +739,7 @@ namespace Gambit
             {
               str errmsg = "Trying to resolve dependency on loop manager with";
               errmsg += "\nmodule function that is not declared as loop manager.";
-              dependency_resolver_error.raise(LOCAL_INFO,errmsg);
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
             }
             std::set<Graphs::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
@@ -838,7 +841,7 @@ namespace Gambit
       if ( auxEntryCandidates.size() == 1 ) return auxEntryCandidates[0];
       else
       {
-        dependency_resolver_error.raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex.");
+        dependency_resolver_error().raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex.");
       }
     }
 
@@ -861,7 +864,7 @@ namespace Gambit
       {
         str errmsg = "Multiple matches for identical capability in inifile.";
         errmsg += "\nCapability: " + quantity.first + " (" + quantity.second + ")";
-        dependency_resolver_error.raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
     }
 
@@ -936,13 +939,13 @@ namespace Gambit
                    +  "\necessary backends, and that they contain all the";
                    +  "\nnecessary functions required for this scan.";
           }
-          dependency_resolver_error.raise(LOCAL_INFO,errmsg);
+          dependency_resolver_error().raise(LOCAL_INFO,errmsg);
         }
 
         // One candidate...
         if (vertexCandidates.size() > 1)
         {
-          dependency_resolver_error.raise(LOCAL_INFO,"Found too many candidates for backend requirement.");
+          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement.");
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);

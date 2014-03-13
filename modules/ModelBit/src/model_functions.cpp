@@ -105,7 +105,7 @@ namespace Gambit
       str errmsg = "Error: model \"";
       errmsg += model + "\" is not in the GAMBIT database.";
       errmsg += "\nRecognised models are:" + modelClaw.list_models();
-      model_error.raise(LOCAL_INFO,errmsg); 
+      model_error().raise(LOCAL_INFO,errmsg); 
     }
   }
     

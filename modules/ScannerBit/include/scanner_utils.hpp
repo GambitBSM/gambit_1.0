@@ -83,14 +83,6 @@ namespace                                                       \
 namespace Gambit
 {
 
-        namespace Scanner
-        {
-                /// Scanner errors
-                extern error scan_error;
-                /// Scanner warnings
-                extern warning scan_warning;
-        }
-
         template <typename T>
         class reg_elem : public std::unordered_map<std::string, T *>
         {
@@ -113,6 +105,12 @@ namespace Gambit
         
         namespace Scanner
         {       
+
+                /// Scanner errors
+                error& scan_error();
+                /// Scanner warnings
+                warning& scan_warning();
+
                 namespace outputHandler
                 {
                         extern OutputHandler out;

@@ -84,8 +84,8 @@ namespace Gambit {
                    std::map<std::string,double> physicalpars;
                    double lnew;
                    int i;
-                   if (ndim!=my_ndim) {scan_error.raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
-                   if (ndim!=parameter_keys.size()) {scan_error.raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
+                   if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
+                   if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
                    
                    // WANT TO DO THIS:
              	   //lnew = (*boundLogLike)(physicalpars);
