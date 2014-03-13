@@ -20,12 +20,14 @@
 #include <map>
 #include <vector>
 
-#include "logs.hpp"
+//DEPRECIATE #include "logs.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
+#include "error_handlers.hpp"
 
 namespace Gambit
 {
+
   /// Master driver class for a GAMBIT scan.
   class gambit_core
   {

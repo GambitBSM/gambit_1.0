@@ -22,6 +22,7 @@
 
 #include "extern_core.hpp"
 #include "util_types.hpp"
+#include "standalone_error_handlers.hpp"
 #include "functors.hpp"
 
 
@@ -58,12 +59,11 @@ namespace Gambit
       /// Failure message invoked when the user tries to access the object before it is initialized.
       static void dieGracefully()
       {
-        cout << endl;
-        cout << "You just tried to access a GAMBIT object (derived from 'safety_bucket_base') that has not" << endl;
-        cout << "been initialized with a non-zero functor pointer. Bad idea." << endl;
-        cout << "Probably you tried to retrieve a backend or module dependency" << endl; 
-        cout << "that has not been activated." << endl;
-        /** FIXME \todo throw real error here */
+        str errmsg = "You just tried to access a GAMBIT object (derived from 'safety_bucket_base')"
+                   "\nthat has not been initialized with a non-zero functor pointer. Bad idea."
+                   "\nProbably you tried to retrieve a backend or module dependency"
+                   "\nthat has not been activated.";
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
   };
 
@@ -292,13 +292,12 @@ namespace Gambit
           temp_functor_ptr = dynamic_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
           if (temp_functor_ptr == 0)                                                
           {                                                              
-            cout << endl;
-            cout << "Error: Null returned from dynamic cast in ";    
-            cout << "attempting to retrieve backend requirement" << endl;    
-            cout << name() <<" from backend " << backend() << "." << endl;                 
-            cout << "Probably you have passed arguments of the " << endl; 
-            cout << "wrong type(s) when calling this function." << endl;     
-            /** FIXME \todo throw real error here */
+            str errmsg = "Error: Null returned from dynamic cast in ";    
+            errmsg +=  "\nattempting to retrieve backend requirement"    
+                       "\n" + name() + " from backend " + backend() + "."
+                       "\nProbably you have passed arguments of the "  
+                       "\nwrong type(s) when calling this function."; 
+            utils_error().raise(LOCAL_INFO,errmsg);    
           }                                                              
         }                                                                
         else                                                             

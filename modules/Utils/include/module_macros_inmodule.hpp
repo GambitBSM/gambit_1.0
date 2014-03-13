@@ -33,6 +33,7 @@
 #define __module_macros_inmodule_hpp__
 
 #include "functors.hpp"
+#include "exceptions.hpp"
 #include "extern_core.hpp"
 #include "util_macros.hpp"
 #include "safety_bucket.hpp"
@@ -46,7 +47,7 @@
 /// and backend requirements.
 /// @{
 // Redirect the rollcall macros to their in-module variants
-#define START_MODULE                                      DUMMY
+#define START_MODULE                                      MODULE_START_MODULE
 #define START_CAPABILITY                                  MODULE_START_CAPABILITY
 #define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
@@ -71,6 +72,25 @@
 //  *******************************************************************************
 /// \name In-module rollcall macros
 /// @{
+
+/// Redirection of \link START_MODULE() START_MODULE\endlink when 
+/// invoked from within a module.
+#define MODULE_START_MODULE                                                    \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_MODULE."))                                                           \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      /* Module errors */                                                      \
+      error& CAT(MODULE,_error)();                                             \
+      /* Module warnings */                                                    \
+      warning& CAT(MODULE,_warning)();                                         \
+    }                                                                          \
+  }                                                                            \
+
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when 
 /// invoked from within a module.

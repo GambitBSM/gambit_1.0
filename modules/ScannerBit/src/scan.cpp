@@ -14,16 +14,18 @@
 //
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 July/August 2013/Feb 2014
+///  \date 2013 July, Aug
+///  \date 2014 Feb
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
-#include <gambit_scan.hpp>
-#include <plugin/plugin_interface.hpp>
+#include "scan.hpp"
+#include "plugin/plugin_interface.hpp"
 
 namespace Gambit
 {
@@ -62,5 +64,5 @@ namespace Gambit
                 }
                 
                 Gambit_Scanner::~Gambit_Scanner(){}
-        };
-};
+        }
+}

@@ -34,6 +34,10 @@ namespace Gambit
                         
                         std::vector<std::string> priorKeys = prior.getParameters();
                         std::vector<std::string> gambitKeys;
+
+                        //FIXME remove this example when its usefulness has expired...
+                        str errstring = "Damn, error in the scanner.";
+                        scan_error().raise(LOCAL_INFO,errstring);
                         
                         for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
                         {

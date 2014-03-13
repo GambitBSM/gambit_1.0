@@ -16,12 +16,18 @@
 ///          (gregory.david.martinez@gmail.com)
 ///  \date 2014 Feb
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
+///
 ///  *********************************************
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
+#include "util_types.hpp"
+#include "error_handlers.hpp"
 #include "variadic_functions.hpp"
 
 #include <yaml-cpp/yaml.h>
@@ -30,11 +36,12 @@
 #define __yaml_parser_hpp__
 
 
-
 namespace Gambit
 {
+
   namespace IniParser
   {
+
     /// Just a small wrapper object for the 'options' nodes which we extract
     /// from the prior/likelihood/auxiliaries section of the inifile
     class Options
@@ -58,14 +65,15 @@ namespace Gambit
         template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
           const YAML::Node node = getVariadicNode(options, keys...);
-          if (node)
-            return node.as<TYPE>();
-          // else
-          std::cout << "ERROR: No options entry for " << stringifyVariadic(keys...) << std::endl;
-          std::cout << "(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)" << std::endl;
-          std::cout << "Contents of options:" << std::endl;
-          std::cout << options << std::endl;
-          exit(1);
+          if (not node)
+          {
+            str errmsg = "No options entry for ";
+            errmsg +=     stringifyVariadic(keys...) +
+                       "\n(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)"
+                       "\nFIXME to dump contents of options!!\n";// + options; FIXME
+            inifile_error().raise(LOCAL_INFO,errmsg);
+          }
+          return node.as<TYPE>();
         }
 
         // Dump contents of YAML::Node to cout
@@ -91,17 +99,15 @@ namespace Gambit
         const std::vector<std::string> getPriorNames() const
         {
           std::vector<std::string> result;
-#ifndef NO_GCC_4_7
-          for (auto &node : options)
-          {
-            result.push_back( node.first.as<std::string>() );
-          }
-#else
+          //C++11 version; unsuported with gcc 4.5.
+          //for (auto &node : options)
+          //{
+          //  result.push_back( node.first.as<std::string>() );
+          //}
           for (auto it = options.begin(), end = options.end(); it != end; ++it)
           {
             result.push_back( it->first.as<std::string>() );
           }
-#endif
 
           return result;
         }
@@ -204,7 +210,7 @@ namespace Gambit
     {
       public:
         // Read the file
-        int readFile(std::string filename);
+        void readFile(std::string filename);
 
         //
         // Getters for private observable and auxiliaries entries
@@ -232,11 +238,8 @@ namespace Gambit
         template<typename TYPE, typename... args> TYPE getValue(args... keys) const
         {
           const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
-          if (node)
-            return node.as<TYPE>();
-
-          std::cout << "ERROR: No inifile entry for [" << stringifyVariadic(keys...) << "]" << std::endl;
-          exit(1);
+          if (not node) inifile_error().raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
+          return node.as<TYPE>();
         }
 
         //
@@ -245,10 +248,8 @@ namespace Gambit
         template<typename TYPE> TYPE getModelParameterEntry(std::string model,
             std::string param, std::string key) const
         {
-          if (parametersNode[model][param][key])
-            return parametersNode[model][param][key].as<TYPE>();
-          std::cout << "ERROR: " << model << "." << param << "." << key << "not found in inifile" << std::endl;
-          exit(1);
+          if (not parametersNode[model][param][key]) inifile_error().raise(LOCAL_INFO,model + "." + param + "." + key + "not found in inifile.");
+          return parametersNode[model][param][key].as<TYPE>();
         }
 
         bool hasModelParameterEntry(std::string model, std::string param, std::string key) const
@@ -328,10 +329,8 @@ namespace Gambit
         template<typename TYPE> TYPE getPriorEntry(std::string priorname,
             std::string key) const
         {
-          if (priorsNode[priorname][key])
-            return priorsNode[priorname][key].as<TYPE>();
-          std::cout << "ERROR: " << priorname << "." << key << "not found in inifile" << std::endl;
-          exit(1);
+          if (not priorsNode[priorname][key]) inifile_error().raise(LOCAL_INFO,priorname + "." + key + "not found in inifile");
+          return priorsNode[priorname][key].as<TYPE>();
         }
 
         // For existence checks
@@ -351,11 +350,15 @@ namespace Gambit
           // Check that this requirement is met
           if ( hasPriorEntry(priorname,"range") and hasPriorEntry(priorname,"options") )
           {
-            ///TODO: gambit error
-            std::cout<<"Error in prior section of inifile ("<<priorname<<")! A prior cannot have both of the keywords 'range' and 'options'. If a prior needs extra information aside from a range, the range and further options should all be put inside the 'options' section. 'range' is merely a convinience keyoword which triggers the auto-creation of an options section containing only a 'range' entry."<<std::endl;
-            std::cout<<"Dumping contents of YAML::Node"<<std::endl;
-            std::cout<<priorsNode[priorname]<<std::endl;
-            exit(1);
+            str errmsg = "Error in prior section of inifile (";
+            errmsg +=     priorname + ")!"
+                       "\nA prior cannot have both of the keywords 'range' and 'options'. "
+                       "\nIf a prior needs extra information aside from a range, the range "
+                       "\nand further options should all be put inside the 'options' section. "
+                       "\n'Range' is merely a convenience keyoword which triggers the "
+                       "\nauto-creation of an options section containing only a 'range' entry.";
+                       "\nFIXME to dump contents of YAML::Node!!\n";// + priorsNode[priorname]; FIXME
+            inifile_error().raise(LOCAL_INFO,errmsg);
           }
           // Auto-create options section if 'range' keyword found
           if ( hasPriorEntry(priorname,"range") )
@@ -406,11 +409,8 @@ namespace Gambit
         template<typename TYPE, typename... args> TYPE getScannerValue(args... keys) const
         {
           const YAML::Node node = getVariadicNode(scannerNode, keys...);
-          if (node)
-            return node.as<TYPE>();
-
-          std::cout << "ERROR: No inifile entry for [" << stringifyVariadic(keys...) << "]" << std::endl;
-          exit(1);
+          if (not node) inifile_error().raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
+          return node.as<TYPE>();
         }
         
         const Options getScannerOptions(std::string key) const

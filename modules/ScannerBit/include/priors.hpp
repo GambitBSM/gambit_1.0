@@ -29,8 +29,9 @@
 #include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
-#include <yaml_parser.hpp> // for the Options class
-#include <scanner_utils.hpp>
+
+#include "yaml_parser.hpp" // for the Options class
+#include "scanner_utils.hpp"
 
 // This macro registers each prior.
 #define LOAD_PRIOR(tag, ...) REGISTER(prior_creators, tag, __VA_ARGS__)

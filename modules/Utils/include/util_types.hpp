@@ -37,6 +37,8 @@
 #include <iostream>
 #include <omp.h>
 
+#include "ini_code_struct.hpp"
+#include "standalone_error_handlers.hpp"
 
 namespace Gambit
 {
@@ -50,13 +52,6 @@ namespace Gambit
   using std::cout;
   using std::endl;
 
-  /// A container for a function that needs to be constructed at compile
-  /// and executed as initialisation code at startup.
-  struct ini_code
-  {
-    ini_code(void (*unroll)()) { (*unroll)(); }
-  };
-  
   /// A safe pointer that throws an informative error if you try to dereference
   /// it when nullified, and cannot be used to overwrite the thing it points to.
   template <typename TYPE> 
@@ -100,12 +95,13 @@ namespace Gambit
       /// Failure message invoked when the user tries to dereference a null safe_ptr
       static void dieGracefully()
       {
-        cout << endl << "You just tried to dereference a GAMBIT safe pointer that has value" << endl;
-        cout << "NULL.  Bad idea.  Probably you tried to retrieve a conditional" << endl;
-        cout << "dependency that has not been activated because the necessary condition" << endl;
-        cout << "has not been met, or you tried to access a model parameter for a model" << endl;
-        cout << "that you are not actually scanning.  This means there is a bug in one" << endl;
-        cout << "of your module functions." << endl;
+        str errmsg = "You just tried to dereference a GAMBIT safe pointer that has value";
+        errmsg +=  "\nNULL.  Bad idea.  Probably you tried to retrieve a conditional"
+                   "\ndependency that has not been activated because the necessary condition"
+                   "\nhas not been met, or you tried to access a model parameter for a model"
+                   "\nthat you are not actually scanning.  This means there is a bug in one"
+                   "\nof your module functions.";
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
 
   };
@@ -176,11 +172,12 @@ namespace Gambit
       /// Failure message invoked when the user tries to dereference a null safe_variable_ptr
       static void dieGracefully()
       {
-        cout << endl << "You just tried to dereference a GAMBIT safe variable pointer that has value" << endl;
-        cout << "NULL.  Bad idea.  Probably you tried to retrieve a conditional" << endl;
-        cout << "dependency that has not been activated because the necessary condition" << endl;
-        cout << "has not been met." << endl;
-      }
+        str errmsg = "You just tried to dereference a GAMBIT safe variable pointer that has value";
+        errmsg +=  "\nNULL.  Bad idea.  Probably you tried to retrieve a conditional"
+                   "\ndependency that has not been activated because the necessary condition"
+                   "\nhas not been met.";
+        utils_error().raise(LOCAL_INFO,errmsg);
+      } 
 
   };
 

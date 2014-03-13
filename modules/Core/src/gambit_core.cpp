@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  GAMBIT Core driver class implementation.
-///  Noting to see here.  Move along please.
+///  Nothing to see here.  Move along please.
 ///
 ///  *********************************************
 ///

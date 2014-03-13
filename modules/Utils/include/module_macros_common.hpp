@@ -13,7 +13,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
-///  \date 2014 Jan
+///  \date 2014 Jan, Mar
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -27,8 +27,10 @@
 #ifndef __module_macros_common_hpp__
 #define __module_macros_common_hpp__
 
-#include "util_macros.hpp"
 #include <string>
+
+#include "util_macros.hpp"
+
 #include <boost/preprocessor/comparison/greater.hpp>
 
 

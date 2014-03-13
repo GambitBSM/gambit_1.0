@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Exception object definitions.
+///  Exception object declarations.
 ///
 ///  *********************************************
 ///
@@ -14,15 +14,36 @@
 ///
 ///  *********************************************
 
+#ifndef __error_handlers_hpp__
+#define __error_handlers_hpp__
+
 #include "standalone_error_handlers.hpp"
 
 namespace Gambit
 {
 
-  /// Dependency resolver errors
-  error dependency_resolver_error("A problem has been raised by the dependency resolver.","dependency_resolver_error");
-  /// Dependency resolver warnings
-  warning dependency_resolver_warning("A problem has been raised by the dependency resolver.","dependency_resolver_warning");
+  /// Core errors
+  error& core_error();
+  /// Core warnings
+  warning& core_warning();
 
+  namespace Graphs
+  {
+    /// Dependency resolver errors
+    error& dependency_resolver_error();
+    /// Dependency resolver warnings
+    warning& dependency_resolver_warning();
+  }
+
+  namespace IniParser
+  {
+    /// IniFile errors
+    error& inifile_error();
+    /// IniFile warnings
+    warning& inifile_warning();
+  }
+    
 }
+
+#endif //#ifndef error_handlers_hpp
 

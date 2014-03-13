@@ -139,13 +139,6 @@ multinest:
   output_file:  output
     
 ###############################
-#--- # Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
-###############################
 --- # Observables of interest
 ###############################
 
@@ -216,6 +209,28 @@ multinest:
 #  function:     ""
 #  backend:      "libFirst"
 
+#########################
+--- # Logging setup
+#########################
+
+# Redirectory of specific messages according to tags
+redirection:
+  [Default] : "logfiles/default.log"
+  [Error] : "logfiles/errors.log"
+  [Warning] : "logfiles/warnings.log"
+  [Core,Error] : "logfiles/core_errors.log"
+  [Core,Error,Fatal] : "logfiles/fatal_core_errors.log"
+  [Dependency Resolver] : "logfiles/dependency_resolver.log"
+  [ExampleBit_A] : "logfiles/ExampleBit_A.log"
+  [LibFirst] : "logfiles/libfirst.log"
+
+###############################
+#--- # Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
+
 ##########################
 --- # Name/Value Section
 ##########################
@@ -228,6 +243,14 @@ another_key:
 
 dependency_resolution:
   prefer_model_specific_functions: true
+
+#By default, errors are fatal and warnings non-fatal
+exceptions:
+  dependency_resolver_error: fatal
+  dependency_resolver_warning: non-fatal
+  core_warning: fatal
+  scan_error: non-fatal #make this fatal to see an example error
+  ExampleBit_B_error: non-fatal
 
 enable_testing: false
 test_function: uniform

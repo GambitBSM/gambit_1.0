@@ -30,12 +30,11 @@
 #include "gambit_core.hpp"
 #include "printers.hpp"
 #include "functors.hpp"
+#include "error_handlers.hpp"
 #include "yaml_parser.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
-
-//using namespace boost;
 
 namespace Gambit
 {
@@ -43,6 +42,7 @@ namespace Gambit
   {
 
     using namespace boost;
+
     // Typedefs for central boost graph
     typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;

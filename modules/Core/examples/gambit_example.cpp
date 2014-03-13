@@ -16,15 +16,16 @@
 ///
 ///  *********************************************
 
-#include "error_handlers.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
+#include "scannerbit.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
 #include "priors.hpp"
+#include "register_error_handlers.hpp"
+#include "log.hpp"
 
 using namespace Gambit;
 
@@ -122,6 +123,10 @@ void beispiel()
 
 int main( int, const char*[] )
 {
+
+  try
+  {
+
   beispiel();
 
   cout<<endl;
@@ -136,14 +141,15 @@ int main( int, const char*[] )
   cout<<endl;
 
   // Setup logs
-  logsetup::setfile("_GAMBIT_msgs_example_errors.txt");              // setup detailed debug
-  logsetup::setfile_upto_LOG("_GAMBIT_msgs_example_normal.txt");     // into files, depending
-  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug0.txt");   // on debug level.
-  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug1.txt",1);
-  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug2.txt",2);
-  logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
-  logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
-  GAMBIT_MSG_INFO("starting example");
+  // THIS IS DEPRECATED -> USE NEW LOGGING SYSTEM
+  // logsetup::setfile("_GAMBIT_msgs_example_errors.txt");              // setup detailed debug
+  // logsetup::setfile_upto_LOG("_GAMBIT_msgs_example_normal.txt");     // into files, depending
+  // logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug0.txt");   // on debug level.
+  // logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug1.txt",1);
+  // logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug2.txt",2);
+  // logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
+  // logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
+  // GAMBIT_MSG_INFO("starting example");
   
   // ****************
   // ModelBit demo code START
@@ -607,8 +613,13 @@ int main( int, const char*[] )
   */
   
 
-  // Logging example 
-  GAMBIT_MSG_LOG("GAMBIT example");
+  // Logging example
+  // DEPRECATED! 
+  // try{
+  //   GAMBIT_MSG_LOG("GAMBIT example");
+  // }catch( exceptions::GAMBIT_exception_base & e){
+  //   GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
+  // }
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::commonBlock);
@@ -620,6 +631,14 @@ int main( int, const char*[] )
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
     
-  return 1;
+
+  }
+
+  catch (std::exception& e)
+  {
+    cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+  }
+
+  return 0;
 
 }

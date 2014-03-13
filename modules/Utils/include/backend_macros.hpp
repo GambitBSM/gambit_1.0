@@ -42,6 +42,7 @@
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "backend_type_macros.hpp"
+#include "logging.hpp"
 
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/logical/bitand.hpp>
@@ -49,6 +50,32 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>
+
+/// Macro for adding a tag to the logging system for each backend
+/* (we don't strictly need all the namespaces for this, but I left them in
+    for consistency with the other macros) */
+#define REGISTER_BACKEND_LOGTAG                                             \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace Backends                                                        \
+  {                                                                         \
+    namespace BACKENDNAME                                                   \
+    {                                                                       \
+      void rt_register_backend_with_log ()                                  \
+      {                                                                     \
+        int mytag = Logging::getfreetag();                                  \
+        Logging::get_tag2str()[mytag] = STRINGIFY(BACKENDNAME);             \
+        Logging::get_components().insert(mytag);                            \         
+      }                                                                     \
+                                                                            \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code register_backend_with_log (&rt_register_backend_with_log); \
+      }                                                                     \
+    } /* end namespace BACKENDNAME */                                       \
+  } /* end namespace Backends */                                            \
+} /* end namespace Gambit */                                                \
+
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
@@ -89,6 +116,8 @@ namespace Gambit                                                            \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
+/* Register a LogTag for this backend with the logging system */            \
+REGISTER_BACKEND_LOGTAG                                                     \
 
 
 /// Macro for constructing pointers to library variables,

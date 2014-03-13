@@ -102,11 +102,10 @@ namespace Gambit
   {
     if (not modelClaw.model_exists(model))
     {
-      cout<<"Error: model '"<<model<<"'<< is not in the GAMBIT database."<<endl;
-      cout<<"Recognised models are: "<<endl;
-      modelClaw.list_models();
-      exit(1);
-      ///TODO: convert to proper GAMBIT error
+      str errmsg = "Error: model \"";
+      errmsg += model + "\" is not in the GAMBIT database.";
+      errmsg += "\nRecognised models are:" + modelClaw.list_models();
+      model_error().raise(LOCAL_INFO,errmsg); 
     }
   }
     

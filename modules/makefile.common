@@ -16,14 +16,6 @@ ifdef HAVE_MAC
   HAVE_MAC = iMissUbuntuAlready
 endif
 
-# if your compiler doesn't support all of C++11, some things might not compile.
-# if you don't have at least GCC 4.7 you can define NO_GCC_4_7
-# NOTE: You can do so on the command line:
-#       make -f makefile.xxx NO_GCC_4_7=whatever
-ifdef NO_GCC_4_7
-  NO_GCC_4_7 = upgradeYourGCC
-endif
-
 # set SHH to anything to make the output less verbose
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx SHH=whatever
@@ -68,6 +60,7 @@ COREDIR = Core
 MODELDIR = ModelBit
 UTILSDIR = Utils
 PRINTERSDIR = Printers
+LOGGINGDIR = logging
 SCANDIR = ScannerBit
 BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
@@ -89,6 +82,7 @@ CFLAGS= -I$(COREDIR)/include \
 	-I$(MODELDIR)/include/models \
 	-I$(UTILSDIR)/include \
         -I$(PRINTERSDIR)/include \
+        -I$(LOGGINGDIR)/include \
 	-I$(SCANDIR)/include \
 	-I$(BACKENDDIR)/include \
 	-I$(BACKENDDIR)/lib \
@@ -119,10 +113,10 @@ else
 endif
 FFLAGS = -O3 -fPIC
 
-ifdef NO_GCC_4_7
-  CFLAGS += -DNO_GCC_4_7 -Dnullptr=0 -std=c++0x
-else
+ifdef CPP11FLAG
   CFLAGS += -std=c++11
+else
+  CFLAGS += -Dnullptr=0 -std=c++0x
 endif
 
 # CoreBit/include/logs.hpp:
@@ -390,6 +384,10 @@ PRINTINC:=$(wildcard $(PRINTERSDIR)/include/*hpp) $(wildcard $(PRINTERSDIR)/incl
 PRINTSRC:=$(wildcard $(PRINTERSDIR)/src/*cpp)
 PRINTOBJS:=$(addprefix $(PRINTERSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(PRINTSRC))))
 
+LOGINC:=$(wildcard $(LOGGINGDIR)/include/*hpp) $(wildcard $(LOGGINGDIR)/include/*h)
+LOGSRC:=$(wildcard $(LOGGINGDIR)/src/*cpp)
+LOGOBJS:=$(addprefix $(LOGGINGDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(LOGSRC))))
+
 BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp)  $(wildcard $(BACKENDDIR)/lib/*hpp) \
  $(wildcard $(BACKENDDIR)/include/*h)  $(wildcard $(BACKENDDIR)/lib/*h)
 BACKENDSRC:=$(wildcard $(BACKENDDIR)/src/*cpp)
@@ -424,7 +422,7 @@ EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
 GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
@@ -432,7 +430,7 @@ endif
 
 # Ben: Currently if we change things in headers then stuff doesn't get recompiled: need to add these dependencies in
 # I'm not sure I added them everywhere necessary... might be safer to make everything depend on them...
-HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC)
+HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC) $(LOGINC)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -456,7 +454,11 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(GAMBITINC)
+$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(PRINTINC) $(GAMBITINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(LOGGINGDIR)/build/%.o: $(LOGGINGDIR)/src/%.cpp $(LOGINC) $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
