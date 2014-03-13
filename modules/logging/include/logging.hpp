@@ -37,7 +37,8 @@ namespace Gambit
 {
   // CAREFUL! These logging enum tags might clash with other names in the Gambit namespace! Be careful when adding new ones.
   enum LogTag {  /* Message tags */
-                   info=0,
+                   debug=0,
+                   info,
                    warn,
                    err,
                    /* Flags */
@@ -46,9 +47,10 @@ namespace Gambit
                    /* Component tags */
                    def,
                    core,
+                   logging,
                    depres,
                    models,
-                   scanner
+                   scanner,
                    /* etc... */
                 }; 
 
@@ -58,7 +60,7 @@ namespace Gambit
     // Probably want to make a macro to do this, since we will want string versions of all of these so that we can match them to the entries in the inifile. Also we want to be able to figure out how many there are, so that we can associate the modules and backends with integers that don't overlap with the enum (so maybe put them in a vector or something)
   
     // Function to do the reverse search of tag map (brute force)
-    int str2tag(std::string&);
+    int str2tag(const std::string&);
 
     // Function to retrieve the 'components' set outside of this compilation unit
     // (needed by module and backend macros so they can add to it)
@@ -164,7 +166,13 @@ namespace Gambit
         /// Internal version of main logging function
         void send(const std::string&, std::set<LogTag>&);
         void send(const std::string&, std::set<int>&);
+        void finalsend(const std::string&, std::set<int>&);
 
+        /// Set the internal variables tracking which module and/or backend is currently running
+        void entering_module(int);
+        void leaving_module();
+        void entering_backend(int);
+        void leaving_backend();
 
       private:
         // Dump the prelim buffer to the 'send' function
@@ -180,11 +188,11 @@ namespace Gambit
         std::vector< std::pair<std::string,std::set<int>> > prelim_buffer;
 
         // Flag to set whether loggers have been initialised not
-        bool loggers_readyQ = false;
+        bool loggers_readyQ;
 
         //int current_function; // Can generalise to this if we discover that we really want to...
-        int current_module = -1;  // index -1 means "not in any module"
-        int current_backend = -1; // index -1 means "not in any backend"
+        int current_module;  // index -1 means "not in any module"
+        int current_backend; = -1; // index -1 means "not in any backend"
     };
 
   } //end namespace Logging

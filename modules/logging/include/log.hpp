@@ -30,7 +30,7 @@
 namespace Gambit {
 
   /// Function to retrieve a reference to the Gambit global log object.
-  Logging::LogMaster& log();
+  Logging::LogMaster& logger();
 
 } // end namespace Gambit
 

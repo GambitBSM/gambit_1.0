@@ -165,11 +165,11 @@ multinest:
 #   capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-#- purpose:      Likelihood
-#  capability:   lnL_ExampleBitB
-#  type:         double
-#  function:     ""
-#  module:       ""
+- purpose:      Likelihood
+  capability:   lnL_ExampleBitB
+  type:         double
+  function:     ""
+  module:       ""
 
 # Test loop manager
 #- purpose:      Likelihood
@@ -221,6 +221,8 @@ redirection:
   [Core,Error] : "logfiles/core_errors.log"
   [Core,Error,Fatal] : "logfiles/fatal_core_errors.log"
   [Dependency Resolver] : "logfiles/dependency_resolver.log"
+  [ExampleBit_A] : "logfiles/ExampleBit_A.log"
+  [LibFirst] : "logfiles/libfirst.log"
 
 ###############################
 #--- # Printer (output) setup

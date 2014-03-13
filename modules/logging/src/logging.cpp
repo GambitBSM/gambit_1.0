@@ -39,7 +39,7 @@ namespace Gambit
     // Main message categories
     // (Won't compile in g++ if the LogTags are const, something about how standard containers work...)
 
-    static LogTag msg_a[] = {info, warn, err};
+    static LogTag msg_a[] = {debug, info, warn, err};
     static const std::set<LogTag> msgtypes(msg_a, msg_a+sizeof(msg_a)/sizeof(msg_a[0])); 
  
     // Extra flags for messages
@@ -48,7 +48,7 @@ namespace Gambit
 
     // Tags for gambit components
     // We add the core components here, but the module and backend numbers are added later, so these cannot be const.
-    LogTag core_a[] = {def, core, depres, models, scanner};
+    LogTag core_a[] = {def, core, logging, depres, models, scanner};
     static std::set<int> components(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
     
     // Function to retrieve the 'components' set outside of this compilation unit
@@ -61,6 +61,7 @@ namespace Gambit
     static std::map<int,std::string> create_tag_names()
     {
        std::map<int,std::string> m;
+       m[debug]   = "Debug";
        m[info]    = "Info";
        m[warn]    = "Warning";
        m[err]     = "Error";
@@ -70,6 +71,7 @@ namespace Gambit
        /* Component tags */
        m[def]     = "Default";
        m[core]    = "Core";
+       m[logging] = "Logging";
        m[models]  = "Models";
        m[depres]  = "Dependency Resolver";
        m[scanner] = "Scanner";
@@ -101,6 +103,7 @@ namespace Gambit
         if( tag2str.count(i) == 0 ) { return i; }
       }
       // Uh oh, seems like we ran out of integers. If this happens you are screwed, and we have to rewrite the code to use long ints instead, or you have to unhook some modules.
+      // Cannot log this because we are outside the LogMaster class code.
       std::ostringstream ss;
       ss << "Error in logger.cpp! It seems that you have so many logging tags that you have exceeded the maximum allowed integer. There is no way you can fix this except to have fewer modules hooked up to gambit all at once. Otherwise we have to rewrite the logger to work with long ints or some such" << std::endl;
       throw std::overflow_error( ss.str() ); 
@@ -113,11 +116,8 @@ namespace Gambit
        {
          if (tag->second == tagname) { return tag->first; }         
        }    
-       // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
-       // TODO: Not sure if we can raise a gambit exception here... can't be logged, anyway.
-       std::ostringstream ss;
-       ss << "Error in Logging::str2tag function! Tags name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile!" << std::endl;
-       throw std::logic_error( ss.str() ); 
+       // Uh oh, no match found. Return fail code and let caller deal with it
+       return -1;
     } 
 
     /// Function to inspect tags and their associated strings. For testing purposes only
@@ -149,20 +149,21 @@ namespace Gambit
     /// Logging "controller" object
     /// Keeps track of the individual logging objects.
 
-    LogMaster::LogMaster()
+    LogMaster::LogMaster() 
+      : loggers_readyQ(false), current_module(-1), current_backend(-1) 
     {
     }
  
-    LogMaster::LogMaster(const IniParser::IniFile& inifile)
+    LogMaster::LogMaster(const IniParser::IniFile& inifile) 
+      : loggers_readyQ(false), current_module(-1), current_backend(-1) 
     {
     }
 
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
-    LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) : loggers(loggersIN)
+    LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) 
+      : loggers(loggersIN), loggers_readyQ(true), current_module(-1), current_backend(-1) 
     {
-           // Flag the logger map as ready to use 
-       loggers_readyQ = true;
     }
 
     // Destructor
@@ -210,7 +211,18 @@ namespace Gambit
                 stag != yamltags.end(); ++stag) 
           {
             // Finding the tag index from the tag string is kind of a drag, have to do a brute search
-            tags.insert( str2tag(*stag) );
+            int newtag = str2tag(*stag);
+            // Check that valid tag was found (returns -1 if no tag found)
+            if(newtag==-1)
+            {
+              // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
+              // TODO: Not sure if we can raise a gambit exception here... Well we can log it at least!
+              std::ostringstream ss;
+              ss << "Error in Logging::str2tag function! Tags name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile!";
+              send(ss.str(),logging,err,fatal);
+              throw std::logic_error( ss.str() ); 
+            }
+            tags.insert(newtag);
           }
           // Build the logger object
           StdLogger* newlogger = new StdLogger(filename);
@@ -221,13 +233,13 @@ namespace Gambit
        dump_prelim_buffer();
     }
 
-    // Dump the prelim buffer to the 'send' function
+    // Dump the prelim buffer to the 'finalsend' function
     void LogMaster::dump_prelim_buffer()
     {
        for(std::vector< std::pair<std::string,std::set<int>> >::iterator msgpair = prelim_buffer.begin(); 
             msgpair != prelim_buffer.end(); ++msgpair) 
        {
-         send(msgpair->first,msgpair->second);
+         finalsend(msgpair->first,msgpair->second);
        }
        // Clear the buffer
        prelim_buffer.clear();
@@ -327,7 +339,19 @@ namespace Gambit
        std::cout<<"msg: "<<message<<std::endl;   
 
        // Preliminary stuff 
-       
+    
+       // Automatically add the tags for the "current" module and backend to the tags list
+       if (current_module != -1)  
+       { 
+         std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str[current_module]<<std::endl;
+         tags.insert(current_module); 
+       }
+       if (current_backend != -1) 
+       {
+         std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str[current_backend]<<std::endl;
+         tags.insert(current_backend); 
+       } 
+  
        // If the loggers have not yet been initialised, buffer the message
        if ( not loggers_readyQ ) 
        {
@@ -337,6 +361,13 @@ namespace Gambit
        }
        std::cout<<"Loggers ready, forwarding message..."<<std::endl;
     
+       finalsend(message,tags);
+
+    } // end LogHub::send 
+
+    /// Version of send function used by buffer dump; skips all the tag modification stuff
+    void LogMaster::finalsend(const std::string& message, std::set<int>& tags)
+    {
        // Check the 'ignore' set; if any of the specified tags are in this set, then do nothing more, i.e. ignore the message.
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
        if( not is_disjoint(tags, ignore) ) 
@@ -386,17 +417,6 @@ namespace Gambit
          }
        } //end tag sorting
 
-       // Automatically add the tags for the "current" module and backend to the tags list
-       if (current_module != -1) 
-       { 
-         component_tags.insert(current_module);
-         tags.insert(current_module);
-       }
-       if (current_backend != -1) 
-       { 
-         component_tags.insert(current_backend);
-         tags.insert(current_backend);
-       }
        // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
        component_tags.insert(def); // Maybe delete this line, probably not needed
        tags.insert(def);
@@ -414,9 +434,23 @@ namespace Gambit
            (keyvalue->second)->write(message, component_tags, type_tags, flag_tags);
          }
        } //end loop over loggers
+    } // end LogMaster::finalsend
 
-    } // end LogHub::send 
-
+    void LogMaster::entering_module(int i) { current_module = i; }
+    void LogMaster::leaving_module() { current_module = -1; }
+    void LogMaster::entering_backend(int i) 
+    {
+       current_backend = i; 
+       std::cout<<"setting current_backend="<<current_backend<<std::endl;
+       // TODO: Activate std::out and std::err redirection, if requested in inifile
+    }
+    void LogMaster::leaving_backend()
+    { 
+       current_backend = -1;
+       std::cout<<"restoring current_backend="<<current_backend<<std::endl;
+       // TODO: Restore std::out and std::err to normal
+    }
+ 
     /// %%%% Logger classes %%%
    
     // Apparantly this cannot be virtual, so provide an implementation for it

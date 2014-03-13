@@ -44,6 +44,7 @@
 #include "model_types.hpp"
 #include "model_functions.hpp"
 #include "yaml_parser.hpp"
+#include "log.hpp"
 
 // Decay rate of average runtime estimate
 #define FUNCTORS_FADE_RATE 0.01
@@ -223,7 +224,7 @@ namespace Gambit
 
       /// Debug flag
       bool verbose;
-
+ 
   };
 
 
@@ -414,6 +415,9 @@ namespace Gambit
       /// Do post-calculate timing things
       virtual void finishTiming(double nsec, double sec);
 
+      /// Integer LogTag, for tagging log messages
+      int myLogTag = -1; 
+
   };
 
 
@@ -507,6 +511,9 @@ namespace Gambit
 
       /// Internal storage of function pointer
       funcPtrType myFunction;
+
+      /// Integer LogTag, for tagging log messages
+      int myLogTag = -1; 
 
     public:
 
@@ -622,7 +629,20 @@ namespace Gambit
                                                                    str origin_version) 
     : functor (func_name, func_capability, result_type, origin_name),
       myFunction (inputFunction) 
-    { myVersion = origin_version; }
+    {
+      myVersion = origin_version; 
+      // Determine LogTag number
+      myLogTag = Logging::str2tag(myOrigin);
+      // Check for failure
+      if(myLogTag==-1)
+      {
+        std::ostringstream ss;
+        ss << "Error retrieving LogTag number (in functors.hpp, constructor for backend_functor_common)! No match for backend name in tag2str map! This is supposed to be a backend functor, so this is a fatal error. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
+        logger().send(ss.str(),err,fatal);
+        //TODO: gambit error
+        exit(0);
+      }
+    }
 
     /// Update the internal function pointer wrapped by the functor
     template <typename TYPE, typename... ARGS>
@@ -638,8 +658,7 @@ namespace Gambit
       return myFunction;
     }
 
-
-  // Actual backend functor class method definitions for TYPE != void
+    // Actual backend functor class method definitions for TYPE != void
 
     /// Constructor 
     template <typename TYPE, typename... ARGS>
@@ -655,9 +674,12 @@ namespace Gambit
     /// Operation (execute function and return value) 
     template <typename TYPE, typename... ARGS>
     TYPE backend_functor<TYPE, ARGS...>::operator()(ARGS... args) 
-    { 
+    {
       if (this == NULL) functor::failBigTime("operator()");
-      return this->myFunction(args...);
+      logger().entering_backend(this->myLogTag);
+      TYPE tmp = this->myFunction(args...);
+      logger().leaving_backend();
+      return tmp;
     }
 
     /// Alternative to operation, in case the functor return value is 
@@ -670,7 +692,7 @@ namespace Gambit
     }
 
 
-  // Actual backend functor class method definitions for TYPE=void
+    // Actual backend functor class method definitions for TYPE=void
 
     /// Constructor 
     template <typename... ARGS>
@@ -686,9 +708,11 @@ namespace Gambit
     /// Operation (execute function and return value) 
     template <typename... ARGS>
     void backend_functor<void, ARGS...>::operator()(ARGS... args) 
-    { 
+    {
       if (this == NULL) functor::functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
       this->myFunction(args...);
+      logger().leaving_backend();
     }
 
   /// Function for creating backend functor objects.

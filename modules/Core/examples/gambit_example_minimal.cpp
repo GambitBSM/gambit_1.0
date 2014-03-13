@@ -46,7 +46,7 @@ void beispiel(const char* inifilename)
 
   // Test some logging messages
   // (should be cached by the logger since it doesn't know where to send them yet)
-  log().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
+  logger().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
  
   // Read INI file
   IniParser::IniFile iniFile;
@@ -56,10 +56,10 @@ void beispiel(const char* inifilename)
   // already available here  due to including log.hpp
 
   // Test some logging messages
-  log().send("First log message ever!");
-  log().send("First log message with a tag!",err);
-  log().send("First log message with two tags!",err,core);
-  log().send("First log message with three tags!",def,err,core);
+  logger().send("First log message ever!");
+  logger().send("First log message with a tag!",err);
+  logger().send("First log message with two tags!",err,core);
+  logger().send("First log message with three tags!",def,err,core);
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();

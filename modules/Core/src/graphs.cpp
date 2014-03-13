@@ -419,7 +419,7 @@ namespace Gambit
           std::ostringstream ss;
           ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
           cout << ss.str() << endl;;
-          log().send(ss.str(),info,depres);
+          logger().send(ss.str(),info,depres);
         }
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
