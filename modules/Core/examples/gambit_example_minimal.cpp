@@ -152,7 +152,8 @@ void beispiel(const char* inifilename)
 int main( int argc, const char* argv[] )
 {
   const char* inifilename;
-         
+//  char* inifilename;
+
   std::streambuf *coutbuf = std::cout.rdbuf(); 
   std::cout.rdbuf(coutbuf);
    
@@ -168,10 +169,8 @@ int main( int argc, const char* argv[] )
                  "\n        : gambit_example_minimal modelbit_test.yaml";
       core_error.raise(LOCAL_INFO,errmsg);
     } 
-    else { // if we got enough parameters...
-      std::cout << argv[0];
-      inifilename = argv[1];
-    }
+    std::cout << argv[0];
+    inifilename = argv[1];
   
     beispiel(inifilename);
  
