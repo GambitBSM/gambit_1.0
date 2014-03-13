@@ -139,13 +139,6 @@ multinest:
   output_file:  output
     
 ###############################
-#--- # Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
-###############################
 --- # Observables of interest
 ###############################
 
@@ -215,6 +208,25 @@ multinest:
 #  type:         ""
 #  function:     ""
 #  backend:      "libFirst"
+
+#########################
+--- # Logging setup
+#########################
+
+# Redirectory of specific messages according to tags
+redirection:
+  [Default] : "logfiles/default.log"
+  [Error] : "logfiles/errors.log"
+  [Warning] : "logfiles/warnings.log"
+  [Core,Error] : "logfiles/core_errors.log"
+  [Core,Error,Fatal] : "logfiles/fatal_core_errors.log"
+
+###############################
+#--- # Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
 
 ##########################
 --- # Name/Value Section

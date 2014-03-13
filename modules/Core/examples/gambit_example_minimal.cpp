@@ -22,12 +22,13 @@
 #include "model_rollcall.hpp"
 #include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include <gambit_scan.hpp>
-#include <priorfactory.hpp>
-#include <priors.hpp>
-#include <scanner_factory.hpp>
-#include <inifile_interface.hpp>
-#include <test_factory.hpp>
+#include "gambit_scan.hpp"
+#include "priorfactory.hpp"
+#include "priors.hpp"
+#include "scanner_factory.hpp"
+#include "inifile_interface.hpp"
+#include "test_factory.hpp"
+#include "log.hpp"
 
 using namespace Gambit;
 
@@ -40,9 +41,25 @@ void beispiel(const char* inifilename)
   cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
     Core.getBackendFunctors()->size() << endl;
 
+
+  // Test some logging messages
+  // (should be cached by the logger since it doesn't know where to send them yet)
+  Log().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
+ 
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile(inifilename);
+ 
+  // Reading the inifile will also have initialised the LogMaster object, which is
+  // already available here  due to including log.hpp
+
+  // Test some logging messages
+  Log().send("First log message ever!");
+  Log().send("First log message with a tag!",Logging::err);
+  Log().send("First log message with two tags!",Logging::err,Logging::core);
+  Log().send("First log message with three tags!",Logging::default_log,Logging::err,Logging::core);
+
+  exit(0);
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
