@@ -30,6 +30,7 @@
 #include "gambit_core.hpp"
 #include "printers.hpp"
 #include "functors.hpp"
+#include "error_handlers.hpp"
 #include "yaml_parser.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
@@ -41,11 +42,6 @@ namespace Gambit
   {
 
     using namespace boost;
-
-    /// Dependency resolver errors
-    extern error dependency_resolver_error;
-    /// Dependency resolver warnings
-    extern warning dependency_resolver_warning;
 
     // Typedefs for central boost graph
     typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;

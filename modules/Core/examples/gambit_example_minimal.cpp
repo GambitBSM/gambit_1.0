@@ -16,17 +16,16 @@
 ///
 ///  *********************************************
 
-#include "error_handlers.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
-#include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
+#include "scannerbit.hpp"
 #include "priorfactory.hpp"
 #include "priors.hpp"
 #include "scanner_factory.hpp"
+#include "register_error_handlers.hpp"
 #include "inifile_interface.hpp"
 #include "test_factory.hpp"
 
@@ -166,7 +165,8 @@ int main( int argc, const char* argv[] )
       errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
                  "\n  e.g.  : gambit_example_minimal gambit.yaml"
                  "\n        : gambit_example_minimal modelbit_test.yaml";
-      core_error.raise(LOCAL_INFO,errmsg);
+      core_error().raise(LOCAL_INFO,errmsg);
+      inifilename = "";
     } 
     else { // if we got enough parameters...
       std::cout << argv[0];

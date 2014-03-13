@@ -8,12 +8,12 @@ Core
 ----
 
 Rollcall:
-* Implement scan-level and point-level initialisation functions in backends (**Pat & Chistoph; before G3**)
+* Implement scan-level and point-level initialisation functions in backends (**Pat & Chistoph; if/when needed**)
 * Allow grouping of backend requirements into blocks, maybe declaration of parameters  (**Pat; discussion with whole collab needed at G3**)
-* Tracking of config files -> lists in module/backend rollcall headers (**Pat; before G3**)
+* Tracking of config files -> lists in module/backend rollcall headers (**Pat; after G3**)
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
-* Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; before G3**)
+* Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; after G3**)
 * Make name of current model (and related lineage tests) accessible from within module functions (**Pat; before G3**)
 
 IniFile:
@@ -24,22 +24,22 @@ IniFile:
 Dependency Resolver:
 * Make dependency resolver errors more informative (**Christoph; no major time pressure**)
 * Modify model checks in dependency resolver so that all observables are parsed and their dependencies resolved before concluding that some model is not used for anything, and throwing an error (put FlavBit test observables first in gambit.yaml to see this error)
+* Sort out specification of what can be given to the Scanner as Likelihoods / what can be given as target observables in iniFile
 
 Backends:
 * Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; before G3**)
-* Resolve residual issues with passing strings to fortran backends (**Pat, Csaba, Ben & Anders; before G3**)
+* Resolve residual issues with passing strings to fortran backends (**all; at G3**)
 * Implement backending of Mathematica codes (**Ben to dabble with; no time pressure**)
 * Implement backending of Python codes (**Ben to dabble with; no time pressure**)
 
 Messaging:
-* Implement proper exception handling system (**Pat, talking to Ben; before G3**)
 * Implement proper logging system (**Ben, talking to Pat; before G3**)
 * Write printer functions for all common functor types and print streams (**Hopefully happens a bit on its own as the two points above get dealt with**)
 
 General:
 * Experiment with automake and cmake for build (**Antje to update automake system to current master; Ben, Pat, Chistoph + others to test; Antje to merge into master before G3. Cmake to be left for after G3.**)
-* Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat; before G3**)
-* Create SLHA internal representation, plus hook up file reader/writer. (**Are, Csaba; progress before G3, completion maybe not**) 
+* Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat; after G3**)
+* Create SLHA internal representation, plus hook up file reader/writer. (**Ben; progress before G3, completion maybe not**) 
 * General review of legacy code -> cull obsolete stuff (**ALL, but Pat and Ben to pay special attention to legacy SUFit code in ModelParameters, exceptions and logging systems**)
 * Fix naming conventions (**ALL, whenever we touch a file!!**)
   - filenames (lowercase+underscore)
@@ -67,6 +67,7 @@ Done:
 * Convert common block / struct access to by-pointer
 * Make dependency resolver more model-aware; now it can choose between two otherwise-valid functor options for filling a dependency, based only on the model being scanned.
 * Implement elegant optional array reindexing scheme for Fortran arrays
+* Implement proper exception handling system
 
 
 Models

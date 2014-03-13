@@ -40,14 +40,10 @@
 #include "graphs.hpp"
 #include "gambit_core.hpp"
 #include "util_types.hpp"
+#include "standalone_error_handlers.hpp"
 
 namespace Gambit
 {
-
-  /// Model errors
-  extern error model_error;
-  /// Model warnings
-  extern warning model_warning;
 
   namespace ModelBit
   {

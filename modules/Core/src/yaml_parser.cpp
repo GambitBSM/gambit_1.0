@@ -54,6 +54,8 @@ namespace Gambit
           // Check if the exception has an entry in the YAML file
           if (hasKey("exceptions",iter->first))
           { 
+
+            std::cout << "Found exceptions, " << iter->first;
             // Retrieve the entry and set the exception's 'fatal' flag accordingly.
             str value = getValue<str>("exceptions",iter->first);
             if (value == "fatal")
@@ -67,7 +69,7 @@ namespace Gambit
             else
             {
               str error_msg = "Unrecognised entry \"" + value + "\" for exceptions key \"" + iter->first + "\" in input file.";
-              inifile_error.raise(LOCAL_INFO,error_msg);
+              inifile_error().raise(LOCAL_INFO,error_msg);
             }
           }
         }

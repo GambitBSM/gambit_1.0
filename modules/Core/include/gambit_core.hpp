@@ -23,14 +23,10 @@
 #include "logs.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
+#include "error_handlers.hpp"
 
 namespace Gambit
 {
-
-  /// Core errors
-  extern error core_error;
-  /// Core warnings
-  extern warning core_warning;
 
   /// Master driver class for a GAMBIT scan.
   class gambit_core

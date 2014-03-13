@@ -39,7 +39,7 @@ namespace Gambit
   void exception::set_fatal(bool fatal) { isFatal = fatal; }
 
   /// Retrieve the identity of the exception.
-  const char* exception::what() const noexcept { return myWhat; }
+  const char* exception::what() const throw() { return myWhat; }
 
   /// Raise the exception.
   /// Log the exception and, if it is considered fatal, actually throw it. 

@@ -197,12 +197,34 @@
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
+                                                                               \
       /* Module errors */                                                      \
-      error CAT(MODULE,_error)("A problem has been raised by "STRINGIFY(MODULE)\
-                        ".", STRINGIFY(MODULE) "_error");                      \
+      error& CAT(MODULE,_error)()                                              \
+      {                                                                        \
+        static error local("A problem has been raised by "STRINGIFY(MODULE)    \
+                           ".", STRINGIFY(MODULE) "_error");                   \
+        return local;                                                          \
+      }                                                                        \
+                                                                               \
       /* Module warnings */                                                    \
-      warning CAT(MODULE,_warning)("A problem has been raised by "             \
-                        STRINGIFY(MODULE) ".", STRINGIFY(MODULE) "_warning");  \
+      warning& CAT(MODULE,_warning)()                                          \
+      {                                                                        \
+        static warning local("A problem has been raised by "STRINGIFY(MODULE)  \
+                           ".", STRINGIFY(MODULE) "_warning");                 \
+        return local;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Register module errors and warnings */                                \
+      namespace Ini                                                            \
+      {                                                                        \
+        void CAT_3(register_,MODULE,_handlers)()                               \
+        {                                                                      \
+          error e = CAT(MODULE,_error)();                                      \
+          warning w = CAT(MODULE,_warning)();                                  \
+        }                                                                      \
+        ini_code CAT(MODULE,_handlers)(&CAT_3(register_,MODULE,_handlers));    \
+      }                                                                        \
+                                                                               \
       CORE_START_MODULE_COMMON(MODULE)                                         \
     }                                                                          \
   }                                                                            \
@@ -647,7 +669,7 @@
                      "\ndependency DEP of function FUNCTION.  Attempt was to"  \
                      "\nresolve to " + dep_functor->name() + " in " +          \
                      dep_functor->origin() + ".";                              \
-          core_error.raise(LOCAL_INFO,errmsg);                                 \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -778,7 +800,7 @@
                      "\nMODEL with function FUNCTION.  Attempt was to"         \
                      "\nresolve to " + params_functor->name() + " in " +       \
                      params_functor->origin() + ".";                           \
-          core_error.raise(LOCAL_INFO,errmsg);                                 \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -802,13 +824,15 @@
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
-            cout<<"Error in MODULE::resolve_dependency, for model"<< endl;     \
-            cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;     \
-            cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;      \
-            cout<<params_functor->origin()<<"."<<endl;                         \
-            cout<<"You have tried to scan two models simultaneously"<< endl;   \
-            cout<<"that have one or more parameters in common. "<< endl;       \
-            cout<<"Problem parameter: "<<it->first<<endl;                      \
+            str errmsg = "Problem in "STRINGIFY(MODULE)"::resolve_dependency,";\
+            errmsg +=    " for model "STRINGIFY(MODEL)" with function\n"       \
+                         STRINGIFY(FUNCTION)".  Attempt was to resolve to\n" + \
+                         params_functor->name() + " in " +                     \
+                         params_functor->origin() + ".\nYou have tried to scan"\
+                         "two models simultaneously that have one or more\n"   \
+                         "parameters in common.\nProblem parameter: " +        \
+                         it->first;                                            \
+            utils_error().raise(LOCAL_INFO,errmsg);                            \
           }                                                                    \
         }                                                                      \
       }                                                                        \

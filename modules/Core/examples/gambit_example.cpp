@@ -16,15 +16,15 @@
 ///
 ///  *********************************************
 
-#include "error_handlers.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
+#include "scannerbit.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
 #include "priors.hpp"
+#include "register_error_handlers.hpp"
 
 using namespace Gambit;
 

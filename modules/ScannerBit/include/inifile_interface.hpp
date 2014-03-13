@@ -30,7 +30,7 @@
 #include <algorithm>
 
 #include "scanner_utils.hpp"
-#include "gambit_scan.hpp"
+#include "scan.hpp"
 #include "yaml_parser.hpp"
 
 namespace Gambit
@@ -62,11 +62,8 @@ namespace Gambit
                                         return std::string("");
                                 }
                         }
-                        //#ifndef NO_GCC_4_7
-                        //~IniFileInterface() noexcept {}
-			//#else
+                        //~IniFileInterface() noexcept {} //If we move to demanding C++11 noexcept to be supported
                         ~IniFileInterface(){}
-			//#endif
                 };
         }
 }

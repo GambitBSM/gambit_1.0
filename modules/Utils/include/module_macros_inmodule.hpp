@@ -85,9 +85,9 @@
     namespace MODULE                                                           \
     {                                                                          \
       /* Module errors */                                                      \
-      extern error CAT(MODULE,_error);                                         \
+      error& CAT(MODULE,_error)();                                             \
       /* Module warnings */                                                    \
-      extern warning CAT(MODULE,_warning);                                     \
+      warning& CAT(MODULE,_warning)();                                         \
     }                                                                          \
   }                                                                            \
 

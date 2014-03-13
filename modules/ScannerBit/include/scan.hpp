@@ -22,8 +22,8 @@
 ///
 ///  *********************************************
 
-#ifndef __gambit_scan_hpp__
-#define __gambit_scan_hpp__
+#ifndef __scan_hpp__
+#define __scan_hpp__
 
 #include "yaml_parser.hpp"
 
