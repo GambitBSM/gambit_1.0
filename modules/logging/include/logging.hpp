@@ -35,10 +35,8 @@
 // Code!
 namespace Gambit
 {
-  namespace Logging
-  {
-
-    enum LogTag {  /* Message tags */
+  // CAREFUL! These logging enum tags might clash with other names in the Gambit namespace! Be careful when adding new ones.
+  enum LogTag {  /* Message tags */
                    info=0,
                    warn,
                    err,
@@ -46,16 +44,37 @@ namespace Gambit
                    fatal,
                    nonfatal,
                    /* Component tags */
-                   default_log,
+                   def,
                    core,
+                   depres,
                    models,
                    scanner
                    /* etc... */
                 }; 
+
+  namespace Logging
+  {
+
     // Probably want to make a macro to do this, since we will want string versions of all of these so that we can match them to the entries in the inifile. Also we want to be able to figure out how many there are, so that we can associate the modules and backends with integers that don't overlap with the enum (so maybe put them in a vector or something)
   
+    // Function to do the reverse search of tag map (brute force)
     int str2tag(std::string&);
 
+    // Function to retrieve the 'components' set outside of this compilation unit
+    // (needed by module and backend macros so they can add to it)
+    std::set<int>& get_components();
+ 
+    // Function to retrieve the 'tag2str' map outside of this compilation unit
+    // (needed by module and backend macros so they can add to it)
+    std::map<int,std::string>& get_tag2str();
+
+    // Function to return the next unused tag index
+    // (needed by module and backend macros so they can determine what tag they are allowed to use)
+    int getfreetag();
+
+    /// Function to inspect tags and their associated strings. For testing purposes only.
+    void checktags();
+ 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Logger class declarations                           %
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

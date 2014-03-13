@@ -42,6 +42,7 @@
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "backend_type_macros.hpp"
+#include "logging.hpp"
 
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/logical/bitand.hpp>
@@ -84,6 +85,20 @@ namespace Gambit                                                            \
       namespace ini                                                         \
       {                                                                     \
         ini_code BACKENDNAME(&loadLibrary);                                 \
+      }                                                                     \
+                                                                            \
+      /* I think we want this done regardless of whether the loading is
+         successful... */                                                   \
+      void rt_register_backend_with_log ()                                  \
+      {                                                                     \
+        int mytag = Logging::getfreetag();                                  \
+        Logging::get_tag2str()[mytag] = STRINGIFY(BACKENDNAME);             \
+        Logging::get_components().insert(mytag);                            \         
+      }                                                                     \
+                                                                            \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code register_backend_with_log (&rt_register_backend_with_log); \
       }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \

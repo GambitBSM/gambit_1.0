@@ -55,6 +55,7 @@
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
+#include "logging.hpp"
 
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/compl.hpp>
@@ -197,6 +198,22 @@
     namespace MODULE                                                           \
     {                                                                          \
       CORE_START_MODULE_COMMON(MODULE)                                         \
+                                                                               \
+      /* Runtime registeration of module with the log system */                \
+      /* Not in CORE_START_MODULE_COMMON because we don't want models to have
+         their own logging tags... probably */                                 \
+      void rt_register_module_with_log ()                                      \
+      {                                                                        \
+        int mytag = Logging::getfreetag();                                     \
+        Logging::get_tag2str()[mytag] = STRINGIFY(MODULE);                     \
+        Logging::get_components().insert(mytag);                               \         
+      }                                                                        \
+                                                                               \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code register_module_with_log (&rt_register_module_with_log);      \
+      }                                                                        \
+                                                                               \ 
     }                                                                          \
   }                                                                            \
 
@@ -395,6 +412,7 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this conditional backend requirement for this function.";  \
       }                                                                        \
+                                                                               \
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.

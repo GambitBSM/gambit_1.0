@@ -25,12 +25,12 @@
 #ifndef __log_hpp__
 #define __log_hpp__
 
-#include "logger.hpp"
+#include "logging.hpp"
 
 namespace Gambit {
 
   /// Function to retrieve a reference to the Gambit global log object.
-  Logging::LogMaster& Log();
+  Logging::LogMaster& log();
 
 } // end namespace Gambit
 

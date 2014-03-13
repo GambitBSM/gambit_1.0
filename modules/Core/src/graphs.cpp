@@ -29,6 +29,7 @@
 #include "graphs.hpp"
 #include "printers.hpp"
 #include "extern_claw.hpp"
+#include "log.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -415,7 +416,10 @@ namespace Gambit
       {
         if (verbose)
         {
-          cout << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "..." << endl;
+          std::ostringstream ss;
+          ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
+          cout << ss.str() << endl;;
+          log().send(ss.str(),info,depres);
         }
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output

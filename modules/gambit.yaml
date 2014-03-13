@@ -220,6 +220,7 @@ redirection:
   [Warning] : "logfiles/warnings.log"
   [Core,Error] : "logfiles/core_errors.log"
   [Core,Error,Fatal] : "logfiles/fatal_core_errors.log"
+  [Dependency Resolver] : "logfiles/dependency_resolver.log"
 
 ###############################
 #--- # Printer (output) setup

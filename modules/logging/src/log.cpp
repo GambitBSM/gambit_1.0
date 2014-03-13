@@ -26,7 +26,7 @@
 namespace Gambit {
 
   using namespace Logging;
-  LogMaster& Log() {
+  LogMaster& log() {
       static LogMaster global_log;
       return global_log;
   }

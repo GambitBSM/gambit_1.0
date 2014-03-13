@@ -21,9 +21,10 @@
 #include <cstdarg>
 #include <stdexcept>
 #include <algorithm>
+#include <limits>
 
 // Gambit
-#include "logger.hpp"
+#include "logging.hpp"
 #include "util_functions.hpp"
 
 // Code!
@@ -37,17 +38,24 @@ namespace Gambit
 
     // Main message categories
     // (Won't compile in g++ if the LogTags are const, something about how standard containers work...)
-    LogTag msg_a[] = {info, warn, err};
-    const std::set<LogTag> msgtypes(msg_a, msg_a+sizeof(msg_a)/sizeof(msg_a[0]));
 
+    static LogTag msg_a[] = {info, warn, err};
+    static const std::set<LogTag> msgtypes(msg_a, msg_a+sizeof(msg_a)/sizeof(msg_a[0])); 
+ 
     // Extra flags for messages
     LogTag flags_a[] = {fatal, nonfatal};
-    const std::set<LogTag> flags(flags_a, flags_a+sizeof(flags_a)/sizeof(flags_a[0]));
+    static const std::set<LogTag> flags(flags_a, flags_a+sizeof(flags_a)/sizeof(flags_a[0]));
 
     // Tags for gambit components
     // We add the core components here, but the module and backend numbers are added later, so these cannot be const.
-    LogTag core_a[] = {default_log, core, models, scanner};
-    std::set<int> components(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
+    LogTag core_a[] = {def, core, depres, models, scanner};
+    static std::set<int> components(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
+    
+    // Function to retrieve the 'components' set outside of this compilation unit
+    // (needed by module and backend macros so they can add to it)
+    std::set<int>& get_components() {
+      return components;
+    }
 
     // String names for enums
     static std::map<int,std::string> create_tag_names()
@@ -60,9 +68,10 @@ namespace Gambit
        m[fatal]   = "Fatal";
        m[nonfatal]= "Non-fatal";
        /* Component tags */
-       m[default_log]="Default";
+       m[def]     = "Default";
        m[core]    = "Core";
        m[models]  = "Models";
+       m[depres]  = "Dependency Resolver";
        m[scanner] = "Scanner";
        
        // Test numbers:
@@ -75,7 +84,27 @@ namespace Gambit
        return m;
     }
     // Can't be const because we will add to it from the module/backend macros
-    std::map<int,std::string> tag2str = create_tag_names();
+    static std::map<int,std::string> tag2str = create_tag_names();
+    
+    // Function to retrieve the 'tag2str' map outside of this compilation unit
+    // (needed by module and backend macros so they can add to it)
+    std::map<int,std::string>& get_tag2str() {
+      return tag2str;
+    }
+
+    // Function to return the next unused tag index
+    int getfreetag()
+    {
+      // Could make this search more efficient, since probably there are no free tags below the last tag used, but I think the loop will be so fast that this isn't worth doing, and it only runs during initialisation anyway.
+      for(int i=0; i<std::numeric_limits<int>::max(); ++i)
+      {
+        if( tag2str.count(i) == 0 ) { return i; }
+      }
+      // Uh oh, seems like we ran out of integers. If this happens you are screwed, and we have to rewrite the code to use long ints instead, or you have to unhook some modules.
+      std::ostringstream ss;
+      ss << "Error in logger.cpp! It seems that you have so many logging tags that you have exceeded the maximum allowed integer. There is no way you can fix this except to have fewer modules hooked up to gambit all at once. Otherwise we have to rewrite the logger to work with long ints or some such" << std::endl;
+      throw std::overflow_error( ss.str() ); 
+    }
 
     // Function to do the reverse search (brute force)
     int str2tag(const std::string& tagname)
@@ -89,7 +118,29 @@ namespace Gambit
        std::ostringstream ss;
        ss << "Error in Logging::str2tag function! Tags name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile!" << std::endl;
        throw std::logic_error( ss.str() ); 
+    } 
+
+    /// Function to inspect tags and their associated strings. For testing purposes only
+    void checktags()
+    {
+       std::cout<<"Checking message type LogTags..."<<std::endl;
+       for(std::set<LogTag>::iterator tag = msgtypes.begin(); tag != msgtypes.end(); ++tag) 
+       {
+         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
+       }    
+       std::cout<<"Checking message flag LogTags..."<<std::endl;
+       for(std::set<LogTag>::iterator tag = flags.begin(); tag != flags.end(); ++tag) 
+       {
+         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
+       }    
+       std::cout<<"Checking Gambit component LogTags..."<<std::endl;
+       for(std::set<int>::iterator tag = components.begin(); tag != components.end(); ++tag) 
+       {
+         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
+       }    
+       std::cout<<"LogTag check finished."<<std::endl;
     }
+
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Logger class member function definitions            %
@@ -110,25 +161,7 @@ namespace Gambit
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) : loggers(loggersIN)
     {
-       // Test categories of tags
-       std::cout<<"Checking message type LogTags..."<<std::endl;
-       for(std::set<LogTag>::iterator tag = msgtypes.begin(); tag != msgtypes.end(); ++tag) 
-       {
-         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
-       }    
-       std::cout<<"Checking message flag LogTags..."<<std::endl;
-       for(std::set<LogTag>::iterator tag = flags.begin(); tag != flags.end(); ++tag) 
-       {
-         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
-       }    
-       std::cout<<"Checking Gambit component LogTags..."<<std::endl;
-       for(std::set<int>::iterator tag = components.begin(); tag != components.end(); ++tag) 
-       {
-         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
-       }    
-       std::cout<<"LogTag check finished."<<std::endl;
-
-       // Flag the logger map as ready to use 
+           // Flag the logger map as ready to use 
        loggers_readyQ = true;
     }
 
@@ -144,7 +177,7 @@ namespace Gambit
          {
            StdLogger* deflogger = new StdLogger("default.log");
            std::set<int> deftag;
-           deftag.insert(default_log);
+           deftag.insert(def);
            loggers[deftag] = deflogger; 
            loggers_readyQ = true;
          }
@@ -364,9 +397,9 @@ namespace Gambit
          component_tags.insert(current_backend);
          tags.insert(current_backend);
        }
-       // Automatically add the "default_log" tag so that the message definitely tries to go somewhere
-       component_tags.insert(default_log); // Maybe delete this line, probably not needed
-       tags.insert(default_log);
+       // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
+       component_tags.insert(def); // Maybe delete this line, probably not needed
+       tags.insert(def);
 
        // Main loop for message distribution       
  

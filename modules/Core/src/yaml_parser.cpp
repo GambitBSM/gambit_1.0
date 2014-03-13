@@ -65,8 +65,9 @@ namespace Gambit
           loggerinfo[tags] = filename;
       }
       // Initialise global LogMaster object
-      Log().initialise(loggerinfo);
+      log().initialise(loggerinfo);
 
+      return 0;
     }
   }
 }

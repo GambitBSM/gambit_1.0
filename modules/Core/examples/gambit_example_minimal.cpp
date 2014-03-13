@@ -41,10 +41,12 @@ void beispiel(const char* inifilename)
   cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
     Core.getBackendFunctors()->size() << endl;
 
+  // Check the logging tags were registered correctly (for testing)
+  Logging::checktags();
 
   // Test some logging messages
   // (should be cached by the logger since it doesn't know where to send them yet)
-  Log().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
+  log().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
  
   // Read INI file
   IniParser::IniFile iniFile;
@@ -54,12 +56,10 @@ void beispiel(const char* inifilename)
   // already available here  due to including log.hpp
 
   // Test some logging messages
-  Log().send("First log message ever!");
-  Log().send("First log message with a tag!",Logging::err);
-  Log().send("First log message with two tags!",Logging::err,Logging::core);
-  Log().send("First log message with three tags!",Logging::default_log,Logging::err,Logging::core);
-
-  exit(0);
+  log().send("First log message ever!");
+  log().send("First log message with a tag!",err);
+  log().send("First log message with two tags!",err,core);
+  log().send("First log message with three tags!",def,err,core);
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
