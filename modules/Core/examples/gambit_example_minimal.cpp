@@ -195,7 +195,7 @@ void beispiel(const char* inifilename)
 int main( int argc, const char* argv[] )
 {
   const char* inifilename;
-         
+
   std::streambuf *coutbuf = std::cout.rdbuf(); 
   std::cout.rdbuf(coutbuf);
    
@@ -212,10 +212,8 @@ int main( int argc, const char* argv[] )
       core_error().raise(LOCAL_INFO,errmsg);
       inifilename = "";
     } 
-    else { // if we got enough parameters...
-      std::cout << argv[0];
-      inifilename = argv[1];
-    }
+    std::cout << argv[0];
+    inifilename = argv[1];
   
     beispiel(inifilename);
  

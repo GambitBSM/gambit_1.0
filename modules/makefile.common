@@ -164,7 +164,38 @@ ifndef SHH
 endif
 CFLAGS += $(BOOST_CXXFLAGS)
 
-LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+# GSL is required too.
+ifndef GSL
+  ifdef GSLDIR
+    GSL := $(GSLDIR)
+  else
+    $(info $$GSLDIR not defined.  GSL assumed to be installed in ./ or regular system paths.)
+    GSLINC=./
+    GSL=./
+    export GSL
+  endif
+endif
+ifdef GSL
+  ifndef SHH
+    $(info INFO:)
+    $(info GSL path = $(GSL))
+    $(info )
+  endif
+  GSLINC=$(GSL)/include
+  GSLLIB=$(GSL)/lib
+endif
+GSL_CXXFLAGS := -I$(GSLINC)
+GSL_LDFLAGS := -L$(GSLLIB) -lgsl
+ifndef SHH
+  $(info INFO:)
+  $(info -- GSL Flags --)
+  $(info Compile > $(GSL_CXXFLAGS))
+  $(info Link    > $(GSL_LDFLAGS))
+  $(info )
+endif
+CFLAGS += $(GSL_CXXFLAGS)
+
+LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
