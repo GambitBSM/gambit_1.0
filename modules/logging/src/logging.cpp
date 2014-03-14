@@ -27,9 +27,13 @@
 #include "logging.hpp"
 #include "util_functions.hpp"
 
+// Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
+#include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
+
 // Code!
 namespace Gambit
 {
+
   namespace Logging
   {
     // Make some const sets to keep track of sub-types of these tags
@@ -48,7 +52,7 @@ namespace Gambit
 
     // Tags for gambit components
     // We add the core components here, but the module and backend numbers are added later, so these cannot be const.
-    LogTag core_a[] = {def, core, logging, depres, models, scanner};
+    LogTag core_a[] = {def, core, logging, depres, models, scanner, iniparser};
     static std::set<int> components(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
     
     // Function to retrieve the 'components' set outside of this compilation unit
@@ -71,7 +75,7 @@ namespace Gambit
        /* Component tags */
        m[def]     = "Default";
        m[core]    = "Core";
-       m[logging] = "Logging";
+       m[logging] = "Logger";
        m[models]  = "Models";
        m[depres]  = "Dependency Resolver";
        m[scanner] = "Scanner";
@@ -185,12 +189,19 @@ namespace Gambit
          // Dump buffered messages
          dump_prelim_buffer();
        }
+       // Check if there is anything in the output stream that has not been send, and send it if there is
+       if (not stream.str().empty() or not streamtags.empty())
+       {
+         *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+       } 
+
        // Delete logger objects
        for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 
        {
          // Ensure their filestreams have been flushed before we delete them.
          // (not sure if this is really needed, I think the message is in the operating systems domain by this point)
-         (keyvalue->second)->flush();
+         // Edit:  I think I have decided that this is unnecessary
+         //(keyvalue->second)->flush();
          delete (keyvalue->second);
        }
     }
@@ -236,27 +247,14 @@ namespace Gambit
     // Dump the prelim buffer to the 'finalsend' function
     void LogMaster::dump_prelim_buffer()
     {
-       for(std::vector< std::pair<std::string,std::set<int>> >::iterator msgpair = prelim_buffer.begin(); 
-            msgpair != prelim_buffer.end(); ++msgpair) 
+       for(std::vector<Message>::iterator msg = prelim_buffer.begin(); 
+            msg != prelim_buffer.end(); ++msg) 
        {
-         finalsend(msgpair->first,msgpair->second);
+         finalsend(*msg);
        }
        // Clear the buffer
        prelim_buffer.clear();
     }
-
-    /// Function to parse inifile and prepare the logger objects;
-    // Run this if not loading the inifile via the constructor.
-    // void LogMaster::read_inifile(const IniParser::IniFile& inifile)
-    // {
-    //    // Parse inifile and create logger objects
-
-    //    // Inform LogMaster that logger objects are ready to receive messages
-    //    loggers_readyQ = true;
-
-    //    // Dump the contents of the prelim_buffer to the loggers
-    //    dump_prelim_buffer();
-    // }
 
     /// Main logging function (user-friendly overloaded version)
     // Need a bunch of overloads of this to deal with 
@@ -313,6 +311,61 @@ namespace Gambit
 
     //...add more as needed
 
+    /// stringstream versions....
+    void LogMaster::send(const std::ostringstream& message)
+    {
+      std::set<LogTag> tags;
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      send(message.str(),tags);
+    }
+ 
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2, LogTag tag3)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      tags.insert(tag3);
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2, LogTag tag3, LogTag tag4)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      tags.insert(tag3);
+      tags.insert(tag4);
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2, LogTag tag3, LogTag tag4, LogTag tag5)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      tags.insert(tag3);
+      tags.insert(tag4);
+      tags.insert(tag5);
+      send(message.str(),tags);
+    }
+
+    //...add more as needed
+
+
     // Overload to allow tags to be cast to ints, for delivery to the "full" send function
     void LogMaster::send(const std::string& message, std::set<LogTag>& tags)
     {
@@ -330,80 +383,169 @@ namespace Gambit
 
     /// Serious version of main logging function
     // Ok this is the function that actual does things; the above are all just "syntatic sugar", as the cool kids say.
+    // In the end, this function should construct all the Message structs.
     void LogMaster::send(const std::string& message, std::set<int>& tags)
     {
        // LogMaster keeps an internal map of all the logging objects, where the keys are sets of 'LogTag's, constructed according to the inifile. So to figure out where the message has to go, we just compare the "tags" to these keys; if any of these keys are a subset of our tags, then we send the message to that LogHub.
        // Well almost. We have to seperate out the components first, because we can "send" a message to multiple components at once, but a direction command will never include two component tags (it is an error if it does).
 
        // Testing...
-       std::cout<<"msg: "<<message<<std::endl;   
+       //std::cout<<"msg: "<<message<<std::endl;   
 
        // Preliminary stuff 
-    
+   
+       // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
+       tags.insert(def);
+ 
        // Automatically add the tags for the "current" module and backend to the tags list
        if (current_module != -1)  
        { 
-         std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str[current_module]<<std::endl;
+         //std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str[current_module]<<std::endl;
          tags.insert(current_module); 
        }
        if (current_backend != -1) 
        {
-         std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str[current_backend]<<std::endl;
+         //std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str[current_backend]<<std::endl;
          tags.insert(current_backend); 
        } 
   
        // If the loggers have not yet been initialised, buffer the message
        if ( not loggers_readyQ ) 
        {
-         std::cout<<"Loggers not ready, buffering message..."<<std::endl; 
-         prelim_buffer.push_back( std::make_pair(message,tags) );
+         //std::cout<<"Loggers not ready, buffering message..."<<std::endl; 
+         // prelim_buffer.push_back( Message(message,tags) );
+         // TODO: Apparently in C++ 11 I'm allowed to do the following: not sure if this is cool in Gambit though. Prevents a copy though, I think, by constructing the object directly in the vector.
+         prelim_buffer.emplace_back(message,tags); //time stamp automatically added NOW
          return;
        }
-       std::cout<<"Loggers ready, forwarding message..."<<std::endl;
+       //std::cout<<"Loggers ready, forwarding message..."<<std::endl;
     
-       finalsend(message,tags);
+       finalsend(Message(message,tags)); //time stamp automatically added NOW
 
     } // end LogHub::send 
 
     /// Version of send function used by buffer dump; skips all the tag modification stuff
-    void LogMaster::finalsend(const std::string& message, std::set<int>& tags)
+    void LogMaster::finalsend(const Message& mail)
     {
        // Check the 'ignore' set; if any of the specified tags are in this set, then do nothing more, i.e. ignore the message.
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
-       if( not is_disjoint(tags, ignore) ) 
+       if( not is_disjoint(mail.tags, ignore) ) 
        { 
-         std::cout<<"Ignoring message..."<<std::endl;
+         //std::cout<<"Ignoring message..."<<std::endl;
          return; 
        }
 
-       // Containers to store categorised tags
-       std::set<LogTag> type_tags;      //message types
-       std::set<int> component_tags;    //gambit components, modules, and backends
-       std::set<LogTag> flag_tags;      //extra message flags      
+       // Sort the tags
+       const SortedMessage sortedmsg(mail);
 
-       std::set<int> key; // Combination of tags to use as lookup key
-
-       // First task is to scan through the tags and figure out where the message is supposed to go 
-       std::cout<<"Sorting tags..."<<std::endl;
-       for(std::set<int>::iterator tag = tags.begin(); tag != tags.end(); ++tag) 
+       // Main loop for message distribution       
+ 
+       // Loop through the map of loggers and see if any of them match subsets of 'key'.             
+       for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 
        {
-         std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
+         // if set1 includes set2
+         if( std::includes(mail.tags.begin(), mail.tags.end(),
+                           (keyvalue->first).begin(), (keyvalue->first).end()) )
+         {
+           // Matching logger object found! Send it the sorted message object
+           (keyvalue->second)->write(sortedmsg);
+         }
+       } //end loop over loggers
+    } // end LogMaster::finalsend
+  
+    /// stringstream overloads...
+    void LogMaster::send(const std::ostringstream& message, std::set<LogTag>& tags)
+    {
+      send(message.str(), tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, std::set<int>& tags)
+    {
+      send(message.str(), tags);
+    }
+ 
+    /// Overloads of stream operator for logging
+    // I believe the overloads will override the template, and would in fact override specialisations of the template as well. We can change the overloads to template specialisations if the priority is aroung the other way...
+
+    /// Handle LogTag input 
+    LogMaster& LogMaster::operator<< (const LogTag& tag)
+    {
+       streamtags.insert(tag);
+       return *this;
+    }
+   
+    /// Handle end of message character
+    LogMaster& LogMaster::operator<< (const endofmessage&)
+    {
+       // Collect the stream and tags, then send the message
+       send(stream.str(), streamtags);
+       // Clear stream and tags for next message;
+       stream.str(std::string()); //TODO: check that this works properly on all compilers...
+       streamtags.clear();
+       return *this;
+    }
+
+    /// Handle various stream manipulators
+    LogMaster& LogMaster::operator<< (const manip1 fp)
+    {
+       stream << fp;
+       return *this;
+    }
+
+    LogMaster& LogMaster::operator<< (const manip2 fp)
+    {
+       stream << fp;
+       return *this;
+    }
+
+    LogMaster& LogMaster::operator<< (const manip3 fp)
+    {
+       stream << fp;
+       return *this;
+    }
+
+    void LogMaster::entering_module(int i) { current_module = i; }
+    void LogMaster::leaving_module() { current_module = -1; }
+    void LogMaster::entering_backend(int i) 
+    {
+       current_backend = i; 
+       *this<<"setting current_backend="<<current_backend;
+       *this<<logging<<debug<<EOM;
+       // TODO: Activate std::out and std::err redirection, if requested in inifile
+    }
+    void LogMaster::leaving_backend()
+    { 
+       current_backend = -1;
+       *this<<"restoring current_backend="<<current_backend;
+       *this<<logging<<debug<<EOM;
+       // TODO: Restore std::out and std::err to normal
+    }
+ 
+    /// Constructor for SortedMessage struct
+    SortedMessage::SortedMessage(const Message& mail)
+      : message(mail.message), received_at(mail.received_at)
+    {
+       // First task is to scan through the tags and figure out where the message is supposed to go 
+       //std::cout<<"Sorting tags..."<<std::endl;
+       for(std::set<int>::iterator tag = mail.tags.begin(); tag != mail.tags.end(); ++tag) 
+       {
+         //std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
          if ( msgtypes.find(static_cast<LogTag>(*tag)) != msgtypes.end() )
          {
            // If tag is a message type, add it to the type_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
            type_tags.insert(static_cast<LogTag>(*tag));
          }
          else if ( components.find(*tag) != components.end() )
          {
            // If tag names a gambit core component, add it to the component_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
            component_tags.insert(*tag);
          }
          else if ( flags.find(static_cast<LogTag>(*tag)) != flags.end() )
          {
            // If tag is an auxiliary message flag, add it to the flag_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
            flag_tags.insert(static_cast<LogTag>(*tag));
          } 
          else
@@ -412,45 +554,12 @@ namespace Gambit
            // TODO: Gambit error! Really bad one that can't be logged.
            // I think we are converging on the idea that this type of error should just throw an ordinary exception.
            std::ostringstream ss;
-           ss << "Error in LogMaster::_send function! One of the tags received could not be found in any of the const LogTag sets. This is supposed to be impossible. Please check that all tags in the LogTags enum (in logger.hpp) are also listed in one (and only one) of the (const) category sets (also in logger.hpp). If this seems fine the problem may be in the code which generates the integer codes for the modules and backends (not yet written...). Tag was number: "<< *tag<<"; name: "<< tag2str[*tag];
+           ss << "Error in SortedMessage constructor! One of the tags received could not be found in any of the const LogTag sets. This is supposed to be impossible. Please check that all tags in the LogTags enum (in logger.hpp) are also listed in one (and only one) of the (const) category sets (also in logger.hpp). If this seems fine the problem may be in the code which generates the integer codes for the modules and backends (not yet written...). Tag was number: "<< *tag<<"; name: "<< tag2str[*tag];
            throw std::logic_error( ss.str() ); 
          }
        } //end tag sorting
+    } // end SortedMessage constructor
 
-       // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
-       component_tags.insert(def); // Maybe delete this line, probably not needed
-       tags.insert(def);
-
-       // Main loop for message distribution       
- 
-       // Loop through the map of loggers and see if any of them match subsets of 'key'.             
-       for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 
-       {
-         // if set1 includes set2
-         if( std::includes(tags.begin(), tags.end(),
-                           (keyvalue->first).begin(), (keyvalue->first).end()) )
-         {
-           // Matching logger object found! Send it the message + tags
-           (keyvalue->second)->write(message, component_tags, type_tags, flag_tags);
-         }
-       } //end loop over loggers
-    } // end LogMaster::finalsend
-
-    void LogMaster::entering_module(int i) { current_module = i; }
-    void LogMaster::leaving_module() { current_module = -1; }
-    void LogMaster::entering_backend(int i) 
-    {
-       current_backend = i; 
-       std::cout<<"setting current_backend="<<current_backend<<std::endl;
-       // TODO: Activate std::out and std::err redirection, if requested in inifile
-    }
-    void LogMaster::leaving_backend()
-    { 
-       current_backend = -1;
-       std::cout<<"restoring current_backend="<<current_backend<<std::endl;
-       // TODO: Restore std::out and std::err to normal
-    }
- 
     /// %%%% Logger classes %%%
    
     // Apparantly this cannot be virtual, so provide an implementation for it
@@ -470,15 +579,22 @@ namespace Gambit
     StdLogger::~StdLogger() {}
  
     /// Write message to log file
-    void StdLogger::write(const std::string& message, std::set<int>& components, std::set<LogTag>& msgtypes, std::set<LogTag>& flags)
+    void StdLogger::write(const SortedMessage& mail)
     {
-      writetags(components);
-      writetags(msgtypes);
-      writetags(flags);
-      my_fstream<<" : "<<message<<std::endl; 
+      // Message reception time (UTC)
+      my_fstream<<"("<<pt::to_iso_extended_string(mail.received_at)<<")";
+      // milliseconds elapsed since start_time
+      pt::time_duration diff = mail.received_at - start_time;
+      my_fstream<<"("<<diff.total_milliseconds()<<"ms)";
+      // Message tags
+      writetags(mail.component_tags);
+      writetags(mail.type_tags);
+      writetags(mail.flag_tags);
+      // Message proper
+      my_fstream<<" : "<<mail.message<<std::endl; 
     }
 
-    void StdLogger::writetags(std::set<LogTag>& tags)
+    void StdLogger::writetags(const std::set<LogTag>& tags)
     {
       // If we can figure out how to cast set<LogTag> to set<int> then we can do this better
       std::set<int> int_tags;
@@ -489,7 +605,7 @@ namespace Gambit
       writetags(int_tags);
     }
  
-    void StdLogger::writetags(std::set<int>& tags)
+    void StdLogger::writetags(const std::set<int>& tags)
     {
       std::set<int>::iterator it;
       

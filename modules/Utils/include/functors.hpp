@@ -415,7 +415,7 @@ namespace Gambit
       virtual void finishTiming(double nsec, double sec);
 
       /// Integer LogTag, for tagging log messages
-      int myLogTag = -1; 
+      int myLogTag; 
 
   };
 
@@ -512,7 +512,7 @@ namespace Gambit
       funcPtrType myFunction;
 
       /// Integer LogTag, for tagging log messages
-      int myLogTag = -1; 
+      int myLogTag; 
 
     public:
 
@@ -627,7 +627,8 @@ namespace Gambit
                                                                    str origin_name,
                                                                    str origin_version) 
     : functor (func_name, func_capability, result_type, origin_name),
-      myFunction (inputFunction) 
+      myFunction (inputFunction),
+      myLogTag(-1) 
     {
       myVersion = origin_version; 
       // Determine LogTag number

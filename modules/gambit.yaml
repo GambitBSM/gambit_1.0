@@ -214,15 +214,18 @@ multinest:
 #########################
 
 # Redirectory of specific messages according to tags
+prefix : "logfiles/"
 redirection:
-  [Default] : "logfiles/default.log"
-  [Error] : "logfiles/errors.log"
-  [Warning] : "logfiles/warnings.log"
-  [Core,Error] : "logfiles/core_errors.log"
-  [Core,Error,Fatal] : "logfiles/fatal_core_errors.log"
-  [Dependency Resolver] : "logfiles/dependency_resolver.log"
-  [ExampleBit_A] : "logfiles/ExampleBit_A.log"
-  [LibFirst] : "logfiles/libfirst.log"
+  [Debug] : "debug.log"
+  [Default] : "default.log"
+  [Error] : "errors.log"
+  [Warning] : "warnings.log"
+  [Core,Error] : "core_errors.log"
+  [Core,Error,Fatal] : "fatal_core_errors.log"
+  [Dependency Resolver] : "dependency_resolver.log"
+  [ExampleBit_A] : "ExampleBit_A.log"
+  [ExampleBit_B] : "ExampleBit_B.log"
+  [LibFirst] : "libfirst.log"
 
 ###############################
 #--- # Printer (output) setup
