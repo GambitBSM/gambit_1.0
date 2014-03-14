@@ -44,10 +44,40 @@ void beispiel(const char* inifilename)
   // Check the logging tags were registered correctly (for testing)
   Logging::checktags();
 
-  // Test some logging messages
-  // (should be cached by the logger since it doesn't know where to send them yet)
-  logger().send("Testing log cache! This message should be delivered even though the LogMaster has not been initialised");
- 
+  //%%%%%% LOGGING DEMO %%%%%%%%%%%%%%%%
+  // Probably move to gambit_example.cpp to keep this minimal, but for a little while lets leave it here for educational purposes
+  
+  // There are several different ways to send log messages. To use any of them, you have to include the header "log.hpp" and use 'logger()' to retrieve the logging object.
+  // First, the "send" function:
+  logger().send("Logger demo test message 1");
+
+  // Log messages can be redirected use commands in the yaml file, if you attach some tags to them. To see the allowed tags, please inspect the LogTag enum in logging/include/logging.hpp
+  // Tags can be entered into the send function in any arguments after the first
+  // (I think I only defined enough overloads for 5 tags currently, but extension to more is trivial.
+  logger().send("Logger demo test message 2",core,info);
+
+  // If you like, you can collect your tags into a set and send them that way
+  std::set<LogTag> mytags;
+  //std::set<int> mytags; // secretly you can use ints too (via std::set<int> only), but its takes some work to find out what integers you want to use.
+  mytags.insert(core);
+  mytags.insert(info);
+  logger().send("Logger demo test message 3",mytags);
+
+  // You also may supply your message as a stringstream (useful for sticking numbers etc in)
+  std::ostringstream ss;
+  ss << "Logger demo test message " << 4;
+  logger().send(ss,mytags); //of course you can also just do ss.str() to change it to a string yourself; this is all that the send function overload does anyway.
+
+  // Finally, you can just stream everything into the logger directly. The only catch is that you need to use a special end of message character to signal to the logger that you are done and it should send the message.
+  // Tags can be anywhere in the stream; they will just be plucked out by the logger 
+  logger() << "Logger demo test message " << 5 << core << info << EOM;
+
+  // std::endl and other stream manipulators are theoretically allowed, and will just treat the message as a stringstream, but this is not thoroughly tested, so let me (Ben) know if anything weird happens if you try to do this.
+
+  // Uberfinally; if you send log messages from within module or backend (convenience) function, they should be automatically tagged according to the module and backend that sent them.
+
+  // %%%%%% END LOGGING DEMO %%%%%%%%%%%%%%
+
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile(inifilename);
@@ -55,11 +85,8 @@ void beispiel(const char* inifilename)
   // Reading the inifile will also have initialised the LogMaster object, which is
   // already available here  due to including log.hpp
 
-  // Test some logging messages
-  logger().send("First log message ever!");
-  logger().send("First log message with a tag!",err);
-  logger().send("First log message with two tags!",err,core);
-  logger().send("First log message with three tags!",def,err,core);
+  // Test the log
+  logger() << core << "First log message with three tags!" << std::endl << "New line, but not new message!" << err << nonfatal << EOM;
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();

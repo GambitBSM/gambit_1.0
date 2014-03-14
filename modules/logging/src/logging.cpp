@@ -30,6 +30,7 @@
 // Code!
 namespace Gambit
 {
+
   namespace Logging
   {
     // Make some const sets to keep track of sub-types of these tags
@@ -313,6 +314,61 @@ namespace Gambit
 
     //...add more as needed
 
+    /// stringstream versions....
+    void LogMaster::send(const std::ostringstream& message)
+    {
+      std::set<LogTag> tags;
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      send(message.str(),tags);
+    }
+ 
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2, LogTag tag3)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      tags.insert(tag3);
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2, LogTag tag3, LogTag tag4)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      tags.insert(tag3);
+      tags.insert(tag4);
+      send(message.str(),tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, LogTag tag1, LogTag tag2, LogTag tag3, LogTag tag4, LogTag tag5)
+    {
+      std::set<LogTag> tags;
+      tags.insert(tag1);
+      tags.insert(tag2);
+      tags.insert(tag3);
+      tags.insert(tag4);
+      tags.insert(tag5);
+      send(message.str(),tags);
+    }
+
+    //...add more as needed
+
+
     // Overload to allow tags to be cast to ints, for delivery to the "full" send function
     void LogMaster::send(const std::string& message, std::set<LogTag>& tags)
     {
@@ -435,6 +491,57 @@ namespace Gambit
          }
        } //end loop over loggers
     } // end LogMaster::finalsend
+  
+    /// stringstream overloads...
+    void LogMaster::send(const std::ostringstream& message, std::set<LogTag>& tags)
+    {
+      send(message.str(), tags);
+    }
+
+    void LogMaster::send(const std::ostringstream& message, std::set<int>& tags)
+    {
+      send(message.str(), tags);
+    }
+ 
+    /// Overloads of stream operator for logging
+    // I believe the overloads will override the template, and would in fact override specialisations of the template as well. We can change the overloads to template specialisations if the priority is aroung the other way...
+
+    /// Handle LogTag input 
+    LogMaster& LogMaster::operator<< (const LogTag& tag)
+    {
+       streamtags.insert(tag);
+       return *this;
+    }
+   
+    /// Handle end of message character
+    LogMaster& LogMaster::operator<< (const endofmessage&)
+    {
+       // Collect the stream and tags, then send the message
+       send(stream.str(), streamtags);
+       // Clear stream and tags for next message;
+       stream.str(std::string()); //TODO: check that this works properly on all compilers...
+       streamtags.clear();
+       return *this;
+    }
+
+    /// Handle various stream manipulators
+    LogMaster& LogMaster::operator<< (const manip1 fp)
+    {
+       stream << fp;
+       return *this;
+    }
+
+    LogMaster& LogMaster::operator<< (const manip2 fp)
+    {
+       stream << fp;
+       return *this;
+    }
+
+    LogMaster& LogMaster::operator<< (const manip3 fp)
+    {
+       stream << fp;
+       return *this;
+    }
 
     void LogMaster::entering_module(int i) { current_module = i; }
     void LogMaster::leaving_module() { current_module = -1; }
