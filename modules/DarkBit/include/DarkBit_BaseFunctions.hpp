@@ -210,7 +210,8 @@ namespace Gambit
     // Wrapper class for converting class functions to gsl functions
     // (http://stackoverflow.com/questions/13074756/
     // how-to-avoid-static-member-function-when-using-gsl-with-c/).
-    class gsl_function_pp : public gsl_function
+    // Doesn't compile with icc so commenting out for now.
+/*    class gsl_function_pp : public gsl_function
     {
        public:
        gsl_function_pp(std::function<double(double)> const& func) : _func(func)
@@ -223,7 +224,7 @@ namespace Gambit
        static double invoke(double x, void *params) {
         return static_cast<gsl_function_pp*>(params)->_func(x);
       }
-    };
+    };*/
 
     //
     // Helper classes that create new base functions from existing ones
@@ -303,13 +304,15 @@ namespace Gambit
                         if (j != index) d1_func = d1_func->fixPar(j, args[j]);
                     }
 
-                   gsl_function_pp Fp(std::bind(&BFintegrate::f, &(*this), std::placeholders::_1));
+                    //Doesn't compile with icc so commenting out for now
+                   /*gsl_function_pp Fp(std::bind(&BFintegrate::f, &(*this), std::placeholders::_1));
                    gsl_function *F = static_cast<gsl_function*>(&Fp);
 
                     //TODO: Add error checks to integration output!!
                     gsl_integration_qags(F, x0, x1, 0, 1e-7, 10000, w, &result, &error);
 
-                   return result;
+                   return result; */
+                   return 0;
                 }
             }
 
