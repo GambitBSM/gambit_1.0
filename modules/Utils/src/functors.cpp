@@ -328,7 +328,8 @@ namespace Gambit
       myLoopManagerCapability ("none"),
       myLoopManagerName       ("none"),
       myLoopManagerOrigin     ("none"),
-      globlMaxThreads    (omp_get_max_threads())
+      globlMaxThreads    (omp_get_max_threads()),
+      myLogTag(-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
 

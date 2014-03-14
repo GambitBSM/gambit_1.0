@@ -27,6 +27,9 @@
 #include "logging.hpp"
 #include "util_functions.hpp"
 
+// Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
+#include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
+
 // Code!
 namespace Gambit
 {
@@ -237,27 +240,14 @@ namespace Gambit
     // Dump the prelim buffer to the 'finalsend' function
     void LogMaster::dump_prelim_buffer()
     {
-       for(std::vector< std::pair<std::string,std::set<int>> >::iterator msgpair = prelim_buffer.begin(); 
-            msgpair != prelim_buffer.end(); ++msgpair) 
+       for(std::vector<Message>::iterator msg = prelim_buffer.begin(); 
+            msg != prelim_buffer.end(); ++msg) 
        {
-         finalsend(msgpair->first,msgpair->second);
+         finalsend(*msg);
        }
        // Clear the buffer
        prelim_buffer.clear();
     }
-
-    /// Function to parse inifile and prepare the logger objects;
-    // Run this if not loading the inifile via the constructor.
-    // void LogMaster::read_inifile(const IniParser::IniFile& inifile)
-    // {
-    //    // Parse inifile and create logger objects
-
-    //    // Inform LogMaster that logger objects are ready to receive messages
-    //    loggers_readyQ = true;
-
-    //    // Dump the contents of the prelim_buffer to the loggers
-    //    dump_prelim_buffer();
-    // }
 
     /// Main logging function (user-friendly overloaded version)
     // Need a bunch of overloads of this to deal with 
@@ -386,6 +376,7 @@ namespace Gambit
 
     /// Serious version of main logging function
     // Ok this is the function that actual does things; the above are all just "syntatic sugar", as the cool kids say.
+    // In the end, this function should construct all the Message structs.
     void LogMaster::send(const std::string& message, std::set<int>& tags)
     {
        // LogMaster keeps an internal map of all the logging objects, where the keys are sets of 'LogTag's, constructed according to the inifile. So to figure out where the message has to go, we just compare the "tags" to these keys; if any of these keys are a subset of our tags, then we send the message to that LogHub.
@@ -395,7 +386,10 @@ namespace Gambit
        std::cout<<"msg: "<<message<<std::endl;   
 
        // Preliminary stuff 
-    
+   
+       // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
+       tags.insert(def);
+ 
        // Automatically add the tags for the "current" module and backend to the tags list
        if (current_module != -1)  
        { 
@@ -412,70 +406,30 @@ namespace Gambit
        if ( not loggers_readyQ ) 
        {
          std::cout<<"Loggers not ready, buffering message..."<<std::endl; 
-         prelim_buffer.push_back( std::make_pair(message,tags) );
+         // prelim_buffer.push_back( Message(message,tags) );
+         // TODO: Apparently in C++ 11 I'm allowed to do the following: not sure if this is cool in Gambit though. Prevents a copy though, I think, by constructing the object directly in the vector.
+         prelim_buffer.emplace_back(message,tags); //time stamp automatically added NOW
          return;
        }
        std::cout<<"Loggers ready, forwarding message..."<<std::endl;
     
-       finalsend(message,tags);
+       finalsend(Message(message,tags)); //time stamp automatically added NOW
 
     } // end LogHub::send 
 
     /// Version of send function used by buffer dump; skips all the tag modification stuff
-    void LogMaster::finalsend(const std::string& message, std::set<int>& tags)
+    void LogMaster::finalsend(const Message& mail)
     {
        // Check the 'ignore' set; if any of the specified tags are in this set, then do nothing more, i.e. ignore the message.
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
-       if( not is_disjoint(tags, ignore) ) 
+       if( not is_disjoint(mail.tags, ignore) ) 
        { 
          std::cout<<"Ignoring message..."<<std::endl;
          return; 
        }
 
-       // Containers to store categorised tags
-       std::set<LogTag> type_tags;      //message types
-       std::set<int> component_tags;    //gambit components, modules, and backends
-       std::set<LogTag> flag_tags;      //extra message flags      
-
-       std::set<int> key; // Combination of tags to use as lookup key
-
-       // First task is to scan through the tags and figure out where the message is supposed to go 
-       std::cout<<"Sorting tags..."<<std::endl;
-       for(std::set<int>::iterator tag = tags.begin(); tag != tags.end(); ++tag) 
-       {
-         std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
-         if ( msgtypes.find(static_cast<LogTag>(*tag)) != msgtypes.end() )
-         {
-           // If tag is a message type, add it to the type_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
-           type_tags.insert(static_cast<LogTag>(*tag));
-         }
-         else if ( components.find(*tag) != components.end() )
-         {
-           // If tag names a gambit core component, add it to the component_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
-           component_tags.insert(*tag);
-         }
-         else if ( flags.find(static_cast<LogTag>(*tag)) != flags.end() )
-         {
-           // If tag is an auxiliary message flag, add it to the flag_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
-           flag_tags.insert(static_cast<LogTag>(*tag));
-         } 
-         else
-         {
-           // If tag was not in of those categories, it shouldn't have been a valid LogTag, and so there should have been a compiler error before now. Since there wasn't, there is something wrong with the LogTag definitions, the tag categories, or this function.
-           // TODO: Gambit error! Really bad one that can't be logged.
-           // I think we are converging on the idea that this type of error should just throw an ordinary exception.
-           std::ostringstream ss;
-           ss << "Error in LogMaster::_send function! One of the tags received could not be found in any of the const LogTag sets. This is supposed to be impossible. Please check that all tags in the LogTags enum (in logger.hpp) are also listed in one (and only one) of the (const) category sets (also in logger.hpp). If this seems fine the problem may be in the code which generates the integer codes for the modules and backends (not yet written...). Tag was number: "<< *tag<<"; name: "<< tag2str[*tag];
-           throw std::logic_error( ss.str() ); 
-         }
-       } //end tag sorting
-
-       // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
-       component_tags.insert(def); // Maybe delete this line, probably not needed
-       tags.insert(def);
+       // Sort the tags
+       const SortedMessage sortedmsg(mail);
 
        // Main loop for message distribution       
  
@@ -483,11 +437,11 @@ namespace Gambit
        for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 
        {
          // if set1 includes set2
-         if( std::includes(tags.begin(), tags.end(),
+         if( std::includes(mail.tags.begin(), mail.tags.end(),
                            (keyvalue->first).begin(), (keyvalue->first).end()) )
          {
-           // Matching logger object found! Send it the message + tags
-           (keyvalue->second)->write(message, component_tags, type_tags, flag_tags);
+           // Matching logger object found! Send it the sorted message object
+           (keyvalue->second)->write(sortedmsg);
          }
        } //end loop over loggers
     } // end LogMaster::finalsend
@@ -558,6 +512,45 @@ namespace Gambit
        // TODO: Restore std::out and std::err to normal
     }
  
+    /// Constructor for SortedMessage struct
+    SortedMessage::SortedMessage(const Message& mail)
+      : message(mail.message), received_at(mail.received_at)
+    {
+       // First task is to scan through the tags and figure out where the message is supposed to go 
+       std::cout<<"Sorting tags..."<<std::endl;
+       for(std::set<int>::iterator tag = mail.tags.begin(); tag != mail.tags.end(); ++tag) 
+       {
+         std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
+         if ( msgtypes.find(static_cast<LogTag>(*tag)) != msgtypes.end() )
+         {
+           // If tag is a message type, add it to the type_tags set
+           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
+           type_tags.insert(static_cast<LogTag>(*tag));
+         }
+         else if ( components.find(*tag) != components.end() )
+         {
+           // If tag names a gambit core component, add it to the component_tags set
+           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
+           component_tags.insert(*tag);
+         }
+         else if ( flags.find(static_cast<LogTag>(*tag)) != flags.end() )
+         {
+           // If tag is an auxiliary message flag, add it to the flag_tags set
+           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
+           flag_tags.insert(static_cast<LogTag>(*tag));
+         } 
+         else
+         {
+           // If tag was not in of those categories, it shouldn't have been a valid LogTag, and so there should have been a compiler error before now. Since there wasn't, there is something wrong with the LogTag definitions, the tag categories, or this function.
+           // TODO: Gambit error! Really bad one that can't be logged.
+           // I think we are converging on the idea that this type of error should just throw an ordinary exception.
+           std::ostringstream ss;
+           ss << "Error in SortedMessage constructor! One of the tags received could not be found in any of the const LogTag sets. This is supposed to be impossible. Please check that all tags in the LogTags enum (in logger.hpp) are also listed in one (and only one) of the (const) category sets (also in logger.hpp). If this seems fine the problem may be in the code which generates the integer codes for the modules and backends (not yet written...). Tag was number: "<< *tag<<"; name: "<< tag2str[*tag];
+           throw std::logic_error( ss.str() ); 
+         }
+       } //end tag sorting
+    } // end SortedMessage constructor
+
     /// %%%% Logger classes %%%
    
     // Apparantly this cannot be virtual, so provide an implementation for it
@@ -577,15 +570,15 @@ namespace Gambit
     StdLogger::~StdLogger() {}
  
     /// Write message to log file
-    void StdLogger::write(const std::string& message, std::set<int>& components, std::set<LogTag>& msgtypes, std::set<LogTag>& flags)
+    void StdLogger::write(const SortedMessage& mail)
     {
-      writetags(components);
-      writetags(msgtypes);
-      writetags(flags);
-      my_fstream<<" : "<<message<<std::endl; 
+      writetags(mail.component_tags);
+      writetags(mail.type_tags);
+      writetags(mail.flag_tags);
+      my_fstream<<" : "<<mail.message<<std::endl; 
     }
 
-    void StdLogger::writetags(std::set<LogTag>& tags)
+    void StdLogger::writetags(const std::set<LogTag>& tags)
     {
       // If we can figure out how to cast set<LogTag> to set<int> then we can do this better
       std::set<int> int_tags;
@@ -596,7 +589,7 @@ namespace Gambit
       writetags(int_tags);
     }
  
-    void StdLogger::writetags(std::set<int>& tags)
+    void StdLogger::writetags(const std::set<int>& tags)
     {
       std::set<int>::iterator it;
       

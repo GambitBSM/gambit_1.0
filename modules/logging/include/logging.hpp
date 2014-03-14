@@ -25,12 +25,9 @@
 // Gambit
 #include "yaml_parser.hpp"
 
-/// Macros
-// For automating construction of the tags
-#define ADD_TAG(ENUM,CATEGORY,STRING) \
-  
-
-
+// Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
+#include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
+namespace pt = boost::posix_time;
 
 // Code!
 namespace Gambit
@@ -78,7 +75,37 @@ namespace Gambit
 
     /// Function to inspect tags and their associated strings. For testing purposes only.
     void checktags();
- 
+
+    /// structure for storing log messages and metadata
+    struct Message
+    {
+        const std::string message;
+        const std::set<int> tags;
+        const pt::ptime received_at;
+        // Constructor
+        Message(const std::string& msgIN, 
+                const std::set<int>& tagsIN)
+          : message(msgIN), 
+            tags(tagsIN), 
+            received_at(pt::second_clock::universal_time())
+        {}
+    };
+
+    /// structure for storing log messages and metadata after tags are sorted
+    struct SortedMessage
+    {
+        const std::string& message; //lives on in original Message object, so can be a reference safely I think
+        const pt::ptime& received_at; //ditto
+        // couldn't figure out how to nicely initialise these in the constructor list, so not const
+        // now happens in body of constructor
+        std::set<LogTag> type_tags;      //message types
+        std::set<int> component_tags;    //gambit components, modules, and backends
+        std::set<LogTag> flag_tags;      //extra message flags      
+        // Constructor (does the sorting of the tags)
+        SortedMessage(const Message& mail);
+    };
+
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Logger class declarations                           %
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,7 +118,7 @@ namespace Gambit
         virtual ~BaseLogger();
 
         /// Write message
-        virtual void write(const std::string&, std::set<int>&, std::set<LogTag>&, std::set<LogTag>&) = 0;
+        virtual void write(const SortedMessage&) = 0;
 
         /// Flush stream buffer;
         virtual void flush() = 0;
@@ -113,14 +140,14 @@ namespace Gambit
         virtual ~StdLogger();
 
         /// Write message
-        virtual void write(const std::string&, std::set<int>&, std::set<LogTag>&, std::set<LogTag>&);
+        virtual void write(const SortedMessage&);
         
         /// Flush stream buffer
         virtual void flush();
  
         /// Look up names corresponding to tags and write them out to the stream
-        void writetags(std::set<LogTag>&);   
-        void writetags(std::set<int>&);   
+        void writetags(const std::set<LogTag>&);   
+        void writetags(const std::set<int>&);   
  
       private:
         std::ofstream my_own_fstream; //Don't use this except in constructor
@@ -185,7 +212,7 @@ namespace Gambit
         /// Internal version of main logging function
         void send(const std::string&, std::set<LogTag>&);
         void send(const std::string&, std::set<int>&);
-        void finalsend(const std::string&, std::set<int>&);
+        void finalsend(const Message&);
 
         // stringstream versions...
         void send(const std::ostringstream&, std::set<LogTag>&);
@@ -223,7 +250,7 @@ namespace Gambit
         std::set<int> ignore;
   
         /// Messages sent before logger objects are created will be buffered in this vector.
-        std::vector< std::pair<std::string,std::set<int>> > prelim_buffer;
+        std::vector<Message> prelim_buffer;
 
         /// Flag to set whether loggers have been initialised not
         bool loggers_readyQ;
