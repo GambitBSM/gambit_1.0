@@ -147,7 +147,7 @@ namespace Gambit
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
-            virtual double integrator(const BFargVec &vec, int i, double E0, double E1) { failHard("Integrator not implemented."); }
+            virtual double integrator(const BFargVec &vec, int i, double E0, double E1) { failHard("Integrator not implemented."); return 0;}
 
             // Member functions that change the state of the current base function object.
             BFptr enableCaching() { cachingFlag = true; return shared_from_this(); }
