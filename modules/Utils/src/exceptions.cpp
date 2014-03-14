@@ -182,14 +182,9 @@ namespace Gambit
     /// Log the details of the exception
     void exception::log_exception(std::string origin, std::string specific_message)
     {
-      //FIXME The stream version of this doesn't work for some reason
-      //if (isFatal) logger() << fatal; else logger() << nonfatal;
-      //for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
-      //logger() << myKind << ": " << myMessage << "\nRaised at " << origin << ".\n" << specific_message << EOM;
-      std::set<LogTag> newTags = myLogTags;
-      if (isFatal) newTags.insert(fatal); else newTags.insert(nonfatal);
-      str fullMsg = str(myKind) + ": " + str(myMessage) + "\nRaised at " + origin + ".\n" + specific_message;     
-      logger().send(fullMsg, newTags);
+      if (isFatal) logger() << fatal; else logger() << nonfatal;
+      for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
+      logger() << myKind << ": " << myMessage << "\nRaised at " << origin << ".\n" << specific_message << EOM;
      }
 
   /// GAMBIT error class constructors

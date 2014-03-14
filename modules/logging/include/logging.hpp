@@ -263,7 +263,7 @@ namespace Gambit
   } //end namespace Logging
 
   /// Explicit const instance of the end of message struct in Gambit namespace
-  const Logging::endofmessage EOM();
+  const Logging::endofmessage EOM = Logging::endofmessage();
 
 } // end namespace Gambit
 
