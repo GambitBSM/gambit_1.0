@@ -19,14 +19,20 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2014 Mar
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
+///
 ///  *********************************************
 
 #include "log.hpp"
 
-namespace Gambit {
+namespace Gambit
+{
 
   using namespace Logging;
-  LogMaster& logger() {
+  LogMaster& logger()
+  {
       static LogMaster global_log;
       return global_log;
   }

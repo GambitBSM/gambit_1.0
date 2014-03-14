@@ -56,7 +56,7 @@
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
-#include "logging.hpp"
+#include "log.hpp"
 
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/compl.hpp>
@@ -234,8 +234,8 @@
       void rt_register_module_with_log ()                                      \
       {                                                                        \
         int mytag = Logging::getfreetag();                                     \
-        Logging::get_tag2str()[mytag] = STRINGIFY(MODULE);                     \
-        Logging::get_components().insert(mytag);                               \         
+        Logging::tag2str()[mytag] = STRINGIFY(MODULE);                         \
+        Logging::components().insert(mytag);                                   \
       }                                                                        \
                                                                                \
       namespace Ini                                                            \

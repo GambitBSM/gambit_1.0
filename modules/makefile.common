@@ -138,10 +138,7 @@ ifndef BOOST
   ifdef BOOSTDIR
     BOOST := $(BOOSTDIR)
   else
-    $(info $$BOOSTDIR not defined.  Boost assumed to be installed in ./ or regular system paths.)
-    BOOSTINC=./
-    BOOST=./
-    export BOOST
+    $(info $$BOOST and $$BOOSTDIR undefined.  Boost assumed to be installed in regular system paths.)
   endif
 endif
 ifdef BOOST
@@ -151,10 +148,18 @@ ifdef BOOST
     $(info )
   endif
   BOOSTINC=$(BOOST)
+  BOOST_CXXFLAGS := -I$(BOOSTINC)
+  CFLAGS += $(BOOST_CXXFLAGS)
   BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
+  BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
+  BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME),-L$(BOOST)/stage/lib -lboost_date_time)
+else
+  BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard /usr/lib/*)))
+  BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard /usr/lib/*)))
+  BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION), -lboost_serialization)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time)
 endif
-BOOST_CXXFLAGS := -I$(BOOSTINC)
-BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
 ifndef SHH
   $(info INFO:)
   $(info -- Boost Flags --)
@@ -162,17 +167,13 @@ ifndef SHH
   $(info Link    > $(BOOST_LDFLAGS))
   $(info )
 endif
-CFLAGS += $(BOOST_CXXFLAGS)
 
 # GSL is required too.
 ifndef GSL
   ifdef GSLDIR
     GSL := $(GSLDIR)
   else
-    $(info $$GSLDIR not defined.  GSL assumed to be installed in ./ or regular system paths.)
-    GSLINC=./
-    GSL=./
-    export GSL
+    $(info $$GSLDIR not defined.  GSL assumed to be installed regular system paths.)
   endif
 endif
 ifdef GSL
@@ -183,9 +184,11 @@ ifdef GSL
   endif
   GSLINC=$(GSL)/include
   GSLLIB=$(GSL)/lib
+  GSL_CXXFLAGS := -I$(GSLINC)
+  CFLAGS += $(GSL_CXXFLAGS)
+  GSL_LDFLAGS := -L$(GSLLIB)
 endif
-GSL_CXXFLAGS := -I$(GSLINC)
-GSL_LDFLAGS := -L$(GSLLIB) -lgsl -llapack
+GSL_LDFLAGS += -lgsl -llapack
 ifndef SHH
   $(info INFO:)
   $(info -- GSL Flags --)
@@ -193,7 +196,6 @@ ifndef SHH
   $(info Link    > $(GSL_LDFLAGS))
   $(info )
 endif
-CFLAGS += $(GSL_CXXFLAGS)
 
 LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
@@ -585,10 +587,10 @@ gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FU
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-ExampleBit_A_standalone: $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) \
+ExampleBit_A_standalone: $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) \
  $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
-	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
+	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
 	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)

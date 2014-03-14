@@ -21,9 +21,11 @@
 #define __exceptions_hpp__
 
 #include <map>
+#include <set>
 #include <string>
 #include <exception>
 
+#include "log_tags.hpp"
 #include "util_macros.hpp"
 
 namespace Gambit
@@ -35,8 +37,27 @@ namespace Gambit
 
     public:
 
-      /// Constructor
+      /// Constructors
+      /// @{
+      /// Constructor without log tags
       exception(const char*, const char*, const char*, const char*, bool);
+      /// Constructor with 1 log tag
+      exception(const char*, const char*, const char*, const char*, bool, LogTag);
+      /// Constructor with 2 log tags
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag);
+      /// Constructor with 3 log tags
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag);
+      /// Constructor with 4 log tags
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 5 log tags
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 6 log tags
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 7 log tags
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with log tags as a set
+      exception(const char*, const char*, const char*, const char*, bool, std::set<LogTag>);
+      /// @}
 
       /// Destructor
       virtual ~exception() throw() {}
@@ -64,7 +85,15 @@ namespace Gambit
       /// Map of pointers to all instances of this class.
       static std::map<const char*,exception*> exception_map;
     
+    protected:
+
+      /// The set of tags to be passed to the logger
+      std::set<LogTag> myLogTags;
+
     private:
+
+      /// Log the details of the exception
+      void log_exception(std::string, std::string);
 
       /// The kind of exception (error, warning, etc; for logging).
       const char* myKind;
@@ -84,17 +113,58 @@ namespace Gambit
   /// GAMBIT error class.
   class error : public exception
   {
+
     public:
-      /// Constructor
+
+      /// Constructors
+      /// @{
+      /// Constructor without log tags
       error(const char*, const char*);
+      /// Constructor with 1 log tag
+      error(const char*, const char*, LogTag);
+      /// Constructor with 2 log tags
+      error(const char*, const char*, LogTag, LogTag);
+      /// Constructor with 3 log tags
+      error(const char*, const char*, LogTag, LogTag, LogTag);
+      /// Constructor with 4 log tags
+      error(const char*, const char*, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 5 log tags
+      error(const char*, const char*, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 6 log tags
+      error(const char*, const char*, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with log tags as a set
+      error(const char*, const char*, std::set<LogTag>);
+      /// @}
+
   };
+
 
   /// GAMBIT warning class.
   class warning : public exception
   {
+
     public:
-      /// Constructor
+
+      /// Constructors
+      /// @{
+      /// Constructor without log tags
       warning(const char*, const char*);
+      /// Constructor with 1 log tag
+      warning(const char*, const char*, LogTag);
+      /// Constructor with 2 log tags
+      warning(const char*, const char*, LogTag, LogTag);
+      /// Constructor with 3 log tags
+      warning(const char*, const char*, LogTag, LogTag, LogTag);
+      /// Constructor with 4 log tags
+      warning(const char*, const char*, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 5 log tags
+      warning(const char*, const char*, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with 6 log tags
+      warning(const char*, const char*, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
+      /// Constructor with log tags as a set
+      warning(const char*, const char*, std::set<LogTag>);
+      /// @}
+
   };
 
 }

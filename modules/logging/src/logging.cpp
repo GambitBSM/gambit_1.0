@@ -12,6 +12,10 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2014 Mar
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
+///
 ///  *********************************************
 
 
@@ -36,29 +40,33 @@ namespace Gambit
 
   namespace Logging
   {
-    // Make some const sets to keep track of sub-types of these tags
-    // (make sure to update the integers which track the number of elements in these
-    //  if you add to them!)
-
-    // Main message categories
-    // (Won't compile in g++ if the LogTags are const, something about how standard containers work...)
-
-    static LogTag msg_a[] = {debug, info, warn, err};
-    static const std::set<LogTag> msgtypes(msg_a, msg_a+sizeof(msg_a)/sizeof(msg_a[0])); 
- 
-    // Extra flags for messages
-    LogTag flags_a[] = {fatal, nonfatal};
-    static const std::set<LogTag> flags(flags_a, flags_a+sizeof(flags_a)/sizeof(flags_a[0]));
-
-    // Tags for gambit components
-    // We add the core components here, but the module and backend numbers are added later, so these cannot be const.
-    LogTag core_a[] = {def, core, logging, depres, models, scanner, iniparser};
-    static std::set<int> components(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
     
-    // Function to retrieve the 'components' set outside of this compilation unit
-    // (needed by module and backend macros so they can add to it)
-    std::set<int>& get_components() {
-      return components;
+    // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
+    // These won't compile in g++ if the LogTags are const, something about how standard containers work...
+       
+    // Function to retrieve the 'msgtypes' set of tags
+    const std::set<LogTag>& msgtypes()
+    {
+      static LogTag msg_a[] = {debug, info, warn, err};
+      static const std::set<LogTag> msgtypes_set(msg_a, msg_a+sizeof(msg_a)/sizeof(msg_a[0])); 
+      return msgtypes_set;
+    }
+
+    // Function to retrieve the 'flags' set of tags
+    const std::set<LogTag>& flags()
+    {
+      static LogTag flags_a[] = {fatal, nonfatal};
+      static const std::set<LogTag> flags_set(flags_a, flags_a+sizeof(flags_a)/sizeof(flags_a[0]));
+      return flags_set;
+    }
+
+    // Function to retrieve the 'components' set of tags (needed by module and backend macros so they can add to it)
+    std::set<int>& components()
+    {
+      // We add the core components here, but the module and backend numbers are added later, so the set cannot be const.
+      static LogTag core_a[] = {def, core, logging, models, depres, scan, inifile, printers, utils};
+      static std::set<int> components_set(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
+      return components_set;
     }
 
     // String names for enums
@@ -78,7 +86,10 @@ namespace Gambit
        m[logging] = "Logger";
        m[models]  = "Models";
        m[depres]  = "Dependency Resolver";
-       m[scanner] = "Scanner";
+       m[scan]    = "Scanner";
+       m[inifile] = "IniFile";
+       m[printers]= "Printers";
+       m[utils]   = "Utilities";
        
        // Test numbers:
        std::cout<<"Checking LogTag numbers..."<<std::endl;
@@ -89,13 +100,14 @@ namespace Gambit
 
        return m;
     }
-    // Can't be const because we will add to it from the module/backend macros
-    static std::map<int,std::string> tag2str = create_tag_names();
     
     // Function to retrieve the 'tag2str' map outside of this compilation unit
     // (needed by module and backend macros so they can add to it)
-    std::map<int,std::string>& get_tag2str() {
-      return tag2str;
+    std::map<int,std::string>& tag2str()
+    {
+      // Can't be const because we will add to it from the module/backend macros
+      static std::map<int,std::string> tag2str_map = create_tag_names();
+      return tag2str_map;
     }
 
     // Function to return the next unused tag index
@@ -104,7 +116,7 @@ namespace Gambit
       // Could make this search more efficient, since probably there are no free tags below the last tag used, but I think the loop will be so fast that this isn't worth doing, and it only runs during initialisation anyway.
       for(int i=0; i<std::numeric_limits<int>::max(); ++i)
       {
-        if( tag2str.count(i) == 0 ) { return i; }
+        if( tag2str().count(i) == 0 ) { return i; }
       }
       // Uh oh, seems like we ran out of integers. If this happens you are screwed, and we have to rewrite the code to use long ints instead, or you have to unhook some modules.
       // Cannot log this because we are outside the LogMaster class code.
@@ -116,7 +128,7 @@ namespace Gambit
     // Function to do the reverse search (brute force)
     int str2tag(const std::string& tagname)
     {
-       for(std::map<int,std::string>::iterator tag = tag2str.begin(); tag != tag2str.end(); ++tag) 
+       for(std::map<int,std::string>::iterator tag = tag2str().begin(); tag != tag2str().end(); ++tag) 
        {
          if (tag->second == tagname) { return tag->first; }         
        }    
@@ -128,19 +140,19 @@ namespace Gambit
     void checktags()
     {
        std::cout<<"Checking message type LogTags..."<<std::endl;
-       for(std::set<LogTag>::iterator tag = msgtypes.begin(); tag != msgtypes.end(); ++tag) 
+       for(std::set<LogTag>::iterator tag = msgtypes().begin(); tag != msgtypes().end(); ++tag) 
        {
-         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
+         std::cout<<"  "<<*tag<<" : "<<tag2str()[*tag]<<std::endl; 
        }    
        std::cout<<"Checking message flag LogTags..."<<std::endl;
-       for(std::set<LogTag>::iterator tag = flags.begin(); tag != flags.end(); ++tag) 
+       for(std::set<LogTag>::iterator tag = flags().begin(); tag != flags().end(); ++tag) 
        {
-         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
+         std::cout<<"  "<<*tag<<" : "<<tag2str()[*tag]<<std::endl; 
        }    
        std::cout<<"Checking Gambit component LogTags..."<<std::endl;
-       for(std::set<int>::iterator tag = components.begin(); tag != components.end(); ++tag) 
+       for(std::set<int>::iterator tag = components().begin(); tag != components().end(); ++tag) 
        {
-         std::cout<<"  "<<*tag<<" : "<<tag2str[*tag]<<std::endl; 
+         std::cout<<"  "<<*tag<<" : "<<tag2str()[*tag]<<std::endl; 
        }    
        std::cout<<"LogTag check finished."<<std::endl;
     }
@@ -400,12 +412,12 @@ namespace Gambit
        // Automatically add the tags for the "current" module and backend to the tags list
        if (current_module != -1)  
        { 
-         //std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str[current_module]<<std::endl;
+         //std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str()[current_module]<<std::endl;
          tags.insert(current_module); 
        }
        if (current_backend != -1) 
        {
-         //std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str[current_backend]<<std::endl;
+         //std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str()[current_backend]<<std::endl;
          tags.insert(current_backend); 
        } 
   
@@ -413,8 +425,6 @@ namespace Gambit
        if ( not loggers_readyQ ) 
        {
          //std::cout<<"Loggers not ready, buffering message..."<<std::endl; 
-         // prelim_buffer.push_back( Message(message,tags) );
-         // TODO: Apparently in C++ 11 I'm allowed to do the following: not sure if this is cool in Gambit though. Prevents a copy though, I think, by constructing the object directly in the vector.
          prelim_buffer.emplace_back(message,tags); //time stamp automatically added NOW
          return;
        }
@@ -529,23 +539,23 @@ namespace Gambit
        //std::cout<<"Sorting tags..."<<std::endl;
        for(std::set<int>::iterator tag = mail.tags.begin(); tag != mail.tags.end(); ++tag) 
        {
-         //std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
-         if ( msgtypes.find(static_cast<LogTag>(*tag)) != msgtypes.end() )
+         //std::cout<<"Sorting tag "<<tag2str()[*tag]<<std::endl;
+         if ( msgtypes().find(static_cast<LogTag>(*tag)) != msgtypes().end() )
          {
            // If tag is a message type, add it to the type_tags set
-           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str()[*tag]<<"' as message type"<<std::endl;
            type_tags.insert(static_cast<LogTag>(*tag));
          }
-         else if ( components.find(*tag) != components.end() )
+         else if ( components().find(*tag) != components().end() )
          {
            // If tag names a gambit core component, add it to the component_tags set
-           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str()[*tag]<<"' as Gambit component"<<std::endl;
            component_tags.insert(*tag);
          }
-         else if ( flags.find(static_cast<LogTag>(*tag)) != flags.end() )
+         else if ( flags().find(static_cast<LogTag>(*tag)) != flags().end() )
          {
            // If tag is an auxiliary message flag, add it to the flag_tags set
-           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str()[*tag]<<"' as message flag"<<std::endl;
            flag_tags.insert(static_cast<LogTag>(*tag));
          } 
          else
@@ -554,7 +564,7 @@ namespace Gambit
            // TODO: Gambit error! Really bad one that can't be logged.
            // I think we are converging on the idea that this type of error should just throw an ordinary exception.
            std::ostringstream ss;
-           ss << "Error in SortedMessage constructor! One of the tags received could not be found in any of the const LogTag sets. This is supposed to be impossible. Please check that all tags in the LogTags enum (in logger.hpp) are also listed in one (and only one) of the (const) category sets (also in logger.hpp). If this seems fine the problem may be in the code which generates the integer codes for the modules and backends (not yet written...). Tag was number: "<< *tag<<"; name: "<< tag2str[*tag];
+           ss << "Error in SortedMessage constructor! One of the tags received could not be found in any of the const LogTag sets. This is supposed to be impossible. Please check that all tags in the LogTags enum (in logger.hpp) are also listed in one (and only one) of the (const) category sets (also in logger.hpp). If this seems fine the problem may be in the code which generates the integer codes for the modules and backends (not yet written...). Tag was number: "<< *tag<<"; name: "<< tag2str()[*tag];
            throw std::logic_error( ss.str() ); 
          }
        } //end tag sorting
@@ -616,7 +626,7 @@ namespace Gambit
         for (it = tags.begin(); it != tags.end(); ++it)
         {
           if (not firstloop) { my_fstream<<","; }
-          my_fstream << tag2str[*it]; // replace with a lookup of the correct string
+          my_fstream << tag2str()[*it]; // replace with a lookup of the correct string
           firstloop = false;
         }
         my_fstream<<"]";

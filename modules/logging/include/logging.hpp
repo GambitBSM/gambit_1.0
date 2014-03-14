@@ -12,10 +12,14 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2014 Mar
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 Mar
+///
 ///  *********************************************
 
-#ifndef __logger_hpp__
-#define __logger_hpp__
+#ifndef __logging_hpp__
+#define __logging_hpp__
 
 // Standard libraries
 #include <set>
@@ -23,6 +27,7 @@
 #include <stdexcept>
 
 // Gambit
+#include "log_tags.hpp"
 #include "yaml_parser.hpp"
 
 // Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
@@ -32,26 +37,6 @@ namespace pt = boost::posix_time;
 // Code!
 namespace Gambit
 {
-  // CAREFUL! These logging enum tags might clash with other names in the Gambit namespace! Be careful when adding new ones.
-  // If you add a new tag, be sure to add it to one of the tag category sets defined in logging.cpp as well.
-  enum LogTag {  /* Message tags */
-                   debug=0,
-                   info,
-                   warn,
-                   err,
-                   /* Flags */
-                   fatal,
-                   nonfatal,
-                   /* Component tags */
-                   def,
-                   core,
-                   logging,
-                   depres,
-                   models,
-                   scanner,
-                   iniparser
-                   /* etc... */
-                }; 
 
   namespace Logging
   {
@@ -59,20 +44,25 @@ namespace Gambit
     static const pt::ptime start_time(pt::microsec_clock::universal_time());
 
     /// Special struct for signalling end of message to LogMaster stream
-    struct endofmessage {};
+    struct endofmessage { endofmessage(){} ~endofmessage(){} };
 
     // Probably want to make a macro to do this, since we will want string versions of all of these so that we can match them to the entries in the inifile. Also we want to be able to figure out how many there are, so that we can associate the modules and backends with integers that don't overlap with the enum (so maybe put them in a vector or something)
   
     // Function to do the reverse search of tag map (brute force)
     int str2tag(const std::string&);
 
-    // Function to retrieve the 'components' set outside of this compilation unit
-    // (needed by module and backend macros so they can add to it)
-    std::set<int>& get_components();
+    // Function to retrieve the 'msgtypes' set
+    const std::set<LogTag>& msgtypes();
+
+    // Function to retrieve the 'flags' set
+    const std::set<LogTag>& flags();
+
+    // Function to retrieve the 'components' set (needed by module and backend macros so they can add to it)
+    std::set<int>& components();
  
     // Function to retrieve the 'tag2str' map outside of this compilation unit
     // (needed by module and backend macros so they can add to it)
-    std::map<int,std::string>& get_tag2str();
+    std::map<int,std::string>& tag2str();
 
     // Function to return the next unused tag index
     // (needed by module and backend macros so they can determine what tag they are allowed to use)
@@ -84,10 +74,10 @@ namespace Gambit
     /// structure for storing log messages and metadata
     struct Message
     {
-        const std::string message;
-        const std::set<int> tags;
-        const pt::ptime received_at;
-        // Constructor
+        std::string message;
+        std::set<int> tags;
+        pt::ptime received_at;
+        /// Constructor
         Message(const std::string& msgIN, 
                 const std::set<int>& tagsIN)
           : message(msgIN), 
@@ -273,7 +263,7 @@ namespace Gambit
   } //end namespace Logging
 
   /// Explicit const instance of the end of message struct in Gambit namespace
-  const Logging::endofmessage EOM;
+  const Logging::endofmessage EOM();
 
 } // end namespace Gambit
 
