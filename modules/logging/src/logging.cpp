@@ -75,7 +75,7 @@ namespace Gambit
        /* Component tags */
        m[def]     = "Default";
        m[core]    = "Core";
-       m[logging] = "Logging";
+       m[logging] = "Logger";
        m[models]  = "Models";
        m[depres]  = "Dependency Resolver";
        m[scanner] = "Scanner";
@@ -189,12 +189,19 @@ namespace Gambit
          // Dump buffered messages
          dump_prelim_buffer();
        }
+       // Check if there is anything in the output stream that has not been send, and send it if there is
+       if (not stream.str().empty() or not streamtags.empty())
+       {
+         *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+       } 
+
        // Delete logger objects
        for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 
        {
          // Ensure their filestreams have been flushed before we delete them.
          // (not sure if this is really needed, I think the message is in the operating systems domain by this point)
-         (keyvalue->second)->flush();
+         // Edit:  I think I have decided that this is unnecessary
+         //(keyvalue->second)->flush();
          delete (keyvalue->second);
        }
     }
@@ -383,7 +390,7 @@ namespace Gambit
        // Well almost. We have to seperate out the components first, because we can "send" a message to multiple components at once, but a direction command will never include two component tags (it is an error if it does).
 
        // Testing...
-       std::cout<<"msg: "<<message<<std::endl;   
+       //std::cout<<"msg: "<<message<<std::endl;   
 
        // Preliminary stuff 
    
@@ -393,25 +400,25 @@ namespace Gambit
        // Automatically add the tags for the "current" module and backend to the tags list
        if (current_module != -1)  
        { 
-         std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str[current_module]<<std::endl;
+         //std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str[current_module]<<std::endl;
          tags.insert(current_module); 
        }
        if (current_backend != -1) 
        {
-         std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str[current_backend]<<std::endl;
+         //std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str[current_backend]<<std::endl;
          tags.insert(current_backend); 
        } 
   
        // If the loggers have not yet been initialised, buffer the message
        if ( not loggers_readyQ ) 
        {
-         std::cout<<"Loggers not ready, buffering message..."<<std::endl; 
+         //std::cout<<"Loggers not ready, buffering message..."<<std::endl; 
          // prelim_buffer.push_back( Message(message,tags) );
          // TODO: Apparently in C++ 11 I'm allowed to do the following: not sure if this is cool in Gambit though. Prevents a copy though, I think, by constructing the object directly in the vector.
          prelim_buffer.emplace_back(message,tags); //time stamp automatically added NOW
          return;
        }
-       std::cout<<"Loggers ready, forwarding message..."<<std::endl;
+       //std::cout<<"Loggers ready, forwarding message..."<<std::endl;
     
        finalsend(Message(message,tags)); //time stamp automatically added NOW
 
@@ -424,7 +431,7 @@ namespace Gambit
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
        if( not is_disjoint(mail.tags, ignore) ) 
        { 
-         std::cout<<"Ignoring message..."<<std::endl;
+         //std::cout<<"Ignoring message..."<<std::endl;
          return; 
        }
 
@@ -502,13 +509,15 @@ namespace Gambit
     void LogMaster::entering_backend(int i) 
     {
        current_backend = i; 
-       std::cout<<"setting current_backend="<<current_backend<<std::endl;
+       *this<<"setting current_backend="<<current_backend;
+       *this<<logging<<debug<<EOM;
        // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
     void LogMaster::leaving_backend()
     { 
        current_backend = -1;
-       std::cout<<"restoring current_backend="<<current_backend<<std::endl;
+       *this<<"restoring current_backend="<<current_backend;
+       *this<<logging<<debug<<EOM;
        // TODO: Restore std::out and std::err to normal
     }
  
@@ -517,26 +526,26 @@ namespace Gambit
       : message(mail.message), received_at(mail.received_at)
     {
        // First task is to scan through the tags and figure out where the message is supposed to go 
-       std::cout<<"Sorting tags..."<<std::endl;
+       //std::cout<<"Sorting tags..."<<std::endl;
        for(std::set<int>::iterator tag = mail.tags.begin(); tag != mail.tags.end(); ++tag) 
        {
-         std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
+         //std::cout<<"Sorting tag "<<tag2str[*tag]<<std::endl;
          if ( msgtypes.find(static_cast<LogTag>(*tag)) != msgtypes.end() )
          {
            // If tag is a message type, add it to the type_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message type"<<std::endl;
            type_tags.insert(static_cast<LogTag>(*tag));
          }
          else if ( components.find(*tag) != components.end() )
          {
            // If tag names a gambit core component, add it to the component_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as Gambit component"<<std::endl;
            component_tags.insert(*tag);
          }
          else if ( flags.find(static_cast<LogTag>(*tag)) != flags.end() )
          {
            // If tag is an auxiliary message flag, add it to the flag_tags set
-           std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
+           //std::cout<<"Identified tag '"<<tag2str[*tag]<<"' as message flag"<<std::endl;
            flag_tags.insert(static_cast<LogTag>(*tag));
          } 
          else
@@ -572,9 +581,16 @@ namespace Gambit
     /// Write message to log file
     void StdLogger::write(const SortedMessage& mail)
     {
+      // Message reception time (UTC)
+      my_fstream<<"("<<pt::to_iso_extended_string(mail.received_at)<<")";
+      // milliseconds elapsed since start_time
+      pt::time_duration diff = mail.received_at - start_time;
+      my_fstream<<"("<<diff.total_milliseconds()<<"ms)";
+      // Message tags
       writetags(mail.component_tags);
       writetags(mail.type_tags);
       writetags(mail.flag_tags);
+      // Message proper
       my_fstream<<" : "<<mail.message<<std::endl; 
     }
 

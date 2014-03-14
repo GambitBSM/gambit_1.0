@@ -53,6 +53,9 @@ namespace Gambit
 
   namespace Logging
   {
+    // Global reference start time. Can only be used in this compile unit.
+    static const pt::ptime start_time(pt::microsec_clock::universal_time());
+
     /// Special struct for signalling end of message to LogMaster stream
     struct endofmessage {};
 
@@ -87,7 +90,7 @@ namespace Gambit
                 const std::set<int>& tagsIN)
           : message(msgIN), 
             tags(tagsIN), 
-            received_at(pt::second_clock::universal_time())
+            received_at(pt::microsec_clock::universal_time())
         {}
     };
 
