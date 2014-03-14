@@ -86,7 +86,7 @@ void beispiel(const char* inifilename)
   // already available here  due to including log.hpp
 
   // Test the log
-  logger() << core << "First log message with three tags!" << std::endl << "New line, but not new message!" << err << nonfatal << EOM;
+  logger() << core << "log message with two tags!" << std::endl << "New line, but not new message!" << err << nonfatal << EOM;
   
   // Determine selected model(s)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();

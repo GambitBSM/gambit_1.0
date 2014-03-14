@@ -52,7 +52,7 @@ namespace Gambit
 
     // Tags for gambit components
     // We add the core components here, but the module and backend numbers are added later, so these cannot be const.
-    LogTag core_a[] = {def, core, logging, depres, models, scanner};
+    LogTag core_a[] = {def, core, logging, depres, models, scanner, iniparser};
     static std::set<int> components(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
     
     // Function to retrieve the 'components' set outside of this compilation unit

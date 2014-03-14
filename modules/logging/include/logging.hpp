@@ -33,6 +33,7 @@ namespace pt = boost::posix_time;
 namespace Gambit
 {
   // CAREFUL! These logging enum tags might clash with other names in the Gambit namespace! Be careful when adding new ones.
+  // If you add a new tag, be sure to add it to one of the tag category sets defined in logging.cpp as well.
   enum LogTag {  /* Message tags */
                    debug=0,
                    info,
@@ -48,6 +49,7 @@ namespace Gambit
                    depres,
                    models,
                    scanner,
+                   iniparser
                    /* etc... */
                 }; 
 
