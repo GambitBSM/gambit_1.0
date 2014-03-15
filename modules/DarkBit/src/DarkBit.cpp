@@ -515,9 +515,22 @@ namespace Gambit {
           sigma = (*it->dSigmadE)(0.);  // Differential cross-section for two-body final states in v=0 limit
 
           // Find channel
-          if ( it->isChannel("mu+", "mu-") ) ch = 17;
-          if ( it->isChannel("b", "bbar") ) ch = 25;
-
+          if      ( it->isChannel("Z0"    , "Z0"     )) ch = 12;
+          else if ( it->isChannel("W+"    , "W-"     )) ch = 13;              
+          else if ( it->isChannel("nu_e"  , "~nu_e"  )) ch = 14;
+          else if ( it->isChannel("e+"    , "e-"     )) ch = 15;
+          else if ( it->isChannel("nu_mu" , "~nu_mu" )) ch = 16;                                                
+          else if ( it->isChannel("mu+"   , "mu-"    )) ch = 17;
+          else if ( it->isChannel("nu_tau", "~nu_tau")) ch = 18;
+          else if ( it->isChannel("tau+"  , "tau-"   )) ch = 19;
+          else if ( it->isChannel("u"     , "ubar"   )) ch = 20;   
+          else if ( it->isChannel("d"     , "dbar"   )) ch = 21;
+          else if ( it->isChannel("c"     , "cbar"   )) ch = 22;
+          else if ( it->isChannel("s"     , "sbar"   )) ch = 23;
+          else if ( it->isChannel("t"     , "tbar"   )) ch = 24;                                                                                                        
+          else if ( it->isChannel("b"     , "bbar"   )) ch = 25;
+          else if ( it->isChannel("g"     , "g"      )) ch = 26;             
+          
           // Fill dNdE
           if ( ch > 0 )
           {
