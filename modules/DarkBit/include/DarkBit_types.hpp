@@ -237,7 +237,7 @@ namespace Gambit
       public:
         DMhaloCatalog() {}  // Dummy constructor
 
-        bool addDMhalo(shared_ptr<DMhalo> newHalo)
+        void addDMhalo(shared_ptr<DMhalo> newHalo)
         {
           this->myHalos.push_back(newHalo);
         }
