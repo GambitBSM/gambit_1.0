@@ -32,7 +32,6 @@
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
-#include "log.hpp"
 
 namespace Gambit
 {

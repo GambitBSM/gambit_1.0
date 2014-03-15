@@ -37,6 +37,7 @@
 #define __DarkBit_types_hpp__
 
 #include <cmath>
+#include <algorithm>
 #include <gsl/gsl_integration.h>
 #include "DarkBit_BaseFunctions.hpp"
 
@@ -124,6 +125,7 @@ namespace Gambit
         BFptr dSigmadE;  
 
         // Compare final states
+        /*
         bool isChannel(std::string p0, std::string p1, std::string p2 =
                 "", std::string p3 = "")
         {
@@ -132,6 +134,16 @@ namespace Gambit
             if ( nFinalStates == 4 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] and p3 == finalStateIDs[3] ) return true;
             return false;
         }
+        */
+        // New version that allows permutations of the final states
+        bool isChannel(std::string p0, std::string p1, std::string p2 = "", std::string p3 = "")
+        {
+            std::vector<std::string> inIDs;
+            if      (p2=="") inIDs = {p0,p1};
+            else if (p3=="") inIDs = {p0,p1,p2};
+            else             inIDs = {p0,p1,p2,p3};
+            return std::is_permutation(finalStateIDs.begin(), finalStateIDs.end(), inIDs.begin());
+        }        
 
         // Generic flags
         std::map<std::string, bool> flags;
@@ -237,7 +249,7 @@ namespace Gambit
       public:
         DMhaloCatalog() {}  // Dummy constructor
 
-        bool addDMhalo(shared_ptr<DMhalo> newHalo)
+        void addDMhalo(shared_ptr<DMhalo> newHalo)
         {
           this->myHalos.push_back(newHalo);
         }
