@@ -85,7 +85,7 @@ namespace Gambit {
          colist[i-1]=DSpart.kn[i];
         }
         colist[3]=DSpart.kcha[1];
-        colist[4]=DSpart.kcha[2];
+        colist[4]=DSpart.kcha[2];  // WARNING: Causes subscript out of range warning
         lcolist=5;
       }
       if (copr[1]!=0){     //include sfermion coannihilation

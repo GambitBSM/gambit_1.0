@@ -17,12 +17,13 @@
 #ifndef __DarkBit_BaseFunctions_hpp__
 #define __DarkBit_BaseFunctions_hpp__
 
+#include "shared_ptr.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cmath>
 #include <functional>
-#include <gsl/gsl_integration.h>
+//#include <gsl/gsl_integration.h>
 
 namespace Gambit 
   {
@@ -292,26 +293,25 @@ namespace Gambit
                 }
                 else
                 {
-                    double result, error;
-
-                    // Possibly increase workspace size?
-                    gsl_integration_workspace * w = gsl_integration_workspace_alloc (10000);
-
-                    //Reduce integrand to 1d function by using values from args vector
-                    d1_func = integrand;
-                    for (int j = 0; j < ndim; ++j)
-                    {
-                        if (j != index) d1_func = d1_func->fixPar(j, args[j]);
-                    }
-
-                    //Doesn't compile with icc so commenting out for now
-                   /*gsl_function_pp Fp(std::bind(&BFintegrate::f, &(*this), std::placeholders::_1));
-                   gsl_function *F = static_cast<gsl_function*>(&Fp);
-
-                    //TODO: Add error checks to integration output!!
-                    gsl_integration_qags(F, x0, x1, 0, 1e-7, 10000, w, &result, &error);
-
-                   return result; */
+//                    double result, error;
+//                    // Possibly increase workspace size?
+//                    gsl_integration_workspace * w = gsl_integration_workspace_alloc (10000);
+//
+//                    //Reduce integrand to 1d function by using values from args vector
+//                    d1_func = integrand;
+//                    for (int j = 0; j < ndim; ++j)
+//                    {
+//                        if (j != index) d1_func = d1_func->fixPar(j, args[j]);
+//                    }
+//
+//                    //Doesn't compile with icc so commenting out for now
+//                   /*gsl_function_pp Fp(std::bind(&BFintegrate::f, &(*this), std::placeholders::_1));
+//                   gsl_function *F = static_cast<gsl_function*>(&Fp);
+//
+//                    //TODO: Add error checks to integration output!!
+//                    gsl_integration_qags(F, x0, x1, 0, 1e-7, 10000, w, &result, &error);
+//
+//                   return result; */
                    return 0;
                 }
             }
