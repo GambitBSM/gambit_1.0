@@ -328,7 +328,8 @@ namespace Gambit
       myLoopManagerCapability ("none"),
       myLoopManagerName       ("none"),
       myLoopManagerOrigin     ("none"),
-      globlMaxThreads    (omp_get_max_threads())
+      globlMaxThreads    (omp_get_max_threads()),
+      myLogTag(-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
 
@@ -337,9 +338,8 @@ namespace Gambit
       // Check for failure
       if(myLogTag==-1)
       {
-        std::ostringstream ss;
-        ss << "Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
-        logger().send(ss.str(),warn,nonfatal);
+        logger() <<"Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
+        logger() <<warn<<debug<<EOM;
       }
     }
 

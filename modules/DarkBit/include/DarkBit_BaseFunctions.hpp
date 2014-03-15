@@ -17,10 +17,13 @@
 #ifndef __DarkBit_BaseFunctions_hpp__
 #define __DarkBit_BaseFunctions_hpp__
 
+#include "shared_ptr.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cmath>
+#include <functional>
+//#include <gsl/gsl_integration.h>
 
 namespace Gambit 
   {
@@ -145,7 +148,7 @@ namespace Gambit
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
-            virtual double integrator(const BFargVec &vec, int i, double E0, double E1) { failHard("Integrator not implemented."); }
+            virtual double integrator(const BFargVec &vec, int i, double E0, double E1) { failHard("Integrator not implemented."); return 0;}
 
             // Member functions that change the state of the current base function object.
             BFptr enableCaching() { cachingFlag = true; return shared_from_this(); }
@@ -205,6 +208,24 @@ namespace Gambit
     inline double BFplainFunction(double x0,double x1,double x2,double x3,double x4,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2, x3, x4); }
     inline double BFplainFunction(double x0,double x1,double x2,double x3,double x4,double x5,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2, x3, x4, x5); }
 
+    // Wrapper class for converting class functions to gsl functions
+    // (http://stackoverflow.com/questions/13074756/
+    // how-to-avoid-static-member-function-when-using-gsl-with-c/).
+    // Doesn't compile with icc so commenting out for now.
+/*    class gsl_function_pp : public gsl_function
+    {
+       public:
+       gsl_function_pp(std::function<double(double)> const& func) : _func(func)
+       {
+         function=&gsl_function_pp::invoke;
+         params=this;
+       }
+       private:
+       std::function<double(double)> _func;
+       static double invoke(double x, void *params) {
+        return static_cast<gsl_function_pp*>(params)->_func(x);
+      }
+    };*/
 
     //
     // Helper classes that create new base functions from existing ones
@@ -272,14 +293,38 @@ namespace Gambit
                 }
                 else
                 {
-                    // TODO: Implement integral over x_index, from x0 to x1 
-                    std::cout << "ERROR: Integration not yet implemented in general." << std::endl;
-                    exit(1);
+//                    double result, error;
+//                    // Possibly increase workspace size?
+//                    gsl_integration_workspace * w = gsl_integration_workspace_alloc (10000);
+//
+//                    //Reduce integrand to 1d function by using values from args vector
+//                    d1_func = integrand;
+//                    for (int j = 0; j < ndim; ++j)
+//                    {
+//                        if (j != index) d1_func = d1_func->fixPar(j, args[j]);
+//                    }
+//
+//                    //Doesn't compile with icc so commenting out for now
+//                   /*gsl_function_pp Fp(std::bind(&BFintegrate::f, &(*this), std::placeholders::_1));
+//                   gsl_function *F = static_cast<gsl_function*>(&Fp);
+//
+//                    //TODO: Add error checks to integration output!!
+//                    gsl_integration_qags(F, x0, x1, 0, 1e-7, 10000, w, &result, &error);
+//
+//                   return result; */
+                   return 0;
                 }
             }
+
+            double f(double x)
+            {
+                return BFplainFunction(x, &d1_func);
+            }
+
             double x0, x1;
             int index;
             BFptr integrand;
+            BFptr d1_func;
     };
 
     // General mapping 3-dim --> 2-dim, line-of-sight integral

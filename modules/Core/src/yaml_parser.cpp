@@ -56,8 +56,6 @@ namespace Gambit
           // Check if the exception has an entry in the YAML file
           if (hasKey("exceptions",iter->first))
           { 
-
-            std::cout << "Found exceptions, " << iter->first;
             // Retrieve the entry and set the exception's 'fatal' flag accordingly.
             str value = getValue<str>("exceptions",iter->first);
             if (value == "fatal")
@@ -90,7 +88,7 @@ namespace Gambit
       }
 
       // Parse the logging setup node, and initialise the LogMaster object
-
+      std::string prefix = logNode["prefix"].as<std::string>();
       YAML::Node redir = logNode["redirection"];
       // map storing info used to set up logger objects
       std::map<std::set<std::string>,std::string> loggerinfo;
@@ -107,7 +105,7 @@ namespace Gambit
           filename = (it->second).as<std::string>();
     
           // Add entry to the loggerinfo map
-          loggerinfo[tags] = filename;
+          loggerinfo[tags] = prefix + filename;
       }
       // Initialise global LogMaster object
       logger().initialise(loggerinfo);
