@@ -9,7 +9,6 @@
  * Pat Scott 2013-04-22
  * Anders Kvellestad 2013, Nov
  */
-#include "log.hpp"
 
 /* Specify the path to the shared library along with a backend name. */
 

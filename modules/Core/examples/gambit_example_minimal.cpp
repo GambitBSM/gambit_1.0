@@ -16,9 +16,9 @@
 ///
 ///  *********************************************
 
+#include "module_rollcall.hpp"
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
-#include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "yaml_parser.hpp"
 #include "scannerbit.hpp"

@@ -34,6 +34,7 @@
 #include "scanlog.hpp"
 #include "outputhandler.hpp"
 #include "exceptions.hpp"
+#include "log.hpp"
 
 #define REGISTER(reg_map, tag, ...)                                                                             \
 namespace __gambit_registry__                                                                                   \

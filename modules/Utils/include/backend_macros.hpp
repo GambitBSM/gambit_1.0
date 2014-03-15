@@ -21,7 +21,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July
-///  \date 2014 Jan
+///  \date 2014 Jan, Mar
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -42,7 +42,7 @@
 #include "functors.hpp"
 #include "create_core.hpp"
 #include "backend_type_macros.hpp"
-#include "logging.hpp"
+#include "log.hpp"
 
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/logical/bitand.hpp>
@@ -64,8 +64,8 @@ namespace Gambit                                                            \
       void rt_register_backend_with_log ()                                  \
       {                                                                     \
         int mytag = Logging::getfreetag();                                  \
-        Logging::get_tag2str()[mytag] = STRINGIFY(BACKENDNAME);             \
-        Logging::get_components().insert(mytag);                            \         
+        Logging::tag2str()[mytag] = STRINGIFY(BACKENDNAME);                 \
+        Logging::components().insert(mytag);                                \
       }                                                                     \
                                                                             \
       namespace ini                                                         \

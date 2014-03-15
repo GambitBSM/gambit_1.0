@@ -56,8 +56,6 @@ namespace Gambit
           // Check if the exception has an entry in the YAML file
           if (hasKey("exceptions",iter->first))
           { 
-
-            std::cout << "Found exceptions, " << iter->first;
             // Retrieve the entry and set the exception's 'fatal' flag accordingly.
             str value = getValue<str>("exceptions",iter->first);
             if (value == "fatal")
