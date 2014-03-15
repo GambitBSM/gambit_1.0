@@ -173,7 +173,7 @@ ifndef GSL
   ifdef GSLDIR
     GSL := $(GSLDIR)
   else
-    $(info $$GSLDIR not defined.  GSL assumed to be installed regular system paths.)
+    $(info $$GSLDIR not defined.  GSL assumed to be installed in regular system paths.)
   endif
 endif
 ifdef GSL
