@@ -14,7 +14,6 @@
 #include "DarkBit_BaseFunctions.hpp"
 using namespace Gambit::DarkBit;
 
-
 int main()
 {
     // INTRODUCTION:
@@ -125,6 +124,15 @@ int main()
     // Fails right now:
     // TODO:  Make integration routines work in multiple dimensions
     // std::cout << "Integrated: " << interpolated1D->integrate(0, 1, 2) << std::endl;
+
+
+    // C) Constrution of new function objects using the C++11 lambda
+    // expressions.  This is neat.
+
+    BFptr fromLambda(new BFfromPlainFunction( [](double r, double l) {return r*l * 3;} ));
+
+    std::cout << "Value from fromLambda: " << (*fromLambda)(123,321) << std::endl;
+
 
     // THE USE OF PLAIN FUNCTIONS:
     // ---------------------------

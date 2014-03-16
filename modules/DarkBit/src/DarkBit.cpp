@@ -475,80 +475,154 @@ namespace Gambit {
 
     void GA_dNdE_DarkSUSY(Gambit::DarkBit::BFptr &result)
     {
+        //////////////////////////////////////////////////////////////////////////
+        // Calculates annihilation spectra for general process catalogs, using
+        // DarkSUSY as a backend.  This function returns 
+        //
+        //   dN/dE*(sv) (E, v)  [cm^3/s/GeV]
+        //
+        // the energy spectrum of photons times sigma*v, as function of energy
+        // (GeV) and velocity (in units of c).  By default, only the v=0
+        // component is calculated.  
+        //
+        // The return type is a GAMBIT Base Function object as function which
+        // is only defined for v=0.
+        //////////////////////////////////////////////////////////////////////////
+
+        // TODO: 
+        // - Rename dNdE to DiffYield
+        // - Move grid initialization (resolution and range) to PointInit
+        
       using namespace Pipes::GA_dNdE_DarkSUSY;
-      // TODO: Move to PointInit
-      int n = 1000;
+
+
+      ////////////////////
+      // 1) Initialization
+      ////////////////////
+
+      // Grid and energy range used in interpolating functions.  This should
+      // finally depend on the likelihood functions that are called.
+      int n = 1000;  
       double E0 = 0.1;
       double E1 = 1000;
-
       std::vector<double> xgrid;
       std::vector<double> ygrid;
-
-      // Generate logarithmic grid for dNdE
       for (int i = 0; i<n; i++)
       {
-        xgrid.push_back(E0*pow(E1/E0, (double)i/(n-1)));
+        xgrid.push_back(E0*pow(E1/E0, (double)i/(n-1)));  // logarithmic grid for dNdE
         ygrid.push_back(0);
       }
 
-      // Search for annihilation process
+      // Get annihilation process from process catalog
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi", (std::string)"chi");
 
-      // Get particle mass
+      // Get particle mass from process catalog
       double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+
+
+      ///////////////////////////////////////////////////////////
+      // 2) Construction of "model-independent" two-body spectrum
+      ///////////////////////////////////////////////////////////
 
       // Loop over all channels for that process
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
               it != annProc.channelList.end(); ++it)
       {
-          int flag = 0;  // CW: Is this flag of any use?
-          int ch = 0;
-          int yieldk = 152;
-          double sigma;
-
-          if ( it->nFinalStates != 2 )
-          {
-              std::cout << "ERROR: Only support for two-body final states." << std::endl;
-              exit(1);
-          }
-
-          sigma = (*it->dSigmadE)(0.);  // Differential cross-section for two-body final states in v=0 limit
-
+        int flag = 0;
+        int ch = 0;
+        int yieldk = 152;
+        double sigmav;
+        if ( it->nFinalStates == 2 )
+        {
           // Find channel
           if      ( it->isChannel("Z0"    , "Z0"     )) ch = 12;
-          else if ( it->isChannel("W+"    , "W-"     )) ch = 13;              
+          else if ( it->isChannel("W+"    , "W-"     )) ch = 13;
           else if ( it->isChannel("nu_e"  , "~nu_e"  )) ch = 14;
           else if ( it->isChannel("e+"    , "e-"     )) ch = 15;
-          else if ( it->isChannel("nu_mu" , "~nu_mu" )) ch = 16;                                                
+          else if ( it->isChannel("nu_mu" , "~nu_mu" )) ch = 16;
           else if ( it->isChannel("mu+"   , "mu-"    )) ch = 17;
           else if ( it->isChannel("nu_tau", "~nu_tau")) ch = 18;
           else if ( it->isChannel("tau+"  , "tau-"   )) ch = 19;
-          else if ( it->isChannel("u"     , "ubar"   )) ch = 20;   
+          else if ( it->isChannel("u"     , "ubar"   )) ch = 20;
           else if ( it->isChannel("d"     , "dbar"   )) ch = 21;
           else if ( it->isChannel("c"     , "cbar"   )) ch = 22;
           else if ( it->isChannel("s"     , "sbar"   )) ch = 23;
-          else if ( it->isChannel("t"     , "tbar"   )) ch = 24;                                                                                                        
+          else if ( it->isChannel("t"     , "tbar"   )) ch = 24;
           else if ( it->isChannel("b"     , "bbar"   )) ch = 25;
-          else if ( it->isChannel("g"     , "g"      )) ch = 26;             
-          
-          // Fill dNdE
-          if ( ch > 0 )
-          {
-              for (int i = 0; i<n; i++)
-              {
-                  ygrid[i] += sigma * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
-              }
-          }
+          else if ( it->isChannel("g"     , "g"      )) ch = 26;
           else
           {
-              std::cout << "Channel not known." << std::endl;
+              std::cout << "ERROR: Unsupport two-body final state." << std::endl;
               exit(1);
           }
+      
+          // Build up ygrid
+          sigmav = (*it->dSigmadE)(0.);  // (sv)(v=0) for two-body final state
+          for (int i = 0; i<n; i++)
+          {
+              ygrid[i] += sigmav * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
+          }
+        }
       }
 
-      // Construct base function object from interpolating the table
-      BFptr ret(new BFinterpolation(xgrid, ygrid, 1));
-      result = ret;
+      // Construct base function object from table interpolation
+      BFptr DiffYield2Body(new BFinterpolation(xgrid, ygrid, 1));
+
+
+      /////////////////////////////
+      // 3) Three-body final states
+      /////////////////////////////
+
+      BFptr DiffYield3Body(new BFconstant(0., 1));  // Initial spectrum = 0
+
+      // Loop over all channels for that process
+      for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
+      {
+        int flag = 0;
+        int ch = 0;
+        int yieldk = 152;
+        BFptr dsigmavde;
+        if ( it->nFinalStates == 3 )
+        {
+          // Find channel
+          if      ( it->isChannel("gamma", "Z0"    , "Z0"     )) ch = 1;
+          else if ( it->isChannel("gamma", "W+"    , "W-"     )) ch = 1;
+          else if ( it->isChannel("gamma", "nu_e"  , "~nu_e"  )) ch = 1;
+          else if ( it->isChannel("gamma", "e+"    , "e-"     )) ch = 1;
+          else if ( it->isChannel("gamma", "nu_mu" , "~nu_mu" )) ch = 1;
+          else if ( it->isChannel("gamma", "mu+"   , "mu-"    )) ch = 1;
+          else if ( it->isChannel("gamma", "nu_tau", "~nu_tau")) ch = 1;
+          else if ( it->isChannel("gamma", "tau+"  , "tau-"   )) ch = 1;
+          else if ( it->isChannel("gamma", "u"     , "ubar"   )) ch = 1;
+          else if ( it->isChannel("gamma", "d"     , "dbar"   )) ch = 1;
+          else if ( it->isChannel("gamma", "c"     , "cbar"   )) ch = 1;
+          else if ( it->isChannel("gamma", "s"     , "sbar"   )) ch = 1;
+          else if ( it->isChannel("gamma", "t"     , "tbar"   )) ch = 1;
+          else if ( it->isChannel("gamma", "b"     , "bbar"   )) ch = 1;
+          else if ( it->isChannel("gamma", "g"     , "g"      )) ch = 1;
+          else
+          {
+              std::cout << "ERROR: Unsupport three-body final state." << std::endl;
+              exit(1);
+          }
+
+          // Generate photon spectrum in v=0 limit from primary photon.
+          // (we just ignore the contributions from the second and third
+          // particle and integrate out the corresponding kinematical
+          // variable).
+          dsigmavde = it->dSigmadE->fixPar(2, 0)->integrate(1, 0, 100);  
+
+          // Add up individual constributions
+          DiffYield3Body = DiffYield3Body->sum(dsigmavde);
+        }
+      }
+
+      // Resample function
+      DiffYield3Body = DiffYield3Body->tabularize();  
+
+      // Sum two- and three-body spectra and return result
+      result = DiffYield2Body->sum(DiffYield3Body);
     }
 
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)

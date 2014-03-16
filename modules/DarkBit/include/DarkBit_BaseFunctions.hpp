@@ -23,15 +23,17 @@
 #include <string>
 #include <cmath>
 #include <functional>
+//#include "boost/lambda/lambda.hpp"
+//#include "boost/function/function.hpp"
 //#include <gsl/gsl_integration.h>
 
 namespace Gambit 
   {
   namespace DarkBit
     {
-    //
+    /////////////////////////
     // Base function object
-    //
+    /////////////////////////
 
     // Abstract base class for double^n --> double functions.  
     class BaseFunction;
@@ -55,11 +57,8 @@ namespace Gambit
                 std::cout << "Constructing: " << this->name << std::endl; 
             }
 
-            /// TODO: Ben - I am getting warnings like this a lot:
-            // /usr/local/boost/1.50.0/include/boost/checked_delete.hpp:34:5: warning: deleting object of polymorphic class type ‘Gambit::DarkBit::BFtabularize’ which has non-virtual destructor might cause undefined behaviour [-Wdelete-non-virtual-dtor]
-            // I think it might be complaining that this destructor in the base class isn't virtual?
-            // Haven't changed anything, just flagging possible problem...
-            ~BaseFunction() 
+            // TODO: check warnings related to non-virtual base function destructors
+            virtual ~BaseFunction()
             { 
                 std::cout << "Destructing: " << this->name << std::endl; 
             }
@@ -67,8 +66,7 @@ namespace Gambit
             // Call by std::vector<double> arguments (standard)
             double operator() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
 
-            // Call by list of arguments; up to six dimensions for now (for
-            // convenience)
+            // Call by list of arguments; up to six dimensions for now (for convenience)
             double operator() () 
             { 
                 assertNdim(0); 
@@ -145,6 +143,7 @@ namespace Gambit
             BFptr fixPar(int i, double x);
             BFptr rotSym(int i);
             BFptr tabularize();
+            BFptr sum(BFptr f2);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -163,6 +162,14 @@ namespace Gambit
             bool hasIntegrator() { return integratorFlag; }
             bool doesCaching() { return cachingFlag; }
 
+            // TODO: add information about positions and width of poles
+
+
+        private:
+            // The central virtual abstract member function that must be
+            // implemented by any derived class.
+            virtual double value(const BFargVec &args) = 0;
+
             // Function that checks for the correct dimensionality of arguments.
             void assertNdim(unsigned int i, std::string msg = "")
             {
@@ -174,14 +181,6 @@ namespace Gambit
                     exit(1);
                 }
             }
-
-            // TODO: add information about positions and width of poles
-
-
-        private:
-            // The central virtual abstract member function that must be
-            // implemented by any derived class.
-            virtual double value(const BFargVec &args) = 0;
 
 
         protected:  // Relevant for implementations
@@ -204,7 +203,11 @@ namespace Gambit
             std::string name; 
     };
 
+
+    ////////////////////////////////////////////////////////////////////////
     // Plain functions that redirect to BFptr object, using void* pointers
+    ////////////////////////////////////////////////////////////////////////
+
     // (for use in C- and Fortran backends)
     inline double BFplainFunction(double x0,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0); }
     inline double BFplainFunction(double x0,double x1,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1); }
@@ -232,9 +235,10 @@ namespace Gambit
       }
     };*/
 
-    //
+
+    /////////////////////////////////////////////////////////////////////
     // Helper classes that create new base functions from existing ones
-    //
+    /////////////////////////////////////////////////////////////////////
 
     // General mapping 1-dim --> n-dim, assuming rotational symmetry
     class BFrotSym : public BaseFunction
@@ -355,10 +359,12 @@ namespace Gambit
     };
 
     // General mapping n-dim --> n-dim, tabularize underlying function
+    // NOTE: Right now, this is just a dummy function that does actually
+    // nothing but passing the original BF.
     class BFtabularize : public BaseFunction
     {
         public:
-            BFtabularize(BFptr ptr) : BaseFunction("Tabularize", ptr->getNdim())
+            BFtabularize(BFptr ptr) : BaseFunction("Tabularize", ptr->getNdim()), ptr(ptr)
             {
                 // TODO: Implement grid scan of the function ptr and store
                 // information locally.
@@ -367,25 +373,76 @@ namespace Gambit
             double value(const BFargVec &args)
             {
                 // TODO: return interpolated value from grid
-                (void)args;
-                return 0;
+                return (*ptr)(args);
             }
 
         private:
             // TODO: Some n-dim grid with values
+            BFptr ptr;
+    };
+
+    // Adding two functions (n-dim, n-dim) --> n-dim
+    class BFsum: public BaseFunction
+    {
+        public:
+            BFsum(BFptr f1, BFptr f2) : BaseFunction("Sum", f1->getNdim()), f1(f1), f2(f2)
+            {
+                if (f1->getNdim()!=f2->getNdim()) failHard("BFsum can only sum objects with matching dimensionality.");
+            }
+
+            double value(const BFargVec &args)
+            {
+                return (*f1)(args) + (*f2)(args);
+            }
+
+        private:
+            BFptr f1;
+            BFptr f2;
     };
 
     // Definition of factory functions for above helper classes that are provided by the base function object
     inline BFptr BaseFunction::tabularize() { return BFptr(new BFtabularize(shared_from_this())); }
+    inline BFptr BaseFunction::sum(BFptr f2) { return BFptr(new BFsum(shared_from_this(), f2)); }
     inline BFptr BaseFunction::lineOfSightIntegral(double D) { return BFptr(new BFlineOfSightIntegral(shared_from_this(), D)); }
     inline BFptr BaseFunction::fixPar(int i, double x) { return BFptr (new BFfixPar(shared_from_this(), i, x)); }
     inline BFptr BaseFunction::integrate(int i, double x0, double x1) { return BFptr (new BFintegrate(shared_from_this(), i, x0, x1)); }
     inline BFptr BaseFunction::rotSym(int i) { return BFptr (new BFrotSym(shared_from_this(), i)); }
 
 
-    //
-    // Helper classes that generate new base function objects
-    //
+    ////////////////////////////////////////////////////////////////////////
+    // Helper classes that generate new base function objects from scratch
+    ////////////////////////////////////////////////////////////////////////
+
+    // Constant n-dim function
+    class BFfromPlainFunction: public BaseFunction
+    {
+        public:
+            BFfromPlainFunction(double(*f)()) : BaseFunction("Constant", 0), ndim(0) { ptr = (void*) f; }
+            BFfromPlainFunction(double(*f)(double)) : BaseFunction("Constant", 1), ndim(1) { ptr = (void*) f; }
+            BFfromPlainFunction(double(*f)(double,double)) : BaseFunction("Constant", 2), ndim(2) { ptr = (void*) f; }
+            BFfromPlainFunction(double(*f)(double,double,double)) : BaseFunction("Constant", 3), ndim(3) { ptr = (void*) f; }
+            BFfromPlainFunction(double(*f)(double,double,double,double)) : BaseFunction("Constant", 4), ndim(4) { ptr = (void*) f; }
+            BFfromPlainFunction(double(*f)(double,double,double,double,double)) : BaseFunction("Constant", 5), ndim(5) { ptr = (void*) f; }
+            BFfromPlainFunction(double(*f)(double,double,double,double,double,double)) : BaseFunction("Constant", 6), ndim(6) { ptr = (void*) f; }
+
+        private:
+            double value(const BFargVec &args)
+            {
+                std::cout << "ndim: " << ndim << std::endl;
+                if (ndim == 0) { return (*(double(*)()) ptr)();}
+                else if (ndim == 1) { return (*((double(*)(double)) ptr))(args[0]);}
+                else if (ndim == 2) { return (*((double(*)(double,double)) ptr))(args[0],args[1]);}
+                else if (ndim == 3) { return (*(double(*)(double,double,double)) ptr)(args[0],args[1],args[2]);}
+                else if (ndim == 4) { return (*(double(*)(double,double,double,double)) ptr)(args[0],args[1],args[2],args[3]);}
+                else if (ndim == 5) { return (*(double(*)(double,double,double,double,double)) ptr)(args[0],args[1],args[2],args[3],args[4]);}
+                else if (ndim == 6) { return (*(double(*)(double,double,double,double,double,double)) ptr)(args[0],args[1],args[2],args[3],args[4],args[5]);}
+                else { return 0; }
+
+            }
+
+            void* ptr; // Void pointer to plain function
+            unsigned int ndim;
+    };
 
     // Constant n-dim function 
     class BFconstant: public BaseFunction
@@ -465,9 +522,10 @@ namespace Gambit
             std::vector<double> Ygrid;
     };
 
-    //
-    // Implementations of physical functions
-    //
+
+    ///////////////////////////////////////////////////
+    // Explicit implementations of physical functions
+    ///////////////////////////////////////////////////
 
     class DMradialProfile: public BaseFunction
     {
