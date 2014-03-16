@@ -48,7 +48,7 @@ namespace Gambit
     {
         public:
             // Verbose constructor and destructor
-            BaseFunction(std::string name, int ndim) : cachingFlag(false), integratorFlag(false)
+            BaseFunction(std::string name, unsigned int ndim) : cachingFlag(false), integratorFlag(false)
             {  
                 this->name = name;
                 this->ndim = ndim;
@@ -148,7 +148,12 @@ namespace Gambit
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
-            virtual double integrator(const BFargVec &vec, int i, double E0, double E1) { failHard("Integrator not implemented."); return 0;}
+            virtual double integrator(const BFargVec &vec, int i, double E0, double E1)
+            {
+                (void)vec; (void)i; (void)E0; (void)E1;
+                failHard("Integrator not implemented.");
+                return 0;
+            }
 
             // Member functions that change the state of the current base function object.
             BFptr enableCaching() { cachingFlag = true; return shared_from_this(); }
@@ -159,7 +164,7 @@ namespace Gambit
             bool doesCaching() { return cachingFlag; }
 
             // Function that checks for the correct dimensionality of arguments.
-            void assertNdim(int i, std::string msg = "")
+            void assertNdim(unsigned int i, std::string msg = "")
             {
                 if (i!=ndim)
                 {
@@ -193,7 +198,7 @@ namespace Gambit
             bool integratorFlag;  // True if implementation of abstract base class has its own integrator
 
             // Number of dimensions
-            int ndim;
+            unsigned int ndim;
 
             // Name of the current base function (to be defined in derived classes)
             std::string name; 
@@ -235,7 +240,7 @@ namespace Gambit
     class BFrotSym : public BaseFunction
     {
         public:
-            BFrotSym(BFptr radialProfile, int ndim) : BaseFunction("RotSym", ndim) 
+            BFrotSym(BFptr radialProfile, unsigned int ndim) : BaseFunction("RotSym", ndim)
             {
                 if (radialProfile->getNdim() != 1) failHard("RotSym constructor requires 1-dim radial profile.");
                 this->radialProfile = radialProfile;
@@ -244,7 +249,7 @@ namespace Gambit
             double value(const BFargVec &args)
             {
                 double r = 0;
-                for (int i = 0; i < ndim; i++)
+                for (unsigned int i = 0; i < ndim; i++)
                 {
                     r += args[i] * args[i];
                 }
@@ -322,8 +327,8 @@ namespace Gambit
             }
 
             double x0, x1;
-            int index;
             BFptr integrand;
+            int index;
             BFptr d1_func;
     };
 
@@ -340,6 +345,7 @@ namespace Gambit
             double value(const BFargVec &args)
             {
                 // TODO: Implement LOS-integral.  Two arguments are (theta, phi).
+                (void)args;
                 return 0;
             }
 
@@ -361,6 +367,7 @@ namespace Gambit
             double value(const BFargVec &args)
             {
                 // TODO: return interpolated value from grid
+                (void)args;
                 return 0;
             }
 
@@ -384,7 +391,7 @@ namespace Gambit
     class BFconstant: public BaseFunction
     {
         public:
-            BFconstant(double value, int ndim) : BaseFunction("Constant", ndim)
+            BFconstant(double value, unsigned int ndim) : BaseFunction("Constant", ndim)
             {
                 this->myValue = value;
             }
@@ -392,6 +399,7 @@ namespace Gambit
         private:
             double value(const BFargVec &args)
             {
+                (void)args;
                 return myValue;
             }
 
@@ -403,7 +411,7 @@ namespace Gambit
     class BFinterpolation: public BaseFunction
     {
         public:
-            BFinterpolation(std::vector<double> Xgrid, std::vector<double> Ygrid, int ndim) : BaseFunction("Interpolation", ndim) 
+            BFinterpolation(std::vector<double> Xgrid, std::vector<double> Ygrid, unsigned int ndim) : BaseFunction("Interpolation", ndim)
             {
                 if (ndim != 1) failHard("Only 1-dim interpolation implemented right now.");
                 this->Xgrid = Xgrid;
@@ -414,6 +422,7 @@ namespace Gambit
             // Implementation specific integrator
             double integrator(const BFargVec &vec, int i, double E0, double E1)
             {
+                (void)i;
                 if (vec.size() != ndim - 1) failHard("Too many vec-arguments in BFinterpolation::integrator.");
                 // Simple trapezoidal integration in log-log space
                 double sum = 0;
@@ -463,7 +472,7 @@ namespace Gambit
     class DMradialProfile: public BaseFunction
     {
         public:
-            DMradialProfile(std::string type, int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
+            DMradialProfile(std::string type, unsigned int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
             {
                 if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim"
                         " density function.");
@@ -519,7 +528,7 @@ namespace Gambit
                 else
                 {
                     double r = 0;
-                    for (int i = 0; i < ndim; i++)
+                    for (unsigned int i = 0; i < ndim; i++)
                     {
                         r += vec[i] * vec[i];
                     }
@@ -534,7 +543,7 @@ namespace Gambit
             double alpha, beta, gamma; // Exponents
 
             // Dimensionality (either 1 or 3)
-            int ndim;
+            unsigned int ndim;
 
             // Pointer to member function that implements DM profile
             double (DMradialProfile::*ptrF)(double);

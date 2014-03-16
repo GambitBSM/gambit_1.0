@@ -682,6 +682,7 @@ namespace Gambit {
       using namespace Pipes::RD_oh2_SingletDM;
       //double sigmaV = (*Dep::GA_BRs).sigmaV;
       //result = 0.11/sigmaV * 3e-26;
+      result = 0;
     }
 
     void lnL_oh2_Simple(double &result)
