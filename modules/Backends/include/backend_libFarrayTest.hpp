@@ -19,19 +19,19 @@ LOAD_LIBRARY
 
 BE_VARIABLE(FORTRAN_COMMONBLOCK(libFarrayTest_CB_type,commonBlock), "commonblock_", "libFarrayTestCommonBlock")
 
-BE_FUNCTION(printStuff, void, (), "__testmodule_MOD_printstuff", "libFarrayTest_printStuff")
+BE_FUNCTION(printStuff, void, (), "printstuff_", "libFarrayTest_printStuff")
 
-BE_FUNCTION(set_d, void, (), "__testmodule_MOD_set_d", "libFarrayTest_set_d")
+BE_FUNCTION(set_d, void, (), "set_d_", "libFarrayTest_set_d")
 
 BE_FUNCTION(fptrRoutine, void, (   ARG_FARRAY(double,1), int&,                     \
                                         ARG_FARRAY_FPTR(double,(ARG_FARRAY(double,1)))  \
-                                    ), "__testmodule_MOD_fptrroutine", "libFarrayTest_fptrRoutine")
+                                    ), "fptrroutine_", "libFarrayTest_fptrRoutine")
 
-BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "__testmodule_MOD_doublefuncarray1", "libFarrayTest_doubleFuncArray1", 1)
+BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", 1)
 
-BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "__testmodule_MOD_doublefuncarray2", "libFarrayTest_doubleFuncArray2", 1)
+BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", 1)
 
-BE_FUNCTION(doubleFunc, double, (double&), "__testmodule_MOD_doublefunc", "libFarrayTest_doubleFunc")
+BE_FUNCTION(doubleFunc, double, (double&), "doublefunc_", "libFarrayTest_doubleFunc")
 
 
 namespace Gambit
