@@ -27,7 +27,7 @@
 // #include <regex>
 
 #include "graphs.hpp"
-#include "extern_claw.hpp"
+#include "modelbit.hpp"
 #include "log.hpp"
 
 #include <boost/format.hpp>
@@ -499,7 +499,7 @@ namespace Gambit
     void DependencyResolver::makeFunctorsModelCompatible()
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      std::vector<str> modelList = modelClaw.get_activemodels();
+      std::vector<str> modelList = modelClaw().get_activemodels();
       for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
       {
         for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
@@ -605,7 +605,7 @@ namespace Gambit
         // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
         // found at a given level in the hierarchy.
         std::vector<Graphs::VertexID> newVertexCandidates;
-        std::vector<str> parentModelList = modelClaw.get_activemodels();
+        std::vector<str> parentModelList = modelClaw().get_activemodels();
         while (newVertexCandidates.size() == 0 and not parentModelList.empty())
         {
           for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)

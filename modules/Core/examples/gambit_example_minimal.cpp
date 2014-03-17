@@ -36,10 +36,10 @@ void beispiel(const char* inifilename)
 {
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
-  cout << "Registered module functors [Core.getModuleFunctors->size()]: " <<
-    Core.getModuleFunctors()->size() << endl;
-  cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
-    Core.getBackendFunctors()->size() << endl;
+  cout << "Registered module functors [Core().getModuleFunctors->size()]: " <<
+    Core().getModuleFunctors()->size() << endl;
+  cout << "Registered backend functors [Core().getBackendFunctors->size()]: " <<
+    Core().getBackendFunctors()->size() << endl;
 
   // Check the logging tags were registered correctly (for testing)
   Logging::checktags();
@@ -100,7 +100,7 @@ void beispiel(const char* inifilename)
   //Priors::BasePrior* prior = priorManager.getprior();
 
   // Activate "primary" model functors
-  modelClaw.activatePrimaryModels(selectedmodels);
+  modelClaw().activatePrimaryModels(selectedmodels);
 
   // Set up a printer object
   // (will do this with a factory that reads the inifile, similar to the PriorManager)
@@ -112,7 +112,7 @@ void beispiel(const char* inifilename)
   Printers::asciiPrinter printer(outfile,infofile);
 
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);
+  Graphs::DependencyResolver dependencyResolver(Core(), iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -121,14 +121,14 @@ void beispiel(const char* inifilename)
   dependencyResolver.resolveNow();
 
   // Check that all requested models are used for at least one computation
-  modelClaw.checkPrimaryModelFunctorUsage();
+  modelClaw().checkPrimaryModelFunctorUsage();
 
   // Report the proposed (output) functor evaluation order
   dependencyResolver.printFunctorEvalOrder();
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
-  modelClaw.makeGraph();
+  modelClaw().makeGraph();
  
   //Let's define the prior
   Gambit::Priors::CompositePrior prior(iniFile);
@@ -139,7 +139,7 @@ void beispiel(const char* inifilename)
     if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
       return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile);
     else
-      return new Gambit::Scanner::Scanner_Function_Factory (Core, dependencyResolver, prior);
+      return new Gambit::Scanner::Scanner_Function_Factory (Core(), dependencyResolver, prior);
   };
   
   Gambit::Scanner::Factory_Base *factory = factory_func();
@@ -165,8 +165,8 @@ void beispiel(const char* inifilename)
   {
     // Set parameter values in active primary_model_parameter functors
     for(activemodel_it 
-        it  = Core.getActiveModelFunctors()->begin(); 
-        it != Core.getActiveModelFunctors()->end();
+        it  = Core().getActiveModelFunctors()->begin(); 
+        it != Core().getActiveModelFunctors()->end();
         it++) 
     {
         modelname = it->first;

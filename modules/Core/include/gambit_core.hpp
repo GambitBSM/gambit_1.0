@@ -20,10 +20,8 @@
 #include <map>
 #include <vector>
 
-//DEPRECIATE #include "logs.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
-#include "error_handlers.hpp"
 
 namespace Gambit
 {
@@ -62,52 +60,48 @@ namespace Gambit
     public:
 
       /// Constructor, sets safe mode
-      gambit_core(bool safe) : safe_mode_on(safe) {}
+      gambit_core(bool);
 
       /// Destructor
       ~gambit_core(){}
 
       /// Is the scan running in safe mode?
-      bool safe_mode() { return safe_mode_on; }
+      bool safe_mode();
 
       /// Add a new module functor to functorList
-      void registerModuleFunctor(functor &f) { functorList.push_back(&f); }
+      void registerModuleFunctor(functor&);
 
       /// Add a new module functor to nestFunctorList
-      void registerNestedModuleFunctor(functor &f) { nestedFunctorList.push_back(&f); }
+      void registerNestedModuleFunctor(functor&);
 
       /// Add a new backend functor to backendFunctorList
-      void registerBackendFunctor(functor &f) { backendFunctorList.push_back(&f); }
+      void registerBackendFunctor(functor&);
 
       /// Add a new primary model functor to primaryModelFunctorList
-      void registerPrimaryModelFunctor(primary_model_functor &f) 
-      {
-        registerModuleFunctor(f);
-        primaryModelFunctorList.push_back(&f); 
-      }
+      void registerPrimaryModelFunctor(primary_model_functor&); 
 
       /// Add an entry to the map of activated primary model functors
-      void registerActiveModelFunctor(primary_model_functor &f) 
-      {
-        activeModelFunctorList[f.origin()] = &f;
-      }
+      void registerActiveModelFunctor(primary_model_functor&); 
 
       /// Get a pointer to the list of module functors
-      const fVec* getModuleFunctors() const { return &functorList; } 
+      const fVec* getModuleFunctors() const ; 
 
       /// Get a pointer to the list of nested module functors
-      const fVec* getNestedModuleFunctors() const { return &nestedFunctorList; } 
+      const fVec* getNestedModuleFunctors() const ; 
 
       /// Get a pointer to the list of backend model functors
-      const fVec* getBackendFunctors() const { return &backendFunctorList; }
+      const fVec* getBackendFunctors() const ;
 
       /// Get a pointer to the list of primary model functors
-      const pmfVec* getPrimaryModelFunctors() const { return &primaryModelFunctorList; }
+      const pmfVec* getPrimaryModelFunctors() const ;
 
       /// Get a pointer to the map of all user-activated primary model functors
-      const pmfMap* getActiveModelFunctors() const { return &activeModelFunctorList; }
+      const pmfMap* getActiveModelFunctors() const ;
 
   };
+
+  /// Core accessor function
+  gambit_core& Core();
 
 }
 

@@ -139,6 +139,9 @@ namespace Gambit
  
   }
 
+  /// Claw accessor function
+  ModelBit::ModelFunctorClaw& modelClaw();
+
 }
 
 #endif

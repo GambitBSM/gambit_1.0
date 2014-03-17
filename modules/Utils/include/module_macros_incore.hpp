@@ -52,7 +52,7 @@
 
 #include "functors.hpp"
 #include "exceptions.hpp"
-#include "create_core.hpp"
+#include "gambit_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
@@ -570,7 +570,7 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    Core.registerModuleFunctor(Functown::FUNCTION);                            \
+    Core().registerModuleFunctor(Functown::FUNCTION);                          \
     BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
@@ -636,7 +636,7 @@
       template <>                                                              \
       void rt_register_function_nesting<Tags::FUNCTION> ()                     \
       {                                                                        \
-        Core.registerNestedModuleFunctor(Functown::FUNCTION);                  \
+        Core().registerNestedModuleFunctor(Functown::FUNCTION);                \
         Functown::FUNCTION.setLoopManagerCapability(STRINGIFY(LOOPMAN));       \
         Pipes::FUNCTION::Loop::iteration = Functown::FUNCTION.iterationPtr();  \
       }                                                                        \

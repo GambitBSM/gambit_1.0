@@ -32,7 +32,7 @@
 #include "model_functions.hpp"
 #include "module_macros_incore.hpp"
 #include "types_rollcall.hpp"
-#include "create_claw.hpp"
+#include "modelbit.hpp"
 
 
 // MACRO DEFINITIONS. 
@@ -84,26 +84,25 @@
         /* Runtime addition of model to GAMBIT (modelClaw) database */         \
         void rt_add_model()                                                    \
         {                                                                      \
-          modelClaw.add_model(STRINGIFY(MODEL));                               \
+          modelClaw().add_model(STRINGIFY(MODEL));                             \
         }                                                                      \
                                                                                \
         /* Runtime addition of model's parents to ModelClaw database */        \
-        /* ///TODO: need to change this to allow multiple parents */           \
         void rt_add_parents()                                                  \
         {                                                                      \
-          modelClaw.add_parents(STRINGIFY(MODEL), STRINGIFY(PARENT));          \
+          modelClaw().add_parents(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
         }                                                                      \
                                                                                \
         /* Runtime addition of model's lineage to ModelClaw database */        \
         void rt_add_lineage()                                                  \
         {                                                                      \
-          modelClaw.add_lineage(STRINGIFY(MODEL), lineage);                    \
+          modelClaw().add_lineage(STRINGIFY(MODEL), lineage);                  \
         }                                                                      \
                                                                                \
         /* Runtime addition of model-as-a-descendant to ModelClaw databases */ \
         void rt_add_descendant()                                               \
         {                                                                      \
-          modelClaw.add_descendant(STRINGIFY(MODEL), &is_descendant_of);       \
+          modelClaw().add_descendant(STRINGIFY(MODEL), &is_descendant_of);     \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
@@ -428,7 +427,7 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    Core.registerPrimaryModelFunctor(Functown::FUNCTION);                      \
+    Core().registerPrimaryModelFunctor(Functown::FUNCTION);                    \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \

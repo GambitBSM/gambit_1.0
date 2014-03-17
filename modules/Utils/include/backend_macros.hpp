@@ -40,7 +40,7 @@
 #include "util_macros.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
-#include "create_core.hpp"
+#include "gambit_core.hpp"
 #include "backend_type_macros.hpp"
 #include "log.hpp"
 
@@ -124,8 +124,8 @@ REGISTER_BACKEND_LOGTAG                                                     \
 /// defining simple 'get/set' functions and
 /// wrapping these functions in backend functors.
 /// Fully compatible with Fortran arrays and common blocks
-#define BE_VARIABLE(TYPEMACRO, SYMBOLNAME, CAPABILITY)                 \
-    BE_VARIABLE_I(BOOST_PP_TUPLE_ELEM(1,STRIP_PARENS(TYPEMACRO)),      \
+#define BE_VARIABLE(TYPEMACRO, SYMBOLNAME, CAPABILITY)                      \
+    BE_VARIABLE_I(BOOST_PP_TUPLE_ELEM(1,STRIP_PARENS(TYPEMACRO)),           \
     BE_VAR_GETTYPE(STRIP_PARENS(TYPEMACRO)),                                \
     BOOST_PP_TUPLE_ELEM(0,STRIP_PARENS(TYPEMACRO)),                         \
     BOOST_PP_TUPLE_ELEM(2,STRIP_PARENS(TYPEMACRO)),                         \
@@ -228,7 +228,7 @@ namespace Gambit                                                            \
         }                                                                   \
                                                                             \
         /* Register functors */                                             \
-        Core.registerBackendFunctor(Functown::NAME);                        \
+        Core().registerBackendFunctor(Functown::NAME);                      \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \
@@ -290,8 +290,8 @@ namespace Gambit                                                            \
       {                                                                     \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         NAME##fortranPartPtr = reinterpret_cast<TYPE::fortranPart*>(pSym);  \
-        Core.registerBackendFunctor(Functown::get##NAME);                   \
-        Core.registerBackendFunctor(Functown::set##NAME);                   \
+        Core().registerBackendFunctor(Functown::get##NAME);                 \
+        Core().registerBackendFunctor(Functown::set##NAME);                 \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \
@@ -486,7 +486,7 @@ namespace Gambit                                                                
         }                                                                                       \
                                                                                                 \
         /* Register functor. */                                                                 \
-        Core.registerBackendFunctor(Functown::NAME);                                            \
+        Core().registerBackendFunctor(Functown::NAME);                                          \
       }                                                                                         \
                                                                                                 \
       /* The code within the void function 'constructVarPointer_NAME'                           \
@@ -542,7 +542,7 @@ namespace Gambit                                                            \
                                                                             \
       void CAT(constructFuncPointer_,NAME)()                                \
       {                                                                     \
-        Core.registerBackendFunctor(Functown::NAME);                        \
+        Core().registerBackendFunctor(Functown::NAME);                      \
       }                                                                     \
                                                                             \
       namespace ini                                                         \

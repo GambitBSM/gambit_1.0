@@ -20,7 +20,7 @@
 #include <iostream>
 #include <omp.h>
 
-#include "extern_core.hpp"
+#include "gambit_core.hpp"
 #include "util_types.hpp"
 #include "standalone_error_handlers.hpp"
 #include "functors.hpp"
@@ -287,7 +287,7 @@ namespace Gambit
 
         backend_functor<TYPE, ARGS...> * temp_functor_ptr;
 
-        if (Core.safe_mode())                                            
+        if (Core().safe_mode())                                            
         {                                                                
           temp_functor_ptr = dynamic_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
           if (temp_functor_ptr == 0)                                                

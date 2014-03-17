@@ -331,4 +331,11 @@ namespace Gambit
     
   }
 
+  /// Claw accessor function
+  ModelBit::ModelFunctorClaw& modelClaw()
+  {
+    static ModelBit::ModelFunctorClaw local(Core());
+    return local;
+  }
+
 }
