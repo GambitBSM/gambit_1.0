@@ -647,7 +647,7 @@ namespace Gambit
     ////////////////////////////////////////////////////////////////////////////
 
     // Generate linear 1-dim grid
-    std::vector<double> linspace(double x0, double x1, unsigned int n)
+    inline std::vector<double> linspace(double x0, double x1, unsigned int n)
     {
         std::vector<double> ret;
         double dx = 0;
@@ -661,7 +661,7 @@ namespace Gambit
     }
 
     // Generate logarithmic 1-dim grid
-    std::vector<double> logspace(double x0, double x1, unsigned int n)
+    inline std::vector<double> logspace(double x0, double x1, unsigned int n)
     {
         std::vector<double> ret;
         double dx = 0;
