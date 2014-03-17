@@ -8,10 +8,16 @@ module testmodule
   0, 0/), [3,2,2]))  
   common /commonBlock/ a,b,c,d
 
-contains
+end module testmodule
+
 
   subroutine printStuff()
     implicit none
+    double precision, dimension(-2:0) :: a
+    double precision, dimension(3) :: b   
+    integer :: c
+    integer, dimension(1:3,0:1,-1:0) :: d
+    common /commonBlock/ a,b,c,d
     write(*,*) "a:    ", a 
     write(*,*) "b:    ", b
     write(*,*) "c:    ", c   
@@ -21,6 +27,11 @@ contains
 
   subroutine set_d()
     implicit none 
+    double precision, dimension(-2:0) :: a
+    double precision, dimension(3) :: b   
+    integer :: c
+    integer, dimension(1:3,0:1,-1:0) :: d
+    common /commonBlock/ a,b,c,d
     d(1,0,-1) = -101
     d(1,0,0) = 100    
     d(1,1,-1) = -111
@@ -36,6 +47,7 @@ contains
   end subroutine set_d
 
   subroutine fptrRoutine(i,j,func)
+    implicit none
     double precision, dimension(3), intent(inout) :: i
     integer, intent(in) :: j
     interface AFunc
@@ -49,6 +61,7 @@ contains
   end subroutine fptrRoutine
 
   double precision function doubleFuncArray1(i)
+    implicit none
     double precision, dimension(3), intent(in) :: i
     write(*,*) " This is doubleFuncArray1 called with arguments:",i
     doubleFuncArray1 = i(1)
@@ -56,6 +69,7 @@ contains
   end function
 
   double precision function doubleFuncArray2(i)
+    implicit none
     double precision, dimension(3), intent(in) :: i
     write(*,*) " This is doubleFuncArray2 called with arguments:",i
     doubleFuncArray2 = i(2)
@@ -63,10 +77,11 @@ contains
   end function
 
   double precision function doubleFunc(i)
+    implicit none
     double precision, intent(in) :: i
     write(*,*) " This is doubleFunc called with arguments:",i
     doubleFunc = i*3.14
     return
   end function
 
-end module testmodule
+
