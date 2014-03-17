@@ -36,6 +36,7 @@
 #include "graphs.hpp"
 #include "gambit_core.hpp"
 #include "util_types.hpp"
+#include "stream_printers.hpp"
 
 namespace Gambit
 {
