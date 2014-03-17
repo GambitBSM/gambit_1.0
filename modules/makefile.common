@@ -188,7 +188,7 @@ ifdef GSL
   CFLAGS += $(GSL_CXXFLAGS)
   GSL_LDFLAGS := -L$(GSLLIB)
 endif
-GSL_LDFLAGS += -lgsl -llapack
+GSL_LDFLAGS += -lgsl -lgslcblas -lm
 ifndef SHH
   $(info INFO:)
   $(info -- GSL Flags --)
