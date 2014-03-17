@@ -23,17 +23,19 @@
 #include <string>
 #include <cmath>
 #include <functional>
+#include <iostream>
+#include <fstream>
 //#include "boost/lambda/lambda.hpp"
 //#include "boost/function/function.hpp"
-//#include <gsl/gsl_integration.h>
+#include <gsl/gsl_integration.h>
 
 namespace Gambit 
   {
   namespace DarkBit
     {
-    /////////////////////////
-    // Base function object
-    /////////////////////////
+    //////////////////////////////////////////
+    // Central abstract Base Function object
+    //////////////////////////////////////////
 
     // Abstract base class for double^n --> double functions.  
     class BaseFunction;
@@ -142,7 +144,7 @@ namespace Gambit
             BFptr lineOfSightIntegral(double D);
             BFptr fixPar(int i, double x);
             BFptr rotSym(int i);
-            BFptr tabularize();
+            BFptr tabularize(std::vector<double> xgrid);
             BFptr sum(BFptr f2);
 
             // Member functions that are optionally available for only a subset
@@ -152,6 +154,22 @@ namespace Gambit
                 (void)vec; (void)i; (void)E0; (void)E1;
                 failHard("Integrator not implemented.");
                 return 0;
+            }
+
+            // Member functions for file IO
+            void writeToFile(std::vector<double> xgrid, std::ofstream & os)
+            {
+                if(os)
+                {
+                    for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
+                    {
+                        os << *it << " " << this->operator()(*it) << std::endl;
+                    }
+                }
+                else
+                {
+                    std::cout << "Warning: outputfile not open for writing." << std::endl;
+                }
             }
 
             // Member functions that change the state of the current base function object.
@@ -217,184 +235,6 @@ namespace Gambit
     inline double BFplainFunction(double x0,double x1,double x2,double x3,double x4,double x5,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2, x3, x4, x5); }
 
 
-    /////////////////////////////////////////////////////////////////////
-    // Helper classes that create new base functions from existing ones
-    /////////////////////////////////////////////////////////////////////
-
-    // General mapping 1-dim --> n-dim, assuming rotational symmetry
-    class BFrotSym : public BaseFunction
-    {
-        public:
-            BFrotSym(BFptr radialProfile, unsigned int ndim) : BaseFunction("RotSym", ndim)
-            {
-                if (radialProfile->getNdim() != 1) failHard("RotSym constructor requires 1-dim radial profile.");
-                this->radialProfile = radialProfile;
-            };
-        private:
-            double value(const BFargVec &args)
-            {
-                double r = 0;
-                for (unsigned int i = 0; i < ndim; i++)
-                {
-                    r += args[i] * args[i];
-                }
-                r = sqrt(r);
-                return (*(this->radialProfile))(r);
-            }
-            BFptr radialProfile;
-    };
-
-    // General mapping n-dim --> (n-1)-dim, by fixing one parameter
-    class BFfixPar: public BaseFunction
-    {
-        public:
-            BFfixPar(BFptr parent, int i, double x) : 
-                BaseFunction("FixPar", parent->getNdim()-1), 
-                myPointer(parent), index(i), x(x) {}
-
-            double value(const BFargVec &args)
-            {
-                BFargVec myArgs = args;
-                myArgs.insert(myArgs.begin() + index, x);
-                return (*myPointer)(myArgs);
-            }
-
-        private:
-            BFptr myPointer;
-            int index;
-            double x;
-    };
-
-    // General mapping n-dim --> (n-1)-dim, integration along one argument
-    class BFintegrate : public BaseFunction, public gsl_function
-    {
-        public:
-            BFintegrate(BFptr integrand, unsigned int i, double x0, double x1) :
-                BaseFunction("Integrate", integrand->getNdim()-1), 
-                x0(x0), x1(x1), integrand(integrand), index(i) {}
-
-        private:
-            double value(const BFargVec &args)
-            {
-                // If integrand has its own integrator, use that.
-                if (integrand->hasIntegrator())
-                {
-                    return integrand->integrator(args, index, x0, x1);
-                }
-
-                //
-                // Otherwise, we use GSL:
-                //
-                double result, error;
-
-                // Build up n-dim argument vector for integrand from (n-1)-dim args.
-                fullArgs.clear();
-                for (unsigned int i = 0; i < args.size(); ++i)
-                {
-                    fullArgs.push_back(args[i]);
-                    if (i == index) fullArgs.push_back(0);
-                }
-
-                // Setup workspace etc.
-                // TODO: Possibly increase workspace size?
-                gsl_integration_workspace * w = gsl_integration_workspace_alloc (10000);
-
-                // Setup gsl_function
-                function=&BFintegrate::invoke;
-                params=this;
-
-                //TODO: Add error checks to integration output!!
-                gsl_integration_qags(this, x0, x1, 0, 1e-7, 10000, w, &result, &error);
-
-                return result;
-            }
-
-            // Static member function that invokes integrand
-            static double invoke(double x, void *params) {
-                BFintegrate * myBF = static_cast<BFintegrate*>(params);
-                (myBF->fullArgs)[myBF->index] = x;  // Set argument
-                return (*myBF->integrand)(myBF->fullArgs);
-            }
-
-            double x0, x1;  // Integration range
-            unsigned int index;  // index of variable to integrate over
-            BFptr integrand;  // n-dim integrand
-            BFargVec fullArgs;  // n-dim temporary argument list for integrand
-    };
-
-    // General mapping 3-dim --> 2-dim, line-of-sight integral
-    class BFlineOfSightIntegral : public BaseFunction 
-    {
-        public:
-            BFlineOfSightIntegral(BFptr integrand, double D) :
-                BaseFunction("LineOfSightIntegral", 2), D(D), integrand(integrand) 
-            {
-                if (integrand->getNdim()!=3) failHard("LineOfSightIntegral requires 3-dim density profile.");
-            }
-
-            double value(const BFargVec &args)
-            {
-                // TODO: Implement LOS-integral.  Two arguments are (theta, phi).
-                (void)args;
-                return 0;
-            }
-
-        private:
-            double D, theta, phi;
-            BFptr integrand;
-    };
-
-    // General mapping n-dim --> n-dim, tabularize underlying function
-    // NOTE: Right now, this is just a dummy function that does actually
-    // nothing but passing the original BF.
-    class BFtabularize : public BaseFunction
-    {
-        public:
-            BFtabularize(BFptr ptr) : BaseFunction("Tabularize", ptr->getNdim()), ptr(ptr)
-            {
-                // TODO: Implement grid scan of the function ptr and store
-                // information locally.
-            }
-
-            double value(const BFargVec &args)
-            {
-                // TODO: return interpolated value from grid
-                return (*ptr)(args);
-            }
-
-        private:
-            // TODO: Some n-dim grid with values
-            BFptr ptr;
-    };
-
-    // Adding two functions (n-dim, n-dim) --> n-dim
-    class BFsum: public BaseFunction
-    {
-        public:
-            BFsum(BFptr f1, BFptr f2) : BaseFunction("Sum", f1->getNdim()), f1(f1), f2(f2)
-            {
-                if (f1->getNdim()!=f2->getNdim()) failHard("BFsum can only sum objects with matching dimensionality.");
-            }
-
-            double value(const BFargVec &args)
-            {
-                return (*f1)(args) + (*f2)(args);
-            }
-
-        private:
-            BFptr f1;
-            BFptr f2;
-    };
-
-    // Definition of factory functions for above helper classes that are provided by the base function object
-    inline BFptr BaseFunction::tabularize() { return BFptr(new BFtabularize(shared_from_this())); }
-    inline BFptr BaseFunction::sum(BFptr f2) { return BFptr(new BFsum(shared_from_this(), f2)); }
-    inline BFptr BaseFunction::lineOfSightIntegral(double D) { return BFptr(new BFlineOfSightIntegral(shared_from_this(), D)); }
-    inline BFptr BaseFunction::fixPar(int i, double x) { return BFptr (new BFfixPar(shared_from_this(), i, x)); }
-    inline BFptr BaseFunction::integrate(int i, double x0, double x1) { return BFptr (new BFintegrate(shared_from_this(), i, x0, x1)); }
-    inline BFptr BaseFunction::rotSym(int i) { return BFptr (new BFrotSym(shared_from_this(), i)); }
-
-
     ////////////////////////////////////////////////////////////////////////
     // Helper classes that generate new base function objects from scratch
     ////////////////////////////////////////////////////////////////////////
@@ -414,7 +254,6 @@ namespace Gambit
         private:
             double value(const BFargVec &args)
             {
-                std::cout << "ndim: " << ndim << std::endl;
                 if (ndim == 0) { return (*(double(*)()) ptr)();}
                 else if (ndim == 1) { return (*((double(*)(double)) ptr))(args[0]);}
                 else if (ndim == 2) { return (*((double(*)(double,double)) ptr))(args[0],args[1]);}
@@ -507,6 +346,193 @@ namespace Gambit
             std::vector<double> Xgrid;
             std::vector<double> Ygrid;
     };
+
+
+    /////////////////////////////////////////////////////////////////////
+    // Helper classes that create new base functions from existing ones
+    /////////////////////////////////////////////////////////////////////
+
+    // General mapping 1-dim --> n-dim, assuming rotational symmetry
+    class BFrotSym : public BaseFunction
+    {
+        public:
+            BFrotSym(BFptr radialProfile, unsigned int ndim) : BaseFunction("RotSym", ndim)
+            {
+                if (radialProfile->getNdim() != 1) failHard("RotSym constructor requires 1-dim radial profile.");
+                this->radialProfile = radialProfile;
+            };
+        private:
+            double value(const BFargVec &args)
+            {
+                double r = 0;
+                for (unsigned int i = 0; i < ndim; i++)
+                {
+                    r += args[i] * args[i];
+                }
+                r = sqrt(r);
+                return (*(this->radialProfile))(r);
+            }
+            BFptr radialProfile;
+    };
+
+    // General mapping n-dim --> (n-1)-dim, by fixing one parameter
+    class BFfixPar: public BaseFunction
+    {
+        public:
+            BFfixPar(BFptr parent, int i, double x) : 
+                BaseFunction("FixPar", parent->getNdim()-1), 
+                myPointer(parent), index(i), x(x) {}
+
+            double value(const BFargVec &args)
+            {
+                BFargVec myArgs = args;
+                myArgs.insert(myArgs.begin() + index, x);
+                return (*myPointer)(myArgs);
+            }
+
+        private:
+            BFptr myPointer;
+            int index;
+            double x;
+    };
+
+    // General mapping n-dim --> (n-1)-dim, integration along one argument
+    class BFintegrate : public BaseFunction, public gsl_function
+    {
+        public:
+            BFintegrate(BFptr integrand, unsigned int i, double x0, double x1) :
+                BaseFunction("Integrate", integrand->getNdim()-1), 
+                x0(x0), x1(x1), integrand(integrand), index(i) 
+            {
+                // Setup gsl workspace (just in case)
+                // TODO: Possibly increase workspace size?
+                gsl_workspace = gsl_integration_workspace_alloc (100000);
+            }
+
+            ~BFintegrate()
+            {
+                // Free gsl workspace
+                gsl_integration_workspace_free(gsl_workspace);
+            }
+
+        private:
+            double value(const BFargVec &args)
+            {
+                // If integrand has its own integrator, use that.
+                if (integrand->hasIntegrator())
+                {
+                    return integrand->integrator(args, index, x0, x1);
+                }
+
+                //
+                // Otherwise, we use GSL:
+                //
+                double result, error;
+
+                // Build up n-dim argument vector for integrand from (n-1)-dim args.
+                fullArgs.clear();
+                for (unsigned int i = 0; i < index; ++i) fullArgs.push_back(args[i]);
+                fullArgs.push_back(0);  // Argument that we integrate over.
+                for (unsigned int i = index; i < args.size(); ++i) fullArgs.push_back(args[i]);
+
+                // Setup gsl_function
+                function=&BFintegrate::invoke;
+                params=this;
+
+                //TODO: Add error checks to integration output!!
+                gsl_integration_qags(this, x0, x1, 0, 1e-7, 10000, gsl_workspace, &result, &error);
+
+                return result;
+            }
+
+            // Static member function that invokes integrand
+            static double invoke(double x, void *params) {
+                BFintegrate * myBF = static_cast<BFintegrate*>(params);
+                (myBF->fullArgs)[myBF->index] = x;  // Set argument
+                return (*myBF->integrand)(myBF->fullArgs);
+            }
+
+            double x0, x1;  // Integration range
+            BFptr integrand;  // n-dim integrand
+            unsigned int index;  // index of variable to integrate over
+            BFargVec fullArgs;  // n-dim temporary argument list for integrand
+            gsl_integration_workspace * gsl_workspace;  // GSL workspace
+    };
+
+    // General mapping 3-dim --> 2-dim, line-of-sight integral
+    class BFlineOfSightIntegral : public BaseFunction 
+    {
+        public:
+            BFlineOfSightIntegral(BFptr integrand, double D) :
+                BaseFunction("LineOfSightIntegral", 2), D(D), integrand(integrand) 
+            {
+                if (integrand->getNdim()!=3) failHard("LineOfSightIntegral requires 3-dim density profile.");
+            }
+
+            double value(const BFargVec &args)
+            {
+                // TODO: Implement LOS-integral.  Two arguments are (theta, phi).
+                (void)args;
+                return 0;
+            }
+
+        private:
+            double D, theta, phi;
+            BFptr integrand;
+    };
+
+    // General mapping n-dim --> n-dim, tabularize underlying function
+    // NOTE: Right now, this is just a dummy function that does actually
+    // nothing but passing the original BF.
+    class BFtabularize : public BaseFunction
+    {
+        public:
+            BFtabularize(BFptr ptrOrig, std::vector<double> xgrid) : BaseFunction("Tabularize", ptrOrig->getNdim())
+            {
+                for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
+                {
+                    ygrid.push_back((*ptrOrig)(*it));
+                }
+                ptr.reset(new BFinterpolation(xgrid, ygrid, 1));
+            }
+
+            double value(const BFargVec &args)
+            {
+                return (*ptr)(args);
+            }
+
+        private:
+            std::vector<double> xgrid;
+            std::vector<double> ygrid;
+            BFptr ptr;
+    };
+
+    // Adding two functions (n-dim, n-dim) --> n-dim
+    class BFsum: public BaseFunction
+    {
+        public:
+            BFsum(BFptr f1, BFptr f2) : BaseFunction("Sum", f1->getNdim()), f1(f1), f2(f2)
+            {
+                if (f1->getNdim()!=f2->getNdim()) failHard("BFsum can only sum objects with matching dimensionality.");
+            }
+
+            double value(const BFargVec &args)
+            {
+                return (*f1)(args) + (*f2)(args);
+            }
+
+        private:
+            BFptr f1;
+            BFptr f2;
+    };
+
+    // Definition of factory functions for above helper classes that are provided by the base function object
+    inline BFptr BaseFunction::tabularize(std::vector<double> xgrid) { return BFptr(new BFtabularize(shared_from_this(), xgrid)); }
+    inline BFptr BaseFunction::sum(BFptr f2) { return BFptr(new BFsum(shared_from_this(), f2)); }
+    inline BFptr BaseFunction::lineOfSightIntegral(double D) { return BFptr(new BFlineOfSightIntegral(shared_from_this(), D)); }
+    inline BFptr BaseFunction::fixPar(int i, double x) { return BFptr (new BFfixPar(shared_from_this(), i, x)); }
+    inline BFptr BaseFunction::integrate(int i, double x0, double x1) { return BFptr (new BFintegrate(shared_from_this(), i, x0, x1)); }
+    inline BFptr BaseFunction::rotSym(int i) { return BFptr (new BFrotSym(shared_from_this(), i)); }
 
 
     ///////////////////////////////////////////////////
@@ -612,8 +638,41 @@ namespace Gambit
             {
               return (pow(2., (beta - gamma) / alpha) * rhos / pow(r / rs, gamma) * pow(1 + pow(r / rs, alpha), (gamma - beta) / alpha));
             }
-
     };
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Some helper functions that we might want to move somewhere else at some
+    // point
+    ////////////////////////////////////////////////////////////////////////////
+
+    // Generate linear 1-dim grid
+    std::vector<double> linspace(double x0, double x1, unsigned int n)
+    {
+        std::vector<double> ret;
+        double dx = 0;
+        if (n > 1)
+            dx = (x1-x0)/(n-1);
+            for (unsigned int i = 0; i<n; i++)
+            {
+                ret.push_back(x0 + i * dx);
+            }
+        return ret;
+    }
+
+    // Generate logarithmic 1-dim grid
+    std::vector<double> logspace(double x0, double x1, unsigned int n)
+    {
+        std::vector<double> ret;
+        double dx = 0;
+        if (n > 1)
+            dx = (x1-x0)/(n-1);
+            for (unsigned int i = 0; i<n; i++)
+            {
+                ret.push_back(pow(10, x0 + i * dx));
+            }
+        return ret;
+    }
   }
 }
 
