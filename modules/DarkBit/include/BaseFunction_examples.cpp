@@ -12,6 +12,8 @@
 //
 
 #include "DarkBit_BaseFunctions.hpp"
+#include <iostream>
+#include <fstream>
 using namespace Gambit::DarkBit;
 
 int main()
@@ -109,29 +111,39 @@ int main()
 
     // SPECIFIC EXAMPLES:
     // ------------------
-    //
+
     // A) Generating functions from tables
-    
     BFargVec xgrid; xgrid.push_back(1.); xgrid.push_back(2.); xgrid.push_back(3.); xgrid.push_back(4.);
     BFargVec ygrid; ygrid.push_back(4.); ygrid.push_back(3.); ygrid.push_back(2.); ygrid.push_back(1.);
     BFptr interpolated1D(new BFinterpolation(xgrid, ygrid, 1));
-
     std::cout << "Value of interpolated1D: " << (*interpolated1D)(2.5) << std::endl;
 
 
-    // B) Performing integrations over functions
-
-    // Fails right now:
-    // TODO:  Make integration routines work in multiple dimensions
-    // std::cout << "Integrated: " << interpolated1D->integrate(0, 1, 2) << std::endl;
-
-
-    // C) Constrution of new function objects using the C++11 lambda
+    // B) Constrution of new function objects using the C++11 lambda
     // expressions.  This is neat.
+    BFptr fromLambda(new BFfromPlainFunction( [](double r, double l)  {return 1/(0.0001+r) * l * 2;} ));
+    std::cout << "Value from fromLambda: " << (*fromLambda)(129.6, 1) << std::endl;
 
-    BFptr fromLambda(new BFfromPlainFunction( [](double r, double l) {return r*l * 3;} ));
 
-    std::cout << "Value from fromLambda: " << (*fromLambda)(123,321) << std::endl;
+    // C) Performing integrations over functions
+    BFptr integrated = fromLambda->integrate(0, 0., 10.);  // Integration over r = 0...10
+    std::cout << "Integrated: " << (*integrated)(1) << std::endl;  // l = 1
+    std::cout << "Integrated: " << (*integrated)(2) << std::endl;  // l = 2
+    // Integrals can be chained to get integrals over e.g. 2-dim space:
+    BFptr integratedCompletely = integrated->integrate(0, 0., 10.);  // Integration over r,l = 0...10
+    std::cout << "Complete integration: " << (*integratedCompletely)() << std::endl;
+
+
+    // D) Tabularizing analytical functions
+    xgrid = linspace(1, 100, 100);
+    BFptr tabularized = integrated->tabularize(xgrid);
+
+
+    // E) Write to file
+    std::ofstream os;
+    os.open("test.dat");
+    tabularized->writeToFile(linspace(1, 200, 10), os);
+    os.close();
 
 
     // THE USE OF PLAIN FUNCTIONS:

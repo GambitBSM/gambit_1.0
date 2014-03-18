@@ -619,7 +619,7 @@ namespace Gambit {
       }
 
       // Resample function
-      DiffYield3Body = DiffYield3Body->tabularize();  
+      // DiffYield3Body = DiffYield3Body->tabularize(logspace(0, 2, 100));
 
       // Sum two- and three-body spectra and return result
       result = DiffYield2Body->sum(DiffYield3Body);
