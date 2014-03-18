@@ -12,6 +12,10 @@
 ///          (anders.kvellestad@fys.uio.no) 
 ///   \date 2013 Apr, Nov
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca) 
+///   \date 2014 Mar
+///
 ///  *********************************************
 
 #ifndef __safety_bucket_hpp__
