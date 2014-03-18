@@ -42,26 +42,29 @@ namespace Gambit
       primaryModelFunctorList.push_back(&f); 
     }
 
-    /// Add an entry to the map of activated primary model functors
-    void gambit_core::registerActiveModelFunctor(primary_model_functor &f) 
+    /// Add entries to the map of activated primary model functors
+    void gambit_core::registerActiveModelFunctors(const gambit_core::pmfVec& fvec) 
     {
-      activeModelFunctorList[f.origin()] = &f;
+      for (gambit_core::pmfVec::const_iterator it = fvec.begin(); it != fvec.end(); ++it)
+      {  
+        activeModelFunctorList[(*it)->origin()] = *it;
+      }
     }
 
-    /// Get a pointer to the list of module functors
-    const gambit_core::fVec* gambit_core::getModuleFunctors() const { return &functorList; } 
+    /// Get a reference to the list of module functors
+    const gambit_core::fVec& gambit_core::getModuleFunctors() const { return functorList; } 
 
-    /// Get a pointer to the list of nested module functors
-    const gambit_core::fVec* gambit_core::getNestedModuleFunctors() const { return &nestedFunctorList; } 
+    /// Get a reference to the list of nested module functors
+    const gambit_core::fVec& gambit_core::getNestedModuleFunctors() const { return nestedFunctorList; } 
 
-    /// Get a pointer to the list of backend model functors
-    const gambit_core::fVec* gambit_core::getBackendFunctors() const { return &backendFunctorList; }
+    /// Get a reference to the list of backend model functors
+    const gambit_core::fVec& gambit_core::getBackendFunctors() const { return backendFunctorList; }
 
-    /// Get a pointer to the list of primary model functors
-    const gambit_core::pmfVec* gambit_core::getPrimaryModelFunctors() const { return &primaryModelFunctorList; }
+    /// Get a reference to the list of primary model functors
+    const gambit_core::pmfVec& gambit_core::getPrimaryModelFunctors() const { return primaryModelFunctorList; }
 
-    /// Get a pointer to the map of all user-activated primary model functors
-    const gambit_core::pmfMap* gambit_core::getActiveModelFunctors() const { return &activeModelFunctorList; }
+    /// Get a reference to the map of all user-activated primary model functors
+    const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
 
 
   /// Core accessor function

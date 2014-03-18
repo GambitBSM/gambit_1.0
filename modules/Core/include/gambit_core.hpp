@@ -74,23 +74,23 @@ namespace Gambit
       /// Add a new primary model functor to primaryModelFunctorList
       void registerPrimaryModelFunctor(primary_model_functor&); 
 
-      /// Add an entry to the map of activated primary model functors
-      void registerActiveModelFunctor(primary_model_functor&); 
+      /// Add entries to the map of activated primary model functors
+      void registerActiveModelFunctors(const pmfVec&); 
 
-      /// Get a pointer to the list of module functors
-      const fVec* getModuleFunctors() const ; 
+      /// Get a reference to the list of module functors
+      const fVec& getModuleFunctors() const ; 
 
-      /// Get a pointer to the list of nested module functors
-      const fVec* getNestedModuleFunctors() const ; 
+      /// Get a reference to the list of nested module functors
+      const fVec& getNestedModuleFunctors() const ; 
 
-      /// Get a pointer to the list of backend model functors
-      const fVec* getBackendFunctors() const ;
+      /// Get a reference to the list of backend model functors
+      const fVec& getBackendFunctors() const ;
 
-      /// Get a pointer to the list of primary model functors
-      const pmfVec* getPrimaryModelFunctors() const ;
+      /// Get a reference to the list of primary model functors
+      const pmfVec& getPrimaryModelFunctors() const ;
 
-      /// Get a pointer to the map of all user-activated primary model functors
-      const pmfMap* getActiveModelFunctors() const ;
+      /// Get a reference to the map of all user-activated primary model functors
+      const pmfMap& getActiveModelFunctors() const ;
 
   };
 

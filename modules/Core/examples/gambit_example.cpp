@@ -33,10 +33,10 @@ void beispiel()
 {
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
-  cout << "Registered module functors [Core().getModuleFunctors->size()]: " <<
-    Core().getModuleFunctors()->size() << endl;
-  cout << "Registered backend functors [Core().getBackendFunctors->size()]: " <<
-    Core().getBackendFunctors()->size() << endl;
+  cout << "Registered module functors [Core().getModuleFunctors().size()]: " <<
+    Core().getModuleFunctors().size() << endl;
+  cout << "Registered backend functors [Core().getBackendFunctors().size()]: " <<
+    Core().getBackendFunctors().size() << endl;
 
   // Read INI file
   IniParser::IniFile iniFile;
@@ -57,7 +57,7 @@ void beispiel()
   Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
 
   // Activate "primary" model functors
-  modelClaw().activatePrimaryModels(selectedmodels);
+  Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
   // Set up a printer object
   Printers::ostreamPrinter printer(std::cout,1); 
@@ -72,7 +72,7 @@ void beispiel()
   dependencyResolver.resolveNow();
 
   // Check that all requested models are used for at least one computation
-  modelClaw().checkPrimaryModelFunctorUsage();
+  modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
   // Examples for getting information from the key/value section of the
   // inifile

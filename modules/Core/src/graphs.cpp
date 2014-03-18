@@ -314,14 +314,14 @@ namespace Gambit
     }
 
     /// Generic printer of the contents of a functor list
-    void DependencyResolver::printGenericFunctorList(const std::vector<functor*>* functorList) 
+    void DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList) 
     {
       const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
       cout << boost::format(formatString)%
        "ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
       for (std::vector<functor *>::const_iterator 
-          it  = functorList->begin();
-          it != functorList->end();
+          it  = functorList.begin();
+          it != functorList.end();
           ++it)
       {
         cout << boost::format(formatString)%
@@ -480,8 +480,8 @@ namespace Gambit
     {
       // - module functors go into masterGraph
       for (std::vector<functor *>::const_iterator 
-          it  = boundCore->getModuleFunctors()->begin();
-          it != boundCore->getModuleFunctors()->end();
+          it  = boundCore->getModuleFunctors().begin();
+          it != boundCore->getModuleFunctors().end();
           ++it)
       {
         // Ignore functors with status set to 0 in order to ignore primary_model_functors 
@@ -904,8 +904,8 @@ namespace Gambit
         // Loop over all existing backend vertices, and make a list of
         // functors that are available and fulfill the backend dependency requirement
         for (std::vector<functor *>::const_iterator
-            itf  = boundCore->getBackendFunctors()->begin(); 
-            itf != boundCore->getBackendFunctors()->end();
+            itf  = boundCore->getBackendFunctors().begin(); 
+            itf != boundCore->getBackendFunctors().end();
             ++itf) 
         {
           // Without inifile entry, just match capabilities and types exactly
