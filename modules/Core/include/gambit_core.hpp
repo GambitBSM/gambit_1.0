@@ -39,9 +39,6 @@ namespace Gambit
       typedef std::map<str, primary_model_functor*> pmfMap;
       /// @}     
 
-      /// Internal indication of the safe mode status
-      bool safe_mode_on;
-
       /// List of all declared module functors
       fVec functorList;
 
@@ -59,14 +56,11 @@ namespace Gambit
 
     public:
 
-      /// Constructor, sets safe mode
-      gambit_core(bool);
+      /// Constructor
+      gambit_core(){};
 
       /// Destructor
       ~gambit_core(){}
-
-      /// Is the scan running in safe mode?
-      bool safe_mode();
 
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);

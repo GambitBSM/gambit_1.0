@@ -52,11 +52,13 @@
 
 #include "functors.hpp"
 #include "exceptions.hpp"
-#include "gambit_core.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
 #include "log.hpp"
+#ifndef STANDALONE
+  #include "gambit_core.hpp"
+#endif
 
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/compl.hpp>
@@ -393,10 +395,24 @@
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
                                                                                \
+      /* Supplementary version */                                              \
+      template <typename TAG>                                                  \
+      void rt_register_function_supp ()                                        \
+      {                                                                        \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
+      }                                                                        \
+                                                                               \
       /* Runtime registration function for nesting requirements of             \
       observable/likelihood function TAG*/                                     \
       template <typename TAG>                                                  \
       void rt_register_function_nesting ()                                     \
+      {                                                                        \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
+      }                                                                        \
+                                                                               \
+      /* Supplementary version */                                              \
+      template <typename TAG>                                                  \
+      void rt_register_function_nesting_supp ()                                \
       {                                                                        \
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
@@ -551,8 +567,20 @@
   functions should be made to depend on them here. */                          \
 
 
+// Determine whether to make registration calls to the Core in the MAKE_FUNCTOR
+// macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)             \
+          MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)
+#else
+  #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)             \
+          MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)        \
+          MAKE_FUNCTOR_SUPP(FUNCTION)        
+#endif
+
+
 /// Main parts of the functor creation
-#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)               \
+#define MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)          \
                                                                                \
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
@@ -570,7 +598,6 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    Core().registerModuleFunctor(Functown::FUNCTION);                          \
     BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
@@ -594,9 +621,38 @@
   }                                                                            \
 
 
-/// Redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
+/// Main parts of the functor creation
+#define MAKE_FUNCTOR_SUPP(FUNCTION)                                            \
+                                                                               \
+  /* Set up the supplementary commands to be called at runtime to register the \
+  function*/                                                                   \
+  template <>                                                                  \
+  void rt_register_function_supp<Tags::FUNCTION> ()                            \
+  {                                                                            \
+    Core().registerModuleFunctor(Functown::FUNCTION);                          \
+  }                                                                            \
+                                                                               \
+  /* Create the supplementary function initialisation object */                \
+  namespace Ini                                                                \
+  {                                                                            \
+    ini_code CAT(FUNCTION,_supp) (&rt_register_function_supp<Tags::FUNCTION>); \
+  }                                                                            \
+
+
+// Determine whether to make registration calls to the Core in the 
+// CORE_NEEDS_MANAGER_WITH_CAPABILITY macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                          \
+          CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)
+#else
+  #define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                          \
+          CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)                     \
+          CORE_NEEDS_MANAGER_WITH_CAPABILITY_SUPP(LOOPMAN)
+#endif
+
+/// Main redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
 /// within the core.
-#define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                            \
+#define CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)                       \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "NEEDS_MANAGER_WITH_CAPABILITY."))                                          \
@@ -636,7 +692,6 @@
       template <>                                                              \
       void rt_register_function_nesting<Tags::FUNCTION> ()                     \
       {                                                                        \
-        Core().registerNestedModuleFunctor(Functown::FUNCTION);                \
         Functown::FUNCTION.setLoopManagerCapability(STRINGIFY(LOOPMAN));       \
         Pipes::FUNCTION::Loop::iteration = Functown::FUNCTION.iterationPtr();  \
       }                                                                        \
@@ -646,6 +701,36 @@
       {                                                                        \
         ini_code CAT(FUNCTION,_nesting)                                        \
          (&rt_register_function_nesting<Tags::FUNCTION>);                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Supplementray redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when 
+/// invoked from within the core.
+#define CORE_NEEDS_MANAGER_WITH_CAPABILITY_SUPP(LOOPMAN)                       \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the supplementary runtime command that registers the fact that \
+      FUNCTION must be run inside a loop manager with capability LOOPMAN.*/    \
+      template <>                                                              \
+      void rt_register_function_nesting_supp<Tags::FUNCTION> ()                \
+      {                                                                        \
+        Core().registerNestedModuleFunctor(Functown::FUNCTION);                \
+      }                                                                        \
+                                                                               \
+      /* Create the corresponding supplementary initialisation object */       \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT(FUNCTION,_nesting_supp)                                   \
+         (&rt_register_function_nesting_supp<Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \
     }                                                                          \

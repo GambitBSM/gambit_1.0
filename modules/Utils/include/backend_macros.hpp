@@ -40,9 +40,11 @@
 #include "util_macros.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
-#include "gambit_core.hpp"
 #include "backend_type_macros.hpp"
 #include "log.hpp"
+#ifndef STANDALONE
+  #include "gambit_core.hpp"
+#endif
 
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/logical/bitand.hpp>
@@ -52,8 +54,8 @@
 #include <boost/preprocessor/tuple/to_seq.hpp>
 
 /// Macro for adding a tag to the logging system for each backend
-/* (we don't strictly need all the namespaces for this, but I left them in
-    for consistency with the other macros) */
+//  We don't strictly need all the namespaces for this, but it's nice to have
+//  them for consistency with the other macros.
 #define REGISTER_BACKEND_LOGTAG                                             \
 namespace Gambit                                                            \
 {                                                                           \
@@ -96,7 +98,8 @@ namespace Gambit                                                            \
         {                                                                   \
           std::cout << "Failed loading library from " << LIBPATH            \
                     << " due to error: " << dlerror() << std::endl;         \
-          std::cout << "All functors generated from this library will get status=0" << std::endl; \
+          std::cout << "All functors generated from this library will get " \
+                       "status=0" << std::endl;                             \
           present = false;                                                  \
         }                                                                   \
         else                                                                \
@@ -134,19 +137,27 @@ REGISTER_BACKEND_LOGTAG                                                     \
     BE_VAR_GETCONSTRARG1(STRIP_PARENS(TYPEMACRO)),                          \
     BE_VAR_GETCONSTRARG2(STRIP_PARENS(TYPEMACRO)))
 
-/* Macros for getting the type exposed to the user */   
+
+/// Macros for exposing the type to the user   
+/// @{
 #define BE_VAR_GETTYPE(TYPEMACRO) CAT(BE_VAR_TYPE,BOOST_PP_TUPLE_ELEM(2,TYPEMACRO))(TYPEMACRO)
 #define BE_VAR_TYPE0(TYPEMACRO) (Gambit::Farray<BOOST_PP_TUPLE_ELEM(0,TYPEMACRO),BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))>)     // Fortran Array
 #define BE_VAR_TYPE1(TYPEMACRO) (BOOST_PP_TUPLE_ELEM(0,TYPEMACRO))                                                                          // General variable
 #define BE_VAR_TYPE2(TYPEMACRO) (BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))                                                                          // Fortran Common Block
+/// @}
 
-/* Macros for producing arrays necessary for the Farray constructor */   
+
+/// Macros for producing arrays necessary for the Farray constructor
+/// @{   
 #define BE_VAR_GETPRECONSTR(TYPEMACRO) CAT(BE_VAR_GETPRECONSTR,BOOST_PP_TUPLE_ELEM(2,TYPEMACRO))(TYPEMACRO)
 #define BE_VAR_GETPRECONSTR0(TYPEMACRO) (ADD_FARRAY_CONSTRUCTOR_ARRAYS(BOOST_PP_TUPLE_ELEM(1,TYPEMACRO),BOOST_PP_LIST_SIZE(BOOST_PP_TUPLE_ELEM(3,TYPEMACRO)),BOOST_PP_TUPLE_ELEM(3,TYPEMACRO))) // Fortran Array
-#define BE_VAR_GETPRECONSTR1(TYPEMACRO) ()                                                                                                                                                      // General variable
-#define BE_VAR_GETPRECONSTR2(TYPEMACRO) ()                                                                                                                                                      // Fortran Common Block
+#define BE_VAR_GETPRECONSTR1(TYPEMACRO) ()        // General variable
+#define BE_VAR_GETPRECONSTR2(TYPEMACRO)           // Fortran Common Block
+/// @}
 
-/* Macros for producing arguments to the Farray constructor */   
+
+/// Macros for producing arguments to the Farray constructor   
+/// @{   
 #define BE_VAR_GETCONSTRARG1(TYPEMACRO) CAT(BE_VAR_GETCONSTRARG1,BOOST_PP_TUPLE_ELEM(2,TYPEMACRO))(TYPEMACRO)
 #define BE_VAR_GETCONSTRARG10(TYPEMACRO) CAT(BOOST_PP_TUPLE_ELEM(1,TYPEMACRO),_temp_startArray)               // Fortran Array
 #define BE_VAR_GETCONSTRARG11(TYPEMACRO)                                                                      // General variable
@@ -155,27 +166,49 @@ REGISTER_BACKEND_LOGTAG                                                     \
 #define BE_VAR_GETCONSTRARG20(TYPEMACRO) CAT(BOOST_PP_TUPLE_ELEM(1,TYPEMACRO),_temp_endArray)                 // Fortran Array
 #define BE_VAR_GETCONSTRARG21(TYPEMACRO)                                                                      // General variable
 #define BE_VAR_GETCONSTRARG22(TYPEMACRO)                                                                      // Fortran Common Block
+/// @}
 
-/* Macros for calling the appropriate constructor */    
-#define BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,ARG,EXTRA1,EXTRA2) CAT(BE_VAR_CONSTRUCT,TYPEOPT)(NAME,TYPE,ARG,EXTRA1,EXTRA2)
-/* Fortran Array */
+
+/// Macros for calling the appropriate constructor
+/// @{      
+#define BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,ARG,EXTRA1,EXTRA2)               \
+        CAT(BE_VAR_CONSTRUCT,TYPEOPT)(NAME,TYPE,ARG,EXTRA1,EXTRA2)
+/// Fortran Array
 #define BE_VAR_CONSTRUCT0(NAME,TYPE,ARG,EXTRA1,EXTRA2)                      \
   CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG,EXTRA1,EXTRA2);                \
   NAME = &CAT(NAME,_keeper);
-/* General variable */
+/// General variable
 #define BE_VAR_CONSTRUCT1(NAME,TYPE,ARG,EXTRA1,EXTRA2) NAME = ARG;                                                 
-/* Fortran Common Block */
+/// Fortran Common Block
 #define BE_VAR_CONSTRUCT2(NAME,TYPE,ARG,EXTRA1,EXTRA2)                      \
   CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG);                              \
   NAME = &CAT(NAME,_keeper);
+/// @}
 
-/* For Fortran Arrays and Common Blocks we need an instance of the frontend object */    
+
+/// Macros for getting an instance of the frontend object, for Fortran Arrays and Common Blocks
+/// @{  
 #define BE_VAR_INSTANCE(TYPEOPT,TYPE,NAME) CAT(BE_VAR_INSTANCE,TYPEOPT)(TYPE,NAME)
 #define BE_VAR_INSTANCE0(TYPE,NAME) STRIP_PARENS(TYPE) CAT(NAME,_keeper);                                     // Fortran Array
 #define BE_VAR_INSTANCE1(TYPE,NAME)                                                                           // General variable
 #define BE_VAR_INSTANCE2(TYPE,NAME) STRIP_PARENS(TYPE) CAT(NAME,_keeper);                                     // Fortran Common Block
+/// @}
 
-#define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)  \
+
+// Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)                                    \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)
+#else
+  #define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)                                    \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)                               \
+          BE_VARIABLE_I_SUPP(NAME)
+#endif
+
+
+/// Main actual backend variable macro
+#define BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME,       \
+                           CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)   \
 namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
@@ -211,7 +244,8 @@ namespace Gambit                                                            \
         /* -- Obtain pointer from symbol */                                 \
         pSym = dlsym(pHandle, SYMBOLNAME);                                  \
         STRIP_PARENS(PRECONSTR)                                             \
-        BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,reinterpret_cast<BASETYPE*>(pSym), CONSTRARG1, CONSTRARG2)   \
+        BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,                                 \
+         reinterpret_cast<BASETYPE*>(pSym), CONSTRARG1, CONSTRARG2)         \
         /* -- Disable the functor if the library is not present             \
               or the symbol not found. */                                   \
         if(!present)                                                        \
@@ -227,8 +261,6 @@ namespace Gambit                                                            \
           Functown::NAME.setStatus(0);                                      \
         }                                                                   \
                                                                             \
-        /* Register functors */                                             \
-        Core().registerBackendFunctor(Functown::NAME);                      \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \
@@ -244,11 +276,8 @@ namespace Gambit                                                            \
 } /* end namespace Gambit */                                                \
 
 
-/// THIS CAN PROBABLY BE DELETED NOW:
-/// Draft version of new macro for constructing pointers to library variables,
-/// to work with reindexing.  Not at all finished, just ignore this for now...
-#define BE_VARIABLE_DRAFT(NAME, TYPE, SYMBOLNAME, FFLAG)                    \
-/*ASSERT(FFLAG == FORTRAN_STRUCTURE)*/                                      \
+/// Supplementary backend variable macro
+#define BE_VARIABLE_I_SUPP(NAME)                                            \
 namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
@@ -256,50 +285,18 @@ namespace Gambit                                                            \
     namespace BACKENDNAME                                                   \
     {                                                                       \
                                                                             \
-      TYPE::fortranPart * NAME##fortranPartPtr;                             \
-                                                                            \
-      /* Construct 'get' function */                                        \
-      TYPE get##NAME() { return TYPE(NAME##fortranPartPtr); }               \
-                                                                            \
-      /* Construct 'set' function */                                        \
-      void set##NAME(TYPE a) { *NAME##fortranPartPtr = a.myFortranPart; }   \
-                                                                            \
-                                                                            \
-      /* Create functor objects */                                          \
-      namespace Functown                                                    \
+      void CAT(constructVarPointer_supp_,NAME)()                            \
       {                                                                     \
-        auto get##NAME = makeBackendFunctor<TYPE>(                          \
-         Gambit::Backends::BACKENDNAME::get##NAME,                          \
-         STRINGIFY(NAME),                                                   \
-         STRINGIFY( CAT(BACKENDNAME,_##get##NAME##_capability) ),           \
-         STRINGIFY(TYPE),                                                   \
-         STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION) );                                              \
-                                                                            \
-        auto set##NAME = makeBackendFunctor<void>(                          \
-         Gambit::Backends::BACKENDNAME::set##NAME,                          \
-         STRINGIFY(NAME),                                                   \
-         STRINGIFY( CAT(BACKENDNAME,_##set##NAME##_capability) ),           \
-         "void",                                                            \
-         STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION) );                                              \
-                                                                            \
-      } /* end namespace Functown */                                        \
-                                                                            \
-      void CAT(constructVarPointer_,NAME)()                                 \
-      {                                                                     \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
-        NAME##fortranPartPtr = reinterpret_cast<TYPE::fortranPart*>(pSym);  \
-        Core().registerBackendFunctor(Functown::get##NAME);                 \
-        Core().registerBackendFunctor(Functown::set##NAME);                 \
+        /* Register functors */                                             \
+        Core().registerBackendFunctor(Functown::NAME);                      \
       }                                                                     \
                                                                             \
-      /* The code within the void function 'constructVarPointer_NAME'       \
+      /* The code within the void function 'constructVarPointer_supp_NAME'  \
          is executed when we create the following instance of               \
          the 'ini_code' struct. */                                          \
       namespace ini                                                         \
       {                                                                     \
-        ini_code NAME(&CAT(constructVarPointer_,NAME));                     \
+        ini_code CAT(NAME,_supp)(&CAT(constructVarPointer_supp_,NAME));     \
       }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
@@ -344,9 +341,6 @@ namespace Gambit
 #define ARG_FARRAY(TYPE,DIMS) (0,TYPE,DIMS)
 #define ARG_FARRAY_FPTR(TYPE,ARGLIST) (1,TYPE,ARGLIST,BEF_FPTR_CALLARGS_FE(ARGLIST),BEF_FPTR_CALLARGS_BE(ARGLIST))  
   
-//#define BE_FUNCTION_4(NAME, TYPE, ARGSLIST, SYMBOLNAME)                                     \
-  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, STRINGIFY(BACKENDNAME ## _ ## NAME ## _capability), 0 )
-  
 #define BE_FUNCTION_5(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)                                     \
   BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, 0 )
 
@@ -361,77 +355,108 @@ namespace Gambit
   BE_FUNC_GET_CALLARGS_FE(ARGSLIST), BE_FUNC_GET_CALLARGS_BE(ARGSLIST), SYMBOLNAME,                     \
   CAPABILITY, BE_FUNC_NEEDTRANS(ARGSLIST), HAS_FARRAYS_AND_CAN_BE_FPTR)
 
-/* Loop through argument list, and check for bracket enclosed arguments (produced by the ARG_FARRAY and ARG_FARRAY_FPTR macros). 
-   Return 1 if any exist, otherwise return 0. If any exist, a wrapper function is necessary. */  
+/// Loop through argument list, and check for bracket enclosed arguments (produced by the ARG_FARRAY and ARG_FARRAY_FPTR macros). 
+/// Return 1 if any exist, otherwise return 0. If any exist, a wrapper function is necessary.
+/// @{
 #define BE_FUNC_NEEDTRANS(ARG) BOOST_PP_SEQ_ELEM(0,BOOST_PP_SEQ_FOR_EACH(BE_FUNC_NEEDTRANS_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG) )(0))
 #define BE_FUNC_NEEDTRANS_I(X,Y,ARG) CAT(BE_FUNC_NEEDTRANS_I,HAS_PARENS(ARG))(ARG)
 #define BE_FUNC_NEEDTRANS_I0(ARG)
 #define BE_FUNC_NEEDTRANS_I1(ARG) (1)
+/// @}
 
-/* Expands to the argument list of the (frontend) function exposed to the user. */  
+/// Expands to the argument list of the (frontend) function exposed to the user. 
+/// @{
 #define BE_FUNC_GET_ARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_ARGS_FE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_ARGS_FE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_ARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BE_FUNC_GET_ARGS_FE_I0(ARG,IDX) ,ARG
 #define BE_FUNC_GET_ARGS_FE_I1(ARG,IDX) CAT(BE_FUNC_GET_ARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BE_FUNC_GET_ARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
 #define BE_FUNC_GET_ARGS_FE_II1(ARG,IDX) ,BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(3,ARG)
+/// @}
 
-/* Expands to the argument list of the backend function in the library. */  
+/// Expands to the argument list of the backend function in the library.
+/// @{
 #define BE_FUNC_GET_ARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_ARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_ARGS_BE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_ARGS_BE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BE_FUNC_GET_ARGS_BE_I0(ARG,IDX) , ARG
 #define BE_FUNC_GET_ARGS_BE_I1(ARG,IDX) CAT(BE_FUNC_GET_ARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BE_FUNC_GET_ARGS_BE_II0(ARG,IDX) , BOOST_PP_TUPLE_ELEM(1,ARG)*
 #define BE_FUNC_GET_ARGS_BE_II1(ARG,IDX) , BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(4,ARG)
+/// @}
 
-/* Expands to the argument list needed for calling the wrapper function. Contains named arguments. */  
+/// Expands to the argument list needed for calling the wrapper function. Contains named arguments.
+/// @{ 
 #define BE_FUNC_GET_CALLARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_CALLARGS_FE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_CALLARGS_FE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_CALLARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_FE_I0(ARG,IDX) ,ARG FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_FE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>& FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_FE_II1(ARG,IDX) ,BOOST_PP_TUPLE_ELEM(1,ARG)(*FE_arg##IDX) BOOST_PP_TUPLE_ELEM(3,ARG)
+/// @}
 
-/* Expands to the argument list passed by the wrapper function to the backend function. Contains conversion of named input arguments. */  
+/// Expands to the argument list passed by the wrapper function to the backend function. Contains conversion of named input arguments.
+/// @{ 
 #define BE_FUNC_GET_CALLARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_CALLARGS_BE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_CALLARGS_BE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_BE_I0(ARG,IDX) , FE_arg##IDX
 #define BE_FUNC_GET_CALLARGS_BE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BE_FUNC_GET_CALLARGS_BE_II0(ARG,IDX) , FE_arg##IDX.getArray()
 #define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) , reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(accessFrontBackFuncMap(reinterpret_cast<voidFptr>(FE_arg##IDX)))
+/// @}
 
-/* Expands to the argument list of a function pointer argument in the (frontend) function exposed to the user. */  
+/// Expands to the argument list of a function pointer argument in the (frontend) function exposed to the user.
+/// @{
 #define BEF_FPTR_CALLARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_FE_I,x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BEF_FPTR_CALLARGS_FE_I(X,Y,IDX,ARG) CAT(BEF_FPTR_CALLARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BEF_FPTR_CALLARGS_FE_I0(ARG,IDX) ,ARG
 #define BEF_FPTR_CALLARGS_FE_I1(ARG,IDX) CAT(BEF_FPTR_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
 #define BEF_FPTR_CALLARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
+/// @}
 
-/* Expands to the argument list of a function pointer argument in the backend function in the library. */  
+/// Expands to the argument list of a function pointer argument in the backend function in the library.
+/// @{
 #define BEF_FPTR_CALLARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BEF_FPTR_CALLARGS_BE_I(X,Y,IDX,ARG) CAT(BEF_FPTR_CALLARGS_BE_I,HAS_PARENS(ARG))(ARG,IDX)
 #define BEF_FPTR_CALLARGS_BE_I0(ARG,IDX) , ARG
 #define BEF_FPTR_CALLARGS_BE_I1(ARG,IDX) , BOOST_PP_TUPLE_ELEM(1,ARG)*
+/// @}
 
-/* Add a function pointer of type NAME##_BEtype */  
+/// Add a function pointer of type NAME##_BEtype
 #define BE_FUNC_ADD_UNWRAPPED_POINTER(NAME) NAME##_BEtype NAME##_unwrapped;
 
-/* Add a wrapper function in the cases where the function exposed to the user and the function in the library differ */  
+/// Add a wrapper function in the cases where the function exposed to the user and the function in the library differ
+/// @{
 #define BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS) CAT(BE_FUNC_GENERATE_WRAPPER_FUNC,TRANS)(TYPE,NAME,CALLARGS_FE,CALLARGS_BE)
 #define BE_FUNC_GENERATE_WRAPPER_FUNC0(TYPE,NAME,CALLARGS_FE,CALLARGS_BE)
 #define BE_FUNC_GENERATE_WRAPPER_FUNC1(TYPE,NAME,CALLARGS_FE,CALLARGS_BE) TYPE NAME##_wrapper CALLARGS_FE {return NAME##_unwrapped CALLARGS_BE ;}
+/// @}
 
-/* Connect pointers to the backend library */  
+/// Connect pointers to the backend library
+/// @{
 #define BE_FUNC_CONNECT_POINTERS(NAME,TRANS) CAT(BE_FUNC_CONNECT_POINTERS,TRANS)(NAME)
 #define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym);
 #define BE_FUNC_CONNECT_POINTERS1(NAME)                                                         \
   NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym);                                     \
   NAME = NAME##_wrapper;             
+/// @}
 
-/* Adds function to frontBackFuncMap */ 
+/// Adds function to frontBackFuncMap
 #define BE_FUNC_ADD_TO_FPTR_MAP(NAME) frontBackFuncMap.insert(std::make_pair( reinterpret_cast<voidFptr>(NAME), reinterpret_cast<voidFptr>(NAME##_unwrapped)));
 
-#define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)\
+
+// Determine whether to make registration calls to the Core or not in BE_FUNCTION_IMPL2, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)      \
+          BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)
+#else
+  #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)      \
+          BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR) \
+          BE_FUNCTION_IMPL2_SUPP(NAME)
+#endif
+
+/// Main actual backend function macro
+#define BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE,          \
+                               SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)      \
 namespace Gambit                                                                                \
 {                                                                                               \
   namespace Backends                                                                            \
@@ -470,8 +495,9 @@ namespace Gambit                                                                
         /* -- Obtain pointer from symbol */                                                     \
         pSym = dlsym(pHandle, SYMBOLNAME);                                                      \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
-        /* Add function to frontBackFuncMap to give correct conversion when sent as an argument */        \
-        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),BE_FUNC_ADD_TO_FPTR_MAP(NAME), ) \
+        /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),                       \
+                                     BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
         Functown::NAME.updatePointer(NAME);                                                     \
         /* -- Disable the functor if the library is not present or the symbol not found. */     \
         if(!present)                                                                            \
@@ -485,8 +511,6 @@ namespace Gambit                                                                
           Functown::NAME.setStatus(0);                                                          \
         }                                                                                       \
                                                                                                 \
-        /* Register functor. */                                                                 \
-        Core().registerBackendFunctor(Functown::NAME);                                          \
       }                                                                                         \
                                                                                                 \
       /* The code within the void function 'constructVarPointer_NAME'                           \
@@ -500,27 +524,50 @@ namespace Gambit                                                                
     } /* end namespace BACKENDNAME */                                                           \
   } /* end namespace Backends */                                                                \
 } /* end namespace Gambit */                                                                    \
-/// @}
+
+/// Supplemenentary backend function macro
+#define BE_FUNCTION_IMPL2_SUPP(NAME)                                                            \
+namespace Gambit                                                                                \
+{                                                                                               \
+  namespace Backends                                                                            \
+  {                                                                                             \
+    namespace BACKENDNAME                                                                       \
+    {                                                                                           \
+                                                                                                \
+      void CAT(constructFuncPointer_supp_,NAME)()                                               \
+      {                                                                                         \
+        /* Register functor. */                                                                 \
+        Core().registerBackendFunctor(Functown::NAME);                                          \
+      }                                                                                         \
+                                                                                                \
+      /* The code within the void function 'constructVarPointer_supp_NAME'                      \
+         is executed when we create the following instance of                                   \
+         the 'ini_code' struct. */                                                              \
+      namespace ini                                                                             \
+      {                                                                                         \
+        ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_supp_,NAME));                        \
+      }                                                                                         \
+                                                                                                \
+    } /* end namespace BACKENDNAME */                                                           \
+  } /* end namespace Backends */                                                                \
+} /* end namespace Gambit */                                                                    \
 
 
-/// \name Wrapping macros for convenience functions
-///
+// Determine whether to make registration calls to the Core or not in BE_CONV_FUNCTION, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define BE_CONV_FUNCTION(NAME, TYPE, CAPABILITY)                                             \
+          BE_CONV_FUNCTION_MAIN(NAME, TYPE, CAPABILITY)
+#else
+  #define BE_CONV_FUNCTION(NAME, TYPE, CAPABILITY)                                             \
+          BE_CONV_FUNCTION_MAIN(NAME, TYPE, CAPABILITY)                                        \
+          BE_CONV_FUNCTION_SUPP(NAME)
+#endif
+
+
+/// \name Main wrapping macro for convenience functions
 /// BE_CONV_FUNCTION(NAME, TYPE, CAPABILITY) is the macro used for wrapping 
 /// convenience functions in backend functors.
-///
-/// The third argument (CAPABILITY) is optional.
-/// If left out, it defaults to "[backend name]_[function name]_capability".
-/// @{
-#define BE_CONV_FUNCTION_2(NAME, TYPE)                                      \
-  BE_CONV_FUNCTION_IMPL(NAME, TYPE,                                         \
-   STRINGIFY(CAT(BACKENDNAME,_##NAME##_##capability)))                      \
-
-#define BE_CONV_FUNCTION_3(NAME, TYPE, CAPABILITY)                          \
-  BE_CONV_FUNCTION_IMPL(NAME, TYPE, CAPABILITY)                             \
-
-#define BE_CONV_FUNCTION(...) VARARG(BE_CONV_FUNCTION, __VA_ARGS__)
-
-#define BE_CONV_FUNCTION_IMPL(NAME, TYPE, CAPABILITY)                       \
+#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, CAPABILITY)                       \
 namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
@@ -540,6 +587,20 @@ namespace Gambit                                                            \
          STRINGIFY(VERSION) );                                              \
       } /* end namespace Functown */                                        \
                                                                             \
+    } /* end namespace BACKENDNAME */                                       \
+  } /* end namespace Backends */                                            \
+} /* end namespace Gambit */                                                \
+
+
+/// \name Supplementary wrapping macro for convenience functions
+#define BE_CONV_FUNCTION_SUPP(NAME)                                         \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace Backends                                                        \
+  {                                                                         \
+    namespace BACKENDNAME                                                   \
+    {                                                                       \
+                                                                            \
       void CAT(constructFuncPointer_,NAME)()                                \
       {                                                                     \
         Core().registerBackendFunctor(Functown::NAME);                      \
@@ -547,12 +608,12 @@ namespace Gambit                                                            \
                                                                             \
       namespace ini                                                         \
       {                                                                     \
-        ini_code NAME(&CAT(constructFuncPointer_,NAME));                    \
+        ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_,NAME));         \
       }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME */                                       \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
-/// @}
+
 
 #endif // __BACKEND_MACROS_HPP__

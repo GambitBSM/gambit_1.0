@@ -10,6 +10,7 @@
 ///   
 ///  \author Pat Scott
 ///  \date 2013 Aug
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -24,12 +25,6 @@ namespace Gambit
 {
 
   /// Definitions of public methods in GAMBIT core class.
-
-    /// Constructor, sets safe mode
-    gambit_core::gambit_core(bool safe) : safe_mode_on(safe) {}
-
-    /// Is the scan running in safe mode?
-    bool gambit_core::safe_mode() { return safe_mode_on; }
 
     /// Add a new module functor to functorList
     void gambit_core::registerModuleFunctor(functor &f) { functorList.push_back(&f); }
@@ -72,7 +67,7 @@ namespace Gambit
   /// Core accessor function
   gambit_core& Core()
   {
-    static gambit_core local(true);
+    static gambit_core local;
     return local;
   }
 
