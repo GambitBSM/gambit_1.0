@@ -19,7 +19,7 @@
 #ifndef __ScannerBit_hpp__
 #define __ScannerBit_hpp__
 
-#include "exception_map.hpp"
+#include "static_members.hpp"
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 

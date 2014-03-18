@@ -2,8 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  Initialisation of the map of all instances of
-///  the exceptions class.
+///  Initialisation of static member variables in 
+///  utility classes.
 ///
 ///  *********************************************
 ///
@@ -15,8 +15,11 @@
 ///
 ///  *********************************************
 
-#ifndef __exception_map_hpp__
-#define __exception_map_hpp__
+#ifndef __static_members_hpp__
+#define __static_members_hpp__
+
+#include "exceptions.hpp"
+#include "safety_bucket.hpp"
 
 namespace Gambit
 {
@@ -24,7 +27,11 @@ namespace Gambit
   /// Map of pointers to all instances of the exception class.
   std::map<const char*,exception*> exception::exception_map;
 
+  /// Flag indicating whether backend function buckets should 
+  /// operate in safe mode or not.  True by default.
+  bool BE_bucket_base::safe_mode = true;
+
 }
 
-#endif //#ifndef __exception_map_hpp__
+#endif //#ifndef __static_members_hpp__
 

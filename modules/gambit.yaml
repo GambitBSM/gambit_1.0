@@ -247,6 +247,9 @@ another_key:
 dependency_resolution:
   prefer_model_specific_functions: true
 
+#Whether to run GAMBIT in safe mode or not
+safe_mode: true
+
 #By default, errors are fatal and warnings non-fatal
 exceptions:
   dependency_resolver_error: fatal
