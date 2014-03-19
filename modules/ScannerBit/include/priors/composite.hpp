@@ -51,9 +51,9 @@ namespace Gambit
                 public:
                 
                         // Constructors defined in composite.cpp
-                        CompositePrior(const IniParser::IniFile& iniFile);
+                        CompositePrior(const Options &model_options, const Options &prior_options);
                         
-                        CompositePrior(const std::vector<std::string> &params, const IniParser::Options &options);
+                        CompositePrior(const std::vector<std::string> &params, const Options &options);
                         
                         inline std::vector<std::string> & getShownParameters() {return shown_param_names;}
                         

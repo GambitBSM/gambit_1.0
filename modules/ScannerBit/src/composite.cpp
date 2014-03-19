@@ -25,7 +25,7 @@
 #include <set>
 #include <map>
 #include <algorithm>
-#include <yaml_parser.hpp> // for the Options class
+#include <options_node.hpp> // for the Options class
 
 namespace Gambit 
 {
@@ -61,27 +61,27 @@ namespace Gambit
                 // the full prior.
                 
                 // Constructor
-                CompositePrior::CompositePrior(const IniParser::IniFile& iniFile)
+                CompositePrior::CompositePrior(const Options &model_options, const Options &prior_options)
                 {       
                         std::unordered_map<std::string, std::string> sameMap;
                         std::vector<BasePrior *> phantomPriors;
                         std::unordered_set<std::string> needSet;
                         
                         // Get model parameters from the inifile
-                        std::vector <std::string> modelNames = iniFile.getModelNames();
+                        std::vector <std::string> modelNames = model_options.getNames();
                         
                         //main loop to enter in parameter values
                         std::for_each (modelNames.begin(), modelNames.end(), [&](std::string &mod)
                         {//loop over iniFile models
-                                std::vector <std::string> parameterNames = iniFile.getModelParameters(mod);
+                                std::vector <std::string> parameterNames = model_options.getNames(mod);
                                 
                                 std::for_each (parameterNames.begin(), parameterNames.end(), [&](std::string &par)
                                 {//loop over iniFile parameters
                                         param_names.push_back(mod + std::string("::") + par);
                                         
-                                        if (iniFile.hasModelParameterEntry(mod, par, "same_as"))
+                                        if (model_options.hasKey(mod, par, "same_as"))
                                         {
-                                                std::string connectedName = iniFile.getModelParameterEntry<std::string>(mod, par, "same_as");
+                                                std::string connectedName = model_options.getValue<std::string>(mod, par, "same_as");
                                                 std::string::size_type pos = connectedName.rfind("::");
                                                 if (pos == std::string::npos)
                                                 {
@@ -90,18 +90,18 @@ namespace Gambit
                                                 
                                                 sameMap[mod + std::string("::") + par] = connectedName;
                                         }
-                                        else if (iniFile.hasModelParameterEntry(mod, par, "fixed_value"))
+                                        else if (model_options.hasKey(mod, par, "fixed_value"))
                                         {
-                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par, iniFile.getModelParameterEntry<double>(mod, par, "fixed_value")));
+                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par, model_options.getValue<double>(mod, par, "fixed_value")));
                                         }
                                         else   
                                         {
                                                 std::string joined_parname = mod + std::string("::") + par;
                                                 
-                                                if (iniFile.hasModelParameterEntry(mod, par, "prior_type"))
+                                                if (model_options.hasKey(mod, par, "prior_type"))
                                                 {
-                                                        IniParser::Options options = iniFile.getParameterOptions(mod, par);
-                                                        std::string priortype = iniFile.getModelParameterEntry<std::string>(mod, par, "prior_type");
+                                                        Options options = model_options.getOptions(mod, par);
+                                                        std::string priortype = model_options.getValue<std::string>(mod, par, "prior_type");
                                                         
                                                         if(priortype == "same_as")
                                                         {
@@ -130,10 +130,10 @@ namespace Gambit
                                                                 }
                                                         }
                                                 }
-                                                else if (iniFile.hasModelParameterEntry(mod, par, "range"))
+                                                else if (model_options.hasKey(mod, par, "range"))
                                                 {
                                                         shown_param_names.push_back(joined_parname);
-                                                        std::pair<double, double> range = iniFile.getModelParameterEntry< std::pair<double, double> >(mod, par, "range");
+                                                        std::pair<double, double> range = model_options.getValue< std::pair<double, double> >(mod, par, "range");
                                                         if (range.first > range.second)
                                                         {
                                                                 double temp = range.first;
@@ -153,14 +153,14 @@ namespace Gambit
                         });
                         
                         // Get the list of priors to build from the iniFile
-                        std::vector<std::string> priorNames = iniFile.getPriorNames();
+                        std::vector<std::string> priorNames = prior_options.getNames();
                         std::unordered_set<std::string> paramSet(shown_param_names.begin(), shown_param_names.end()); 
 
                         std::for_each (priorNames.begin(), priorNames.end(), [&](std::string &priorname)
                         {
-                                if (iniFile.hasPriorEntry(priorname, "parameters") && iniFile.hasPriorEntry(priorname, "prior_type"))
+                                if (prior_options.hasKey(priorname, "parameters") && prior_options.hasKey(priorname, "prior_type"))
                                 {
-                                        auto params = iniFile.getPriorEntry<std::vector<std::string>>(priorname, "parameters");
+                                        auto params = prior_options.getValue<std::vector<std::string>>(priorname, "parameters");
                                         
                                         std::for_each (params.begin(), params.end(), [&](std::string &par)
                                         {
@@ -182,8 +182,8 @@ namespace Gambit
                                                 }
                                         });
 
-                                        auto options = iniFile.getPriorOptions(priorname);
-                                        auto priortype = iniFile.getPriorEntry<std::string>(priorname, "prior_type");
+                                        auto options = prior_options.getOptions(priorname);
+                                        auto priortype = prior_options.getValue<std::string>(priorname, "prior_type");
                                         
                                         if (prior_creators.find(priortype) == prior_creators.end())
                                         {
@@ -311,13 +311,13 @@ namespace Gambit
                         my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
                 }  
                 
-                CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const IniParser::Options &options_in) : param_names(params_in), shown_param_names(params_in)
+                CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const Options &options_in) : param_names(params_in), shown_param_names(params_in)
                 {       
                         std::unordered_map<std::string, std::string> sameMap;
                         std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());
                         std::unordered_set<std::string> paramSet(params_in.begin(), params_in.end()); 
 
-                        auto priorNames = options_in.getPriorNames();
+                        auto priorNames = options_in.getNames();
                         
                         std::for_each (priorNames.begin(), priorNames.end(), [&](std::string &priorname)
                         {

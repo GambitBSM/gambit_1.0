@@ -20,16 +20,16 @@ namespace Gambit
 {
         namespace Scanner_Testing
         {
-                Test_Function_Factory::Test_Function_Factory(IniParser::IniFile &iniFile)
+                Test_Function_Factory::Test_Function_Factory(const Options &test_options)
                 {
 
-                        if (iniFile.hasKey("test_function"))
+                        if (test_options.hasKey("test_function"))
                         {
-                                std::string choice = iniFile.getValue<std::string>("test_function");
+                                std::string choice = test_options.getValue<std::string>("test_function");
                                 auto it = __test_functor_map__.find(choice);
                                 if (it != __test_functor_map__.end())
                                 {
-                                        IniParser::Options options = iniFile.getOptions(choice);
+                                        Options options = test_options.getOptions(choice);
                                         func = it->second(options);
                                 }
                                 else

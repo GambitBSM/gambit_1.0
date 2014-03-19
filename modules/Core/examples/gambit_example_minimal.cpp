@@ -133,20 +133,19 @@ void beispiel(const char* inifilename)
   ModelGraph().makeGraph(Core().getPrimaryModelFunctors());
  
   //Let's define the prior
-  Gambit::Priors::CompositePrior prior(iniFile);
+  Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
   //Let's define the scanner factory
-  auto factory_func = [&]()->Gambit::Scanner::Factory_Base *
+  Gambit::Scanner::Factory_Base *factory = [&]()->Gambit::Scanner::Factory_Base *
   {
     if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile);
+      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile.getKeyValuePairNode());
     else
       return new Gambit::Scanner::Scanner_Function_Factory (Core(), dependencyResolver, prior);
-  };
+  }();
   
-  Gambit::Scanner::Factory_Base *factory = factory_func();
   //Let's define the iniFile interface
-  Gambit::Scanner::IniFileInterface interface(iniFile);
+  Gambit::Scanner::IniFileInterface interface(iniFile.getScannerNode());
   //Let's run the scanner!
   Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
   //cout << "keys = " << scanner->getKeys() << endl;

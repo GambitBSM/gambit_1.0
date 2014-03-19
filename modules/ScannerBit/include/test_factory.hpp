@@ -26,7 +26,7 @@
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 #include "scanner_factory.hpp"
-#include "yaml_parser.hpp"
+#include <options_node.hpp>
 
 #define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )
 
@@ -36,7 +36,7 @@ namespace Gambit
         {
                 registry
                 {
-                        typedef Scanner::Function_Base *func_type(const IniParser::Options &);
+                        typedef Scanner::Function_Base *func_type(const Options &);
                         reg_elem <func_type> __test_functor_map__;
                 }
                 
@@ -46,7 +46,7 @@ namespace Gambit
                         Scanner::Function_Base *func;
                         
                 public:
-                        Test_Function_Factory(IniParser::IniFile &iniFile);
+                        Test_Function_Factory(const Options &);
                         
                         const std::vector<std::string> & getKeys() const {return func->getKeys();}
                         

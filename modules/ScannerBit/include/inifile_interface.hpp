@@ -31,7 +31,7 @@
 
 #include "scanner_utils.hpp"
 #include "scan.hpp"
-#include "yaml_parser.hpp"
+#include "options_node.hpp"
 
 namespace Gambit
 {
@@ -40,12 +40,12 @@ namespace Gambit
                 class IniFileInterface : public IniFileInterface_Base
                 {
                 private:
-                        const IniParser::IniFile *boundIniFile;
+                        Options scanner_options;
                         std::string file;
                         std::string name;
                         
                 public:
-                        IniFileInterface(const IniParser::IniFile &iniFile);
+                        IniFileInterface(const YAML::Node &node);
                         
                         const std::string pluginName() const {return name;};
                         
@@ -53,9 +53,9 @@ namespace Gambit
                         
                         const std::string getValue(const std::string &in) const
                         {
-                                if (boundIniFile->hasScannerKey(name.c_str(), in.c_str()))
+                                if (scanner_options.hasKey(name.c_str(), in.c_str()))
                                 {
-                                        return boundIniFile->getScannerValue<std::string>(name.c_str(), in.c_str());
+                                        return scanner_options.getValue<std::string>(name.c_str(), in.c_str());
                                 }
                                 else
                                 {
