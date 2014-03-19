@@ -3,6 +3,7 @@
 # Lundberg 2011-Aug
 # Pat Scott 2012-Nov+
 # Abram Krislock 2014-Jan
+# Aldo Saavedra 2014-March 
 #
 ###
 
@@ -578,7 +579,7 @@ $(SLHAPy8DIR)/libslhapy8.a:
 	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
 gambit_example: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libfastsim.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
@@ -615,6 +616,17 @@ $(SCANDIR)/lib/libsample.so: $(SCANDIR)/lib/crapsample.cpp
 $(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
+
+ifndef COLLIDE
+  FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+endif 
+
+$(info $(FJ_CXXFLAGS))
+$(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.cpp $(FASTSIMDIR)/src/DetectorResponse.cpp  $(FASTSIMDIR)/src/fastsim_interface.cpp
+	$(CC) $(CFLAGS) -c -fPIC -I$(FASTSIMDIR)/include/ $(FJ_CXXFLAGS) -I$(HEPSIMPLEDIR) $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o 
+	$(CC) $(CFLAGS) -c -fPIC -I$(FASTSIMDIR)/include/ $(FJ_CXXFLAGS) -I$(HEPSIMPLEDIR) $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o 
+	$(CC) $(CFLAGS) -c -fPIC -I$(FASTSIMDIR)/include/ $(FJ_CXXFLAGS) -I$(HEPSIMPLEDIR) $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o 
+	$(CC) -shared -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o 
 
 #libmultinest_interface.so
 multinest:
