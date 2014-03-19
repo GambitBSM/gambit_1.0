@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Library of ModelBit methods.
+///  Library of Models methods.
 ///  
 ///  Duties:
 ///  * Activate primary_model_functors according to
@@ -32,12 +32,12 @@
 ///
 ///  *********************************************
 
-#include "modelbit.hpp"
+#include "models.hpp"
 #include "stream_printers.hpp"
 
 namespace Gambit
 {
-  namespace ModelBit
+  namespace Models
   {
 
     typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
@@ -71,7 +71,7 @@ namespace Gambit
     //
     /// ModelFunctorClaw function definitions
     /// 
-    /// Modelbit object which performs initialisation and checking operations
+    /// Models object the performs initialisation and checking operations
     /// on a primary_model_functor list.
     /// Also creates a graph of the model hierarchy for visualisation purposes.
 
@@ -328,9 +328,9 @@ namespace Gambit
   }
 
   /// Claw accessor function
-  ModelBit::ModelFunctorClaw& modelClaw()
+  Models::ModelFunctorClaw& modelClaw()
   {
-    static ModelBit::ModelFunctorClaw local;
+    static Models::ModelFunctorClaw local;
     return local;
   }
 

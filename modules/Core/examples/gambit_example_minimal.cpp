@@ -208,7 +208,7 @@ int main( int argc, const char* argv[] )
       // Inform the user of how to use the program
       errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
                  "\n  e.g.  : gambit_example_minimal gambit.yaml"
-                 "\n        : gambit_example_minimal modelbit_test.yaml";
+                 "\n        : gambit_example_minimal models_test.yaml";
       core_error().raise(LOCAL_INFO,errmsg);
       inifilename = "";
     } 

@@ -27,7 +27,7 @@
 // #include <regex>
 
 #include "graphs.hpp"
-#include "modelbit.hpp"
+#include "models.hpp"
 #include "log.hpp"
 
 #include <boost/format.hpp>
@@ -718,12 +718,9 @@ namespace Gambit
 
         // If toVertex is the Core, then fromVertex is one of our target functors, which are
         // the things we want to output to the printer system.  Turn printing on for these.
-        // Ben: I had to change this back because otherwise you turn off printing for the model
-        // parameters functors, which modelbit previously turned on. 
         if ( printme and (toVertex==OMEGA_VERTEXID) )
         {
            masterGraph[fromVertex]->setPrintRequirement(true);
-           cout << "  --->SETTING PRINT FLAG OF THIS FUNCTOR TO TRUE" << endl;
         }
 
         if ( toVertex != OMEGA_VERTEXID)

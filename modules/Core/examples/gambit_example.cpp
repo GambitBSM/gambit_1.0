@@ -152,12 +152,12 @@ int main( int, const char*[] )
   // GAMBIT_MSG_INFO("starting example");
   
   // ****************
-  // ModelBit demo code START
+  // Models demo code START
   // ****************
   cout << endl;
-  cout << "*** Start ModelBit demo ***" << endl;
+  cout << "*** Start Models demo ***" << endl;
   
-  // See ModelBit/models/MSSM.hpp for the definitions of the models referenced
+  // See Models/models/MSSM.hpp for the definitions of the models referenced
   // here.
 
   // Ben: newest system
@@ -195,7 +195,7 @@ int main( int, const char*[] )
   // ScannerBit: creates alpha_parameters
   //TEMP_ScannerBit::Functown::generate_parameters.calculate();
   
-  // ModelBit: insert alpha_parameters into primary parameters functor
+  // Models: insert alpha_parameters into primary parameters functor
   //Models::CMSSM_I::Functown::primary_parameters.calculate();
   
   // Model parameters now ready for delivery to other functors
@@ -220,7 +220,7 @@ int main( int, const char*[] )
         // iterator->second = value
   //      cout<<"      "<<it->first<<" = "<<it->second<<endl;
   //    }
-  //cout<<"  ModelBit:"<<endl;
+  //cout<<"  Models:"<<endl;
   //cout<<"    CMSSM_I parameters:"<<endl;
   //Models::CMSSM_I::Functown::primary_parameters.valuePtr()->print();
   //cout<<"    CMSSM_I -> MSSM_I_parameters:"<<endl;
@@ -231,7 +231,7 @@ int main( int, const char*[] )
   //============== end toy sequence ============================================
     
     
-  // Now just a bunch of leftover old tests of ModelBit. Deleted some stuff
+  // Now just a bunch of leftover old tests of Models. Deleted some stuff
   // from here that no longer works (mostly old way of setting parameters)
   
 
@@ -419,10 +419,10 @@ int main( int, const char*[] )
   MSSMI_parent_safeptr->print();
   
   
-  cout << "*** End ModelBit demo ***" << endl;
+  cout << "*** End Models demo ***" << endl;
   cout << endl;
   // ****************
-  // ModelBit demo code END
+  // Models demo code END
   // ****************
 
   
@@ -617,7 +617,7 @@ int main( int, const char*[] )
   // cout << " ...but I may need: " << endl << SUSYspecBit::Accessors::iMayNeed << endl;
   // cout << endl;
   // cout << "I can do MSSMspectrum " << SUSYspecBit::Accessors::provides("MSSMspectrum") << endl;
-  // cout << "(the following are temporary capabilities that will be shifted to ModelBit)" <<endl;
+  // cout << "(the following are temporary capabilities that will be shifted to Models)" <<endl;
   // cout << "I can do SMparameters " << SUSYspecBit::Accessors::provides("SMparameters") << endl;
   // cout << "I can do CMSSMparameters " << SUSYspecBit::Accessors::provides("CMSSMparameters") << endl;
   // cout << "I can do MSSMsoftmasses " << SUSYspecBit::Accessors::provides("MSSMsoftmasses") << endl;
