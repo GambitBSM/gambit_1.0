@@ -29,7 +29,6 @@
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
 
-
 #define MODULE DarkBit
 START_MODULE
 

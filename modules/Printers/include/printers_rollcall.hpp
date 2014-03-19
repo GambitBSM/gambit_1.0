@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  "Rollcall header" for Gambit printers
+///  Rollcall header for Gambit printers.
 ///  Include here the header for any printer class
 ///  (derived from BasePrinter) that you want
 ///  Gambit to be able to use.
@@ -18,8 +18,8 @@
 ///  *********************************************
 
 
-#ifndef __printers_hpp__
-#define __printers_hpp__
+#ifndef __printers_rollcall_hpp__
+#define __printers_rollcall_hpp__
 
 #include "ostreamprinter.hpp"
 #include "asciiprinter.hpp"

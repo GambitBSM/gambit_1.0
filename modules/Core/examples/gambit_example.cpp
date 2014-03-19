@@ -33,10 +33,10 @@ void beispiel()
 {
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
-  cout << "Registered module functors [Core.getModuleFunctors->size()]: " <<
-    Core.getModuleFunctors()->size() << endl;
-  cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
-    Core.getBackendFunctors()->size() << endl;
+  cout << "Registered module functors [Core().getModuleFunctors().size()]: " <<
+    Core().getModuleFunctors().size() << endl;
+  cout << "Registered backend functors [Core().getBackendFunctors().size()]: " <<
+    Core().getBackendFunctors().size() << endl;
 
   // Read INI file
   IniParser::IniFile iniFile;
@@ -57,13 +57,13 @@ void beispiel()
   Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
 
   // Activate "primary" model functors
-  modelClaw.activatePrimaryModels(selectedmodels);
+  Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
   // Set up a printer object
   Printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);
+  Graphs::DependencyResolver dependencyResolver(Core(), iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -72,7 +72,7 @@ void beispiel()
   dependencyResolver.resolveNow();
 
   // Check that all requested models are used for at least one computation
-  modelClaw.checkPrimaryModelFunctorUsage();
+  modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
   // Examples for getting information from the key/value section of the
   // inifile
@@ -341,7 +341,7 @@ int main( int, const char*[] )
   
   // New way of checking congruency using global lineage database
   cout<<"Checking congruency of "<<Models::CMSSM_I::Accessors::name()<<" using database..."<<endl;
-  cout<<"lineage is:"<< modelClaw.get_lineage("CMSSM_I") <<endl;
+  cout<<"lineage is:"<< modelClaw().get_lineage("CMSSM_I") <<endl;
   cout<<"is descendant of MSSM_I?         :"<<strict_descendant_of("CMSSM_I","MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<strict_descendant_of("CMSSM_I","CMSSM_I")<<endl;
   cout<<"is descendant of or == CMSSM_I?  :"<<descendant_of("CMSSM_I","CMSSM_I")<<endl;
@@ -349,7 +349,7 @@ int main( int, const char*[] )
     
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<Models::MSSM_I::Accessors::name()<<" using database..."<<endl;
-  cout<<"descendants are:"<< modelClaw.get_descendants("MSSM_I") <<endl;
+  cout<<"descendants are:"<< modelClaw().get_descendants("MSSM_I") <<endl;
   cout<<"is ancestor of MSSM_I?         :"<<strict_ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of or == MSSM_I?   :"<<ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of CMSSM_I?        :"<<strict_ancestor_of("MSSM_I","CMSSM_I")<<endl;

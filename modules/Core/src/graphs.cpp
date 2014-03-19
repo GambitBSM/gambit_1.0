@@ -27,7 +27,7 @@
 // #include <regex>
 
 #include "graphs.hpp"
-#include "extern_claw.hpp"
+#include "modelbit.hpp"
 #include "log.hpp"
 
 #include <boost/format.hpp>
@@ -314,14 +314,14 @@ namespace Gambit
     }
 
     /// Generic printer of the contents of a functor list
-    void DependencyResolver::printGenericFunctorList(const std::vector<functor*>* functorList) 
+    void DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList) 
     {
       const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
       cout << boost::format(formatString)%
        "ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
       for (std::vector<functor *>::const_iterator 
-          it  = functorList->begin();
-          it != functorList->end();
+          it  = functorList.begin();
+          it != functorList.end();
           ++it)
       {
         cout << boost::format(formatString)%
@@ -480,8 +480,8 @@ namespace Gambit
     {
       // - module functors go into masterGraph
       for (std::vector<functor *>::const_iterator 
-          it  = boundCore->getModuleFunctors()->begin();
-          it != boundCore->getModuleFunctors()->end();
+          it  = boundCore->getModuleFunctors().begin();
+          it != boundCore->getModuleFunctors().end();
           ++it)
       {
         // Ignore functors with status set to 0 in order to ignore primary_model_functors 
@@ -499,7 +499,7 @@ namespace Gambit
     void DependencyResolver::makeFunctorsModelCompatible()
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      std::vector<str> modelList = modelClaw.get_activemodels();
+      std::vector<str> modelList = modelClaw().get_activemodels();
       for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
       {
         for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
@@ -605,7 +605,7 @@ namespace Gambit
         // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
         // found at a given level in the hierarchy.
         std::vector<Graphs::VertexID> newVertexCandidates;
-        std::vector<str> parentModelList = modelClaw.get_activemodels();
+        std::vector<str> parentModelList = modelClaw().get_activemodels();
         while (newVertexCandidates.size() == 0 and not parentModelList.empty())
         {
           for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)
@@ -904,8 +904,8 @@ namespace Gambit
         // Loop over all existing backend vertices, and make a list of
         // functors that are available and fulfill the backend dependency requirement
         for (std::vector<functor *>::const_iterator
-            itf  = boundCore->getBackendFunctors()->begin(); 
-            itf != boundCore->getBackendFunctors()->end();
+            itf  = boundCore->getBackendFunctors().begin(); 
+            itf != boundCore->getBackendFunctors().end();
             ++itf) 
         {
           // Without inifile entry, just match capabilities and types exactly

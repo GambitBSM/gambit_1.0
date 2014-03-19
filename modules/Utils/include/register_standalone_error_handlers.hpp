@@ -18,7 +18,7 @@
 #ifndef __register_standalone_error_handlers_hpp__
 #define __register_standalone_error_handlers_hpp__
 
-#include "exception_map.hpp"
+#include "static_members.hpp"
 #include "standalone_error_handlers.hpp"
 
 namespace Gambit

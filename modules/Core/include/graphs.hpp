@@ -28,7 +28,7 @@
 #include <queue>
 
 #include "gambit_core.hpp"
-#include "printers.hpp"
+#include "printers_rollcall.hpp"
 #include "functors.hpp"
 #include "error_handlers.hpp"
 #include "yaml_parser.hpp"
@@ -91,7 +91,7 @@ namespace Gambit
         void printFunctorList();
 
         // Pretty print backend functor information
-        void printGenericFunctorList(const std::vector<functor*>*);
+        void printGenericFunctorList(const std::vector<functor*>&);
 
         // Pretty print function evaluation order
         void printFunctorEvalOrder();

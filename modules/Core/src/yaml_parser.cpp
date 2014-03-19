@@ -25,6 +25,7 @@
 #include "util_types.hpp"
 #include "yaml_parser.hpp"
 #include "log.hpp"
+#include "safety_bucket.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -109,6 +110,14 @@ namespace Gambit
       }
       // Initialise global LogMaster object
       logger().initialise(loggerinfo);
+
+      // Set safe mode for the backend safety buckets
+      if (hasKey("safe_mode"))
+      {       
+         // Retrieve the entry and set the safe_mode flag accordingly.
+         BE_bucket_base::safe_mode = getValue<bool>("safe_mode");
+      }      
+
     }
   }
 }

@@ -12,6 +12,10 @@
 ///          (anders.kvellestad@fys.uio.no) 
 ///   \date 2013 Apr, Nov
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca) 
+///   \date 2014 Mar
+///
 ///  *********************************************
 
 #ifndef __safety_bucket_hpp__
@@ -20,7 +24,6 @@
 #include <iostream>
 #include <omp.h>
 
-#include "extern_core.hpp"
 #include "util_types.hpp"
 #include "standalone_error_handlers.hpp"
 #include "functors.hpp"
@@ -160,6 +163,9 @@ namespace Gambit
         return _functor_base_ptr->version();
       }
 
+      /// Flag indicating whether to operate in safe mode or not (true by default)
+      static bool safe_mode;
+
   };
 
 
@@ -273,12 +279,11 @@ namespace Gambit
         return temp_functor_ptr->handoutFunctionPointer();
       }
 
-
     protected:
 
       functor * _functor_ptr;
 
-      // Depending on whether the core is in 'safe_mode' or not, 
+      // Depending on whether the buckets are running in 'safe_mode' or not, 
       // perform a dynamic or static cast of _functor_ptr from type functor*
       // to type backend_functor<TYPE, ARGS...>*.
       template <typename... ARGS> 
@@ -287,8 +292,8 @@ namespace Gambit
 
         backend_functor<TYPE, ARGS...> * temp_functor_ptr;
 
-        if (Core.safe_mode())                                            
-        {                                                                
+        if (safe_mode)                                            
+        {
           temp_functor_ptr = dynamic_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
           if (temp_functor_ptr == 0)                                                
           {                                                              
@@ -301,7 +306,7 @@ namespace Gambit
           }                                                              
         }                                                                
         else                                                             
-        {                                                                
+        {
           temp_functor_ptr = static_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
         }                                                                
 

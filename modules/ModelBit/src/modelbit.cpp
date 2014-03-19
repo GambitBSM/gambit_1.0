@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Library of ModelBit provisions to the core.
+///  Library of ModelBit methods.
 ///  
 ///  Duties:
 ///  * Activate primary_model_functors according to
@@ -33,17 +33,15 @@
 ///  *********************************************
 
 #include "modelbit.hpp"
-#include "graphs.hpp"
-#include "gambit_core.hpp"
-#include "util_types.hpp"
+#include "stream_printers.hpp"
 
 namespace Gambit
 {
-  typedef std::map<std::string, primary_model_functor *> activemodel_map;
-  typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
-
   namespace ModelBit
   {
+
+    typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
+
     /// Helper class for drawing the model hierarchy graph
     class labelWriter
     {
@@ -74,29 +72,25 @@ namespace Gambit
     /// ModelFunctorClaw function definitions
     /// 
     /// Modelbit object which performs initialisation and checking operations
-    /// on the Core's primary_model_functor list.
+    /// on a primary_model_functor list.
     /// Also creates a graph of the model hierarchy for visualisation purposes.
 
     // Public functions and data members
-    
-    /// Constructor
-    ///
-    /// Hooks the claw into a core
-    ModelFunctorClaw::ModelFunctorClaw (gambit_core &core)
-      : boundCore(&core) {}
-    
+        
     /// Model activation function
     ///
-    /// Activates primary_model_functors according to the model(s) being scanned
-    void ModelFunctorClaw::activatePrimaryModels (std::vector<str> selectedmodels)
+    /// Returns a vector of primary_model_functors to be activated, according to the model(s) being scanned
+    primodel_vec ModelFunctorClaw::getPrimaryModelFunctorsToActivate (std::vector<str> selectedmodels, const primodel_vec& primaryModelFunctors)
     {
+      // Holder for result
+      primodel_vec result;
       // Iterator to elements of 'selectedmodels'
       std::vector<str>::iterator el;      
 
       // Loop through functor list and activate functor if it matches a member of 'selectedmodels'.
-      for (std::vector<primary_model_functor*>::const_iterator 
-          it  = boundCore->getPrimaryModelFunctors()->begin();
-          it != boundCore->getPrimaryModelFunctors()->end();
+      for (primodel_vec::const_iterator 
+          it  = primaryModelFunctors.begin();
+          it != primaryModelFunctors.end();
           ++it)
       {
         // Check if this functor originates from one of the selected models
@@ -108,8 +102,8 @@ namespace Gambit
           (*it)->setPrintRequirement(true);  // Tell printer to output this functor
           // Initialise ModelParameters object it contains
           (*it)->calculate();
-          // Add it to the map of active primary model functors in the core
-          boundCore->registerActiveModelFunctor(**it);
+          // Add it to the vector of primary model functors to make active (to be returned)
+          result.push_back(*it);
           // Add it to the internal list of active models
           activemodels.push_back(*el);
           // Remove it from the input 'selectedmodels' list
@@ -138,6 +132,9 @@ namespace Gambit
         }
         exit (EXIT_FAILURE);
       }
+
+      return result;
+
     }
    
     /// Retrieve the internally stored vector of activated models
@@ -151,7 +148,7 @@ namespace Gambit
     /// Checks that all the active primary model functors are actually used for
     /// something in the dependency tree. If not throws an error to warn the
     /// user.
-    void ModelFunctorClaw::checkPrimaryModelFunctorUsage()
+    void ModelFunctorClaw::checkPrimaryModelFunctorUsage(const activemodel_map& activeModelFunctors)
     {
       std::vector<std::string> unusedmodels;
       std::string modelname;
@@ -160,8 +157,8 @@ namespace Gambit
       // set to 2 ("active"). If not, it means that some of them were not
       // activated by the dependency resolver and thus are not used for 
       // computing anything.
-      for(activemodel_it it  = boundCore->getActiveModelFunctors()->begin(); 
-                         it != boundCore->getActiveModelFunctors()->end(); it++) 
+      for(activemodel_it it  = activeModelFunctors.begin(); 
+                         it != activeModelFunctors.end(); it++) 
       {
         modelname  = it->first;
         functorPtr = it->second;
@@ -192,7 +189,7 @@ namespace Gambit
 
     
     /// Figure out relationships between primary model functors    
-    void ModelFunctorClaw::makeGraph()
+    void ModelFunctorClaw::makeGraph(const primodel_vec& primaryModelFunctors)
     {
       boost::graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       std::map<std::string, Graphs::VertexID> vertexIDmap;
@@ -201,7 +198,7 @@ namespace Gambit
       std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
 
       // Add all primary model functors to the model hierarchy graph
-      addFunctorsToGraph();
+      addFunctorsToGraph(primaryModelFunctors);
 
       // Loop over all vertices (models) in modelGraph and create a map from
       // model names to vertex IDs.
@@ -245,12 +242,12 @@ namespace Gambit
 
 
     /// Add model functors to the modelGraph
-    void ModelFunctorClaw::addFunctorsToGraph()
+    void ModelFunctorClaw::addFunctorsToGraph(const primodel_vec& primaryModelFunctors)
     {
       // - model functors go into modelGraph
       for (std::vector<primary_model_functor *>::const_iterator
-          it  = boundCore->getPrimaryModelFunctors()->begin();
-          it != boundCore->getPrimaryModelFunctors()->end(); ++it)
+          it  = primaryModelFunctors.begin();
+          it != primaryModelFunctors.end(); ++it)
       {
         //if ( (*it)->status() != 0 ) 
         boost::add_vertex(*it, modelGraph);     
@@ -328,6 +325,13 @@ namespace Gambit
       return myIsDescendantOfDB[model1](model2);
     }
     
+  }
+
+  /// Claw accessor function
+  ModelBit::ModelFunctorClaw& modelClaw()
+  {
+    static ModelBit::ModelFunctorClaw local;
+    return local;
   }
 
 }

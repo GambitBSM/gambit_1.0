@@ -5,8 +5,11 @@
 ///  List of headers that define classes, typedefs
 ///  and so forth needed for module, model and 
 ///  backend co-operation with the GAMBIT core. 
-///  If you need to add a new type, what to do 
-///  depends on what the type is associated with.
+///  If you need to add a new type, you either 
+///  need to include the header containing it from
+///  this header, or include it instead from 
+///  shared_types.hpp.  Which one to choose depends 
+///  on what the type is for (guidelines below).
 ///
 ///  Bear in mind throughout that normal C/C++ rules
 ///  apply; if your new type is never going to be
@@ -29,59 +32,40 @@
 ///  --------
 ///  To add a new type that will be used to
 ///  communicate with a backend X:
-///   1. If the type will be used by more than
-///      one backend, add it to the header
-///      Utils/include/shared_types.hpp.
-///   2. If the file will be used by a single 
-///      backend only, add it to a header
+///      Add it to a header
 ///      Backends/include/X_types.hpp
 ///      and include that header from the file
-///      Utils/include/backend_types_rollcall.hpp 
+///      Utils/include/shared_types.hpp.       
 ///
-///  MODELS
-///  ------
+///  MODELS AND MODULES
+///  ------------------
 ///  To add a new type that will be used to
-///  communicate with a model Y:
-///   1. If the type will be used by more than one
-///      model, or a model and a module, add it to the header
-///      Utils/include/shared_types.hpp.
+///  communicate with a model X or module Y:
+///   1. If the type will only be used by a single
+///      model X, add it to a header
+///      ModelBit/include/models/X_types.hpp
+///      and include that header from this file.
 ///   2. If the type will only be used by a single
-///      model, add it to a header
-///      ModelBit/include/models/Y_types.hpp
+///      module Y, add it to a header
+///      Y/include/Y_types.hpp
 ///      and include that header from this file.
 ///
-///  MODULES
-///  -------
-///  To add a new type that will be used to
-///  communicate with a module Z:
-///   1. If the type will be used by more than one
-///      module, add it to the header
+///  MIXTURES
+///  -------- 
+///  If the type will be used by multiple modules, 
+///  multiple models or multiple backends, or any 
+///  mixture thereof:
+///      Add it to or include it from the header
 ///      Utils/include/shared_types.hpp.
-///   2. If the type will only be used by a single
-///      module, add it to a header
-///      Z/include/Z_types.hpp
-///      and include that header from this file.
-///
-///  In general, types belong to the 'lowest-level'
-///  category of component that they will be used 
-///  to communicate with.  This hierarchy runs
-///  backends < models < modules,
-///  so anything at all used to communicate with a 
-///  backend should be incorporated as per the
-///  rules for backend types above.  Model rules 
-///  should be followed for any types used to
-///  communicate with models but not backends, and
-///  module rules should be followed only for 
-///  types that are used to communicate exclusively
-///  with modules.
+///  
 /// 
-///  Finally, if you want to be able to spit 
-///  instances of your new type out to a file or 
-///  other output medium, you will need to add 
-///  specialisations for it in 
-///  Utils/include/printers.hpp.
+///  Remember also that if you want to be able to
+///  spit instances of your new type out to a file 
+///  or other output medium, you will need to add 
+///  specialisations for it in the various printers
+///  included in 
+///  Utils/include/printers_rollcall.hpp.
 ///
-///  Easy, right?
 ///
 ///  *********************************************
 ///
@@ -90,6 +74,7 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -99,10 +84,10 @@
 // Include the shared types
 #include "shared_types.hpp"
 
-// Include the models' own types
+// Include the model-specific types
 #include "MSSM_types.hpp"
 
-// Include the modules' own types
+// Include the module-specific types
 #include "DarkBit_types.hpp"
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??

@@ -188,7 +188,7 @@ ifdef GSL
   CFLAGS += $(GSL_CXXFLAGS)
   GSL_LDFLAGS := -L$(GSLLIB)
 endif
-GSL_LDFLAGS += -lgsl -llapack
+GSL_LDFLAGS += -lgsl -lgslcblas -lm
 ifndef SHH
   $(info INFO:)
   $(info -- GSL Flags --)
@@ -587,8 +587,8 @@ gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FU
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-ExampleBit_A_standalone: $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) \
- $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
+ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) \
+ $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
 	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
 	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)

@@ -34,7 +34,6 @@
 
 #include "functors.hpp"
 #include "exceptions.hpp"
-#include "extern_core.hpp"
 #include "util_macros.hpp"
 #include "safety_bucket.hpp"
 #include "module_macros_common.hpp"
@@ -108,7 +107,7 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Let the module source know that this functor is declared by the core*/\
+      /* Let the module source know that this functor is declared*/            \
       namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
                                                                                \
       /* Set up a helper function to call the iterate method if the functor is \
