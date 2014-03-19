@@ -16,19 +16,21 @@
 ///
 ///  *********************************************
 
+#include "log.hpp"
+#include "graphs.hpp"
+#include "modelgraph.hpp"
+#include "scannerbit.hpp"
+#include "yaml_parser.hpp"
+#include "model_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "backend_rollcall.hpp"
-#include "graphs.hpp"
-#include "model_rollcall.hpp"
-#include "yaml_parser.hpp"
-#include "scannerbit.hpp"
-#include "priorfactory.hpp"
-#include "priors.hpp"
-#include "scanner_factory.hpp"
 #include "register_error_handlers.hpp"
-#include "inifile_interface.hpp"
+//Pat: do all of the following actually have to be included from here?
+#include "priors.hpp"
+#include "priorfactory.hpp"
 #include "test_factory.hpp"
-#include "log.hpp"
+#include "scanner_factory.hpp"
+#include "inifile_interface.hpp"
 
 using namespace Gambit;
 
@@ -128,7 +130,7 @@ void beispiel(const char* inifilename)
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
-  modelClaw().makeGraph(Core().getPrimaryModelFunctors());
+  ModelGraph().makeGraph(Core().getPrimaryModelFunctors());
  
   //Let's define the prior
   Gambit::Priors::CompositePrior prior(iniFile);

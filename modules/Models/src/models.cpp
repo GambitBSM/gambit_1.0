@@ -8,11 +8,7 @@
 ///  * Activate primary_model_functors according to
 ///    the model(s) being scanned
 ///  * Check whether all active primary_model_functors
-///    are actually used in the the dependency graph
-///  * Create and track a graph of the model hierarchy,
-///    for both visualisation and for relationship 
-///    checks (needed in order to activate conditional
-///    dependencies on models)
+///    are actually used
 ///
 ///  *********************************************
 ///
@@ -33,52 +29,23 @@
 ///  *********************************************
 
 #include "models.hpp"
-#include "stream_printers.hpp"
 
 namespace Gambit
 {
+
   namespace Models
   {
 
     typedef std::map<std::string, primary_model_functor *>::const_iterator activemodel_it;
 
-    /// Helper class for drawing the model hierarchy graph
-    class labelWriter
-    {
-      private:
-        const Graphs::MasterGraphType * myGraph;
-      public:
-        labelWriter(const Graphs::MasterGraphType * modelGraph) : myGraph(modelGraph) {};
-        void operator()(std::ostream& out, const Graphs::VertexID& v) const
-        {
-          if ( (*myGraph)[v]->status() == 2 )
-          {
-            out << "[fillcolor=\"red\", style=\"rounded,filled\", shape=box,";
-            out << "label=< ";
-            out << "<font point-size=\"20\" color=\"black\">" << (*myGraph)[v]->origin() << "</font><br/>";
-          } else {
-            out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
-            out << "label=< ";
-            out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->origin() << "</font><br/>";
-          } 
-          /*out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";
-          out <<  "Function: " << (*myGraph)[v]->name() << "<br/>";
-          out <<  "Module: " << (*myGraph)[v]->origin();*/
-          out << ">]";
-        }
-    };
-    
-    //
     /// ModelFunctorClaw function definitions
-    /// 
     /// Models object the performs initialisation and checking operations
     /// on a primary_model_functor list.
-    /// Also creates a graph of the model hierarchy for visualisation purposes.
+    /// @{
 
     // Public functions and data members
         
     /// Model activation function
-    ///
     /// Returns a vector of primary_model_functors to be activated, according to the model(s) being scanned
     primodel_vec ModelFunctorClaw::getPrimaryModelFunctorsToActivate (std::vector<str> selectedmodels, const primodel_vec& primaryModelFunctors)
     {
@@ -185,73 +152,6 @@ namespace Gambit
         exit (EXIT_FAILURE);
       }
       
-    } //end checkPrimaryModelFunctorUsage
-
-    
-    /// Figure out relationships between primary model functors    
-    void ModelFunctorClaw::makeGraph(const primodel_vec& primaryModelFunctors)
-    {
-      boost::graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      std::map<std::string, Graphs::VertexID> vertexIDmap;
-      std::string model;
-      
-      std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
-
-      // Add all primary model functors to the model hierarchy graph
-      addFunctorsToGraph(primaryModelFunctors);
-
-      // Loop over all vertices (models) in modelGraph and create a map from
-      // model names to vertex IDs.
-      for (boost::tie(vi, vi_end) = boost::vertices(modelGraph); 
-              vi != vi_end; ++vi) 
-      {
-        model = (*modelGraph[*vi]).origin();
-        vertexIDmap[model] = *vi;
-        std::cout<<"    Vertex added: "<<model<<std::endl;
-      }
-      
-      // Loop over all vertices (models) in vertexIDmap, look up the 'parents' 
-      // of each one in myParentsDB, and add an edge from parent to child in the
-      // model graph.
-      //
-      typedef std::map<std::string, Graphs::VertexID>::iterator vertexIDmap_it;
-      for (vertexIDmap_it vimap = vertexIDmap.begin(); 
-              vimap != vertexIDmap.end(); vimap++) 
-      {
-        model = vimap->first;
-        
-        std::cout<<model<<"; parents: "<<myParentsDB[model]<<std::endl;;
-        
-        // Loop through vector of parents of 'model'
-        for(std::vector<std::string>::const_iterator 
-                    parent = myParentsDB[model].begin(); 
-                    parent!= myParentsDB[model].end(); parent++) 
-        {
-          // Add edge between parent and child
-          boost::add_edge(vertexIDmap[*parent], vertexIDmap[model], modelGraph);
-          std::cout<<"    Edge added: "<<model<<" ---> "<<*parent<<std::endl;
-        }
-      }
-      std::cout<<std::endl;
-      
-      // Generate graphviz plot
-      std::ofstream outf("modelgraph.gv");
-      write_graphviz(outf, modelGraph, labelWriter(&modelGraph)); 
-      
-    }
-
-
-    /// Add model functors to the modelGraph
-    void ModelFunctorClaw::addFunctorsToGraph(const primodel_vec& primaryModelFunctors)
-    {
-      // - model functors go into modelGraph
-      for (std::vector<primary_model_functor *>::const_iterator
-          it  = primaryModelFunctors.begin();
-          it != primaryModelFunctors.end(); ++it)
-      {
-        //if ( (*it)->status() != 0 ) 
-        boost::add_vertex(*it, modelGraph);     
-      }
     }
 
 
@@ -324,6 +224,8 @@ namespace Gambit
     {
       return myIsDescendantOfDB[model1](model2);
     }
+
+    /// @}
     
   }
 

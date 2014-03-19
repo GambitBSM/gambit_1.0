@@ -33,13 +33,9 @@
 #include <vector>
 #include <string>
 
-#include "graphs.hpp"
 #include "util_types.hpp"
+#include "functors.hpp"
 #include "standalone_error_handlers.hpp"
-
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/graph/graphviz.hpp>
 
 namespace Gambit
 {
@@ -56,12 +52,6 @@ namespace Gambit
     {
 
       private:
-
-        /// Add model functors (vertices) to model hierarchy graph
-        void addFunctorsToGraph(const primodel_vec&);
-        
-        /// The central boost graph object for the model hierarchy
-        Graphs::MasterGraphType modelGraph;
 
         /// Function pointer type
         typedef bool (*LineageFunction)(std::string);
@@ -97,9 +87,6 @@ namespace Gambit
         /// the user.
         void checkPrimaryModelFunctorUsage(const activemodel_map&);
         
-        /// Add edges (relationships) to model hierarchy graph
-        void makeGraph (const primodel_vec&);
-
         /// Add a model to those recongnised by GAMBIT
         void add_model (const str &);
 
