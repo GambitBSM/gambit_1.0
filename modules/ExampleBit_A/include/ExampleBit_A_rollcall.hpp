@@ -31,6 +31,8 @@
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__
 
+#include "Event.hpp"
+
 #define MODULE ExampleBit_A
 START_MODULE
 
@@ -111,17 +113,46 @@ START_MODULE
 
   #undef CAPABILITY
 
-/*  #define CAPABILITY fastsim                // calling fastsim
+
+  /*
+  #define CAPABILITY Aldo_sim                // calling fastsim
   START_CAPABILITY
 
-    #define FUNCTION fastsim          //
-    START_FUNCTION(int)                  //
+    #define FUNCTION  Aldo_test          // Name of the function that initializes the fastsim
+    START_FUNCTION(int)                    // returns the number of events for now
+      #define BACKEND_REQ Read_Aldo_Sim            
+      START_BACKEND_REQ(int)
+      BACKEND_OPTION(LibAldo)         // Specify that backend libfastsim possesses initialize
+      #undef BACKEND_REQ
+
     #undef FUNCTION
 
   #undef CAPABILITY
-*/
+  */
+
+  #define CAPABILITY event_gen                // calling fastsim
+  START_CAPABILITY
+
+    #define FUNCTION  Aldos_evgen          // Name of the function that initializes the fastsim
+    START_FUNCTION(HEP_Simple_Lib::Event)  // returns the number of events for now
+    #undef FUNCTION
+
+  #undef CAPABILITY
 
 
+  #define CAPABILITY fast_sim                // calling fastsim
+  START_CAPABILITY
+
+    #define FUNCTION  init_sim          // Name of the function that initializes the fastsim
+    START_FUNCTION(int)                    // returns the number of events for now
+      #define BACKEND_REQ init_fastsim            
+      START_BACKEND_REQ(int)
+      BACKEND_OPTION(LibFastSim)         // Specify that backend libfastsim possesses initialize
+      #undef BACKEND_REQ
+
+    #undef FUNCTION
+
+  #undef CAPABILITY
   #define CAPABILITY function_pointer
   START_CAPABILITY
 

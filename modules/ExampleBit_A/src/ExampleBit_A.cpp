@@ -95,6 +95,48 @@ namespace Gambit
       //result = &some_other_function;
     }
 
+
+    /*
+    void Aldo_test(int &nevents) {
+
+      using namespace Pipes::Aldo_test;
+
+      cout << "My backend requirement of initialize (detector si,)  has been filled by " << 
+        BEreq::Read_Aldo_Sim.name() << " from " <<
+        BEreq::Read_Aldo_Sim.backend() << ", v" << 
+        BEreq::Read_Aldo_Sim.version() << "." << endl;
+
+      cout << " calling function " << BEreq::Read_Aldo_Sim(nevents) << endl;
+
+      nevents = 42;
+
+    }
+    */
+    
+
+    void Aldos_evgen(HEP_Simple_Lib::Event &how_many) {
+
+      HEP_Simple_Lib::Particle *chosen;
+      chosen = new HEP_Simple_Lib::Particle(40.5, -32.6, 0.5, 51.992884131, 13);
+      how_many.add_particle(chosen);
+
+      cout << " we created a particle " << endl;
+    }
+
+    // FastSim
+    void init_sim(int &which) {
+      
+      using namespace Pipes::init_sim;
+      cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
+        BEreq::init_fastsim.name() << " from " <<
+        BEreq::init_fastsim.backend() << ", v" << 
+        BEreq::init_fastsim.version() << "." << endl;
+
+      cout << " calling function from library" << BEreq::init_fastsim(1) << endl;
+      which = 10;
+
+    }
+
     /// Example of interacting with models
     void damu (double &result)
     {
@@ -140,19 +182,6 @@ namespace Gambit
       
       result = loglTotal;
     }
-
-    /// Fastsim test function
-    /// 
-    /*void fastsim (int value)
-    {
-      //using namespace Pipes::fastsim;      
-
-
-      cout<<"  calling fastsim "<<endl;
-    } 
-    */
-
-
 
 
     /// \name Loopmanager Examples

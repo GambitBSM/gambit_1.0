@@ -37,7 +37,8 @@ LOAD_LIBRARY
  * If left out (as done in some of the examples below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability") */
   
-BE_FUNCTION(initialize, void, (fast_sim::DetectorType), "_ZN8fast_sim7FastSim4initENS_12DetectorTypeE", STRINGIFY(BACKENDNAME ## _ ## initialize_capability))
+BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
+//BE_FUNCTION(FastSim_Init, int, (Event&), "_Z12FastSim_Initi", "evgen")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
 //BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 //BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")

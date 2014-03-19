@@ -433,6 +433,12 @@ int main( int, const char*[] )
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample2);
   
+
+  // for the fastsim backend
+  ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim::Functown::FastSim_Init);
+
+
+
    //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
   cout << "My name is " << ExampleBit_A::Accessors::name() << endl;
   cout << " I can calculate: " << endl << ExampleBit_A::Accessors::iCanDo << endl;
@@ -481,6 +487,28 @@ int main( int, const char*[] )
     ExampleBit_A::Functown::identity.calculate();
     cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::identity(0) << endl ;
   }
+
+
+  cout << "I can do Fast Evgen: " << ExampleBit_A::Accessors::provides("event_gen") << endl;
+
+  if (ExampleBit_A::Accessors::provides("event_gen"))
+  {
+    ExampleBit_A::Functown::Aldos_evgen.calculate();
+    HEP_Simple_Lib::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0); 
+    cout << " the number of muons generated " << myevent.visible_particles().size() << endl;
+    //cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::Aldos_evgen(0) << endl ;
+  }
+
+
+
+  cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
+  if (ExampleBit_A::Accessors::provides("fast_sim"))
+  {
+    ExampleBit_A::Functown::init_sim.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::init_sim(0) << endl ;
+  }
+
+
 
 
   cout <<  endl;

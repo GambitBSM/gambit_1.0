@@ -8,6 +8,8 @@
 
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
+//  for setPE, added a mass check the difference between E^2 - p^2 < 0 or == -0 , the mass is set to 0.
+//  setPE is only used for massless particles, setPM is used for particles with rest mass.  Aldo Saavedra
 
 namespace HEP_Simple_Lib {
 
@@ -116,6 +118,13 @@ namespace HEP_Simple_Lib {
       P4(double px, double py, double pz, double E) {
         setPE(px, py, pz, E);
       }
+
+      /// Constructor from Cartesian/Minkowski coordinates
+      P4(double px, double py, double pz) {
+        setPM(px, py, pz,0);
+      }
+
+
 
       /// Copy constructor
       P4(const P4& v)
@@ -236,7 +245,14 @@ namespace HEP_Simple_Lib {
       P4& setPE(double px, double py, double pz, double E) {
         assert(E >= 0);
         setPx(px); setPy(py); setPz(pz);
-        const double mass = sqrt( sqr(E) - sqr(p()) );
+
+        double mass = 0.0;
+        if (sqr(E) <= sqr(p())) {
+          mass = 0.0;
+        }
+        else
+          mass = sqrt( sqr(E) - sqr(p()) );
+
         setM(mass);
         return *this;
       }
