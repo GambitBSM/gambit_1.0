@@ -12,6 +12,10 @@
 ///          (anders.kvellestad@fys.uio.no) 
 ///   \date 2013 Apr, Nov
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca) 
+///   \date 2014 Mar
+///
 ///  *********************************************
 
 #ifndef __safety_bucket_hpp__
@@ -20,8 +24,8 @@
 #include <iostream>
 #include <omp.h>
 
-#include "extern_core.hpp"
 #include "util_types.hpp"
+#include "standalone_error_handlers.hpp"
 #include "functors.hpp"
 
 
@@ -58,12 +62,11 @@ namespace Gambit
       /// Failure message invoked when the user tries to access the object before it is initialized.
       static void dieGracefully()
       {
-        cout << endl;
-        cout << "You just tried to access a GAMBIT object (derived from 'safety_bucket_base') that has not" << endl;
-        cout << "been initialized with a non-zero functor pointer. Bad idea." << endl;
-        cout << "Probably you tried to retrieve a backend or module dependency" << endl; 
-        cout << "that has not been activated." << endl;
-        /** FIXME \todo throw real error here */
+        str errmsg = "You just tried to access a GAMBIT object (derived from 'safety_bucket_base')"
+                   "\nthat has not been initialized with a non-zero functor pointer. Bad idea."
+                   "\nProbably you tried to retrieve a backend or module dependency"
+                   "\nthat has not been activated.";
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
   };
 
@@ -159,6 +162,9 @@ namespace Gambit
         if (not _initialized) dieGracefully();
         return _functor_base_ptr->version();
       }
+
+      /// Flag indicating whether to operate in safe mode or not (true by default)
+      static bool safe_mode;
 
   };
 
@@ -273,12 +279,11 @@ namespace Gambit
         return temp_functor_ptr->handoutFunctionPointer();
       }
 
-
     protected:
 
       functor * _functor_ptr;
 
-      // Depending on whether the core is in 'safe_mode' or not, 
+      // Depending on whether the buckets are running in 'safe_mode' or not, 
       // perform a dynamic or static cast of _functor_ptr from type functor*
       // to type backend_functor<TYPE, ARGS...>*.
       template <typename... ARGS> 
@@ -287,22 +292,21 @@ namespace Gambit
 
         backend_functor<TYPE, ARGS...> * temp_functor_ptr;
 
-        if (Core.safe_mode())                                            
-        {                                                                
+        if (safe_mode)                                            
+        {
           temp_functor_ptr = dynamic_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
           if (temp_functor_ptr == 0)                                                
           {                                                              
-            cout << endl;
-            cout << "Error: Null returned from dynamic cast in ";    
-            cout << "attempting to retrieve backend requirement" << endl;    
-            cout << name() <<" from backend " << backend() << "." << endl;                 
-            cout << "Probably you have passed arguments of the " << endl; 
-            cout << "wrong type(s) when calling this function." << endl;     
-            /** FIXME \todo throw real error here */
+            str errmsg = "Error: Null returned from dynamic cast in ";    
+            errmsg +=  "\nattempting to retrieve backend requirement"    
+                       "\n" + name() + " from backend " + backend() + "."
+                       "\nProbably you have passed arguments of the "  
+                       "\nwrong type(s) when calling this function."; 
+            utils_error().raise(LOCAL_INFO,errmsg);    
           }                                                              
         }                                                                
         else                                                             
-        {                                                                
+        {
           temp_functor_ptr = static_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
         }                                                                
 

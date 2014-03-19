@@ -19,6 +19,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -30,10 +31,14 @@ namespace Gambit
         {
                 Scanner_Function_Factory::Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior) : dependencyResolver(dependencyResolver), prior(prior)
                 {
-                        functorMap = *core.getActiveModelFunctors();
+                        functorMap = core.getActiveModelFunctors();
                         
                         std::vector<std::string> priorKeys = prior.getParameters();
                         std::vector<std::string> gambitKeys;
+
+                        //FIXME remove this example when its usefulness has expired...
+                        str errstring = "Damn, error in the scanner.";
+                        scan_error().raise(LOCAL_INFO,errstring);
                         
                         for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
                         {

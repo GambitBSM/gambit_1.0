@@ -3,12 +3,12 @@
 //   *********************************************
 ///  \file
 ///
-///  Types returned from more than one module, 
-///  model or backend as the results of their
-///  externally-accessible functions.  Also
-///  other classes, typedefs, etc that are used
-///  internally in more than one module, model or
-///  backend.
+///  Types for which any of the following apply: 
+///  1. The type is returned or read in by a backend.
+///  2. The type is used internally in convenience 
+///     functions of more than one backend.
+///  3. The type is returned or used internally by
+///     more than one module or model.
 ///
 ///  *********************************************
 ///
@@ -17,6 +17,7 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
+///  \date 2014 Mar
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -27,9 +28,19 @@
 #ifndef __shared_types_hpp__
 #define __shared_types_hpp__
 
-#include "backend_types_rollcall.hpp"
+// Definitions required to understand model parameter objects
 #include "model_types.hpp"
 
+// All the types from the different backends
+#include "SLHA_types.hpp"
+#include "DarkSUSY_types.hpp"
+#include "SuperIso_types.hpp"
+#include "libFarrayTest_types.hpp"
+#include "FastSim_types.hpp"
+
+
+// Other types that don't belong in any of the existing includes.  Should be progressively
+// organised into new headers and included from here as their number grows.
 namespace Gambit
 {
   

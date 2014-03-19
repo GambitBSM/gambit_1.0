@@ -31,11 +31,12 @@
 #include <unordered_set>
 #include <set>
 #include <string>
-#include <functors.hpp>
-#include <graphs.hpp>
-#include <priors.hpp>
-#include <scanner_utils.hpp>
-#include <gambit_scan.hpp>
+
+#include "functors.hpp"
+#include "graphs.hpp"
+#include "priors.hpp"
+#include "scanner_utils.hpp"
+#include "scan.hpp"
 
 #define LOAD_SCANNER_FUNCTION(tag, ...) REGISTER(__scanner_factories__, tag, __VA_ARGS__)
 
@@ -84,11 +85,8 @@ namespace Gambit
                         {
                                 delete (Function_Base *)a;
                         }
-                        //#ifndef NO_GCC_4_7
-                        //~Scanner_Function_Factory() noexcept {}
-			//#else
+                        //~Scanner_Function_Factory() noexcept {} //If we move to demanding C++11 noexcept to be supported
                         ~Scanner_Function_Factory(){}
-			//#endif
                 };
         }
 }

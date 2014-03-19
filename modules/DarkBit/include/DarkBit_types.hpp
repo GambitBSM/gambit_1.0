@@ -37,6 +37,7 @@
 #define __DarkBit_types_hpp__
 
 #include <cmath>
+#include <algorithm>
 #include <gsl/gsl_integration.h>
 #include "DarkBit_BaseFunctions.hpp"
 
@@ -106,7 +107,7 @@ namespace Gambit
         // Constructor
         TH_Channel(std::vector<std::string> finalStateIDs, BFptr dSigmadE) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
-            dSigmadE(dSigmadE) 
+            dSigmadE(dSigmadE)
         {
             if ( nFinalStates < 2 )
             {
@@ -117,6 +118,9 @@ namespace Gambit
 
         // Final state identifiers
         std::vector<std::string> finalStateIDs;
+
+        // Number of final state particles in this channel
+        int nFinalStates;
 
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
@@ -133,17 +137,27 @@ namespace Gambit
             return false;
         }
 
+        // New version that allows permutations of the final states
+        //bool isChannel(std::string p0, std::string p1, std::string p2 = "", std::string p3 = "")
+        //{
+        //    std::vector<std::string> inIDs;
+        //    if      (p2=="") inIDs = {p0,p1};
+        //    else if (p3=="") inIDs = {p0,p1,p2};
+        //    else             inIDs = {p0,p1,p2,p3};
+        //    return std::is_permutation(finalStateIDs.begin(), finalStateIDs.end(), inIDs.begin());
+        //}
+        // CW: std::vector initializatino with lists, as well as
+        // is_permutatino, is not yet supported by g++ 4.5.4, so I am going
+        // back to the original version of isChannel().
+
         // Generic flags
         std::map<std::string, bool> flags;
-
-        // Number of final state particles in this channel
-        int nFinalStates;
     };
 
     struct TH_Process
     {
         // Constructor for decay process
-        TH_Process(std::string particleID) : isAnnihilation(false), particle1ID(particle1ID), particle2ID("") {}
+        TH_Process(std::string particle1ID) : isAnnihilation(false), particle1ID(particle1ID), particle2ID("") {}
 
         // Constructor for annihilation process
         TH_Process(std::string particle1ID, std::string particle2ID) :
@@ -163,12 +177,12 @@ namespace Gambit
             return (p1 == this->particle1ID and p2 == this->particle2ID);
         }
 
+        // Annihilation or decay?
+        bool isAnnihilation;
+
         // Decaying particle or particle pair
         std::string particle1ID;
         std::string particle2ID;
-
-        // Annihilation or decay?
-        bool isAnnihilation; 
 
         // Generic flags
         std::map<std::string, bool> flags;
@@ -237,7 +251,7 @@ namespace Gambit
       public:
         DMhaloCatalog() {}  // Dummy constructor
 
-        bool addDMhalo(shared_ptr<DMhalo> newHalo)
+        void addDMhalo(shared_ptr<DMhalo> newHalo)
         {
           this->myHalos.push_back(newHalo);
         }

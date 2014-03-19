@@ -2,8 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Header for library of ModelBit provisions to 
-///  the core.
+///  Header for ModelBit.
 ///  
 ///  Duties:
 ///    Activate primary_model_functors according 
@@ -38,8 +37,8 @@
 #include <boost/graph/graphviz.hpp>
 
 #include "graphs.hpp"
-#include "gambit_core.hpp"
 #include "util_types.hpp"
+#include "standalone_error_handlers.hpp"
 
 namespace Gambit
 {
@@ -47,21 +46,19 @@ namespace Gambit
   namespace ModelBit
   {
      
-    typedef std::map < str, std::vector<str> > map_of_vectors;
-    
+    typedef std::vector<primary_model_functor*> primodel_vec;
+    typedef std::map<std::string, primary_model_functor *> activemodel_map;
+
     /// ModelBit object which performs initialisation and checking operations
-    /// on the Core's primary_model_functor list.
+    /// on a primary_model_functor list.
     class ModelFunctorClaw
     {
 
       private:
 
         /// Add model functors (vertices) to model hierarchy graph
-        void addFunctorsToGraph();
+        void addFunctorsToGraph(const primodel_vec&);
         
-        /// Private pointer to the gambit_core object to which this claw is bound
-        gambit_core *boundCore;
-
         /// The central boost graph object for the model hierarchy
         Graphs::MasterGraphType modelGraph;
 
@@ -83,25 +80,24 @@ namespace Gambit
       public:
 
         /// Constructor
-        ///
-        /// Hooks the claw into a core
-        ModelFunctorClaw (gambit_core&);
+        ModelFunctorClaw(){}
+        /// Destructor
+        ~ModelFunctorClaw(){}
         
         /// Model activation function
         ///
-        /// Activates primary_model_functors according to the model(s) being 
-        /// scanned
-        void activatePrimaryModels (std::vector<str>);
+        /// Returns a vector of primary_model_functors to be activated, according to the model(s) being scanned
+        primodel_vec getPrimaryModelFunctorsToActivate (std::vector<str>, const primodel_vec&);
         
         /// Active model functor "usefulness" checker
         ///
         /// Checks that all the active primary model functors are actually used 
         /// for something in the dependency tree. If not throws an error to warn
         /// the user.
-        void checkPrimaryModelFunctorUsage();
+        void checkPrimaryModelFunctorUsage(const activemodel_map&);
         
         /// Add edges (relationships) to model hierarchy graph
-        void makeGraph();
+        void makeGraph (const primodel_vec&);
 
         /// Add a model to those recongnised by GAMBIT
         void add_model (const str &);
@@ -119,7 +115,7 @@ namespace Gambit
         bool model_exists (const str &); 
 
         /// List all the models recognised by GAMBIT
-        void list_models();
+        str list_models();
 
         /// Return vector of the active models;
         std::vector<str> get_activemodels();
@@ -139,6 +135,9 @@ namespace Gambit
     };
  
   }
+
+  /// Claw accessor function
+  ModelBit::ModelFunctorClaw& modelClaw();
 
 }
 

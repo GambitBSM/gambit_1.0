@@ -24,7 +24,8 @@
 /* The following macro loads the library (using dlmopen) in LIBPATH 
  * when this header file is included somewhere. */
 
-/* LOAD_LIBRARY # Fake library so don't need this */
+/* LOAD_LIBRARY # Fake library so don't need this. However we still have to register a backend LogTag, which would have been done automatically by this macro, so below we run this 'secret' macro. Most backends should not use this macro, however. */
+REGISTER_BACKEND_LOGTAG 
 
 namespace Gambit
 {

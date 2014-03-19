@@ -12,7 +12,8 @@
 ///
 ///  If you have a module that you want to 
 ///  use as a standalone code, instead of
-///  including this file, just include 
+///  including this file, just include
+///  standalone.hpp and 
 ///  your_module_name_rollcall.hpp in your 
 ///  driver program.
 ///
@@ -33,6 +34,8 @@
 
 // Include the module macro definitions
 #include "module_macros_incore.hpp"
+// Define the static members of utility classes
+#include "static_members.hpp"
 
 // Create all the modules
 #include "ExampleBit_A_rollcall.hpp"

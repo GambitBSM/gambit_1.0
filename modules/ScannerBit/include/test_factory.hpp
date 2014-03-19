@@ -17,17 +17,18 @@
 #ifndef __test_factory_hpp__
 #define __test_factory_hpp__
 
-#include <vector>
-#include <unordered_map>
 #include <map>
+#include <vector>
 #include <string>
-#include <scanner_utils.hpp>
-#include <gambit_scan.hpp>
-#include <scanner_factory.hpp>
+#include <unordered_map>
 #include <sstream>
-#include <yaml_parser.hpp>
 
-#define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )                                                                                              \
+#include "scanner_utils.hpp"
+#include "scan.hpp"
+#include "scanner_factory.hpp"
+#include "yaml_parser.hpp"
+
+#define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )
 
 namespace Gambit
 {
@@ -60,11 +61,8 @@ namespace Gambit
                         {
                         }
 
-                        //#ifndef NO_GCC_4_7
-                        //~Test_Function_Factory() noexcept
-			//#else
+                        //~Test_Function_Factory() noexcept //If we move to demanding C++11 noexcept to be supported
                         ~Test_Function_Factory()
-			//#endif
                         {
                                 if (func != 0)
                                         delete func;

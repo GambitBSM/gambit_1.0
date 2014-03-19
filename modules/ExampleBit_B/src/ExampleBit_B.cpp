@@ -24,11 +24,15 @@
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Nov
+///
+///  \author Ben Farmer
+///          (ben.farmer@gmail.com)
+///  \date 2014 Mar
+///
 ///  *********************************************
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_B_rollcall.hpp"
-
 
 namespace Gambit
 {
@@ -41,7 +45,7 @@ namespace Gambit
     /// Initialisation function, called anew for each new model point before all other module functions are called.
     void PointInit_Default()
     {
-      cout<<"  Initialising ExampleBit_B for current point."<<endl;
+      logger() <<"  Initialising ExampleBit_B for current point."<<info<<EOM;
     }
 
     //************************************************************
@@ -56,38 +60,46 @@ namespace Gambit
     void xsection         (double &result) 
     { 
       using namespace Pipes::xsection;
-      cout << endl;
-      cout << "In ExampleBit_B, function xsection" << endl;
-      cout << "  Printing parameter values:" << endl;
-      cout << "  M0: "  << *Param["M0"] << endl;
-      cout << "  M12: " << *Param["M12"] << endl;
-      cout << "  A0: "  << *Param["A0"] << endl;
+      logger() << endl;
+      logger() << "In ExampleBit_B, function xsection" << endl;
+      logger() << "  Printing parameter values:" << endl;
+      logger() << "  M0: "  << *Param["M0"] << endl;
+      logger() << "  M12: " << *Param["M12"] << endl;
+      logger() << "  A0: "  << *Param["A0"] << endl;
+      logger() <<info<<EOM;
       result = 5.e10; 
+
+      //Example of how to raise an error from a module function.
+      str errormsg = "Damn, this xsection is bad.";
+      ExampleBit_B_error().raise(LOCAL_INFO,errormsg);
+
     }
 
     void nevents_postcuts (int &result)          
     {
       using namespace Pipes::nevents_postcuts;
  
-      cout << endl << "My dependency on nevents has been filled by " << 
+      logger() << endl << "My dependency on nevents has been filled by " << 
        Dep::nevents.name() << " from " <<
        Dep::nevents.module() << "." << endl;
-      cout << "Its value is: " << *Dep::nevents << endl;
+      logger() << "Its value is: " << *Dep::nevents << endl;
+      logger() <<info<<EOM;
 
       //cout << "Now let's see what happens when we try to retrieve a conditional dependency." << endl;
       //cout << "The id is: " << *Dep::id << endl;
 
-      cout << "My backend requirement of awesomeness has been filled by " << 
+      logger() << "My backend requirement of awesomeness has been filled by " << 
        BEreq::awesomeness.name() << " from " <<
        BEreq::awesomeness.backend() << ", v" << 
        BEreq::awesomeness.version() << "." << endl;
-      cout << "Its value is: ";
+      logger() << "Its value is: ";
       double doall_local = BEreq::awesomeness(2);
-      cout << doall_local << endl << endl;    
+      logger() << doall_local << endl << endl;    
       int stuff = 2;
-      cout << "Again, its value is: ";
+      logger() << "Again, its value is: ";
       double doall_local2 = BEreq::awesomeness(byVal(stuff));
-      cout << doall_local2 << endl << endl;    
+      logger() << doall_local2 << endl << endl;    
+      logger() <<info<<EOM;
 
       result = (int) (*Dep::nevents + doall_local);
 
@@ -95,12 +107,13 @@ namespace Gambit
       double inputvar1 = 0;
       double inputvar2 = 0;
       double inputvar3 = 2.5;
-      cout << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
+      logger() << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
       double refex1 = BEreq::refex(inputvar1);
-      cout << "Next returns void, takes parameters both by ref and by val." << endl;
+      logger() << "Next returns void, takes parameters both by ref and by val." << endl;
       BEreq::refex2(inputvar2, byVal(inputvar3));
-      cout << "Results of backend functions with parameters passed byRef: " 
+      logger() << "Results of backend functions with parameters passed byRef: " 
            << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
+      logger() <<info<<EOM;
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
@@ -108,21 +121,23 @@ namespace Gambit
 
       // Demostration of accessing backend requirements via 'BEvariable_bucket'/'BEfunction_bucket' objects
       // living in Pipes::[module function name]::BEreq::[backend capability]
-      cout << endl;
-      cout << "Will now set backend variable SomeInt=1000." << endl;
-      cout << "If this works the next result from 'someFunction' should be PI*1000." << endl;
+      logger() << endl;
+      logger() << "Will now set backend variable SomeInt=1000." << endl;
+      logger() << "If this works the next result from 'someFunction' should be PI*1000." << endl;
+      logger() <<info<<EOM;
       *BEreq::SomeInt = 1000;
       BEreq::someFunction();
 
-      cout << endl;
-      cout << "Will now call 'someFunction' once more, this time using the function pointer." << endl;
+      logger() << endl;
+      logger() << "Will now call 'someFunction' once more, this time using the function pointer." << endl;
+      logger() <<info<<EOM;
       void (*function_pointer)() = BEreq::someFunction.pointer<>();
       function_pointer();
 
-      cout << endl;
-      cout << "Print some info on the backend requirement 'SomeInt':" << endl;
-      cout << "Name: " << BEreq::SomeInt.name() << "   Backend: " << BEreq::SomeInt.backend() << "   Version: " << BEreq::SomeInt.version() << endl;
-      cout << endl;
+      logger() << endl;
+      logger() << "Print some info on the backend requirement 'SomeInt':" << endl;
+      logger() << "Name: " << BEreq::SomeInt.name() << "   Backend: " << BEreq::SomeInt.backend() << "   Version: " << BEreq::SomeInt.version() << endl;
+      logger() <<info<<EOM;
 
     }
 

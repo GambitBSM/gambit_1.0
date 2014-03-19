@@ -139,13 +139,6 @@ multinest:
   output_file:  output
     
 ###############################
-#--- # Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
-###############################
 --- # Observables of interest
 ###############################
 
@@ -172,11 +165,11 @@ multinest:
 #   capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-#- purpose:      Likelihood
-#  capability:   lnL_ExampleBitB
-#  type:         double
-#  function:     ""
-#  module:       ""
+- purpose:      Likelihood
+  capability:   lnL_ExampleBitB
+  type:         double
+  function:     ""
+  module:       ""
 
 # Test loop manager
 #- purpose:      Likelihood
@@ -216,6 +209,31 @@ multinest:
 #  function:     ""
 #  backend:      "libFirst"
 
+#########################
+--- # Logging setup
+#########################
+
+# Redirectory of specific messages according to tags
+prefix : "logfiles/"
+redirection:
+  [Debug] : "debug.log"
+  [Default] : "default.log"
+  [Error] : "errors.log"
+  [Warning] : "warnings.log"
+  [Core,Error] : "core_errors.log"
+  [Core,Error,Fatal] : "fatal_core_errors.log"
+  [Dependency Resolver] : "dependency_resolver.log"
+  [ExampleBit_A] : "ExampleBit_A.log"
+  [ExampleBit_B] : "ExampleBit_B.log"
+  [LibFirst] : "libfirst.log"
+
+###############################
+#--- # Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
+
 ##########################
 --- # Name/Value Section
 ##########################
@@ -228,6 +246,17 @@ another_key:
 
 dependency_resolution:
   prefer_model_specific_functions: true
+
+#Whether to run GAMBIT in safe mode or not
+safe_mode: true
+
+#By default, errors are fatal and warnings non-fatal
+exceptions:
+  dependency_resolver_error: fatal
+  dependency_resolver_warning: non-fatal
+  core_warning: fatal
+  scan_error: non-fatal #make this fatal to see an example error
+  ExampleBit_B_error: non-fatal
 
 enable_testing: false
 test_function: uniform

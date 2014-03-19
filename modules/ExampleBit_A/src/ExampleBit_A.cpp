@@ -33,7 +33,6 @@
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
-
 namespace Gambit
 {
 
@@ -57,7 +56,9 @@ namespace Gambit
     /// Some other example function
     double some_other_function(int &input)
     {
-      std::cout << "  This is some_other_function, invoked with argument " << input << std::endl;
+      ostringstream ss;      
+      ss << "  This is some_other_function, invoked with argument " << input;
+      logger().send(ss.str(),info);
       return input * 2.0;
     }
 
@@ -74,7 +75,7 @@ namespace Gambit
     /// Initialisation function, called anew for each new model point before all other module functions are called.
     void PointInit_Default()
     {
-      cout<<"  Initialising ExampleBit_A for current point."<<endl;
+      logger().send("Initialising ExampleBit_A for current point.",info);
     }
 
     //************************************************************

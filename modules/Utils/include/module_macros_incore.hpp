@@ -51,10 +51,14 @@
 #include <map>
 
 #include "functors.hpp"
-#include "create_core.hpp"
+#include "exceptions.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
+#include "log.hpp"
+#ifndef STANDALONE
+  #include "gambit_core.hpp"
+#endif
 
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/compl.hpp>
@@ -196,7 +200,51 @@
   {                                                                            \
     namespace MODULE                                                           \
     {                                                                          \
+                                                                               \
+      /* Module errors */                                                      \
+      error& CAT(MODULE,_error)()                                              \
+      {                                                                        \
+        static error local("A problem has been raised by " STRINGIFY(MODULE)   \
+                           ".", STRINGIFY(MODULE) "_error");                   \
+        return local;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Module warnings */                                                    \
+      warning& CAT(MODULE,_warning)()                                          \
+      {                                                                        \
+        static warning local("A problem has been raised by " STRINGIFY(MODULE) \
+                           ".", STRINGIFY(MODULE) "_warning");                 \
+        return local;                                                          \
+      }                                                                        \
+                                                                               \
+      /* Register module errors and warnings */                                \
+      namespace Ini                                                            \
+      {                                                                        \
+        void CAT_3(register_,MODULE,_handlers)()                               \
+        {                                                                      \
+          error e = CAT(MODULE,_error)();                                      \
+          warning w = CAT(MODULE,_warning)();                                  \
+        }                                                                      \
+        ini_code CAT(MODULE,_handlers)(&CAT_3(register_,MODULE,_handlers));    \
+      }                                                                        \
+                                                                               \
       CORE_START_MODULE_COMMON(MODULE)                                         \
+                                                                               \
+      /* Runtime registeration of module with the log system */                \
+      /* Not in CORE_START_MODULE_COMMON because we don't want models to have
+         their own logging tags... probably */                                 \
+      void rt_register_module_with_log ()                                      \
+      {                                                                        \
+        int mytag = Logging::getfreetag();                                     \
+        Logging::tag2str()[mytag] = STRINGIFY(MODULE);                         \
+        Logging::components().insert(mytag);                                   \
+      }                                                                        \
+                                                                               \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code register_module_with_log (&rt_register_module_with_log);      \
+      }                                                                        \
+                                                                               \ 
     }                                                                          \
   }                                                                            \
 
@@ -347,10 +395,24 @@
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
                                                                                \
+      /* Supplementary version */                                              \
+      template <typename TAG>                                                  \
+      void rt_register_function_supp ()                                        \
+      {                                                                        \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
+      }                                                                        \
+                                                                               \
       /* Runtime registration function for nesting requirements of             \
       observable/likelihood function TAG*/                                     \
       template <typename TAG>                                                  \
       void rt_register_function_nesting ()                                     \
+      {                                                                        \
+        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
+      }                                                                        \
+                                                                               \
+      /* Supplementary version */                                              \
+      template <typename TAG>                                                  \
+      void rt_register_function_nesting_supp ()                                \
       {                                                                        \
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
@@ -395,6 +457,7 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this conditional backend requirement for this function.";  \
       }                                                                        \
+                                                                               \
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
@@ -504,8 +567,20 @@
   functions should be made to depend on them here. */                          \
 
 
+// Determine whether to make registration calls to the Core in the MAKE_FUNCTOR
+// macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)             \
+          MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)
+#else
+  #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)             \
+          MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)        \
+          MAKE_FUNCTOR_SUPP(FUNCTION)        
+#endif
+
+
 /// Main parts of the functor creation
-#define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)               \
+#define MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)          \
                                                                                \
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
@@ -523,7 +598,6 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    Core.registerModuleFunctor(Functown::FUNCTION);                            \
     BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
@@ -547,9 +621,38 @@
   }                                                                            \
 
 
-/// Redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
+/// Main parts of the functor creation
+#define MAKE_FUNCTOR_SUPP(FUNCTION)                                            \
+                                                                               \
+  /* Set up the supplementary commands to be called at runtime to register the \
+  function*/                                                                   \
+  template <>                                                                  \
+  void rt_register_function_supp<Tags::FUNCTION> ()                            \
+  {                                                                            \
+    Core().registerModuleFunctor(Functown::FUNCTION);                          \
+  }                                                                            \
+                                                                               \
+  /* Create the supplementary function initialisation object */                \
+  namespace Ini                                                                \
+  {                                                                            \
+    ini_code CAT(FUNCTION,_supp) (&rt_register_function_supp<Tags::FUNCTION>); \
+  }                                                                            \
+
+
+// Determine whether to make registration calls to the Core in the 
+// CORE_NEEDS_MANAGER_WITH_CAPABILITY macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                          \
+          CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)
+#else
+  #define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                          \
+          CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)                     \
+          CORE_NEEDS_MANAGER_WITH_CAPABILITY_SUPP(LOOPMAN)
+#endif
+
+/// Main redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
 /// within the core.
-#define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                            \
+#define CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)                       \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "NEEDS_MANAGER_WITH_CAPABILITY."))                                          \
@@ -589,7 +692,6 @@
       template <>                                                              \
       void rt_register_function_nesting<Tags::FUNCTION> ()                     \
       {                                                                        \
-        Core.registerNestedModuleFunctor(Functown::FUNCTION);                  \
         Functown::FUNCTION.setLoopManagerCapability(STRINGIFY(LOOPMAN));       \
         Pipes::FUNCTION::Loop::iteration = Functown::FUNCTION.iterationPtr();  \
       }                                                                        \
@@ -599,6 +701,36 @@
       {                                                                        \
         ini_code CAT(FUNCTION,_nesting)                                        \
          (&rt_register_function_nesting<Tags::FUNCTION>);                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Supplementray redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when 
+/// invoked from within the core.
+#define CORE_NEEDS_MANAGER_WITH_CAPABILITY_SUPP(LOOPMAN)                       \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the supplementary runtime command that registers the fact that \
+      FUNCTION must be run inside a loop manager with capability LOOPMAN.*/    \
+      template <>                                                              \
+      void rt_register_function_nesting_supp<Tags::FUNCTION> ()                \
+      {                                                                        \
+        Core().registerNestedModuleFunctor(Functown::FUNCTION);                \
+      }                                                                        \
+                                                                               \
+      /* Create the corresponding supplementary initialisation object */       \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT(FUNCTION,_nesting_supp)                                   \
+         (&rt_register_function_nesting_supp<Tags::FUNCTION>);                 \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -635,13 +767,12 @@
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          cout<<"Error: Null returned from dynamic cast of "<< endl;           \
-          cout<<"dependency functor in MODULE::resolve_dependency, for"<< endl;\
-          cout<<"dependency DEP of function FUNCTION.  Attempt was to "<< endl;\
-          cout<<"resolve to "<<dep_functor->name()<<" in   "<< endl;           \
-          cout<<dep_functor->origin()<<"."<<endl;                              \
-          exit(1);                                                             \
-          /** FIXME \todo throw real error here */                             \
+          str errmsg = "Error: Null returned from dynamic cast of";            \
+          errmsg +=  "\ndependency functor in MODULE::resolve_dependency, for" \
+                     "\ndependency DEP of function FUNCTION.  Attempt was to"  \
+                     "\nresolve to " + dep_functor->name() + " in " +          \
+                     dep_functor->origin() + ".";                              \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -767,13 +898,12 @@
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          cout<<"Error: Null returned from dynamic cast in "<< endl;           \
-          cout<<"MODULE::resolve_dependency, for model"<< endl;                \
-          cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;       \
-          cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;        \
-          cout<<params_functor->origin()<<"."<<endl;                           \
-          exit(1);                                                             \
-          /** FIXME \todo throw real error here */                             \
+          str errmsg = "Error: Null returned from dynamic cast in";            \
+          errmsg +=  "\nMODULE::resolve_dependency, for model"                 \
+                     "\nMODEL with function FUNCTION.  Attempt was to"         \
+                     "\nresolve to " + params_functor->name() + " in " +       \
+                     params_functor->origin() + ".";                           \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
         }                                                                      \
                                                                                \
         /* It did! Now initialize the safety_bucket using the functors.*/      \
@@ -797,13 +927,15 @@
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
-            cout<<"Error in MODULE::resolve_dependency, for model"<< endl;     \
-            cout<<"MODEL with function FUNCTION.  Attempt was to "<< endl;     \
-            cout<<"resolve to "<<params_functor->name()<<" in   "<< endl;      \
-            cout<<params_functor->origin()<<"."<<endl;                         \
-            cout<<"You have tried to scan two models simultaneously"<< endl;   \
-            cout<<"that have one or more parameters in common. "<< endl;       \
-            cout<<"Problem parameter: "<<it->first<<endl;                      \
+            str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_dependency,";\
+            errmsg +=    " for model " STRINGIFY(MODEL) " with function\n"       \
+                         STRINGIFY(FUNCTION) ".  Attempt was to resolve to\n" + \
+                         params_functor->name() + " in " +                     \
+                         params_functor->origin() + ".\nYou have tried to scan"\
+                         "two models simultaneously that have one or more\n"   \
+                         "parameters in common.\nProblem parameter: " +        \
+                         it->first;                                            \
+            utils_error().raise(LOCAL_INFO,errmsg);                            \
           }                                                                    \
         }                                                                      \
       }                                                                        \

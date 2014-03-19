@@ -32,7 +32,7 @@
 #include "model_functions.hpp"
 #include "module_macros_incore.hpp"
 #include "types_rollcall.hpp"
-#include "create_claw.hpp"
+#include "modelbit.hpp"
 
 
 // MACRO DEFINITIONS. 
@@ -84,26 +84,25 @@
         /* Runtime addition of model to GAMBIT (modelClaw) database */         \
         void rt_add_model()                                                    \
         {                                                                      \
-          modelClaw.add_model(STRINGIFY(MODEL));                               \
+          modelClaw().add_model(STRINGIFY(MODEL));                             \
         }                                                                      \
                                                                                \
         /* Runtime addition of model's parents to ModelClaw database */        \
-        /* ///TODO: need to change this to allow multiple parents */           \
         void rt_add_parents()                                                  \
         {                                                                      \
-          modelClaw.add_parents(STRINGIFY(MODEL), STRINGIFY(PARENT));          \
+          modelClaw().add_parents(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
         }                                                                      \
                                                                                \
         /* Runtime addition of model's lineage to ModelClaw database */        \
         void rt_add_lineage()                                                  \
         {                                                                      \
-          modelClaw.add_lineage(STRINGIFY(MODEL), lineage);                    \
+          modelClaw().add_lineage(STRINGIFY(MODEL), lineage);                  \
         }                                                                      \
                                                                                \
         /* Runtime addition of model-as-a-descendant to ModelClaw databases */ \
         void rt_add_descendant()                                               \
         {                                                                      \
-          modelClaw.add_descendant(STRINGIFY(MODEL), &is_descendant_of);       \
+          modelClaw().add_descendant(STRINGIFY(MODEL), &is_descendant_of);     \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
@@ -126,7 +125,8 @@
         void primary_parameters (ModelParameters&) {}                          \
                                                                                \
         /* Wrap it up in a primary_model_functor */                            \
-        MAKE_PRIMARY_MODEL_FUNCTOR                                             \
+        MAKE_PRIMARY_MODEL_FUNCTOR(primary_parameters, CAT(MODEL,_parameters), \
+                                   MODEL)                                      \
                                                                                \
       }                                                                        \
     }                                                                          \
@@ -400,38 +400,41 @@
   INTERPRET_AS_X__DEFINE(PARENT,FUNC)                                          \
 
 
-/// Macro to create and register primary model functors. 
+/// Macros to create and register primary model functors. 
 ///
-/// Need this extra wrapper in order to register these special functors in the
-/// Core's primary model functor list (no other functors are allowed here)         
-#define MAKE_PRIMARY_MODEL_FUNCTOR                                             \
-  MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(primary_parameters,ModelParameters,          \
-    CAT(MODEL,_parameters),MODEL)                                              \
+/// We need this extra wrapper in order to define these special functors and add
+/// them to the Core's primary model functor list (no other functors allowed here).         
+/// @{
+
+// Determine whether to make registration calls to the Core in the 
+// MAKE_PRIMARY_MODEL_FUNCTOR macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)               \
+          MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
+#else
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)               \
+          MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)          \
+          MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                  
+#endif
   
-/// Version of MAKE_FUNCTOR modified to build primary_parameters functors.
-#define MAKE_PRIMARY_MODEL_FUNCTOR_GUTS(FUNCTION,TYPE,CAPABILITY,ORIGIN)       \
+/// Main version of MAKE_FUNCTOR modified to build primary_parameters functors.
+#define MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)            \
                                                                                \
   /* Create the function wrapper object (functor) */                           \
-  /* Note: primary_model_functors can only contain results of type 
-     ModelParameters, so the TYPE argument is not very useful in this macro.
-     It exists mainly for copy/paste reasons. */                               \
   namespace Functown                                                           \
   {                                                                            \
     primary_model_functor FUNCTION                                             \
      (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
-     STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
+     "ModelParameters", STRINGIFY(ORIGIN));                                    \
   }                                                                            \
                                                                                \
-  /* Set up the commands to be called at runtime to register the function,     \ 
-     including registering the functor with the primaryModelFunctorList in     \
-     the Core. */                                                              \
+  /* Set up the commands to be called at runtime to register the function. */  \
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    Core.registerPrimaryModelFunctor(Functown::FUNCTION);                      \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
-    Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
+    Accessors::iCanDo[STRINGIFY(FUNCTION)] = "ModelParameters";                \
   }                                                                            \
                                                                                \
   /* Create the function initialisation object */                              \
@@ -440,6 +443,23 @@
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
   }                                                                            \
 
+/// Supplementary version of MAKE_FUNCTOR modded for primary_parameters functors.
+#define MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                              \
+                                                                               \
+  /* Register the functor with the Core. */                                    \
+  template <>                                                                  \
+  void rt_register_function_supp<Tags::FUNCTION> ()                            \
+  {                                                                            \
+    Core().registerPrimaryModelFunctor(Functown::FUNCTION);                    \
+  }                                                                            \
+                                                                               \
+  /* Create the function initialisation object */                              \
+  namespace Ini                                                                \
+  {                                                                            \
+    ini_code CAT(FUNCTION,_supp) (&rt_register_function_supp<Tags::FUNCTION>); \
+  }                                                                            \
+
+/// @}
 
 #endif /* defined(__model_macros_hpp__) */
 

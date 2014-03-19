@@ -16,14 +16,6 @@ ifdef HAVE_MAC
   HAVE_MAC = iMissUbuntuAlready
 endif
 
-# if your compiler doesn't support all of C++11, some things might not compile.
-# if you don't have at least GCC 4.7 you can define NO_GCC_4_7
-# NOTE: You can do so on the command line:
-#       make -f makefile.xxx NO_GCC_4_7=whatever
-ifdef NO_GCC_4_7
-  NO_GCC_4_7 = upgradeYourGCC
-endif
-
 # set SHH to anything to make the output less verbose
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx SHH=whatever
@@ -68,6 +60,7 @@ COREDIR = Core
 MODELDIR = ModelBit
 UTILSDIR = Utils
 PRINTERSDIR = Printers
+LOGGINGDIR = logging
 SCANDIR = ScannerBit
 BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
@@ -89,6 +82,7 @@ CFLAGS= -I$(COREDIR)/include \
 	-I$(MODELDIR)/include/models \
 	-I$(UTILSDIR)/include \
         -I$(PRINTERSDIR)/include \
+        -I$(LOGGINGDIR)/include \
 	-I$(SCANDIR)/include \
 	-I$(BACKENDDIR)/include \
 	-I$(BACKENDDIR)/lib \
@@ -119,10 +113,10 @@ else
 endif
 FFLAGS = -O3 -fPIC
 
-ifdef NO_GCC_4_7
-  CFLAGS += -DNO_GCC_4_7 -Dnullptr=0 -std=c++0x
-else
+ifdef CPP11FLAG
   CFLAGS += -std=c++11
+else
+  CFLAGS += -Dnullptr=0 -std=c++0x
 endif
 
 # CoreBit/include/logs.hpp:
@@ -144,10 +138,7 @@ ifndef BOOST
   ifdef BOOSTDIR
     BOOST := $(BOOSTDIR)
   else
-    $(info $$BOOSTDIR not defined.  Boost assumed to be installed in ./ or regular system paths.)
-    BOOSTINC=./
-    BOOST=./
-    export BOOST
+    $(info $$BOOST and $$BOOSTDIR undefined.  Boost assumed to be installed in regular system paths.)
   endif
 endif
 ifdef BOOST
@@ -157,10 +148,18 @@ ifdef BOOST
     $(info )
   endif
   BOOSTINC=$(BOOST)
+  BOOST_CXXFLAGS := -I$(BOOSTINC)
+  CFLAGS += $(BOOST_CXXFLAGS)
   BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
+  BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
+  BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME),-L$(BOOST)/stage/lib -lboost_date_time)
+else
+  BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard /usr/lib/*)))
+  BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard /usr/lib/*)))
+  BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION), -lboost_serialization)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time)
 endif
-BOOST_CXXFLAGS := -I$(BOOSTINC)
-BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)
 ifndef SHH
   $(info INFO:)
   $(info -- Boost Flags --)
@@ -168,9 +167,37 @@ ifndef SHH
   $(info Link    > $(BOOST_LDFLAGS))
   $(info )
 endif
-CFLAGS += $(BOOST_CXXFLAGS)
 
-LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+# GSL is required too.
+ifndef GSL
+  ifdef GSLDIR
+    GSL := $(GSLDIR)
+  else
+    $(info $$GSLDIR not defined.  GSL assumed to be installed in regular system paths.)
+  endif
+endif
+ifdef GSL
+  ifndef SHH
+    $(info INFO:)
+    $(info GSL path = $(GSL))
+    $(info )
+  endif
+  GSLINC=$(GSL)/include
+  GSLLIB=$(GSL)/lib
+  GSL_CXXFLAGS := -I$(GSLINC)
+  CFLAGS += $(GSL_CXXFLAGS)
+  GSL_LDFLAGS := -L$(GSLLIB)
+endif
+GSL_LDFLAGS += -lgsl -lgslcblas -lm
+ifndef SHH
+  $(info INFO:)
+  $(info -- GSL Flags --)
+  $(info Compile > $(GSL_CXXFLAGS))
+  $(info Link    > $(GSL_LDFLAGS))
+  $(info )
+endif
+
+LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
@@ -390,6 +417,10 @@ PRINTINC:=$(wildcard $(PRINTERSDIR)/include/*hpp) $(wildcard $(PRINTERSDIR)/incl
 PRINTSRC:=$(wildcard $(PRINTERSDIR)/src/*cpp)
 PRINTOBJS:=$(addprefix $(PRINTERSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(PRINTSRC))))
 
+LOGINC:=$(wildcard $(LOGGINGDIR)/include/*hpp) $(wildcard $(LOGGINGDIR)/include/*h)
+LOGSRC:=$(wildcard $(LOGGINGDIR)/src/*cpp)
+LOGOBJS:=$(addprefix $(LOGGINGDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(LOGSRC))))
+
 BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp)  $(wildcard $(BACKENDDIR)/lib/*hpp) \
  $(wildcard $(BACKENDDIR)/include/*h)  $(wildcard $(BACKENDDIR)/lib/*h)
 BACKENDSRC:=$(wildcard $(BACKENDDIR)/src/*cpp)
@@ -424,7 +455,7 @@ EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
 GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
@@ -432,7 +463,7 @@ endif
 
 # Ben: Currently if we change things in headers then stuff doesn't get recompiled: need to add these dependencies in
 # I'm not sure I added them everywhere necessary... might be safer to make everything depend on them...
-HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC)
+HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC) $(LOGINC)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -456,7 +487,11 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(GAMBITINC)
+$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(PRINTINC) $(GAMBITINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(LOGGINGDIR)/build/%.o: $(LOGGINGDIR)/src/%.cpp $(LOGINC) $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -552,10 +587,10 @@ gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FU
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-ExampleBit_A_standalone: $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) $(EXAMPLE_AOBJS) \
- $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
+ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) \
+ $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
-	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
+	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
 	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)

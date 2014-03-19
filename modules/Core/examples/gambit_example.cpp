@@ -16,16 +16,16 @@
 ///
 ///  *********************************************
 
-
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
-#include "exceptions.hpp"
 #include "yaml_parser.hpp"
-#include "gambit_scan.hpp"
+#include "scannerbit.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
 #include "priors.hpp"
+#include "register_error_handlers.hpp"
+#include "log.hpp"
 
 using namespace Gambit;
 
@@ -33,10 +33,10 @@ void beispiel()
 {
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
-  cout << "Registered module functors [Core.getModuleFunctors->size()]: " <<
-    Core.getModuleFunctors()->size() << endl;
-  cout << "Registered backend functors [Core.getBackendFunctors->size()]: " <<
-    Core.getBackendFunctors()->size() << endl;
+  cout << "Registered module functors [Core().getModuleFunctors().size()]: " <<
+    Core().getModuleFunctors().size() << endl;
+  cout << "Registered backend functors [Core().getBackendFunctors().size()]: " <<
+    Core().getBackendFunctors().size() << endl;
 
   // Read INI file
   IniParser::IniFile iniFile;
@@ -57,13 +57,13 @@ void beispiel()
   Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
 
   // Activate "primary" model functors
-  modelClaw.activatePrimaryModels(selectedmodels);
+  Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
   // Set up a printer object
   Printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core, iniFile, printer);
+  Graphs::DependencyResolver dependencyResolver(Core(), iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -72,7 +72,7 @@ void beispiel()
   dependencyResolver.resolveNow();
 
   // Check that all requested models are used for at least one computation
-  modelClaw.checkPrimaryModelFunctorUsage();
+  modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
   // Examples for getting information from the key/value section of the
   // inifile
@@ -123,6 +123,10 @@ void beispiel()
 
 int main( int, const char*[] )
 {
+
+  try
+  {
+
   beispiel();
 
   cout<<endl;
@@ -137,14 +141,15 @@ int main( int, const char*[] )
   cout<<endl;
 
   // Setup logs
-  logsetup::setfile("_GAMBIT_msgs_example_errors.txt");              // setup detailed debug
-  logsetup::setfile_upto_LOG("_GAMBIT_msgs_example_normal.txt");     // into files, depending
-  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug0.txt");   // on debug level.
-  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug1.txt",1);
-  logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug2.txt",2);
-  logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
-  logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
-  GAMBIT_MSG_INFO("starting example");
+  // THIS IS DEPRECATED -> USE NEW LOGGING SYSTEM
+  // logsetup::setfile("_GAMBIT_msgs_example_errors.txt");              // setup detailed debug
+  // logsetup::setfile_upto_LOG("_GAMBIT_msgs_example_normal.txt");     // into files, depending
+  // logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug0.txt");   // on debug level.
+  // logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug1.txt",1);
+  // logsetup::setfile_upto_DEBUG("_GAMBIT_msgs_example_debug2.txt",2);
+  // logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
+  // logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
+  // GAMBIT_MSG_INFO("starting example");
   
   // ****************
   // ModelBit demo code START
@@ -336,7 +341,7 @@ int main( int, const char*[] )
   
   // New way of checking congruency using global lineage database
   cout<<"Checking congruency of "<<Models::CMSSM_I::Accessors::name()<<" using database..."<<endl;
-  cout<<"lineage is:"<< modelClaw.get_lineage("CMSSM_I") <<endl;
+  cout<<"lineage is:"<< modelClaw().get_lineage("CMSSM_I") <<endl;
   cout<<"is descendant of MSSM_I?         :"<<strict_descendant_of("CMSSM_I","MSSM_I")<<endl;
   cout<<"is descendant of CMSSM_I?        :"<<strict_descendant_of("CMSSM_I","CMSSM_I")<<endl;
   cout<<"is descendant of or == CMSSM_I?  :"<<descendant_of("CMSSM_I","CMSSM_I")<<endl;
@@ -344,7 +349,7 @@ int main( int, const char*[] )
     
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<Models::MSSM_I::Accessors::name()<<" using database..."<<endl;
-  cout<<"descendants are:"<< modelClaw.get_descendants("MSSM_I") <<endl;
+  cout<<"descendants are:"<< modelClaw().get_descendants("MSSM_I") <<endl;
   cout<<"is ancestor of MSSM_I?         :"<<strict_ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of or == MSSM_I?   :"<<ancestor_of("MSSM_I","MSSM_I")<<endl;
   cout<<"is ancestor of CMSSM_I?        :"<<strict_ancestor_of("MSSM_I","CMSSM_I")<<endl;
@@ -608,12 +613,13 @@ int main( int, const char*[] )
   */
   
 
-  // Logging example 
-  try{
-    GAMBIT_MSG_LOG("GAMBIT example");
-  }catch( exceptions::GAMBIT_exception_base & e){
-    GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
-  }
+  // Logging example
+  // DEPRECATED! 
+  // try{
+  //   GAMBIT_MSG_LOG("GAMBIT example");
+  // }catch( exceptions::GAMBIT_exception_base & e){
+  //   GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
+  // }
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::commonBlock);
@@ -625,6 +631,14 @@ int main( int, const char*[] )
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
     
-  return 1;
+
+  }
+
+  catch (std::exception& e)
+  {
+    cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+  }
+
+  return 0;
 
 }
