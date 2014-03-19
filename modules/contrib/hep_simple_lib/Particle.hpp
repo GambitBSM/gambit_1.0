@@ -31,6 +31,8 @@ namespace HEP_Simple_Lib {
       int _pdgId;
       /// Promptness flag
       bool _prompt;
+      /// isolation value
+      float _isol4;
       //@}
 
     public:
@@ -40,29 +42,35 @@ namespace HEP_Simple_Lib {
 
       /// Default constructor
       Particle()
-        : _pdgId(0), _prompt(false) {  }
+        : _pdgId(0), _prompt(false), _isol4(0.0) {  }
 
       /// "Cartesian" constructor
       Particle(double px, double py, double pz, double E, int pdgid)
-        : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false) {  }
+        : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
+     
+      /// "Cartesian" constructor for massless particles - or close enough
+      Particle(double px, double py, double pz, int pdgid)
+        : _p4(px, py, pz), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
+
 
       /// 4-mom + PDG ID constructor
       Particle(const P4& mom, int pdgid)
-        : _p4(mom), _pdgId(pdgid), _prompt(false) {  }
+        : _p4(mom), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
 
       /// Copy constructor
       Particle(const Particle& p)
-        : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()) {  }
+        : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()), _isol4(p.isol()) {  }
 
       /// Copy constructor from a pointer
       Particle(const Particle* p)
-        : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()) {  }
+        : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()), _isol4(p->isol()) {  }
 
       /// Copy assignment operator
       Particle& operator=(const Particle& p) {
         _p4 = p.mom();
         _pdgId = p.pid();
         _prompt = p.is_prompt();
+        _isol4 = p.isol();
         return *this;
       }
 
@@ -111,6 +119,14 @@ namespace HEP_Simple_Lib {
       int pid() const { return _pdgId; }
       /// Set PDG ID code
       void set_pid(int pid) { _pdgId = pid; }
+
+      /// @ Isolation of particle
+      //@{
+
+      /// Get isolation 
+      double isol() const { return _isol4;}
+      void set_isol(float isol) {_isol4 = isol;}
+
 
       //@}
 

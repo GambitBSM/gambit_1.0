@@ -9,11 +9,11 @@
 
 /* Specify the path to the shared library along with a backend name. */
 
-#define LIBPATH      "Backends/lib/libfastsim.so"
+#define LIBPATH      "Backends/lib/libAldo.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME LibFastSim
+  #define BACKENDNAME LibAldo
 #endif
 #define VERSION 1.0
 
@@ -37,8 +37,7 @@ LOAD_LIBRARY
  * If left out (as done in some of the examples below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability") */
   
-BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
-//BE_FUNCTION(FastSim_Init, int, (Event&), "_Z12FastSim_Initi", "evgen")
+BE_FUNCTION(initialize, int, (int&), "_Z19ReadEventsInterfaceRi", "Read_Aldo_Sim")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
 //BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
 //BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")

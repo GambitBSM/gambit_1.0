@@ -214,7 +214,7 @@ multinest:
 #########################
 
 # Redirectory of specific messages according to tags
-prefix : "logfiles/"
+prefix : "runs/example_minimal_test/logs"
 redirection:
   [Debug] : "debug.log"
   [Default] : "default.log"

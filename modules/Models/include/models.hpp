@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Header for ModelBit.
+///  Model helper declarations.
 ///  
 ///  Duties:
 ///    Activate primary_model_functors according 
@@ -27,40 +27,31 @@
 ///  *********************************************
 
 
-#ifndef __modelbit_hpp__
-#define __modelbit_hpp__
+#ifndef __models_hpp__
+#define __models_hpp__
 
 #include <vector>
 #include <string>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/graph/graphviz.hpp>
 
-#include "graphs.hpp"
 #include "util_types.hpp"
+#include "functors.hpp"
 #include "standalone_error_handlers.hpp"
 
 namespace Gambit
 {
 
-  namespace ModelBit
+  namespace Models
   {
      
     typedef std::vector<primary_model_functor*> primodel_vec;
     typedef std::map<std::string, primary_model_functor *> activemodel_map;
 
-    /// ModelBit object which performs initialisation and checking operations
+    /// Models object that performs initialisation and checking operations
     /// on a primary_model_functor list.
     class ModelFunctorClaw
     {
 
       private:
-
-        /// Add model functors (vertices) to model hierarchy graph
-        void addFunctorsToGraph(const primodel_vec&);
-        
-        /// The central boost graph object for the model hierarchy
-        Graphs::MasterGraphType modelGraph;
 
         /// Function pointer type
         typedef bool (*LineageFunction)(std::string);
@@ -96,9 +87,6 @@ namespace Gambit
         /// the user.
         void checkPrimaryModelFunctorUsage(const activemodel_map&);
         
-        /// Add edges (relationships) to model hierarchy graph
-        void makeGraph (const primodel_vec&);
-
         /// Add a model to those recongnised by GAMBIT
         void add_model (const str &);
 
@@ -137,7 +125,7 @@ namespace Gambit
   }
 
   /// Claw accessor function
-  ModelBit::ModelFunctorClaw& modelClaw();
+  Models::ModelFunctorClaw& modelClaw();
 
 }
 
