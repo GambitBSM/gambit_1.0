@@ -619,13 +619,17 @@ $(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 
 ifndef COLLIDE
   FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+  FJ_LDFLAGS := $(shell fastjet-config --libs)
+  LNFLAGS += $(FJ_LDFLAGS)
 endif 
 
 $(info $(FJ_CXXFLAGS))
+$(info $(CFLAGS))
+
 $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.cpp $(FASTSIMDIR)/src/DetectorResponse.cpp  $(FASTSIMDIR)/src/fastsim_interface.cpp
-	$(CC) $(CFLAGS) -c -fPIC -I$(FASTSIMDIR)/include/ $(FJ_CXXFLAGS) -I$(HEPSIMPLEDIR) $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o 
-	$(CC) $(CFLAGS) -c -fPIC -I$(FASTSIMDIR)/include/ $(FJ_CXXFLAGS) -I$(HEPSIMPLEDIR) $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o 
-	$(CC) $(CFLAGS) -c -fPIC -I$(FASTSIMDIR)/include/ $(FJ_CXXFLAGS) -I$(HEPSIMPLEDIR) $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o 
+	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o 
+	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o 
+	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o 
 	$(CC) -shared -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o 
 
 #libmultinest_interface.so

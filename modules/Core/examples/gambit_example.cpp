@@ -489,17 +489,15 @@ int main( int, const char*[] )
   }
 
 
-  cout << "I can do Fast Evgen: " << ExampleBit_A::Accessors::provides("event_gen") << endl;
+ cout << "I can do Fast Evgen: " << ExampleBit_A::Accessors::provides("event_gen") << endl;
 
-  if (ExampleBit_A::Accessors::provides("event_gen"))
+ if (ExampleBit_A::Accessors::provides("event_gen"))
   {
     ExampleBit_A::Functown::Aldos_evgen.calculate();
     HEP_Simple_Lib::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0); 
     cout << " the number of muons generated " << myevent.visible_particles().size() << endl;
     //cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::Aldos_evgen(0) << endl ;
   }
-
-
 
   cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
   if (ExampleBit_A::Accessors::provides("fast_sim"))
