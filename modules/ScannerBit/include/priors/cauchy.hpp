@@ -45,7 +45,7 @@ namespace Gambit
                         
                 public: 
                         // Constructor defined in caucy.cpp
-                        Cauchy(const std::vector<std::string>& param, const IniParser::Options& options);
+                        Cauchy(const std::vector<std::string>& param, const Options& options);
                         
                         // Transformation from unit interval to the Gaussian
                         void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const

@@ -20,8 +20,9 @@
 #include <priors.hpp>
 #include <algorithm>
 #include <cmath>
-#include <yaml_parser.hpp>
-#include <scanner_utils.hpp>
+
+#include "yaml_options.hpp"
+#include "scanner_utils.hpp"
 
 namespace Gambit
 {
@@ -36,7 +37,7 @@ namespace Gambit
                         std::map<std::string, double> param_map;
                         
                 public:
-                        Test_Uniform (const IniParser::Options &options) : prior(nullptr)
+                        Test_Uniform (const Options &options) : prior(nullptr)
                         {
                                 if (options.hasKey("dim"))
                                 {

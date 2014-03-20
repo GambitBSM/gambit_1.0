@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-/// INI-file parser based on yaml-cpp
+///  Ini-file parser based on yaml-cpp
 ///
 ///  *********************************************
 ///
@@ -29,6 +29,7 @@
 #include "util_types.hpp"
 #include "error_handlers.hpp"
 #include "variadic_functions.hpp"
+#include "yaml_options.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -42,88 +43,6 @@ namespace Gambit
   namespace IniParser
   {
 
-    /// Just a small wrapper object for the 'options' nodes which we extract
-    /// from the prior/likelihood/auxiliaries section of the inifile
-    class Options
-    {
-      public:
-        // Constructor
-        Options(YAML::Node optionsIN) : options(optionsIN) {} 
-
-        // Default constructor
-        Options() {}
-
-        //
-        // Getters for key/value pairs (this is all the options node should contain)
-        //
-        template <typename... args>
-        bool hasKey(args... keys) const
-        {
-          return getVariadicNode(options, keys...);
-        }
-
-        template<typename TYPE, typename... args> TYPE getValue(args... keys) const
-        {
-          const YAML::Node node = getVariadicNode(options, keys...);
-          if (not node)
-          {
-            str errmsg = "No options entry for ";
-            errmsg +=     stringifyVariadic(keys...) +
-                       "\n(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)"
-                       "\nFIXME to dump contents of options!!\n";// + options; FIXME
-            inifile_error().raise(LOCAL_INFO,errmsg);
-          }
-          return node.as<TYPE>();
-        }
-
-        // Dump contents of YAML::Node to cout
-        void dumpcontents() const
-        {
-            std::cout<<options<<std::endl;
-        }
-        
-        //Greg:  add a recursive option function for testing purposes.
-        const Options getOptions(std::string key) const
-        {
-          if (options[key]["options"])
-          {
-            return Options(options[key]["options"]);
-          }
-          else
-          {
-            return Options(options[key]);
-          }
-        }
-        
-        //Greg:  another function for recursion
-        const std::vector<std::string> getPriorNames() const
-        {
-          std::vector<std::string> result;
-          //C++11 version; unsuported with gcc 4.5.
-          //for (auto &node : options)
-          //{
-          //  result.push_back( node.first.as<std::string>() );
-          //}
-          for (auto it = options.begin(), end = options.end(); it != end; ++it)
-          {
-            result.push_back( it->first.as<std::string>() );
-          }
-
-          return result;
-        }
-        
-      private:
-        YAML::Node options;
-    };
-  }
-}
-
-namespace Gambit
-{
-  namespace IniParser
-  {
-    class Options;
-    // Structs corresponding to inifile
     namespace Types
     {
       // Dependency and Observable have the same type (and purpose entry is
@@ -138,7 +57,7 @@ namespace Gambit
         std::string backend;
         std::string version;
         bool printme; // Instruction to printer as to whether to write result to disk
-        Gambit::IniParser::Options options;
+        Options options;
         std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
         std::vector<Observable> backends; // ..deps of deps of deps of obs possible
       };
@@ -170,7 +89,7 @@ namespace YAML {
       READ(backend)
       READ(version)
       if (node["options"].IsDefined())
-          rhs.options = Gambit::IniParser::Options(node["options"]);
+          rhs.options = Gambit::Options(node["options"]);
       #undef READ
       for(YAML::const_iterator it=node["dependencies"].begin();
           it!=node["dependencies"].end(); ++it)

@@ -232,7 +232,7 @@ namespace Gambit
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
-    void functor::notifyOfIniOptions(const IniParser::Options & opt)
+    void functor::notifyOfIniOptions(const Options & opt)
     {
       myOptions = opt;
     }

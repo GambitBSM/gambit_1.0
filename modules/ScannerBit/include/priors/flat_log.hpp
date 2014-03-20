@@ -117,7 +117,7 @@ namespace Gambit
         public:
         
                 // Constructor
-                RangePrior1D(const std::vector<std::string>& param, const IniParser::Options& options) : BasePrior(1), myparameter(param[0])
+                RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0])
                 {
                         // Read the entries we need from the options
                         if ( not options.hasKey("range") )

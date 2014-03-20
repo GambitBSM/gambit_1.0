@@ -43,7 +43,7 @@
 #include "util_functions.hpp"
 #include "model_types.hpp"
 #include "model_functions.hpp"
-#include "yaml_parser.hpp"
+#include "yaml_options.hpp"
 #include "log.hpp"
 
 // Decay rate of average runtime estimate
@@ -167,7 +167,7 @@ namespace Gambit
       /// Notify the functor about an instance of the options class that contains
       /// information from its corresponding ini-file entry in the auxiliaries or
       /// observables section.
-      void notifyOfIniOptions(const IniParser::Options &);
+      void notifyOfIniOptions(const Options &);
 
       /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
       bool modelAllowed(str model);
@@ -204,7 +204,7 @@ namespace Gambit
       int myVertexID;
 
       /// Options class
-      IniParser::Options myOptions;
+      Options myOptions;
 
       /// List of allowed models
       std::set<str> allowedModels;

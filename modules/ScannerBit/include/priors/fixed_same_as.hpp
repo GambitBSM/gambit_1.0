@@ -31,7 +31,7 @@ namespace Gambit
                         std::vector<std::string> names;
                         
                 public:
-                        FixedPrior(const std::vector<std::string>& param, const IniParser::Options& options) : names(param)
+                        FixedPrior(const std::vector<std::string>& param, const Options& options) : names(param)
                         {
                                 if (options.hasKey("fixed_value"))
                                 {
@@ -62,7 +62,7 @@ namespace Gambit
                         std::vector <std::string> names;
                         
                 public:
-                        MultiPriors(const std::vector<std::string>& param, const IniParser::Options& options)
+                        MultiPriors(const std::vector<std::string>& param, const Options& options)
                         {
                                 if (options.hasKey("same_as"))
                                 {

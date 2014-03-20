@@ -19,13 +19,14 @@
 ///
 ///  *********************************************
 
-#include <priors.hpp>
 #include <cmath>
 #include <vector>
 #include <set>
 #include <map>
 #include <algorithm>
-#include <yaml_parser.hpp> // for the Options class
+
+#include "priors.hpp"
+#include "yaml_options.hpp"
 
 namespace Gambit 
 {
@@ -100,7 +101,7 @@ namespace Gambit
                                                 
                                                 if (iniFile.hasModelParameterEntry(mod, par, "prior_type"))
                                                 {
-                                                        IniParser::Options options = iniFile.getParameterOptions(mod, par);
+                                                        Options options = iniFile.getParameterOptions(mod, par);
                                                         std::string priortype = iniFile.getModelParameterEntry<std::string>(mod, par, "prior_type");
                                                         
                                                         if(priortype == "same_as")
@@ -311,7 +312,7 @@ namespace Gambit
                         my_subpriors.insert(my_subpriors.end(), phantomPriors.begin(), phantomPriors.end());
                 }  
                 
-                CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const IniParser::Options &options_in) : param_names(params_in), shown_param_names(params_in)
+                CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const Options &options_in) : param_names(params_in), shown_param_names(params_in)
                 {       
                         std::unordered_map<std::string, std::string> sameMap;
                         std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());

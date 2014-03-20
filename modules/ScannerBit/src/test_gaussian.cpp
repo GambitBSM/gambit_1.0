@@ -25,7 +25,7 @@ namespace Gambit
 {       
         namespace Scanner_Testing
         {
-                Test_Gaussian::Test_Gaussian (const IniParser::Options &options) : Test_Uniform(options), param(getKeys()), values(getParameters()), chol(getKeys().size())
+                Test_Gaussian::Test_Gaussian (const Options &options) : Test_Uniform(options), param(getKeys()), values(getParameters()), chol(getKeys().size())
                 {
                         std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                         

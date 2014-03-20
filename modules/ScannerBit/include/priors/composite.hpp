@@ -30,6 +30,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "yaml_options.hpp"
+
 namespace Gambit 
 {
         namespace Priors 
@@ -53,7 +55,7 @@ namespace Gambit
                         // Constructors defined in composite.cpp
                         CompositePrior(const IniParser::IniFile& iniFile);
                         
-                        CompositePrior(const std::vector<std::string> &params, const IniParser::Options &options);
+                        CompositePrior(const std::vector<std::string> &params, const Options &options);
                         
                         inline std::vector<std::string> & getShownParameters() {return shown_param_names;}
                         

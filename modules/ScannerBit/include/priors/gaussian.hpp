@@ -23,14 +23,15 @@
 #define PRIOR_GAUSSIAN_HPP
 
 #include <vector>
-#include <boost/math/special_functions/erf.hpp>
-#include <cholesky.hpp>
 #include <algorithm>
 #include <cmath>
-#include <yaml_parser.hpp>
-#include <scanner_utils.hpp>
-#include <priors.hpp>
 
+#include "cholesky.hpp"
+#include "yaml_parser.hpp"
+#include "scanner_utils.hpp"
+#include "priors.hpp"
+
+#include <boost/math/special_functions/erf.hpp>
    
 namespace Gambit
 {
@@ -46,7 +47,7 @@ namespace Gambit
                         
                 public: 
                         // Constructor defined in gaussian.cpp
-                        Gaussian(const std::vector<std::string>& param, const IniParser::Options& options);
+                        Gaussian(const std::vector<std::string>& param, const Options& options);
                         
                         // Transformation from unit interval to the Gaussian
                         void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const

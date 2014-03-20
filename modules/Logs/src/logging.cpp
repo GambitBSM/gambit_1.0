@@ -170,11 +170,6 @@ namespace Gambit
     {
     }
  
-    LogMaster::LogMaster(const IniParser::IniFile& inifile) 
-      : loggers_readyQ(false), current_module(-1), current_backend(-1) 
-    {
-    }
-
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) 

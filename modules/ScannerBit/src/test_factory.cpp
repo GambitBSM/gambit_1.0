@@ -29,7 +29,7 @@ namespace Gambit
                                 auto it = __test_functor_map__.find(choice);
                                 if (it != __test_functor_map__.end())
                                 {
-                                        IniParser::Options options = iniFile.getOptions(choice);
+                                        Options options = iniFile.getOptions(choice);
                                         func = it->second(options);
                                 }
                                 else

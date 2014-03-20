@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-/// INI-file parser based on yaml-cpp
+///  Ini-file parser based on yaml-cpp
 ///
 ///  *********************************************
 ///

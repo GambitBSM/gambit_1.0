@@ -21,7 +21,7 @@
 #define __MSSM_hpp__
 
 #include <string>
-#include <module_macros_incore.hpp>
+#include "MSSM_types.hpp"
 
 #define MODEL test_parent_I
   START_MODEL
