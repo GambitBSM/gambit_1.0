@@ -771,7 +771,7 @@ namespace Gambit
           // fromVertex (optEntry) and pass it to the fromVertex for later use
           if ( optEntry != NULL )
           {
-            IniParser::Options myOptions(optEntry->options);
+            Options myOptions(optEntry->options);
             masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex

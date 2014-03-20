@@ -28,7 +28,6 @@
 
 // Gambit
 #include "log_tags.hpp"
-#include "yaml_parser.hpp"
 
 // Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
 #include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
@@ -165,26 +164,19 @@ namespace Gambit
         /// Default constructor
         LogMaster();
 
-        /// Constructor
-        // Sets up logging objects as instructed by inifile
-        LogMaster(const IniParser::IniFile&);
-
         /// Alternate constructor
-        // Mainly for testing; lets you pass in pre-built loggers and their tags
+        /// Mainly for testing; lets you pass in pre-built loggers and their tags
         LogMaster(std::map<std::set<int>,BaseLogger*>&);
 
         /// Destructor
-        // If errors happen before the inifile is loaded, we need to dump the log messages (that have been buffered) into a default log file. These will be log messages coming from initialisation code and so on.
+        /// If errors happen before the inifile is loaded, we need to dump the log messages 
+        /// (that have been buffered) into a default log file. These will be log messages coming from initialisation code and so on.
         ~LogMaster();
 
         /// Function to construct loggers according to blueprint
         // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
         void initialise(std::map<std::set<std::string>, std::string>&);
  
-        /// Function to parse inifile and prepare the logger objects;
-        // Run this if not loading the inifile via the constructor.
-        //void read_inifile(const IniParser::IniFile&);
-
         /// Main logging function (user-friendly overloaded version)
         // Need a bunch of overloads of this to deal with 
         void send(const std::string&);

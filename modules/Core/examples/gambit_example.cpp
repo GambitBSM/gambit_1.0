@@ -46,15 +46,8 @@ void beispiel()
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
 
-  // Build prior object based on inifile instructions
-  //Priors::PriorManager priorManager(iniFile);
-
-  // Extract a pointer to the prior object, so that it can be passed to the Scanner.
-  // Could do this via the Core instead, perhaps.
-  // comment out until fixed - Aldo
-  // Greg: Since the composite prior has the prior manager's constructor, you can call make 
-  //    composite prior directly.
-  Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
+  //Let's define the prior
+  Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
 
   // Activate "primary" model functors
   Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );

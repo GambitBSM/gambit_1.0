@@ -19,13 +19,14 @@
 ///
 ///  *********************************************
 
-#include <priors.hpp>
 #include <cmath>
 #include <vector>
 #include <set>
 #include <map>
 #include <algorithm>
-#include <options_node.hpp> // for the Options class
+
+#include "yaml_options.hpp"
+#include "priors/composite.hpp"
 
 namespace Gambit 
 {

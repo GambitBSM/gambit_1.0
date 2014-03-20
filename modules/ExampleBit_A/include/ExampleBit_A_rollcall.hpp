@@ -31,7 +31,7 @@
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__
 
-#include "Event.hpp"
+#include "ExampleBit_A_types.hpp"
 
 #define MODULE ExampleBit_A
 START_MODULE
@@ -60,14 +60,14 @@ START_MODULE
   START_CAPABILITY
   
     #define FUNCTION exampleEventGen
-    START_FUNCTION(double)
+    START_FUNCTION(singleprec)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement) // Declares that the module function can only run inside a loop, and that the loop
     #undef FUNCTION                                    // must be managed by another module function that has CAPABILITY eventLoopManagement
                                                        // (and has been declared as a potential manager with the flag CAN_MANAGE_LOOPS).
     #define FUNCTION exampleCut
     START_FUNCTION(int)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
-    DEPENDENCY(event, double)
+    DEPENDENCY(event, singleprec)
     #undef FUNCTION
     
   #undef CAPABILITY

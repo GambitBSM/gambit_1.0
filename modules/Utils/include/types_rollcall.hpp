@@ -43,12 +43,26 @@
 ///  communicate with a model X or module Y:
 ///   1. If the type will only be used by a single
 ///      model X, add it to a header
-///      Models/models/X_types.hpp
-///      and include that header from this file.
+///      Models/models/X_types.hpp,
+///      **FIXME currently you then do this:**
+///      and include that header from 
+///      Models/models/X.hpp
+///      and this file.
+///      **FIXME in future this will be true instead:**
+///      and it will be automatically included in 
+///      this file and in Models/models/X.hpp 
+///      by the functor type harvester.
 ///   2. If the type will only be used by a single
 ///      module Y, add it to a header
-///      Y/include/Y_types.hpp
-///      and include that header from this file.
+///      Y/include/Y_types.hpp,
+///      **FIXME currently you then do this:**
+///      and include that header from 
+///      Y/include/Y_rollcall.hpp
+///      and this file.
+///      **FIXME in future this will be true instead:**
+///      and it will be automatically included in 
+///      this file and in Y/include/Y_rollcall.hpp 
+///      by the functor type harvester.
 ///
 ///  MIXTURES
 ///  -------- 
@@ -89,6 +103,7 @@
 
 // Include the module-specific types
 #include "DarkBit_types.hpp"
+#include "ExampleBit_A_types.hpp"
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
   #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)

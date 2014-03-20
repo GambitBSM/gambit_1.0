@@ -31,7 +31,7 @@
 
 #include "scanner_utils.hpp"
 #include "scan.hpp"
-#include "options_node.hpp"
+#include "yaml_options.hpp"
 
 namespace Gambit
 {

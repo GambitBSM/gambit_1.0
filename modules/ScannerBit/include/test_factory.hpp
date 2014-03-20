@@ -26,7 +26,9 @@
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 #include "scanner_factory.hpp"
-#include <options_node.hpp>
+
+#include "yaml_options.hpp"
+
 
 #define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )
 

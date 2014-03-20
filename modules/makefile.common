@@ -468,7 +468,7 @@ HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC) $(LOGINC)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
-HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
+HARVESTER:= $(UTILSDIR)/scripts/functor_type_harvester.py
 ifndef SHH
   HARVESTER_OPTS += -v
 endif
