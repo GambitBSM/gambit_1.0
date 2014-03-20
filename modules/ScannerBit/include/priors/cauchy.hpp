@@ -44,7 +44,7 @@ namespace Gambit
                         Cholesky col;
                         
                 public: 
-                        // Constructor defined in caucy.cpp
+                        // Constructor defined in cauchy.cpp
                         Cauchy(const std::vector<std::string>& param, const Options& options);
                         
                         // Transformation from unit interval to the Gaussian
