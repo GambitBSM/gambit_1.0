@@ -33,6 +33,7 @@ namespace Gambit
                 {
                 protected:
                         std::vector<Graphs::VertexID> vertices;
+                        std::vector<Graphs::VertexID> vertices_phantom;
                         Graphs::DependencyResolver &dependencyResolver;
                         std::vector<double> realParameters;
                         Priors::CompositePrior &prior;
@@ -52,6 +53,10 @@ namespace Gambit
                                         {
                                                 *(it++) = vert;
                                                 size++;
+                                        }
+                                        else
+                                        {
+                                                vertices_phantom.push_back(vert);
                                         }
                                 });
 
@@ -116,7 +121,15 @@ namespace Gambit
                                 setParameters(in);
                                 
                                 //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-                                std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
+                                std::cout << "Number of vertices to calculate: " << (vertices.size() + vertices_phantom.size()) << std::endl;
+                                
+                                for (auto it = vertices_phantom.begin(), end = vertices_phantom.end(); it != end; ++it)
+                                {
+                                        std::cout << "__________calculating vertex " << *it << std::endl;
+                                        calcObsLike(*it);
+                                        std::cout << "----------done " << std::endl;
+                                }
+                                
                                 for (auto it = vertices.begin(), end = vertices.end(); it != end; ++it)
                                 {
                                         std::cout << "__________calculating vertex " << *it << std::endl;
@@ -135,7 +148,46 @@ namespace Gambit
                         }
                 };
                 
+                class Scanner_Function_Minimal : public Scanner_Function_Base
+                {
+                public:
+                        //#ifndef NO_GCC_4_7
+                        Scanner_Function_Minimal (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
+                        //#else                        
+                        //using Scanner_Function_Base::Scanner_Function_Base;
+                        //#endif                        
+
+                        double operator () (std::vector<double> &in)
+                        {
+                                double ret = 0;
+                                
+                                outputHandler::out.defout();
+                                
+                                setParameters(in);
+                                
+                                //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+                                std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
+                                
+                                for (auto it = vertices.begin(), end = vertices.end(); it != end; ++it)
+                                {
+                                        std::cout << "__________calculating vertex " << *it << std::endl;
+                                        calcObsLike(*it);
+                                        std::cout << "----------done " << std::endl;
+                                        //dependencyResolver.notifyOfInvalidation(*it);
+                                        ret += getObsLike(*it);
+                                        std::cout << "...collected double" << endl;
+                                }
+                                
+                                resetAll();
+                                
+                                outputHandler::out.redir("scanner");
+                                
+                                return ret;
+                        }
+                };
+                
                 LOAD_SCANNER_FUNCTION(Scanner_Function, Scanner_Function)
+                LOAD_SCANNER_FUNCTION(Scanner_Function_Minimal, Scanner_Function_Minimal)
         }
 }
 

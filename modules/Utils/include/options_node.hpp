@@ -8,9 +8,13 @@
 ///
 ///  Authors (add name and date if you modify):
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 Dec
+///
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date Feb 2014
+///  \date Feb, Mar 2014
 ///
 ///  *********************************************
 
