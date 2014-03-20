@@ -28,36 +28,36 @@ namespace Gambit
 {
         namespace Scanner
         {
-                IniFileInterface::IniFileInterface(const IniParser::IniFile &iniFile) : boundIniFile(&iniFile)
+                IniFileInterface::IniFileInterface(const YAML::Node &node) : scanner_options(node)
                 {       
                         bool redirect = false;
-                        if (iniFile.hasScannerKey("enable_redirect"))
+                        if (scanner_options.hasKey("enable_redirect"))
                         {
-                                redirect = iniFile.getScannerValue<bool>("enable_redirect");
+                                redirect = scanner_options.getValue<bool>("enable_redirect");
                         }
 
                         if (redirect)
                         {
-                                if (iniFile.hasScannerKey("redirect_output", "scanner"))
+                                if (scanner_options.hasKey("redirect_output", "scanner"))
                                 {
-                                        std::string file = iniFile.getScannerValue<std::string>("redirect_output", "scanner");
+                                        std::string file = scanner_options.getValue<std::string>("redirect_output", "scanner");
                                         
                                         outputHandler::out.set("scanner", file);
                                 }
-                                if (iniFile.hasScannerKey("redirect_output", "error"))
+                                if (scanner_options.hasKey("redirect_output", "error"))
                                 {
-                                        std::string file = iniFile.getScannerValue<std::string>("redirect_output", "error");
+                                        std::string file = scanner_options.getValue<std::string>("redirect_output", "error");
                                         scanLog::err << scanLog::set_output(file);
                                 }
                         }
                         
-                        if (iniFile.hasScannerKey("scanner", "file_path"))
+                        if (scanner_options.hasKey("scanner", "file_path"))
                         {
-                                file = iniFile.getScannerValue<std::string>("scanner", "file_path");
+                                file = scanner_options.getValue<std::string>("scanner", "file_path");
 
-                                if (boundIniFile->hasScannerKey("scanner", "plugin")) 
+                                if (scanner_options.hasKey("scanner", "plugin")) 
                                 {
-                                        name = iniFile.getScannerValue<std::string>("scanner", "plugin");
+                                        name = scanner_options.getValue<std::string>("scanner", "plugin");
                                 }
                                 else
                                 {

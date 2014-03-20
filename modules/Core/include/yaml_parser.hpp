@@ -148,6 +148,11 @@ namespace Gambit
         // Getters for key/value section
         //
         
+        YAML::Node getParametersNode() const {return parametersNode;}
+        YAML::Node getPriorsNode() const {return priorsNode;}
+        YAML::Node getScannerNode() const {return scannerNode;}
+        YAML::Node getKeyValuePairNode() const {return keyValuePairNode;}
+        
         template <typename... args>
         bool hasKey(args... keys) const
         {

@@ -69,7 +69,7 @@ namespace Gambit
           out << ">]";
         }
     };
-    
+  }
 
     /// ModelHierarchy method definitions
     /// Creates a graph of the model hierarchy for visualisation purposes.
@@ -123,7 +123,7 @@ namespace Gambit
       
       // Generate graphviz plot
       std::ofstream outf("modelgraph.gv");
-      write_graphviz(outf, modelGraph, labelWriter(&modelGraph)); 
+      write_graphviz(outf, modelGraph, Models::labelWriter(&modelGraph)); 
       
     }
 
@@ -142,7 +142,7 @@ namespace Gambit
 
     /// @}    
 
-  }
+  //}
 
   /// ModelGraph accessor function
   ModelHierarchy& ModelGraph()

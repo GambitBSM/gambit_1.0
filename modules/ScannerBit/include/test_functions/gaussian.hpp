@@ -21,14 +21,12 @@
 #include <algorithm>
 #include <cmath>
 
-#include "cholesky.hpp"
 #include "yaml_options.hpp"
 #include "scanner_utils.hpp"
 #include "priors.hpp"
 #include "test_factory.hpp"
 #include "test_functions/uniform.hpp"
 
-#include <boost/math/special_functions/erf.hpp>
 
 namespace Gambit
 {
@@ -53,7 +51,7 @@ namespace Gambit
                                 return chol.Square(values, mean);
                         }
                         
-                        ~Test_Gaussian() = default;
+                        ~Test_Gaussian(){}
                 };
                 
                 LOAD_TEST_FUNCTOR(gaussian, Test_Gaussian)

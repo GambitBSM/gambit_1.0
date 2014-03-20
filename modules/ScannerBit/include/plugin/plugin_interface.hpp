@@ -83,7 +83,8 @@ namespace Gambit
                         mainFuncType main;
                         
                 public:
-                        Plugin_Interface(std::string file, std::string name, std::vector<void*> *input = NULL) : name(name)
+                        template <typename... plug_args>
+                        Plugin_Interface(std::string file, std::string name, std::vector<void*> *input, plug_args... inputs) : name(name)
                         {
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
                                 std::string str;

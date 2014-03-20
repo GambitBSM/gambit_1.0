@@ -123,8 +123,8 @@ namespace Gambit
                         if ( not options.hasKey("range") )
                         {
                                 std::cout<<"Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')"<<std::endl;
-                                std::cout<<"Dumping content of options:"<<std::endl;
-                                options.dumpcontents();
+                                //std::cout<<"Dumping content of options:"<<std::endl;
+                                //options.dumpcontents();
                         }
                         std::pair<double, double> range = options.getValue< std::pair<double, double> >("range");
                         if (range.first > range.second)

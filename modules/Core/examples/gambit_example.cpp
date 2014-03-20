@@ -46,15 +46,8 @@ void beispiel()
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   cout << "Your selected models are: " << selectedmodels << endl;
 
-  // Build prior object based on inifile instructions
-  //Priors::PriorManager priorManager(iniFile);
-
-  // Extract a pointer to the prior object, so that it can be passed to the Scanner.
-  // Could do this via the Core instead, perhaps.
-  // comment out until fixed - Aldo
-  // Greg: Since the composite prior has the prior manager's constructor, you can call make 
-  //    composite prior directly.
-  Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
+  //Let's define the prior
+  Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
 
   // Activate "primary" model functors
   Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
@@ -489,17 +482,15 @@ int main( int, const char*[] )
   }
 
 
-  cout << "I can do Fast Evgen: " << ExampleBit_A::Accessors::provides("event_gen") << endl;
+ cout << "I can do Fast Evgen: " << ExampleBit_A::Accessors::provides("event_gen") << endl;
 
-  if (ExampleBit_A::Accessors::provides("event_gen"))
+ if (ExampleBit_A::Accessors::provides("event_gen"))
   {
     ExampleBit_A::Functown::Aldos_evgen.calculate();
     HEP_Simple_Lib::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0); 
     cout << " the number of muons generated " << myevent.visible_particles().size() << endl;
     //cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::Aldos_evgen(0) << endl ;
   }
-
-
 
   cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
   if (ExampleBit_A::Accessors::provides("fast_sim"))

@@ -24,6 +24,7 @@
 #include "yaml_options.hpp"
 #include "scanner_utils.hpp"
 
+
 namespace Gambit
 {
         namespace Scanner_Testing

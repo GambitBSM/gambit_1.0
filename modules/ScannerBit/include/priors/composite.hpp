@@ -31,6 +31,7 @@
 #include <iostream>
 
 #include "yaml_options.hpp"
+#include "priors.hpp"
 
 namespace Gambit 
 {
@@ -53,7 +54,7 @@ namespace Gambit
                 public:
                 
                         // Constructors defined in composite.cpp
-                        CompositePrior(const IniParser::IniFile& iniFile);
+                        CompositePrior(const Options &model_options, const Options &prior_options);
                         
                         CompositePrior(const std::vector<std::string> &params, const Options &options);
                         

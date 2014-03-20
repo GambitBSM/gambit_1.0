@@ -31,7 +31,6 @@
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__
 
-#include "Event.hpp"
 #include "ExampleBit_A_types.hpp"
 
 #define MODULE ExampleBit_A
