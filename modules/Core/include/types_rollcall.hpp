@@ -43,7 +43,7 @@
 ///  communicate with a model X or module Y:
 ///   1. If the type will only be used by a single
 ///      model X, add it to a header
-///      ModelBit/include/models/X_types.hpp
+///      Models/models/X_types.hpp
 ///      and include that header from this file.
 ///   2. If the type will only be used by a single
 ///      module Y, add it to a header

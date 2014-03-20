@@ -16,19 +16,21 @@
 ///
 ///  *********************************************
 
+#include "log.hpp"
+#include "graphs.hpp"
+#include "modelgraph.hpp"
+#include "scannerbit.hpp"
+#include "yaml_parser.hpp"
+#include "model_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "backend_rollcall.hpp"
-#include "graphs.hpp"
-#include "model_rollcall.hpp"
-#include "yaml_parser.hpp"
-#include "scannerbit.hpp"
-#include "priorfactory.hpp"
-#include "priors.hpp"
-#include "scanner_factory.hpp"
 #include "register_error_handlers.hpp"
-#include "inifile_interface.hpp"
+//Pat: do all of the following actually have to be included from here?
+#include "priors.hpp"
+#include "priorfactory.hpp"
 #include "test_factory.hpp"
-#include "log.hpp"
+#include "scanner_factory.hpp"
+#include "inifile_interface.hpp"
 
 using namespace Gambit;
 
@@ -128,23 +130,22 @@ void beispiel(const char* inifilename)
 
   // Create a graph of the available model hierarchy. Currently for 
   // visualisation purposes only.
-  modelClaw().makeGraph(Core().getPrimaryModelFunctors());
+  ModelGraph().makeGraph(Core().getPrimaryModelFunctors());
  
   //Let's define the prior
-  Gambit::Priors::CompositePrior prior(iniFile);
+  Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
   //Let's define the scanner factory
-  auto factory_func = [&]()->Gambit::Scanner::Factory_Base *
+  Gambit::Scanner::Factory_Base *factory = [&]()->Gambit::Scanner::Factory_Base *
   {
     if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile);
+      return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile.getKeyValuePairNode());
     else
       return new Gambit::Scanner::Scanner_Function_Factory (Core(), dependencyResolver, prior);
-  };
+  }();
   
-  Gambit::Scanner::Factory_Base *factory = factory_func();
   //Let's define the iniFile interface
-  Gambit::Scanner::IniFileInterface interface(iniFile);
+  Gambit::Scanner::IniFileInterface interface(iniFile.getScannerNode());
   //Let's run the scanner!
   Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
   //cout << "keys = " << scanner->getKeys() << endl;
@@ -208,7 +209,7 @@ int main( int argc, const char* argv[] )
       // Inform the user of how to use the program
       errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
                  "\n  e.g.  : gambit_example_minimal gambit.yaml"
-                 "\n        : gambit_example_minimal modelbit_test.yaml";
+                 "\n        : gambit_example_minimal models_test.yaml";
       core_error().raise(LOCAL_INFO,errmsg);
       inifilename = "";
     } 

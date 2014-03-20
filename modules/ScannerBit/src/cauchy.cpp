@@ -20,7 +20,7 @@ namespace Gambit
 {
         namespace Priors
         {
-                Cauchy::Cauchy(const std::vector<std::string>& param, const IniParser::Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
+                Cauchy::Cauchy(const std::vector<std::string>& param, const Options& options) : BasePrior(param.size()), param(param), mean(param.size(), 0.0), col(param.size())
                 { 
                         std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                         

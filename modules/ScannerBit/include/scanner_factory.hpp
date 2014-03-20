@@ -85,7 +85,7 @@ namespace Gambit
                         {
                                 delete (Function_Base *)a;
                         }
-                        //~Scanner_Function_Factory() noexcept {} //If we move to demanding C++11 noexcept to be supported
+
                         ~Scanner_Function_Factory(){}
                 };
         }

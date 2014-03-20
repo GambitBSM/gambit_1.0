@@ -190,7 +190,7 @@ namespace Gambit {
     
     // // This is a placeholder to satisfy the SMpars dependency of the spectrum
     // // generating functions. Probably this should actually be satsfied by 
-    // // ModelBit once it is hooked into the dependency system.
+    // // the Models once they are hooked into the dependency system.
     // void setSMpars (SMpars &result)
     // {
     //   // Hardcode some values

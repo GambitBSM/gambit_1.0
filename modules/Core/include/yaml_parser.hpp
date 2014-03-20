@@ -69,8 +69,8 @@ namespace Gambit
           {
             str errmsg = "No options entry for ";
             errmsg +=     stringifyVariadic(keys...) +
-                       "\n(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)"
-                       "\nFIXME to dump contents of options!!\n";// + options; FIXME
+                       std::string("\n(sorry, I can't tell you which likelihood/auxiliary/prior entry this error comes from yet)")
+                       + "\nFIXME to dump contents of options!!\n";// + options; FIXME
             inifile_error().raise(LOCAL_INFO,errmsg);
           }
           return node.as<TYPE>();
@@ -228,6 +228,11 @@ namespace Gambit
         //
         // Getters for key/value section
         //
+        
+        YAML::Node getParametersNode() const {return parametersNode;}
+        YAML::Node getPriorsNode() const {return priorsNode;}
+        YAML::Node getScannerNode() const {return scannerNode;}
+        YAML::Node getKeyValuePairNode() const {return keyValuePairNode;}
         
         template <typename... args>
         bool hasKey(args... keys) const

@@ -32,7 +32,7 @@
 #include "model_functions.hpp"
 #include "module_macros_incore.hpp"
 #include "types_rollcall.hpp"
-#include "modelbit.hpp"
+#include "models.hpp"
 
 
 // MACRO DEFINITIONS. 

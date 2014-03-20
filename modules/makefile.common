@@ -58,10 +58,10 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib#   # path
 
 # Location of gambit sub-directories
 COREDIR = Core
-MODELDIR = ModelBit
+MODELDIR = Models
 UTILSDIR = Utils
 PRINTERSDIR = Printers
-LOGGINGDIR = logging
+LOGGINGDIR = Logs
 SCANDIR = ScannerBit
 BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
@@ -80,13 +80,13 @@ FASTSIMDIR = ../extras/fast_sim
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
 	-I$(MODELDIR)/include \
-	-I$(MODELDIR)/include/models \
+	-I$(MODELDIR)/models \
 	-I$(UTILSDIR)/include \
         -I$(PRINTERSDIR)/include \
+        -I$(PRINTERSDIR)/printers \
         -I$(LOGGINGDIR)/include \
 	-I$(SCANDIR)/include \
 	-I$(BACKENDDIR)/include \
-	-I$(BACKENDDIR)/lib \
 	-I$(DARKDIR)/include \
 	-I$(FLAVDIR)/include \
         -I$(HECOLLIDERDIR)/include \

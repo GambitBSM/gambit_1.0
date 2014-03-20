@@ -30,7 +30,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "yaml_parser.hpp" // for the Options class
+#include <options_node.hpp> // for the Options class
 #include "scanner_utils.hpp"
 
 // This macro registers each prior.
@@ -70,7 +70,7 @@ namespace Gambit
                 /// Map in which to keep factory functions for the priors (prior_creators)
                 registry
                 { 
-                        typedef BasePrior* create_prior_function(const std::vector<std::string> &, const IniParser::Options &);
+                        typedef BasePrior* create_prior_function(const std::vector<std::string> &, const Options &);
                         reg_elem <create_prior_function> prior_creators;
                 }
         } // end namespace Priors

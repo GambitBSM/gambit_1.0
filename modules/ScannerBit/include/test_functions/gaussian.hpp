@@ -22,7 +22,7 @@
 #include <cholesky.hpp>
 #include <algorithm>
 #include <cmath>
-#include <yaml_parser.hpp>
+#include <options_node.hpp>
 #include <scanner_utils.hpp>
 #include <priors.hpp>
 #include <test_factory.hpp>
@@ -42,7 +42,7 @@ namespace Gambit
                         
                 public:
                         //constructor defined in gaussian.cpp
-                        Test_Gaussian (const IniParser::Options &options);
+                        Test_Gaussian (const Options &options);
                         
                         double operator() (std::vector<double> &unit)
                         {
@@ -51,7 +51,7 @@ namespace Gambit
                                 return chol.Square(values, mean);
                         }
                         
-                        ~Test_Gaussian() = default;
+                        ~Test_Gaussian(){}
                 };
                 
                 LOAD_TEST_FUNCTOR(gaussian, Test_Gaussian)

@@ -21,7 +21,7 @@
 ///  *********************************************
 
 #include "model_functions.hpp"
-#include "modelbit.hpp"
+#include "models.hpp"
 
 namespace Gambit
 {

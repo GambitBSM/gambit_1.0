@@ -52,16 +52,16 @@ CMSSM_I:
 
 # The "adhoc" model bypasses ModelBit and produces some model parameter nodes
 # on the fly. This can be used for testing purposes.
-adhoc:
-  m0:
-    fixed: true
-    range: [0, 5]
-  m1:
-    fixed: true
-    range: [6, 10]
-  m2:
-    fixed: true
-    range: [50, 500]
+#adhoc:
+#  m0:
+#    fixed: true
+#    range: [0, 5]
+#  m1:
+#    fixed: true
+#    range: [6, 10]
+#  m2:
+#    fixed: true
+#    range: [50, 500]
 
 # Ben: proposed replacement for the input parameters section (to allow more general treatment of priors)
 
@@ -214,7 +214,7 @@ multinest:
 #########################
 
 # Redirectory of specific messages according to tags
-prefix : "logfiles/"
+prefix : "runs/example_minimal_test/logs"
 redirection:
   [Debug] : "debug.log"
   [Default] : "default.log"

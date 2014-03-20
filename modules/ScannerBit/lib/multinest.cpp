@@ -244,7 +244,7 @@ scanner_plugin (multinest)
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
-                // NOTE 2: Prior creation now shifted into ModelBit! Pointer to a prior object must wind up here somehow!
+                // NOTE 2: Prior creation now shifted into Models code! Pointer to a prior object must wind up here somehow!
                 // WANT TO DO THIS:
                 ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, ndims, keys);
                 // // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
