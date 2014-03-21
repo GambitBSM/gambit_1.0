@@ -232,9 +232,16 @@ namespace Gambit
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
-    void functor::notifyOfIniOptions(const Options & opt)
+    void functor::notifyOfIniOptions(const Options& opt)
     {
       myOptions = opt;
+    }
+
+    /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
+    safe_ptr<Options> functor::getOptions()
+    {
+      if (this == NULL) functor::failBigTime("getOptions");
+      return safe_ptr<Options>(&myOptions);       
     }
 
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
@@ -338,7 +345,9 @@ namespace Gambit
       // Check for failure
       if(myLogTag==-1)
       {
-        logger() <<"Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
+        logger() <<"Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name "
+                 <<"in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="
+                 <<myOrigin<<", myName="<<myName<<")";
         logger() <<warn<<debug<<EOM;
       }
     }
@@ -362,15 +371,25 @@ namespace Gambit
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
     }
 
-    /// Invalidation rate
+    /// Getter for invalidation rate
     double module_functor_common::getInvalidationRate()
     {
+      if (this == NULL) functor::failBigTime("getInvalidationRate");
       return pInvalidation;
     }
 
+    /// Setter for the fade rate
     void module_functor_common::setFadeRate(double new_rate)
     {
+      if (this == NULL) functor::failBigTime("setFadeRate");
       fadeRate = new_rate;
+    }
+
+    /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
+    safe_ptr< std::vector<str> > module_functor_common::getModels()
+    {
+      if (this == NULL) functor::failBigTime("getModels");
+      return safe_ptr< std::vector<str> >(&myModels);       
     }
 
     /// Execute a single iteration in the loop managed by this functor.
@@ -747,6 +766,8 @@ namespace Gambit
         if (verbose) cout << "req: " << it->first << " " << it->second << endl;
         myBackendReqs.push_back(*it);        
       }
+      //Add the model to the internal list of models being scanned.
+      myModels.push_back(model);
     }
 
     /// Do pre-calculate timing things

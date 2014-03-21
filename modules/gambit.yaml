@@ -204,6 +204,10 @@ multinest:
   dependencies:
   - {capability: "id", module: "ExampleBit_B"}
 
+- function:     "xsection"
+  options:
+    scale: 15.5
+
 #- capability:   "awesomeness"
 #  type:         ""
 #  function:     ""
@@ -214,7 +218,7 @@ multinest:
 #########################
 
 # Redirectory of specific messages according to tags
-prefix : "runs/example_minimal_test/logs"
+prefix : "runs/example_minimal_test/logs/"
 redirection:
   [Debug] : "debug.log"
   [Default] : "default.log"
