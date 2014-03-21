@@ -186,6 +186,9 @@ namespace Gambit
 
     protected:
           
+      /// Debug flag
+      bool verbose;
+ 
       /// Internal storage of the function name.
       str myName;       
       /// Internal storage of exactly what the function calculates.
@@ -221,9 +224,6 @@ namespace Gambit
       /// Try to find a parent model in some user-supplied map from models to sspair vectors
       str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
 
-      /// Debug flag
-      bool verbose;
- 
   };
 
 
@@ -252,6 +252,9 @@ namespace Gambit
 
       /// Setter for the fade rate 
       void setFadeRate(double new_rate);
+
+      /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
+      safe_ptr< std::vector<str> > getModels();
 
       /// Execute a single iteration in the loop managed by this functor.
       void iterate(int iteration);
@@ -354,6 +357,9 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
+
+      /// Internal list of models that this functor is currently configured to work with
+      std::vector<str> myModels;
 
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;

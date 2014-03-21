@@ -61,7 +61,8 @@ namespace Gambit
     { 
       using namespace Pipes::xsection;
       logger() << endl;
-      logger() << "In ExampleBit_B, function xsection" << endl;
+      logger() << "In ExampleBit_B, function xsection." << endl;
+      logger() << "First model being scanned is: " << Models->at(0) << endl;
       logger() << "  Printing parameter values:" << endl;
       logger() << "  M0: "  << *Param["M0"] << endl;
       logger() << "  M12: " << *Param["M12"] << endl;

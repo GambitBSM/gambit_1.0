@@ -362,15 +362,25 @@ namespace Gambit
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
     }
 
-    /// Invalidation rate
+    /// Getter for invalidation rate
     double module_functor_common::getInvalidationRate()
     {
+      if (this == NULL) functor::failBigTime("getInvalidationRate");
       return pInvalidation;
     }
 
+    /// Setter for the fade rate
     void module_functor_common::setFadeRate(double new_rate)
     {
+      if (this == NULL) functor::failBigTime("setFadeRate");
       fadeRate = new_rate;
+    }
+
+    /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
+    safe_ptr< std::vector<str> > module_functor_common::getModels()
+    {
+      if (this == NULL) functor::failBigTime("getModels");
+      return safe_ptr< std::vector<str> >(&myModels);       
     }
 
     /// Execute a single iteration in the loop managed by this functor.
@@ -747,6 +757,8 @@ namespace Gambit
         if (verbose) cout << "req: " << it->first << " " << it->second << endl;
         myBackendReqs.push_back(*it);        
       }
+      //Add the model to the internal list of models being scanned.
+      myModels.push_back(model);
     }
 
     /// Do pre-calculate timing things

@@ -594,6 +594,19 @@
      STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
   }                                                                            \
                                                                                \
+  namespace Pipes                                                              \
+  {                                                                            \
+    namespace FUNCTION                                                         \
+    {                                                                          \
+      /* Create a map to hold pointers to all the model parameters accessible  \
+      to this functor */                                                       \
+      std::map<str, safe_ptr<const double> > Param;                            \
+      /* Declare a safe pointer to the functor's internal vector of currently- \
+      activated models. */                                                     \
+      safe_ptr< std::vector<str> > Models;                                     \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
   /* Set up the commands to be called at runtime to register the function*/    \
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
@@ -602,22 +615,13 @@
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
+    Pipes::FUNCTION::Models = Functown::FUNCTION.getModels();                  \
   }                                                                            \
                                                                                \
   /* Create the function initialisation object */                              \
   namespace Ini                                                                \
   {                                                                            \
     ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
-  }                                                                            \
-                                                                               \
-  /* Create a map to hold pointers to all the model parameters accessible to   \
-  this functor. */                                                             \
-  namespace Pipes                                                              \
-  {                                                                            \
-    namespace FUNCTION                                                         \
-    {                                                                          \
-      std::map<str, safe_ptr<const double> > Param;                            \
-    }                                                                          \
   }                                                                            \
 
 
