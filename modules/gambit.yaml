@@ -204,6 +204,10 @@ multinest:
   dependencies:
   - {capability: "id", module: "ExampleBit_B"}
 
+- function:     "xsection"
+  options:
+    scale: 15.5
+
 #- capability:   "awesomeness"
 #  type:         ""
 #  function:     ""

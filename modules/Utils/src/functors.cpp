@@ -232,9 +232,16 @@ namespace Gambit
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
-    void functor::notifyOfIniOptions(const Options & opt)
+    void functor::notifyOfIniOptions(const Options& opt)
     {
       myOptions = opt;
+    }
+
+    /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
+    safe_ptr<Options> functor::getOptions()
+    {
+      if (this == NULL) functor::failBigTime("getOptions");
+      return safe_ptr<Options>(&myOptions);       
     }
 
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
@@ -338,7 +345,9 @@ namespace Gambit
       // Check for failure
       if(myLogTag==-1)
       {
-        logger() <<"Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
+        logger() <<"Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name "
+                 <<"in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="
+                 <<myOrigin<<", myName="<<myName<<")";
         logger() <<warn<<debug<<EOM;
       }
     }

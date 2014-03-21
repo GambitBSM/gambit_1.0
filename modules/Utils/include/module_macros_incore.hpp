@@ -604,6 +604,8 @@
       /* Declare a safe pointer to the functor's internal vector of currently- \
       activated models. */                                                     \
       safe_ptr< std::vector<str> > Models;                                     \
+      /* Declare a safe pointer to the functor's run options. */               \
+      safe_ptr<Options> runOptions;                                            \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -616,6 +618,7 @@
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
     Pipes::FUNCTION::Models = Functown::FUNCTION.getModels();                  \
+    Pipes::FUNCTION::runOptions = Functown::FUNCTION.getOptions();             \
   }                                                                            \
                                                                                \
   /* Create the function initialisation object */                              \

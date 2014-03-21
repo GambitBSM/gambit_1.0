@@ -167,7 +167,10 @@ namespace Gambit
       /// Notify the functor about an instance of the options class that contains
       /// information from its corresponding ini-file entry in the auxiliaries or
       /// observables section.
-      void notifyOfIniOptions(const Options &);
+      void notifyOfIniOptions(const Options&);
+
+      /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
+      safe_ptr<Options> getOptions();
 
       /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
       bool modelAllowed(str model);
@@ -186,9 +189,6 @@ namespace Gambit
 
     protected:
           
-      /// Debug flag
-      bool verbose;
- 
       /// Internal storage of the function name.
       str myName;       
       /// Internal storage of exactly what the function calculates.
@@ -201,12 +201,14 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
+      /// Debug flag
+      bool verbose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
 
-      /// Options class
+      /// Internal storage of function options, as a YAML node
       Options myOptions;
 
       /// List of allowed models
