@@ -200,11 +200,11 @@ multinest:
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
-- function:     "nevents_postcuts"
+- capability:    "nevents_postcuts"
   dependencies:
   - {capability: "id", module: "ExampleBit_B"}
 
-- function:     "xsection"
+- capability:    "xsection"
   options:
     scale: 15.5
 

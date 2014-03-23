@@ -140,11 +140,16 @@ int main()
 
 
     // E) Write to file
+    BFptr fromLambdaSin(new BFfromPlainFunction( [](double x)  {return sin(x);} ));
     std::ofstream os;
     os.open("test.dat");
-    tabularized->writeToFile(linspace(1, 200, 10), os);
+    fromLambdaSin->writeToFile(linspace(-20, 20, 1000), os);
     os.close();
 
+
+    // F) Complicated integrants
+    BFptr withPole(new BFfromPlainFunction( [](double x)  {return sin(x)/(x+0.000001);} ));
+    std::cout << "Result from complicated integral: " << (*withPole->integrate(0, -1., 1.))() << std::endl;
 
     // THE USE OF PLAIN FUNCTIONS:
     // ---------------------------

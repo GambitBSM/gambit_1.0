@@ -20,6 +20,7 @@
 #define __util_macros_hpp__
 
 #include "boost_fallbacks.hpp"
+
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
