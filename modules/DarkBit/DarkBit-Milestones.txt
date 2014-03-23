@@ -1,37 +1,32 @@
 Milestones until March 2014 meeting:
 
 0. Singlet dark matter + MSSM-25 implementation [Christoph]
-    - Discuss with collider group + ModelBit about MSSM-25 status (Dec.)
-    - Implementation singlet DM as prototype (Jan.)
-    - Implementation of dummy MSSM-25 routines (Feb./Mar.)
+    - Discuss with collider group + ModelBit about MSSM-25 status (Dec.)            [todo]
+    - Implementation singlet DM as prototype (Jan.)                                 [DONE (toy model)]
+    - Implementation of dummy MSSM-25 routines (Feb./Mar.)                          [todo]
 
 1. Relic density calculations (backend MicrOmegas + DarkSUSY) [Torsten,
     Jonathan]
-    - Mostly solution of technical problems (array indexing, shared libraries
+    - Mostly solution of technical problems (array indexing, shared libraries       [HALF COMPLETED]
       etc.) (Feb.)
 
 2. Gamma + neutrino yields (backending DarkSUSY) [Christoph, Torsten, Jonathan,
     Jokaim]
-    - Discuss right format for gamma-ray spectrum (Dec. + Jan.)
-    - Implementation of gamma-ray yields (Jan.)
-    - Discussion + implementation of neutrino yields (Feb. + Mar.) [with Pat]
+    - Discuss right format for gamma-ray spectrum (Dec. + Jan.)                     [DONE]
+    - Implementation of gamma-ray yields (Jan.)                                     [DONE]
+    - Discussion + implementation of neutrino yields (Feb. + Mar.) [with Pat]       [todo]
 
 3. Parametrizations of generalized halos, J-factors + gamma-ray 'propagation
     routines' [Christoph + Lars]
-    - Discussion about parametrization (Dec. + Jan.)
-    - Implementation (Feb. + Mar.)
+    - Discussion about parametrization (Dec. + Jan.)                                [DONE]
+    - Implementation (Feb. + Mar.)                                                  [todo]
 
 4. WIMP-nucleon cross-sections [Chris]
-    - backending DarkSUSY (Feb.)
+    - backending DarkSUSY (Feb.)                                                    [?]
 
 5. direct detection routines [Chris]
-    - backending aspects of Chris' direct detection code (Mar.)
+    - backending aspects of Chris' direct detection code (Mar.)                     [?]
 
-6. IceCube likelihoods [Pat] (until March meeting)
+6. IceCube likelihoods [Pat] (until March meeting)                                  [todo]
 
-7. CMB + Fermi likelihoods (simplified) [Christoph] (until or after Mar.)
-
-
-During the discussion, general help was offered by: 
-Jonathan (in general), Torsten for DS backending questions, Pat + Christoph for
-integration into GAMBIT in general
+7. CMB + Fermi likelihoods (simplified) [Christoph] (until or after Mar.)           [todo]
