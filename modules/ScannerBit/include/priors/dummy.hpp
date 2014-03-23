@@ -21,31 +21,31 @@
 
 namespace Gambit
 {
-   namespace Priors
-   {
-        class Dummy : public BasePrior
+        namespace Priors
         {
-        private:
-                std::vector<std::string> param_names;
-                
-        public: 
-                // Constructor
-                Dummy(const std::vector<std::string>& param, const Options& options) : BasePrior(param.size()), param_names(param)
-                { 
-                }
-                
-                void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
+                class Dummy : public BasePrior
                 {
-                        auto it_vec = unitpars.begin();
-                        std::for_each (param_names.begin(), param_names.end(), [&] (const std::string &par)
+                private:
+                        std::vector<std::string> param_names;
+                        
+                public: 
+                        // Constructor
+                        Dummy(const std::vector<std::string>& param, const Options& options) : BasePrior(param.size()), param_names(param)
+                        { 
+                        }
+                        
+                        void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
                         {
-                                outputMap[par] = *(it_vec++);
-                        });
-                }
-        };
-        
-        LOAD_PRIOR(dummy, Dummy)
-   }
+                                auto it_vec = unitpars.begin();
+                                std::for_each (param_names.begin(), param_names.end(), [&] (const std::string &par)
+                                {
+                                        outputMap[par] = *(it_vec++);
+                                });
+                        }
+                };
+                
+                LOAD_PRIOR(dummy, Dummy)
+        }
 }
 
 #endif

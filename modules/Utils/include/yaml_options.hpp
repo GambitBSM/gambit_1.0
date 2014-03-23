@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <sstream>
+#include <utility>
 
 #include "util_types.hpp"
 #include "standalone_error_handlers.hpp"
@@ -50,19 +51,22 @@ namespace Gambit
       /// Default constructor
       Options() {}
 
-      /// Preferred constructor
-      Options(YAML::Node optionsIN) : options(optionsIN) {} 
+      /// Copy constructor
+      Options(const YAML::Node &options) : options(options) {}
+      
+      /// Move constructor
+      Options(YAML::Node &&options) : options(std::move(options)) {}
 
       /// Getters for key/value pairs (which is all the options node should contain)
       /// @{
       template <typename... args>
-      bool hasKey(args... keys) const
+      bool hasKey(const args&... keys) const
       {
         return getVariadicNode(options, keys...);
       }
 
       template<typename TYPE, typename... args>
-      TYPE getValue(args... keys) const
+      TYPE getValue(const args&... keys) const
       {
         const YAML::Node node = getVariadicNode(options, keys...);
         if (not node)
