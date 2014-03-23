@@ -525,11 +525,11 @@ namespace Gambit
         Graphs::VertexID toVertex, sspair quantity)
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      const IniParser::ObservableType *auxEntry = NULL;
-      const IniParser::ObservableType *depEntry = NULL;
-      const IniParser::ObservableType *optEntry = NULL;
+      const IniParser::ObservableType *auxEntry = NULL;  // Ptr. on ini-file entry of the dependent vertex (if existent)
+      const IniParser::ObservableType *depEntry = NULL;  // Ptr. on ini-file entry that specifies how to resolve 'quantity'
+      const IniParser::ObservableType *optEntry = NULL;  // Ptr. on ini-file entry that carries options for 'quantity'
       std::vector<Graphs::VertexID> vertexCandidates;
-      bool entryExists = false;
+      bool entryExists = false;  // Ini-file entry to resolve 'quantity' found?
 
       // First, we check whether the dependent vertex has a unique
       // correspondence in the inifile. Final (output) vertices have to be
@@ -548,12 +548,12 @@ namespace Gambit
       else 
       {
         auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries());
+        optEntry = findIniEntry(quantity, boundIniFile->getAuxiliaries());
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 
         {
           entryExists = true;
-          optEntry = auxEntry;
         }
       }
 
