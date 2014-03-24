@@ -24,15 +24,15 @@
 #ifndef __model_macros_hpp__
 #define __model_macros_hpp__
 
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost_fallbacks.hpp>
-
 #include "util_macros.hpp"
 #include "util_types.hpp"
 #include "model_functions.hpp"
 #include "module_macros_incore.hpp"
 #include "types_rollcall.hpp"
 #include "models.hpp"
+#include "boost_fallbacks.hpp"
+
+#include <boost/preprocessor/seq/for_each.hpp>
 
 
 // MACRO DEFINITIONS. 

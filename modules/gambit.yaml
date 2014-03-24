@@ -200,9 +200,13 @@ multinest:
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
-- function:     "nevents_postcuts"
+- capability:    "nevents_postcuts"
   dependencies:
   - {capability: "id", module: "ExampleBit_B"}
+
+- capability:    "xsection"
+  options:
+    scale: 15.5
 
 #- capability:   "awesomeness"
 #  type:         ""
@@ -214,7 +218,7 @@ multinest:
 #########################
 
 # Redirectory of specific messages according to tags
-prefix : "runs/example_minimal_test/logs"
+prefix : "runs/example_minimal_test/logs/"
 redirection:
   [Debug] : "debug.log"
   [Default] : "default.log"
@@ -225,7 +229,7 @@ redirection:
   [Dependency Resolver] : "dependency_resolver.log"
   [ExampleBit_A] : "ExampleBit_A.log"
   [ExampleBit_B] : "ExampleBit_B.log"
-  [LibFirst] : "libfirst.log"
+  [afadfh,LibFirst] : "libfirst.log"
 
 ###############################
 #--- # Printer (output) setup

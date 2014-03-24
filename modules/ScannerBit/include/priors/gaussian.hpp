@@ -23,14 +23,15 @@
 #define PRIOR_GAUSSIAN_HPP
 
 #include <vector>
-#include <boost/math/special_functions/erf.hpp>
-#include <cholesky.hpp>
 #include <algorithm>
 #include <cmath>
-#include <yaml_parser.hpp>
-#include <scanner_utils.hpp>
-#include <priors.hpp>
 
+#include "cholesky.hpp"
+#include "yaml_parser.hpp"
+#include "scanner_utils.hpp"
+#include "priors.hpp"
+
+#include <boost/math/special_functions/erf.hpp>
    
 namespace Gambit
 {

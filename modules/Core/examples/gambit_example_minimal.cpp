@@ -16,17 +16,30 @@
 ///
 ///  *********************************************
 
-#include "log.hpp"
-#include "graphs.hpp"
-#include "modelgraph.hpp"
-#include "scannerbit.hpp"
-#include "yaml_parser.hpp"
-#include "model_rollcall.hpp"
-#include "module_rollcall.hpp"
 #include "backend_rollcall.hpp"
-#include "register_error_handlers.hpp"
-//Pat: do all of the following actually have to be included from here?
+#include "graphs.hpp"
+#include "yaml_parser.hpp"
+#include "scannerbit.hpp"
+#include "module_rollcall.hpp"
+#include "model_rollcall.hpp"
+#include "stream_printers.hpp"
 #include "priors.hpp"
+#include "register_error_handlers.hpp"
+#include "log.hpp"
+
+//Pat: no idea why exactly, but the following inclusion order causes a BOOST_PP_IIF compile error on later versions of Boost
+//#include "log.hpp"
+//#include "graphs.hpp"
+//#include "scannerbit.hpp"
+//#include "yaml_parser.hpp"
+//#include "model_rollcall.hpp"
+//#include "module_rollcall.hpp"
+//#include "backend_rollcall.hpp"
+//#include "register_error_handlers.hpp"
+//#include "stream_printers.hpp"
+//#include "priors.hpp"
+
+#include "modelgraph.hpp"
 #include "priorfactory.hpp"
 #include "test_factory.hpp"
 #include "scanner_factory.hpp"
@@ -94,13 +107,6 @@ void beispiel(const char* inifilename)
   std::vector<std::string> selectedmodels = iniFile.getModelNames();
   //cout << "Your selected models are: " << selectedmodels << endl;
   
-  // Build prior object based on inifile instructions
-  //Priors::PriorManager priorManager(iniFile);
-
-  // Extract a pointer to the prior object, so that it can be passed to the Scanner.
-  // Could do this via the Core instead, perhaps.
-  //Priors::BasePrior* prior = priorManager.getprior();
-
   // Activate "primary" model functors
   Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 

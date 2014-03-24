@@ -493,18 +493,28 @@ namespace Gambit
       }
     }
 
-    /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
+    /// Deactivate functors that are not allowed to be used with any of the models being scanned. 
     /// Also activate the model-conditional dependencies and backend requirements of those
     /// functors that are allowed to be used with the model(s) being scanned.
     void DependencyResolver::makeFunctorsModelCompatible()
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       std::vector<str> modelList = modelClaw().get_activemodels();
+      // First make sure to deactivate all the vertices
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
+        masterGraph[*vi]->setStatus(0);
+      }
+      // Then reactivate those that match one of the models being scanned.
       for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
       {
         for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
         {
-          masterGraph[*vi]->modelAllowed(*it) ? masterGraph[*vi]->notifyOfModel(*it) : masterGraph[*vi]->setStatus(0);
+          if (masterGraph[*vi]->modelAllowed(*it))
+          {
+            masterGraph[*vi]->notifyOfModel(*it);
+            masterGraph[*vi]->setStatus(1);
+          }
         }
       }
     }
@@ -515,11 +525,11 @@ namespace Gambit
         Graphs::VertexID toVertex, sspair quantity)
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      const IniParser::ObservableType *auxEntry = NULL;
-      const IniParser::ObservableType *depEntry = NULL;
-      const IniParser::ObservableType *optEntry = NULL;
+      const IniParser::ObservableType *auxEntry = NULL;  // Ptr. on ini-file entry of the dependent vertex (if existent)
+      const IniParser::ObservableType *depEntry = NULL;  // Ptr. on ini-file entry that specifies how to resolve 'quantity'
+      const IniParser::ObservableType *optEntry = NULL;  // Ptr. on ini-file entry that carries options for 'quantity'
       std::vector<Graphs::VertexID> vertexCandidates;
-      bool entryExists = false;
+      bool entryExists = false;  // Ini-file entry to resolve 'quantity' found?
 
       // First, we check whether the dependent vertex has a unique
       // correspondence in the inifile. Final (output) vertices have to be
@@ -538,12 +548,12 @@ namespace Gambit
       else 
       {
         auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries());
+        optEntry = findIniEntry(quantity, boundIniFile->getAuxiliaries());
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
         if ( auxEntry != NULL and depEntry != NULL ) 
         {
           entryExists = true;
-          optEntry = auxEntry;
         }
       }
 
@@ -771,7 +781,7 @@ namespace Gambit
           // fromVertex (optEntry) and pass it to the fromVertex for later use
           if ( optEntry != NULL )
           {
-            IniParser::Options myOptions(optEntry->options);
+            Options myOptions(optEntry->options);
             masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex

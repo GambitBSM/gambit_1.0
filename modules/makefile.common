@@ -357,9 +357,12 @@ endif
 # all phony stuff here
 .PHONY: default all clean sterile distclean doxygen mh
 
-TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
+# gambit_examples does not compile for me due to fastsim dependency...
+#TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
+#default: mh gambit_example gambit_example_minimal
 
-default: mh gambit_example gambit_example_minimal
+TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
+default: mh gambit_example_minimal
 
 all: mh gambit_example gambit_example_minimal doxygen
 
@@ -472,7 +475,7 @@ HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC) $(LOGINC)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
-HARVESTER:= $(COREDIR)/scripts/functor_type_harvester.py
+HARVESTER:= $(UTILSDIR)/scripts/functor_type_harvester.py
 ifndef SHH
   HARVESTER_OPTS += -v
 endif

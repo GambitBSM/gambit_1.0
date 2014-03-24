@@ -20,8 +20,10 @@
 #include <priors.hpp>
 #include <algorithm>
 #include <cmath>
-#include <options_node.hpp>
-#include <scanner_utils.hpp>
+
+#include "yaml_options.hpp"
+#include "scanner_utils.hpp"
+
 
 namespace Gambit
 {

@@ -122,14 +122,18 @@
         ,)                                                                     \
       }                                                                        \
                                                                                \
-      /* Declare the parameters safe-pointer map as external, and create a     \
-      pointer to the single iteration of the loop that can be executed by this \
-      functor. */                                                              \
       namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
+          /* Declare the parameters safe-pointer map as external. */           \
           extern std::map<str, safe_ptr<double> > Param;                       \
+          /* Declare the safe-pointer to the models vector as external. */     \
+          extern safe_ptr< std::vector<str> > Models;                          \
+          /* Declare the safe pointer to the run options as external. */       \
+          extern safe_ptr<Options> runOptions;                                 \
+          /* Create a pointer to the single iteration of the loop that can be  \
+          executed by this functor */                                          \
           namespace Loop                                                       \
           {                                                                    \
             BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                              \

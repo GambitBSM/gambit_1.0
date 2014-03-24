@@ -64,6 +64,15 @@ namespace Gambit
                         while (c != '\n' && c != EOF);
                 }
                 
+                inline void input_variadic_vector(std::vector<void *> &input){}
+                
+                template <typename T, typename... args>
+                inline void input_variadic_vector(std::vector<void *> &input, const T& value, const args&... params)
+                {
+                        input.push_back((void *)&value);
+                        input_variadic_vector(input, params...);
+                }
+                
                 template <typename T> class Plugin_Interface;
                 
                 template <typename ret, typename... args>
@@ -73,6 +82,7 @@ namespace Gambit
                         void *plugin;
                         std::string name;
                         std::vector<std::string> mod_names;
+                        std::vector<void *> input;
                         typedef void (*initFuncType)(std::vector<void *> *);                              
                         typedef void * (*getFuncType)(std::string);
                         typedef void (*rmFuncType)(void *, std::string);
@@ -84,10 +94,12 @@ namespace Gambit
                         
                 public:
                         template <typename... plug_args>
-                        Plugin_Interface(std::string file, std::string name, std::vector<void*> *input, plug_args... inputs) : name(name)
+                        Plugin_Interface(std::string file, std::string name, const plug_args&... inputs) : name(name)
                         {
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
                                 std::string str;
+                                
+                                input_variadic_vector(input, inputs...);
                                 
                                 if (FILE* f = popen((std::string("nm ") + file + std::string(" | grep \"__gambit_plugin_pluginInit_\"")).c_str(), "r"))
                                 {
@@ -144,7 +156,7 @@ namespace Gambit
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + name + std::string("__")).c_str());
                                                 rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_plugin_rmMember_") + name + std::string("__")).c_str());
 
-                                                initFunc(input);
+                                                initFunc(&input);
                                                 main = (mainFuncType)getFunc(name);
                                                 
                                                 if (main == 0)

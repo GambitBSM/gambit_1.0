@@ -30,6 +30,7 @@
 // Gambit
 #include "logging.hpp"
 #include "util_functions.hpp"
+#include "standalone_error_handlers.hpp"
 
 // Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
 #include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
@@ -43,6 +44,8 @@ namespace Gambit
     
     // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
     // These won't compile in g++ if the LogTags are const, something about how standard containers work...
+
+    // Arg ok, when trying to write log messages from the LogMaster destructor, these containers may have been destructed first. To get around this, the LogMaster will internalise all of these when it is constructed.
        
     // Function to retrieve the 'msgtypes' set of tags
     const std::set<LogTag>& msgtypes()
@@ -157,7 +160,6 @@ namespace Gambit
        std::cout<<"LogTag check finished."<<std::endl;
     }
 
-
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //% Logger class member function definitions            %
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -170,11 +172,6 @@ namespace Gambit
     {
     }
  
-    LogMaster::LogMaster(const IniParser::IniFile& inifile) 
-      : loggers_readyQ(false), current_module(-1), current_backend(-1) 
-    {
-    }
-
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) 
@@ -186,18 +183,21 @@ namespace Gambit
     LogMaster::~LogMaster()
     {
        // Later on this should clean up the logger objects
-      
+       std::cout<<"LogMaster is being destructed, checking if messaged left to deliver..."<<std::endl;
        // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
        if (prelim_buffer.size()!=0)
        { 
+         std::cout<<"argh yep buffer has things in it, try to dump them to the logs..."<<std::endl;
          if (not loggers_readyQ)
          {
+           std::cout<<"Oh no, loggers were never initialised! creating default logger..."<<std::endl;
            StdLogger* deflogger = new StdLogger("default.log");
            std::set<int> deftag;
            deftag.insert(def);
            loggers[deftag] = deflogger; 
            loggers_readyQ = true;
          }
+         std::cout<<"dumping messages..."<<std::endl;
          // Dump buffered messages
          dump_prelim_buffer();
        }
@@ -239,11 +239,9 @@ namespace Gambit
             if(newtag==-1)
             {
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
-              // TODO: Not sure if we can raise a gambit exception here... Well we can log it at least!
-              std::ostringstream ss;
-              ss << "Error in Logging::str2tag function! Tags name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile!";
-              send(ss.str(),logging,err,fatal);
-              throw std::logic_error( ss.str() ); 
+              std::ostringstream errormsg;
+              errormsg << "Error in Logging::str2tag function! Tag name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile! Tag string was ["<<*stag<<"]";
+              logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             tags.insert(newtag);
           }
@@ -539,7 +537,26 @@ namespace Gambit
        //std::cout<<"Sorting tags..."<<std::endl;
        for(std::set<int>::iterator tag = mail.tags.begin(); tag != mail.tags.end(); ++tag) 
        {
-         //std::cout<<"Sorting tag "<<tag2str()[*tag]<<std::endl;
+         // Debugging crap... to be deleted.
+         // std::cout<<"Sorting tag "<<tag2str()[*tag]<<std::endl;
+         // std::cout<<"empty?"<<components().empty()<<std::endl;
+         // for(std::set<int>::iterator tag2 = components().begin(); tag2 != components().end(); ++tag2) 
+         // {
+         //    std::cout<<"componentI: "<<*tag2<<std::endl;
+         //    std::cout<<"component:  "<<tag2str()[*tag2]<<std::endl;
+         // }
+         // for(std::set<LogTag>::iterator tag3 = msgtypes().begin(); tag3 != msgtypes().end(); ++tag3) 
+         // {
+         //    std::cout<<"msgtypeI: "<<*tag3<<std::endl;
+         //    std::cout<<"msgtype:  "<<tag2str()[*tag3]<<std::endl;
+         // }
+         // std::cout<<"core:"<<*(components().find(core))<<std::endl;
+         // std::cout<<"t1 "<<*(components().find(*tag))<<std::endl;
+         // std::cout<<"t2 "<<*(components().end())<<std::endl;
+         // std::cout<<"tag "<<*tag<<std::endl;
+         // std::cout<<"tag "<<static_cast<LogTag>(*tag)<<std::endl;
+         // std::cout<<"mt1 "<<*(msgtypes().find(static_cast<LogTag>(*tag)))<<std::endl;
+         // std::cout<<"mt2 "<<*(msgtypes().end())<<std::endl;
          if ( msgtypes().find(static_cast<LogTag>(*tag)) != msgtypes().end() )
          {
            // If tag is a message type, add it to the type_tags set
@@ -548,6 +565,7 @@ namespace Gambit
          }
          else if ( components().find(*tag) != components().end() )
          {
+           // std::cout<<"Adding tag "<<tag2str()[*tag]<<std::endl;         
            // If tag names a gambit core component, add it to the component_tags set
            //std::cout<<"Identified tag '"<<tag2str()[*tag]<<"' as Gambit component"<<std::endl;
            component_tags.insert(*tag);

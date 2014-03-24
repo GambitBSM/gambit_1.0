@@ -18,15 +18,15 @@
 #define __test_gaussian_hpp__
 
 #include <vector>
-#include <boost/math/special_functions/erf.hpp>
-#include <cholesky.hpp>
 #include <algorithm>
 #include <cmath>
-#include <options_node.hpp>
-#include <scanner_utils.hpp>
-#include <priors.hpp>
-#include <test_factory.hpp>
-#include <test_functions/uniform.hpp>
+
+#include "yaml_options.hpp"
+#include "scanner_utils.hpp"
+#include "priors.hpp"
+#include "test_factory.hpp"
+#include "test_functions/uniform.hpp"
+
 
 namespace Gambit
 {
@@ -48,7 +48,7 @@ namespace Gambit
                         {
                                 this->Test_Uniform::operator()(unit);
                                 
-                                return chol.Square(values, mean);
+                                return -chol.Square(values, mean);
                         }
                         
                         ~Test_Gaussian(){}

@@ -40,17 +40,12 @@ namespace Gambit
                         
                         unsigned int dim = factory.getDim();
                         auto keys = factory.getKeys();
-                        std::vector<void *> input(4);
-                        input[0] = (void *)(&dim);
-                        input[1] = (void *)(&keys);
-                        input[2] = (void *)&factory;
-                        input[3] = (void *)&interface;
                         
                         scanLog::err.check();
                         outputHandler::out.redir("scanner");
                         try
                         {
-                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), &input);
+                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), dim, keys, factory, interface);
                                 plugin_interface();
                         }
                         catch (std::exception &exception)

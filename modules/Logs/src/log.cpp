@@ -31,8 +31,23 @@ namespace Gambit
 {
 
   using namespace Logging;
+
+  // This is an empty struct that I use simple to ensure that the logger LogTag "catalogues" are constructed before the logger itself. This ensures that they are destructed *after* the logger, which is important because we need them to exist during destruction of the logger.
+  struct ensure_construction_order
+  {
+    ensure_construction_order()
+    {
+      // call the functions which retrieve the catalogues, thus ensuring those objects are constructed.
+      msgtypes();
+      flags();
+      components();
+    }
+  };
+
   LogMaster& logger()
   {
+      // I assume that these being static, the constructor for x will only get called once.
+      static ensure_construction_order x;
       static LogMaster global_log;
       return global_log;
   }

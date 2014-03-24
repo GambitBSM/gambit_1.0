@@ -43,7 +43,7 @@
 #include "util_functions.hpp"
 #include "model_types.hpp"
 #include "model_functions.hpp"
-#include "yaml_parser.hpp"
+#include "yaml_options.hpp"
 #include "log.hpp"
 
 // Decay rate of average runtime estimate
@@ -167,7 +167,10 @@ namespace Gambit
       /// Notify the functor about an instance of the options class that contains
       /// information from its corresponding ini-file entry in the auxiliaries or
       /// observables section.
-      void notifyOfIniOptions(const IniParser::Options &);
+      void notifyOfIniOptions(const Options&);
+
+      /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
+      safe_ptr<Options> getOptions();
 
       /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
       bool modelAllowed(str model);
@@ -198,13 +201,15 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
+      /// Debug flag
+      bool verbose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
 
-      /// Options class
-      IniParser::Options myOptions;
+      /// Internal storage of function options, as a YAML node
+      Options myOptions;
 
       /// List of allowed models
       std::set<str> allowedModels;
@@ -221,9 +226,6 @@ namespace Gambit
       /// Try to find a parent model in some user-supplied map from models to sspair vectors
       str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
 
-      /// Debug flag
-      bool verbose;
- 
   };
 
 
@@ -252,6 +254,9 @@ namespace Gambit
 
       /// Setter for the fade rate 
       void setFadeRate(double new_rate);
+
+      /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
+      safe_ptr< std::vector<str> > getModels();
 
       /// Execute a single iteration in the loop managed by this functor.
       void iterate(int iteration);
@@ -354,6 +359,9 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
+
+      /// Internal list of models that this functor is currently configured to work with
+      std::vector<str> myModels;
 
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;

@@ -30,7 +30,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include <options_node.hpp> // for the Options class
+#include "yaml_options.hpp"
 #include "scanner_utils.hpp"
 
 // This macro registers each prior.

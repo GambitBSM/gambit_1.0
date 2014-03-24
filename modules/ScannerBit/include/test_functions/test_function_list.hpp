@@ -19,5 +19,6 @@
 
 #include <test_functions/uniform.hpp>
 #include <test_functions/gaussian.hpp>
+#include <test_functions/eggbox.hpp>
 
 #endif

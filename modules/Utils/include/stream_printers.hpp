@@ -23,11 +23,11 @@
 #ifndef __stream_printers_hpp__
 #define __stream_printers_hpp__
 
-#include<map>
-#include<set>
-#include<string>
-#include<vector>
-#include<ostream>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+#include <ostream>
 
 namespace Gambit
 {
