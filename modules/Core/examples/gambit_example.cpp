@@ -54,7 +54,7 @@ void beispiel()
   // comment out until fixed - Aldo
   // Greg: Since the composite prior has the prior manager's constructor, you can call make 
   //    composite prior directly.
-  Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
+  //Priors::BasePrior* prior = new Priors::CompositePrior(iniFile);
 
   // Activate "primary" model functors
   Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
@@ -433,10 +433,8 @@ int main( int, const char*[] )
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst::Functown::byRefExample2);
   
-
   // for the fastsim backend
   ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim::Functown::FastSim_Init);
-
 
 
    //Here are a bunch of explicit example calls to the two example modules, testing their capabilities
@@ -488,7 +486,6 @@ int main( int, const char*[] )
     cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::identity(0) << endl ;
   }
 
-
  cout << "I can do Fast Evgen: " << ExampleBit_A::Accessors::provides("event_gen") << endl;
 
  if (ExampleBit_A::Accessors::provides("event_gen"))
@@ -505,8 +502,6 @@ int main( int, const char*[] )
     ExampleBit_A::Functown::init_sim.calculate();
     cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::init_sim(0) << endl ;
   }
-
-
 
 
   cout <<  endl;
