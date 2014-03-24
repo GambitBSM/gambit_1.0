@@ -39,7 +39,8 @@
 #include <cmath>
 #include <algorithm>
 #include <gsl/gsl_integration.h>
-#include "DarkBit_BaseFunctions.hpp"
+
+using namespace Gambit::BF;
 
 namespace Gambit
 {
