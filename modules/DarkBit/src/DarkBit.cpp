@@ -473,7 +473,7 @@ namespace Gambit {
       }
     }
 
-    void GA_dNdE_DarkSUSY(Gambit::DarkBit::BFptr &result)
+    void GA_dNdE_DarkSUSY(BFptr &result)
     {
         //////////////////////////////////////////////////////////////////////////
         // Calculates annihilation spectra for general process catalogs, using

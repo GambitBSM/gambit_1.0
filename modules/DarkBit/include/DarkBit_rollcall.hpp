@@ -182,7 +182,7 @@ START_MODULE
   #define CAPABILITY GA_dNdE
   START_CAPABILITY
     #define FUNCTION GA_dNdE_DarkSUSY
-      START_FUNCTION(Gambit::DarkBit::BFptr)
+      START_FUNCTION(Gambit::BF::BFptr)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
       #define BACKEND_REQ dshayield
@@ -204,7 +204,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
-      DEPENDENCY(GA_dNdE, Gambit::DarkBit::BFptr)
+      DEPENDENCY(GA_dNdE, Gambit::BF::BFptr)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
     #undef FUNCTION
   #undef CAPABILITY

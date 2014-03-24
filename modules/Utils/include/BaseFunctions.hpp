@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Base functions objects for use in DarkBit.
+///  Base functions objects for use in GAMBIT.
 ///
 ///  *********************************************
 ///
@@ -10,12 +10,12 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2014 Feb
+///  \date 2014 Feb, Mar
 ///
 ///  *********************************************
 
-#ifndef __DarkBit_BaseFunctions_hpp__
-#define __DarkBit_BaseFunctions_hpp__
+#ifndef __BaseFunctions_hpp__
+#define __BaseFunctions_hpp__
 
 #include "shared_ptr.hpp"
 #include <iostream>
@@ -31,7 +31,7 @@
 
 namespace Gambit 
   {
-  namespace DarkBit
+  namespace BF
     {
     //////////////////////////////////////////
     // Central abstract Base Function object
@@ -676,4 +676,4 @@ namespace Gambit
   }
 }
 
-#endif // defined __DarkBit_BaseFunctions_hpp__
+#endif // defined __BaseFunctions_hpp__
