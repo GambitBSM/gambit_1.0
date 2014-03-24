@@ -48,7 +48,7 @@ namespace Gambit
                         {
                                 this->Test_Uniform::operator()(unit);
                                 
-                                return chol.Square(values, mean);
+                                return -chol.Square(values, mean);
                         }
                         
                         ~Test_Gaussian(){}
