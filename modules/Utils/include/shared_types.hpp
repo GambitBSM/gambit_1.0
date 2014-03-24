@@ -22,6 +22,10 @@
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Dec
+//
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2014 Mar
 ///
 ///  *********************************************
 
@@ -30,6 +34,9 @@
 
 // Definitions required to understand model parameter objects
 #include "model_types.hpp"
+
+// GAMBIT BaseFunction Objects
+#include "BaseFunctions.hpp"
 
 // All the types from the different backends
 #include "SLHA_types.hpp"
