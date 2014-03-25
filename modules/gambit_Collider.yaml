@@ -181,8 +181,8 @@ multinest:
 #  capability:   SI_bsgamma
 
 # Uncomment to test HEColliderBit
-#- purpose:      Observable
-#  capability:   analysisAccumulator
+- purpose:      Observable
+  capability:   analysisAccumulator
 
 # Test Pythia8 SLHA reader
 - purpose:      Likelihood
@@ -194,17 +194,9 @@ multinest:
   capability:   test_vector
   type:         std::vector<double>
 
-# Example for dependency resolution for target functors
-#- purpose:      Observable
-#  capability:   testTarget
-
 #########################
 --- # Auxiliary entries
 #########################
-#
-- capability:   testTarget
-  dependencies:
-  - {capability: "testCapability", function: "testFunction1"}
 
 - capability:   "MSSMspectrum"
 
@@ -217,10 +209,10 @@ multinest:
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
-#- capability:   "analysisAccumulator"
-#  type: "double"
-#  dependencies:
-#  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
+- capability:   "analysisAccumulator"
+  type: "double"
+  dependencies:
+  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
 
 - capability:    "nevents_postcuts"
   dependencies:

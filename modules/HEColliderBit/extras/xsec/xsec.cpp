@@ -58,6 +58,10 @@ double Evaluator::xsec(string process, double * par){
     if(process == "nn_n1n1") xsec = nn_n1n1.Value(0,par);
     if(process == "nn_n1n2") xsec = nn_n1n2.Value(0,par);
 
+    if(process == "nn_n1n3") xsec = nn_n1n3.Value(0,par);
+    if(process == "nn_n1n4") xsec = nn_n1n4.Value(0,par);
+    if(process == "nn_n1n5") xsec = nn_n1n5.Value(0,par);
+    
     if(process == "b1b1") xsec = b1b1.Value(0,par);
     if(process == "b2b2") xsec = b2b2.Value(0,par);
     if(process == "t1t1") xsec = t1t1.Value(0,par);
