@@ -940,10 +940,10 @@ namespace Gambit
           str errmsg = "Found no candidates for backend requirement.";
           if (disabledVertexCandidates.size() != 0)
           {
-            errmsg += "\nNote that viable candidates exist but have been disabled:"
+            errmsg += "\nNote that viable candidates exist but have been disabled:";
             //printGenericFunctorList(&disabledVertexCandidates);  FIXME this needs to return a string, not just print
-                   +  "\nPlease check that all shared objects exist for the"
-                   +  "\necessary backends, and that they contain all the"
+                   +  "\nPlease check that all shared objects exist for the";
+                   +  "\necessary backends, and that they contain all the";
                    +  "\nnecessary functions required for this scan.";
           }
           dependency_resolver_error().raise(LOCAL_INFO,errmsg);
