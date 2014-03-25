@@ -198,6 +198,14 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
+    #define FUNCTION TH_ProcessCatalog_DarkSUSY
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(CMMSM)
+      #define BACKEND_REQ dssigmav
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ      
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY lnL_FermiLATdwarfs

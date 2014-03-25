@@ -5,8 +5,45 @@
 
 using namespace std;
 
+namespace xsec{
+
 Evaluator::Evaluator(){
     
+}
+
+double Evaluator::xsec(string process, Pythia8::SusyLesHouches * point){
+
+    // Get parameters from SLHA object
+    double par[24];
+    // Uses MSOFT and HMIX blocks defined at scale Q
+    // TODO: be carefull about scale definitions!
+    par[0] = point->minpar(3); // \tan\beta
+    par[1] = point->msoft(1);  // M_1
+    par[2] = point->msoft(2);  // M_2
+    par[3] = point->msoft(3);  // M_3
+    par[4] = point->au(3,3);   // A_t
+    par[5] = point->ad(3,3);   // A_b
+    par[6] = point->ae(3,3);   // A_\tau
+    par[7] = point->hmix(1);   // \mu
+    par[8] = sqrt(point->hmix(4));  // m_A
+    par[9] = point->msoft(31); // meL
+    par[10] = point->msoft(32); // mmuL
+    par[11] = point->msoft(33); // mtauL
+    par[12] = point->msoft(34); // meR
+    par[13] = point->msoft(35); // mmuR
+    par[14] = point->msoft(36); // mtauR
+    par[15] = point->msoft(41); // mqL1
+    par[16] = point->msoft(44); // muR
+    par[17] = point->msoft(47); // mdR
+    par[18] = point->msoft(42); // mqL2
+    par[19] = point->msoft(45); // mcR
+    par[20] = point->msoft(48); // msR
+    par[21] = point->msoft(43); // mqL3
+    par[22] = point->msoft(46); // mtR
+    par[23] = point->msoft(49); // mbR
+    
+    // Evaluate
+    return Evaluator::xsec(process, par);
 }
 
 double Evaluator::xsec(string process, double * par){
@@ -119,4 +156,6 @@ double Evaluator::xsec(string process, double * par){
     if(xsec < 0) cout << "Something went wrong, wrong process?" << endl;
     
     return xsec;
+}
+
 }

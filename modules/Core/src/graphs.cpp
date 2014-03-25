@@ -941,9 +941,9 @@ namespace Gambit
           if (disabledVertexCandidates.size() != 0)
           {
             errmsg += "\nNote that viable candidates exist but have been disabled:"
-                     "\nPlease check that all shared objects exist for the"
-                     "\necessary backends, and that they contain all the"
-                     "\nnecessary functions required for this scan.";
+                      "\nPlease check that all shared objects exist for the"
+                      "\necessary backends, and that they contain all the"
+                      "\nnecessary functions required for this scan.";
                    //printGenericFunctorList(&disabledVertexCandidates);  FIXME this needs to return a string, not just print
           }
           dependency_resolver_error().raise(LOCAL_INFO,errmsg);
