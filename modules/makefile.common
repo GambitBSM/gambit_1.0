@@ -3,7 +3,7 @@
 # Lundberg 2011-Aug
 # Pat Scott 2012-Nov+
 # Abram Krislock 2014-Jan
-# Aldo Saavedra 2014-March 
+# Aldo Saavedra 2014-March
 #
 ###
 
@@ -27,7 +27,7 @@ endif
 # set COLLIDE to anything to also include HEColliderBit compilation
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx COLLIDE=whatever
-# TODO: Once this works for everyone (or, once the class loader is ready and 
+# TODO: Once this works for everyone (or, once the class loader is ready and
 #       we need to completely change the way HEColliderBit compiles), then
 #       we should get rid of this flag entirely.
 ifndef SHH
@@ -79,36 +79,36 @@ FASTSIMDIR = ../extras/fast_sim
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
-	-I$(MODELDIR)/include \
-	-I$(MODELDIR)/models \
-	-I$(UTILSDIR)/include \
-        -I$(PRINTERSDIR)/include \
-        -I$(PRINTERSDIR)/printers \
-        -I$(LOGGINGDIR)/include \
-	-I$(SCANDIR)/include \
-	-I$(BACKENDDIR)/include \
-	-I$(DARKDIR)/include \
-	-I$(FLAVDIR)/include \
-        -I$(HECOLLIDERDIR)/include \
-	-I$(EXAMPLEADIR)/include \
-	-I$(EXAMPLEBDIR)/include \
-	-I$(DARKDIR)/include \
-	-I$(EXSUSYSPECDIR)/include \
-	-I$(FLAVDIR)/include \
-	-I$(YAMLDIR)/include \
-        -I$(SLHAPy8DIR) \
-        -I$(SLHAEADIR) \
-	-I$(HEPSIMPLEDIR) \
-	-I$(FASTSIMDIR)/include \
-	-I$(MULTINESTINC)
+  -I$(MODELDIR)/include \
+  -I$(MODELDIR)/models \
+  -I$(UTILSDIR)/include \
+  -I$(PRINTERSDIR)/include \
+  -I$(PRINTERSDIR)/printers \
+  -I$(LOGGINGDIR)/include \
+  -I$(SCANDIR)/include \
+  -I$(BACKENDDIR)/include \
+  -I$(DARKDIR)/include \
+  -I$(FLAVDIR)/include \
+  -I$(HECOLLIDERDIR)/include \
+  -I$(EXAMPLEADIR)/include \
+  -I$(EXAMPLEBDIR)/include \
+  -I$(DARKDIR)/include \
+  -I$(EXSUSYSPECDIR)/include \
+  -I$(FLAVDIR)/include \
+  -I$(YAMLDIR)/include \
+  -I$(SLHAPy8DIR) \
+  -I$(SLHAEADIR) \
+  -I$(HEPSIMPLEDIR) \
+  -I$(FASTSIMDIR)/include \
+  -I$(MULTINESTINC)
 
 ifdef CPPFLAGS
-   CFLAGS += $(CPPFLAGS)
+  CFLAGS += $(CPPFLAGS)
 endif
 
 LN = $(CC)
 ifdef SHH
-  CFLAGS += -O3 -g -fPIC -fopenmp 
+  CFLAGS += -O3 -g -fPIC -fopenmp
 else
   CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp
 endif
@@ -125,7 +125,7 @@ endif
 # There are also in-code options, but this could potentially lead to
 # a speedup and smaller code. -1000 allows all log messages to be treated.
 # TODO this is legacy SUFIT, to be revised
-COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10 
+COMPOPTS = -DGAMBIT_BUILDOPT_LOGLIMIT=-10
 ifdef COLLIDE
   COMPOPTS += -DCOLLIDE=$(COLLIDE) -DQUIET
 endif
@@ -240,13 +240,14 @@ ifdef COLLIDE
   PY8_CXXFLAGS := $(shell PATH=$(PATH) pythia8-config --cxxflags)
   PY8_LDFLAGS := $(shell PATH=$(PATH) pythia8-config --libs)
 
-  # Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied toi). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
-  #(i.e. 
-  # pythia8-config --libs 
-  # returns:
-  # -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
-  # while I need -L/home/farmer/bin/lib/archive
-  PY8_LDFLAGS:=$(PY8_LD_HACK) $(PY8_LDFLAGS) 
+  # Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied to). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
+  #   (i.e.
+  #     pythia8-config --libs
+  #   returns:
+  #     -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
+  #   while I need -L/home/farmer/bin/lib/archive
+  # Andy: lib/archive/ contains just the static libs, lib/ contains the shared one. LD_LIBRARY_PATH also needs to know about that path at runtime
+  PY8_LDFLAGS := $(PY8_LD_HACK) $(PY8_LDFLAGS)
 
   ifndef PY8_CXXFLAGS
     $(warning ***!!!***)
@@ -275,7 +276,7 @@ ifdef COLLIDE
 
   ifndef FJ_CXXFLAGS
     $(info ***!!!***)
-    $(info Fastjet compile flags failed to configure.) 
+    $(info Fastjet compile flags failed to configure.)
     $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
     $(info You may also need to include /where/fastjet/is/lib in your)
     $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
@@ -295,11 +296,11 @@ ifdef COLLIDE
   endif
 
   ROOT_CXXFLAGS := $(shell root-config --cflags)
-  ROOT_LDFLAGS := $(subst lib,lib -lEG,$(shell root-config --libs))
+  ROOT_LDFLAGS := $(shell root-config --libs) -lEG
 
   ifndef ROOT_CXXFLAGS
     $(info ***!!!***)
-    $(info ROOT compile flags failed to configure.) 
+    $(info ROOT compile flags failed to configure.)
     $(info Please use the 'thisroot' shell script from your ROOT installation.)
     $(error HEColliderBit dependency error....)
   else
@@ -363,19 +364,19 @@ default: mh gambit_example_minimal
 
 all: mh gambit_example gambit_example_minimal doxygen
 
-clean: 
+clean:
 	@echo cleaning
-	@rm -rf $(TARGETS) 
-	@rm -rf */build/* 
+	@rm -rf $(TARGETS)
+	@rm -rf */build/*
 	@cd contrib/yaml-cpp-0.5.1; make clean
 	@cd contrib/SLHAPy8; make clean
 	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
-	@rm -rf $(COREDIR)/build/.minihelp 
+	@rm -rf $(COREDIR)/build/.minihelp
 	@rm -f _*.txt
 	@rm -f *.gv
 	@rm -rf $(DOCDIR)/html
-	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
-	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/lib/*.o 
+	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
+	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/lib/*.o
 	@rm -rf $(FUNCTOR_TYPES)
 
 # also removes ~ files and other weirdly generated files
@@ -383,7 +384,7 @@ sterile: distclean
 	@true
 
 distclean: clean
-	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~  
+	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
 	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
 
 $(COREDIR)/build/.minihelp:
@@ -399,7 +400,7 @@ $(COREDIR)/build/.minihelp:
 	@echo "*   file targets:                          "
 	@echo "*                                          "
 	@for t in $(TARGETS); do \
-	echo "* make $$t" ; done 
+	echo "* make $$t" ; done
 	@echo "*******************************************"
 	@touch $(COREDIR)/build/.minihelp
 mh: $(COREDIR)/build/.minihelp
@@ -505,8 +506,8 @@ $(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(GAMBITINC)
 
 $(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(GAMBITINC) $(SCANINC)
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@	
-	
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_AINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -526,7 +527,7 @@ $(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(GAMBITINC) $(DARKINC)
 $(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-	
+
 $(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(GAMBITINC) $(EXSUSYSPECINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -602,19 +603,19 @@ $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
 
 $(BACKENDDIR)/lib/libfirst.so: $(BACKENDDIR)/lib/libfirst.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
-	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o  
+	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o
 
 $(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
-	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o  
+	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o
 
 $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
-	
+
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/lib/crapsample.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/crapsample.cpp -o $(SCANDIR)/lib/crapsample.o
-	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/crapsample.o  
+	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/crapsample.o
 
 $(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
@@ -624,16 +625,16 @@ ifndef COLLIDE
   FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
   FJ_LDFLAGS := $(shell fastjet-config --libs)
   LNFLAGS += $(FJ_LDFLAGS)
-endif 
+endif
 
 $(info $(FJ_CXXFLAGS))
 $(info $(CFLAGS))
 
 $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.cpp $(FASTSIMDIR)/src/DetectorResponse.cpp  $(FASTSIMDIR)/src/fastsim_interface.cpp
-	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o 
-	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o 
-	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o 
-	$(CC) -shared -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o 
+	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o
+	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o
+	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o
+	$(CC) -shared -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o
 
 #libmultinest_interface.so
 multinest:
@@ -654,4 +655,3 @@ headertest:
 	 echo "======= testing: $(CC) $(CFLAGS) $$q -o /dev/null";\
 	 if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
 ht: headertest
-
