@@ -27,7 +27,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Jan
+///  \date 2014 Jan, Mar
 ///  *********************************************
 
 #ifndef __util_types_hpp__
@@ -35,6 +35,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <omp.h>
 
 #include "ini_code_struct.hpp"
@@ -210,8 +211,7 @@ namespace Gambit
           {
             if(orig.size[i] != size[i]) 
             {
-              cout << "Error: Using assignment operator on different size Farrays." << endl;
-              throw 0;
+              utils_error().raise(LOCAL_INFO,"Trying to use assignment operator on different size Farrays.");
             }
           }
         }
@@ -236,13 +236,13 @@ namespace Gambit
         int len = sizeof...(a);
         if(len != dim) 
         {
-          cout << "Error: Trying to access "<<dim<<"-dimensional Farray using "<<len<<" arguments." << endl;
-          throw 0;
+          std::ostringstream err;
+          err << "Trying to access "<<dim<<"-dimensional Farray using "<<len<<" arguments.";      
+          utils_error().raise(LOCAL_INFO,err.str());          
         }         
         if(array == NULL)
         { 
-          cout << "Error: Trying to access uninitialized Farray." << endl;          
-          throw 0;
+          utils_error().raise(LOCAL_INFO,"Trying to access uninitialized Farray."); 
         }  
         int indices[] = {a...};             
         int idx = 0;
@@ -252,8 +252,9 @@ namespace Gambit
           int idx_i = indices[i];
           if(idx_i<start[i] || idx_i>end[i])
           { 
-            cout << "Error: Farray index out of range." << endl;            
-            throw 0;
+            std::ostringstream err;
+            err << "Farray index out of range.\n Trying to access element "<<idx_i<<"; allowed range is "<<start[i]<<"-"<<end[i]<<".";      
+            utils_error().raise(LOCAL_INFO,err.str());                         
           }
           idx_i -= start[i];				
           for (int j=0; j<i; j++) idx_i *= size[j];
@@ -267,13 +268,13 @@ namespace Gambit
         int len = sizeof...(a);
         if(len != dim) 
         {
-          cout << "Error: Trying to access "<<dim<<"-dimensional Farray using "<<len<<" arguments." << endl;
-          throw 0;
+          std::ostringstream err;
+          err << "Trying to access "<<dim<<"-dimensional Farray using "<<len<<" arguments.";      
+          utils_error().raise(LOCAL_INFO,err.str());     
         }         
         if(array == NULL)
         { 
-          cout << "Error: Trying to access uninitialized Farray." << endl;          
-          throw 0;
+          utils_error().raise(LOCAL_INFO,"Trying to access uninitialized Farray."); 
         }  
         int indices[] = {a...};             
         int idx = 0;
@@ -283,8 +284,9 @@ namespace Gambit
           int idx_i = indices[i];
           if(idx_i<start[i] || idx_i>end[i])
           { 
-            cout << "Error: Farray index out of range." << endl;            
-            throw 0;
+            std::ostringstream err;
+            err << "Farray index out of range.\n Trying to access element "<<idx_i<<"; allowed range is "<<start[i]<<"-"<<end[i]<<".";      
+            utils_error().raise(LOCAL_INFO,err.str());  
           }
           idx_i -= start[i];				
           for (int j=0; j<i; j++) idx_i *= size[j];
@@ -296,8 +298,7 @@ namespace Gambit
       { 
         if(array == NULL) 
         {
-          cout << "Error: getArray() called on uninitialized Farray." << endl;
-          throw 0;
+          utils_error().raise(LOCAL_INFO,"Trying to call getArray() on uninitialized Farray."); 
         } 
         return array;}
       void setLimits(int st[dim], int en[dim]) 
@@ -311,8 +312,7 @@ namespace Gambit
           }  
           else 
           {
-            cout << "Error: Wrong size array(s) sent to Farray setLimits function." << endl;
-            throw 0;
+            utils_error().raise(LOCAL_INFO,"Wrong size index array(s) sent to Farray setLimits() function.");  
           }
         }
       }

@@ -1,27 +1,27 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Functions of module DarkBit
-//
-//  Put your functions in files like this
-//  if you wish to add observables or likelihoods
-//  to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Torsten Bringmann (torsten.bringmann@desy.de)
-//  [wrapper structure cloned from TinyDarkBit.cpp]
-//  2013 Jun
-//
-//  Christoph Weniger <c.weniger@uva.nl>
-//  July 2013, January 2014
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Functions of module DarkBit
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de) 
+///  \date 2013 Jun
+///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul
+///  \date 2014 Jan
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
+///
+///  *********************************************
 
 #include <dlfcn.h>
 #include <iostream>
@@ -30,7 +30,7 @@
 #include "gambit_module_headers.hpp"
 #include "DarkBit_types.hpp"
 #include "DarkBit_rollcall.hpp"
-
+#include "util_macros.hpp"
 
 namespace Gambit {
 
@@ -460,20 +460,38 @@ namespace Gambit {
 ////////////////////////////////////////
 // Part of DarkBit that actually works.
 ////////////////////////////////////////
-
-    bool dsinit_flag = false;
-    void DarkBit_PointInit_Default()
+//
+    void DarkBit_PointInit_CMSSM()
     {
-      using namespace Pipes::DarkBit_PointInit_Default;
-      std::cout << "INITIALIZATION of DarkBit" << std::endl;
+      using namespace Pipes::DarkBit_PointInit_CMSSM;
+      bool static dsinit_flag = false;
+      // Initialize DarkSUSY if run for the first time
       if (not dsinit_flag) 
       {
+          std::cout << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           dsinit_flag = true;
       }
+      // Setup mSUGRA model from CMSSM parameters
+      double am0 = *Param["M0"];  // m0
+      double amhf = *Param["M12"];  // m_1/2
+      double aa0 = *Param["A0"];  // A0
+      double asgnmu = *Param["sgnmu"];  // sign(mu)
+      double atanbe = *Param["tanb"];  // tan(beta)
+      int unphys, hwarning;
+      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
+      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+      BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+      BEreq::dssusy_isasugra(unphys, hwarning);
     }
 
-    void GA_dNdE_DarkSUSY(BFptr &result)
+    void DarkBit_PointInit_Default()
+    {
+      using namespace Pipes::DarkBit_PointInit_Default;
+      // Nothing
+    }
+
+    void GA_AnnYield_DarkSUSY(BFptr &result)
     {
         //////////////////////////////////////////////////////////////////////////
         // Calculates annihilation spectra for general process catalogs, using
@@ -490,10 +508,9 @@ namespace Gambit {
         //////////////////////////////////////////////////////////////////////////
 
         // TODO: 
-        // - Rename dNdE to DiffYield
         // - Move grid initialization (resolution and range) to PointInit
         
-      using namespace Pipes::GA_dNdE_DarkSUSY;
+      using namespace Pipes::GA_AnnYield_DarkSUSY;
 
 
       ////////////////////
@@ -611,10 +628,13 @@ namespace Gambit {
           // (we just ignore the contributions from the second and third
           // particle and integrate out the corresponding kinematical
           // variable).
-          dsigmavde = it->dSigmadE->fixPar(2, 0)->integrate(1, 0, 100);  
+          dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
 
           // Add up individual constributions
           DiffYield3Body = DiffYield3Body->sum(dsigmavde);
+
+          // Divide by mass
+          // TODO: DiffYield3Body = DiffYield3Body->mul(pow(mass, -2.));
         }
       }
 
@@ -625,16 +645,83 @@ namespace Gambit {
       result = DiffYield2Body->sum(DiffYield3Body);
     }
 
+    void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    {
+        using namespace Pipes::TH_ProcessCatalog_CMSSM;
+
+        // TODO:  Check if this is really DM mass
+        DS_MSPCTM mymspctm= *BEreq::mspctm;
+        double mass = mymspctm.mass[41];
+
+        TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
+        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
+
+        // TODO: Hook up cross section to DarkSUSY
+        #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2)                                          \
+            /* Set cross-section */                                                             \
+            double CAT(sigma_,NAME) = BEreq::dssigmav(PARTCH);                                  \
+            /* Create associated kinematical functions (just dependent on vrel)                 \
+            *  here: s-wave, vrel independent 1-dim constant function */                        \
+            BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),1));             \
+            /* Create channel identifier string */                                              \
+            std::vector<std::string> CAT(finalStates_,NAME);                                    \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                    \
+            /* Create channel and push it into channel list of process */                       \
+            TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
+            process.channelList.push_back(CAT(channel_,NAME));
+             
+        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
+        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
+        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
+        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
+        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
+        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
+        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
+        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
+        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
+        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
+        SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
+        SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
+        SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0      )
+        SETUP_DS_PROCESS(WW,        13, W+,     W-      )
+        SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e   )
+        SETUP_DS_PROCESS(ee,        15, e+,     e-      )
+        SETUP_DS_PROCESS(numnum,    16, nu_mu,  ~nu_mu  )
+        SETUP_DS_PROCESS(mumu,      17, mu+,    mu-     )
+        SETUP_DS_PROCESS(nutnut,    18, nu_tau, ~nu_tau )
+        SETUP_DS_PROCESS(tautau,    19, tau+,   tau-    )
+        SETUP_DS_PROCESS(uubar,     20, u,      ubar    )
+        SETUP_DS_PROCESS(ddbar,     21, d,      dbar    )
+        SETUP_DS_PROCESS(ccbar,     22, c,      cbar    )
+        SETUP_DS_PROCESS(ssbar,     23, s,      sbar    )
+        SETUP_DS_PROCESS(ttbar,     24, t,      tbar    )
+        SETUP_DS_PROCESS(bbbar,     25, b,      bbar    )
+        SETUP_DS_PROCESS(gluglu,    26, g,      g       )
+        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
+        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
+    
+        #undef SETUP_DS_PROCESS
+
+        // And process on process list
+        catalog.processList.push_back(process);
+
+        // Finally, store properties of "chi" in particleProperty list
+        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+
+        result = catalog;
+    }
+
+/*    
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
-        using namespace Pipes::TH_ProcessCatalog_SingletDM;
+        using namespace Pipes::TH_ProcessCatalog_CMSSM;
 
-        double mass = *Param["mass"];
-        double sigmaTot = pow(*Param["lambda"], 2);
-
-        // TODO: Remove hardcoded values
-        mass = 100;
-        sigmaTot = 3e-26;
+        DS_MSPCTM mymspctm= *BEreq::mspctm;
+        // TODO:  Check if this is really DM mass
+        double mass = mymspctm.mass[41];  // Hardcoded array index
+        double sigmaTot = 3e-26;
 
         std::cout << "Generate ProcessCatalog for chi with mass=" << mass << " GeV and cs=" << sigmaTot << " cm3/s." << std::endl;
 
@@ -675,6 +762,7 @@ namespace Gambit {
 
         result = catalog;
     }
+*/
 
     void lnL_FermiLATdwarfsSimple(double &result)
     {
@@ -739,16 +827,14 @@ namespace Gambit {
         // More precisely, the zero velocity limit of the differential
         // annihilation cross-section as function of individual final state
         // photons
-        double dNdEint = (*(*Dep::GA_dNdE)->integrate(0, 1, 100))();
-
-        // Get mass of DM particle
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100))();
 
         // Calculate the phi-value
-        double phi = dNdEint / 8 / 3.14159265 * 1e26 / pow(mass, 2);
+        double phi = AnnYieldint / 8 / 3.14159265 * 1e26;
 
         // And return final likelihood
         result = 0.5*(*dwarf_likelihood)(phi);
+        std::cout << "LIKELIHOOD IS: " << result << std::endl;
     }
 
     void RD_oh2_SingletDM(double &result)
@@ -766,5 +852,19 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
+    void testTarget(double &result)
+    {
+        result = 0;
+    }
+
+    void testFunction1(double &result)
+    {
+        result = 0;
+    }
+
+    void testFunction2(double &result)
+    {
+        result = 0;
+    }
   }
 }

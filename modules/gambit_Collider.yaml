@@ -16,23 +16,7 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-Standard_Model:
-  alpha_emi:
-    fixed_value: 80
-  G_F:
-    fixed_value: 80
-  alpha_s:
-    fixed_value: 80
-  mZ:
-    fixed_value: 80
-  mb:
-    fixed_value: 80
-  mt:
-    fixed_value: 80
-  mtau:
-    fixed_value: 80
-
-CMSSM_demo:
+CMSSM_I:
   # SM pars
   MZ:
     fixed_value: 80
@@ -103,21 +87,21 @@ CMSSM_demo:
 # decided that we can deal with this via the "purpose" system.
 
 #m0_prior:
-#  parameters: [CMSSM_demo::M0]
+#  parameters: [CMSSM_I::M0]
 #  prior_type: log
 #  range: [0.001,1000]
 
 m12_prior: 
-  parameters: [CMSSM_demo::M12]
+  parameters: [CMSSM_I::M12]
   prior_type: composite
   options: 
     new_prior: 
-      parameters: [CMSSM_demo::M12]
+      parameters: [CMSSM_I::M12]
       prior_type: log
       range: [100,2000]
 
 tanbMstop_prior: 
-  parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
+  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
   prior_type: cauchy
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
@@ -197,8 +181,8 @@ multinest:
 #  capability:   SI_bsgamma
 
 # Uncomment to test HEColliderBit
-#- purpose:      Observable
-#  capability:   analysisAccumulator
+- purpose:      Observable
+  capability:   analysisAccumulator
 
 # Test Pythia8 SLHA reader
 - purpose:      Likelihood
@@ -210,17 +194,9 @@ multinest:
   capability:   test_vector
   type:         std::vector<double>
 
-# Example for dependency resolution for target functors
-#- purpose:      Observable
-#  capability:   testTarget
-
 #########################
 --- # Auxiliary entries
 #########################
-#
-- capability:   testTarget
-  dependencies:
-  - {capability: "testCapability", function: "testFunction1"}
 
 - capability:   "MSSMspectrum"
 
@@ -233,10 +209,10 @@ multinest:
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
-#- capability:   "analysisAccumulator"
-#  type: "double"
-#  dependencies:
-#  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
+- capability:   "analysisAccumulator"
+  type: "double"
+  dependencies:
+  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
 
 - capability:    "nevents_postcuts"
   dependencies:

@@ -6,11 +6,6 @@
 ///  eventLoop functionality. Based heavily on the
 ///  eventLoopManager example in ExampleBit_A
 ///
-///  \@todo Must merge this with
-///           HEColliderBit_rollcall.hpp
-///    Once they are both ready.
-///
-///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -32,8 +27,25 @@
 #define MODULE HEColliderBit
 START_MODULE
 
-
   /// Initialization capabilities
+  #define CAPABILITY PointInit
+  START_CAPABILITY
+    #define FUNCTION PointInit_Default
+      START_FUNCTION(void)
+      /* \todo set up pythia as a backend
+      #define BACKEND_REQ pyinit
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(Pythia, 8.xx)
+        // HERE!!!!
+      #undef BACKEND_REQ
+      */
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  /// \todo Move the rest of this stuff into proper Gambity initialization function
+  //
+  /// \todo Assume that spectrum comes from somewhere else...
+  /// \note Play with SoftSUSY class loading with Anders
   #define CAPABILITY slhaFileName
   START_CAPABILITY
     #define FUNCTION getslhaFileName
@@ -41,6 +53,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  /// \note Leave Delphes hard coded for now.
   #define CAPABILITY delphesConfigFileName
   START_CAPABILITY
     #define FUNCTION getDelphesConfigFileName
@@ -73,7 +86,7 @@ START_MODULE
 
 
   /// Fully initialized simulation tool capabilities
-  /// @todo Backend these properly once the class loader is ready.
+  /// \todo Backend these properly once the class loader is ready.
   #define CAPABILITY readiedHardScatteringSim
   START_CAPABILITY
     #define FUNCTION readyPythiaBackend

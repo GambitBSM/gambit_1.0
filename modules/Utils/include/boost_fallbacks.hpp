@@ -36,6 +36,7 @@
 # define __boost_fallbacks_hpp__
 
 #include <boost/version.hpp>
+#include <boost/preprocessor/config/config.hpp>
 
 #pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
 

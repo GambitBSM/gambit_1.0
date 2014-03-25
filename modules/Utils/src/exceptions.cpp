@@ -224,28 +224,28 @@ namespace Gambit
 
     /// Constructor without log tags
     warning::warning(const char* message, const char* inikey) : 
-     exception("WARNING", "GAMBIT warning", message, inikey, true, warn) {}
+     exception("WARNING", "GAMBIT warning", message, inikey, false, warn) {}
     /// Constructor with 1 log tag
     warning::warning(const char* message, const char* inikey, LogTag t1)
-     : exception("WARNING", "GAMBIT warning", message, inikey, true, warn, t1) {}
+     : exception("WARNING", "GAMBIT warning", message, inikey, false, warn, t1) {}
     /// Constructor with 2 log tags
     warning::warning(const char* message, const char* inikey, LogTag t1, LogTag t2)
-     : exception("WARNING", "GAMBIT warning", message, inikey, true, warn, t1, t2) {}
+     : exception("WARNING", "GAMBIT warning", message, inikey, false, warn, t1, t2) {}
     /// Constructor with 3 log tags
     warning::warning(const char* message, const char* inikey, LogTag t1, LogTag t2, LogTag t3)
-     : exception("WARNING", "GAMBIT warning", message, inikey, true, warn, t1, t2, t3) {}
+     : exception("WARNING", "GAMBIT warning", message, inikey, false, warn, t1, t2, t3) {}
     /// Constructor with 4 log tags
     warning::warning(const char* message, const char* inikey, LogTag t1, LogTag t2, LogTag t3, LogTag t4)
-     : exception("WARNING", "GAMBIT warning", message, inikey, true, warn, t1, t2, t3, t4) {}
+     : exception("WARNING", "GAMBIT warning", message, inikey, false, warn, t1, t2, t3, t4) {}
     /// Constructor with 5 log tags
     warning::warning(const char* message, const char* inikey, LogTag t1, LogTag t2, LogTag t3, LogTag t4, LogTag t5)
-     : exception("WARNING", "GAMBIT warning", message, inikey, true, warn, t1, t2, t3, t4, t5) {}
+     : exception("WARNING", "GAMBIT warning", message, inikey, false, warn, t1, t2, t3, t4, t5) {}
     /// Constructor with 6 log tags
     warning::warning(const char* message, const char* inikey, LogTag t1, LogTag t2, LogTag t3, LogTag t4, LogTag t5, LogTag t6)
-     : exception("WARNING", "GAMBIT warning", message, inikey, true, warn, t1, t2, t3, t4, t5, t6) {}
+     : exception("WARNING", "GAMBIT warning", message, inikey, false, warn, t1, t2, t3, t4, t5, t6) {}
     /// Constructor with log tags as a set
     warning::warning(const char* message, const char* inikey, std::set<LogTag> tags) :
-     exception("WARNING", "GAMBIT warning", message, inikey, true)
+     exception("WARNING", "GAMBIT warning", message, inikey, false)
     {
       myLogTags = tags;
       myLogTags.insert(warn);
