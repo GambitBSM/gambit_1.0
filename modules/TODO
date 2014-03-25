@@ -8,23 +8,23 @@ Core
 ----
 
 Rollcall:
-* Implement scan-level and point-level initialisation functions in backends (**Pat & Chistoph; if/when needed**)
+* Implement point-level initialisation functions in backends (**Pat & Chistoph**)
 * Allow grouping of backend requirements into blocks, maybe declaration of parameters  (**Pat; discussion with whole collab needed at G3**)
 * Tracking of config files -> lists in module/backend rollcall headers (**Pat; after G3**)
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
-* Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
 * Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; after G3**)
-* Make name of current model (and related lineage tests) accessible from within module functions (**Pat; before G3**)
+* Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
 
 IniFile:
-* Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions. (**Christoph & Pat; before G3**)
-* Allow config file keys to be overridden in the .ini file according to key name, if the config file they belong to has been declared with the OVERIDABLE flag; otherwise, the ini parser should throw an error. (**Christoph; before G3**)
+* Allow config file keys to be overridden in the .ini file according to key name, if the config file they belong to has been declared with the OVERIDABLE flag; otherwise, the ini parser should throw an error. (**Christoph; after G3**)
+* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair. (**Christoph; after G3**) 
 * Support alternative ini format(s)
 
 Dependency Resolver:
-* Make dependency resolver errors more informative (**Christoph; no major time pressure**)
-* Modify model checks in dependency resolver so that all observables are parsed and their dependencies resolved before concluding that some model is not used for anything, and throwing an error (put FlavBit test observables first in gambit.yaml to see this error)
-* Sort out specification of what can be given to the Scanner as Likelihoods / what can be given as target observables in iniFile
+* Make dependency resolver errors more informative (**Christoph; major time pressure**)
+* Make it possible to resolve dependencies that match a functor's own capability-type pair (**Christoph**)
+* Write new entry to auxiliary section of the YAML file if dependency resolution fails, according to user input. (**Christoph**)
+* Make copying of functors possible, and therefore also the use of the same module function multiple times in the depedency tree (**Pat & Christoph, during first major code revision following release.**)
 
 Backends:
 * Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; before G3**)
@@ -47,7 +47,6 @@ General:
 
 Recent decisions impacting upcoming development:
 * Separate output/log for points with "BadPoint" errors
-* No virus-like global "using namespace blah" in headers; scoped use of namespaces only
 
 Done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
@@ -60,7 +59,7 @@ Done:
 * Implement point-level initialisation functions in modules
 * Remove any need for macro calls from within module functions (macros-->safe pointer-like objects)
 * Until automake and cmake are done, may want to make more "makefile.common" files for readability
-* Allow conditional backend requirements (conditional on model only, not dependency)  (**Pat; before G3**)
+* Allow conditional backend requirements (conditional on model only, not dependency)
 * Make rollcall macros throw errors if the required #defines have not been done
 * Implement standalone compilation of physics modules
 * Convert common block / struct access to by-pointer
@@ -69,6 +68,9 @@ Done:
 * Implement proper exception handling system
 * Implement proper logging system
 * Legacy SUFit logging and exception code culled
+* Make name of current model (and related lineage tests) accessible from within module functions
+* Sort out specification of what can be given to the Scanner as Likelihoods / what can be given as target observables in iniFile
+* Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions.
 
 
 Models
@@ -76,15 +78,14 @@ Models
 
 Ongoing:
 
-* Massage function in ModelBit that checks that all the user-requested models are actually used by the dependency resolver. (**Christoph & Ben; before G3**)
-  - If not, throw an error to say that they are wasting their CPU time with the unused parameters.  
-  - This entry is the same as one on the Core::Dependency Resolver part of the TODO list 
+* Make it possible to declare in module function rollcall macro calls that multiple models are required to be scanned, e.g. ALLOWED_MODELS(GROUP1, blah), ALLOWED_MODELS(GROUP2, blah), s.t. the function requires something from GROUP1 and GROUP2 to be scanned, in order to be used in a given scan. 
 
 Done:
 * Reunify model macros with module macros as much as possible (dependency macro in particular)
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
 * Sort out 'warning redefined' warnings from BOOST about TUPLE_TO_SEQ.
+* Massage function in ModelBit that checks that all the user-requested models are actually used by the dependency resolver.  If not, throw an error to say that they are wasting their CPU time with the unused parameters. 
 
 
 HE Collider

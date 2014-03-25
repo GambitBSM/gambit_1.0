@@ -56,6 +56,26 @@ namespace Gambit
     void identity         (str    &result) { result = "rabbiton"; }
     void nevents          (int    &result) { result = 2; }
     void lnL_ExampleBitB  (double &result) { result = 0; }   // Some dummy double likelihood function for the scanner
+     
+    // Function that returns a vector of doubles, for testing printer
+    void exampleVec       (std::vector<double> &result) 
+    { 
+      result.clear();
+      result.push_back(101);
+      result.push_back(102);
+      result.push_back(103);
+      result.push_back(104);
+      result.push_back(105);
+      // Some stuff to mess with the printer by changing the length of the vector it tries to print
+      static int loopnumber(0);
+      if(loopnumber > 5)
+      {
+        result.push_back(106);
+        result.push_back(107);
+        result.push_back(108);
+      }
+      loopnumber+=1;
+    }
 
     void xsection         (double &result) 
     { 

@@ -200,8 +200,10 @@ namespace Gambit
          std::cout<<"dumping messages..."<<std::endl;
          // Dump buffered messages
          dump_prelim_buffer();
+         std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
        }
-       // Check if there is anything in the output stream that has not been send, and send it if there is
+
+       // Check if there is anything in the output stream that has not been sent, and send it if there is
        if (not stream.str().empty() or not streamtags.empty())
        {
          *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;

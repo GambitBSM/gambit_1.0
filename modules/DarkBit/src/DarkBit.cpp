@@ -1,28 +1,27 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-// determine relevant resonances for LSP annihilation
-//  *********************************************
-//
-//  Functions of module DarkBit
-//
-//  Put your functions in files like this
-//  if you wish to add observables or likelihoods
-//  to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Torsten Bringmann (torsten.bringmann@desy.de)
-//  [wrapper structure cloned from TinyDarkBit.cpp]
-//  2013 Jun
-//
-//  Christoph Weniger <c.weniger@uva.nl>
-//  July 2013, January 2014
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Functions of module DarkBit
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de) 
+///  \date 2013 Jun
+///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul
+///  \date 2014 Jan
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
+///
+///  *********************************************
 
 #include <dlfcn.h>
 #include <iostream>
@@ -31,7 +30,7 @@
 #include "gambit_module_headers.hpp"
 #include "DarkBit_types.hpp"
 #include "DarkBit_rollcall.hpp"
-
+#include "util_macros.hpp"
 
 namespace Gambit {
 
@@ -648,6 +647,75 @@ namespace Gambit {
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
+        using namespace Pipes::TH_ProcessCatalog_DarkSUSY;
+
+        // TODO:  Check if this is really DM mass
+        DS_MSPCTM mymspctm= *BEreq::mspctm;
+        double mass = mymspctm.mass[41];
+
+        TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
+        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
+
+        // TODO: Hook up cross section to DarkSUSY
+        #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2)                                          \
+            /* Set cross-section */                                                             \
+            double CAT(sigma_,NAME) = BEreq::dssigmav(PARTCH);                                  \
+            /* Create associated kinematical functions (just dependent on vrel)                 \
+            *  here: s-wave, vrel independent 1-dim constant function */                        \
+            BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),1));             \
+            /* Create channel identifier string */                                              \
+            std::vector<std::string> CAT(finalStates_,NAME);                                    \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                    \
+            /* Create channel and push it into channel list of process */                       \
+            TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
+            process.channelList.push_back(CAT(channel_,NAME));
+             
+        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
+        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
+        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
+        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
+        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
+        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
+        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
+        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
+        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
+        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
+        SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
+        SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
+        SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0      )
+        SETUP_DS_PROCESS(WW,        13, W+,     W-      )
+        SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e   )
+        SETUP_DS_PROCESS(ee,        15, e+,     e-      )
+        SETUP_DS_PROCESS(numnum,    16, nu_mu,  ~nu_mu  )
+        SETUP_DS_PROCESS(mumu,      17, mu+,    mu-     )
+        SETUP_DS_PROCESS(nutnut,    18, nu_tau, ~nu_tau )
+        SETUP_DS_PROCESS(tautau,    19, tau+,   tau-    )
+        SETUP_DS_PROCESS(uubar,     20, u,      ubar    )
+        SETUP_DS_PROCESS(ddbar,     21, d,      dbar    )
+        SETUP_DS_PROCESS(ccbar,     22, c,      cbar    )
+        SETUP_DS_PROCESS(ssbar,     23, s,      sbar    )
+        SETUP_DS_PROCESS(ttbar,     24, t,      tbar    )
+        SETUP_DS_PROCESS(bbbar,     25, b,      bbar    )
+        SETUP_DS_PROCESS(gluglu,    26, g,      g       )
+        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
+        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
+    
+        #undef SETUP_DS_PROCESS
+
+        // And process on process list
+        catalog.processList.push_back(process);
+
+        // Finally, store properties of "chi" in particleProperty list
+        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+
+        result = catalog;
+    }
+
+/*    
+    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    {
         using namespace Pipes::TH_ProcessCatalog_CMSSM;
 
         DS_MSPCTM mymspctm= *BEreq::mspctm;
@@ -694,6 +762,7 @@ namespace Gambit {
 
         result = catalog;
     }
+*/
 
     void lnL_FermiLATdwarfsSimple(double &result)
     {
