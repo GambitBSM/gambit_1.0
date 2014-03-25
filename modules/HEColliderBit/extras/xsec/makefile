@@ -1,6 +1,9 @@
 FILES_NETWORKS = \
   networks/NNfunction_n1n1.o \
   networks/NNfunction_n1n2.o \
+  networks/NNfunction_nn_n1n3.o \
+  networks/NNfunction_nn_n1n4.o \
+  networks/NNfunction_nn_n1n5.o \
   networks/NNfunction_b1b1.o \
   networks/NNfunction_sb_cLdL.o \
   networks/NNfunction_sb_dLuR.o \
