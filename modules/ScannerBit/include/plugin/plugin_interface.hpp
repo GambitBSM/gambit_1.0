@@ -31,6 +31,7 @@
 #include <dlfcn.h>
 #include <scanner_utils.hpp>
 #include <plugin/plugin_exception.hpp>
+#include <typeinfo>
 
 namespace Gambit
 {
@@ -64,6 +65,22 @@ namespace Gambit
                         while (c != '\n' && c != EOF);
                 }
                 
+                inline std::string stringify_variadic_inputs()
+                {
+                        return "";
+                }
+                
+                inline std::string stringify_variadic_inputs(const std::string &in)
+                {
+                        return in;
+                }
+                
+                template <typename... args>
+                inline std::string stringify_variadic_inputs(const std::string &in, const args&... params)
+                {
+                        return in + ", " + stringify_variadic_inputs(params...);
+                }
+                
                 inline void input_variadic_vector(std::vector<void *> &input){}
                 
                 template <typename T, typename... args>
@@ -83,7 +100,7 @@ namespace Gambit
                         std::string name;
                         std::vector<std::string> mod_names;
                         std::vector<void *> input;
-                        typedef void (*initFuncType)(std::vector<void *> *);                              
+                        typedef const type_info &(*initFuncType)(std::vector<void *> *);                              
                         typedef void * (*getFuncType)(std::string);
                         typedef void (*rmFuncType)(void *, std::string);
                         typedef ret (*mainFuncType)(args...);
@@ -155,14 +172,21 @@ namespace Gambit
                                                 initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + name + std::string("__")).c_str());
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + name + std::string("__")).c_str());
                                                 rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_plugin_rmMember_") + name + std::string("__")).c_str());
-
-                                                initFunc(&input);
+                                                bool diff = typeid(ret (args...)) != initFunc(&input);
+                                                
                                                 main = (mainFuncType)getFunc(name);
                                                 
                                                 if (main == 0)
                                                 {
                                                         ostringstream ss;
                                                         ss << "Could not find main function in plugin \"" << name << "\".";
+                                                        throw Gambit::Plugin::PluginException(ss.str());
+                                                }
+                                                
+                                                if(diff)
+                                                {
+                                                        ostringstream ss;
+                                                        ss << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"";
                                                         throw Gambit::Plugin::PluginException(ss.str());
                                                 }
                                         }
