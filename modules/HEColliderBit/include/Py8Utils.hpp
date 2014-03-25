@@ -1,12 +1,13 @@
 #pragma once
 
 #include "HEColliderBit_types.hpp"
-
-#include "PIDUtils.hpp"
-#include "FastJetUtils.hpp"
-#include "Vectors.hpp"
 #include "Event.hpp"
 
+#include "MCUtils/PIDUtils.h"
+#include "MCUtils/Vectors.h"
+#include "MCUtils/FastJet.h"
+#include "fastjet/ClusterSequence.hh"
+using namespace MCUtils;
 
 namespace Gambit {
   namespace HEColliderBit {
@@ -19,15 +20,15 @@ namespace Gambit {
       return fastjet::PseudoJet(p.px(), p.py(), p.pz(), p.e());
     }
 
-    inline HEP_Simple_Lib::P4 vec4_to_p4(const Pythia8::Vec4& p) {
+    inline P4 vec4_to_p4(const Pythia8::Vec4& p) {
       const double m = p.mCalc();
       assert(m > -1e-3 && "Negative mass vector from Pythia8");
-      return HEP_Simple_Lib::P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
+      return P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
     }
 
-    inline HEP_Simple_Lib::P4 pyparticle_to_p4(const Pythia8::Particle& p) {
+    inline P4 pyparticle_to_p4(const Pythia8::Particle& p) {
       assert(p.m() >= 0);
-      return HEP_Simple_Lib::P4::mkXYZM(p.px(), p.py(), p.pz(), p.m());
+      return P4::mkXYZM(p.px(), p.py(), p.pz(), p.m());
     }
 
     inline Pythia8::Vec4 pseudojet_to_vec4(const fastjet::PseudoJet& p) {
@@ -43,7 +44,7 @@ namespace Gambit {
     //@{
 
     inline double deltaPhi(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
-      return HEP_Simple_Lib::delta_phi(a.phi(), b.phi());
+      return MCUtils::deltaphi(a.phi(), b.phi());
     }
 
     inline double deltaR(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
@@ -200,6 +201,7 @@ namespace Gambit {
         ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
+        /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
@@ -207,9 +209,6 @@ namespace Gambit {
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         } else {
-          // Choose jet constituents (should include neutrinos?)
-          /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
-          /// @todo Use ghost tagging! For fun...
           jetparticles.push_back(vec4_to_pseudojet(p.p()));
         }
 
@@ -223,7 +222,6 @@ namespace Gambit {
 
       // Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {
-        /// @todo Use ghost tagging! For fun...
         bool isB = false;
         for (auto& pb : bhadrons) {
           if (pj.delta_R(pb) < 0.3) {
@@ -232,7 +230,8 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        gevt.addJet(new HEP_Simple_Lib::Jet(HEP_Simple_Lib::pseudojet_to_p4(pj), isB));
+        const P4 p4 = pseudojet_to_p4(pj);
+        gevt.addJet(new HEP_Simple_Lib::Jet(p4, isB));
       }
 
       // MET (not equal to sum of prompt invisibles)
@@ -241,4 +240,3 @@ namespace Gambit {
 
   }
 }
-
