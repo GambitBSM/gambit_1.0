@@ -2,6 +2,7 @@
 #define xsec_h
 
 #include <string>
+#include "SusyLesHouches.h"
 
 // Include all NN-classes
 #include "networks/NNfunction_n1n1.h"
@@ -92,6 +93,8 @@
 #include "networks/NNfunction_uRg.h"
 
 using namespace std;
+
+namespace xsec{
 
 class Evaluator {
     NNfunction_n1n1 nn_n1n1;
@@ -184,6 +187,10 @@ class Evaluator {
 public:
     Evaluator();
     double xsec(string process, double * par);
+    double xsec(string process, Pythia8::SusyLesHouches * point);
+
 };
 
+}
+    
 #endif // xsec_h
