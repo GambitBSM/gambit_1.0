@@ -171,6 +171,13 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY test_vector
+  START_CAPABILITY
+    #define FUNCTION exampleVec             // Observable: test vector of doubles
+    START_FUNCTION(std::vector<double>)     // Function calculates a vector of doubles
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Some likelihood of type double that depends on postcuts
   #define CAPABILITY lnL_ExampleBitB

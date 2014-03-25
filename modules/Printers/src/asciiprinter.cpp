@@ -188,7 +188,7 @@ namespace Gambit
             if(j>=reslength)
             {
               // Allocated space exceeded; fill remaining slots with 'none'
-              my_fstream<<std::setw(14)<<"none";
+              my_fstream<<std::setw(14)<<" none ";
             }
             else
             {

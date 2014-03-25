@@ -185,6 +185,11 @@ multinest:
   capability:   MSSMslha_testLogL
 #  printme:      false
 
+# Test vector output of printer
+- purpose:      Observable
+  capability:   test_vector
+  type:         std::vector<double>
+
 #########################
 --- # Auxiliary entries
 #########################
