@@ -341,9 +341,6 @@ ifdef COLLIDE
 						 $(ROOT_LDFLAGS) \
 						 $(DELPHES_LDFLAGS)
 
-  # this for creating the shared library for fastsim
-  FJ_DIR := $(shell fastjet-config --prefix)
-
 endif
 #**********************
 
@@ -362,7 +359,7 @@ endif
 #default: mh gambit_example gambit_example_minimal
 
 TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
-default: mh gambit_example_minimal
+default: mh gambit_example gambit_example_minimal
 
 all: mh gambit_example gambit_example_minimal doxygen
 
