@@ -42,7 +42,6 @@ namespace Gambit
                 {
                 public:
                         virtual const std::vector<double> & getParameters() const = 0;
-                        virtual const std::vector<std::string> & getKeys() const = 0;
                         virtual double operator () (std::vector<double> &) = 0;
                         virtual ~Function_Base() = 0;
                 };

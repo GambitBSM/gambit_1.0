@@ -69,68 +69,13 @@ namespace Gambit
             double operator() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
 
             // Call by list of arguments; up to six dimensions for now (for convenience)
-            double operator() () 
-            { 
-                assertNdim(0); 
-                BFargVec v; 
-                return this->value(v); 
-            }
-            double operator() (double x0) 
-            { 
-                assertNdim(1); 
-                BFargVec v;
-                v.push_back(x0); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1)
-            { 
-                assertNdim(2); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2)
-            { 
-                assertNdim(3); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2, double x3)
-            { 
-                assertNdim(4); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                v.push_back(x3); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2, double x3, double x4) 
-            { 
-                assertNdim(5); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                v.push_back(x3); 
-                v.push_back(x4); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) 
-            { 
-                assertNdim(6); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                v.push_back(x3); 
-                v.push_back(x4); 
-                v.push_back(x5); 
-                return this->value(v); 
+            template<typename... args>
+            double operator()(args... params)
+            {
+                    assertNdim(getVariadicNumber<args...>::N);
+                    BFargVec v;
+                    inputVariadicVector(v, params...);
+                    return this->value(v);
             }
 
             // Returns a copy of the shared pointer object.
@@ -227,20 +172,83 @@ namespace Gambit
     ////////////////////////////////////////////////////////////////////////
 
     // (for use in C- and Fortran backends)
-    inline double BFplainFunction(double x0,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0); }
-    inline double BFplainFunction(double x0,double x1,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1); }
-    inline double BFplainFunction(double x0,double x1,double x2,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2); }
-    inline double BFplainFunction(double x0,double x1,double x2,double x3,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2, x3); }
-    inline double BFplainFunction(double x0,double x1,double x2,double x3,double x4,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2, x3, x4); }
-    inline double BFplainFunction(double x0,double x1,double x2,double x3,double x4,double x5,void* void_ptr) { return (**static_cast<BFptr*>(void_ptr))(x0, x1, x2, x3, x4, x5); }
-
+    template <int n>
+    struct BFplainFunctionStruct
+    {
+        template<typename T, typename... args>
+        inline static double BFplainFunction(const T&in, const args&... params)
+        {
+                return BFplainFunctionStruct<n-1>::BFplainFunction(params..., in);
+        }
+    };
+    
+    template <>
+    struct BFplainFunctionStruct<1>
+    {
+        template<typename... args>
+        inline static double BFplainFunction(void* void_ptr, const args&... params) 
+        { 
+                return (**static_cast<BFptr*>(void_ptr))(params...);
+        }
+    };
+    
+    //Input is of the form:  BFplainFunction(double, ..., void *ptr)
+    template<typename... args>
+    double BFplainFunction(const args&... params)
+    {
+            return BFplainFunctionStruct<getVariadicNumber<args...>::N>::BFplainFunction(params...);
+    }
 
     ////////////////////////////////////////////////////////////////////////
     // Helper classes that generate new base function objects from scratch
     ////////////////////////////////////////////////////////////////////////
 
     // Constant n-dim function
-    class BFfromPlainFunction: public BaseFunction
+    
+    template <int n, typename... args>
+    struct BFfromPlainFunctionStruct
+    {
+            template <typename... argss>
+            inline static double BFfromPlainFunction(std::vector<double>::iterator it, double (*f)(args...), argss... params)
+            {
+                    double in;
+                    return BFfromPlainFunctionStruct<n-1, args...>::BFfromPlainFunction(it, f, in, params...);
+            }
+    };
+    
+    template <typename... args>
+    struct BFfromPlainFunctionStruct<0, args...>
+    {
+            template <typename... argss>
+            inline static double BFfromPlainFunction(std::vector<double>::iterator it, double (*f)(args...), argss... params)
+            {
+                    outputVariadicVector(it, params...);
+                    return f(params...);
+            }
+    };
+    
+    template <typename T>
+    class BFfromPlainFunction;
+    
+    template <typename... args>
+    class BFfromPlainFunction<double (args...)> : public BaseFunction
+    {
+    private:
+            double (*ptr)(args ...);
+            
+    public:
+            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("Constant", getVariadicNumber<args...>::N)
+            {
+                    ptr = f;
+            }
+            
+            double value(const BFargVec &vec)
+            {
+                    return BFfromPlainFunctionStruct<getVariadicNumber<args...>::N, args...>::BFfromPlainFunction(vec.begin(), ptr);
+            }
+    };
+    
+   /* class BFfromPlainFunction: public BaseFunction
     {
         public:
             BFfromPlainFunction(double(*f)()) : BaseFunction("Constant", 0), ndim(0) { ptr = (void*) f; }
@@ -267,7 +275,7 @@ namespace Gambit
 
             void* ptr; // Void pointer to plain function
             unsigned int ndim;
-    };
+    };*/
 
     // Constant n-dim function 
     class BFconstant: public BaseFunction

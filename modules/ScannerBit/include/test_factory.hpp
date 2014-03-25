@@ -46,13 +46,14 @@ namespace Gambit
                 {
                 private:
                         Scanner::Function_Base *func;
+                        std::vector<std::string> keys;
                         
                 public:
                         Test_Function_Factory(const Options &);
                         
-                        const std::vector<std::string> & getKeys() const {return func->getKeys();}
+                        const std::vector<std::string> & getKeys() const {return keys;}
                         
-                        unsigned int getDim() const {return func->getKeys().size();}
+                        unsigned int getDim() const {return keys.size();}
                         
                         void * operator() (const std::string &in, const std::string &purpose) const
                         {
