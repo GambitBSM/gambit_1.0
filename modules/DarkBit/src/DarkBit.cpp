@@ -1,4 +1,5 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
+// determine relevant resonances for LSP annihilation
 //  *********************************************
 //
 //  Functions of module DarkBit
@@ -460,20 +461,38 @@ namespace Gambit {
 ////////////////////////////////////////
 // Part of DarkBit that actually works.
 ////////////////////////////////////////
-
-    bool dsinit_flag = false;
-    void DarkBit_PointInit_Default()
+//
+    void DarkBit_PointInit_CMSSM()
     {
-      using namespace Pipes::DarkBit_PointInit_Default;
-      std::cout << "INITIALIZATION of DarkBit" << std::endl;
+      using namespace Pipes::DarkBit_PointInit_CMSSM;
+      bool static dsinit_flag = false;
+      // Initialize DarkSUSY if run for the first time
       if (not dsinit_flag) 
       {
+          std::cout << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           dsinit_flag = true;
       }
+      // Setup mSUGRA model from CMSSM parameters
+      double am0 = *Param["M0"];  // m0
+      double amhf = *Param["M12"];  // m_1/2
+      double aa0 = *Param["A0"];  // A0
+      double asgnmu = *Param["sgnmu"];  // sign(mu)
+      double atanbe = *Param["tanb"];  // tan(beta)
+      int unphys, hwarning;
+      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
+      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+      BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+      BEreq::dssusy_isasugra(unphys, hwarning);
     }
 
-    void GA_dNdE_DarkSUSY(BFptr &result)
+    void DarkBit_PointInit_Default()
+    {
+      using namespace Pipes::DarkBit_PointInit_Default;
+      // Nothing
+    }
+
+    void GA_AnnYield_DarkSUSY(BFptr &result)
     {
         //////////////////////////////////////////////////////////////////////////
         // Calculates annihilation spectra for general process catalogs, using
@@ -490,10 +509,9 @@ namespace Gambit {
         //////////////////////////////////////////////////////////////////////////
 
         // TODO: 
-        // - Rename dNdE to DiffYield
         // - Move grid initialization (resolution and range) to PointInit
         
-      using namespace Pipes::GA_dNdE_DarkSUSY;
+      using namespace Pipes::GA_AnnYield_DarkSUSY;
 
 
       ////////////////////
@@ -611,10 +629,13 @@ namespace Gambit {
           // (we just ignore the contributions from the second and third
           // particle and integrate out the corresponding kinematical
           // variable).
-          dsigmavde = it->dSigmadE->fixPar(2, 0)->integrate(1, 0, 100);  
+          dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
 
           // Add up individual constributions
           DiffYield3Body = DiffYield3Body->sum(dsigmavde);
+
+          // Divide by mass
+          // TODO: DiffYield3Body = DiffYield3Body->mul(pow(mass, -2.));
         }
       }
 
@@ -625,16 +646,14 @@ namespace Gambit {
       result = DiffYield2Body->sum(DiffYield3Body);
     }
 
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
-        using namespace Pipes::TH_ProcessCatalog_SingletDM;
+        using namespace Pipes::TH_ProcessCatalog_CMSSM;
 
-        double mass = *Param["mass"];
-        double sigmaTot = pow(*Param["lambda"], 2);
-
-        // TODO: Remove hardcoded values
-        mass = 100;
-        sigmaTot = 3e-26;
+        DS_MSPCTM mymspctm= *BEreq::mspctm;
+        // TODO:  Check if this is really DM mass
+        double mass = mymspctm.mass[41];  // Hardcoded array index
+        double sigmaTot = 3e-26;
 
         std::cout << "Generate ProcessCatalog for chi with mass=" << mass << " GeV and cs=" << sigmaTot << " cm3/s." << std::endl;
 
@@ -739,16 +758,14 @@ namespace Gambit {
         // More precisely, the zero velocity limit of the differential
         // annihilation cross-section as function of individual final state
         // photons
-        double dNdEint = (*(*Dep::GA_dNdE)->integrate(0, 1, 100))();
-
-        // Get mass of DM particle
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100))();
 
         // Calculate the phi-value
-        double phi = dNdEint / 8 / 3.14159265 * 1e26 / pow(mass, 2);
+        double phi = AnnYieldint / 8 / 3.14159265 * 1e26;
 
         // And return final likelihood
         result = 0.5*(*dwarf_likelihood)(phi);
+        std::cout << "LIKELIHOOD IS: " << result << std::endl;
     }
 
     void RD_oh2_SingletDM(double &result)

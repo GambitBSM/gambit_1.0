@@ -45,12 +45,24 @@ START_MODULE
 
   #define CAPABILITY PointInit
   START_CAPABILITY
-    #define FUNCTION DarkBit_PointInit_Default
+    #define FUNCTION DarkBit_PointInit_CMSSM
       START_FUNCTION(void)
+      ALLOW_MODELS(CMSSM_I)
       #define BACKEND_REQ dsinit
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
+      #define BACKEND_REQ dsgive_model_isasugra
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ dssusy_isasugra
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
+    #define FUNCTION DarkBit_PointInit_Default
+      START_FUNCTION(void)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -165,7 +177,6 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION RD_oh2_SingletDM
       START_FUNCTION(double)
-      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -178,13 +189,11 @@ START_MODULE
   #undef CAPABILITY
 
 
-
-  #define CAPABILITY GA_dNdE
+  #define CAPABILITY GA_AnnYield
   START_CAPABILITY
-    #define FUNCTION GA_dNdE_DarkSUSY
+    #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Gambit::BF::BFptr)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(SingletDM)
       #define BACKEND_REQ dshayield
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -194,9 +203,13 @@ START_MODULE
 
   #define CAPABILITY TH_ProcessCatalog
   START_CAPABILITY
-    #define FUNCTION TH_ProcessCatalog_SingletDM
+    #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(SingletDM)
+      ALLOW_MODELS(CMSSM_I)
+      #define BACKEND_REQ mspctm
+        START_BACKEND_REQ(DS_MSPCTM, VAR)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -204,8 +217,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
-      DEPENDENCY(GA_dNdE, Gambit::BF::BFptr)
-      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
     #undef FUNCTION
   #undef CAPABILITY
 
