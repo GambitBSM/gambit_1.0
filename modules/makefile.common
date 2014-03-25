@@ -336,10 +336,10 @@ ifdef COLLIDE
 	$(DELPHES_CXXFLAGS) \
 	$(FJ_CXXFLAGS) \
 
-  LNFLAGS += $(PY8_LDFLAGS) \
-	$(FJ_LDFLAGS) \
-	$(ROOT_LDFLAGS) \
-	$(DELPHES_LDFLAGS)
+	LNFLAGS += $(PY8_LDFLAGS) \
+						 $(FJ_LDFLAGS) \
+						 $(ROOT_LDFLAGS) \
+						 $(DELPHES_LDFLAGS)
 
 endif
 #**********************
@@ -358,8 +358,8 @@ endif
 #TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
 #default: mh gambit_example gambit_example_minimal
 
-TARGETS = gambit_example_minimal ExampleBit_A_standalone
-default: mh gambit_example_minimal
+TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
+default: mh gambit_example gambit_example_minimal
 
 all: mh gambit_example gambit_example_minimal doxygen
 
@@ -377,6 +377,7 @@ clean:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o 
 	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/lib/*.o 
 	@rm -rf $(FUNCTOR_TYPES)
+	@rm -f $(FASTSIMDIR)/src/*.o
 
 # also removes ~ files and other weirdly generated files
 sterile: distclean
@@ -620,20 +621,23 @@ $(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
 
-ifndef COLLIDE
-  FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
-  FJ_LDFLAGS := $(shell fastjet-config --libs)
-  LNFLAGS += $(FJ_LDFLAGS)
-endif 
+#ifndef COLLIDE
+#  FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+#  FJ_LDFLAGS := $(shell fastjet-config --libs)
+#  LNFLAGS += $(FJ_LDFLAGS)
+#endif 
 
-$(info $(FJ_CXXFLAGS))
+FJ_DIR := $(shell fastjet-config --prefix)
+
+$(info $(FJ_DIR))
 $(info $(CFLAGS))
 
-$(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.cpp $(FASTSIMDIR)/src/DetectorResponse.cpp  $(FASTSIMDIR)/src/fastsim_interface.cpp
-	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o 
-	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o 
-	$(CC) $(CFLAGS) $(FJ_CXXFLAGS) -c -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o 
-	$(CC) -shared -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o 
+$(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.cpp $(FASTSIMDIR)/src/DetectorResponse.cpp  $(FASTSIMDIR)/src/fastsim_interface.cpp $(FASTSIMDIR)/src/jsoncpp.cc 
+	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o 
+	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o 
+	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o 
+	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/jsoncpp.cc  -o $(FASTSIMDIR)/src/jsoncpp.o 
+	$(CC) -O3 -shared -L$(FJ_DIR)/lib -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o $(FASTSIMDIR)/src/jsoncpp.o -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic 
 
 #libmultinest_interface.so
 multinest:
