@@ -63,7 +63,7 @@ namespace Gambit
                         std::map<std::string, factoryBase *> outputFuncs;
                         std::type_info const &(*main_type)(void);
                         
-                        gambitData(std::string name) : name(name), main_type([]()->const std::type_info & {return typeid(void);}) {}
+                        gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
                                 std::for_each (outputFuncs.begin(), outputFuncs.end(), [] (std::pair<std::string, factoryBase *> outputMap)
