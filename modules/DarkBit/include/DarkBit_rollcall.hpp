@@ -233,6 +233,24 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY testTarget
+  START_CAPABILITY
+    #define FUNCTION testTarget
+      START_FUNCTION(double)
+      DEPENDENCY(testCapability, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY testCapability
+  START_CAPABILITY
+    #define FUNCTION testFunction1
+      START_FUNCTION(double)
+    #undef FUNCTION
+    #define FUNCTION testFunction2
+      START_FUNCTION(double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 #undef MODULE
 
 #endif /* defined(__DarkBit_rollcall_hpp__) */

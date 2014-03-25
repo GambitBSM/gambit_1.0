@@ -852,5 +852,19 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
+    void testTarget(double &result)
+    {
+        result = 0;
+    }
+
+    void testFunction1(double &result)
+    {
+        result = 0;
+    }
+
+    void testFunction2(double &result)
+    {
+        result = 0;
+    }
   }
 }
