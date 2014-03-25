@@ -22,6 +22,7 @@
 #include <map>
 #include <algorithm>
 #include <plugin/plugin_exception.hpp>
+#include <typeinfo>
 
 using namespace std;
 
@@ -60,8 +61,9 @@ namespace Gambit
                         std::vector <void *> inputData;
                         std::vector <void (*)(gambitData &)> inits;
                         std::map<std::string, factoryBase *> outputFuncs;
+                        std::type_info const &(*main_type)(void);
                         
-                        gambitData(std::string name) : name(name) {}
+                        gambitData(std::string name) : name(name), main_type([]()->const std::type_info & {return typeid(void);}) {}
                         ~gambitData()
                         {
                                 std::for_each (outputFuncs.begin(), outputFuncs.end(), [] (std::pair<std::string, factoryBase *> outputMap)

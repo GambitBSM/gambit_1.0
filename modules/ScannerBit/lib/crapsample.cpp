@@ -64,7 +64,7 @@ scanner_plugin (crapsample)
         run_function(hiFunc);
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
-        void plugin_main (void)
+        int plugin_main (void)
         {
                 //std::vector<std::string> &keys     = get_keys();
                 //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
@@ -121,7 +121,7 @@ scanner_plugin (crapsample)
                 }
                 while(count < N);
                 
-                //return 0;
+                return 0;
         }
 }
 

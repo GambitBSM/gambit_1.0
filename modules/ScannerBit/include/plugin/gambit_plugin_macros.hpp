@@ -204,8 +204,14 @@ namespace __gambit_plugin_namespace__                                           
                                                                                                                         \
                         static void init(gambitData &pluginData)                                                        \
                         {                                                                                               \
+                                pluginData.main_type = interface <MainTags::main>::main_type;                           \
                                 pluginData.outputFuncs[pluginData.name] = new Gambit::Plugin::funcFactory               \
                                         <decltype(__gambit_plugin_ret_val__()) (__VA_ARGS__)>(__gambit_plugin_main__);  \
+                        }                                                                                               \
+                                                                                                                        \
+                        static std::type_info const & main_type(void)                                                   \
+                        {                                                                                               \
+                                return typeid(decltype(__gambit_plugin_ret_val__())(__VA_ARGS__));                      \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
@@ -242,7 +248,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         };                                                                                              \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" void __gambit_plugin_pluginInit_ ## plug_name ## __(std::vector<void *> *input)              \
+                extern "C" const type_info &__gambit_plugin_pluginInit_ ## plug_name ## __(std::vector<void *> *input)         \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
                                 pluginData.inputData = *input;                                                          \
@@ -253,6 +259,8 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         });                                                                                             \
                                                                                                                         \
                         pluginData.inits.clear();                                                                       \
+                                                                                                                        \
+                        return pluginData.main_type();                                                                  \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void * __gambit_plugin_getMember_ ## plug_name ## __(std::string in)                         \
