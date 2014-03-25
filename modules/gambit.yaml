@@ -180,6 +180,10 @@ multinest:
 #- purpose:      Likelihood
 #  capability:   SI_bsgamma
 
+# Uncomment to test HEColliderBit
+- purpose:      Observable
+  capability:   analysisAccumulator
+
 # Test Pythia8 SLHA reader
 - purpose:      Likelihood
   capability:   MSSMslha_testLogL
@@ -204,6 +208,11 @@ multinest:
   - {capability: "Weff", type: "", function: "Weff", module: ""}
   backends:
   - {capability: "", function: "", backend: "", version: ""}
+
+- capability:   "analysisAccumulator"
+  type: "double"
+  dependencies:
+  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
 
 - capability:    "nevents_postcuts"
   dependencies:
