@@ -20,6 +20,9 @@
 #ifndef __backend_rollcall_hpp__
 #define __backend_rollcall_hpp__
 
+// Define the static members of utility classes
+#include "static_members.hpp"
+
 // Include the backend macro definitions
 #include "backend_macros.hpp"
 
