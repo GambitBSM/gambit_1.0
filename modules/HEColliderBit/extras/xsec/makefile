@@ -1,6 +1,9 @@
 FILES_NETWORKS = \
   networks/NNfunction_n1n1.o \
   networks/NNfunction_n1n2.o \
+  networks/NNfunction_nn_n1n3.o \
+  networks/NNfunction_nn_n1n4.o \
+  networks/NNfunction_nn_n1n5.o \
   networks/NNfunction_b1b1.o \
   networks/NNfunction_sb_cLdL.o \
   networks/NNfunction_sb_dLuR.o \
@@ -87,21 +90,26 @@ FILES_NETWORKS = \
 
 .PHONY = all clean
 
+SLHA = ../../../../modules/contrib/SLHAPy8
+
 all: testxsec libxsec.a libxsec.so
 	@true
 
 testxsec: test_xsec.cpp libxsec.a
-	$(CXX) $^ -o $@
+	$(CXX) $^ -o $@ -I$(SLHA)/Pythia8
 
-libxsec.a: $(FILES_NETWORKS) xsec.o
+libxsec.a: $(FILES_NETWORKS) xsec.o SusyLesHouches.o
 	ar rcs $@ $^
 	ranlib $@
 
-libxsec.so: $(FILES_NETWORKS) xsec.o
+libxsec.so: $(FILES_NETWORKS) xsec.o SusyLesHouches.o
 	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $^
 
+SusyLesHouches.o:
+	$(CXX) $(CXXFLAGS) -fPIC -c $(SLHA)/src/SusyLesHouches.cc -I$(SLHA)
+
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -fPIC -c $^ -o $@
+	$(CXX) $(CXXFLAGS) -fPIC -c $^ -o $@ -I$(SLHA)/Pythia8
 
 networks/%.o: networks/%.cxx
 	$(CXX) $(CXXFLAGS) -fPIC -c $^ -o $@
