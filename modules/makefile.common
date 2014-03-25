@@ -273,6 +273,7 @@ ifdef COLLIDE
 
   FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
   FJ_LDFLAGS := $(shell fastjet-config --libs)
+  FJ_LIB := $(shell fastjet-config --prefix)
 
   ifndef FJ_CXXFLAGS
     $(info ***!!!***)
@@ -337,10 +338,10 @@ ifdef COLLIDE
 	$(DELPHES_CXXFLAGS) \
 	$(FJ_CXXFLAGS) \
 
-	LNFLAGS += $(PY8_LDFLAGS) \
-						 $(FJ_LDFLAGS) \
-						 $(ROOT_LDFLAGS) \
-						 $(DELPHES_LDFLAGS)
+  LNFLAGS += $(PY8_LDFLAGS) \
+    $(FJ_LDFLAGS) \
+    $(ROOT_LDFLAGS) \
+    $(DELPHES_LDFLAGS)
 
 endif
 #**********************
@@ -624,23 +625,18 @@ $(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
 
-ifndef COLLIDE
-  FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
-  FJ_LDFLAGS := $(shell fastjet-config --libs)
-  LNFLAGS += $(FJ_LDFLAGS)
-endif
+$(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cpp
+$(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cc
+	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
 
-FJ_DIR := $(shell fastjet-config --prefix)
-
-$(info $(FJ_DIR))
-$(info $(CFLAGS))
-
-$(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.cpp $(FASTSIMDIR)/src/DetectorResponse.cpp  $(FASTSIMDIR)/src/fastsim_interface.cpp $(FASTSIMDIR)/src/jsoncpp.cc
-	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o
-	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/DetectorResponse.o
-	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o
-	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/jsoncpp.cc  -o $(FASTSIMDIR)/src/jsoncpp.o
-	$(CC) -O3 -shared -L$(FJ_DIR)/lib -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o $(FASTSIMDIR)/src/jsoncpp.o -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
+$(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o $(FASTSIMDIR)/src/jsoncpp.o
+# AB: this isn't how makefiles work!!! No dependency handling here (and fastjet flags were unportable & broke the build)
+#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o
+#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/#DetectorResponse.o
+#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o
+#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/jsoncpp.cc  -o $(FASTSIMDIR)/src/jsoncpp.o
+#	$(CC) -O3 -shared -L$(FJ_DIR)/lib -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o $(FASTSIMDIR)/src/jsoncpp.o -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
+	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS)
 
 #libmultinest_interface.so
 multinest:
@@ -660,4 +656,5 @@ headertest:
 	 echo "==================================================" ;\
 	 echo "======= testing: $(CC) $(CFLAGS) $$q -o /dev/null";\
 	 if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
+
 ht: headertest
