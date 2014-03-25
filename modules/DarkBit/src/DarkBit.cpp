@@ -647,7 +647,7 @@ namespace Gambit {
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
-        using namespace Pipes::TH_ProcessCatalog_DarkSUSY;
+        using namespace Pipes::TH_ProcessCatalog_CMSSM;
 
         // TODO:  Check if this is really DM mass
         DS_MSPCTM mymspctm= *BEreq::mspctm;

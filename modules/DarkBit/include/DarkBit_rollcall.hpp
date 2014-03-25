@@ -210,10 +210,6 @@ START_MODULE
         START_BACKEND_REQ(DS_MSPCTM, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
-    #undef FUNCTION
-    #define FUNCTION TH_ProcessCatalog_DarkSUSY
-      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMMSM)
       #define BACKEND_REQ dssigmav
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
