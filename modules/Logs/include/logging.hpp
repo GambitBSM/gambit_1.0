@@ -39,6 +39,7 @@ namespace Gambit
 
   namespace Logging
   {
+
     // Global reference start time. Can only be used in this compile unit.
     static const pt::ptime start_time(pt::microsec_clock::universal_time());
 

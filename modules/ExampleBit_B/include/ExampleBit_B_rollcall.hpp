@@ -80,7 +80,7 @@ START_MODULE
 
     #define FUNCTION xsection               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-    ALLOW_MODELS(CMSSM_I,NormalDist_I)
+    ALLOW_MODELS(CMSSM_demo,NormalDist)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -91,8 +91,8 @@ START_MODULE
 
     #define FUNCTION exampleCharge          // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
-    ALLOW_MODEL(NormalDist_I)
-    ALLOW_MODELS(MSSM_I, TWOHDM, UED)       // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
+    ALLOW_MODEL(NormalDist)
+    ALLOW_MODELS(MSSM_demo, TWOHDM, UED)       // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -106,7 +106,7 @@ START_MODULE
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
     DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
-    DEPENDENCY(M1, double)                  // Dependency: some model parameter called M1
+    DEPENDENCY(mZ, double)                  // Dependency: some model parameter called mZ; can have problems if many models have such a parameter
     
       #define BACKEND_REQ awesomeness       // awesomeness must be obtained from an external (backend) code, with
       START_BACKEND_REQ(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.

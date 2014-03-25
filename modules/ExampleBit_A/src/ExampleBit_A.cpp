@@ -38,6 +38,7 @@ namespace Gambit
 
   namespace ExampleBit_A
   {
+    using namespace LogTags;
 
     /// Local module declarations
     /// Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example.

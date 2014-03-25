@@ -29,6 +29,7 @@
 
 // Include the individual models.
 // Each header may define multiple related models if desired.
+#include "demo.hpp"
 #include "MSSM.hpp"
 #include "SingletDM.hpp"
       

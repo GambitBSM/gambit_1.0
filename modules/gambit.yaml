@@ -16,7 +16,23 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-CMSSM_I:
+Standard_Model:
+  alpha_emi:
+    fixed_value: 80
+  G_F:
+    fixed_value: 80
+  alpha_s:
+    fixed_value: 80
+  mZ:
+    fixed_value: 80
+  mb:
+    fixed_value: 80
+  mt:
+    fixed_value: 80
+  mtau:
+    fixed_value: 80
+
+CMSSM_demo:
   # SM pars
   MZ:
     fixed_value: 80
@@ -87,21 +103,21 @@ CMSSM_I:
 # decided that we can deal with this via the "purpose" system.
 
 #m0_prior:
-#  parameters: [CMSSM_I::M0]
+#  parameters: [CMSSM_demo::M0]
 #  prior_type: log
 #  range: [0.001,1000]
 
 m12_prior: 
-  parameters: [CMSSM_I::M12]
+  parameters: [CMSSM_demo::M12]
   prior_type: composite
   options: 
     new_prior: 
-      parameters: [CMSSM_I::M12]
+      parameters: [CMSSM_demo::M12]
       prior_type: log
       range: [100,2000]
 
 tanbMstop_prior: 
-  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
+  parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
   prior_type: cauchy
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
