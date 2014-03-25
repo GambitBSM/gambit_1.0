@@ -160,84 +160,18 @@ multinest:
 # Oh, actually some kinds of databases would allow us print different
 # obserables at different iterations. So it will depend on the printer.
 
-# Uncomment to test DarkBit
-#- purpose:      Likelihood
-#  capability:   RD_oh2
-
-# Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-- purpose:      Likelihood
-  capability:   lnL_ExampleBitB
-  type:         double
-  function:     ""
-  module:       ""
-
-# Uncomment to test FastSim
-- purpose:      Likelihood
-  capability:   fast_sim
-
-# Test loop manager
-#- purpose:      Likelihood
-#  capability:   nevents_like
-#  type:         double
-
-# Uncomment to test FlavBit
-#- purpose:      Likelihood
-#  capability:   SI_bsgamma
-
 # Uncomment to test HEColliderBit
-#- purpose:      Observable
-#  capability:   analysisAccumulator
-
-# Test Pythia8 SLHA reader
-- purpose:      Likelihood
-  capability:   MSSMslha_testLogL
-#  printme:      false
-
-# Test vector output of printer
 - purpose:      Observable
-  capability:   test_vector
-  type:         std::vector<double>
-
-# Example for dependency resolution for target functors
-#- purpose:      Observable
-#  capability:   testTarget
+  capability:   analysisAccumulator
 
 #########################
 --- # Auxiliary entries
 #########################
-#
-- capability:   testTarget
+
+- capability:   analysisAccumulator
+  type:         double
   dependencies:
-  - {capability: "testCapability", function: "testFunction1"}
-
-- capability:   "MSSMspectrum"
-
-- capability:   "omega_DM"
-  type:         ""
-  function:     ""
-  module:       ""
-  dependencies:
-  - {capability: "Weff", type: "", function: "Weff", module: ""}
-  backends:
-  - {capability: "", function: "", backend: "", version: ""}
-
-#- capability:   "analysisAccumulator"
-#  type: "double"
-#  dependencies:
-#  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
-
-- capability:    "nevents_postcuts"
-  dependencies:
-  - {capability: "id", module: "ExampleBit_B"}
-
-- capability:    "xsection"
-  options:
-    scale: 15.5
-
-#- capability:   "awesomeness"
-#  type:         ""
-#  function:     ""
-#  backend:      "libFirst"
+  - {capability: GambitColliderEvent, function: reconstructDelphesEvent}
 
 #########################
 --- # Logging setup
@@ -255,6 +189,7 @@ redirection:
   [Dependency Resolver] : "dependency_resolver.log"
   [ExampleBit_A] : "ExampleBit_A.log"
   [ExampleBit_B] : "ExampleBit_B.log"
+  [HEColliderBit] : "HEColliderBit.log"
   [LibFirst] : "libfirst.log"
 
 ###############################

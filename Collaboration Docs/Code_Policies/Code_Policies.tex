@@ -8,13 +8,14 @@
 
 \subsubsection{File naming} All file extensions to be .hpp (headers) and .cpp (source).
 
-\subsubsection{Code structure naming conventions} The only things to be called \begin{verbatim}<blah>Bit\end{verbatim} are specifically the physics modules (HEColliderBit, DMDirectBit, etc), the scanner module (ScannerBit) and the core (CoreBit). No sub-categories of code within these is a `Bit', nor are any of the Utils. The general rule of thumb is that Bits are things that can and will be released and able to function on their own with the addition of a simple driver program (except for the CoreBit of course).
+\subsubsection{Code structure naming conventions} The only things to be called \begin{verbatim}<blah>Bit\end{verbatim} are the physics modules (ColliderBit, DarkBit, FlavBit, etc) and the scanner module (ScannerBit). No sub-categories of code within these is a `Bit', nor are any of the Utils, Core, Logs, Models, etc. The general rule is that Bits are things that can and will be released and able to function on their own with the addition of a simple driver program.
 
 \subsubsection{Namespaces} 
-\begin{itemize} 
-  \item Everything goes in \begin{verbatim}GAMBIT\end{verbatim} namespace
-  \item backend objects go in \begin{verbatim}GAMBIT::Backend\end{verbatim}
-  \item module functions in \begin{verbatim}GAMBIT::<module_name>\end{verbatim}
+\begin{itemize}
+  \item Everything goes in \begin{verbatim}Gambit\end{verbatim} namespace
+  \item backend objects go in \begin{verbatim}Gambit::Backend\end{verbatim}
+  \item module functions in \begin{verbatim}Gambit::<module_name>\end{verbatim}
+  \item No virus-like global ``using namespace blah'' is allowed in headers; scoped use of namespaces only please.
 \end{itemize}
 
 \subsubsection{Header inclusion ordering} 
@@ -42,7 +43,7 @@ This helps ensure that the GAMBIT overwrites of some of the Boost headers get ap
 \end{itemize} 
 
 
-\subsection{Reccomendations (not rules)}
+\subsection{Recommendations (not rules)}
 
 Align your braces vertically, i.e. 
 \begin{verbatim}
@@ -97,8 +98,8 @@ The model and scanner `modules' will essentially just be abstract model and scan
 \section{Target Compilers}
 
 \begin{itemize}
-\item[]\textbf{icc}/\textbf{ifort} v13.0.0 and later
-\item[]\textbf{gcc}/\textbf{gfortran} v4.5.4 and later
+\item[]\textbf{icc}/\textbf{ifort} v12.1.0 and later
+\item[]\textbf{gcc}/\textbf{gfortran} v4.4.7 and later
 \item[]\textbf{clang}/\textbf{fort equivalent?} v??
 \end{itemize}
 
@@ -107,7 +108,7 @@ These versions to be discussed and ratified/changed at GAMBIT III, March 2014.
 \subsection{Library requirements/compatibilities}
 
 \begin{itemize}
-\item[]\textbf{Boost} v1.42 and later
+\item[]\textbf{Boost} v1.41 and later
 \end{itemize}
 
 Maybe make yaml-cpp and HepMC required libs rather than contributed libs at some point too.

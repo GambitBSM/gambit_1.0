@@ -1,9 +1,13 @@
 #include "xsec.h"
 
+#include "SusyLesHouches.h"
+
 #include <iostream>
+#include <string>
 #include <time.h>
 
 using namespace std;
+using namespace xsec;
 
 int main(int argc, char* argv[]){
 
@@ -68,6 +72,12 @@ int main(int argc, char* argv[]){
     
     t = clock() - t0;
     cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
+    
+    cout << "Testing with Pythia8 SLHA class" << endl;
+    Pythia8::SusyLesHouches * point = new Pythia8::SusyLesHouches("sps1a_slha.dat");
+    ev.xsec("nn_n1n1",point);
+
+    delete point;
     
     return 0;
 }
