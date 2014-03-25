@@ -94,6 +94,7 @@ int main() {
   /// @note Hard-coded for now, so I can do *something*
   map<string, double> sp_xsecs = {{"g~", 0.5}, {"q~", 0.2}, {"X~", 0.02}, {"t~", 0.1}};
   double total_xsec = 0; for (const auto& ispx : sp_xsecs) total_xsec += ispx.second;
+
   map<string, Subprocess> sps;
   // Gluino processes
   sps["g~"] = Subprocess(sp_xsecs["g~"],
