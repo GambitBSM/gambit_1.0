@@ -195,8 +195,8 @@ multinest:
   type:         std::vector<double>
 
 # Example for dependency resolution for target functors
-- purpose:      Observable
-  capability:   testTarget
+#- purpose:      Observable
+#  capability:   testTarget
 
 #########################
 --- # Auxiliary entries

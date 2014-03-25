@@ -271,31 +271,6 @@ ifdef COLLIDE
     endif
   endif
 
-  FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
-  FJ_LDFLAGS := $(shell fastjet-config --libs)
-  FJ_DIR := $(shell fastjet-config --prefix)
-
-  ifndef FJ_CXXFLAGS
-    $(info ***!!!***)
-    $(info Fastjet compile flags failed to configure.)
-    $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
-    $(info You may also need to include /where/fastjet/is/lib in your)
-    $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-    ifdef COLLIDE
-      $(error HEColliderBit dependency error....)
-    else
-      $(info Be sure to set these PATHs when compiling HEColliderBit)
-    endif
-  else
-    ifndef SHH
-      $(info INFO:)
-      $(info -- Fastjet Flags --)
-      $(info Compile > $(FJ_CXXFLAGS))
-      $(info Link    > $(FJ_LDFLAGS))
-      $(info )
-    endif
-  endif
-
   ROOT_CXXFLAGS := $(shell root-config --cflags)
   ROOT_LDFLAGS := $(shell root-config --libs) -lEG
 
@@ -335,16 +310,42 @@ ifdef COLLIDE
 
   CFLAGS += $(PY8_CXXFLAGS) \
 	$(ROOT_CXXFLAGS) \
-	$(DELPHES_CXXFLAGS) \
-	$(FJ_CXXFLAGS) \
+	$(DELPHES_CXXFLAGS)
 
   LNFLAGS += $(PY8_LDFLAGS) \
-    $(FJ_LDFLAGS) \
     $(ROOT_LDFLAGS) \
     $(DELPHES_LDFLAGS)
 
 endif
 #**********************
+
+FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+FJ_LDFLAGS := $(shell fastjet-config --libs)
+FJ_DIR := $(shell fastjet-config --prefix)
+
+ifndef FJ_CXXFLAGS
+  $(info ***!!!***)
+  $(info Fastjet compile flags failed to configure.)
+  $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
+  $(info You may also need to include /where/fastjet/is/lib in your)
+  $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
+  ifdef COLLIDE
+    $(error HEColliderBit dependency error....)
+  else
+    $(info Be sure to set these PATHs when compiling HEColliderBit)
+  endif
+else
+  ifndef SHH
+    $(info INFO:)
+    $(info -- Fastjet Flags --)
+    $(info Compile > $(FJ_CXXFLAGS))
+    $(info Link    > $(FJ_LDFLAGS))
+    $(info )
+  endif
+endif
+
+CFLAGS += $(FJ_CXXFLAGS)
+LNFLAGS += $(FJ_LDFLAGS)
 
 ifndef SHH
   $(info CFLAGS = $(CFLAGS))

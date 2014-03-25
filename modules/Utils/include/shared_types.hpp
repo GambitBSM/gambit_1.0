@@ -44,7 +44,7 @@
 #include "SuperIso_types.hpp"
 #include "libFarrayTest_types.hpp"
 #include "FastSim_types.hpp"
-
+#include "Pythia_types.hpp"
 
 // Other types that don't belong in any of the existing includes.  Should be progressively
 // organised into new headers and included from here as their number grows.
