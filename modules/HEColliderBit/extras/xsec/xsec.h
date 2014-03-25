@@ -7,6 +7,9 @@
 // Include all NN-classes
 #include "networks/NNfunction_n1n1.h"
 #include "networks/NNfunction_n1n2.h"
+#include "networks/NNfunction_nn_n1n3.h"
+#include "networks/NNfunction_nn_n1n4.h"
+#include "networks/NNfunction_nn_n1n5.h"
 
 #include "networks/NNfunction_b1b1.h"
 #include "networks/NNfunction_b2b2.h"
@@ -99,6 +102,10 @@ namespace xsec{
 class Evaluator {
     NNfunction_n1n1 nn_n1n1;
     NNfunction_n1n2 nn_n1n2;
+
+    NNfunction_nn_n1n3 nn_n1n3;
+    NNfunction_nn_n1n4 nn_n1n4;
+    NNfunction_nn_n1n5 nn_n1n5;
     
     NNfunction_b1b1 b1b1;
     NNfunction_b2b2 b2b2;
