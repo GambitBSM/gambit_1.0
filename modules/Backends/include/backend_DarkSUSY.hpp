@@ -59,6 +59,7 @@ BE_FUNCTION(dsrdeqn, void, (double(*)(double&),double&,double&,double&,double&,i
 BE_FUNCTION(dsrdwintp, double, (double&), "dsrdwintp_", "dsrdwintp")
 BE_FUNCTION(dsanwx, double, (double&), "dsanwx_", "dsanwx")
 BE_FUNCTION(dshayield, double, (double&,double&,int&,int&,int&), "dshayield_", "dshayield")
+BE_FUNCTION(dssigmav, double, (int&), "dssigmav_", "dssigmav")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
