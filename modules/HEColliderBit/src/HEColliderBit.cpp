@@ -62,7 +62,7 @@ namespace Gambit {
     /// \todo Assume that spectrum comes from somewhere else...
     /// \note Play with SoftSUSY class loading with Anders
     void getslhaFileName(std::string &result)
-          { result = "sps1aWithDecays.spc"; }
+          { result = "/home/krill/Dropbox/gambit/modules/HEColliderBit/data/sps1aWithDecays.spc"; }
 
     /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
     /// @note That means that the class loaders had better be working by then...
