@@ -109,7 +109,7 @@ namespace Gambit                                                            \
         else                                                                \
         {                                                                   \
           logger() << "Succeeded in loading " << LIBPATH << "\n"            \
-                   << info << EOM;                                          \
+                   << LogTags::info << EOM;                                 \
           present = true;                                                   \
         }                                                                   \
       }                                                                     \

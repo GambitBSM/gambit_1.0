@@ -33,34 +33,20 @@ Standard_Model:
     fixed_value: 80
 
 CMSSM_demo:
-  # SM pars
-  MZ:
-    fixed_value: 80
-  Mbot:
-    fixed_value: 90
-  Mtop:
-    fixed_value: 170
-  g1:
-    fixed_value: 0.001
-  g2:
-    fixed_value: 0.003
-  g3:
-    fixed_value: 0.1
-
-  # CMSSM pars
   A0:
     range: [-1000, 1000]
   M0:
     prior_type: log
     range: [0.001,1000]
   M12:
-    #same_as: CMSSM_I::M0
+  #  same_as: CMSSM_demo::M0
   Mstop:
-    #same_as: CMSSM_I::M12
+  #  same_as: CMSSM_demo::M0
   sgnmu:
      range: [-1, 1]
      fixed_value: 1
   tanb:
+  #  fixed_value: 1
 
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
