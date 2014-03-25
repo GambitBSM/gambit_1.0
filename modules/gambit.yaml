@@ -194,9 +194,17 @@ multinest:
   capability:   test_vector
   type:         std::vector<double>
 
+# Example for dependency resolution for target functors
+- purpose:      Observable
+  capability:   testTarget
+
 #########################
 --- # Auxiliary entries
 #########################
+#
+- capability:   testTarget
+  dependencies:
+  - {capability: "testCapability", function: "testFunction1"}
 
 - capability:   "MSSMspectrum"
 
