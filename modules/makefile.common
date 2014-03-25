@@ -273,7 +273,7 @@ ifdef COLLIDE
 
   FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
   FJ_LDFLAGS := $(shell fastjet-config --libs)
-  FJ_LIB := $(shell fastjet-config --prefix)
+  FJ_DIR := $(shell fastjet-config --prefix)
 
   ifndef FJ_CXXFLAGS
     $(info ***!!!***)
@@ -626,16 +626,14 @@ $(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
 
 $(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cpp
+	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
 $(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cc
 	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
 
 $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o $(FASTSIMDIR)/src/jsoncpp.o
-# AB: this isn't how makefiles work!!! No dependency handling here (and fastjet flags were unportable & broke the build)
-#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/FastSim.cpp  -o $(FASTSIMDIR)/src/FastSim.o
-#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/DetectorResponse.cpp  -o $(FASTSIMDIR)/src/#DetectorResponse.o
-#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/fastsim_interface.cpp  -o $(FASTSIMDIR)/src/fastsim_interface.o
-#	$(CC) -c $(CFLAGS) -I$(FJ_DIR)/include -fPIC $(FASTSIMDIR)/src/jsoncpp.cc  -o $(FASTSIMDIR)/src/jsoncpp.o
-#	$(CC) -O3 -shared -L$(FJ_DIR)/lib -o $(BACKENDDIR)/lib/libfastsim.so $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/fastsim_interface.o $(FASTSIMDIR)/src/jsoncpp.o -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
+# Intention is to pull symbols from FastJet into the fastsim backend (same should happen for direct pythia event filling... and any analyses that use jet structure)
+# Currently breaks formost symbols because symbols can't be copied unless libfastjet.a was unusually built with the -fPIC flag
+#	$(CC) -shared -L$(FJ_DIR)/lib -o $@ $^ -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
 	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS)
 
 #libmultinest_interface.so
