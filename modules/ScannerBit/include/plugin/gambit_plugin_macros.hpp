@@ -248,7 +248,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         };                                                                                              \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" const type_info &__gambit_plugin_pluginInit_ ## plug_name ## __(std::vector<void *> *input)         \
+                extern "C" const type_info &__gambit_plugin_pluginInit_ ## plug_name ## __(std::vector<void *> *input)  \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
                                 pluginData.inputData = *input;                                                          \
