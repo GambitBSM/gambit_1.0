@@ -91,8 +91,6 @@ namespace Gambit {
       vector<fastjet::PseudoJet> jetparticles;
       vector<fastjet::PseudoJet> bhadrons, taus;
 
-      // cout << 1 << endl;
-
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
@@ -111,8 +109,6 @@ namespace Gambit {
         }
       }
 
-      // cout << 2 << endl;
-
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
@@ -123,6 +119,8 @@ namespace Gambit {
         ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
+        /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
+        /// @todo Should we set up Pythia to make taus stable?
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
@@ -130,15 +128,11 @@ namespace Gambit {
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         } else {
-          // Choose jet constituents (should include neutrinos?)
-          /// @todo Don't exclude tau decay products, apparently: ATLAS treats them as jets
-          /// @todo Use ghost tagging! For fun...
+          // Choose jet constituents
           jetparticles.push_back(vec4_to_pseudojet(p.p()));
         }
 
       }
-
-      // cout << 3 << endl;
 
       // Jet finding
       // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
@@ -148,7 +142,6 @@ namespace Gambit {
 
       // Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {
-        /// @todo Use ghost tagging! For fun...
         bool isB = false;
         for (auto& pb : bhadrons) {
           if (pj.delta_R(pb) < 0.3) {
@@ -160,9 +153,7 @@ namespace Gambit {
         gevt.addJet(new HEP_Simple_Lib::Jet(HEP_Simple_Lib::pseudojet_to_p4(pj), isB));
       }
 
-      // cout << 4 << endl;
-
-      // MET (not equal to sum of prompt invisibles)
+      // MET (note: NOT just equal to sum of prompt invisibles)
       gevt.set_missingmom(-vec4_to_p4(ptot));
     }
 
