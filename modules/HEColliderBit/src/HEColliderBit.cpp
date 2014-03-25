@@ -41,11 +41,14 @@ namespace Gambit {
     /// @todo Put in actual analyses rather than a simple counter
     double counter = 0.;
 
-    /// Initialization ... \todo Does Gambit call this automatically??
-    void initialize()
+    /// @todo void? or return Pythia instance?
+    void PointInit_Default()
     {
-      std::cout << "\n\n -----\n Hi there. This is HEColliderBit testing";
-      std::cout << " an event loop.\n\n";
+      logger() << "==================" << endl;
+      logger() << "HEColliderBit says,";
+      logger() << "\"Hi there. Initializing...\"" << endl;
+      logger() << info << endl << EOM;
+      /// @todo Init pythia!!
     }
 
 
@@ -54,8 +57,10 @@ namespace Gambit {
     /// *************************************************
     
     /// *** Initialization for managers ***
+    /// \todo Move the rest of this stuff into proper Gambity initialization function
     
-    /// @todo Model info including SLHA will need to come from ModelBit
+    /// \todo Assume that spectrum comes from somewhere else...
+    /// \note Play with SoftSUSY class loading with Anders
     void getslhaFileName(std::string &result)
           { result = "sps1aWithDecays.spc"; }
 
@@ -83,8 +88,7 @@ namespace Gambit {
     /// *** Finalization for analyses ***
 
     /// @todo Scaling will depend on nEvents, xsec, and analysis luminosity
-    void getScaleFactor(double &result)
-          { result = 1.5; }
+    void getScaleFactor(double &result) { result = 1.5; }
 
 
     /// *** Readied Simulation Tools ***
@@ -111,25 +115,35 @@ namespace Gambit {
       /// \todo Will need to remind myself how Andy's code works.
       /// \todo Check out HEColliderMain.cpp in extras folder.
       /// \todo Delete this entire module function if vanilla loops are better.
-      std::cout<<"*** 'manageXsecDependentLoop()' was called.\n";
-      std::cout<<"    Are we still gonna do this one? I dunno...\n\n\n";
-      exit(1);
+      logger() << "==================" << endl;
+      logger() << "HEColliderBit says,";
+      logger() << "\"manageXsecDependentLoop() was called.\"" << endl;
+      logger() << info << endl << EOM;
+      HEColliderBit_error().raise(LOCAL_INFO,"Xsec dependent loop not implemented.");
     }
 
     void manageVanillaLoop() {
       using namespace Pipes::manageVanillaLoop;
-      std::cout<<"*** 'manageVanillaLoop()' was called. \n";
-      std::cout<<"    Now testing parallelized, Gambitized, HEColliderBit Loop.";
-      std::cout<<"\n\n\n";
+      logger() << "==================" << endl;
+      logger() << "HEColliderBit says,";
+      logger() << "\"manageVanillaLoop() was called.\"" << endl;
+      logger() << "*** NOTE: Each iteration will report:" << endl;
+      logger() << "  iteration, event met, thread, counts" << endl;
+      logger() << info << endl << EOM;
 
+      Loop::executeIteration(0);
       #pragma omp parallel
       {
         #pragma omp for
-        for (int it=0; it<*Dep::nEvents; it++) {
+        for (int it=1; it<*Dep::nEvents-1; it++) {
           Loop::executeIteration(it);
         }
       }
-      std::cout<<"\n\n ** Success!! ** \n\n\n";
+      Loop::executeIteration(*Dep::nEvents);
+      logger() << "==================" << endl;
+      logger() << "HEColliderBit says,";
+      logger() << "\"manageVanillaLoop() completed.\"" << endl;
+      logger() << info << endl << EOM;
     }
 
     /// Hard Scattering Event Generators
@@ -149,7 +163,6 @@ namespace Gambit {
       #pragma omp critical (Delphes)
       {
         (*Dep::readiedDetectorSim)->processEvent(*Dep::hardScatteringEvent, result);
-        cout<<"  ****** Delphes Reconstruction ****** \n";
       }
     }
 
@@ -177,10 +190,10 @@ namespace Gambit {
       result = counter * *Dep::scaleFactor;
       #pragma omp critical (print)
       { 
-        cout<<"  Running simpleCounter in iteration "<<*Loop::iteration<<endl;
-        cout<<"  Retrieved event met: "<<(*Dep::GambitColliderEvent).met()<<endl;
-        cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
-        cout<<"  Current total counts is: "<<result<<endl;
+        logger() << "  " << *Loop::iteration << ", ";
+        logger() << (*Dep::GambitColliderEvent).met() << ", ";
+        logger() << omp_get_thread_num() << ", ";
+        logger() << result << EOM;
       }
     }
 
