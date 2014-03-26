@@ -200,6 +200,8 @@ class Evaluator {
 
     void _init_pidmap();
 
+    void _params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const;
+
 public:
 
     Evaluator() { _init_pidmap(); }
@@ -207,14 +209,16 @@ public:
     string get_process(int pid1, int pid2) const;
 
     double xsec(const vector<int>& parts1, const vector<int>& parts2, double * par) const;
-    // double xsec(const vector<int>& parts1, const vector<int>& parts2,
-    //             const Pythia8::SusyLesHouches& point) const;
+    double xsec(const vector<int>& parts1, const vector<int>& parts2, Pythia8::SusyLesHouches& point) const;
+    double xsec(const vector<int>& parts1, const vector<int>& parts2, const string& slhafile) const;
 
     double xsec(int pid1, int pid2, double * par) const;
-    double xsec(int pid1, int pid2, const Pythia8::SusyLesHouches& point) const;
+    double xsec(int pid1, int pid2, Pythia8::SusyLesHouches& point) const;
+    double xsec(int pid1, int pid2, const string& slhafile) const;
 
     double xsec(const string& process, double * par) const;
-    double xsec(const string& process, const Pythia8::SusyLesHouches& point) const;
+    double xsec(const string& process, Pythia8::SusyLesHouches& point) const;
+    double xsec(const string& process, const string& slhafile) const;
 
     double log10xsec(const string& process, double * par) const;
 
