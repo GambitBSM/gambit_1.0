@@ -718,7 +718,19 @@ namespace Gambit {
 
     void RD_oh2_DarkSUSY(double &result)
     {
-        result = 0;
+        using namespace Pipes::RD_oh2_DarkSUSY;
+        // Input
+        int omtype = 0;  // 0: no coann; 1: all coann
+        int fast = 0;  // 0: standard; 1: fast; 2: dirty
+
+        // Output
+        double xf;  // freeze-out temperature
+        int ierr;  // error flag
+        int iwar;  // warming flag
+        int nfc;  // number of function calls to effective annihilation cross section
+        double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
+        std::cout << "oh2 is " << oh2 << std::endl;
+        result = oh2;
     }
 
 /*    
@@ -861,21 +873,6 @@ namespace Gambit {
       using namespace Pipes::lnL_oh2_Simple;
       double oh2 = *Dep::RD_oh2;
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
-    }
-
-    void testTarget(double &result)
-    {
-        result = 0;
-    }
-
-    void testFunction1(double &result)
-    {
-        result = 0;
-    }
-
-    void testFunction2(double &result)
-    {
-        result = 0;
     }
   }
 }
