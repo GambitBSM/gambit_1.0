@@ -13,12 +13,12 @@ Evaluator::Evaluator(){
     // TODO: move to a separate function
 
     // Sfermions
-    pidmap[1000001]="dLbar";
-    pidmap[1000002]="uLbar";
-    pidmap[1000003]="sLbar";
-    pidmap[1000004]="cLbar";
-    pidmap[1000005]="b1bar";
-    pidmap[1000006]="t1bar";
+    pidmap[1000001]="dL";
+    pidmap[1000002]="uL";
+    pidmap[1000003]="sL";
+    pidmap[1000004]="cL";
+    pidmap[1000005]="b1";
+    pidmap[1000006]="t1";
 
     pidmap[-1000001]="dLbar";
     pidmap[-1000002]="uLbar";
@@ -95,8 +95,21 @@ vector<double> Evaluator::xsec(const vector<int>& parts1,
 */
 
 double Evaluator::xsec(int pid1, int pid2, double * par){
+    // Process string
+    string process;
+    
     // Figure out process string
-    string process = pidmap[pid1]+pidmap[pid2];
+    map<int,string>::iterator it1;
+    map<int,string>::iterator it2;
+    it1 = pidmap.find(pid1);
+    it2 = pidmap.find(pid2);
+    if(it1 != pidmap.end() && it2 != pidmap.end()){
+        process = pidmap[pid1]+pidmap[pid2];
+    }
+    else{
+        cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
+        return -1;
+    }
     
     return Evaluator::xsec(process, par);
 }
