@@ -41,14 +41,14 @@ namespace Gambit
     /// Dependency resolver errors
     error& dependency_resolver_error()
     {
-      static error local("A problem has been raised by the dependency resolver subsystem.","dependency_resolver_error", depres);
+      static error local("A problem has been raised by the dependency resolver subsystem.","dependency_resolver_error", dependency_resolver);
       return local;
     }
 
     /// Dependency resolver warnings
     warning& dependency_resolver_warning()
     {
-      static warning local("A problem has been raised by the dependency resolver subsystem.","dependency_resolver_warning", depres);
+      static warning local("A problem has been raised by the dependency resolver subsystem.","dependency_resolver_warning", dependency_resolver);
       return local;
     }
 

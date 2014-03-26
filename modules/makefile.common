@@ -74,6 +74,7 @@ DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
 SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
+MCUTILSDIR = contrib/mcutils
 HEPSIMPLEDIR = contrib/hep_simple_lib
 FASTSIMDIR = ../extras/fast_sim
 
@@ -100,6 +101,7 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SLHAEADIR) \
   -I$(HEPSIMPLEDIR) \
   -I$(FASTSIMDIR)/include \
+  -I$(MCUTILSDIR)/include \
   -I$(MULTINESTINC)
 
 ifdef CPPFLAGS
