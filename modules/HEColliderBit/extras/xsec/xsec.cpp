@@ -78,23 +78,29 @@ void Evaluator::_init_pidmap() {
 }
 
 
-/*
-vector<double> Evaluator::xsec(const vector<int>& parts1,
-                               const vector<int>& parts2, double * par){
 
-    // Vector to store cross sections
-    vector<double> xsec;
-
+double Evaluator::xsec(const vector<int>& parts1,
+                       const vector<int>& parts2, double * par) const {
+    double xs;
     // Iterate over all pid combinations
-    for(int i = 0; i < parts1.size()*parts2.size(); i++){
+    for (size_t i = 0; i < parts1.size(); i++){
+      for (size_t j = 0; j < parts2.size(); j++){
+        // Avoid double-counting the diagonal combination
+        if (i == j) continue;
+
+        /// @todo Need to consider all +- combinations, assume no duplication, etc.
+
         // Is this a valid final state?
+        const string p = get_process(parts1[i], parts2[j]);
+        if (p.empty()) continue;
 
         // Calculate cross section
+        const double xsec_ij = xsec(p, par);
+        if (xsec_ij > 0) xs += xsec_ij;
+      }
     }
-
-    return xsec;
+    return xs;
 }
-*/
 
 
 string Evaluator::get_process(int pid1, int pid2) const {
@@ -177,8 +183,8 @@ double Evaluator::xsec(const string& process, double * par) const {
       return xsec;
     } catch (const std::exception& e) {
       cout << "Something went wrong, wrong process?" << endl;
+      return -1;
     }
-    return -1;
 }
 
 

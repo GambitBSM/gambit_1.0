@@ -65,6 +65,10 @@ int main(int argc, char* argv[]){
     ev.xsec(0,1000021,MSSMpar); // should be flagged as illegal
     ev.xsec(1000001,1000021,MSSMpar);
 
+    cout << endl;
+    double xstot = ev.xsec({{1000001,1000021}},{{1000021,1000001,-1000001}},MSSMpar);
+    cout << "Total {{1000001,1000021}},{{1000021}} xsec = " << xstot << " pb" << endl;
+
     t = clock() - t0;
     cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
 
