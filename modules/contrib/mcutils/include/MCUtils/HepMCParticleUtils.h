@@ -4,10 +4,11 @@
 /// @author Andy Buckley <andy.buckley@cern.ch>
 /// @author Nataliia Kondrashova <nataliia.kondrashova@cern.ch>
 
-#include "MCUtils/Utils.h"
-#include "MCUtils/MathUtils.h"
 #include "HepMC/GenEvent.h"
 #include <vector>
+
+#include "MCUtils/Utils.h"
+#include "MCUtils/MathUtils.h"
 
 namespace MCUtils {
 
