@@ -35,14 +35,14 @@ void Evaluator::_init_pidmap() {
     pidmap[1000013]="muL";
     pidmap[1000014]="numuL";
     pidmap[1000015]="tau1";
-    pidmap[1000016]="taunuL";
+    pidmap[1000016]="nutauL";
 
     pidmap[-1000011]="eLbar";
     pidmap[-1000012]="nueLbar";
     pidmap[-1000013]="muLbar";
     pidmap[-1000014]="numuLbar";
     pidmap[-1000015]="tau1bar";
-    pidmap[-1000016]="taunuLbar";
+    pidmap[-1000016]="nutauLbar";
 
     pidmap[2000001]="dR";
     pidmap[2000002]="uR";
@@ -230,12 +230,47 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     // Gluino pair production
     if(process == "gg") return gg.Value(0,par);
 
+    // Neutralino/chargino + gluino production
+    if(process == "chi10g") return 0;
+    if(process == "chi20g") return 0;
+    if(process == "chi30g") return 0;
+    if(process == "chi40g") return 0;
+    if(process == "chi1+g") return 0;
+    if(process == "chi2+g") return 0;
+    if(process == "chi1-g") return 0;
+    if(process == "chi2-g") return 0;
+    
     // Neutralino & chargino pair production
     if(process == "chi10chi10") return nn_n1n1.Value(0,par);
     if(process == "chi10chi20") return nn_n1n2.Value(0,par);
     if(process == "chi10chi30") return nn_n1n3.Value(0,par);
     if(process == "chi10chi40") return nn_n1n4.Value(0,par);
     if(process == "chi10chi1+") return nn_n1n5.Value(0,par);
+    if(process == "chi10chi2+") return 0;
+    if(process == "chi10chi1-") return 0;
+    if(process == "chi10chi2-") return 0;
+    if(process == "chi20chi20") return 0;
+    if(process == "chi20chi30") return 0;
+    if(process == "chi20chi40") return 0;
+    if(process == "chi20chi1+") return 0;
+    if(process == "chi20chi2+") return 0;
+    if(process == "chi20chi1-") return 0;
+    if(process == "chi20chi2-") return 0;
+    if(process == "chi30chi30") return 0;
+    if(process == "chi30chi40") return 0;
+    if(process == "chi30chi1+") return 0;
+    if(process == "chi30chi2+") return 0;
+    if(process == "chi30chi1-") return 0;
+    if(process == "chi30chi2-") return 0;
+    if(process == "chi40chi40") return 0;
+    if(process == "chi40chi1+") return 0;
+    if(process == "chi40chi2+") return 0;
+    if(process == "chi40chi1-") return 0;
+    if(process == "chi40chi2-") return 0;
+    if(process == "chi1+chi1-") return 0;
+    if(process == "chi1+chi2-") return 0;
+    if(process == "chi2+chi1-") return 0;
+    if(process == "chi2+chi2-") return 0;
 
     // Squark + gluino production
     // Adds squark+gluino and antisquark+gluino
@@ -247,6 +282,72 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "sRg") return sRg.Value(0,par);
     if(process == "uLg") return uLg.Value(0,par);
     if(process == "uRg") return uRg.Value(0,par);
+    
+    // Neutralino/chargino + squark
+    if(process == "chi10dL") return 0;
+    if(process == "chi10dR") return 0;
+    if(process == "chi10uL") return 0;
+    if(process == "chi10uR") return 0;
+    if(process == "chi10sL") return 0;
+    if(process == "chi10sR") return 0;
+    if(process == "chi10cL") return 0;
+    if(process == "chi10cR") return 0;
+    if(process == "chi20dL") return 0;
+    if(process == "chi20dR") return 0;
+    if(process == "chi20uL") return 0;
+    if(process == "chi20uR") return 0;
+    if(process == "chi20sL") return 0;
+    if(process == "chi20sR") return 0;
+    if(process == "chi20cL") return 0;
+    if(process == "chi20cR") return 0;
+    if(process == "chi30dL") return 0;
+    if(process == "chi30dR") return 0;
+    if(process == "chi30uL") return 0;
+    if(process == "chi30uR") return 0;
+    if(process == "chi30sL") return 0;
+    if(process == "chi30sR") return 0;
+    if(process == "chi30cL") return 0;
+    if(process == "chi30cR") return 0;
+    if(process == "chi40dL") return 0;
+    if(process == "chi40dR") return 0;
+    if(process == "chi40uL") return 0;
+    if(process == "chi40uR") return 0;
+    if(process == "chi40sL") return 0;
+    if(process == "chi40sR") return 0;
+    if(process == "chi40cL") return 0;
+    if(process == "chi40cR") return 0;
+    if(process == "chi1+dL") return 0;
+    if(process == "chi1+dR") return 0;
+    if(process == "chi1+uL") return 0;
+    if(process == "chi1+uR") return 0;
+    if(process == "chi1+sL") return 0;
+    if(process == "chi1+sR") return 0;
+    if(process == "chi1+cL") return 0;
+    if(process == "chi1+cR") return 0;
+    if(process == "chi2+dL") return 0;
+    if(process == "chi2+dR") return 0;
+    if(process == "chi2+uL") return 0;
+    if(process == "chi2+uR") return 0;
+    if(process == "chi2+sL") return 0;
+    if(process == "chi2+sR") return 0;
+    if(process == "chi2+cL") return 0;
+    if(process == "chi2+cR") return 0;
+    if(process == "chi1-dL") return 0;
+    if(process == "chi1-dR") return 0;
+    if(process == "chi1-uL") return 0;
+    if(process == "chi1-uR") return 0;
+    if(process == "chi1-sL") return 0;
+    if(process == "chi1-sR") return 0;
+    if(process == "chi1-cL") return 0;
+    if(process == "chi1-cR") return 0;
+    if(process == "chi2-dL") return 0;
+    if(process == "chi2-dR") return 0;
+    if(process == "chi2-uL") return 0;
+    if(process == "chi2-uR") return 0;
+    if(process == "chi2-sL") return 0;
+    if(process == "chi2-sR") return 0;
+    if(process == "chi2-cL") return 0;
+    if(process == "chi2-cR") return 0;
 
     // Squark + antisquark production
     if(process == "dLcRbar") return sb_dLcR.Value(0,par);
@@ -285,8 +386,10 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "cLuRbar") return sb_cLuR.Value(0,par);
     if(process == "cRcRbar") return sb_cRcR.Value(0,par);
     if(process == "b1b1bar") return b1b1.Value(0,par);
+    if(process == "b1b2bar") return 0;
     if(process == "b2b2bar") return b2b2.Value(0,par);
     if(process == "t1t1bar") return t1t1.Value(0,par);
+    if(process == "t1t2bar") return 0;
     if(process == "t2t2bar") return t2t2.Value(0,par);
 
     // Squark + squark production
@@ -326,6 +429,22 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "cLuL") return ss_cLuL.Value(0,par);
     if(process == "cLuR") return ss_cLuR.Value(0,par);
     if(process == "cRcR") return ss_cRcR.Value(0,par);
+    
+    // Slepton pair production
+    // First five are actually sums over first two generations
+    if(process == "eLeLbar") return 0;
+    if(process == "eReRbar") return 0;
+    if(process == "nueLnueLbar") return 0;
+    if(process == "eLbarnueL") return 0;
+    if(process == "eLnueLbar") return 0;
+    if(process == "tau1tau1bar") return 0;
+    if(process == "tau2tau2bar") return 0;
+    if(process == "tau1tau2bar") return 0;
+    if(process == "nutauLnutauLbar") return 0;
+    if(process == "tau1barnutauL") return 0;
+    if(process == "tau1nutauL") return 0;
+    if(process == "tau2barnutauL") return 0;
+    if(process == "tau2nutauL") return 0;
 
     throw std::runtime_error(("Unknown xsec process type, " + process).c_str());
 }
