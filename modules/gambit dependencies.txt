@@ -7,3 +7,4 @@ build-essential
 pkg-config
 autoconf
 autoconf-archive (only if using Ubuntu)
+gnulib (only if using Ubuntu)
