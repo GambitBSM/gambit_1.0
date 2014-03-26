@@ -44,7 +44,7 @@ namespace Gambit {
     // void *r;     //pointer to softsusy object which does the RGE running etc.
 
     // Ben: Sticking this as a global variable for testing purposes...    
-    Pythia8::SusyLesHouches testSLHAobj(1);
+    Py8SLHA testSLHAobj(1);
     SLHAea::Coll testinput;
 
     //************************************************************
@@ -94,7 +94,7 @@ namespace Gambit {
     }
  
     /// Generate physical MSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void MSSMspectrum (SLHA_MSSM &result)
+    void MSSMspectrum (Py8SLHA &result)
     {
       using namespace Pipes::MSSMspectrum;
 
@@ -107,7 +107,7 @@ namespace Gambit {
 
       // Call spectrum generator backend
       // (for now just reading in an slha file)
-      SLHA_container newspectrum(1);
+      Py8SLHA newspectrum(1);
       newspectrum.readFile("Example_SUSYspecBit/softsusy_example.slha");
 
       // Extract physical, i.e. low scale particle masses and couplings
@@ -117,7 +117,7 @@ namespace Gambit {
     }
     
     /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void NMSSMspectrum (SLHA_NMSSM &result)
+    void NMSSMspectrum (Py8SLHA &result)
     {
       using namespace Pipes::NMSSMspectrum;
 
@@ -125,7 +125,7 @@ namespace Gambit {
 
       // Rather than reading a spectrum from a file, we should of course get it
       // from a spectrum generator back-end
-      SLHA_container newspectrum(1);
+      Py8SLHA newspectrum(1);
       newspectrum.readFile("Example_SUSYspecBit/spectrsp_noGUT.dat");
 
       result.spectrum = newspectrum;
@@ -136,11 +136,11 @@ namespace Gambit {
     {
       using namespace Pipes::MSSMtestLogL;
       // Make a nice const reference for easy use
-      const SLHA_container &spec = (*Dep::MSSMslha).spectrum;
+      const Py8SLHA &spec = (*Dep::MSSMslha).spectrum;
 
       // Could instead copy the object; some of the spectrum object functions are not const (even though they don't modify the
       // object), so might have to do this in some cases. 
-      SLHA_container spec_copy = (*Dep::MSSMslha).spectrum;
+      Py8SLHA spec_copy = (*Dep::MSSMslha).spectrum;
 
       // Might as well test dependency retrieval, check out the spectum object
       // (the below functions cannot be made const (I tried) so the object will have to be copied in

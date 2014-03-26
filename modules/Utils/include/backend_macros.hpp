@@ -100,7 +100,7 @@ namespace Gambit                                                            \
         {                                                                   \
           std::ostringstream err;                                           \
           err << "Failed loading library from " << LIBPATH                  \
-              << " due to error: " << dlerror() << "\n"                     \
+              << " due to error: " << dlerror() << std::endl                \
               << "All functors generated from this library will get "       \
                  "status=0.";                                               \
           utils_warning().raise(LOCAL_INFO,err.str());                      \
@@ -108,7 +108,7 @@ namespace Gambit                                                            \
         }                                                                   \
         else                                                                \
         {                                                                   \
-          logger() << "Succeeded in loading " << LIBPATH << "\n"            \
+          logger() << "Succeeded in loading " << LIBPATH << std::endl       \
                    << LogTags::info << EOM;                                 \
           present = true;                                                   \
         }                                                                   \
@@ -260,9 +260,9 @@ namespace Gambit                                                            \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
           std::ostringstream err;                                           \
-          err << "Library symbol " << SYMBOLNAME << " not found.\n"         \
-              << "The functor generated for this symbol "                   \
-              << "will get status=0\n";                                     \
+          err << "Library symbol " << SYMBOLNAME << " not found."           \
+              << std::endl << "The functor generated for this symbol "      \
+              << "will get status=0" << std::endl;                          \
           utils_warning().raise(LOCAL_INFO,err.str());                      \          
           Functown::NAME.setStatus(0);                                      \          
         }                                                                   \
@@ -513,8 +513,8 @@ namespace Gambit                                                                
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
           std::ostringstream err;                                                               \
-          err << "Library symbol " << SYMBOLNAME << " not found.\n"                             \
-              << "The functor generated for this symbol will get status=0\n";                   \
+          err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
+              << "The functor generated for this symbol will get status=0" << std::endl;        \
           utils_warning().raise(LOCAL_INFO,err.str());                                          \             
           Functown::NAME.setStatus(0);                                                          \
         }                                                                                       \

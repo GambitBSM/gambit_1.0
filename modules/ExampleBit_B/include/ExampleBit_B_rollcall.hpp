@@ -123,7 +123,7 @@ START_MODULE
       START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
       ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
       ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
-      ACTIVATE_FOR_MODEL(MSSM_I)                             // Dependency counts when scanning the MSSM or one of its sub-models
+      ACTIVATE_FOR_MODEL(MSSM_demo)                          // Dependency counts when scanning the MSSM or one of its sub-models
       #undef CONDITIONAL_DEPENDENCY
 
       #define BACKEND_REQ refex
@@ -137,8 +137,8 @@ START_MODULE
       #define BACKEND_REQ SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
       START_BACKEND_REQ(int, VAR)           // is on a backend variable or a backend function. A backend function is assumed if no flag is given. 
       BACKEND_OPTION(LibFirst)              // 
-      //ACTIVATE_FOR_MODEL(MSSM_I)          // Demonstrating how backend requirements can be made conditional on one
-      ACTIVATE_FOR_MODELS(CMSSM_I, UED)     // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
+      //ACTIVATE_FOR_MODEL(MSSM_demo)         // Demonstrating how backend requirements can be made conditional on one
+      ACTIVATE_FOR_MODELS(CMSSM_demo, UED)  // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
       #undef BACKEND_REQ
 
       #define BACKEND_REQ someFunction      // (This backend function is used to test that the above backend variable works.)

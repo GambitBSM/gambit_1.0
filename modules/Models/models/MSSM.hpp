@@ -46,7 +46,7 @@
 // TODO: According to the SLHA conventions, one can provide mA0 or mH+ instead of mA^2.
 //  To use this MSSM model you have to provide mA^2.
 // All parameters are defined at M_input.
-#define MODEL MSSM
+#define MODEL MSSM29
   START_MODEL
   // NOTE! Don't leave a comma after the last argument, or else you'll get weird compiler errors.
   DEFINEPARS(M_input, 
@@ -54,7 +54,7 @@
              At,Ab,
              Ae,Amu,Atau,
              mH12,mH22,
-             mu,mA2,tanb,
+             mu,mA2,tanb, /* mA0, mH+, */ 
              meL,mmuL,mtauL,
              meR,mmuR,mtauR,
              mq1L,mq2L,mq3L,
@@ -63,7 +63,7 @@
 #undef MODEL
 
 #define MODEL MSSMBen
-#define PARENT MSSM
+#define PARENT MSSM29
   START_MODEL
   DEFINEPARS(M_input, 
              M1,M2,M3,
@@ -86,7 +86,7 @@
   
      //namespace matches parent model because this function behaves effectively as the parent model. 
      //'parentparams' is just what we conventionally call 'result' in the module functions. 
-     using namespace Pipes::MSSM_parameters;
+     using namespace Pipes::MSSM29_parameters;
      const ModelParameters &p = *Dep::MSSMBen_parameters;
 
      double MSUSY(p["M_input"]);

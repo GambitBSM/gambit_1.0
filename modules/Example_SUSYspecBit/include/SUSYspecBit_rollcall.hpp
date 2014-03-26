@@ -42,17 +42,17 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY NMSSMslha              // Retrieves physical NMSSM spectrum
+  #define CAPABILITY NMSSMspectrum          // Retrieves physical NMSSM spectrum
   START_CAPABILITY
-    #define FUNCTION NMSSMspectrum             
-    START_FUNCTION(SLHA_NMSSM)                     
+    #define FUNCTION getNMSSMspectrum             
+    START_FUNCTION(Py8SLHA)                     
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY MSSMslha               // Retrieves physical MSSM spectrum
+  #define CAPABILITY MSSMspectrum           // Retrieves physical MSSM spectrum
   START_CAPABILITY
-    #define FUNCTION MSSMspectrum             
-    START_FUNCTION(SLHA_MSSM)                     
+    #define FUNCTION getMSSMspectrum             
+    START_FUNCTION(Py8SLHA)                     
     ALLOW_MODELS(CMSSM_demo,MSSM_demo,MSSM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -61,7 +61,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION MSSMtestLogL             
     START_FUNCTION(double)                     
-    DEPENDENCY(MSSMslha, SLHA_MSSM)
+    DEPENDENCY(MSSMspectrum, Py8SLHA)
     #undef FUNCTION
   #undef CAPABILITY
 

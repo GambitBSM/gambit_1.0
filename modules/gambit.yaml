@@ -163,8 +163,8 @@ multinest:
 # obserables at different iterations. So it will depend on the printer.
 
 # Uncomment to test DarkBit
-# - purpose:      Likelihood
-#   capability:   RD_oh2
+#- purpose:      Likelihood
+#  capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
 - purpose:      Likelihood
@@ -172,6 +172,10 @@ multinest:
   type:         double
   function:     ""
   module:       ""
+
+# Uncomment to test FastSim
+- purpose:      Likelihood
+  capability:   fast_sim
 
 # Test loop manager
 #- purpose:      Likelihood
