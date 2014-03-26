@@ -96,14 +96,14 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-        if (isFinalB(i, pevt)) bhadrons.push_back(vec4_to_pseudojet(p.p()));
+        if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
         // Find last tau in tau replica chains as a proxy for tau-tagging
         // Also require that the tau are prompt
         /// @todo Only accept hadronically decaying taus?
         if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
-          taus.push_back(vec4_to_pseudojet(p.p()));
-          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(vec4_to_p4(p.p()), p.id());
+          taus.push_back(mk_pseudojet(p.p()));
+          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         }
@@ -124,12 +124,12 @@ namespace Gambit {
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
-          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(vec4_to_p4(p.p()), p.id());
+          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         } else {
           // Choose jet constituents
-          jetparticles.push_back(vec4_to_pseudojet(p.p()));
+          jetparticles.push_back(mk_pseudojet(p.p()));
         }
 
       }
@@ -150,11 +150,11 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        gevt.addJet(new HEP_Simple_Lib::Jet(HEP_Simple_Lib::pseudojet_to_p4(pj), isB));
+        gevt.addJet(new HEP_Simple_Lib::Jet(MCUtils::mk_p4(pj), isB));
       }
 
       // MET (note: NOT just equal to sum of prompt invisibles)
-      gevt.set_missingmom(-vec4_to_p4(ptot));
+      gevt.set_missingmom(-mk_p4(ptot));
     }
 
 

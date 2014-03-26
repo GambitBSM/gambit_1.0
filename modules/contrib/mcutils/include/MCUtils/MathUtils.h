@@ -7,6 +7,7 @@
 #endif
 
 #include <cmath>
+#include <vector>
 #include <cassert>
 
 /// @file Convenience maths functions for HEP MC physics
@@ -17,6 +18,14 @@ namespace MCUtils {
 
   /// @name Numerical helpers
   //@{
+
+  /// Convenience function for getting the sign of a number
+  ///
+  /// @todo Template and SFINAE on numerical types?
+  inline int sign(double val) {
+    if (val == 0) return 0;
+    return (val < 0) ? -1 : 1;
+  }
 
   /// Convenience function for squaring (better than repeating long expressions)
   ///
@@ -47,22 +56,57 @@ namespace MCUtils {
 
   /// @brief Boolean function to determine if @a value is within the given floating point range
   ///
-  /// NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
+  /// @note The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
   ///
-  /// @todo Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion...
   /// @todo SFINAE and template for FP types
-  inline bool inRange(double val, double low, double high) {
+  inline bool in_range(double val, double low, double high) {
     return val >= low && val < high;
   }
+
+  /// @brief Boolean function to determine if @a value is within the given floating point range
+  ///
+  /// @note The interval is closed at both ends.
+  ///
+  /// @todo SFINAE and template for FP types
+  inline bool in_closed_range(double val, double low, double high) {
+    return val >= low && val <= high;
+  }
+
+  /// @brief Boolean function to determine if @a value is within the given floating point range
+  ///
+  /// @note The interval is open at both ends.
+  ///
+  /// @todo SFINAE and template for FP types
+  inline bool in_open_range(double val, double low, double high) {
+    return val > low && val < high;
+  }
+
 
   /// @brief Boolean function to determine if @a value is within the given integer range
   ///
   /// NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
   ///
-  /// @todo Would be nice to include val == high if all args are integers, but dangerous due to implicit conversion...
   /// @todo SFINAE and template for integer types
-  inline bool inRange(int val, int low, int high) {
+  inline bool in_range(int val, int low, int high) {
     return val >= low && val < high;
+  }
+
+  /// @brief Boolean function to determine if @a value is within the given integer range
+  ///
+  /// @note The interval is closed at both ends.
+  ///
+  /// @todo SFINAE and template for FP types
+  inline bool in_closed_range(int val, int low, int high) {
+    return val >= low && val <= high;
+  }
+
+  /// @brief Boolean function to determine if @a value is within the given integer range
+  ///
+  /// @note The interval is open at both ends.
+  ///
+  /// @todo SFINAE and template for FP types
+  inline bool in_open_range(int val, int low, int high) {
+    return val > low && val < high;
   }
 
 
@@ -74,7 +118,7 @@ namespace MCUtils {
     const double interval = (end-start)/static_cast<double>(nbins);
     // Add all edges except the last
     double edge = start;
-    while (inRange(edge, start, end)) {
+    while (in_range(edge, start, end)) {
       rtn.push_back(edge);
       edge += interval;
     }

@@ -321,7 +321,7 @@ namespace MCUtils {
 
 
   inline bool inEtaRange(const HepMC::GenParticle* p, double etamin, double etamax) {
-    return inRange(eta(p->momentum()), etamin, etamax);
+    return in_range(eta(p->momentum()), etamin, etamax);
   }
   struct InEtaRange {
     InEtaRange(double etamin, double etamax) : etamin(etamin), etamax(etamax) { }
@@ -340,7 +340,7 @@ namespace MCUtils {
 
 
   inline bool inRapRange(const HepMC::GenParticle* p, double ymin, double ymax) {
-    return inRange(rap(p->momentum()), ymin, ymax);
+    return in_range(rap(p->momentum()), ymin, ymax);
   }
   struct InRapRange {
     InRapRange(double ymin, double ymax) : ymin(ymin), ymax(ymax) { }
@@ -377,7 +377,7 @@ namespace MCUtils {
   /// @brief Determine whether the particle is outside the physical status code range
   ///
   /// If the answer is "true", use with extreme, generator-specific care!
-  inline bool hasNonStandardStatus(const HepMC::GenParticle* p) { return !inRange(p->status(), 1, 5); }
+  inline bool hasNonStandardStatus(const HepMC::GenParticle* p) { return !in_range(p->status(), 1, 5); }
 
   /// Is this a physically reliable final state particle? (as opposed to a debugging entry)
   inline bool isPhysical(const HepMC::GenParticle* p) {

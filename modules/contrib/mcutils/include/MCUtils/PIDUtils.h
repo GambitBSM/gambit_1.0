@@ -476,7 +476,7 @@ namespace MCUtils {
 
     /// Determine if the PID is that of a quark
     inline bool isQuark(int pid) {
-      return inRange(abs(pid), 1, 7);
+      return in_range(abs(pid), 1, 7);
     }
 
     /// Determine if the PID is that of a parton (quark or gluon)
@@ -643,7 +643,7 @@ namespace MCUtils {
 
     /// Determine if the PID is in the generator-specific range
     inline bool isGenSpecific(int pid) {
-      return inRange(pid, 80, 101);
+      return in_range(pid, 80, 101);
     }
 
     /// Determine if the PID is that of an EW scale resonance
