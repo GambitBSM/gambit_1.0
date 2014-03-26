@@ -40,33 +40,6 @@ namespace Gambit {
       double xsec;
     };
 
-
-    // struct KFactorHooks : public Pythia8::UserHooks {
-    //   /// @todo once KFactorContainer is created, need to pass it in here.
-    //   KFactorHooks() {}
-    //   ~KFactorHooks() {}
-
-    //   // To apply the KFactors directly within Pythia, we need to modify the cross sections:
-    //   virtual bool canModifySigma() {return true;}
-    //   virtual double multiplySigmaBy(const Pythia8::SigmaProcess* sigmaProcessPtr,
-    //                                  const Pythia8::PhaseSpace* phaseSpacePtr, bool inEvent)
-    //   {
-    //     // Get the process code:
-    //     //int processCode = sigmaProcessPtr->code();
-
-    //     // Each process has a different KFactor... does something like this work?
-    //     /// @todo this function has not been created yet....:
-    //     // return magicKFactor->getKFactorMagically(processCode);
-    //     return 1.;
-    //   }
-
-    // private:
-    //   /// @todo this class has not been created yet....:
-    //   // KFactorContainer *magicKFactor;
-    //   /// @todo should it instead get this info from SubprocessGroup?
-    //   SubprocessGroup* subprocessGroup;
-    // };
-
   }
 }
 
@@ -169,7 +142,7 @@ int main() {
       // assert(thread_cfgs[NTHREAD].nevts > 0);
 
       // Run the event loop
-      GHEC::Event recoEvent;
+      HEP_Simple_Lib::Event recoEvent;
       for (int counter = 0; counter < sp_num_events_per_thread; counter++) {
         // // Run Pythia8 and run Delphes (not thread safe)
         Pythia8::Event genEvent;

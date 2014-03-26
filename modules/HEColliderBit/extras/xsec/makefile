@@ -1,3 +1,5 @@
+CXXFLAGS := -std=c++11 -fPIC
+
 FILES_NETWORKS = \
   networks/NNfunction_n1n1.o \
   networks/NNfunction_n1n2.o \
@@ -96,23 +98,23 @@ all: testxsec libxsec.a libxsec.so
 	@true
 
 testxsec: test_xsec.cpp libxsec.a
-	$(CXX) $^ -o $@ -I$(SLHA)/Pythia8
+	$(CXX) $(CXXFLAGS) $^ -o $@ -I$(SLHA)/Pythia8
 
 libxsec.a: $(FILES_NETWORKS) xsec.o SusyLesHouches.o
 	ar rcs $@ $^
 	ranlib $@
 
 libxsec.so: $(FILES_NETWORKS) xsec.o SusyLesHouches.o
-	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $^
+	$(CXX) -shared -o $@ $^
 
 SusyLesHouches.o:
-	$(CXX) $(CXXFLAGS) -fPIC -c $(SLHA)/src/SusyLesHouches.cc -I$(SLHA)
+	$(CXX) $(CXXFLAGS) -c $(SLHA)/src/SusyLesHouches.cc -I$(SLHA)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -fPIC -c $^ -o $@ -I$(SLHA)/Pythia8
+	$(CXX) $(CXXFLAGS) -c $^ -o $@ -I$(SLHA)/Pythia8
 
 networks/%.o: networks/%.cxx
-	$(CXX) $(CXXFLAGS) -fPIC -c $^ -o $@
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 clean:
 	rm -f networks/*.o *.o libxsec.a

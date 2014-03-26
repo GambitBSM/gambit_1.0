@@ -328,8 +328,8 @@ int main( int, const char*[] )
   cout<<"is descendant of MSSM_demo?         :"<<Models::CMSSM_demo::is_descendant_of("MSSM_demo")<<endl;
   cout<<"is descendant of CMSSM_demo?        :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_demo")<<endl;
   cout<<"is descendant of CMSSM_II_demo?       :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_II_demo")<<endl;
-  cout<<"is descendant of DMHalo_base_I?  :"<<Models::CMSSM_demo::is_descendant_of("DMHalo_base_I")<<endl;
-  cout<<"is descendant of Gaussian_Halo_I?:"<<Models::CMSSM_demo::is_descendant_of("Gaussian_Halo_I")<<endl;
+  cout<<"is descendant of DMHalo_base_demo?  :"<<Models::CMSSM_demo::is_descendant_of("DMHalo_base_demo")<<endl;
+  cout<<"is descendant of Gaussian_Halo_demo?:"<<Models::CMSSM_demo::is_descendant_of("Gaussian_Halo_demo")<<endl;
   cout<<endl;
   
   // New way of checking congruency using global lineage database
