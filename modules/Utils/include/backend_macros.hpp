@@ -25,7 +25,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Jan
+///  \date 2014 Jan, Mar
 ///
 ///  *********************************************
 
@@ -36,12 +36,14 @@
 #include <string>
 #include <dlfcn.h>
 #include <map>
+#include <sstream>
 
 #include "util_macros.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
 #include "backend_type_macros.hpp"
 #include "log.hpp"
+#include "standalone_error_handlers.hpp"
 #ifndef STANDALONE
   #include "gambit_core.hpp"
 #endif
@@ -96,15 +98,18 @@ namespace Gambit                                                            \
         pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
         if(not pHandle)                                                     \
         {                                                                   \
-          std::cout << "Failed loading library from " << LIBPATH            \
-                    << " due to error: " << dlerror() << std::endl;         \
-          std::cout << "All functors generated from this library will get " \
-                       "status=0" << std::endl;                             \
+          std::ostringstream err;                                           \
+          err << "Failed loading library from " << LIBPATH                  \
+              << " due to error: " << dlerror() << std::endl                \
+              << "All functors generated from this library will get "       \
+                 "status=0.";                                               \
+          backend_warning().raise(LOCAL_INFO,err.str());                    \
           present = false;                                                  \
         }                                                                   \
         else                                                                \
         {                                                                   \
-          std::cout << "Succeeded in loading " << LIBPATH << std::endl;     \
+          logger() << "Succeeded in loading " << LIBPATH << std::endl       \
+                   << backends << info << EOM;                              \
           present = true;                                                   \
         }                                                                   \
       }                                                                     \
@@ -254,11 +259,12 @@ namespace Gambit                                                            \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
-          std::cout << "Library symbol " << SYMBOLNAME                      \
-                    << " not found." << std::endl;                          \
-          std::cout << "The functor generated for this symbol "             \
-                    << "will get status=0" << std::endl;                    \
-          Functown::NAME.setStatus(0);                                      \
+          std::ostringstream err;                                           \
+          err << "Library symbol " << SYMBOLNAME << " not found."           \
+              << std::endl << "The functor generated for this symbol "      \
+              << "will get status=0" << std::endl;                          \
+          backend_warning().raise(LOCAL_INFO,err.str());                    \          
+          Functown::NAME.setStatus(0);                                      \          
         }                                                                   \
                                                                             \
       }                                                                     \
@@ -331,8 +337,8 @@ namespace Gambit
         }
         else
         {
-          cout << "Error: Trying to pass a function pointer with no valid backend equivalent to a backend function." << endl;
-          throw 0;
+          backend_error().raise(LOCAL_INFO,"Trying to pass a function pointer with no valid backend equivalent to a backend function."); 
+          return frontFunc;
         }
     }
   }
@@ -506,8 +512,10 @@ namespace Gambit                                                                
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
-          std::cout << "Library symbol " << SYMBOLNAME << " not found." << std::endl;           \
-          std::cout << "The functor generated for this symbol will get status=0" << std::endl;  \
+          std::ostringstream err;                                                               \
+          err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
+              << "The functor generated for this symbol will get status=0" << std::endl;        \
+          backend_warning().raise(LOCAL_INFO,err.str());                                        \             
           Functown::NAME.setStatus(0);                                                          \
         }                                                                                       \
                                                                                                 \

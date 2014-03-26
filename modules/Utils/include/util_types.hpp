@@ -27,7 +27,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Jan
+///  \date 2014 Jan, Mar
 ///  *********************************************
 
 #ifndef __util_types_hpp__

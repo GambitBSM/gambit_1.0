@@ -79,6 +79,7 @@ Models
 Ongoing:
 
 * Make it possible to declare in module function rollcall macro calls that multiple models are required to be scanned, e.g. ALLOWED_MODELS(GROUP1, blah), ALLOWED_MODELS(GROUP2, blah), s.t. the function requires something from GROUP1 and GROUP2 to be scanned, in order to be used in a given scan. 
+* Explicitly disallow multiple parents in all parts of Models (and other) code.
 
 Done:
 * Reunify model macros with module macros as much as possible (dependency macro in particular)
