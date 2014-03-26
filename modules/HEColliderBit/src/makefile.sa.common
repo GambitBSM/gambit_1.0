@@ -4,7 +4,7 @@
 CXX := g++
 
 HEC_CPPFLAGS := -I../../include -I../../../contrib/mcutils/include -I../../../contrib/hep_simple_lib
-HEC_CXXFLAGS := -std=c++0x -O3 -fPIC -pedantic -Wall -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+HEC_CXXFLAGS := -std=c++11 -O3 -fPIC -pedantic -Wall -Werror=uninitialized #-Werror=delete-non-virtual-dtor
 HEC_LDFLAGS :=
 
 PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)

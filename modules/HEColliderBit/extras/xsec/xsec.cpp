@@ -2,7 +2,9 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <set>
 #include <cmath>
+#include <algorithm>
 #include <stdexcept>
 
 using namespace std;
@@ -79,27 +81,56 @@ void Evaluator::_init_pidmap() {
 
 
 
-double Evaluator::xsec(const vector<int>& parts1,
-                       const vector<int>& parts2, double * par) const {
-    double xs;
-    // Iterate over all pid combinations
-    for (size_t i = 0; i < parts1.size(); i++){
-      for (size_t j = 0; j < parts2.size(); j++){
-        // Avoid double-counting the diagonal combination
-        if (i == j) continue;
+double Evaluator::xsec(const vector<int>& pids1,
+                       const vector<int>& pids2, double * par) const {
+  // Make new vectors of unique abs PIDs
+  vector<int> apids1, apids2;
+  for (size_t i = 0; i < pids1.size(); i++)
+    if (std::find(apids1.begin(), apids1.end(), abs(pids1[i])) == apids1.end()) apids1.push_back(abs(pids1[i]));
+  for (size_t i = 0; i < pids2.size(); i++)
+    if (std::find(apids2.begin(), apids2.end(), abs(pids2[i])) == apids2.end()) apids2.push_back(abs(pids2[i]));
 
-        /// @todo Need to consider all +- combinations, assume no duplication, etc.
+  // Iterate over all PID combinations to find the total xsec
+  // Need to consider all +- and AB/BA combinations
+  double xs = 0;
+  for (size_t i = 0; i < apids1.size(); i++){
+    for (size_t pmi = 0; pmi <= 1; pmi++){
+      const int pid1 = apids1[i] * pow(-1, pmi);
 
-        // Is this a valid final state?
-        const string p = get_process(parts1[i], parts2[j]);
-        if (p.empty()) continue;
+      for (size_t j = 0; j < apids2.size(); j++){
+        for (size_t pmj = 0; pmj <= 1; pmj++){
+          const int pid2 = apids2[j] * pow(-1, pmj);
 
-        // Calculate cross section
-        const double xsec_ij = xsec(p, par);
-        if (xsec_ij > 0) xs += xsec_ij;
+          // Calculate the xsec for this combination, if it exists
+          const double xsec_ij = xsec(pid1, pid2, par);
+          if (xsec_ij > 0) {
+            xs += xsec_ij;
+            cout << "  " << pid1 << " " << pid2 << endl;
+          }
+
+          // Avoid double-counting the diagonal combination
+          if (pid1 != pid2) {
+            const double xsec_ij = xsec(pid1, pid2, par);
+            if (xsec_ij > 0) {
+              xs += xsec_ij;
+              cout << "  " << pid2 << " " << pid1 << endl;
+            }
+          }
+
+          // // Is this a valid final state?
+          // const string p = get_process(parts1[i], parts2[j]);
+          // if (p.empty()) continue;
+
+          // // Calculate cross section
+          // const double xsec_ij = xsec(p, par);
+          // if (xsec_ij > 0) xs += xsec_ij;
+
+        }
       }
+
     }
-    return xs;
+  }
+  return xs;
 }
 
 
@@ -115,10 +146,10 @@ string Evaluator::get_process(int pid1, int pid2) const {
 
 double Evaluator::xsec(int pid1, int pid2, double * par) const {
     const string process = get_process(pid1, pid2);
-    if (process.empty()) {
-      cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
-      return -1;
-    }
+    // if (process.empty()) {
+    //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
+    //   return -1;
+    // }
     return xsec(process, par);
 }
 
@@ -161,10 +192,10 @@ double Evaluator::xsec(const string& process, const Pythia8::SusyLesHouches & po
 
 double Evaluator::xsec(int pid1, int pid2, const Pythia8::SusyLesHouches & point) const {
     const string process = get_process(pid1, pid2);
-    if (process.empty()) {
-      cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
-      return -1;
-    }
+    // if (process.empty()) {
+    //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
+    //   return -1;
+    // }
     return xsec(process, point);
 }
 
@@ -182,7 +213,7 @@ double Evaluator::xsec(const string& process, double * par) const {
       cout << process << " got evaluated: " << xsec << " pb" << endl;
       return xsec;
     } catch (const std::exception& e) {
-      cout << "Something went wrong, wrong process?" << endl;
+      //cout << "Something went wrong, wrong process?" << endl;
       return -1;
     }
 }
