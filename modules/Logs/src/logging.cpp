@@ -639,7 +639,7 @@ namespace Gambit
       std::set<int> int_tags;
       for(std::set<LogTag>::iterator tag = tags.begin(); tag != tags.end(); ++tag) 
       {
-        int_tags.insert(*tag); //static_cast<int>(*tag));
+        int_tags.insert(*tag); //static_cast<int>(*tag);
       }
       writetags(int_tags);
     }
@@ -655,7 +655,9 @@ namespace Gambit
         for (it = tags.begin(); it != tags.end(); ++it)
         {
           if (not firstloop) { my_fstream<<","; }
-          my_fstream << tag2str()[*it]; // replace with a lookup of the correct string
+          std::cout<<"test: "<<*it<<std::endl;
+          std::cout<<"test2:"<<tag2str().at(*it)<<std::endl;
+          my_fstream << tag2str().at(*it); // replace with a lookup of the correct string
           firstloop = false;
         }
         my_fstream<<"]";

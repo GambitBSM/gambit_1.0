@@ -21,6 +21,7 @@
 
 #define STANDALONE
 
+#include "log.hpp"
 #include "backend_rollcall.hpp"
 #include "module_macros_incore.hpp"
 #include "model_rollcall.hpp"
