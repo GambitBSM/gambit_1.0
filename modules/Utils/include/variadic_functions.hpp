@@ -71,10 +71,10 @@ namespace Gambit
                 vec.push_back(val); inputVariadicVector(vec, params...);
         }
         
-        inline void outputVariadicVector(std::vector<double>::iterator vec) {}
+        inline void outputVariadicVector(std::vector<double>::const_iterator vec) {}
         
         template <typename... args>
-        inline void outputVariadicVector(std::vector<double>::iterator vec, double &val, args&... params)
+        inline void outputVariadicVector(std::vector<double>::const_iterator vec, double &val, args&... params)
         {
                 val = *vec;
                 outputVariadicVector(vec+1, params...);

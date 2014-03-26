@@ -91,6 +91,7 @@ namespace Gambit
             BFptr rotSym(int i);
             BFptr tabularize(std::vector<double> xgrid);
             BFptr sum(BFptr f2);
+            BFptr mult(BFptr);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -209,7 +210,7 @@ namespace Gambit
     struct BFfromPlainFunctionStruct
     {
             template <typename... argss>
-            inline static double BFfromPlainFunction(std::vector<double>::iterator it, double (*f)(args...), argss... params)
+            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss... params)
             {
                     double in;
                     return BFfromPlainFunctionStruct<n-1, args...>::BFfromPlainFunction(it, f, in, params...);
@@ -220,7 +221,7 @@ namespace Gambit
     struct BFfromPlainFunctionStruct<0, args...>
     {
             template <typename... argss>
-            inline static double BFfromPlainFunction(std::vector<double>::iterator it, double (*f)(args...), argss... params)
+            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss... params)
             {
                     outputVariadicVector(it, params...);
                     return f(params...);
@@ -533,10 +534,30 @@ namespace Gambit
             BFptr f1;
             BFptr f2;
     };
+    
+    // Adding two functions (n-dim, n-dim) --> n-dim
+    class BFmult: public BaseFunction
+    {
+        public:
+            BFmult(BFptr f1, BFptr f2) : BaseFunction("Sum", f1->getNdim()), f1(f1), f2(f2)
+            {
+                if (f1->getNdim()!=f2->getNdim()) failHard("BFmult can only sum objects with matching dimensionality.");
+            }
+
+            double value(const BFargVec &args)
+            {
+                return (*f1)(args) * (*f2)(args);
+            }
+
+        private:
+            BFptr f1;
+            BFptr f2;
+    };
 
     // Definition of factory functions for above helper classes that are provided by the base function object
     inline BFptr BaseFunction::tabularize(std::vector<double> xgrid) { return BFptr(new BFtabularize(shared_from_this(), xgrid)); }
     inline BFptr BaseFunction::sum(BFptr f2) { return BFptr(new BFsum(shared_from_this(), f2)); }
+    inline BFptr BaseFunction::mult(BFptr f2) { return BFptr(new BFmult(shared_from_this(), f2)); }
     inline BFptr BaseFunction::lineOfSightIntegral(double D) { return BFptr(new BFlineOfSightIntegral(shared_from_this(), D)); }
     inline BFptr BaseFunction::fixPar(int i, double x) { return BFptr (new BFfixPar(shared_from_this(), i, x)); }
     inline BFptr BaseFunction::integrate(int i, double x0, double x1) { return BFptr (new BFintegrate(shared_from_this(), i, x0, x1)); }
