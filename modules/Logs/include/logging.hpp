@@ -43,6 +43,12 @@ namespace Gambit
     // Global reference start time. Can only be used in this compile unit.
     static const pt::ptime start_time(pt::microsec_clock::universal_time());
 
+    // // If we move away from boost, need something like this: (using <ctime>)
+    // // Global clock object for the logger
+    // static const std::time_t log_clock;
+    // // Global reference start time. Can only be used in this compile unit.
+    // static const std::time start_time(&log_clock);
+
     /// Special struct for signalling end of message to LogMaster stream
     struct endofmessage { endofmessage(){} ~endofmessage(){} };
 

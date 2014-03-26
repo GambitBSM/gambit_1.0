@@ -94,9 +94,9 @@ namespace Gambit {
     }
  
     /// Generate physical MSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void MSSMspectrum (Py8SLHA &result)
+    void getMSSMspectrum (Py8SLHA &result)
     {
-      using namespace Pipes::MSSMspectrum;
+      using namespace Pipes::getMSSMspectrum;
 
       // Check what model is being scanned
       // - Pat is adding a vector of strings to the Pipes specifying the active models
@@ -113,13 +113,13 @@ namespace Gambit {
       // Extract physical, i.e. low scale particle masses and couplings
 
       // There is probably some unnecessary copy happening here, not sure if we can avoid it...
-      result.spectrum = newspectrum;
+      result = newspectrum;
     }
     
     /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void NMSSMspectrum (Py8SLHA &result)
+    void getNMSSMspectrum (Py8SLHA &result)
     {
-      using namespace Pipes::NMSSMspectrum;
+      using namespace Pipes::getNMSSMspectrum;
 
       // See MSSM spectrum for what this should end up like.
 
@@ -128,7 +128,7 @@ namespace Gambit {
       Py8SLHA newspectrum(1);
       newspectrum.readFile("Example_SUSYspecBit/spectrsp_noGUT.dat");
 
-      result.spectrum = newspectrum;
+      result = newspectrum;
     }
 
     /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
@@ -136,11 +136,11 @@ namespace Gambit {
     {
       using namespace Pipes::MSSMtestLogL;
       // Make a nice const reference for easy use
-      const Py8SLHA &spec = (*Dep::MSSMslha).spectrum;
+      const Py8SLHA &spec = *Dep::MSSMspectrum;
 
       // Could instead copy the object; some of the spectrum object functions are not const (even though they don't modify the
       // object), so might have to do this in some cases. 
-      Py8SLHA spec_copy = (*Dep::MSSMslha).spectrum;
+      Py8SLHA spec_copy = *Dep::MSSMspectrum;
 
       // Might as well test dependency retrieval, check out the spectum object
       // (the below functions cannot be made const (I tried) so the object will have to be copied in

@@ -103,13 +103,13 @@ namespace Gambit                                                            \
               << " due to error: " << dlerror() << std::endl                \
               << "All functors generated from this library will get "       \
                  "status=0.";                                               \
-          utils_warning().raise(LOCAL_INFO,err.str());                      \
+          backend_warning().raise(LOCAL_INFO,err.str());                    \
           present = false;                                                  \
         }                                                                   \
         else                                                                \
         {                                                                   \
           logger() << "Succeeded in loading " << LIBPATH << std::endl       \
-                   << LogTags::info << EOM;                                 \
+                   << LogTags::backends << LogTags::info << EOM;            \
           present = true;                                                   \
         }                                                                   \
       }                                                                     \
@@ -263,7 +263,7 @@ namespace Gambit                                                            \
           err << "Library symbol " << SYMBOLNAME << " not found."           \
               << std::endl << "The functor generated for this symbol "      \
               << "will get status=0" << std::endl;                          \
-          utils_warning().raise(LOCAL_INFO,err.str());                      \          
+          backend_warning().raise(LOCAL_INFO,err.str());                    \          
           Functown::NAME.setStatus(0);                                      \          
         }                                                                   \
                                                                             \
@@ -337,7 +337,7 @@ namespace Gambit
         }
         else
         {
-          utils_error().raise(LOCAL_INFO,"Trying to pass a function pointer with no valid backend equivalent to a backend function."); 
+          backend_error().raise(LOCAL_INFO,"Trying to pass a function pointer with no valid backend equivalent to a backend function."); 
           return frontFunc;
         }
     }
@@ -515,7 +515,7 @@ namespace Gambit                                                                
           std::ostringstream err;                                                               \
           err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
               << "The functor generated for this symbol will get status=0" << std::endl;        \
-          utils_warning().raise(LOCAL_INFO,err.str());                                          \             
+          backend_warning().raise(LOCAL_INFO,err.str());                                        \             
           Functown::NAME.setStatus(0);                                                          \
         }                                                                                       \
                                                                                                 \
