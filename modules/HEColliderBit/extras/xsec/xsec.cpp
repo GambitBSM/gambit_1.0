@@ -93,37 +93,38 @@ double Evaluator::xsec(const vector<int>& pids1,
   // Iterate over all PID combinations to find the total xsec
   // Need to consider all +- and AB/BA combinations
   double xs = 0;
+  set<string> seen_processes;
+  // Loop over vector 1 and its +- variations
   for (size_t i = 0; i < apids1.size(); i++){
     for (size_t pmi = 0; pmi <= 1; pmi++){
       const int pid1 = apids1[i] * pow(-1, pmi);
 
+      // Loop over vector 2 and its +- variations
       for (size_t j = 0; j < apids2.size(); j++){
         for (size_t pmj = 0; pmj <= 1; pmj++){
           const int pid2 = apids2[j] * pow(-1, pmj);
 
-          // Calculate the xsec for this combination, if it exists
-          const double xsec_ij = xsec(pid1, pid2, par);
-          if (xsec_ij > 0) {
-            xs += xsec_ij;
-            cout << "  " << pid1 << " " << pid2 << endl;
-          }
-
-          // Avoid double-counting the diagonal combination
-          if (pid1 != pid2) {
-            const double xsec_ij = xsec(pid1, pid2, par);
+          // Calculate the xsec for the AB combination, if it exists and hasn't already been seen
+          const string pa = get_process(pid1, pid2);
+          if (!pa.empty() && std::find(seen_processes.begin(), seen_processes.end(), pa) == seen_processes.end()) {
+            seen_processes.insert(pa);
+            const double xsec_ij = xsec(pa, par);
             if (xsec_ij > 0) {
               xs += xsec_ij;
-              cout << "  " << pid2 << " " << pid1 << endl;
+              cout << "  " << pid1 << " " << pid2 << " -> " << pa << endl;
             }
           }
 
-          // // Is this a valid final state?
-          // const string p = get_process(parts1[i], parts2[j]);
-          // if (p.empty()) continue;
-
-          // // Calculate cross section
-          // const double xsec_ij = xsec(p, par);
-          // if (xsec_ij > 0) xs += xsec_ij;
+          // Calculate the xsec for the BA combination, if it exists and hasn't already been seen
+          const string pb = get_process(pid2, pid1);
+          if (!pb.empty() && std::find(seen_processes.begin(), seen_processes.end(), pb) == seen_processes.end()) {
+            seen_processes.insert(pb);
+            const double xsec_ji = xsec(pb, par);
+            if (xsec_ji > 0) {
+              xs += xsec_ji;
+              cout << "  " << pid2 << " " << pid1 << " -> " << pb << endl;
+            }
+          }
 
         }
       }
@@ -246,7 +247,7 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "sRg") return sRg.Value(0,par);
     if(process == "uLg") return uLg.Value(0,par);
     if(process == "uRg") return uRg.Value(0,par);
-    
+
     // Squark + antisquark production
     if(process == "dLcRbar") return sb_dLcR.Value(0,par);
     if(process == "dLdLbar") return sb_dLdL.Value(0,par);
