@@ -6,12 +6,6 @@
 #include "HepMC/GenEvent.h"
 #include <vector>
 
-// Provide convenience foreach loop -- particularly nice for HepMC walking combined with the functions below
-#include "boost/foreach.hpp"
-#ifndef foreach
-#define foreach BOOST_FOREACH
-#endif
-
 #include "MCUtils/Utils.h"
 #include "MCUtils/HepMCParticleClassifiers.h"
 #include "MCUtils/HepMCVertexClassifiers.h"
@@ -349,7 +343,7 @@ namespace MCUtils {
   inline void reduce(HepMC::GenEvent* ge, const PClassifier& c, bool iterative=false) {
     if (iterative) {
       // Remove one particle, search for a new match, remove, etc. until no matches... SLOW!
-      GenParticle* gp = particle_match(ge, c);
+      HepMC::GenParticle* gp = particle_match(ge, c);
       while (gp != 0) {
         reduce(ge, gp); // Reduce in-place
         gp = particle_match(ge, c); // Get next matching particle

@@ -3,11 +3,13 @@
 /// @file Functions for navigating HepMC record contents
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-#include "MCUtils/HepMCParticleUtils.h"
-#include "MCUtils/HepMCVertexUtils.h"
 #include "HepMC/GenEvent.h"
 #include <vector>
 #include <stdexcept>
+
+#include "MCUtils/Utils.h"
+#include "MCUtils/HepMCParticleUtils.h"
+#include "MCUtils/HepMCVertexUtils.h"
 
 namespace MCUtils {
 
