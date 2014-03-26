@@ -16,20 +16,20 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-CMSSM_I:
+CMSSM_demo:
   # SM pars
-  MZ:
-    fixed_value: 80
-  Mbot:
-    fixed_value: 90
-  Mtop:
-    fixed_value: 170
-  g1:
-    fixed_value: 0.001
-  g2:
-    fixed_value: 0.003
-  g3:
-    fixed_value: 0.1
+#  MZ:
+#    fixed_value: 80
+#  Mbot:
+#    fixed_value: 90
+#  Mtop:
+#    fixed_value: 170
+#  g1:
+#    fixed_value: 0.001
+#  g2:
+#    fixed_value: 0.003
+#  g3:
+#    fixed_value: 0.1
 
   # CMSSM pars
   A0:
@@ -189,11 +189,14 @@ multinest:
 #  capability:   MSSMslha_testLogL
 #  printme:      false
 
-- purpose:       Likelihood
-  capability:    lnL_FermiLATdwarfs
+#- purpose:       Likelihood
+#  capability:    lnL_FermiLATdwarfs
+
+#- purpose:       Likelihood
+#  capability:    lnL_oh2
 
 - purpose:       Likelihood
-  capability:    lnL_oh2
+  capability:    CalcAv
 
 #########################
 --- # Auxiliary entries
@@ -201,7 +204,8 @@ multinest:
 
 - capability:   lnL_oh2
   dependencies:
-  - {capability: "RD_oh2", function: "RD_oh2_DarkSUSY"}
+  - {capability: "RD_oh2", function: "RD_oh2_general"}
+  #- {capability: "RD_oh2", function: "RD_oh2_DarkSUSY"}
 
 - capability:   "MSSMspectrum"
 

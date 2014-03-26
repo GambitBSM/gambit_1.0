@@ -144,7 +144,9 @@ namespace Gambit {
           myres.n_thr += 1;
         }
       }
+
 // now add coannihilation thresholds
+/*  CW: I had to comment out this avoid freezing the code
       if (myres.n_thr > 1){
         for (int i=0; i<myres.n_co; i++) {
           for (int j=std::max(1,i); j<myres.n_co; i++) {
@@ -153,6 +155,7 @@ namespace Gambit {
           }
         }
       }
+*/
 
 //      std::cout << "# thresholds: " << myres.n_thr << std::endl;
 //      std::cout << "mchi: " <<  myres.mass_co[0] << std::endl;
@@ -312,6 +315,9 @@ namespace Gambit {
       GET_BE_RESULT(RD_oh2_general, dsrdinit);
       */
       BEreq::dsrdinit();
+
+      std::cout << "Now RD_oh2_general would segfault, so let's stop here before somebody gets hurt." << std::endl;
+      exit(1);
 
 // the following replaces the broken(?) dsrdcom -- should be fixed with higher DS versions
       DS_RDPARS myrdpars;
@@ -874,5 +880,28 @@ namespace Gambit {
       double oh2 = *Dep::RD_oh2;
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
+
+// Tests for Torsten
+
+    void provideN_func(int &result)
+    {
+      using namespace Pipes::provideN_func;
+      result=1000;
+    }
+
+    void provideF_func(double(*&result)(double&))
+    {
+      using namespace Pipes::provideF_func;
+      result = BEreq::funcGauss.pointer<double&>();
+    }
+
+    void CalcAv_func(double &result)
+    {
+      using namespace Pipes::CalcAv_func;
+      int n=*Dep::provideN;
+      result = BEreq::average(byVal(*Dep::provideF), n);
+      std::cout << "CalcAv_func: " << result << std::endl;
+    }
+
   }
 }
