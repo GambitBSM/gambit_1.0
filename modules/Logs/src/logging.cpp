@@ -655,8 +655,8 @@ namespace Gambit
         for (it = tags.begin(); it != tags.end(); ++it)
         {
           if (not firstloop) { my_fstream<<","; }
-          std::cout<<"test: "<<*it<<std::endl;
-          std::cout<<"test2:"<<tag2str().at(*it)<<std::endl;
+          //std::cout<<"test: "<<*it<<std::endl;
+          //std::cout<<"test2:"<<tag2str().at(*it)<<std::endl;
           my_fstream << tag2str().at(*it); // replace with a lookup of the correct string
           firstloop = false;
         }
