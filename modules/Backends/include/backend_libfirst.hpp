@@ -98,7 +98,7 @@ namespace Gambit
 
       double awesomenessByAnders(int a)
       {
-        logger().send("Message from 'awesomenessByAnders' backend convenience function in libfirst wrapper",info);
+        logger().send("Message from 'awesomenessByAnders' backend convenience function in libfirst wrapper",LogTags::info);
         initialize(a);
         someFunction();
         return returnResult();

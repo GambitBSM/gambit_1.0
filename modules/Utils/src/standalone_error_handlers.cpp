@@ -20,6 +20,7 @@
 
 namespace Gambit
 {
+  using namespace LogTags;
 
   /// Utility errors
   error& utils_error()

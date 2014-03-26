@@ -2,6 +2,7 @@
 #define xsec_h
 
 #include <string>
+#include <map>
 #include "SusyLesHouches.h"
 
 // Include all NN-classes
@@ -100,6 +101,8 @@ using namespace std;
 namespace xsec{
 
 class Evaluator {
+    
+    // One object of every NN class
     NNfunction_n1n1 nn_n1n1;
     NNfunction_n1n2 nn_n1n2;
 
@@ -191,8 +194,17 @@ class Evaluator {
     NNfunction_uLg uLg;
     NNfunction_uRg uRg;
     
+    // Map for pid codes and strings
+    map<int,string> pidmap;
+    
 public:
     Evaluator();
+    //string get_process(const vector<int>& parts1, const vector<int>& parts2);
+
+    //vector<double> xsec(const vector<int>& parts1,
+    //                    const vector<int>& parts2, double * par);
+
+    double xsec(int pid1, int pid2, double * par);
     double xsec(string process, double * par);
     double xsec(string process, Pythia8::SusyLesHouches * point);
 

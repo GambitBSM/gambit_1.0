@@ -1,6 +1,7 @@
 #include "xsec.h"
 #include <iostream>
 #include <string>
+#include <map>
 #include <math.h>
 
 using namespace std;
@@ -8,7 +9,96 @@ using namespace std;
 namespace xsec{
 
 Evaluator::Evaluator(){
+    // Make pid map
+    // TODO: move to a separate function
+
+    // Sfermions
+    pidmap[1000001]="dLbar";
+    pidmap[1000002]="uLbar";
+    pidmap[1000003]="sLbar";
+    pidmap[1000004]="cLbar";
+    pidmap[1000005]="b1bar";
+    pidmap[1000006]="t1bar";
+
+    pidmap[-1000001]="dLbar";
+    pidmap[-1000002]="uLbar";
+    pidmap[-1000003]="sLbar";
+    pidmap[-1000004]="cLbar";
+    pidmap[-1000005]="b1bar";
+    pidmap[-1000006]="t1bar";
+
+    pidmap[1000011]="eL";
+    pidmap[1000012]="nueL";
+    pidmap[1000013]="muL";
+    pidmap[1000014]="numuL";
+    pidmap[1000015]="tau1";
+    pidmap[1000016]="taunuL";
+
+    pidmap[-1000011]="eLbar";
+    pidmap[-1000012]="nueLbar";
+    pidmap[-1000013]="muLbar";
+    pidmap[-1000014]="numuLbar";
+    pidmap[-1000015]="tau1bar";
+    pidmap[-1000016]="taunuLbar";
+
+    pidmap[2000001]="dR";
+    pidmap[2000002]="uR";
+    pidmap[2000003]="sR";
+    pidmap[2000004]="cR";
+    pidmap[2000005]="b2";
+    pidmap[2000006]="t2";
+
+    pidmap[-2000001]="dRbar";
+    pidmap[-2000002]="uRbar";
+    pidmap[-2000003]="sRbar";
+    pidmap[-2000004]="cRbar";
+    pidmap[-2000005]="b2bar";
+    pidmap[-2000006]="t2bar";
+
+    pidmap[2000011]="eR";
+    pidmap[2000013]="muR";
+    pidmap[2000015]="tau2";
+
+    pidmap[-2000011]="eRbar";
+    pidmap[-2000013]="muRbar";
+    pidmap[-2000015]="tau2bar";
+
+    // Gauginos
+    pidmap[1000021]="g";
+    pidmap[1000022]="n1";
+    pidmap[1000023]="n2";
+    pidmap[1000024]="c1";
+    pidmap[-1000024]="c1bar";
+    pidmap[1000025]="n3";
+    pidmap[1000035]="n4";
+    pidmap[1000037]="c2";
+    pidmap[-1000037]="c2bar";
     
+}
+
+/*
+vector<double> Evaluator::xsec(const vector<int>& parts1,
+                               const vector<int>& parts2, double * par){
+
+    // Vector to store cross sections
+    vector<double> xsec;
+    
+    // Iterate over all pid combinations
+    for(int i = 0; i < parts1.size()*parts2.size(); i++){
+        // Is this a valid final state?
+        
+        // Calculate cross section
+    }
+    
+    return xsec;
+}
+*/
+
+double Evaluator::xsec(int pid1, int pid2, double * par){
+    // Figure out process string
+    string process = pidmap[pid1]+pidmap[pid2];
+    
+    return Evaluator::xsec(process, par);
 }
 
 double Evaluator::xsec(string process, Pythia8::SusyLesHouches * point){
