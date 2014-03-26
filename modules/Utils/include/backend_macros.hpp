@@ -109,7 +109,7 @@ namespace Gambit                                                            \
         else                                                                \
         {                                                                   \
           logger() << "Succeeded in loading " << LIBPATH << std::endl       \
-                   << backends << info << EOM;                              \
+                   << LogTags::backends << LogTags::info << EOM;            \
           present = true;                                                   \
         }                                                                   \
       }                                                                     \

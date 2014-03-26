@@ -41,7 +41,8 @@ namespace Gambit
 
   namespace Logging
   {
-    
+    using namespace LogTags;  
+  
     // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
     // These won't compile in g++ if the LogTags are const, something about how standard containers work...
 
@@ -446,6 +447,12 @@ namespace Gambit
          return; 
        }
 
+       // If 'fatal' tag is received, print the message to stdout as well
+       if ( mail.tags.find(fatal) != mail.tags.end() )
+       {
+         std::cout<<" \e[00;31;1mFATAL ERROR\e[00m"<<std::endl<<mail.message<<std::endl;
+       } 
+
        // Sort the tags
        const SortedMessage sortedmsg(mail);
 
@@ -623,6 +630,7 @@ namespace Gambit
       writetags(mail.flag_tags);
       // Message proper
       my_fstream<<" : "<<mail.message<<std::endl; 
+
     }
 
     void StdLogger::writetags(const std::set<LogTag>& tags)

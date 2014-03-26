@@ -19,6 +19,7 @@
 
 namespace Gambit
 {
+  using namespace LogTags;
 
   /// Core errors
   error& core_error()

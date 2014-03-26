@@ -34,7 +34,6 @@ namespace Gambit
   /// GAMBIT exception base class.
   class exception : virtual public std::exception
   {
-
     public:
 
       /// Constructors
