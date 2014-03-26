@@ -634,21 +634,19 @@ namespace Gambit {
           // (we just ignore the contributions from the second and third
           // particle and integrate out the corresponding kinematical
           // variable).
-          dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
+          //dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
 
           // Add up individual constributions
-          DiffYield3Body = DiffYield3Body->sum(dsigmavde);
+          //DiffYield3Body = DiffYield3Body->sum(dsigmavde);
 
-          // Divide by mass
-          // TODO: DiffYield3Body = DiffYield3Body->mul(pow(mass, -2.));
         }
       }
 
       // Resample function
-      // DiffYield3Body = DiffYield3Body->tabularize(logspace(0, 2, 100));
+      // DiffYield3Body = DiffYield3Body->tabulate(logspace(0, 2, 100));
 
-      // Sum two- and three-body spectra and return result
-      result = DiffYield2Body->sum(DiffYield3Body);
+      // Sum two- and three-body spectra and devide by mass squared
+      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.));
     }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
@@ -799,7 +797,7 @@ namespace Gambit {
         // Above L = 36, we use linear extrapolation up to L = 360000
         //
         // phi (defined as phi = sigmav/mDM**2*Ntot/8/pi * 1e26)
-        double xgridArray [101] = { 1e-20 , 6.74308086122e-05 , 0.000123192463137 , 
+        double xgridArray [101] = { 0. , 6.74308086122e-05 , 0.000123192463137 , 
         0.000171713798503 , 0.000215245918518 , 0.000255093268618 , 0.00029207805123 ,
         0.000326751732695 , 0.000359503469472 , 0.000390620122006 , 0.000420321264006,
         0.00044878042576 , 0.000476138421008 , 0.000502511975672 , 0.000527999496499,
@@ -847,23 +845,26 @@ namespace Gambit {
         std::vector<double> xgrid(xgridArray, xgridArray + sizeof xgridArray / sizeof xgridArray[0]);
         std::vector<double> ygrid(ygridArray, ygridArray + sizeof ygridArray / sizeof ygridArray[0]);
         // Construct interpolated function, using GAMBIT base functions.
-        BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1));
+        BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1, "lin"));
 
         // Integate spectrum
         // More precisely, the zero velocity limit of the differential
         // annihilation cross-section as function of individual final state
         // photons
-        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100))();
-
+        //std::ofstream os;
+        //os.open("test.dat");
+        //(*Dep::GA_AnnYield)->mult(1e30)->writeToFile(logspace(-1., 5., 100000), os);
+        //os.close();
+        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100)->set_epsrel(1e-3))();
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
-        std::cout << (*dwarf_likelihood)(1.) << std::endl;
 
         // Calculate the phi-value
-        double phi = AnnYieldint / 8 / 3.14159265 * 1e26;
+        double phi = AnnYieldint / 8. / 3.14159265 * 1e26;
 
         // And return final likelihood
         result = 0.5*(*dwarf_likelihood)(phi);
-        std::cout << "LIKELIHOOD IS: " << result << std::endl;
+        std::cout << "dwarf_likelihood: " << result << std::endl;
+        std::cout << "phi: " << phi << std::endl;
     }
 
     void RD_oh2_SingletDM(double &result)
