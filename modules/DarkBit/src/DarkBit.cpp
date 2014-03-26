@@ -531,10 +531,10 @@ namespace Gambit {
       }
 
       // Get annihilation process from process catalog
-      TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi", (std::string)"chi");
+      TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
 
       // Get particle mass from process catalog
-      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
 
 
       ///////////////////////////////////////////////////////////
@@ -656,10 +656,13 @@ namespace Gambit {
         TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
         TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
 
+        int index;
+
         // TODO: Hook up cross section to DarkSUSY
         #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2)                                          \
             /* Set cross-section */                                                             \
-            double CAT(sigma_,NAME) = BEreq::dssigmav(PARTCH);                                  \
+            index = PARTCH;                                                                     \
+            double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
             /* Create associated kinematical functions (just dependent on vrel)                 \
             *  here: s-wave, vrel independent 1-dim constant function */                        \
             BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),1));             \
@@ -671,18 +674,18 @@ namespace Gambit {
             TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
             process.channelList.push_back(CAT(channel_,NAME));
              
-        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
-        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
-        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
-        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
-        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
-        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
-        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
-        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
-        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
-        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
-        SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
-        SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
+//        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
+//        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
+//        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
+//        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
+//        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
+//        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
+//        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
+//        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
+//        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
+//        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
+//        SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
+//        SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
         SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0      )
         SETUP_DS_PROCESS(WW,        13, W+,     W-      )
         SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e   )
@@ -698,8 +701,8 @@ namespace Gambit {
         SETUP_DS_PROCESS(ttbar,     24, t,      tbar    )
         SETUP_DS_PROCESS(bbbar,     25, b,      bbar    )
         SETUP_DS_PROCESS(gluglu,    26, g,      g       )
-        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
-        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
+//        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
+//        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
     
         #undef SETUP_DS_PROCESS
 
@@ -711,6 +714,11 @@ namespace Gambit {
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
 
         result = catalog;
+    }
+
+    void RD_oh2_DarkSUSY(double &result)
+    {
+        result = 0;
     }
 
 /*    
@@ -828,6 +836,9 @@ namespace Gambit {
         // annihilation cross-section as function of individual final state
         // photons
         double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100))();
+
+        std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
+        std::cout << (*dwarf_likelihood)(1.) << std::endl;
 
         // Calculate the phi-value
         double phi = AnnYieldint / 8 / 3.14159265 * 1e26;
