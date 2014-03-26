@@ -76,19 +76,16 @@
  
   // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
   // object as a CAPABILITY of this model)
-  INTERPRET_AS_PARENT__BEGIN
-  INTERPRET_AS_PARENT__DEFINE(MSSMBen_IAPfunc)
-  
-  namespace Gambit{ namespace Models{ namespace MSSMBen{
-  void MSSMBen_IAPfunc (ModelParameters &parentparams)
+  ATTACH_INTERPRET_AS_PARENT_FUNCTION(MSSMBen_IAPfunc)
+
+  // The following function can now be defined anywhere if there are no dependencies
+  // If you need to access the *DEP namespace then it is a little harder because you have to know the right namespace in which to find it. See demo.hpp for examples. 
+  void MSSMBen_IAPfunc (ModelParameters &myparams, ModelParameters &parentparams)
   {
      logger()<<"Running interpret_as_parent calculations for MSSMBen -> MSSM ..."<<LogTags::info<<EOM;
   
-     //namespace matches parent model because this function behaves effectively as the parent model. 
-     //'parentparams' is just what we conventionally call 'result' in the module functions. 
-     using namespace Pipes::MSSM29_parameters;
-     const ModelParameters &p = *Dep::MSSMBen_parameters;
-
+     const ModelParameters &p = myparams;
+     
      double MSUSY(p["M_input"]);
      parentparams.setValue("M_input", MSUSY   );
      parentparams.setValue("M1",      p["M1"] );
@@ -120,7 +117,7 @@
      parentparams.setValue("msR",     1.5*MSUSY );
      parentparams.setValue("mbR",     p["mbR"]  );
    }
-  }}} //exiting namespaces  
+
 #undef PARENT
 #undef MODEL
 

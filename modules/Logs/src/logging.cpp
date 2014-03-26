@@ -184,32 +184,35 @@ namespace Gambit
     // Destructor
     LogMaster::~LogMaster()
     {
-       // Later on this should clean up the logger objects
-       std::cout<<"LogMaster is being destructed, checking if messaged left to deliver..."<<std::endl;
-       // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
-       if (prelim_buffer.size()!=0)
-       { 
-         std::cout<<"argh yep buffer has things in it, try to dump them to the logs..."<<std::endl;
-         if (not loggers_readyQ)
-         {
-           std::cout<<"Oh no, loggers were never initialised! creating default logger..."<<std::endl;
-           StdLogger* deflogger = new StdLogger("default.log");
-           std::set<int> deftag;
-           deftag.insert(def);
-           loggers[deftag] = deflogger; 
-           loggers_readyQ = true;
-         }
-         std::cout<<"dumping messages..."<<std::endl;
-         // Dump buffered messages
-         dump_prelim_buffer();
-         std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
-       }
-
-       // Check if there is anything in the output stream that has not been sent, and send it if there is
-       if (not stream.str().empty() or not streamtags.empty())
+       if(not silenced)
        {
-         *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
-       } 
+         // Later on this should clean up the logger objects
+         std::cout<<"Logger is being destructed, checking if messaged left to deliver..."<<std::endl;
+         // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
+         if (prelim_buffer.size()!=0)
+         { 
+           std::cout<<"Logger buffer is not empty; attempting to deliver unsent messages to the logs..."<<std::endl;
+           if (not loggers_readyQ)
+           {
+             std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
+             StdLogger* deflogger = new StdLogger("default.log");
+             std::set<int> deftag;
+             deftag.insert(def);
+             loggers[deftag] = deflogger; 
+             loggers_readyQ = true;
+           }
+           std::cout<<"Delivering messages..."<<std::endl;
+           // Dump buffered messages
+           dump_prelim_buffer();
+           std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
+         }
+
+         // Check if there is anything in the output stream that has not been sent, and send it if there is
+         if (not stream.str().empty() or not streamtags.empty())
+         {
+           *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+         }   
+       }
 
        // Delete logger objects
        for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 

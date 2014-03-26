@@ -373,11 +373,15 @@
         void FUNC (ModelParameters &);                                         \
                                                                                \
         /* The actual definition of the interpret_as_X function */             \
-        void CAT(MODEL_X,_parameters) (ModelParameters &result)                \
+        void CAT(MODEL_X,_parameters) (ModelParameters &model_x_params)        \
         {                                                                      \
+          /* Collect MODEL's parameters via dependency system */               \
+          using namespace CAT_3(Pipes::,MODEL_X,_parameters);                  \
+          const ModelParameters &model_params = CAT_3(*Dep::,MODEL,_parameters);\
+                                                                               \
           /* Run user-supplied code (which must take result as an
              argument, and set the parameters it contains as desired) */       \
-          FUNC (result);                                                       \
+          FUNC (model_params,model_x_params);                                  \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -399,6 +403,14 @@
 #define INTERPRET_AS_PARENT__DEFINE(FUNC)                                      \
   INTERPRET_AS_X__DEFINE(PARENT,FUNC)                                          \
 
+// Full combo wrapper
+#define ATTACH_INTERPRET_AS_PARENT(FUNC)                                       \
+  INTERPRET_AS_PARENT_BEGIN                                                    \
+  INTERPRET_AS_PARENT__DEFINE(FUNC)                                            \
+
+// Macro to easily get the Pipes, for retrieving dependencies
+#define USING_PIPE                                                             \
+  using namespace CAT_5(Gambit::Models::,MODEL,::Pipes::,PARENT,_parameters);  \
 
 /// Macros to create and register primary model functors. 
 ///
