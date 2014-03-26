@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "SusyLesHouches.h"
+#include "Pythia8/SusyLesHouches.h"
 
 // Include all NN-classes
 #include "networks/NNfunction_n1n1.h"
