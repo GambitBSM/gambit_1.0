@@ -111,7 +111,7 @@ namespace Gambit
                         
                 public:
                         template <typename... plug_args>
-                        Plugin_Interface(std::string file, std::string name, const plug_args&... inputs) : name(name)
+                        Plugin_Interface(const std::string &file, const std::string &name_in, const plug_args&... inputs) : name(name_in)
                         {
                                 plugin = dlopen (file.c_str(), RTLD_NOW);
                                 std::string str;
