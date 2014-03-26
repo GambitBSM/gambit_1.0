@@ -45,7 +45,8 @@ namespace Gambit
     scan,
     inifile,
     printers,
-    utils
+    utils,
+    backends
     /* etc... */
   };
 

@@ -67,7 +67,7 @@ namespace Gambit
     std::set<int>& components()
     {
       // We add the core components here, but the module and backend numbers are added later, so the set cannot be const.
-      static LogTag core_a[] = {def, core, logging, models, depres, scan, inifile, printers, utils};
+      static LogTag core_a[] = {def, core, logging, models, depres, scan, inifile, printers, utils, backends};
       static std::set<int> components_set(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
       return components_set;
     }
@@ -93,6 +93,7 @@ namespace Gambit
        m[inifile] = "IniFile";
        m[printers]= "Printers";
        m[utils]   = "Utilities";
+       m[backends]= "Backends";       
        
        // Test numbers:
        std::cout<<"Checking LogTag numbers..."<<std::endl;

@@ -35,6 +35,8 @@ namespace Gambit
       w = logging_warning();
       e = model_error();
       w = model_warning();
+      e = backend_error();
+      w = backend_warning();
       e = Printers::printer_error();
       w = Printers::printer_warning();
     }
