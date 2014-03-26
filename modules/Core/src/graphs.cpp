@@ -41,6 +41,7 @@
 
 namespace Gambit
 {
+
   namespace Graphs
   {
     using namespace LogTags;

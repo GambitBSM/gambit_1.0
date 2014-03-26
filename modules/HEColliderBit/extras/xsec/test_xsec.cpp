@@ -54,30 +54,18 @@ int main(int argc, char* argv[]){
 
     ev.xsec("nn_n1n2",MSSMpar);
 
-    ev.xsec("b1b1",MSSMpar);
-    ev.xsec("b2b2",MSSMpar);
-    ev.xsec("t1t1",MSSMpar);
-    ev.xsec("t2t2",MSSMpar);
-    
-    ev.xsec("cLg",MSSMpar);
-    ev.xsec("cRg",MSSMpar);
-    ev.xsec("dLg",MSSMpar);
-    ev.xsec("dRg",MSSMpar);
-    ev.xsec("sLg",MSSMpar);
-    ev.xsec("sRg",MSSMpar);
-    ev.xsec("uLg",MSSMpar);
-    ev.xsec("uRg",MSSMpar);
-
     ev.xsec("gg",MSSMpar);
-    
-    t = clock() - t0;
-    cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
     
     cout << "Testing with Pythia8 SLHA class" << endl;
     Pythia8::SusyLesHouches * point = new Pythia8::SusyLesHouches("sps1a_slha.dat");
     ev.xsec("nn_n1n1",point);
-
     delete point;
+    
+    cout << "Testing callign with pids" << endl;
+    ev.xsec(1000021,1000021,MSSMpar);
+    
+    t = clock() - t0;
+    cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
     
     return 0;
 }

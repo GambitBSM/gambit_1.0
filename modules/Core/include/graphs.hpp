@@ -38,6 +38,7 @@
 
 namespace Gambit
 {
+
   namespace Graphs
   {
 
