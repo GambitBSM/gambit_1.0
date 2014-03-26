@@ -1,0 +1,38 @@
+###################
+## Default compiler choices and dependency compile/link flags
+
+CXX := g++
+
+HEC_CPPFLAGS := -I../../include -I../../../contrib/mcutils/include -I../../../contrib/hep_simple_lib
+HEC_CXXFLAGS := -std=c++0x -O3 -fPIC -pedantic -Wall -Werror=uninitialized #-Werror=delete-non-virtual-dtor
+HEC_LDFLAGS :=
+
+PY8_CXXFLAGS := $(shell pythia8-config --cxxflags)
+PY8_LDFLAGS := $(shell pythia8-config --libs)
+
+FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
+FJ_LDFLAGS := $(shell fastjet-config --libs)
+
+ROOT_CXXFLAGS := $(shell root-config --cflags)
+ROOT_LDFLAGS := $(shell root-config --libs)
+
+DELPHES := $(DELPHESDIR)
+ifdef DELPHES
+  $(info Delphes path = $(DELPHES))
+else
+  $(warning $$DELPHESDIR variable not defined)
+  BOOST = /usr/local
+endif
+DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
+DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
+
+BOOST := $(BOOSTDIR)
+ifdef BOOST
+  $(info Boost path = $(BOOST))
+else
+  $(warning $$BOOSTDIR variable not defined)
+  BOOST = /usr
+endif
+BOOST_SERIALIZATION := $(filter libboost_serialization.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
+BOOST_CXXFLAGS := -I$(BOOST)
+BOOST_LDFLAGS := $(if $(BOOST_SERIALIZATION),-L$(BOOST)/stage/lib -lboost_serialization)

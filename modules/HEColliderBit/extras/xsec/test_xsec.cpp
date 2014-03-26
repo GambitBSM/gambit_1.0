@@ -14,12 +14,12 @@ int main(int argc, char* argv[]){
     // Start clock
     clock_t t0, t;
     t0 = clock();
-    
+
     Evaluator ev;
-    
+
     t = clock() - t0;
     cout << "Instantiating class took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
-    
+
     double MSSMpar[24]; // SPS1a-like test
     MSSMpar[0] = 10.;
     MSSMpar[1] = 99.;
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
     MSSMpar[21] = 496.;
     MSSMpar[22] = 425.;
     MSSMpar[23] = 517.;
-    
+
     // Evaluate cross section
     ev.xsec("nn_n1n1",MSSMpar);
 
@@ -55,19 +55,22 @@ int main(int argc, char* argv[]){
     ev.xsec("nn_n1n2",MSSMpar);
 
     ev.xsec("gg",MSSMpar);
-    
+
     cout << "Testing with Pythia8 SLHA class" << endl;
-    Pythia8::SusyLesHouches * point = new Pythia8::SusyLesHouches("sps1a_slha.dat");
+    Pythia8::SusyLesHouches point("sps1a_slha.dat");
     ev.xsec("nn_n1n1",point);
-    delete point;
-    
-    cout << "Testing callign with pids" << endl;
+
+    cout << "Testing calling with pids" << endl;
     ev.xsec(1000021,1000021,MSSMpar);
-    ev.xsec(0,1000021,MSSMpar);
+    ev.xsec(0,1000021,MSSMpar); // should be flagged as illegal
     ev.xsec(1000001,1000021,MSSMpar);
+
+    cout << endl;
+    double xstot = ev.xsec({{1000001,1000021}},{{1000021,1000001,-1000001}},MSSMpar);
+    cout << "Total {{1000001,1000021}},{{1000021}} xsec = " << xstot << " pb" << endl;
 
     t = clock() - t0;
     cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
-    
+
     return 0;
 }

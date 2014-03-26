@@ -101,115 +101,125 @@ using namespace std;
 namespace xsec{
 
 class Evaluator {
-    
-    // One object of every NN class
-    NNfunction_n1n1 nn_n1n1;
-    NNfunction_n1n2 nn_n1n2;
 
-    NNfunction_nn_n1n3 nn_n1n3;
-    NNfunction_nn_n1n4 nn_n1n4;
-    NNfunction_nn_n1n5 nn_n1n5;
-    
-    NNfunction_b1b1 b1b1;
-    NNfunction_b2b2 b2b2;
-    NNfunction_cLg cLg;
-    NNfunction_cRg cRg;
-    NNfunction_dLg dLg;
-    NNfunction_dRg dRg;
-    NNfunction_gg gg;
-    NNfunction_sLg sLg;
-    NNfunction_sRg sRg;
-    NNfunction_sb_cLcL sb_cLcL;
-    NNfunction_sb_cLcR sb_cLcR;
-    NNfunction_sb_cLdL sb_cLdL;
-    NNfunction_sb_cLdR sb_cLdR;
-    NNfunction_sb_cLsL sb_cLsL;
-    NNfunction_sb_cLsR sb_cLsR;
-    NNfunction_sb_cLuL sb_cLuL;
-    NNfunction_sb_cLuR sb_cLuR;
-    NNfunction_sb_cRcR sb_cRcR;
-    NNfunction_sb_dLcR sb_dLcR;
-    NNfunction_sb_dLdL sb_dLdL;
-    NNfunction_sb_dLdR sb_dLdR;
-    NNfunction_sb_dLsR sb_dLsR;
-    NNfunction_sb_dLuR sb_dLuR;
-    NNfunction_sb_dRcR sb_dRcR;
-    NNfunction_sb_dRdR sb_dRdR;
-    NNfunction_sb_dRsR sb_dRsR;
-    NNfunction_sb_sLcR sb_sLcR;
-    NNfunction_sb_sLdL sb_sLdL;
-    NNfunction_sb_sLdR sb_sLdR;
-    NNfunction_sb_sLsL sb_sLsL;
-    NNfunction_sb_sLsR sb_sLsR;
-    NNfunction_sb_sLuL sb_sLuL;
-    NNfunction_sb_sLuR sb_sLuR;
-    NNfunction_sb_sRcR sb_sRcR;
-    NNfunction_sb_sRsR sb_sRsR;
-    NNfunction_sb_uLcR sb_uLcR;
-    NNfunction_sb_uLdR sb_uLdR;
-    NNfunction_sb_uLsR sb_uLsR;
-    NNfunction_sb_uLuL sb_uLuL;
-    NNfunction_sb_uLuR sb_uLuR;
-    NNfunction_sb_uRcR sb_uRcR;
-    NNfunction_sb_uRdR sb_uRdR;
-    NNfunction_sb_uRsR sb_uRsR;
-    NNfunction_sb_uRuR sb_uRuR;
-    NNfunction_ss_cLcL ss_cLcL;
-    NNfunction_ss_cLcR ss_cLcR;
-    NNfunction_ss_cLdL ss_cLdL;
-    NNfunction_ss_cLdR ss_cLdR;
-    NNfunction_ss_cLsL ss_cLsL;
-    NNfunction_ss_cLsR ss_cLsR;
-    NNfunction_ss_cLuL ss_cLuL;
-    NNfunction_ss_cLuR ss_cLuR;
-    NNfunction_ss_cRcR ss_cRcR;
-    NNfunction_ss_dLcR ss_dLcR;
-    NNfunction_ss_dLdL ss_dLdL;
-    NNfunction_ss_dLdR ss_dLdR;
-    NNfunction_ss_dLsR ss_dLsR;
-    NNfunction_ss_dLuR ss_dLuR;
-    NNfunction_ss_dRcR ss_dRcR;
-    NNfunction_ss_dRdR ss_dRdR;
-    NNfunction_ss_dRsR ss_dRsR;
-    NNfunction_ss_sLcR ss_sLcR;
-    NNfunction_ss_sLdL ss_sLdL;
-    NNfunction_ss_sLdR ss_sLdR;
-    NNfunction_ss_sLsL ss_sLsL;
-    NNfunction_ss_sLsR ss_sLsR;
-    NNfunction_ss_sLuL ss_sLuL;
-    NNfunction_ss_sLuR ss_sLuR;
-    NNfunction_ss_sRcR ss_sRcR;
-    NNfunction_ss_sRsR ss_sRsR;
-    NNfunction_ss_uLcR ss_uLcR;
-    NNfunction_ss_uLdR ss_uLdR;
-    NNfunction_ss_uLsR ss_uLsR;
-    NNfunction_ss_uLuL ss_uLuL;
-    NNfunction_ss_uLuR ss_uLuR;
-    NNfunction_ss_uRcR ss_uRcR;
-    NNfunction_ss_uRdR ss_uRdR;
-    NNfunction_ss_uRsR ss_uRsR;
-    NNfunction_ss_uRuR ss_uRuR;
-    NNfunction_t1t1 t1t1;
-    NNfunction_t2t2 t2t2;
-    NNfunction_uLg uLg;
-    NNfunction_uRg uRg;
-    
+    // One object of every NN class
+    // Mutable so their Value methods can be called despite not being declared const by ROOT...
+    mutable NNfunction_n1n1 nn_n1n1;
+    mutable NNfunction_n1n2 nn_n1n2;
+
+    mutable NNfunction_nn_n1n3 nn_n1n3;
+    mutable NNfunction_nn_n1n4 nn_n1n4;
+    mutable NNfunction_nn_n1n5 nn_n1n5;
+
+    mutable NNfunction_b1b1 b1b1;
+    mutable NNfunction_b2b2 b2b2;
+    mutable NNfunction_cLg cLg;
+    mutable NNfunction_cRg cRg;
+    mutable NNfunction_dLg dLg;
+    mutable NNfunction_dRg dRg;
+    mutable NNfunction_gg gg;
+    mutable NNfunction_sLg sLg;
+    mutable NNfunction_sRg sRg;
+    mutable NNfunction_sb_cLcL sb_cLcL;
+    mutable NNfunction_sb_cLcR sb_cLcR;
+    mutable NNfunction_sb_cLdL sb_cLdL;
+    mutable NNfunction_sb_cLdR sb_cLdR;
+    mutable NNfunction_sb_cLsL sb_cLsL;
+    mutable NNfunction_sb_cLsR sb_cLsR;
+    mutable NNfunction_sb_cLuL sb_cLuL;
+    mutable NNfunction_sb_cLuR sb_cLuR;
+    mutable NNfunction_sb_cRcR sb_cRcR;
+    mutable NNfunction_sb_dLcR sb_dLcR;
+    mutable NNfunction_sb_dLdL sb_dLdL;
+    mutable NNfunction_sb_dLdR sb_dLdR;
+    mutable NNfunction_sb_dLsR sb_dLsR;
+    mutable NNfunction_sb_dLuR sb_dLuR;
+    mutable NNfunction_sb_dRcR sb_dRcR;
+    mutable NNfunction_sb_dRdR sb_dRdR;
+    mutable NNfunction_sb_dRsR sb_dRsR;
+    mutable NNfunction_sb_sLcR sb_sLcR;
+    mutable NNfunction_sb_sLdL sb_sLdL;
+    mutable NNfunction_sb_sLdR sb_sLdR;
+    mutable NNfunction_sb_sLsL sb_sLsL;
+    mutable NNfunction_sb_sLsR sb_sLsR;
+    mutable NNfunction_sb_sLuL sb_sLuL;
+    mutable NNfunction_sb_sLuR sb_sLuR;
+    mutable NNfunction_sb_sRcR sb_sRcR;
+    mutable NNfunction_sb_sRsR sb_sRsR;
+    mutable NNfunction_sb_uLcR sb_uLcR;
+    mutable NNfunction_sb_uLdR sb_uLdR;
+    mutable NNfunction_sb_uLsR sb_uLsR;
+    mutable NNfunction_sb_uLuL sb_uLuL;
+    mutable NNfunction_sb_uLuR sb_uLuR;
+    mutable NNfunction_sb_uRcR sb_uRcR;
+    mutable NNfunction_sb_uRdR sb_uRdR;
+    mutable NNfunction_sb_uRsR sb_uRsR;
+    mutable NNfunction_sb_uRuR sb_uRuR;
+    mutable NNfunction_ss_cLcL ss_cLcL;
+    mutable NNfunction_ss_cLcR ss_cLcR;
+    mutable NNfunction_ss_cLdL ss_cLdL;
+    mutable NNfunction_ss_cLdR ss_cLdR;
+    mutable NNfunction_ss_cLsL ss_cLsL;
+    mutable NNfunction_ss_cLsR ss_cLsR;
+    mutable NNfunction_ss_cLuL ss_cLuL;
+    mutable NNfunction_ss_cLuR ss_cLuR;
+    mutable NNfunction_ss_cRcR ss_cRcR;
+    mutable NNfunction_ss_dLcR ss_dLcR;
+    mutable NNfunction_ss_dLdL ss_dLdL;
+    mutable NNfunction_ss_dLdR ss_dLdR;
+    mutable NNfunction_ss_dLsR ss_dLsR;
+    mutable NNfunction_ss_dLuR ss_dLuR;
+    mutable NNfunction_ss_dRcR ss_dRcR;
+    mutable NNfunction_ss_dRdR ss_dRdR;
+    mutable NNfunction_ss_dRsR ss_dRsR;
+    mutable NNfunction_ss_sLcR ss_sLcR;
+    mutable NNfunction_ss_sLdL ss_sLdL;
+    mutable NNfunction_ss_sLdR ss_sLdR;
+    mutable NNfunction_ss_sLsL ss_sLsL;
+    mutable NNfunction_ss_sLsR ss_sLsR;
+    mutable NNfunction_ss_sLuL ss_sLuL;
+    mutable NNfunction_ss_sLuR ss_sLuR;
+    mutable NNfunction_ss_sRcR ss_sRcR;
+    mutable NNfunction_ss_sRsR ss_sRsR;
+    mutable NNfunction_ss_uLcR ss_uLcR;
+    mutable NNfunction_ss_uLdR ss_uLdR;
+    mutable NNfunction_ss_uLsR ss_uLsR;
+    mutable NNfunction_ss_uLuL ss_uLuL;
+    mutable NNfunction_ss_uLuR ss_uLuR;
+    mutable NNfunction_ss_uRcR ss_uRcR;
+    mutable NNfunction_ss_uRdR ss_uRdR;
+    mutable NNfunction_ss_uRsR ss_uRsR;
+    mutable NNfunction_ss_uRuR ss_uRuR;
+    mutable NNfunction_t1t1 t1t1;
+    mutable NNfunction_t2t2 t2t2;
+    mutable NNfunction_uLg uLg;
+    mutable NNfunction_uRg uRg;
+
     // Map for pid codes and strings
     map<int,string> pidmap;
-    
+
+    void _init_pidmap();
+
 public:
-    Evaluator();
-    //string get_process(const vector<int>& parts1, const vector<int>& parts2);
 
-    //vector<double> xsec(const vector<int>& parts1,
-    //                    const vector<int>& parts2, double * par);
+    Evaluator() { _init_pidmap(); }
 
-    double xsec(int pid1, int pid2, double * par);
-    double xsec(string process, double * par);
-    double xsec(string process, Pythia8::SusyLesHouches * point);
+    string get_process(int pid1, int pid2) const;
+
+    double xsec(const vector<int>& parts1, const vector<int>& parts2, double * par) const;
+    // double xsec(const vector<int>& parts1, const vector<int>& parts2,
+    //             const Pythia8::SusyLesHouches& point) const;
+
+    double xsec(int pid1, int pid2, double * par) const;
+    double xsec(int pid1, int pid2, const Pythia8::SusyLesHouches& point) const;
+
+    double xsec(const string& process, double * par) const;
+    double xsec(const string& process, const Pythia8::SusyLesHouches& point) const;
+
+    double log10xsec(const string& process, double * par) const;
 
 };
 
 }
-    
+
 #endif // xsec_h

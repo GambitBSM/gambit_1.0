@@ -1,11 +1,11 @@
 #pragma once
 
 #include <boost/serialization/access.hpp>
-#include "MathUtils.hpp"
-#include "Vectors.hpp"
+#include "MCUtils/MathUtils.h"
+#include "MCUtils/Vectors.h"
 
 namespace HEP_Simple_Lib {
-
+  using namespace MCUtils;
 
     /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
     class Particle {
@@ -31,7 +31,7 @@ namespace HEP_Simple_Lib {
       int _pdgId;
       /// Promptness flag
       bool _prompt;
-      /// isolation value
+      /// Isolation value
       float _isol4;
       //@}
 
@@ -47,11 +47,11 @@ namespace HEP_Simple_Lib {
       /// "Cartesian" constructor
       Particle(double px, double py, double pz, double E, int pdgid)
         : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
-     
-      /// "Cartesian" constructor for massless particles - or close enough
-      Particle(double px, double py, double pz, int pdgid)
-        : _p4(px, py, pz), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
 
+      /// "Cartesian" constructor for massless particles - or close enough
+      /// @todo AB: WTF?
+      // Particle(double px, double py, double pz, int pdgid)
+      //   : _p4(px, py, pz), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
 
       /// 4-mom + PDG ID constructor
       Particle(const P4& mom, int pdgid)
@@ -123,7 +123,7 @@ namespace HEP_Simple_Lib {
       /// @ Isolation of particle
       //@{
 
-      /// Get isolation 
+      /// Get isolation
       double isol() const { return _isol4;}
       void set_isol(float isol) {_isol4 = isol;}
 

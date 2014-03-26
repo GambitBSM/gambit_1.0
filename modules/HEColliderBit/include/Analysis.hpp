@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Event.hpp"
-#include "MathUtils.hpp"
+using namespace HEP_Simple_Lib;
+#include "MCUtils/MathUtils.h"
+using namespace MCUtils;
 
 namespace Gambit {
   namespace HEColliderBit {
@@ -33,12 +35,11 @@ namespace Gambit {
       virtual void init() {  }
 
       /// Analyze the event (accessed by reference)
-      void analyze(const Event& e) { analyze(&e); }
+      void analyze(const HEP_Simple_Lib::Event& e) { analyze(&e); }
 
       /// Analyze the event (accessed by pointer)
-      /// @todo Call init() automatically on first call to analyze()? -- requires a bit of indirection: not worth it?
-      /// @todo Needs to be called from Derived::analyze()
-      virtual void analyze(const Event*) {
+      /// @note Needs to be called from Derived::analyze()
+      virtual void analyze(const HEP_Simple_Lib::Event*) {
         _ntot += 1; //< @todo Event weight support needed?
       }
 
