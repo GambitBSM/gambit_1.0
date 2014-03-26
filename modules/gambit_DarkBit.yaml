@@ -35,16 +35,20 @@ CMSSM_I:
   A0:
     range: [-1000, 1000]
   M0:
+    fixed_value: 100
     prior_type: log
     range: [0.001,1000]
   M12:
+    fixed_value: 90
     #same_as: CMSSM_I::M0
   Mstop:
+    fixed_value: 100
     #same_as: CMSSM_I::M12
   sgnmu:
      range: [-1, 1]
      fixed_value: 1
   tanb:
+     fixed_value: 10
 
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
@@ -91,21 +95,21 @@ CMSSM_I:
 #  prior_type: log
 #  range: [0.001,1000]
 
-m12_prior: 
-  parameters: [CMSSM_I::M12]
-  prior_type: composite
-  options: 
-    new_prior: 
-      parameters: [CMSSM_I::M12]
-      prior_type: log
-      range: [100,2000]
+#m12_prior: 
+#  parameters: [CMSSM_I::M12]
+#  prior_type: composite
+#  options: 
+#    new_prior: 
+#      parameters: [CMSSM_I::M12]
+#      prior_type: log
+#      range: [100,2000]
 
-tanbMstop_prior: 
-  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
-  prior_type: cauchy
-  options:
-    cov: [[0.5, 0.1],[0.1, 0.6]]
-    demo: 45
+#tanbMstop_prior: 
+#  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
+#  prior_type: cauchy
+#  options:
+#    cov: [[0.5, 0.1],[0.1, 0.6]]
+#    demo: 45
 
 ##############################
 --- # Scanner setup
@@ -165,15 +169,11 @@ multinest:
 #  capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-- purpose:      Likelihood
-  capability:   lnL_ExampleBitB
-  type:         double
-  function:     ""
-  module:       ""
-
-# Uncomment to test FastSim
-- purpose:      Likelihood
-  capability:   fast_sim
+#- purpose:      Likelihood
+#  capability:   lnL_ExampleBitB
+#  type:         double
+#  function:     ""
+#  module:       ""
 
 # Test loop manager
 #- purpose:      Likelihood
@@ -184,23 +184,24 @@ multinest:
 #- purpose:      Likelihood
 #  capability:   SI_bsgamma
 
-# Uncomment to test HEColliderBit
-#- purpose:      Observable
-#  capability:   analysisAccumulator
-
 # Test Pythia8 SLHA reader
-- purpose:      Likelihood
-  capability:   MSSMslha_testLogL
+#- purpose:      Likelihood
+#  capability:   MSSMslha_testLogL
 #  printme:      false
 
-# Test vector output of printer
-- purpose:      Observable
-  capability:   test_vector
-  type:         std::vector<double>
+- purpose:       Likelihood
+  capability:    lnL_FermiLATdwarfs
+
+- purpose:       Likelihood
+  capability:    lnL_oh2
 
 #########################
 --- # Auxiliary entries
 #########################
+
+- capability:   lnL_oh2
+  dependencies:
+  - {capability: "RD_oh2", function: "RD_oh2_DarkSUSY"}
 
 - capability:   "MSSMspectrum"
 
@@ -212,11 +213,6 @@ multinest:
   - {capability: "Weff", type: "", function: "Weff", module: ""}
   backends:
   - {capability: "", function: "", backend: "", version: ""}
-
-#- capability:   "analysisAccumulator"
-#  type: "double"
-#  dependencies:
-#  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
 
 - capability:    "nevents_postcuts"
   dependencies:
