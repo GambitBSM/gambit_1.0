@@ -111,7 +111,7 @@ double Evaluator::xsec(const vector<int>& pids1,
             const double xsec_ij = xsec(pa, par);
             if (xsec_ij > 0) {
               xs += xsec_ij;
-              cout << "  " << pid1 << " " << pid2 << " -> " << pa << endl;
+              cout << "  " << pid1 << " " << pid2 << " -> " << pa << " = " << xsec_ij << " pb" << endl;
             }
           }
 
@@ -122,7 +122,7 @@ double Evaluator::xsec(const vector<int>& pids1,
             const double xsec_ji = xsec(pb, par);
             if (xsec_ji > 0) {
               xs += xsec_ji;
-              cout << "  " << pid2 << " " << pid1 << " -> " << pb << endl;
+              cout << "  " << pid2 << " " << pid1 << " -> " << pb << " = " << xsec_ji << " pb" << endl;
             }
           }
 
@@ -211,7 +211,7 @@ double Evaluator::xsec(const string& process, double * par) const {
     // The NN gives log10 of cross section
     try {
       const double xsec = pow(10.,log10xsec(process, par));
-      cout << process << " got evaluated: " << xsec << " pb" << endl;
+      //cout << process << " got evaluated: " << xsec << " pb" << endl;
       return xsec;
     } catch (const std::exception& e) {
       //cout << "Something went wrong, wrong process?" << endl;
