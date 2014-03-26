@@ -9,12 +9,5 @@
 #define foreach BOOST_FOREACH
 #endif
 
-/// @todo Remove HepMC from this header, so some bits of the lib can be used without HepMC?
-#include "HepMC/GenEvent.h"
-
-namespace MCUtils {
-
-  /// Use HepMC's namespace implicitly
-  using namespace HepMC;
-
-}
+// "Forward declare" the MCUtils namespace
+namespace MCUtils { }

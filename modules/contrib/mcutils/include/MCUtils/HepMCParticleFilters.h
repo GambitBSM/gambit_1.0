@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HepMC/GenEvent.h"
+
 #include "MCUtils/Utils.h"
 #include "MCUtils/Vectors.h"
 

@@ -7,15 +7,10 @@
 #include "boost/function.hpp" //< Replace with std::function when possible
 #include <vector>
 
-// Provide convenience foreach loop -- particularly nice for HepMC walking combined with the functions below
-#include "boost/foreach.hpp"
-#ifndef foreach
-#define foreach BOOST_FOREACH
-#endif
-
 #include "MCUtils/HepMCVertexUtils.h"
 #include "MCUtils/HepMCEventUtils.h"
 #include "MCUtils/Vectors.h"
+#include "MCUtils/Utils.h"
 
 namespace MCUtils {
 
