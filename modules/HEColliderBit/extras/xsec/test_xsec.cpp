@@ -63,7 +63,9 @@ int main(int argc, char* argv[]){
     
     cout << "Testing callign with pids" << endl;
     ev.xsec(1000021,1000021,MSSMpar);
-    
+    ev.xsec(0,1000021,MSSMpar);
+    ev.xsec(1000001,1000021,MSSMpar);
+
     t = clock() - t0;
     cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
     
