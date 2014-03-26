@@ -41,24 +41,24 @@ namespace Gambit
       
       // Get the CMSSM spectrum at scale Qout for a chosen model point
       // QGUT is the unification scale; make this optional?
-      MSSMspecQ getCMSSMspectrum(SMpars &smpars,
-             double m0, double m12, double tanb, double a0, int sgnmu, double QGUT, double Qout)
-      {
-        MSSMspecQ spectrum; // GAMBIT format spectrum object.
-        /* run SoftSUSY, stick results into spectrum object */
-        return spectrum;
-      };
-      
-      // Get the MSSM spectrum at scale Qout, from general MSSM soft masses at scale Qin
-      MSSMspecQ getgenMSSMspectrum(SMpars &smpars, MSSMsoftmassesQ &softmasses, double Qin, double Qout)
-      {
-        MSSMspecQ spectrum; // GAMBIT format spectrum object.
-        /* run SoftSUSY, stick results into spectrum object */
-        spectrum.MASS.stop1 = 1000;
-        spectrum.MASS.neut1 = 500;
+      /// MSSMspecQ getCMSSMspectrum(SMpars &smpars,
+      ///        double m0, double m12, double tanb, double a0, int sgnmu, double QGUT, double Qout)
+      /// {
+      ///   MSSMspecQ spectrum; // GAMBIT format spectrum object.
+      ///   /* run SoftSUSY, stick results into spectrum object */
+      ///   return spectrum;
+      /// };
+      /// 
+      /// // Get the MSSM spectrum at scale Qout, from general MSSM soft masses at scale Qin
+      /// MSSMspecQ getgenMSSMspectrum(SMpars &smpars, MSSMsoftmassesQ &softmasses, double Qin, double Qout)
+      /// {
+      ///   MSSMspecQ spectrum; // GAMBIT format spectrum object.
+      ///   /* run SoftSUSY, stick results into spectrum object */
+      ///   spectrum.MASS.stop1 = 1000;
+      ///   spectrum.MASS.neut1 = 500;
     
-        return spectrum;
-      };
+      ///   return spectrum;
+      /// };
       
     } /* end namespace BACKENDNAME */                                          
   } /* end namespace Backends */                                                
@@ -72,8 +72,8 @@ namespace Gambit
  * 
  * As with BE_FUNCTION, the last argument is optional. */
  
-BE_CONV_FUNCTION(getCMSSMspectrum,   MSSMspecQ, "BECMSSMspectrum")
-BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, "BEgenMSSMspectrum")
+//BE_CONV_FUNCTION(getCMSSMspectrum,   MSSMspecQ, "BECMSSMspectrum")
+//BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, "BEgenMSSMspectrum")
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 

@@ -20,6 +20,7 @@
 
 namespace Gambit
 {
+  using namespace LogTags;
 
   /// Utility errors
   error& utils_error()
@@ -32,6 +33,20 @@ namespace Gambit
   warning& utils_warning()
   { 
     static warning local("A problem has been raised by one of the utility codes.","utils_warning", utils); 
+    return local;
+  }
+
+  /// Backend errors
+  error& backend_error()
+  { 
+    static error local("A problem has been raised by the backend system.","backend_error", backends); 
+    return local;
+  }
+
+  /// Backend warnings
+  warning& backend_warning()
+  { 
+    static warning local("A problem has been raised by the backend system.","backend_warning", backends); 
     return local;
   }
 

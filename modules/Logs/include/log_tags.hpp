@@ -26,29 +26,34 @@ namespace Gambit
 
   // CAREFUL! These logging enum tags might clash with other names in the Gambit namespace! Be careful when adding new ones.
   // If you add a new tag, be sure to also add it to one of the tag category sets defined in logging.cpp as well.
-  enum LogTag
-  {
-    /* Message tags */
-    debug=0,
-    info,
-    warn,
-    err,
-    /* Flags */
-    fatal,
-    nonfatal,
-    /* Component tags */
-    def,
-    core,
-    logging,
-    models,
-    depres,
-    scan,
-    inifile,
-    printers,
-    utils
-    /* etc... */
-  };
-
+  namespace LogTags {
+    enum LogTag_declaration
+    {
+      /* Message tags */
+      debug=0,
+      info,
+      warn,
+      err,
+      /* Flags */
+      fatal,
+      nonfatal,
+      /* Component tags */
+      def,
+      core,
+      logging,
+      models,
+      depres,
+      scan,
+      inifile,
+      printers,
+      utils,
+      backends
+      /* etc... */
+    };
+  }
+ 
+  // Typedef to make usage of this enum type less cumbersome
+  typedef LogTags::LogTag_declaration LogTag;
 }
 
 #endif //#ifndef __log_tags_hpp__

@@ -41,7 +41,8 @@ namespace Gambit
 
   namespace Logging
   {
-    
+    using namespace LogTags;  
+  
     // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
     // These won't compile in g++ if the LogTags are const, something about how standard containers work...
 
@@ -67,7 +68,7 @@ namespace Gambit
     std::set<int>& components()
     {
       // We add the core components here, but the module and backend numbers are added later, so the set cannot be const.
-      static LogTag core_a[] = {def, core, logging, models, depres, scan, inifile, printers, utils};
+      static LogTag core_a[] = {def, core, logging, models, depres, scan, inifile, printers, utils, backends};
       static std::set<int> components_set(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
       return components_set;
     }
@@ -93,6 +94,7 @@ namespace Gambit
        m[inifile] = "IniFile";
        m[printers]= "Printers";
        m[utils]   = "Utilities";
+       m[backends]= "Backends";       
        
        // Test numbers:
        std::cout<<"Checking LogTag numbers..."<<std::endl;
@@ -445,6 +447,12 @@ namespace Gambit
          return; 
        }
 
+       // If 'fatal' tag is received, print the message to stdout as well
+       if ( mail.tags.find(fatal) != mail.tags.end() )
+       {
+         std::cout<<" \033[00;31;1mFATAL ERROR\033[00m"<<std::endl<<mail.message<<std::endl;
+       } 
+
        // Sort the tags
        const SortedMessage sortedmsg(mail);
 
@@ -622,6 +630,7 @@ namespace Gambit
       writetags(mail.flag_tags);
       // Message proper
       my_fstream<<" : "<<mail.message<<std::endl; 
+
     }
 
     void StdLogger::writetags(const std::set<LogTag>& tags)
@@ -630,7 +639,7 @@ namespace Gambit
       std::set<int> int_tags;
       for(std::set<LogTag>::iterator tag = tags.begin(); tag != tags.end(); ++tag) 
       {
-        int_tags.insert(*tag); //static_cast<int>(*tag));
+        int_tags.insert(*tag); //static_cast<int>(*tag);
       }
       writetags(int_tags);
     }
@@ -646,7 +655,9 @@ namespace Gambit
         for (it = tags.begin(); it != tags.end(); ++it)
         {
           if (not firstloop) { my_fstream<<","; }
-          my_fstream << tag2str()[*it]; // replace with a lookup of the correct string
+          //std::cout<<"test: "<<*it<<std::endl;
+          //std::cout<<"test2:"<<tag2str().at(*it)<<std::endl;
+          my_fstream << tag2str().at(*it); // replace with a lookup of the correct string
           firstloop = false;
         }
         my_fstream<<"]";

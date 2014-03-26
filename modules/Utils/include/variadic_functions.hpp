@@ -41,6 +41,44 @@ namespace Gambit
         
         template<typename... args>
         inline const std::string stringifyVariadic(const std::string &str, const args&... strs) {return str + ", " + stringifyVariadic(strs...);}
+        
+        template <typename T>
+        struct getVariadicNumber_internal;
+
+        template <>
+        struct getVariadicNumber_internal<void()>
+        {
+                enum{N = 0};
+        };
+
+        template <typename T, typename... args>
+        struct getVariadicNumber_internal<void (T, args...)>
+        {
+                enum{N = 1 + getVariadicNumber_internal<void (args...)>::N};
+        };
+
+        template <typename... args>
+        struct getVariadicNumber
+        {
+                enum{N = getVariadicNumber_internal<void (args...)>::N};
+        };
+        
+        inline void inputVariadicVector(std::vector<double> &vec){}
+        
+        template <typename... args>
+        inline void inputVariadicVector(std::vector<double> &vec, double val, args... params)
+        {
+                vec.push_back(val); inputVariadicVector(vec, params...);
+        }
+        
+        inline void outputVariadicVector(std::vector<double>::const_iterator vec) {}
+        
+        template <typename... args>
+        inline void outputVariadicVector(std::vector<double>::const_iterator vec, double &val, args&... params)
+        {
+                val = *vec;
+                outputVariadicVector(vec+1, params...);
+        }
 }
 
 #endif

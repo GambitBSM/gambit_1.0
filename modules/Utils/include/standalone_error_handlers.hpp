@@ -29,6 +29,11 @@ namespace Gambit
   /// Utility warnings
   warning& utils_warning();
 
+  /// Backend errors
+  error& backend_error();
+  /// Backend warnings
+  warning& backend_warning();
+
   /// Logging errors
   error& logging_error();
   /// Logging warnings
