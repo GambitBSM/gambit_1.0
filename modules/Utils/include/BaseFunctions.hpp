@@ -210,7 +210,7 @@ namespace Gambit
     struct BFfromPlainFunctionStruct
     {
             template <typename... argss>
-            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss... params)
+            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss&... params)
             {
                     double in;
                     return BFfromPlainFunctionStruct<n-1, args...>::BFfromPlainFunction(it, f, in, params...);
@@ -221,7 +221,7 @@ namespace Gambit
     struct BFfromPlainFunctionStruct<0, args...>
     {
             template <typename... argss>
-            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss... params)
+            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss&... params)
             {
                     outputVariadicVector(it, params...);
                     return f(params...);
