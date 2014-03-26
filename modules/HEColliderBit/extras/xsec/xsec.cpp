@@ -153,6 +153,16 @@ double Evaluator::xsec(const string& process, const Pythia8::SusyLesHouches & po
 }
 
 
+double Evaluator::xsec(int pid1, int pid2, const Pythia8::SusyLesHouches & point) const {
+    const string process = get_process(pid1, pid2);
+    if (process.empty()) {
+      cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
+      return -1;
+    }
+    return xsec(process, point);
+}
+
+
 double Evaluator::xsec(const string& process, double * par) const {
     // Returns cross section in pb
     // par is expected to be 24 parameter array with MSSM parameters:

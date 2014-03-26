@@ -57,10 +57,8 @@ int main(int argc, char* argv[]){
     ev.xsec("gg",MSSMpar);
 
     cout << "Testing with Pythia8 SLHA class" << endl;
-    //Pythia8::SusyLesHouches * point = new Pythia8::SusyLesHouches("sps1a_slha.dat");
     Pythia8::SusyLesHouches point("sps1a_slha.dat");
-    ev.xsec("nn_n1n1",&point);
-    //delete point;
+    ev.xsec("nn_n1n1",point);
 
     cout << "Testing calling with pids" << endl;
     ev.xsec(1000021,1000021,MSSMpar);

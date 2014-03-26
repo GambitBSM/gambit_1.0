@@ -205,16 +205,17 @@ public:
     Evaluator() { _init_pidmap(); }
 
     string get_process(int pid1, int pid2) const;
-    //string get_process(const vector<int>& parts1, const vector<int>& parts2) const;
 
-    //vector<double> xsec(const vector<int>& parts1,
-    //                    const vector<int>& parts2, double * par) const;
+    // vector<double> xsec(const vector<int>& parts1,
+    //                     const vector<int>& parts2, double * par) const;
+    // vector<double> xsec(const vector<int>& parts1,
+    //                     const vector<int>& parts2, const Pythia8::SusyLesHouches& point) const;
 
     double xsec(int pid1, int pid2, double * par) const;
-    double xsec(const string& process, double * par) const;
+    double xsec(int pid1, int pid2, const Pythia8::SusyLesHouches& point) const;
 
-    double xsec(const string& process, const Pythia8::SusyLesHouches * point) const { return xsec(process, *point); }
-    double xsec(const string& process, const Pythia8::SusyLesHouches & point) const;
+    double xsec(const string& process, double * par) const;
+    double xsec(const string& process, const Pythia8::SusyLesHouches& point) const;
 
     double log10xsec(const string& process, double * par) const;
 
