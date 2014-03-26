@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Event.hpp"
+using namespace HEP_Simple_Lib;
 #include "MCUtils/MathUtils.h"
+using namespace MCUtils;
 
 namespace Gambit {
   namespace HEColliderBit {
