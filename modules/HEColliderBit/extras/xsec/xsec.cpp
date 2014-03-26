@@ -161,10 +161,14 @@ double Evaluator::xsec(const string& process, double * par) const {
     // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
     // The NN gives log10 of cross section
-    const double xsec = pow(10.,log10xsec(process, par));
-    cout << process << " got evaluated: " << xsec << " pb" << endl;
-
-    if (xsec < 0) cout << "Something went wrong, wrong process?" << endl;
+    try {
+      const double xsec = pow(10.,log10xsec(process, par));
+      cout << process << " got evaluated: " << xsec << " pb" << endl;
+      return xsec;
+    } catch (const std::exception& e) {
+      cout << "Something went wrong, wrong process?" << endl;
+    }
+    return -1;
 }
 
 
