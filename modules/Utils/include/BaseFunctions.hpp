@@ -58,13 +58,13 @@ namespace Gambit
             {  
                 this->name = name;
                 this->ndim = ndim;
-                std::cout << "Constructing base function object: " << this->name << std::endl; 
+                //std::cout << "Constructing base function object: " << this->name << std::endl; 
             }
 
             // TODO: check warnings related to non-virtual base function destructors
             virtual ~BaseFunction()
             { 
-                std::cout << "Destructing base function object: " << this->name << std::endl; 
+                //std::cout << "Destructing base function object: " << this->name << std::endl; 
             }
 
             // Call by std::vector<double> arguments (standard)
