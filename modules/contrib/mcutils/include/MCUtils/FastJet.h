@@ -11,10 +11,6 @@
 namespace MCUtils {
 
 
-  /// Use FastJet's namespace implicitly
-  //using namespace fastjet;
-
-
   /// @name Converters between MCUtils, HepMC and FastJet momentum types
   //@{
 
@@ -41,28 +37,28 @@ namespace MCUtils {
     return P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
   }
 
-  /// Convert a HepMC FourVector to a FastJet PseudoJet
-  inline fastjet::PseudoJet mk_pseudojet(const HepMC::FourVector& p4) {
-    return fastjet::PseudoJet(p4.px(), p4.py(), p4.pz(), p4.e());
-  }
+  // /// Convert a HepMC FourVector to a FastJet PseudoJet
+  // inline fastjet::PseudoJet mk_pseudojet(const HepMC::FourVector& p4) {
+  //   return fastjet::PseudoJet(p4.px(), p4.py(), p4.pz(), p4.e());
+  // }
 
-  /// Convert a HepMC GenParticle to a FastJet PseudoJet
-  inline fastjet::PseudoJet mk_pseudojet(const HepMC::GenParticle* gp) {
-    fastjet::PseudoJet pj = mk_pseudojet(gp->momentum());
-    //pj.set_user_info(new HepMCInfo(p));
-    return pj;
-  }
+  // /// Convert a HepMC GenParticle to a FastJet PseudoJet
+  // inline fastjet::PseudoJet mk_pseudojet(const HepMC::GenParticle* gp) {
+  //   fastjet::PseudoJet pj = mk_pseudojet(gp->momentum());
+  //   //pj.set_user_info(new HepMCInfo(p));
+  //   return pj;
+  // }
 
 
 
-  /// Convert a vector of HepMC GenParticles to a vector of FastJet PseudoJets
-  inline std::vector<fastjet::PseudoJet> mk_pseudojets(const std::vector<const HepMC::GenParticle*>& gps) {
-    std::vector<fastjet::PseudoJet> pjs;
-    foreach (const HepMC::GenParticle* gp, gps) {
-      pjs.push_back( mk_pseudojet(gp) );
-    }
-    return pjs;
-  }
+  // /// Convert a vector of HepMC GenParticles to a vector of FastJet PseudoJets
+  // inline std::vector<fastjet::PseudoJet> mk_pseudojets(const std::vector<const HepMC::GenParticle*>& gps) {
+  //   std::vector<fastjet::PseudoJet> pjs;
+  //   BOOST_FOREACH (const HepMC::GenParticle* gp, gps) {
+  //     pjs.push_back( mk_pseudojet(gp) );
+  //   }
+  //   return pjs;
+  // }
 
   //@}
 

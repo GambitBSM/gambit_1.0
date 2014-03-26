@@ -41,7 +41,7 @@ namespace MCUtils {
   inline GenParticlesC mk_const(const GenParticles& gps) {
     GenParticlesC rtn;
     rtn.reserve(gps.size());
-    foreach (const HepMC::GenParticle* gp, gps) {
+    BOOST_FOREACH (const HepMC::GenParticle* gp, gps) {
       rtn.push_back(gp);
     }
     return rtn;
@@ -50,7 +50,7 @@ namespace MCUtils {
   inline GenParticles mk_unconst(const GenParticlesC& const_gps) {
     GenParticles rtn;
     rtn.reserve(const_gps.size());
-    foreach (const HepMC::GenParticle* const_gp, const_gps) {
+    BOOST_FOREACH (const HepMC::GenParticle* const_gp, const_gps) {
       rtn.push_back(const_cast<HepMC::GenParticle*>(const_gp));
     }
     return rtn;
