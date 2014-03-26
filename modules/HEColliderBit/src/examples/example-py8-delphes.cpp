@@ -3,6 +3,8 @@
 #include "Analysis.hpp"
 #include "Event.hpp"
 
+#include "xsec.h"
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -27,17 +29,29 @@ namespace Gambit {
     struct Subprocess {
       Subprocess()
         : xsec(-1) { }
-      Subprocess(double xs, const vector<int>& parts1, const vector<int>& parts2)
-        : particlesInProcess1(parts1), particlesInProcess2(parts2), xsec(xs) { }
+
+      Subprocess(const vector<int>& parts1, const vector<int>& parts2)
+        : particlesInProcess1(parts1), particlesInProcess2(parts2)
+      {
+        xsec = _xseceval.xsec(parts1, parts2, "../data/sps1aWithDecays.spc");
+      }
+
       void add_analysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
+
       // string name; // or int id = 1000*sp_type + sp_instance
+
       /// @todo Add some metric of CPU cost per event for this process type?
       /// The processes are selected by the IDs of the particles which
       /// must be in the process.
+
       vector<int> particlesInProcess1;
       vector<int> particlesInProcess2;
       vector<shared_ptr<Analysis>> analyses;
       double xsec;
+
+    private:
+
+      xsec::Evaluator _xseceval;
     };
 
   }
@@ -65,28 +79,36 @@ int main() {
   // Subprocess group setup
   /// Decide how many events of each subprocess group to use, from interpolated NLO subprocess cross-sections
   /// @note Hard-coded for now, so I can do *something*
-  map<string, double> sp_xsecs = {{"g~", 0.5}, {"q~", 0.2}, {"X~", 0.02}, {"t~", 0.1}};
-  double total_xsec = 0; for (const auto& ispx : sp_xsecs) total_xsec += ispx.second;
+  //map<string, double> sp_xsecs = {{"g~", 0.5}, {"q~", 0.2}, {"X~", 0.02}, {"t~", 0.1}};
+  // double total_xsec = 0; for (const auto& ispx : sp_xsecs) total_xsec += ispx.second;
 
   map<string, Subprocess> sps;
   // Gluino processes
-  sps["g~"] = Subprocess(sp_xsecs["g~"],
+  sps["g~"] = Subprocess(//sp_xsecs["g~"],
                          {{1000021}},
                          {{1000021, 1000001, 1000002, 1000003, 1000004,
                                     2000001, 2000002, 2000003, 2000004}});
   // Squark processes
-  sps["q~"] = Subprocess(sp_xsecs["q~"],
+  sps["q~"] = Subprocess(//sp_xsecs["q~"],
                          {{1000001, 1000002, 1000003, 1000004,
                            2000001, 2000002, 2000003, 2000004}},
                          {{1000001, 1000002, 1000003, 1000004,
                            2000001, 2000002, 2000003, 2000004}});
   // Gaugino processes
-  sps["X~"] = Subprocess(sp_xsecs["X~"],
+  sps["X~"] = Subprocess(//sp_xsecs["X~"],
                          {{1000021, 1000001, 1000002, 1000003, 1000004,
                                     2000001, 2000002, 2000003, 2000004}},
                          {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
   // Stop processes
-  sps["t~"] = Subprocess(sp_xsecs["t~"], {{1000006}}, {{1000006}});
+  sps["t~"] = Subprocess(//sp_xsecs["t~"],
+                         {{1000006}}, {{1000006}});
+
+  // Calculate total xsec for process division normalization
+  double total_xsec = 0;
+  for (const auto& ispx : sps) {
+    cout << "xsec (" << ispx.first << ") = " << ispx.second.xsec << endl;
+    total_xsec += ispx.second.xsec;
+  }
 
   // Bind subprocesses to analysis pointers
   for (auto& isp : sps) {
