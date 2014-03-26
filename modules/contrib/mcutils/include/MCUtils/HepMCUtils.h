@@ -3,6 +3,7 @@
 /// @file Convenience header for including all HepMC tool functionality
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
+#include "MCUtils/HepMCVectors.h"
 #include "MCUtils/HepMCParticleClassifiers.h"
 #include "MCUtils/HepMCParticleFilters.h"
 #include "MCUtils/HepMCParticleUtils.h"

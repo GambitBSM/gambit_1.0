@@ -227,7 +227,7 @@ namespace MCUtils {
   inline bool isFirstReplica(const HepMC::GenParticle* p) {
     if (!p->production_vertex()) return true;
     bool isfirst = true;
-    foreach (const HepMC::GenParticle* m, const_parents(p->production_vertex())) {
+    BOOST_FOREACH (const HepMC::GenParticle* m, const_parents(p->production_vertex())) {
       if (m->pdg_id() == p->pdg_id()) {
         isfirst = false;
         break;
@@ -242,7 +242,7 @@ namespace MCUtils {
   inline bool isLastReplica(const HepMC::GenParticle* p) {
     if (!p->end_vertex()) return true;
     bool islast = true;
-    foreach (const HepMC::GenParticle* d, const_children(p->end_vertex())) {
+    BOOST_FOREACH (const HepMC::GenParticle* d, const_children(p->end_vertex())) {
       if (d->pdg_id() == p->pdg_id()) {
         islast = false;
         break;

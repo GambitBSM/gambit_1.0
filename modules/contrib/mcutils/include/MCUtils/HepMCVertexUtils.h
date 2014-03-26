@@ -42,7 +42,7 @@ namespace MCUtils {
   inline GenVerticesC mk_const(const GenVertices& gvs) {
     GenVerticesC rtn;
     rtn.reserve(gvs.size());
-    foreach (const HepMC::GenVertex* gv, gvs) {
+    BOOST_FOREACH (const HepMC::GenVertex* gv, gvs) {
       rtn.push_back(gv);
     }
     return rtn;
@@ -51,7 +51,7 @@ namespace MCUtils {
   inline GenVertices mk_unconst(const GenVerticesC& const_gps) {
     GenVertices rtn;
     rtn.reserve(const_gps.size());
-    foreach (const HepMC::GenVertex* const_gp, const_gps) {
+    BOOST_FOREACH (const HepMC::GenVertex* const_gp, const_gps) {
       rtn.push_back(const_cast<HepMC::GenVertex*>(const_gp));
     }
     return rtn;

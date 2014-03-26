@@ -1,14 +1,10 @@
 #pragma once
 
-// Provide convenience foreach loop -- particularly nice for HepMC walking combined with the functions below
-#include "boost/foreach.hpp"
-#ifndef foreach
-#define foreach BOOST_FOREACH
-#endif
-
 #include <cmath>
 #include <vector>
 #include <cassert>
+#include <cstddef>
+#include "boost/foreach.hpp"
 
 /// @file Convenience maths functions for HEP MC physics
 /// @author Andy Buckley <andy.buckley@cern.ch>
@@ -139,7 +135,7 @@ namespace MCUtils {
     const std::vector<double> logvals = linspace(nbins, logstart, logend);
     assert(logvals.size() == nbins+1);
     std::vector<double> rtn;
-    foreach (double logval, logvals) {
+    BOOST_FOREACH (double logval, logvals) {
       rtn.push_back(std::exp(logval) - offset);
     }
     assert(rtn.size() == nbins+1);
