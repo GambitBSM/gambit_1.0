@@ -170,14 +170,14 @@ namespace Gambit
     /// Keeps track of the individual logging objects.
 
     LogMaster::LogMaster() 
-      : loggers_readyQ(false), current_module(-1), current_backend(-1) 
+      : loggers_readyQ(false), silenced(false), current_module(-1), current_backend(-1) 
     {
     }
  
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) 
-      : loggers(loggersIN), loggers_readyQ(true), current_module(-1), current_backend(-1) 
+      : loggers(loggersIN), loggers_readyQ(true), silenced(false), current_module(-1), current_backend(-1) 
     {
     }
 
@@ -258,6 +258,29 @@ namespace Gambit
        dump_prelim_buffer();
     }
 
+    // Overload for initialise, to make it easier to manually initialise the logger in standalone modules
+    void LogMaster::initialise(std::map<std::string, std::string>& loggerinfo)
+    {
+      std::map<std::set<std::string>, std::string> loggerinfo_set;
+      // Translate the string containing the tags into (map of) a set of tags
+      for(std::map<std::string, std::string>::iterator infopair = loggerinfo.begin(); 
+            infopair != loggerinfo.end(); ++infopair)
+      {
+        std::vector<std::string> tags_vec(delimiterSplit(infopair->first, ","));
+        std::set<std::string> tags_set(tags_vec.begin(), tags_vec.end());
+        loggerinfo_set[tags_set] = infopair->second;
+      }
+      // Run the 'normal' initialise function
+      initialise(loggerinfo_set);
+    }
+
+    // Function to completely silence all log messages
+    void LogMaster::disable()
+    {
+       loggers_readyQ = true;
+       silenced = true;
+    }
+ 
     // Dump the prelim buffer to the 'finalsend' function
     void LogMaster::dump_prelim_buffer()
     {
@@ -441,7 +464,8 @@ namespace Gambit
     {
        // Check the 'ignore' set; if any of the specified tags are in this set, then do nothing more, i.e. ignore the message.
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
-       if( not is_disjoint(mail.tags, ignore) ) 
+       // Also ignore the message if logs have been 'silenced'.
+       if( silenced or not is_disjoint(mail.tags, ignore) ) 
        { 
          //std::cout<<"Ignoring message..."<<std::endl;
          return; 
