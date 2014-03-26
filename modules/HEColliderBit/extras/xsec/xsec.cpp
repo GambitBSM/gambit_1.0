@@ -66,14 +66,14 @@ void Evaluator::_init_pidmap() {
 
     // Gauginos
     pidmap[1000021]="g";
-    pidmap[1000022]="n1";
-    pidmap[1000023]="n2";
-    pidmap[1000024]="c1";
-    pidmap[-1000024]="c1bar";
-    pidmap[1000025]="n3";
-    pidmap[1000035]="n4";
-    pidmap[1000037]="c2";
-    pidmap[-1000037]="c2bar";
+    pidmap[1000022]="chi10";
+    pidmap[1000023]="chi20";
+    pidmap[1000024]="chi1+";
+    pidmap[-1000024]="chi1-";
+    pidmap[1000025]="chi30";
+    pidmap[1000035]="chi40";
+    pidmap[1000037]="chi2+";
+    pidmap[-1000037]="chi2-";
 
 }
 
@@ -195,18 +195,18 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     // meL, mmuL, mtauL, meR, mmuR, mtauR
     // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
-    if(process == "nn_n1n1") return nn_n1n1.Value(0,par);
-    if(process == "nn_n1n2") return nn_n1n2.Value(0,par);
+    // Gluino pair production
+    if(process == "gg") return gg.Value(0,par);
 
-    if(process == "nn_n1n3") return nn_n1n3.Value(0,par);
-    if(process == "nn_n1n4") return nn_n1n4.Value(0,par);
-    if(process == "nn_n1n5") return nn_n1n5.Value(0,par);
+    // Neutralino & chargino pair production
+    if(process == "chi10chi10") return nn_n1n1.Value(0,par);
+    if(process == "chi10chi20") return nn_n1n2.Value(0,par);
+    if(process == "chi10chi30") return nn_n1n3.Value(0,par);
+    if(process == "chi10chi40") return nn_n1n4.Value(0,par);
+    if(process == "chi10chi1+") return nn_n1n5.Value(0,par);
 
-    if(process == "b1b1") return b1b1.Value(0,par);
-    if(process == "b2b2") return b2b2.Value(0,par);
-    if(process == "t1t1") return t1t1.Value(0,par);
-    if(process == "t2t2") return t2t2.Value(0,par);
-
+    // Squark + gluino production
+    // Adds squark+gluino and antisquark+gluino
     if(process == "cLg") return cLg.Value(0,par);
     if(process == "cRg") return cRg.Value(0,par);
     if(process == "dLg") return dLg.Value(0,par);
@@ -215,81 +215,85 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "sRg") return sRg.Value(0,par);
     if(process == "uLg") return uLg.Value(0,par);
     if(process == "uRg") return uRg.Value(0,par);
+    
+    // Squark + antisquark production
+    if(process == "dLcRbar") return sb_dLcR.Value(0,par);
+    if(process == "dLdLbar") return sb_dLdL.Value(0,par);
+    if(process == "dLdRbar") return sb_dLdR.Value(0,par);
+    if(process == "dLsRbar") return sb_dLsR.Value(0,par);
+    if(process == "dLuRbar") return sb_dLuR.Value(0,par);
+    if(process == "dRcRbar") return sb_dRcR.Value(0,par);
+    if(process == "dRdRbar") return sb_dRdR.Value(0,par);
+    if(process == "dRsRbar") return sb_dRsR.Value(0,par);
+    if(process == "uLcRbar") return sb_uLcR.Value(0,par);
+    if(process == "uLdRbar") return sb_uLdR.Value(0,par);
+    if(process == "uLsRbar") return sb_uLsR.Value(0,par);
+    if(process == "uLuLbar") return sb_uLuL.Value(0,par);
+    if(process == "uLuRbar") return sb_uLuR.Value(0,par);
+    if(process == "uRcRbar") return sb_uRcR.Value(0,par);
+    if(process == "uRdRbar") return sb_uRdR.Value(0,par);
+    if(process == "uRsRbar") return sb_uRsR.Value(0,par);
+    if(process == "uRuRbar") return sb_uRuR.Value(0,par);
+    if(process == "sLcRbar") return sb_sLcR.Value(0,par);
+    if(process == "sLdLbar") return sb_sLdL.Value(0,par);
+    if(process == "sLdRbar") return sb_sLdR.Value(0,par);
+    if(process == "sLsLbar") return sb_sLsL.Value(0,par);
+    if(process == "sLsRbar") return sb_sLsR.Value(0,par);
+    if(process == "sLuLbar") return sb_sLuL.Value(0,par);
+    if(process == "sLuRbar") return sb_sLuR.Value(0,par);
+    if(process == "sRcRbar") return sb_sRcR.Value(0,par);
+    if(process == "sRsRbar") return sb_sRsR.Value(0,par);
+    if(process == "cLcLbar") return sb_cLcL.Value(0,par);
+    if(process == "cLcRbar") return sb_cLcR.Value(0,par);
+    if(process == "cLdLbar") return sb_cLdL.Value(0,par);
+    if(process == "cLdRbar") return sb_cLdR.Value(0,par);
+    if(process == "cLsLbar") return sb_cLsL.Value(0,par);
+    if(process == "cLsRbar") return sb_cLsR.Value(0,par);
+    if(process == "cLuLbar") return sb_cLuL.Value(0,par);
+    if(process == "cLuRbar") return sb_cLuR.Value(0,par);
+    if(process == "cRcRbar") return sb_cRcR.Value(0,par);
+    if(process == "b1b1bar") return b1b1.Value(0,par);
+    if(process == "b2b2bar") return b2b2.Value(0,par);
+    if(process == "t1t1bar") return t1t1.Value(0,par);
+    if(process == "t2t2bar") return t2t2.Value(0,par);
 
-    if(process == "sb_cLcL") return sb_cLcL.Value(0,par);
-    if(process == "sb_cLcR") return sb_cLcR.Value(0,par);
-    if(process == "sb_cLdL") return sb_cLdL.Value(0,par);
-    if(process == "sb_cLdR") return sb_cLdR.Value(0,par);
-    if(process == "sb_cLsL") return sb_cLsL.Value(0,par);
-    if(process == "sb_cLsR") return sb_cLsR.Value(0,par);
-    if(process == "sb_cLuL") return sb_cLuL.Value(0,par);
-    if(process == "sb_cLuR") return sb_cLuR.Value(0,par);
-    if(process == "sb_cRcR") return sb_cRcR.Value(0,par);
-    if(process == "sb_dLcR") return sb_dLcR.Value(0,par);
-    if(process == "sb_dLdL") return sb_dLdL.Value(0,par);
-    if(process == "sb_dLdR") return sb_dLdR.Value(0,par);
-    if(process == "sb_dLsR") return sb_dLsR.Value(0,par);
-    if(process == "sb_dLuR") return sb_dLuR.Value(0,par);
-    if(process == "sb_dRcR") return sb_dRcR.Value(0,par);
-    if(process == "sb_dRdR") return sb_dRdR.Value(0,par);
-    if(process == "sb_dRsR") return sb_dRsR.Value(0,par);
-    if(process == "sb_sLcR") return sb_sLcR.Value(0,par);
-    if(process == "sb_sLdL") return sb_sLdL.Value(0,par);
-    if(process == "sb_sLdR") return sb_sLdR.Value(0,par);
-    if(process == "sb_sLsL") return sb_sLsL.Value(0,par);
-    if(process == "sb_sLsR") return sb_sLsR.Value(0,par);
-    if(process == "sb_sLuL") return sb_sLuL.Value(0,par);
-    if(process == "sb_sLuR") return sb_sLuR.Value(0,par);
-    if(process == "sb_sRcR") return sb_sRcR.Value(0,par);
-    if(process == "sb_sRsR") return sb_sRsR.Value(0,par);
-    if(process == "sb_uLcR") return sb_uLcR.Value(0,par);
-    if(process == "sb_uLdR") return sb_uLdR.Value(0,par);
-    if(process == "sb_uLsR") return sb_uLsR.Value(0,par);
-    if(process == "sb_uLuL") return sb_uLuL.Value(0,par);
-    if(process == "sb_uLuR") return sb_uLuR.Value(0,par);
-    if(process == "sb_uRcR") return sb_uRcR.Value(0,par);
-    if(process == "sb_uRdR") return sb_uRdR.Value(0,par);
-    if(process == "sb_uRsR") return sb_uRsR.Value(0,par);
-    if(process == "sb_uRuR") return sb_uRuR.Value(0,par);
-
-    if(process == "ss_cLcL") return ss_cLcL.Value(0,par);
-    if(process == "ss_cLcR") return ss_cLcR.Value(0,par);
-    if(process == "ss_cLdL") return ss_cLdL.Value(0,par);
-    if(process == "ss_cLdR") return ss_cLdR.Value(0,par);
-    if(process == "ss_cLsL") return ss_cLsL.Value(0,par);
-    if(process == "ss_cLsR") return ss_cLsR.Value(0,par);
-    if(process == "ss_cLuL") return ss_cLuL.Value(0,par);
-    if(process == "ss_cLuR") return ss_cLuR.Value(0,par);
-    if(process == "ss_cRcR") return ss_cRcR.Value(0,par);
-    if(process == "ss_dLcR") return ss_dLcR.Value(0,par);
-    if(process == "ss_dLdL") return ss_dLdL.Value(0,par);
-    if(process == "ss_dLdR") return ss_dLdR.Value(0,par);
-    if(process == "ss_dLsR") return ss_dLsR.Value(0,par);
-    if(process == "ss_dLuR") return ss_dLuR.Value(0,par);
-    if(process == "ss_dRcR") return ss_dRcR.Value(0,par);
-    if(process == "ss_dRdR") return ss_dRdR.Value(0,par);
-    if(process == "ss_dRsR") return ss_dRsR.Value(0,par);
-    if(process == "ss_sLcR") return ss_sLcR.Value(0,par);
-    if(process == "ss_sLdL") return ss_sLdL.Value(0,par);
-    if(process == "ss_dLdR") return ss_dLdR.Value(0,par);
-    if(process == "ss_sLdR") return ss_sLdR.Value(0,par);
-    if(process == "ss_sLsL") return ss_sLsL.Value(0,par);
-    if(process == "ss_sLsR") return ss_sLsR.Value(0,par);
-    if(process == "ss_sLuL") return ss_sLuR.Value(0,par);
-    if(process == "ss_sLuR") return ss_sLuR.Value(0,par);
-    if(process == "ss_sRcR") return ss_sRcR.Value(0,par);
-    if(process == "ss_sRsR") return ss_sRsR.Value(0,par);
-    if(process == "ss_uLcR") return ss_uLcR.Value(0,par);
-    if(process == "ss_uLdR") return ss_uLdR.Value(0,par);
-    if(process == "ss_uLsR") return ss_uLsR.Value(0,par);
-    if(process == "ss_uLuL") return ss_uLuL.Value(0,par);
-    if(process == "ss_uLuR") return ss_uLuR.Value(0,par);
-    if(process == "ss_uRcR") return ss_uRcR.Value(0,par);
-    if(process == "ss_uRdR") return ss_uRdR.Value(0,par);
-    if(process == "ss_uRsR") return ss_uRsR.Value(0,par);
-    if(process == "ss_uRuR") return ss_uRuR.Value(0,par);
-
-    if(process == "gg") return gg.Value(0,par);
+    // Squark + squark production
+    if(process == "uLcR") return ss_uLcR.Value(0,par);
+    if(process == "uLdR") return ss_uLdR.Value(0,par);
+    if(process == "uLsR") return ss_uLsR.Value(0,par);
+    if(process == "uLuL") return ss_uLuL.Value(0,par);
+    if(process == "uLuR") return ss_uLuR.Value(0,par);
+    if(process == "uRcR") return ss_uRcR.Value(0,par);
+    if(process == "uRdR") return ss_uRdR.Value(0,par);
+    if(process == "uRsR") return ss_uRsR.Value(0,par);
+    if(process == "uRuR") return ss_uRuR.Value(0,par);
+    if(process == "dLcR") return ss_dLcR.Value(0,par);
+    if(process == "dLdL") return ss_dLdL.Value(0,par);
+    if(process == "dLdR") return ss_dLdR.Value(0,par);
+    if(process == "dLsR") return ss_dLsR.Value(0,par);
+    if(process == "dLuR") return ss_dLuR.Value(0,par);
+    if(process == "dRcR") return ss_dRcR.Value(0,par);
+    if(process == "dRdR") return ss_dRdR.Value(0,par);
+    if(process == "dRsR") return ss_dRsR.Value(0,par);
+    if(process == "dLdR") return ss_dLdR.Value(0,par);
+    if(process == "sLcR") return ss_sLcR.Value(0,par);
+    if(process == "sLdL") return ss_sLdL.Value(0,par);
+    if(process == "sLdR") return ss_sLdR.Value(0,par);
+    if(process == "sLsL") return ss_sLsL.Value(0,par);
+    if(process == "sLsR") return ss_sLsR.Value(0,par);
+    if(process == "sLuL") return ss_sLuR.Value(0,par);
+    if(process == "sLuR") return ss_sLuR.Value(0,par);
+    if(process == "sRcR") return ss_sRcR.Value(0,par);
+    if(process == "sRsR") return ss_sRsR.Value(0,par);
+    if(process == "cLcL") return ss_cLcL.Value(0,par);
+    if(process == "cLcR") return ss_cLcR.Value(0,par);
+    if(process == "cLdL") return ss_cLdL.Value(0,par);
+    if(process == "cLdR") return ss_cLdR.Value(0,par);
+    if(process == "cLsL") return ss_cLsL.Value(0,par);
+    if(process == "cLsR") return ss_cLsR.Value(0,par);
+    if(process == "cLuL") return ss_cLuL.Value(0,par);
+    if(process == "cLuR") return ss_cLuR.Value(0,par);
+    if(process == "cRcR") return ss_cRcR.Value(0,par);
 
     throw std::runtime_error(("Unknown xsec process type, " + process).c_str());
 }
