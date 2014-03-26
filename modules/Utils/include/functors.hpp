@@ -646,7 +646,7 @@ namespace Gambit
       {
         std::ostringstream ss;
         ss << "Error retrieving LogTag number (in functors.hpp, constructor for backend_functor_common)! No match for backend name in tag2str map! This is supposed to be a backend functor, so this is a fatal error. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
-        logger().send(ss.str(),err,fatal);
+        logger().send(ss.str(),LogTags::err,LogTags::fatal);
         //TODO: gambit error
         exit(0);
       }

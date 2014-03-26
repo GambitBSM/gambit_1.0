@@ -178,6 +178,13 @@ START_MODULE
     #define FUNCTION RD_oh2_SingletDM
       START_FUNCTION(double)
     #undef FUNCTION
+    #define FUNCTION RD_oh2_DarkSUSY
+      START_FUNCTION(double)
+      #define BACKEND_REQ dsrdomega
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_test
@@ -230,24 +237,6 @@ START_MODULE
     #define FUNCTION lnL_oh2_Simple
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY testTarget
-  START_CAPABILITY
-    #define FUNCTION testTarget
-      START_FUNCTION(double)
-      DEPENDENCY(testCapability, double)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY testCapability
-  START_CAPABILITY
-    #define FUNCTION testFunction1
-      START_FUNCTION(double)
-    #undef FUNCTION
-    #define FUNCTION testFunction2
-      START_FUNCTION(double)
     #undef FUNCTION
   #undef CAPABILITY
 

@@ -23,6 +23,7 @@
 
 namespace Gambit
 {
+  using namespace LogTags;
 
   // Public members of GAMBIT exception base class.
 

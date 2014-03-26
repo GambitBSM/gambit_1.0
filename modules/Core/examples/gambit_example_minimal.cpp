@@ -46,6 +46,7 @@
 #include "inifile_interface.hpp"
 
 using namespace Gambit;
+using namespace LogTags;
 
 void beispiel(const char* inifilename)
 {

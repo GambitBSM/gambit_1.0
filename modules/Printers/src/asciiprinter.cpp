@@ -225,7 +225,9 @@ namespace Gambit
       for(int i=0;i<value.size();i++)
       {
         // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
-        labels.push_back(f->origin()+"::"+f->name()+"["+std::to_string(i)+"] ("+f->capability()+")");
+        std::stringstream ss;
+        ss<<f->origin()<<"::"<<f->name()<<"["<<i<<"] ("<<f->capability()<<")"; 
+        labels.push_back(ss.str());
       }
       addtobuffer(f->vertexID(),value,labels);
     }
