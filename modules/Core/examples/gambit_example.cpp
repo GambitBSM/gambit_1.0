@@ -327,7 +327,7 @@ int main( int, const char*[] )
   cout<<"lineage is:"<<Models::CMSSM_demo::lineage<<endl;
   cout<<"is descendant of MSSM_demo?         :"<<Models::CMSSM_demo::is_descendant_of("MSSM_demo")<<endl;
   cout<<"is descendant of CMSSM_demo?        :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_demo")<<endl;
-  cout<<"is descendant of CMSSM_demoI_demo?       :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_demoI_demo")<<endl;
+  cout<<"is descendant of CMSSM_II_demo?       :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_II_demo")<<endl;
   cout<<"is descendant of DMHalo_base_I?  :"<<Models::CMSSM_demo::is_descendant_of("DMHalo_base_I")<<endl;
   cout<<"is descendant of Gaussian_Halo_I?:"<<Models::CMSSM_demo::is_descendant_of("Gaussian_Halo_I")<<endl;
   cout<<endl;
@@ -338,7 +338,7 @@ int main( int, const char*[] )
   cout<<"is descendant of MSSM_demo?         :"<<strict_descendant_of("CMSSM_demo","MSSM_demo")<<endl;
   cout<<"is descendant of CMSSM_demo?        :"<<strict_descendant_of("CMSSM_demo","CMSSM_demo")<<endl;
   cout<<"is descendant of or == CMSSM_demo?  :"<<descendant_of("CMSSM_demo","CMSSM_demo")<<endl;
-  cout<<"is descendant of CMSSM_demoI_demo?       :"<<strict_descendant_of("CMSSM_demo","CMSSM_demoI_demo")<<endl;
+  cout<<"is descendant of CMSSM_II_demo?       :"<<strict_descendant_of("CMSSM_demo","CMSSM_II_demo")<<endl;
     
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<Models::MSSM_demo::Accessors::name()<<" using database..."<<endl;
@@ -346,7 +346,7 @@ int main( int, const char*[] )
   cout<<"is ancestor of MSSM_demo?         :"<<strict_ancestor_of("MSSM_demo","MSSM_demo")<<endl;
   cout<<"is ancestor of or == MSSM_demo?   :"<<ancestor_of("MSSM_demo","MSSM_demo")<<endl;
   cout<<"is ancestor of CMSSM_demo?        :"<<strict_ancestor_of("MSSM_demo","CMSSM_demo")<<endl;
-  cout<<"is ancestor of CMSSM_demoI_demo?       :"<<strict_ancestor_of("MSSM_demo","CMSSM_demoI_demo")<<endl;
+  cout<<"is ancestor of CMSSM_II_demo?       :"<<strict_ancestor_of("MSSM_demo","CMSSM_II_demo")<<endl;
             
   // Interpret_as_parent features
   // (currently just function wrapped in a functor, provided PARENT parameter 

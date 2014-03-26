@@ -450,7 +450,7 @@ namespace Gambit
        // If 'fatal' tag is received, print the message to stdout as well
        if ( mail.tags.find(fatal) != mail.tags.end() )
        {
-         std::cout<<" \e[00;31;1mFATAL ERROR\e[00m"<<std::endl<<mail.message<<std::endl;
+         std::cout<<" \033[00;31;1mFATAL ERROR\033[00m"<<std::endl<<mail.message<<std::endl;
        } 
 
        // Sort the tags
