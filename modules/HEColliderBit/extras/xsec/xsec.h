@@ -207,7 +207,6 @@ public:
     Evaluator() { _init_pidmap(); }
 
     string get_process(int pid1, int pid2) const;
-    void get_parameters(Pythia8::SusyLesHouches& point, double * par) const;
 
     double xsec(const vector<int>& parts1, const vector<int>& parts2, double * par) const;
     double xsec(const vector<int>& parts1, const vector<int>& parts2, Pythia8::SusyLesHouches& point) const;
