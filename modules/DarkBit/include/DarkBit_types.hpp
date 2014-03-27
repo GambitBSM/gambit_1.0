@@ -52,6 +52,14 @@ namespace Gambit
 
   namespace DarkBit
   {    
+    struct DD_couplings
+    {
+      double gps;
+      double gns;
+      double gpa;
+      double gna;
+    };
+
     class DSgamma3bdyKinFunc : public BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);

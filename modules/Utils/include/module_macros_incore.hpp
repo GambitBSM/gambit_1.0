@@ -807,10 +807,10 @@
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, IS_MODEL_DEP)             \
                                                                                \
-  IF_EQUAL(CAPABILITY, PointInit,                                              \
+/*  IF_EQUAL(CAPABILITY, PointInit,                                              \
     FAIL("Initialization functions cannot have dependencies. "                 \
     "Please check the rollcall header for " STRINGIFY(MODULE) ".")             \
-  )                                                                            \
+  )*/                                                                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
