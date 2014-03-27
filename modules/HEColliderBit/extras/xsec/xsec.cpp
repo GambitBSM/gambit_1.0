@@ -12,7 +12,7 @@ using namespace std;
 namespace xsec{
 
 
-void Evaluator::_init_pidmap() {
+  void Evaluator::_init_pidmap() {
     // Make pid map
 
     // Sfermions
@@ -77,158 +77,234 @@ void Evaluator::_init_pidmap() {
     pidmap[1000037]="chi2+";
     pidmap[-1000037]="chi2-";
 
-}
+  }
 
 
-string Evaluator::get_process(int pid1, int pid2) const {
+  string Evaluator::get_process(int pid1, int pid2) const {
     // Figure out process string
     map<int,string>::const_iterator it1 = pidmap.find(pid1);
     map<int,string>::const_iterator it2 = pidmap.find(pid2);
     if (it1 != pidmap.end() && it2 != pidmap.end())
-        return it1->second + it2->second;
+      return it1->second + it2->second;
     return "";
-}
+  }
 
 
-double Evaluator::xsec(int pid1, int pid2, double * par) const {
+  double Evaluator::xsec(int pid1, int pid2, double * par) const {
     const string process = get_process(pid1, pid2);
     // if (process.empty()) {
     //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
     //   return -1;
     // }
     return xsec(process, par);
-}
-
-
-double Evaluator::xsec(const vector<int>& pids1,
-                       const vector<int>& pids2, double * par) const {
-  // Make new vectors of unique abs PIDs
-  vector<int> apids1, apids2;
-  for (size_t i = 0; i < pids1.size(); i++)
-    if (std::find(apids1.begin(), apids1.end(), abs(pids1[i])) == apids1.end()) apids1.push_back(abs(pids1[i]));
-  for (size_t i = 0; i < pids2.size(); i++)
-    if (std::find(apids2.begin(), apids2.end(), abs(pids2[i])) == apids2.end()) apids2.push_back(abs(pids2[i]));
-
-  // Iterate over all PID combinations to find the total xsec
-  // Need to consider all +- and AB/BA combinations
-  double xs = 0;
-  set<string> seen_processes;
-  // Loop over vector 1 and its +- variations
-  for (size_t i = 0; i < apids1.size(); i++){
-    for (size_t pmi = 0; pmi <= 1; pmi++){
-      const int pid1 = apids1[i] * pow(-1, pmi);
-
-      // Loop over vector 2 and its +- variations
-      for (size_t j = 0; j < apids2.size(); j++){
-        for (size_t pmj = 0; pmj <= 1; pmj++){
-          const int pid2 = apids2[j] * pow(-1, pmj);
-
-          // Calculate the xsec for the AB combination, if it exists and hasn't already been seen
-          const string pa = get_process(pid1, pid2);
-          if (!pa.empty() && std::find(seen_processes.begin(), seen_processes.end(), pa) == seen_processes.end()) {
-            seen_processes.insert(pa);
-            const double xsec_ij = xsec(pa, par);
-            if (xsec_ij > 0) {
-              xs += xsec_ij;
-              cout << "  " << pid1 << " " << pid2 << " -> " << pa << " = " << xsec_ij << " pb" << endl;
-            }
-          }
-
-          // Calculate the xsec for the BA combination, if it exists and hasn't already been seen
-          const string pb = get_process(pid2, pid1);
-          if (!pb.empty() && std::find(seen_processes.begin(), seen_processes.end(), pb) == seen_processes.end()) {
-            seen_processes.insert(pb);
-            const double xsec_ji = xsec(pb, par);
-            if (xsec_ji > 0) {
-              xs += xsec_ji;
-              cout << "  " << pid2 << " " << pid1 << " -> " << pb << " = " << xsec_ji << " pb" << endl;
-            }
-          }
-
-        }
-      }
-
-    }
   }
-  return xs;
-}
 
 
-double Evaluator::xsec(const vector<int>& parts1, const vector<int>& parts2, Pythia8::SusyLesHouches& point) const {
+  double Evaluator::xsec(const vector<int>& pids1,
+                         const vector<int>& pids2, double * par) const {
+    // Make new vectors of unique abs PIDs
+    vector<int> apids1, apids2;
+    for (size_t i = 0; i < pids1.size(); i++)
+      if (std::find(apids1.begin(), apids1.end(), abs(pids1[i])) == apids1.end()) apids1.push_back(abs(pids1[i]));
+    for (size_t i = 0; i < pids2.size(); i++)
+      if (std::find(apids2.begin(), apids2.end(), abs(pids2[i])) == apids2.end()) apids2.push_back(abs(pids2[i]));
+
+    // Iterate over all PID combinations to find the total xsec
+    // Need to consider all +- and AB/BA combinations
+    double xs = 0;
+    set<string> seen_processes;
+    // Loop over vector 1 and its +- variations
+    for (size_t i = 0; i < apids1.size(); i++){
+      for (size_t pmi = 0; pmi <= 1; pmi++){
+        const int pid1 = apids1[i] * pow(-1, pmi);
+
+        // Loop over vector 2 and its +- variations
+        for (size_t j = 0; j < apids2.size(); j++){
+          for (size_t pmj = 0; pmj <= 1; pmj++){
+            const int pid2 = apids2[j] * pow(-1, pmj);
+
+            // Calculate the xsec for the AB combination, if it exists and hasn't already been seen
+            const string pa = get_process(pid1, pid2);
+            if (!pa.empty() && std::find(seen_processes.begin(), seen_processes.end(), pa) == seen_processes.end()) {
+              seen_processes.insert(pa);
+              const double xsec_ij = xsec(pa, par);
+              if (xsec_ij > 0) {
+                xs += xsec_ij;
+                cout << "  " << pid1 << " " << pid2 << " -> " << pa << " = " << xsec_ij << " pb" << endl;
+              }
+            }
+
+            // Calculate the xsec for the BA combination, if it exists and hasn't already been seen
+            const string pb = get_process(pid2, pid1);
+            if (!pb.empty() && std::find(seen_processes.begin(), seen_processes.end(), pb) == seen_processes.end()) {
+              seen_processes.insert(pb);
+              const double xsec_ji = xsec(pb, par);
+              if (xsec_ji > 0) {
+                xs += xsec_ji;
+                cout << "  " << pid2 << " " << pid1 << " -> " << pb << " = " << xsec_ji << " pb" << endl;
+              }
+            }
+
+          }
+        }
+
+      }
+    }
+    return xs;
+  }
+
+
+  double Evaluator::xsec(const vector<int>& parts1, const vector<int>& parts2, Pythia8::SusyLesHouches& point) const {
     double par[24];
     _params_from_py8slha(par, point);
     return xsec(parts1, parts2, par);
-}
+  }
 
 
-double Evaluator::xsec(const vector<int>& parts1, const vector<int>& parts2, const string& slhafile) const {
+  double Evaluator::xsec(const vector<int>& parts1, const vector<int>& parts2, const string& slhafile) const {
     Pythia8::SusyLesHouches point(slhafile);
     return xsec(parts1, parts2, point);
-}
+  }
 
 
+  void Evaluator::_params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const {
+    // TODO: fix m_A use in MSOFT
 
-void Evaluator::_params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const {
-    // Get parameters from SLHA object
-    // Uses MSOFT and HMIX blocks defined at scale Q
-    // TODO: be carefull about scale definitions!
-    par[0] = point.minpar(3); // \tan\beta
-    par[1] = point.msoft(1);  // M_1
-    par[2] = point.msoft(2);  // M_2
-    par[3] = point.msoft(3);  // M_3
-    par[4] = point.au(3,3);   // A_t
-    par[5] = point.ad(3,3);   // A_b
-    par[6] = point.ae(3,3);   // A_\tau
-    par[7] = point.hmix(1);   // \mu
-    par[8] = sqrt(point.hmix(4));  // m_A
-    par[9] = point.msoft(31); // meL
-    par[10] = point.msoft(32); // mmuL
-    par[11] = point.msoft(33); // mtauL
-    par[12] = point.msoft(34); // meR
-    par[13] = point.msoft(35); // mmuR
-    par[14] = point.msoft(36); // mtauR
-    par[15] = point.msoft(41); // mqL1
-    par[16] = point.msoft(44); // muR
-    par[17] = point.msoft(47); // mdR
-    par[18] = point.msoft(42); // mqL2
-    par[19] = point.msoft(45); // mcR
-    par[20] = point.msoft(48); // msR
-    par[21] = point.msoft(43); // mqL3
-    par[22] = point.msoft(46); // mtR
-    par[23] = point.msoft(49); // mbR
-}
+    // Find scales
+    double Qxsec = 1000.;
+    double Qmsoft = point.msoft.q();
+    double Qextpar = point.extpar(0);
+    double Qhmix = point.hmix.q();
+    cout << "Qmsoft " << Qmsoft << endl;
+    cout << "Qextpar " << Qextpar << endl;
+
+    // If EXTPAR exists and scale is very near 1 TeV then we use those soft masses
+    // extpar(0) will be 0 when the block does not exist
+    // Also use if EXTPAR scale is closer to 1 TeV than MSOFT scale.
+    if(abs(Qextpar-Qxsec) < 1.0 || abs(Qextpar-Qxsec) < abs(Qmsoft-Qxsec)){
+      par[0] = point.minpar(3);  // \tan\beta
+      par[1] = point.extpar(1);  // M_1
+      par[2] = point.extpar(2);  // M_2
+      par[3] = point.extpar(3);  // M_3
+      par[4] = point.extpar(11); // A_t
+      par[5] = point.extpar(12); // A_b
+      par[6] = point.extpar(13); // A_\tau
+      par[7] = point.extpar(23); // \mu
+      par[8] = point.extpar(26); // m_A pole mass
+      par[9] = point.extpar(31); // meL
+      par[10] = point.extpar(32); // mmuL
+      par[11] = point.extpar(33); // mtauL
+      par[12] = point.extpar(34); // meR
+      par[13] = point.extpar(35); // mmuR
+      par[14] = point.extpar(36); // mtauR
+      par[15] = point.extpar(41); // mqL1
+      par[16] = point.extpar(44); // muR
+      par[17] = point.extpar(47); // mdR
+      par[18] = point.extpar(42); // mqL2
+      par[19] = point.extpar(45); // mcR
+      par[20] = point.extpar(48); // msR
+      par[21] = point.extpar(43); // mqL3
+      par[22] = point.extpar(46); // mtR
+      par[23] = point.extpar(49); // mbR
+      // Return now if we do not need to do RGE
+      if(abs(Qextpar-Qxsec) < 1.0) return;
+    }
+    // If not, use MSOFT and HMIX blocks.
+    // This uses that HMIX and MSOFT is at the same scale,
+    // however, exceptions have not been seen in the wild.
+    else if (abs(Qmsoft-Qhmix) < 1.0 && abs(Qmsoft) > 0.1){
+      par[0] = point.hmix(3);  // \tan\beta
+      par[1] = point.msoft(1);  // M_1
+      par[2] = point.msoft(2);  // M_2
+      par[3] = point.msoft(3);  // M_3
+
+      cout << endl << "Started with these masses: " << endl;
+      cout << par[1] << " " << par[2] << " " << par[3] << endl;
+
+      par[4] = point.au(3,3);   // A_t
+      par[5] = point.ad(3,3);   // A_b
+      par[6] = point.ae(3,3);   // A_\tau
+      par[7] = point.hmix(1);   // \mu
+      par[8] = sqrt(point.hmix(4));  // m_A WARNING: not pole
+      par[9] = point.msoft(31); // meL
+      par[10] = point.msoft(32); // mmuL
+      par[11] = point.msoft(33); // mtauL
+      par[12] = point.msoft(34); // meR
+      par[13] = point.msoft(35); // mmuR
+      par[14] = point.msoft(36); // mtauR
+      par[15] = point.msoft(41); // mqL1
+      par[16] = point.msoft(44); // muR
+      par[17] = point.msoft(47); // mdR
+      par[18] = point.msoft(42); // mqL2
+      par[19] = point.msoft(45); // mcR
+      par[20] = point.msoft(48); // msR
+      par[21] = point.msoft(43); // mqL3
+      par[22] = point.msoft(46); // mtR
+      par[23] = point.msoft(49); // mbR
+    }
+    else{
+      throw runtime_error("Cannot handle your SLHA file");
+    }
+
+    // RGE run parameters to Qxsec = 1 TeV
+    // Constants for RGEs
+    double dt = log(Qxsec/Qmsoft);
+    cout << "dt " << dt << endl;
+    double pi = 2.*asin(1.);
+    double b[4] = {0,33./5.,1.,-3.};
+    double g[4];
+    g[1] = sqrt(5./3.)*point.gauge(1);
+    g[2] = point.gauge(2);
+    g[3] = point.gauge(3);
+
+    // Loop for running
+    int nt = 10;
+    dt = dt/nt;
+    for(int it = 0; it < nt; it++){
+
+      // Gauge couplings and gaugino soft masses
+      for(int i = 1; i < 4; i++){
+        par[i] = par[i] + 1./8./pow(pi,2)*b[i]*pow(g[i],2)*par[i]*dt;
+        g[i] = g[i] + 1./16./pow(pi,2)*b[i]*pow(g[i],3)*dt;
+      }
+      cout << par[1] << " " << par[2] << " " << par[3] << endl;
+    }
+
+    cout << "Wanted these masses: " << endl;
+    cout << -1.87089880e+02 << " " << 1.53667310e+02 << " " << -5.32953183e+02 << endl;
+  }
 
 
-double Evaluator::xsec(const string& process, Pythia8::SusyLesHouches & point) const {
+  double Evaluator::xsec(const string& process, Pythia8::SusyLesHouches & point) const {
     double par[24];
     _params_from_py8slha(par, point);
     return xsec(process, par);
-}
+  }
 
 
-double Evaluator::xsec(const string& process, const string& slhafile) const {
+  double Evaluator::xsec(const string& process, const string& slhafile) const {
     Pythia8::SusyLesHouches point(slhafile);
     return xsec(process, point);
-}
+  }
 
 
-double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches & point) const {
+  double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches & point) const {
     const string process = get_process(pid1, pid2);
     // if (process.empty()) {
     //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
     //   return -1;
     // }
     return xsec(process, point);
-}
+  }
 
 
-double Evaluator::xsec(int pid1, int pid2, const string& slhafile) const {
+  double Evaluator::xsec(int pid1, int pid2, const string& slhafile) const {
     Pythia8::SusyLesHouches point(slhafile);
     return xsec(pid1, pid2, point);
-}
+  }
 
 
-double Evaluator::xsec(const string& process, double * par) const {
+  double Evaluator::xsec(const string& process, double * par) const {
     // Returns cross section in pb
     // par is expected to be 24 parameter array with MSSM parameters:
     // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
@@ -244,28 +320,30 @@ double Evaluator::xsec(const string& process, double * par) const {
       //cout << "Something went wrong, wrong process?" << endl;
       return -1;
     }
-}
+  }
 
 
-double Evaluator::log10xsec(const string& process, double * par) const {
+  double Evaluator::log10xsec(const string& process, double * par) const {
     // Returns log10(cross section in pb)
     // par is expected to be 24 parameter array with MSSM parameters:
     // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
     // meL, mmuL, mtauL, meR, mmuR, mtauR
     // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
+    //#define NO_IMPL_PROC throw std::runtime_error(("Unimplemented xsec process type, " + process).c_str())
+
     // Gluino pair production
     if(process == "gg") return gg.Value(0,par);
 
     // Neutralino/chargino + gluino production
-    if(process == "chi10g") return 0;
-    if(process == "chi20g") return 0;
-    if(process == "chi30g") return 0;
-    if(process == "chi40g") return 0;
-    if(process == "chi1+g") return 0;
-    if(process == "chi2+g") return 0;
-    if(process == "chi1-g") return 0;
-    if(process == "chi2-g") return 0;
+    if(process == "chi10g") return ng_n1g.Value(0,par);
+    if(process == "chi20g") return ng_n2g.Value(0,par);
+    if(process == "chi30g") return ng_n3g.Value(0,par);
+    if(process == "chi40g") return ng_n4g.Value(0,par);
+    if(process == "chi1+g") return ng_n5g.Value(0,par);
+    if(process == "chi2+g") return ng_n6g.Value(0,par);
+    if(process == "chi1-g") return ng_n7g.Value(0,par);
+    if(process == "chi2-g") return ng_n8g.Value(0,par);
 
     // Neutralino & chargino pair production
     if(process == "chi10chi10") return nn_n1n1.Value(0,par);
@@ -273,31 +351,31 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "chi10chi30") return nn_n1n3.Value(0,par);
     if(process == "chi10chi40") return nn_n1n4.Value(0,par);
     if(process == "chi10chi1+") return nn_n1n5.Value(0,par);
-    if(process == "chi10chi2+") return 0;
-    if(process == "chi10chi1-") return 0;
-    if(process == "chi10chi2-") return 0;
-    if(process == "chi20chi20") return 0;
-    if(process == "chi20chi30") return 0;
-    if(process == "chi20chi40") return 0;
-    if(process == "chi20chi1+") return 0;
-    if(process == "chi20chi2+") return 0;
-    if(process == "chi20chi1-") return 0;
-    if(process == "chi20chi2-") return 0;
-    if(process == "chi30chi30") return 0;
-    if(process == "chi30chi40") return 0;
-    if(process == "chi30chi1+") return 0;
-    if(process == "chi30chi2+") return 0;
-    if(process == "chi30chi1-") return 0;
-    if(process == "chi30chi2-") return 0;
-    if(process == "chi40chi40") return 0;
+    if(process == "chi10chi2+") return nn_n1n6.Value(0,par);
+    if(process == "chi10chi1-") return nn_n1n7.Value(0,par);
+    if(process == "chi10chi2-") return nn_n1n8.Value(0,par);
+    if(process == "chi20chi20") return nn_n2n2.Value(0,par);
+    if(process == "chi20chi30") return nn_n2n3.Value(0,par);
+    if(process == "chi20chi40") return nn_n2n4.Value(0,par);
+    if(process == "chi20chi1+") return nn_n2n5.Value(0,par);
+    if(process == "chi20chi2+") return nn_n2n6.Value(0,par);
+    if(process == "chi20chi1-") return nn_n2n7.Value(0,par);
+    if(process == "chi20chi2-") return nn_n2n8.Value(0,par);
+    if(process == "chi30chi30") return nn_n3n3.Value(0,par);
+    if(process == "chi30chi40") return nn_n3n4.Value(0,par);
+    if(process == "chi30chi1+") return nn_n3n5.Value(0,par);
+    if(process == "chi30chi2+") return nn_n3n6.Value(0,par);
+    if(process == "chi30chi1-") return nn_n3n7.Value(0,par);
+    if(process == "chi30chi2-") return nn_n3n8.Value(0,par);
+    if(process == "chi40chi40") return nn_n4n4.Value(0,par);
     if(process == "chi40chi1+") return 0;
     if(process == "chi40chi2+") return 0;
     if(process == "chi40chi1-") return 0;
     if(process == "chi40chi2-") return 0;
-    if(process == "chi1+chi1-") return 0;
-    if(process == "chi1+chi2-") return 0;
-    if(process == "chi2+chi1-") return 0;
-    if(process == "chi2+chi2-") return 0;
+    if(process == "chi1+chi1-") return nn_n5n7.Value(0,par);
+    if(process == "chi1+chi2-") return nn_n5n8.Value(0,par);
+    if(process == "chi2+chi1-") return nn_n6n7.Value(0,par);
+    if(process == "chi2+chi2-") return nn_n6n8.Value(0,par);
 
     // Squark + gluino production
     // Adds squark+gluino and antisquark+gluino
@@ -474,6 +552,11 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "tau2nutauL") return 0;
 
     throw std::runtime_error(("Unknown xsec process type, " + process).c_str());
-}
+  }
 
 }
+
+
+// extern "C" {
+//   void foo() { cout << "DIE" << endl; }
+// }
