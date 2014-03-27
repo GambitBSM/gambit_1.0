@@ -471,19 +471,19 @@ namespace Gambit
             shared_ptr<BFintegrate> set_epsrel(double epsrel)
             {
                 this->epsrel = epsrel;
-                return dynamic_pointer_cast<BFintegrate> (shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
             shared_ptr<BFintegrate> set_epsabs(double epsabs)
             {
                 this->epsabs = epsabs;
-                return dynamic_pointer_cast<BFintegrate> (shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
             shared_ptr<BFintegrate> set_epsabs(size_t limit)
             {
                 this->limit = limit;
-                return dynamic_pointer_cast<BFintegrate> (shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
         private:
