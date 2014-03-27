@@ -48,6 +48,7 @@ namespace Gambit
     class BFaddPar;
     class BFinterpolation;
     class BFrotSym;
+    class BFvalidRange;
 
     // The most relevant object the user will deal with is a shared pointer to
     // the abstract function base class.
@@ -196,6 +197,7 @@ namespace Gambit
             shared_ptr<BFmult> mult(BFptr);
             shared_ptr<BFmult> mult(double);
             shared_ptr<BFaddPar> addPar(int);
+            shared_ptr<BFvalidRange> validRange(int, double, double);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -542,6 +544,33 @@ namespace Gambit
             int index;
     };
 
+    // Checks whether a given parameter is within the allowed range, and
+    // otherwise throws an exception
+    class BFvalidRange: public BaseFunction
+    {
+        public:
+            BFvalidRange(BFptr parent, int i, double x0, double x1) : 
+                BaseFunction("validRange", parent->getNdim()), 
+                myPointer(parent), index(i), x0(x0), x1(x1) {}
+
+            double value(const BFargVec &args)
+            {
+                if (x0>args[index] or x1<args[index])
+                {
+                    std::cout << "WARNING: Accessing Base Function object out of range!!!" << std::endl;
+                    std::cout << "Requested: " << args[index] << ", valid range is " << x0 << " to " << x1 << std::endl;
+                    return 0;
+                }
+                return (*myPointer)(args);
+            }
+
+        private:
+            BFptr myPointer;
+            int index;
+            double x0;
+            double x1;
+    };
+
     // General mapping n-dim --> (n-1)-dim, by fixing one parameter
     class BFfixPar: public BaseFunction
     {
@@ -770,6 +799,7 @@ namespace Gambit
     inline shared_ptr<BFlineOfSightIntegral> BaseFunction::lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral>(new BFlineOfSightIntegral(shared_from_this(), D)); }
     inline shared_ptr<BFfixPar> BaseFunction::fixPar(int i, double x) { return shared_ptr<BFfixPar>(new BFfixPar(shared_from_this(), i, x)); }
     inline shared_ptr<BFaddPar> BaseFunction::addPar(int i) { return shared_ptr<BFaddPar>(new BFaddPar(shared_from_this(), i)); }
+    inline shared_ptr<BFvalidRange> BaseFunction::validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange>(new BFvalidRange(shared_from_this(), i, x0, x1)); }
     inline shared_ptr<BFintegrate> BaseFunction::integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate> (new BFintegrate(shared_from_this(), i, x0, x1)); }
     inline shared_ptr<BFrotSym> BaseFunction::rotSym(int i) { return shared_ptr<BFrotSym>(new BFrotSym(shared_from_this(), i)); }
 

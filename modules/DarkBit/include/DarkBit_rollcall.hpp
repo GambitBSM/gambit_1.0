@@ -51,7 +51,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkBit_PointInit_CMSSM
       START_FUNCTION(void)
-      DEPENDENCY(MSSMspectrum, Py8SLHA) 
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo)
       #define BACKEND_REQ dsinit
         START_BACKEND_REQ(void)

@@ -205,6 +205,11 @@ multinest:
 --- # Auxiliary entries
 #########################
 
+- capability:   GA_AnnYield
+  options:
+    Emin: 10.
+    Emax: 123.
+
 - capability:   lnL_oh2
   dependencies:
   #- {capability: "RD_oh2", function: "RD_oh2_general"}
