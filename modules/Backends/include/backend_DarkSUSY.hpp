@@ -1,15 +1,36 @@
-/* 
- * DarkSUSY Backend
- * 
- * \author Anders Kvellestad
- * \date 2013-03-26  
- * 
- * Modified: 2013-04-05
- * Pat Scott 2013-04-22
- * Anders Kvellestad 2013-04-25 
- * Torsten Bringmann July 2013
- * Christoph Weniger July 2013
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Backend header for the DarkSUSY backend
+///
+///  Compile-time registration of available 
+///  functions and variables from this backend.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Mar
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Apr
+///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul
+///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de)
+///  \date 2013 Jul
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
+///  *********************************************
 
 /* Specify the path to the shared library along with a backend name. */
 

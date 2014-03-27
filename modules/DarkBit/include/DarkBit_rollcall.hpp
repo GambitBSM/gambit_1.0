@@ -1,30 +1,32 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Rollcall header for module DarkBit
-//
-//  Compile-time registration of available obser-
-//  vables and likelihoods, as well as their
-//  dependencies.
-//
-//  Add to this if you want to add an observable
-//  or likelihood to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Torsten Bringmann (torsten.bringmann@desy.de)
-//  [cloned from TinyDarkBit]
-//  2013 Jun
-//
-//  Christoph Weniger <c.weniger@uva.nl>
-//  July 2013
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Rollcall header for module DarkBit
+///
+///  Compile-time registration of available obser-
+///  vables and likelihoods, as well as their
+///  dependencies.
+///
+///  Add to this if you want to add an observable
+///  or likelihood to this module.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul
+///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de)
+///  \date 2013 Jun
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
+///  *********************************************
 
 
 #ifndef __DarkBit_rollcall_hpp__
