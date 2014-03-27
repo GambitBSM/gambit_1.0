@@ -561,7 +561,7 @@ namespace Gambit
                     std::cout << "Requested: " << args[index] << ", valid range is " << x0 << " to " << x1 << std::endl;
                     return 0;
                 }
-                return (*myPointer)(args);
+                return (*myPointer).value(args);
             }
 
         private:
