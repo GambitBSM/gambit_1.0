@@ -169,10 +169,11 @@ namespace xsec{
 
   void Evaluator::_params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const {
     // TODO: fix m_A use in MSOFT
+      // Reset SUSY-HIT fix DANGER DANGER DANGER
 
     // Find scales
     double Qxsec = 1000.;
-    double Qmsoft = point.msoft.q();
+    double Qmsoft = point.msoft.q()*1000;
     double Qextpar = point.extpar(0);
     double Qhmix = point.hmix.q();
     cout << "Qmsoft " << Qmsoft << endl;
