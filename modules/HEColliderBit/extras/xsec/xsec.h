@@ -6,11 +6,41 @@
 #include "Pythia8/SusyLesHouches.h"
 
 // Include all NN-classes
-#include "networks/NNfunction_n1n1.h"
-#include "networks/NNfunction_n1n2.h"
-#include "networks/NNfunction_nn_n1n3.h"
-#include "networks/NNfunction_nn_n1n4.h"
-#include "networks/NNfunction_nn_n1n5.h"
+#include "networks/NNfunction_NN_1_1.h"
+#include "networks/NNfunction_NN_1_2.h"
+#include "networks/NNfunction_NN_1_3.h"
+#include "networks/NNfunction_NN_1_4.h"
+#include "networks/NNfunction_NN_1_5.h"
+#include "networks/NNfunction_NN_1_6.h"
+#include "networks/NNfunction_NN_1_7.h"
+#include "networks/NNfunction_NN_1_8.h"
+#include "networks/NNfunction_NN_2_2.h"
+#include "networks/NNfunction_NN_2_3.h"
+#include "networks/NNfunction_NN_2_4.h"
+#include "networks/NNfunction_NN_2_5.h"
+#include "networks/NNfunction_NN_2_6.h"
+#include "networks/NNfunction_NN_2_7.h"
+#include "networks/NNfunction_NN_2_8.h"
+#include "networks/NNfunction_NN_3_3.h"
+#include "networks/NNfunction_NN_3_4.h"
+#include "networks/NNfunction_NN_3_5.h"
+#include "networks/NNfunction_NN_3_6.h"
+#include "networks/NNfunction_NN_3_7.h"
+#include "networks/NNfunction_NN_3_8.h"
+#include "networks/NNfunction_NN_4_4.h"
+#include "networks/NNfunction_NN_5_7.h"
+#include "networks/NNfunction_NN_5_8.h"
+#include "networks/NNfunction_NN_6_7.h"
+#include "networks/NNfunction_NN_6_8.h"
+
+#include "networks/NNfunction_NG_1.h"
+#include "networks/NNfunction_NG_2.h"
+#include "networks/NNfunction_NG_3.h"
+#include "networks/NNfunction_NG_4.h"
+#include "networks/NNfunction_NG_5.h"
+#include "networks/NNfunction_NG_6.h"
+#include "networks/NNfunction_NG_7.h"
+#include "networks/NNfunction_NG_8.h"
 
 #include "networks/NNfunction_b1b1.h"
 #include "networks/NNfunction_b2b2.h"
@@ -104,13 +134,42 @@ class Evaluator {
 
     // One object of every NN class
     // Mutable so their Value methods can be called despite not being declared const by ROOT...
-    mutable NNfunction_n1n1 nn_n1n1;
-    mutable NNfunction_n1n2 nn_n1n2;
+    mutable NNfunction_NN_1_1 nn_n1n1;
+    mutable NNfunction_NN_1_2 nn_n1n2;
+    mutable NNfunction_NN_1_3 nn_n1n3;
+    mutable NNfunction_NN_1_4 nn_n1n4;
+    mutable NNfunction_NN_1_5 nn_n1n5;
+    mutable NNfunction_NN_1_6 nn_n1n6;
+    mutable NNfunction_NN_1_7 nn_n1n7;
+    mutable NNfunction_NN_1_8 nn_n1n8;
+    mutable NNfunction_NN_2_2 nn_n2n2;
+    mutable NNfunction_NN_2_3 nn_n2n3;
+    mutable NNfunction_NN_2_4 nn_n2n4;
+    mutable NNfunction_NN_2_5 nn_n2n5;
+    mutable NNfunction_NN_2_6 nn_n2n6;
+    mutable NNfunction_NN_2_7 nn_n2n7;
+    mutable NNfunction_NN_2_8 nn_n2n8;
+    mutable NNfunction_NN_3_3 nn_n3n3;
+    mutable NNfunction_NN_3_4 nn_n3n4;
+    mutable NNfunction_NN_3_5 nn_n3n5;
+    mutable NNfunction_NN_3_6 nn_n3n6;
+    mutable NNfunction_NN_3_7 nn_n3n7;
+    mutable NNfunction_NN_3_8 nn_n3n8;
+    mutable NNfunction_NN_4_4 nn_n4n4;
+    mutable NNfunction_NN_5_7 nn_n5n7;
+    mutable NNfunction_NN_5_8 nn_n5n8;
+    mutable NNfunction_NN_6_7 nn_n6n7;
+    mutable NNfunction_NN_6_8 nn_n6n8;
 
-    mutable NNfunction_nn_n1n3 nn_n1n3;
-    mutable NNfunction_nn_n1n4 nn_n1n4;
-    mutable NNfunction_nn_n1n5 nn_n1n5;
-
+    mutable NNfunction_NG_1 ng_n1g;
+    mutable NNfunction_NG_2 ng_n2g;
+    mutable NNfunction_NG_3 ng_n3g;
+    mutable NNfunction_NG_4 ng_n4g;
+    mutable NNfunction_NG_5 ng_n5g;
+    mutable NNfunction_NG_6 ng_n6g;
+    mutable NNfunction_NG_7 ng_n7g;
+    mutable NNfunction_NG_8 ng_n8g;
+    
     mutable NNfunction_b1b1 b1b1;
     mutable NNfunction_b2b2 b2b2;
     mutable NNfunction_cLg cLg;
