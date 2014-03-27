@@ -2,8 +2,6 @@
 
 #include "Particle.hpp"
 #include "Jet.hpp"
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/vector.hpp>
 #include <algorithm>
 
 namespace HEP_Simple_Lib {
@@ -12,23 +10,6 @@ namespace HEP_Simple_Lib {
     /// Simple event class, separating into various classes of particle
     class Event {
     private:
-
-      /// @name Serialization
-      /// @todo This may have to be a Printer function... ask Ben about Printers
-      //@{
-      friend class boost::serialization::access;
-
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version) {
-        ar & _photons;
-        ar & _electrons;
-        ar & _muons;
-        ar & _taus;
-        ar & _invisibles;
-        ar & _jets;
-        ar & _pmiss;
-      }
-      //@}
 
       /// @name Internal particle / vector containers
       //@{

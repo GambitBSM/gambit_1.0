@@ -12,11 +12,6 @@
 #include <numeric>
 #include <algorithm>
 
-#ifdef ARCHIVE
-#include "boost/archive/text_oarchive.hpp"
-#include "boost/lexical_cast.hpp"
-#endif
-
 #include "omp.h"
 #define MAIN_SHARED slhaFileName,myDelphes
 
@@ -143,12 +138,6 @@ int main() {
       myPythia->set("SUSY:idVecA", thread_cfgs[NTHREAD].particlesInProcess1);
       myPythia->set("SUSY:idVecB", thread_cfgs[NTHREAD].particlesInProcess2);
 
-      // Configure the persistency system
-      #ifdef ARCHIVE
-      ofstream outFile("tester_thread" + boost::lexical_cast<string>(NTHREAD) + ".dat");
-      boost::archive::text_oarchive outArchive(outFile);
-      #endif
-
       // Print out some run details
       /// @note We might want more CPU-heavy processes to run fewer events.
       // cout << " Target number of events for thread #" << NTHREAD << " = " << thread_cfgs[NTHREAD].nevts << endl;
@@ -168,11 +157,6 @@ int main() {
         // Run all analyses attached to the thread
         for (shared_ptr<GHEC::Analysis> ana : thread_cfgs[NTHREAD].analyses)
           ana->analyze(recoEvent);
-
-        // Archive the recoEvent to file if persistency is enabled
-        #ifdef ARCHIVE
-        outArchive << recoEvent;
-        #endif
       } // end event loop
 
       // Record the (LO) cross-section on the analysis
@@ -188,9 +172,6 @@ int main() {
       // Print out final run details
       // cout << "Thread #" << NTHREAD << " has run " << counter << " events" << endl;
 
-      #ifdef ARCHIVE
-      outFile.close();
-      #endif
     } // end omp parallel block
   }
 

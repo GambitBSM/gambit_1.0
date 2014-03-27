@@ -1,28 +1,14 @@
 #pragma once
 
-#include <boost/serialization/access.hpp>
 #include "MCUtils/MathUtils.h"
 #include "MCUtils/Vectors.h"
-using namespace MCUtils;
 
 namespace HEP_Simple_Lib {
+using namespace MCUtils;
 
 
     /// Simple jet class, encapsulating a momentum 4-vector and with some extra b-tag info
     class Jet {
-    private:
-
-      /// @name Serialization
-      //@{
-      friend class boost::serialization::access;
-
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version) {
-        ar & _p4;
-        ar & _pdgId;
-        ar & _isB;
-      }
-      //@}
 
       /// @name Storage
       //@{
