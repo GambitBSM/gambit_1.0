@@ -627,8 +627,9 @@ namespace Gambit {
           // (we just ignore the contributions from the second and third
           // particle and integrate out the corresponding kinematical
           // variable).
-          //dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
 
+          //dsigmavde = it->dSigmadE->integrate(1, 0., 1000.);  
+          //std::cout << "Integral evaluates to: " << (*dsigmavde)(10.0) << std::endl;
           // Add up individual constributions
           //DiffYield3Body = DiffYield3Body->sum(dsigmavde);
 
@@ -703,13 +704,13 @@ namespace Gambit {
     
         #undef SETUP_DS_PROCESS
     
-        bool calculateFSR = true;
+        bool calculateFSR = false;
         bool calculateIB  = true;
         
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_2, IBFUNC, FSRFUNC)                                   \
             index = IBCH;                                                                                               \
             BFptr   CAT(kinematicFunction_,NAME)                                                                        \
-                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),&calculateFSR,&calculateIB));   \
+                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),calculateFSR,calculateIB));   \
             /* Create channel identifier string */                                                                      \
             std::vector<std::string> CAT(finalStates_,NAME);                                                            \
             CAT(finalStates_,NAME).push_back("gamma");                                                                  \
