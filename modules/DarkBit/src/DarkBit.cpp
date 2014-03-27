@@ -702,7 +702,33 @@ namespace Gambit {
 //        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
     
         #undef SETUP_DS_PROCESS
+    
+        bool calculateFSR = true;
+        bool calculateIB  = true;
+        
+        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_2, IBFUNC, FSRFUNC)                                   \
+            index = IBCH;                                                                                               \
+            BFptr   CAT(kinematicFunction_,NAME)                                                                        \
+                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),&calculateFSR,&calculateIB));   \
+            /* Create channel identifier string */                                                                      \
+            std::vector<std::string> CAT(finalStates_,NAME);                                                            \
+            CAT(finalStates_,NAME).push_back("gamma");                                                                  \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                                            \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                                            \
+            /* Create channel and push it into channel list of process */                                               \
+            TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));                        \
+            process.channelList.push_back(CAT(channel_,NAME));
 
+        // TODO: Fix masses
+        double m_e  = 0.511e-3; // GeV
+        double m_mu = 0.1057;   // GeV
+        // TODO: Check if IB and ISR are summed correctly
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,    4, e+,  e-,     m_e, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,  5, mu+, mu-,    m_mu, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+
+        #undef SETUP_DS_PROCESS_GAMMA3BODY
         // And process on process list
         catalog.processList.push_back(process);
 
