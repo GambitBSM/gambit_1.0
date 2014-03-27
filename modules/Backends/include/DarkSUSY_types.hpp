@@ -14,8 +14,8 @@
 ///  \date 2012 Mar
 ///
 ///  \author Torsten Bringmann
-///          (FIXME @blah.edu)
-///  \date 2013 Jun
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2013 Jun, 2014 Mar
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
@@ -67,10 +67,10 @@ namespace Gambit
     int nco,nres,kcoann[1000];
   };
 
-  struct DS_RDPTH//_bare
+  struct DS_RDPTH
   {
-    int nth,incth[1000];
-    double pth[1000];
+    double pth[1002];
+    int incth[1002],nth;
   };
 
 //PS: some proto-reindexing example code, to be built on in the future...
