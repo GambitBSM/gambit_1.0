@@ -85,7 +85,7 @@ BE_FUNCTION(dsgive_model_isasugra, void, (double&,double&,double&,double&,double
 BE_FUNCTION(dssigmav, double, (int&), "dssigmav_", "dssigmav")
 BE_FUNCTION(dsIBffdxdy, double, (int&, double&, double&), "dsibffdxdy_", "dsIBffdxdy")
 BE_FUNCTION(dsIBfsrdxdy, double, (int&, double&, double&), "dsibfsrdxdy_", "dsIBfsrdxdy")
-
+BE_FUNCTION(dsddgpgn, void, (double&, double&, double&, double&), "dsddgpgn_", "dsddgpgn")
 
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")

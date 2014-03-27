@@ -902,6 +902,26 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
+    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
+    {
+        using namespace Pipes::DD_couplings_DarkSUSY;
+        // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
+        // to set all four couplings.
+        BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
+        std::cout << "dsddgpgn gives: \n";
+        std::cout << " gps: " << result.gps << "\n";
+        std::cout << " gns: " << result.gns << "\n";
+        std::cout << " gpa: " << result.gpa << "\n";
+        std::cout << " gna: " << result.gna << std::endl;
+    }
+
+    void lnL_FakeLux(double &result)
+    {
+        using namespace Pipes::lnL_FakeLux;
+        result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
+    }
+
+
 // Tests for Torsten
 
     void provideN_func(int &result)
