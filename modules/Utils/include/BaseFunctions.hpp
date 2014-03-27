@@ -56,6 +56,18 @@ namespace Gambit
     // argument lists exist.
     typedef std::vector<double> BFargVec;
 
+    template<typename T>
+    inline std::enable_if<!is_vector<T>::value, T> Enter_Crap(int i, T &vec)
+    {
+            return vec;
+    }
+    
+    template<typename T>
+    inline std::enable_if<is_vector<T>::value, typename is_vector<T>::type> Enter_Crap(int i, T &vec)
+    {
+            return vec[i];
+    }
+    
     class BaseFunction : public enable_shared_from_this<BaseFunction>
     {
         public:
@@ -74,16 +86,36 @@ namespace Gambit
             }
 
             // Call by std::vector<double> arguments (standard)
-            double operator() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
+            //double output() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
 
             // Call by list of arguments; up to six dimensions for now (for convenience)
             template<typename... args>
-            double operator()(args... params)
+            typename std::enable_if<!is_one_member_vector<args...>::value, double>::type
+            operator()(args... params)
             {
-                    assertNdim(getVariadicNumber<args...>::N);
-                    BFargVec v(getVariadicNumber<args...>::N);
+                    assertNdim(sizeof...(args));
+                    BFargVec v;
+                    v.reserve(sizeof...(args));
                     inputVariadicVector(v, params...);
                     return this->value(v);
+            }
+            
+            template<typename... args>
+            typename std::enable_if<is_one_member_vector<args...>::value, std::vector<double>>::type
+            operator()(args... params)
+            {
+                    assertNdim(sizeof...(args));
+                    int end = getVariadicMaxVector();
+                    BFargVec retval;
+                    retval.reserve(end);
+                    for (int i = 0; i < end; i++)
+                    {
+                        BFargVec v;
+                        v.reserve(sizeof...(args));
+                        inputVariadicVector(v, Enter_Crap(i, params)...);
+                        retval[i] = this->value(v);
+                    }
+                    return retval;
             }
 
             // Returns a copy of the shared pointer object.
@@ -138,11 +170,11 @@ namespace Gambit
             // TODO: add information about positions and width of poles
 
 
-        private:
+        //private:
             // The central virtual abstract member function that must be
             // implemented by any derived class.
             virtual double value(const BFargVec &args) = 0;
-
+    private:
             // Function that checks for the correct dimensionality of arguments.
             void assertNdim(unsigned int i, std::string msg = "")
             {
@@ -206,7 +238,7 @@ namespace Gambit
     template<typename... args>
     double BFplainFunction(const args&... params)
     {
-            return BFplainFunctionStruct<getVariadicNumber<args...>::N>::BFplainFunction(params...);
+            return BFplainFunctionStruct<sizeof...(args)>::BFplainFunction(params...);
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -247,14 +279,14 @@ namespace Gambit
             double (*ptr)(args ...);
             
     public:
-            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("fromPlainFunction", getVariadicNumber<args...>::N)
+            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("fromPlainFunction", sizeof...(args))
             {
                     ptr = f;
             }
             
             double value(const BFargVec &vec)
             {
-                    return BFfromPlainFunctionStruct<getVariadicNumber<args...>::N, args...>::BFfromPlainFunction(vec.begin(), ptr);
+                    return BFfromPlainFunctionStruct<sizeof...(args), args...>::BFfromPlainFunction(vec.begin(), ptr);
             }
     };
     
@@ -439,7 +471,7 @@ namespace Gambit
             {
                 BFargVec myArgs = args;
                 myArgs.insert(myArgs.begin() + index, x);
-                return (*myPointer)(myArgs);
+                return (*myPointer).value(myArgs);
             }
 
         private:
@@ -520,7 +552,7 @@ namespace Gambit
             static double invoke(double x, void *params) {
                 BFintegrate * myBF = static_cast<BFintegrate*>(params);
                 (myBF->fullArgs)[myBF->index] = x;  // Set argument
-                return (*myBF->integrand)(myBF->fullArgs);
+                return (*myBF->integrand).value(myBF->fullArgs);
             }
 
             double x0, x1;  // Integration range
@@ -572,7 +604,7 @@ namespace Gambit
 
             double value(const BFargVec &args)
             {
-                return (*ptr)(args);
+                return (*ptr).value(args);
             }
 
         private:
@@ -593,7 +625,7 @@ namespace Gambit
         private:
             double value(const BFargVec &args)
             {
-                return (*f1)(args) + (*f2)(args);
+                return (*f1).value(args) + (*f2).value(args);
             }
 
             BFptr f1;
@@ -624,12 +656,12 @@ namespace Gambit
 
             double multBFs(const BFargVec &args)
             {
-                return (*f1)(args) * (*f2)(args);
+                return (*f1).value(args) * (*f2).value(args);
             }
 
             double multConst(const BFargVec &args)
             {
-                return (*f1)(args) * x;
+                return (*f1).value(args) * x;
             }
 
             BFptr f1;
