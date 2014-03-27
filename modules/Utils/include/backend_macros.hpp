@@ -54,6 +54,7 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
 
 /// Macro for adding a tag to the logging system for each backend
 //  We don't strictly need all the namespaces for this, but it's nice to have
@@ -80,6 +81,20 @@ namespace Gambit                                                            \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
+namespace Gambit
+{
+  namespace Backends
+  {
+    typedef void(*voidFptr)();
+    // Hack to suppress warnings about casting between void pointers and function pointers.
+    // "Necessary" as long as dlsym has no separate functionality for retrieving function pointers.
+    union void_voidFptr
+    {
+      void *ptr;      // Use this for objects
+      voidFptr fptr;  // Use this for functions
+    };
+  }
+}
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
@@ -91,7 +106,7 @@ namespace Gambit                                                            \
     {                                                                       \
                                                                             \
       void * pHandle;                                                       \
-      void * pSym;                                                          \
+      void_voidFptr pSym;                                                   \
       bool present;                                                         \
       void loadLibrary()                                                    \
       {                                                                     \
@@ -247,10 +262,10 @@ namespace Gambit                                                            \
         /* -- First clear error code by calling dlerror() */                \
         dlerror();                                                          \
         /* -- Obtain pointer from symbol */                                 \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
+        pSym.ptr = dlsym(pHandle, SYMBOLNAME);                              \
         STRIP_PARENS(PRECONSTR)                                             \
         BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,                                 \
-         reinterpret_cast<BASETYPE*>(pSym), CONSTRARG1, CONSTRARG2)         \
+        reinterpret_cast<BASETYPE*>(pSym.ptr), CONSTRARG1, CONSTRARG2)      \
         /* -- Disable the functor if the library is not present             \
               or the symbol not found. */                                   \
         if(!present)                                                        \
@@ -327,7 +342,6 @@ namespace Gambit
 {
   namespace Backends
   {
-    typedef void(*voidFptr)();
     std::map<voidFptr, voidFptr> frontBackFuncMap;  
     voidFptr accessFrontBackFuncMap(voidFptr frontFunc)
     {
@@ -440,9 +454,9 @@ namespace Gambit
 /// Connect pointers to the backend library
 /// @{
 #define BE_FUNC_CONNECT_POINTERS(NAME,TRANS) CAT(BE_FUNC_CONNECT_POINTERS,TRANS)(NAME)
-#define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym);
+#define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym.fptr);
 #define BE_FUNC_CONNECT_POINTERS1(NAME)                                                         \
-  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym);                                     \
+  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym.fptr);                                \
   NAME = NAME##_wrapper;             
 /// @}
 
@@ -499,7 +513,7 @@ namespace Gambit                                                                
         /* -- First clear error code by calling dlerror() */                                    \
         dlerror();                                                                              \
         /* -- Obtain pointer from symbol */                                                     \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                                      \
+        pSym.ptr = dlsym(pHandle, SYMBOLNAME);                                                  \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
         /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
         BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),                       \
