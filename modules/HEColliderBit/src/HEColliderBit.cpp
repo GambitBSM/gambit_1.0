@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Functions of HEColliderBit_eventLoop. Based 
+///  Functions of HEColliderBit_eventLoop. Based
 ///  heavily on the ExampleBit_A Functions
 ///
 ///  *********************************************
@@ -37,7 +37,7 @@ namespace Gambit {
     /// ********************************************
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
-    
+
     /// @todo Put in actual analyses rather than a simple counter
     double counter = 0.;
 
@@ -47,7 +47,7 @@ namespace Gambit {
       logger() << "==================" << endl;
       logger() << "HEColliderBit says,";
       logger() << "\"Hi there. Initializing...\"" << endl;
-      logger() << info << endl << EOM;
+      logger() << LogTags::info << endl << EOM;
       /// @todo Init pythia!!
     }
 
@@ -55,10 +55,10 @@ namespace Gambit {
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
-    
+
     /// *** Initialization for managers ***
     /// \todo Move the rest of this stuff into proper Gambity initialization function
-    
+
     /// \todo Assume that spectrum comes from somewhere else...
     /// \note Play with SoftSUSY class loading with Anders
     void getslhaFileName(std::string &result)
@@ -92,7 +92,7 @@ namespace Gambit {
 
 
     /// *** Readied Simulation Tools ***
-    
+
     /// Proper backending must wait until the class loader is ready.
     /// Until then, let's just hard code these.
     void readyPythiaBackend(Pythia8Backend* &result) {
@@ -118,7 +118,7 @@ namespace Gambit {
       logger() << "==================" << endl;
       logger() << "HEColliderBit says,";
       logger() << "\"manageXsecDependentLoop() was called.\"" << endl;
-      logger() << info << endl << EOM;
+      logger() << LogTags::info << endl << EOM;
       HEColliderBit_error().raise(LOCAL_INFO,"Xsec dependent loop not implemented.");
     }
 
@@ -129,7 +129,7 @@ namespace Gambit {
       logger() << "\"manageVanillaLoop() was called.\"" << endl;
       logger() << "*** NOTE: Each iteration will report:" << endl;
       logger() << "  iteration, event met, thread, counts" << endl;
-      logger() << info << endl << EOM;
+      logger() << LogTags::info << endl << EOM;
 
       Loop::executeIteration(0);
       #pragma omp parallel
@@ -143,7 +143,7 @@ namespace Gambit {
       logger() << "==================" << endl;
       logger() << "HEColliderBit says,";
       logger() << "\"manageVanillaLoop() completed.\"" << endl;
-      logger() << info << endl << EOM;
+      logger() << LogTags::info << endl << EOM;
     }
 
     /// Hard Scattering Event Generators
@@ -189,7 +189,7 @@ namespace Gambit {
       }
       result = counter * *Dep::scaleFactor;
       #pragma omp critical (print)
-      { 
+      {
         logger() << "  " << *Loop::iteration << ", ";
         logger() << (*Dep::GambitColliderEvent).met() << ", ";
         logger() << omp_get_thread_num() << ", ";

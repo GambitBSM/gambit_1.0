@@ -20,6 +20,7 @@
 
 namespace Gambit
 {
+
   using namespace LogTags;
 
   /// Utility errors
@@ -53,14 +54,14 @@ namespace Gambit
   /// Logging errors
   error& logging_error()
   { 
-    static error local("A problem has occurred in the logging utilities.","logging_error", logging); 
+    static error local("A problem has occurred in the logging utilities.","logging_error", logs); 
     return local;
   }
 
   /// Logging warnings
   warning& logging_warning()
   { 
-    static warning local("A problem has occurred in the logging utilities.","logging_warning", logging); 
+    static warning local("A problem has occurred in the logging utilities.","logging_warning", logs); 
     return local;
   }
 

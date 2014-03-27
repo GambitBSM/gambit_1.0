@@ -27,14 +27,14 @@ namespace Gambit
                 /// Scanner errors
                 error& scan_error()
                 {
-                        static error local("A problem has been raised by ScannerBit.","scan_error", LogTags::scan);
+                        static error local("A problem has been raised by ScannerBit.","scan_error", LogTags::scanner);
                         return local;
                 }
 
                 /// Scanner warnings
                 warning& scan_warning()
                 {
-                        static warning local("A problem has been raised by ScannerBit.","scan_warning", LogTags::scan);
+                        static warning local("A problem has been raised by ScannerBit.","scan_warning", LogTags::scanner);
                         return local;
                 }
 

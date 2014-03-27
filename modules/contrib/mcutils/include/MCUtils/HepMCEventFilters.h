@@ -53,8 +53,8 @@ namespace MCUtils {
   inline GenParticlesC const_particles_match_any(const HepMC::GenEvent* ge, const std::vector<PClassifier>& classifiers) {
     std::vector<const HepMC::GenParticle*> rtn;
     for (HepMC::GenEvent::particle_const_iterator pi = ge->particles_begin(); pi != ge->particles_end(); ++pi) {
-      /// @todo Replace with Boost foreach / C++11 range-for
-      foreach (const PClassifier& c, classifiers) {
+      /// @todo Replace with Boost BOOST_FOREACH / C++11 range-for
+      BOOST_FOREACH (const PClassifier& c, classifiers) {
         if (c(*pi)) {
           rtn.push_back(*pi);
           break;
@@ -78,8 +78,8 @@ namespace MCUtils {
     std::vector<const HepMC::GenParticle*> rtn;
     for (HepMC::GenEvent::particle_const_iterator pi = ge->particles_begin(); pi != ge->particles_end(); ++pi) {
       bool allpassed = true;
-      /// @todo Replace with Boost foreach / C++11 range-for
-      foreach (const PClassifier& c, classifiers) {
+      /// @todo Replace with Boost BOOST_FOREACH / C++11 range-for
+      BOOST_FOREACH (const PClassifier& c, classifiers) {
         if (!c(*pi)) {
           allpassed = false;
           break;
@@ -255,7 +255,7 @@ namespace MCUtils {
     /// @note We do the reassigning this way since GV::add_particle_*() modifies the end vertex
     if (vstart != NULL && vend != NULL && vend != vstart) {
       bool is_only_link = true;
-      foreach (const HepMC::GenParticle* pchild, const_particles(vstart, HepMC::children)) {
+      BOOST_FOREACH (const HepMC::GenParticle* pchild, const_particles(vstart, HepMC::children)) {
         if (pchild->end_vertex() == vend) is_only_link = false;
       }
       if (is_only_link) {
@@ -277,7 +277,7 @@ namespace MCUtils {
     for (HepMC::GenEvent::vertex_const_iterator vi = ge->vertices_begin(); vi != ge->vertices_end(); ++vi) {
       if ((*vi)->particles_in_size() == 0 && (*vi)->particles_out_size() == 0) orphaned_vtxs.push_back(*vi);
     }
-    foreach (HepMC::GenVertex* gv, orphaned_vtxs) delete gv;
+    BOOST_FOREACH (HepMC::GenVertex* gv, orphaned_vtxs) delete gv;
   }
 
 
@@ -298,7 +298,7 @@ namespace MCUtils {
   /// more robust but also less efficient than the pointer-based version).
   inline void reduce(HepMC::GenEvent* ge, const std::vector<int>& barcodes_toremove) {
     std::vector<HepMC::GenParticle*> toremove;
-    foreach (int barcode, barcodes_toremove) {
+    BOOST_FOREACH (int barcode, barcodes_toremove) {
       HepMC::GenParticle* gp = ge->barcode_to_particle(barcode);
       if (gp != NULL) toremove.push_back(gp);
     }
@@ -328,7 +328,7 @@ namespace MCUtils {
   /// for ensuring that the memory associated with the returned event is freed.
   inline HepMC::GenEvent* reduce(const HepMC::GenEvent* ge, const std::vector<HepMC::GenParticle*>& toremove) {
     std::vector<int> barcodes_toremove;
-    foreach (const HepMC::GenParticle* gp, toremove) {
+    BOOST_FOREACH (const HepMC::GenParticle* gp, toremove) {
       if (gp != NULL) barcodes_toremove.push_back(gp->barcode());
     }
     return reduce(ge, barcodes_toremove);

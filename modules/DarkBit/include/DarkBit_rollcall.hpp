@@ -1,30 +1,33 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  Rollcall header for module DarkBit
-//
-//  Compile-time registration of available obser-
-//  vables and likelihoods, as well as their
-//  dependencies.
-//
-//  Add to this if you want to add an observable
-//  or likelihood to this module.
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Torsten Bringmann (torsten.bringmann@desy.de)
-//  [cloned from TinyDarkBit]
-//  2013 Jun
-//
-//  Christoph Weniger <c.weniger@uva.nl>
-//  July 2013
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Rollcall header for module DarkBit
+///
+///  Compile-time registration of available obser-
+///  vables and likelihoods, as well as their
+///  dependencies.
+///
+///  Add to this if you want to add an observable
+///  or likelihood to this module.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul
+///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de)
+///  \date 2013 Jun
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
+///  *********************************************
+
 
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
@@ -47,7 +50,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkBit_PointInit_CMSSM
       START_FUNCTION(void)
-      ALLOW_MODELS(CMSSM_I)
+      ALLOW_MODELS(CMSSM_demo)
       #define BACKEND_REQ dsinit
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -212,7 +215,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_I)
+      ALLOW_MODELS(CMSSM_demo)
       #define BACKEND_REQ mspctm
         START_BACKEND_REQ(DS_MSPCTM, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -221,6 +224,14 @@ START_MODULE
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ      
+      #define BACKEND_REQ dsIBffdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ         
+      #define BACKEND_REQ dsIBfsrdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ        
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -237,6 +248,38 @@ START_MODULE
     #define FUNCTION lnL_oh2_Simple
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+// Tests for Torsten
+
+  #define CAPABILITY provideN
+  START_CAPABILITY
+    #define FUNCTION provideN_func
+      START_FUNCTION(int)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY provideF
+  START_CAPABILITY
+    #define FUNCTION provideF_func
+    START_FUNCTION(fptr_dd)
+      #define BACKEND_REQ funcGauss
+        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY CalcAv 
+  START_CAPABILITY 
+    #define FUNCTION CalcAv_func
+      START_FUNCTION(double)
+      DEPENDENCY(provideN, int) 
+      DEPENDENCY(provideF, fptr_dd) 
+      #define BACKEND_REQ average
+        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY
 
