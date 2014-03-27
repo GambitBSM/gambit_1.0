@@ -73,7 +73,7 @@ namespace Gambit
             double operator()(args... params)
             {
                     assertNdim(getVariadicNumber<args...>::N);
-                    BFargVec v;
+                    BFargVec v(getVariadicNumber<args...>::N);
                     inputVariadicVector(v, params...);
                     return this->value(v);
             }
@@ -557,12 +557,16 @@ namespace Gambit
     // Definition of factory functions for above helper classes that are provided by the base function object
     inline BFptr BaseFunction::tabularize(std::vector<double> xgrid) { return BFptr(new BFtabularize(shared_from_this(), xgrid)); }
     inline BFptr BaseFunction::sum(BFptr f2) { return BFptr(new BFsum(shared_from_this(), f2)); }
+    
     inline BFptr BaseFunction::mult(BFptr f2) { return BFptr(new BFmult(shared_from_this(), f2)); }
     inline BFptr BaseFunction::lineOfSightIntegral(double D) { return BFptr(new BFlineOfSightIntegral(shared_from_this(), D)); }
     inline BFptr BaseFunction::fixPar(int i, double x) { return BFptr (new BFfixPar(shared_from_this(), i, x)); }
     inline BFptr BaseFunction::integrate(int i, double x0, double x1) { return BFptr (new BFintegrate(shared_from_this(), i, x0, x1)); }
     inline BFptr BaseFunction::rotSym(int i) { return BFptr (new BFrotSym(shared_from_this(), i)); }
 
+    
+    inline BFptr operator + (const BFptr &f1, const BFptr &f2){ return BFptr(new BFsum(f1, f2));}
+    inline BFptr operator * (const BFptr &f1, const BFptr &f2){ return BFptr(new BFmult(f1, f2));}
 
     ///////////////////////////////////////////////////
     // Explicit implementations of physical functions
