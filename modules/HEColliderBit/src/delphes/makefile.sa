@@ -1,0 +1,27 @@
+include ../makefile.sa.common
+
+.PHONY: all clean
+
+all: libGambitHEColliderDelphes.so libGambitHEColliderDelphes.a
+	@true
+
+libGambitHEColliderDelphes.so: AbsoluteIsolationModule.o AbsoluteIsolationModule_dict.o BTaggingWithTruthModule.o BTaggingWithTruthModule_dict.o
+	$(CXX) -shared $(LDFLAGS) $(HEC_LDFLAGS) $^ $(ROOT_LDFLAGS) $(DELPHES_LDFLAGS) -o $@
+
+libGambitHEColliderDelphes.a: AbsoluteIsolationModule.o AbsoluteIsolationModule_dict.o BTaggingWithTruthModule.o BTaggingWithTruthModule_dict.o
+	ar rcv $@ $^
+	ranlib $@
+
+%.o : %.cc
+	$(CXX) -c $< $(CXXFLAGS) $(HEC_CXXFLAGS) -fopenmp $(ROOT_CXXFLAGS) $(DELPHES_CXXFLAGS) -o $@
+
+AbsoluteIsolationModule_dict.cc: AbsoluteIsolationModule.h AbsoluteIsolationModuleLinkDef.h
+	@echo "\nGenerating dictionary from $^"
+	@rootcint -f AbsoluteIsolationModule_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external $^
+
+BTaggingWithTruthModule_dict.cc: BTaggingWithTruthModule.h BTaggingWithTruthModuleLinkDef.h
+	@echo "\nGenerating dictionary from $^"
+	@rootcint -f BTaggingWithTruthModule_dict.cc -c -I$(DELPHES) -I$(DELPHES)/external $^
+
+clean:
+	rm -f *_dict.cc *_dict.h *_rdict.pcm *.o *.so

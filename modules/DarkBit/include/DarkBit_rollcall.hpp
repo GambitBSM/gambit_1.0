@@ -26,6 +26,7 @@
 //
 //  *********************************************
 
+
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
 
@@ -47,7 +48,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkBit_PointInit_CMSSM
       START_FUNCTION(void)
-      ALLOW_MODELS(CMSSM_I)
+      ALLOW_MODELS(CMSSM_demo)
       #define BACKEND_REQ dsinit
         START_BACKEND_REQ(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -178,6 +179,13 @@ START_MODULE
     #define FUNCTION RD_oh2_SingletDM
       START_FUNCTION(double)
     #undef FUNCTION
+    #define FUNCTION RD_oh2_DarkSUSY
+      START_FUNCTION(double)
+      #define BACKEND_REQ dsrdomega
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_test
@@ -205,7 +213,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_I)
+      ALLOW_MODELS(CMSSM_demo)
       #define BACKEND_REQ mspctm
         START_BACKEND_REQ(DS_MSPCTM, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
@@ -214,6 +222,14 @@ START_MODULE
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ      
+      #define BACKEND_REQ dsIBffdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ         
+      #define BACKEND_REQ dsIBfsrdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ        
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -233,21 +249,35 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY testTarget
+
+// Tests for Torsten
+
+  #define CAPABILITY provideN
   START_CAPABILITY
-    #define FUNCTION testTarget
-      START_FUNCTION(double)
-      DEPENDENCY(testCapability, double)
+    #define FUNCTION provideN_func
+      START_FUNCTION(int)
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY testCapability
+  #define CAPABILITY provideF
   START_CAPABILITY
-    #define FUNCTION testFunction1
-      START_FUNCTION(double)
+    #define FUNCTION provideF_func
+    START_FUNCTION(fptr_dd)
+      #define BACKEND_REQ funcGauss
+        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ
     #undef FUNCTION
-    #define FUNCTION testFunction2
+  #undef CAPABILITY
+
+  #define CAPABILITY CalcAv 
+  START_CAPABILITY 
+    #define FUNCTION CalcAv_func
       START_FUNCTION(double)
+      DEPENDENCY(provideN, int) 
+      DEPENDENCY(provideF, fptr_dd) 
+      #define BACKEND_REQ average
+        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY
 

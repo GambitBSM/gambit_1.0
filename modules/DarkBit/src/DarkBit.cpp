@@ -144,7 +144,9 @@ namespace Gambit {
           myres.n_thr += 1;
         }
       }
+
 // now add coannihilation thresholds
+/*  CW: I had to comment out this avoid freezing the code
       if (myres.n_thr > 1){
         for (int i=0; i<myres.n_co; i++) {
           for (int j=std::max(1,i); j<myres.n_co; i++) {
@@ -153,6 +155,7 @@ namespace Gambit {
           }
         }
       }
+*/
 
 //      std::cout << "# thresholds: " << myres.n_thr << std::endl;
 //      std::cout << "mchi: " <<  myres.mass_co[0] << std::endl;
@@ -312,6 +315,9 @@ namespace Gambit {
       GET_BE_RESULT(RD_oh2_general, dsrdinit);
       */
       BEreq::dsrdinit();
+
+      std::cout << "Now RD_oh2_general would segfault, so let's stop here before somebody gets hurt." << std::endl;
+      exit(1);
 
 // the following replaces the broken(?) dsrdcom -- should be fixed with higher DS versions
       DS_RDPARS myrdpars;
@@ -531,10 +537,10 @@ namespace Gambit {
       }
 
       // Get annihilation process from process catalog
-      TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi", (std::string)"chi");
+      TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
 
       // Get particle mass from process catalog
-      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi").mass;
+      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
 
 
       ///////////////////////////////////////////////////////////
@@ -628,21 +634,19 @@ namespace Gambit {
           // (we just ignore the contributions from the second and third
           // particle and integrate out the corresponding kinematical
           // variable).
-          dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
+          //dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
 
           // Add up individual constributions
-          DiffYield3Body = DiffYield3Body->sum(dsigmavde);
+          //DiffYield3Body = DiffYield3Body->sum(dsigmavde);
 
-          // Divide by mass
-          // TODO: DiffYield3Body = DiffYield3Body->mul(pow(mass, -2.));
         }
       }
 
       // Resample function
-      // DiffYield3Body = DiffYield3Body->tabularize(logspace(0, 2, 100));
+      // DiffYield3Body = DiffYield3Body->tabulate(logspace(0, 2, 100));
 
-      // Sum two- and three-body spectra and return result
-      result = DiffYield2Body->sum(DiffYield3Body);
+      // Sum two- and three-body spectra and devide by mass squared
+      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.));
     }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
@@ -656,10 +660,13 @@ namespace Gambit {
         TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
         TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
 
+        int index;
+
         // TODO: Hook up cross section to DarkSUSY
         #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2)                                          \
             /* Set cross-section */                                                             \
-            double CAT(sigma_,NAME) = BEreq::dssigmav(PARTCH);                                  \
+            index = PARTCH;                                                                     \
+            double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
             /* Create associated kinematical functions (just dependent on vrel)                 \
             *  here: s-wave, vrel independent 1-dim constant function */                        \
             BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),1));             \
@@ -671,18 +678,18 @@ namespace Gambit {
             TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
             process.channelList.push_back(CAT(channel_,NAME));
              
-        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
-        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
-        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
-        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
-        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
-        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
-        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
-        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
-        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
-        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
-        SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
-        SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
+//        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
+//        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
+//        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
+//        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
+//        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
+//        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
+//        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
+//        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
+//        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
+//        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
+//        SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
+//        SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
         SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0      )
         SETUP_DS_PROCESS(WW,        13, W+,     W-      )
         SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e   )
@@ -698,11 +705,37 @@ namespace Gambit {
         SETUP_DS_PROCESS(ttbar,     24, t,      tbar    )
         SETUP_DS_PROCESS(bbbar,     25, b,      bbar    )
         SETUP_DS_PROCESS(gluglu,    26, g,      g       )
-        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
-        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
+//        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
+//        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
     
         #undef SETUP_DS_PROCESS
+    
+        bool calculateFSR = true;
+        bool calculateIB  = true;
+        
+        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_2, IBFUNC, FSRFUNC)                                   \
+            index = IBCH;                                                                                               \
+            BFptr   CAT(kinematicFunction_,NAME)                                                                        \
+                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),&calculateFSR,&calculateIB));   \
+            /* Create channel identifier string */                                                                      \
+            std::vector<std::string> CAT(finalStates_,NAME);                                                            \
+            CAT(finalStates_,NAME).push_back("gamma");                                                                  \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                                            \
+            CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                                            \
+            /* Create channel and push it into channel list of process */                                               \
+            TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));                        \
+            process.channelList.push_back(CAT(channel_,NAME));
 
+        // TODO: Fix masses
+        double m_e  = 0.511e-3; // GeV
+        double m_mu = 0.1057;   // GeV
+        // TODO: Check if IB and ISR are summed correctly
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,    4, e+,  e-,     m_e, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,  5, mu+, mu-,    m_mu, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+
+        #undef SETUP_DS_PROCESS_GAMMA3BODY
         // And process on process list
         catalog.processList.push_back(process);
 
@@ -711,6 +744,23 @@ namespace Gambit {
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
 
         result = catalog;
+    }
+
+    void RD_oh2_DarkSUSY(double &result)
+    {
+        using namespace Pipes::RD_oh2_DarkSUSY;
+        // Input
+        int omtype = 0;  // 0: no coann; 1: all coann
+        int fast = 0;  // 0: standard; 1: fast; 2: dirty
+
+        // Output
+        double xf;  // freeze-out temperature
+        int ierr;  // error flag
+        int iwar;  // warming flag
+        int nfc;  // number of function calls to effective annihilation cross section
+        double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
+        std::cout << "oh2 is " << oh2 << std::endl;
+        result = oh2;
     }
 
 /*    
@@ -773,7 +823,7 @@ namespace Gambit {
         // Above L = 36, we use linear extrapolation up to L = 360000
         //
         // phi (defined as phi = sigmav/mDM**2*Ntot/8/pi * 1e26)
-        double xgridArray [101] = { 1e-20 , 6.74308086122e-05 , 0.000123192463137 , 
+        double xgridArray [101] = { 0. , 6.74308086122e-05 , 0.000123192463137 , 
         0.000171713798503 , 0.000215245918518 , 0.000255093268618 , 0.00029207805123 ,
         0.000326751732695 , 0.000359503469472 , 0.000390620122006 , 0.000420321264006,
         0.00044878042576 , 0.000476138421008 , 0.000502511975672 , 0.000527999496499,
@@ -821,20 +871,26 @@ namespace Gambit {
         std::vector<double> xgrid(xgridArray, xgridArray + sizeof xgridArray / sizeof xgridArray[0]);
         std::vector<double> ygrid(ygridArray, ygridArray + sizeof ygridArray / sizeof ygridArray[0]);
         // Construct interpolated function, using GAMBIT base functions.
-        BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1));
+        BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1, "lin"));
 
         // Integate spectrum
         // More precisely, the zero velocity limit of the differential
         // annihilation cross-section as function of individual final state
         // photons
-        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100))();
+        //std::ofstream os;
+        //os.open("test.dat");
+        //(*Dep::GA_AnnYield)->mult(1e30)->writeToFile(logspace(-1., 5., 100000), os);
+        //os.close();
+        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100)->set_epsrel(1e-3))();
+        std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate the phi-value
-        double phi = AnnYieldint / 8 / 3.14159265 * 1e26;
+        double phi = AnnYieldint / 8. / 3.14159265 * 1e26;
 
         // And return final likelihood
         result = 0.5*(*dwarf_likelihood)(phi);
-        std::cout << "LIKELIHOOD IS: " << result << std::endl;
+        std::cout << "dwarf_likelihood: " << result << std::endl;
+        std::cout << "phi: " << phi << std::endl;
     }
 
     void RD_oh2_SingletDM(double &result)
@@ -852,19 +908,27 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
-    void testTarget(double &result)
+// Tests for Torsten
+
+    void provideN_func(int &result)
     {
-        result = 0;
+      using namespace Pipes::provideN_func;
+      result=1000;
     }
 
-    void testFunction1(double &result)
+    void provideF_func(double(*&result)(double&))
     {
-        result = 0;
+      using namespace Pipes::provideF_func;
+      result = BEreq::funcGauss.pointer<double&>();
     }
 
-    void testFunction2(double &result)
+    void CalcAv_func(double &result)
     {
-        result = 0;
+      using namespace Pipes::CalcAv_func;
+      int n=*Dep::provideN;
+      result = BEreq::average(byVal(*Dep::provideF), n);
+      std::cout << "CalcAv_func: " << result << std::endl;
     }
+
   }
 }

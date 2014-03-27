@@ -22,7 +22,7 @@ using namespace ExampleBit_A::Functown;     // Functors wrapping the module's ac
 
 // Register ad-hoc module functions for use; as many or as few models can be given as desired.
 // Full declaration as per regular rollcall headers such as ExampleBit_A_rollcall.hpp is also allowed.
-QUICK_FUNCTION(ExampleBit_A, xsection, NEW_CAPABILITY, local_xsection, double, MSSM_I)
+QUICK_FUNCTION(ExampleBit_A, xsection, NEW_CAPABILITY, local_xsection, double, MSSM_demo)
 QUICK_FUNCTION(ExampleBit_A, nevents, OLD_CAPABILITY, nevents_dummy, double)
 
 // Ad-hoc functions for filling dependencies that cannot or should not otherwise be filled from inside ExampleBit_A.
@@ -49,7 +49,7 @@ int main()
     cout << "----------" << endl;
     
     // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
-    ModelParameters* CMSSM_primary_parameters = Models::CMSSM_I::Functown::primary_parameters.getcontentsPtr();
+    ModelParameters* CMSSM_primary_parameters = Models::CMSSM_demo::Functown::primary_parameters.getcontentsPtr();
 
     // Print some example diagnostics about ExampleBit_A
     cout << endl << "My name is " << name() << endl;
@@ -72,14 +72,14 @@ int main()
     // Notify any module functions that care of the model(s) being scanned.
     // 'Care' means where they depend on model parameters directly, or have dependencies or backend requirements that are
     // conditional on the model being analysed. 
-    Models::CMSSM_I::Functown::MSSM_I_parameters.notifyOfModel("CMSSM_I");
-    local_xsection.notifyOfModel("CMSSM_I");
+    Models::CMSSM_demo::Functown::MSSM_demo_parameters.notifyOfModel("CMSSM_demo");
+    local_xsection.notifyOfModel("CMSSM_demo");
 
     // Resolve dependencies 'by hand'.  The ordering is unimportant, but *something* in the chain must 
     // have one of its dependencies filled by Models::PRI::Functown::primary_parameters, where PRI is a primary model.
-    Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(&Models::CMSSM_I::Functown::primary_parameters);
-    Models::CMSSM_I::Functown::MSSM_I_parameters.resolveDependency(&nevents_dummy);
-    local_xsection.resolveDependency(&Models::CMSSM_I::Functown::MSSM_I_parameters);
+    Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(&Models::CMSSM_demo::Functown::primary_parameters);
+    Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(&nevents_dummy);
+    local_xsection.resolveDependency(&Models::CMSSM_demo::Functown::MSSM_demo_parameters);
     nevents_dbl.resolveDependency(&local_xsection);
     nevents_int.resolveDependency(&nevents_dbl);
 
@@ -96,14 +96,14 @@ int main()
     cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.origin() << "::";
     cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.name() << endl;
     cout << endl << "My function local_xsection has had its dependency on MSSM parameters filled by:" << endl;
-    cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_I_parameters.origin() << "::";
-    cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_I_parameters.name() << endl;
-    cout << endl << "The model function CMSSM_I::Functown::MSSM_I_parameters has had its dependency on nevents filled by:" << endl;
-    cout << Models::CMSSM_I::Pipes::MSSM_I_parameters::Dep::nevents.origin() << "::";
-    cout << Models::CMSSM_I::Pipes::MSSM_I_parameters::Dep::nevents.name() << endl;
-    cout << endl << "The model function CMSSM_I::Functown::MSSM_I_parameters has had its dependency on CMSSM parameters filled by:" << endl;
-    cout << Models::CMSSM_I::Pipes::MSSM_I_parameters::Dep::CMSSM_I_parameters.origin() << "::";
-    cout << Models::CMSSM_I::Pipes::MSSM_I_parameters::Dep::CMSSM_I_parameters.name() << endl << endl;
+    cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.origin() << "::";
+    cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.name() << endl;
+    cout << endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on nevents filled by:" << endl;
+    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.origin() << "::";
+    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.name() << endl;
+    cout << endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on CMSSM parameters filled by:" << endl;
+    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.origin() << "::";
+    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.name() << endl << endl;
 
     // Start a loop over some low-E points in the primary model parameter space
     cout << "Starting model scan..." << endl << endl;
@@ -123,7 +123,7 @@ int main()
       // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
       // i.e. calculate quantities that other quantities depend on first.
       nevents_dummy.reset_and_calculate();
-      Models::CMSSM_I::Functown::MSSM_I_parameters.reset_and_calculate();
+      Models::CMSSM_demo::Functown::MSSM_demo_parameters.reset_and_calculate();
       local_xsection.reset_and_calculate();
       nevents_dbl.reset_and_calculate();
       nevents_int.reset_and_calculate();

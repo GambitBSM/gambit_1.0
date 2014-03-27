@@ -39,6 +39,7 @@ namespace Gambit
 
   namespace ExampleBit_B
   {
+    using namespace LogTags;
   
     //************************************************************
 

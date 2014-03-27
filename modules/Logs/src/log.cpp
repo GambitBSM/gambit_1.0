@@ -37,16 +37,18 @@ namespace Gambit
   {
     ensure_construction_order()
     {
-      // call the functions which retrieve the catalogues, thus ensuring those objects are constructed.
+      // call the functions which retrieve the catalogues/maps, thus ensuring those objects are constructed.
       msgtypes();
       flags();
       components();
+      tag2str();
     }
   };
 
   LogMaster& logger()
   {
       // I assume that these being static, the constructor for x will only get called once.
+      // With the LogMaster constructed last out of these object, it should be destructed first, thus the other objects should be available for use in the LogMaster destructor.
       static ensure_construction_order x;
       static LogMaster global_log;
       return global_log;

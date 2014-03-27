@@ -16,35 +16,37 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-CMSSM_I:
-  # SM pars
-  MZ:
+Standard_Model:
+  alpha_emi:
     fixed_value: 80
-  Mbot:
-    fixed_value: 90
-  Mtop:
-    fixed_value: 170
-  g1:
-    fixed_value: 0.001
-  g2:
-    fixed_value: 0.003
-  g3:
-    fixed_value: 0.1
+  G_F:
+    fixed_value: 80
+  alpha_s:
+    fixed_value: 80
+  mZ:
+    fixed_value: 80
+  mb:
+    fixed_value: 80
+  mt:
+    fixed_value: 80
+  mtau:
+    fixed_value: 80
 
-  # CMSSM pars
+CMSSM_demo:
   A0:
     range: [-1000, 1000]
   M0:
     prior_type: log
     range: [0.001,1000]
   M12:
-    #same_as: CMSSM_I::M0
+  #  same_as: CMSSM_demo::M0
   Mstop:
-    #same_as: CMSSM_I::M12
+  #  same_as: CMSSM_demo::M0
   sgnmu:
      range: [-1, 1]
      fixed_value: 1
   tanb:
+  #  fixed_value: 1
 
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
@@ -87,21 +89,21 @@ CMSSM_I:
 # decided that we can deal with this via the "purpose" system.
 
 #m0_prior:
-#  parameters: [CMSSM_I::M0]
+#  parameters: [CMSSM_demo::M0]
 #  prior_type: log
 #  range: [0.001,1000]
 
 m12_prior: 
-  parameters: [CMSSM_I::M12]
+  parameters: [CMSSM_demo::M12]
   prior_type: composite
   options: 
     new_prior: 
-      parameters: [CMSSM_I::M12]
+      parameters: [CMSSM_demo::M12]
       prior_type: log
       range: [100,2000]
 
 tanbMstop_prior: 
-  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
+  parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
   prior_type: cauchy
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
@@ -198,17 +200,9 @@ multinest:
   capability:   test_vector
   type:         std::vector<double>
 
-# Example for dependency resolution for target functors
-#- purpose:      Observable
-#  capability:   testTarget
-
 #########################
 --- # Auxiliary entries
 #########################
-#
-- capability:   testTarget
-  dependencies:
-  - {capability: "testCapability", function: "testFunction1"}
 
 - capability:   "MSSMspectrum"
 

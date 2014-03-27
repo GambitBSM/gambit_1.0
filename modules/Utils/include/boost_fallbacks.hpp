@@ -4,7 +4,17 @@
 ///
 ///  Copies of boost headers that are required
 ///  but that may be too recent to be present
-///  on the user's machine.
+///  on the user's machine, or are buggy in
+///  some versions of boost.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2013
+///  \date 2014 Jan, Mar
 ///
 ///  *********************************************
 ///  Boost Software License - Version 1.0 - August 17th, 2003
@@ -37,8 +47,56 @@
 
 #include <boost/version.hpp>
 #include <boost/preprocessor/config/config.hpp>
+#include <boost/detail/workaround.hpp>
 
 #pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
+
+/// If we are working with version 1.41 or earlier, fix the buggy treatment of fpclassify. 
+#if BOOST_WORKAROUND(BOOST_VERSION, < 104200)
+
+  #ifndef BOOST_FUNCTIONAL_HASH_DETAIL_HASH_FLOAT_HEADER
+  #define BOOST_FUNCTIONAL_HASH_DETAIL_HASH_FLOAT_HEADER
+
+  #pragma message "Boost version has buggy hash_detail::float_hash_value.  Defining fixed version."
+
+  #include <boost/config.hpp>
+  #include <boost/config/no_tr1/cmath.hpp>
+  #include <boost/functional/hash/detail/float_functions.hpp>
+  #include <boost/functional/hash/detail/limits.hpp>
+  #include <boost/functional/hash/detail/hash_float_generic.hpp>
+  #include <boost/integer/static_log2.hpp>
+  #include <boost/cstdint.hpp>
+  #include <boost/assert.hpp>
+  
+  namespace boost
+  {
+      namespace hash_detail
+      {
+          template <class T>
+          inline std::size_t float_hash_value(T v)
+          {
+              using namespace std;
+              switch (std::fpclassify(v)) {
+              case FP_ZERO:
+                  return 0;
+              case FP_INFINITE:
+                  return (std::size_t)(v > 0 ? -1 : -2);
+              case FP_NAN:
+                  return (std::size_t)(-3);
+              case FP_NORMAL:
+              case FP_SUBNORMAL:
+                  return float_hash_impl(v);
+              default:
+                  BOOST_ASSERT(0);
+                  return 0;
+              }
+          }
+      }
+  }
+  
+  #endif //defined BOOST_FUNCTIONAL_HASH_DETAIL_HASH_FLOAT_HEADER
+
+#endif
 
 
 // Test if the boost version supports variadics or not.

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <boost/serialization/access.hpp>
-#include "MathUtils.hpp"
-#include "Vectors.hpp"
+#include "MCUtils/MathUtils.h"
+#include "MCUtils/Vectors.h"
+using namespace MCUtils;
 
 namespace HEP_Simple_Lib {
 
@@ -28,6 +29,7 @@ namespace HEP_Simple_Lib {
       /// Momentum vector
       P4 _p4;
       /// PDG ID code
+      /// @todo What is this? It's not used anywhere and doesn't make sense on a jet...
       int _pdgId;
       /// B tag
       bool _isB;
@@ -84,11 +86,11 @@ namespace HEP_Simple_Lib {
       /// Is this particle tagged as a b?
       bool isBJet() const { return _isB; }
       /// Return the ID of the truth particle used to choose the btag efficiency function
-      int getPdgId() const { return _pdgId; } 
+      int getPdgId() const { return _pdgId; }
       /// Set BTag value
       void setBJet(bool isb=true) { _isB = isb; }
       /// Set the ID of the truth particle used to choose the btag efficiency function
-      void setPdgId(int pdgId=0) { _pdgId = pdgId; } 
+      void setPdgId(int pdgId=0) { _pdgId = pdgId; }
 
       //@}
 

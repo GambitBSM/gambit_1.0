@@ -38,7 +38,6 @@ namespace Gambit
                         virtual unsigned int getDim() const = 0;
                         virtual void * operator() (const std::string &in, const std::string &purpose) const = 0;
                         virtual void remove(void *a) const = 0;
-                        //virtual ~Factory_Base() = default;
                         virtual ~Factory_Base() {};
                 };
                 
@@ -48,7 +47,6 @@ namespace Gambit
                         virtual const std::string pluginName() const = 0;
                         virtual const std::string fileName() const = 0;
                         virtual const std::string getValue(const std::string &in) const = 0;
-                        //virtual ~IniFileInterface_Base() = default;
                         virtual ~IniFileInterface_Base() {};
                 };
                 

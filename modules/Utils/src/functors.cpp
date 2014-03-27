@@ -39,6 +39,7 @@
 
 namespace Gambit
 {
+  using namespace LogTags;
 
   /// Poorly declaration of Printers::BasePrinter for use in print functions; leave implementation to printer source files.
   /// If the compiled printer sources are not linked against the compiled program, any calls to the print functions will generate
