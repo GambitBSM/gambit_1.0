@@ -76,48 +76,46 @@
  
   // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
   // object as a CAPABILITY of this model)
-  ATTACH_INTERPRET_AS_PARENT_FUNCTION(MSSMBen_IAPfunc)
+  INTERPRET_AS_PARENT__FUNCTION(MSSMBen_IAPfunc)
 
-  // The following function can now be defined anywhere if there are no dependencies
-  // If you need to access the *DEP namespace then it is a little harder because you have to know the right namespace in which to find it. See demo.hpp for examples. 
-  void MSSMBen_IAPfunc (ModelParameters &myparams, ModelParameters &parentparams)
+  // If you need to access the *DEP pointers via the Pipes then you have to know the right namespace in which to find them. You can use the USING_PIPE macro to make this accessible automatically, so long as PARENT and MODEL are correctly defined. See demo.hpp for examples.
+  void MODEL_NAMESPACE::MSSMBen_IAPfunc (const ModelParameters &myP, ModelParameters &parentP)
   {
      logger()<<"Running interpret_as_parent calculations for MSSMBen -> MSSM ..."<<LogTags::info<<EOM;
-  
-     const ModelParameters &p = myparams;
+      
+     double MSUSY(myP["M_input"]);
      
-     double MSUSY(p["M_input"]);
-     parentparams.setValue("M_input", MSUSY   );
-     parentparams.setValue("M1",      p["M1"] );
-     parentparams.setValue("M2",      p["M2"] );
-     parentparams.setValue("M3",      p["M3"] );
-     parentparams.setValue("At",      p["At"] );
-     parentparams.setValue("Ab",      0 );
-     parentparams.setValue("Ae",      0 );
-     parentparams.setValue("Amu",     0 );
-     parentparams.setValue("Atau",    0 );
-     parentparams.setValue("mH12",    p["MH12"] );
-     parentparams.setValue("mH22",    p["MH22"] );
-     parentparams.setValue("mu",      p["mu"]   );
-     parentparams.setValue("mA2",     1.5*MSUSY );
-     parentparams.setValue("tanb",    p["tanb"] );
-     parentparams.setValue("meL",     1.5*MSUSY );
-     parentparams.setValue("mmuL",    1.5*MSUSY );
-     parentparams.setValue("mtauL",   1.5*MSUSY );
-     parentparams.setValue("meR",     1.5*MSUSY );
-     parentparams.setValue("mmuR",    1.5*MSUSY );
-     parentparams.setValue("mtauR",   1.5*MSUSY );
-     parentparams.setValue("mq1L",    1.5*MSUSY );
-     parentparams.setValue("mq2L",    1.5*MSUSY );
-     parentparams.setValue("mq3L",    p["mq3L"] );
-     parentparams.setValue("muR",     1.5*MSUSY );
-     parentparams.setValue("mcR",     1.5*MSUSY );
-     parentparams.setValue("mtR",     p["mtR"]  );
-     parentparams.setValue("mdR",     1.5*MSUSY );
-     parentparams.setValue("msR",     1.5*MSUSY );
-     parentparams.setValue("mbR",     p["mbR"]  );
-   }
-
+     parentP.setValue("M_input", MSUSY   );
+     parentP.setValue("M1",      myP["M1"] );
+     parentP.setValue("M2",      myP["M2"] );
+     parentP.setValue("M3",      myP["M3"] );
+     parentP.setValue("At",      myP["At"] );
+     parentP.setValue("Ab",      0 );
+     parentP.setValue("Ae",      0 );
+     parentP.setValue("Amu",     0 );
+     parentP.setValue("Atau",    0 );
+     parentP.setValue("mH12",    myP["MH12"] );
+     parentP.setValue("mH22",    myP["MH22"] );
+     parentP.setValue("mu",      myP["mu"]   );
+     parentP.setValue("mA2",     1.5*MSUSY );
+     parentP.setValue("tanb",    myP["tanb"] );
+     parentP.setValue("meL",     1.5*MSUSY );
+     parentP.setValue("mmuL",    1.5*MSUSY );
+     parentP.setValue("mtauL",   1.5*MSUSY );
+     parentP.setValue("meR",     1.5*MSUSY );
+     parentP.setValue("mmuR",    1.5*MSUSY );
+     parentP.setValue("mtauR",   1.5*MSUSY );
+     parentP.setValue("mq1L",    1.5*MSUSY );
+     parentP.setValue("mq2L",    1.5*MSUSY );
+     parentP.setValue("mq3L",    myP["mq3L"] );
+     parentP.setValue("muR",     1.5*MSUSY );
+     parentP.setValue("mcR",     1.5*MSUSY );
+     parentP.setValue("mtR",     myP["mtR"]  );
+     parentP.setValue("mdR",     1.5*MSUSY );
+     parentP.setValue("msR",     1.5*MSUSY );
+     parentP.setValue("mbR",     myP["mbR"]  );
+  }
+  
 #undef PARENT
 #undef MODEL
 

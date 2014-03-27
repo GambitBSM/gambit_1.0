@@ -76,6 +76,7 @@ SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 HEPSIMPLEDIR = contrib/hep_simple_lib
 FASTSIMDIR = ../extras/fast_sim
+MCUTILSDIR = contrib/mcutils
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -100,6 +101,7 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SLHAEADIR) \
   -I$(HEPSIMPLEDIR) \
   -I$(FASTSIMDIR)/include \
+  -I$(MCUTILSDIR)/include \
   -I$(MULTINESTINC)
 
 ifdef CPPFLAGS

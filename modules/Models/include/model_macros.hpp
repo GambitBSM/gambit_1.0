@@ -140,13 +140,12 @@
 /// integer or maybe complex parameters later we could extend some things in 
 /// here.
 
-// Note: also calls DEFINEPAR for this parameter.
-#define MAP_TO_CAPABILITY(CAPABILITY)                                          \
+#define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                                \
   LINK_PARAMETER_TO_CAPABILITY(PARAMETER,CAPABILITY)                           \
 
 #define LINK_PARAMETER_TO_CAPABILITY(PARAMETER,CAPABILITY)                     \
                                                                                \
-  DEFINEPAR(PARAMETER)                                                         \
+  /*DEFINEPAR(PARAMETER) -- Now do this seperately */                          \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -179,6 +178,9 @@
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,MODEL,0)                      \
+           
+        /* Tell this functor to only activate for MODEL */                     \
+        LITTLEGUY_ALLOW_MODEL                                                  \
                                                                                \
       }                                                                        \
                                                                                \
@@ -275,12 +277,13 @@
 // custom CAPABILITIES
 //#define DO_LINK(r,data,elem) LINK_PARAMETER_TO_CAPABILITY(elem,CAT_5(MODEL,_,PARAMETERISATION,_,elem))
 // Changed our minds again: We do want these "miniguys".
-//#define DO_LINK(r,data,elem) DEFINEPAR(elem)
-
+#define DO_LINK(r,data,elem) DEFINEPAR(elem)
 // Want simple names though: can resolve name clashes with dependency resolver,
 // in principle.
-#define DO_LINK(r,data,elem) \
-  LINK_PARAMETER_TO_CAPABILITY(elem,elem)
+//#define DO_LINK(r,data,elem) \
+//  LINK_PARAMETER_TO_CAPABILITY(elem,elem)
+// Nope, changed our minds again; back to no "little guys" except for those explicitly
+// created by MAP_TO_CAPABILITY
 
 #define DEFINEPARS(...) \
   BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
@@ -370,14 +373,14 @@
       {                                                                        \
                                                                                \
         /* Prototype the user-defined function */                              \
-        void FUNC (ModelParameters &);                                         \
+        void FUNC (const ModelParameters&, ModelParameters&);                  \
                                                                                \
-        /* The actual definition of the interpret_as_X function */             \
+        /* The actual definition of the interpret_as_X "module" function */    \
         void CAT(MODEL_X,_parameters) (ModelParameters &model_x_params)        \
         {                                                                      \
           /* Collect MODEL's parameters via dependency system */               \
-          using namespace CAT_3(Pipes::,MODEL_X,_parameters);                  \
-          const ModelParameters &model_params = CAT_3(*Dep::,MODEL,_parameters);\
+          using namespace Pipes::CAT(MODEL_X,_parameters);                     \
+          const ModelParameters& model_params = *Dep::CAT(MODEL,_parameters);  \
                                                                                \
           /* Run user-supplied code (which must take result as an
              argument, and set the parameters it contains as desired) */       \
@@ -404,13 +407,16 @@
   INTERPRET_AS_X__DEFINE(PARENT,FUNC)                                          \
 
 // Full combo wrapper
-#define ATTACH_INTERPRET_AS_PARENT(FUNC)                                       \
-  INTERPRET_AS_PARENT_BEGIN                                                    \
+#define INTERPRET_AS_PARENT__FUNCTION(FUNC)                                    \
+  INTERPRET_AS_PARENT__BEGIN                                                   \
   INTERPRET_AS_PARENT__DEFINE(FUNC)                                            \
 
+// Macro to get to model namespace easily
+#define MODEL_NAMESPACE Gambit::Models::MODEL 
+
 // Macro to easily get the Pipes, for retrieving dependencies
-#define USING_PIPE                                                             \
-  using namespace CAT_5(Gambit::Models::,MODEL,::Pipes::,PARENT,_parameters);  \
+#define USE_MODEL_PIPE                                                         \
+  using namespace MODEL_NAMESPACE::Pipes::CAT(PARENT,_parameters);       \
 
 /// Macros to create and register primary model functors. 
 ///
