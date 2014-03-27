@@ -520,9 +520,16 @@ namespace Gambit {
       // 1) Initialization
       ////////////////////
 
-      // Grid and energy range used in interpolating functions.  This should
-      // finally depend on the likelihood functions that are called.
-      int n = 10000;  // TODO: remove hardcoding
+      // Grid and energy range used in interpolating functions.
+      double Emin = 1e-1; // Default energy range
+      double Emax = 1e4;  
+      if (runOptions->hasKey("Emin") and runOptions->hasKey("Emax"))
+      {
+          // Energy range from ini-file options
+          Emin = runOptions->getValue<double>("Emin");
+          Emax = runOptions->getValue<double>("Emax");
+      }
+      int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
       std::vector<double> xgrid = logspace(-1., 3., n);
       std::vector<double> ygrid = linspace(0., 0., n);
 
@@ -633,10 +640,12 @@ namespace Gambit {
       }
 
       // Resample function
-      // DiffYield3Body = DiffYield3Body->tabulate(logspace(0, 2, 100));
+      DiffYield3Body = DiffYield3Body->tabulate(xgrid);
 
-      // Sum two- and three-body spectra and devide by mass squared
-      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->addPar(1);
+      // Sum two- and three-body spectra, devide by mass squared, fix valid
+      // range, and add additional parameter for velocity (though the result is
+      // velocity independent).
+      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->validRange(0, Emin, Emax)->addPar(1);
     }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
