@@ -58,8 +58,8 @@ namespace Gambit {
 }
 
 
+
 namespace GHEC = Gambit::HEColliderBit;
-using namespace GHEC;
 
 int main() {
 
@@ -74,50 +74,34 @@ int main() {
   cout << endl << "Running parallelized HECollider simulation for " << NUM_EVENTS << " events" << endl;
 
   // Global instance of Delphes, since it's not thread-safe
-  shared_ptr<Delphes3Backend> myDelphes(new Delphes3Backend(delphesConfigFile));
+  shared_ptr<GHEC::Delphes3Backend> myDelphes(new GHEC::Delphes3Backend(delphesConfigFile));
 
   // Subprocess group setup
-  /// Decide how many events of each subprocess group to use, from interpolated NLO subprocess cross-sections
-  /// @note Hard-coded for now, so I can do *something*
-  //map<string, double> sp_xsecs = {{"g~", 0.5}, {"q~", 0.2}, {"X~", 0.02}, {"t~", 0.1}};
-  // double total_xsec = 0; for (const auto& ispx : sp_xsecs) total_xsec += ispx.second;
-
-  map<string, Subprocess> sps;
+  map<string, GHEC::Subprocess> sps;
   // Gluino processes
-  sps["g~"] = Subprocess(//sp_xsecs["g~"],
-                         {{1000021}},
-                         {{1000021, 1000001, 1000002, 1000003, 1000004,
-                                    2000001, 2000002, 2000003, 2000004}});
+  sps["g~"] = GHEC::Subprocess({{1000021}},
+                               {{1000021, 1000001, 1000002, 1000003, 1000004,
+                                          2000001, 2000002, 2000003, 2000004}});
   // Squark processes
-  sps["q~"] = Subprocess(//sp_xsecs["q~"],
-                         {{1000001, 1000002, 1000003, 1000004,
-                           2000001, 2000002, 2000003, 2000004}},
-                         {{1000001, 1000002, 1000003, 1000004,
-                           2000001, 2000002, 2000003, 2000004}});
+  sps["q~"] = GHEC::Subprocess({{1000001, 1000002, 1000003, 1000004,
+                                 2000001, 2000002, 2000003, 2000004}},
+                               {{1000001, 1000002, 1000003, 1000004,
+                                 2000001, 2000002, 2000003, 2000004}});
   // Gaugino processes
-  sps["X~"] = Subprocess(//sp_xsecs["X~"],
-                         {{1000021, 1000001, 1000002, 1000003, 1000004,
-                                    2000001, 2000002, 2000003, 2000004}},
-                         {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
+  sps["X~"] = GHEC::Subprocess({{1000021, 1000001, 1000002, 1000003, 1000004,
+                                          2000001, 2000002, 2000003, 2000004}},
+                               {{1000022, 1000023, 1000024, 1000025, 1000035, 1000037}});
   // Stop processes
-  sps["t~"] = Subprocess(//sp_xsecs["t~"],
-                         {{1000006}}, {{1000006}});
+  sps["t~"] = GHEC::Subprocess({{1000006}}, {{1000006}});
 
-  // Calculate total xsec for process division normalization
-  double total_xsec = 0;
-  for (const auto& ispx : sps) {
-    cout << "xsec (" << ispx.first << ") = " << ispx.second.xsec << endl;
-    total_xsec += ispx.second.xsec;
-  }
-
-  // Bind subprocesses to analysis pointers
+  // Bind analysis pointers to subprocesses
   for (auto& isp : sps) {
     auto& sp = isp.second;
-    sp.add_analysis( mkAnalysis("ATLAS_0LEP") );
-    sp.add_analysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
-    // sp.add_analysis( mkAnalysis("ATLAS_1LEPStop_20invfb") ); //< buggy: segfaults in finalize
-    sp.add_analysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
-    sp.add_analysis( mkAnalysis("ATLAS_2bStop_20invfb") );
+    sp.add_analysis( GHEC::mkAnalysis("ATLAS_0LEP") );
+    sp.add_analysis( GHEC::mkAnalysis("ATLAS_0LEPStop_20invfb") );
+    // sp.add_analysis( GHEC::mkAnalysis("ATLAS_1LEPStop_20invfb") ); //< buggy: segfaults in finalize
+    sp.add_analysis( GHEC::mkAnalysis("ATLAS_2LEPStop_20invfb") );
+    sp.add_analysis( GHEC::mkAnalysis("ATLAS_2bStop_20invfb") );
   }
 
   /// @note Needs more complexity when we want to run different analyses with
@@ -132,9 +116,16 @@ int main() {
   //      if (xsec * ideal_acceptance)[worst subprocess] < 0.01 (xsec * crappy_acceptance)[next-to-worst subprocess]
   // 3) The question then becomes: can we somehow estimate a priori ideal_acceptance and crappy_acceptance?
 
-  // Split up parallelized subprocess generation runs
+  // Calculate total xsec for process division normalization
+  double total_xsec = 0;
+  for (const auto& ispx : sps) {
+    cout << "xsec (" << ispx.first << ") = " << ispx.second.xsec << endl;
+    total_xsec += ispx.second.xsec;
+  }
+
+  // Decide how many events of each subprocess group to use, from interpolated NLO xsecs & split across threads
   const int NUM_CORES = omp_get_max_threads();
-  vector<Subprocess> thread_cfgs(NUM_CORES);
+  vector<GHEC::Subprocess> thread_cfgs(NUM_CORES);
   for (auto& isp : sps) {
     auto& sp = isp.second;
     const int sp_num_events = (int) ceil(NUM_EVENTS * sp.xsec / total_xsec);
@@ -147,7 +138,7 @@ int main() {
     {
       // Py8 backend process configuration
       const int NTHREAD = omp_get_thread_num();
-      unique_ptr<Pythia8Backend> myPythia( new Pythia8Backend(NTHREAD) );
+      unique_ptr<GHEC::Pythia8Backend> myPythia( new GHEC::Pythia8Backend(NTHREAD) );
       myPythia->set("SLHA:file", slhaFileName);
       myPythia->set("SUSY:idVecA", thread_cfgs[NTHREAD].particlesInProcess1);
       myPythia->set("SUSY:idVecB", thread_cfgs[NTHREAD].particlesInProcess2);
@@ -175,7 +166,7 @@ int main() {
         }
 
         // Run all analyses attached to the thread
-        for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses)
+        for (shared_ptr<GHEC::Analysis> ana : thread_cfgs[NTHREAD].analyses)
           ana->analyze(recoEvent);
 
         // Archive the recoEvent to file if persistency is enabled
@@ -188,7 +179,7 @@ int main() {
       /// @todo Combine same-process xsecs on the SP group, then set on the analyses before adding SPs?
       thread_cfgs[NTHREAD].xsec = myPythia->xsec();
       cout << "XSEC = " << myPythia->xsec() << endl;
-      for (shared_ptr<Analysis> ana : thread_cfgs[NTHREAD].analyses) {
+      for (shared_ptr<GHEC::Analysis> ana : thread_cfgs[NTHREAD].analyses) {
         cout << "Py8 xsec = " << myPythia->xsec() << " +- " << myPythia->xsecErr() << endl;
         ana->improve_xsec(myPythia->xsec(), myPythia->xsecErr());
         /// @todo Getting stupid values from Py8...
@@ -204,7 +195,7 @@ int main() {
   }
 
   /// Combine analysis acceptances from each subprocess
-  map<string, shared_ptr<Analysis>> anas;
+  map<string, shared_ptr<GHEC::Analysis>> anas;
   for (auto& spg : sps) {
     for (auto& a : spg.second.analyses) {
       const string aname = (!a->name.empty()) ? a->name : typeid(*a).name();
