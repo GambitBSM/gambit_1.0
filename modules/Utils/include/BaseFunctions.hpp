@@ -159,9 +159,8 @@ namespace Gambit
             operator()(args... params)
             {
                     assertNdim(sizeof...(args));
-                    BFargVec v;
-                    v.reserve(sizeof...(args));
-                    inputVariadicVector(v, params...);
+                    BFargVec v(sizeof...(args));
+                    inputVariadicVector(v.begin(), params...);
                     return this->value(v);
             }
             
@@ -171,13 +170,11 @@ namespace Gambit
             {
                     assertNdim(sizeof...(args));
                     int end = getVariadicMaxVector();
-                    BFargVec retval;
-                    retval.reserve(end);
+                    BFargVec retval(end);
+                    BFargVec v(sizeof...(args));
                     for (int i = 0; i < end; i++)
                     {
-                        BFargVec v;
-                        v.reserve(sizeof...(args));
-                        inputVariadicVector(v, Enter_Crap(i, params)...);
+                        inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
                         retval[i] = this->value(v);
                     }
                     return retval;

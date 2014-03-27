@@ -100,12 +100,12 @@ namespace Gambit
                 return (N > N0) ? N0 : N;
         };
         
-        inline void inputVariadicVector(std::vector<double> &vec){}
+        inline void inputVariadicVector(std::vector<double>::iterator vec){}
         
         template <typename... args>
-        inline void inputVariadicVector(std::vector<double> &vec, double val, args... params)
+        inline void inputVariadicVector(std::vector<double>::iterator vec, double val, args... params)
         {
-                vec.push_back(val); inputVariadicVector(vec, params...);
+                *vec = val; inputVariadicVector(vec+1, params...);
         }
         
         inline void outputVariadicVector(std::vector<double>::const_iterator vec) {}
