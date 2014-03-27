@@ -1,7 +1,5 @@
 #include "xsec.h"
 
-#include "SusyLesHouches.h"
-
 #include <iostream>
 #include <string>
 #include <time.h>

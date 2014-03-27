@@ -22,6 +22,11 @@ LOAD_LIBRARY
 BE_FUNCTION(runMe, void, ( double (*)(int&), int&), "runme_", "runMe")
 BE_FUNCTION(externalFunction, double, (int&), "externalfunction_", "externalFunction")
 
+// Tests for Torsten
+BE_FUNCTION(average, double, (double(*)(double&), int&), "average_", "average")
+BE_FUNCTION(funcGauss, double, (double&), "funcgauss_", "funcGauss")
+BE_FUNCTION(funcBE, double, (double&), "funcbe_", "funcBE")
+
 //Notes: fortran arguments must always be TYPE& for passing by reference , const TYPE& for 
 //passing by value, except for function pointers, which go directly by value.  The arguments
 //of the functions to which pointers are being sent must be passed by reference in order 

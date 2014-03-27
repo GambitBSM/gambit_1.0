@@ -1,15 +1,36 @@
-/* 
- * DarkSUSY Backend
- * 
- * \author Anders Kvellestad
- * \date 2013-03-26  
- * 
- * Modified: 2013-04-05
- * Pat Scott 2013-04-22
- * Anders Kvellestad 2013-04-25 
- * Torsten Bringmann July 2013
- * Christoph Weniger July 2013
- */
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Backend header for the DarkSUSY backend
+///
+///  Compile-time registration of available 
+///  functions and variables from this backend.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)
+///  \date 2013 Mar
+///
+///  \author Pat Scott 
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Apr
+///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul
+///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de)
+///  \date 2013 Jul
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
+///  *********************************************
 
 /* Specify the path to the shared library along with a backend name. */
 
@@ -62,6 +83,10 @@ BE_FUNCTION(dshayield, double, (double&,double&,int&,int&,int&), "dshayield_", "
 BE_FUNCTION(dssusy_isasugra, void, (int&,int&), "dssusy_isasugra_", "dssusy_isasugra")
 BE_FUNCTION(dsgive_model_isasugra, void, (double&,double&,double&,double&,double&), "dsgive_model_isasugra_", "dsgive_model_isasugra")
 BE_FUNCTION(dssigmav, double, (int&), "dssigmav_", "dssigmav")
+BE_FUNCTION(dsIBffdxdy, double, (int&, double&, double&), "dsibffdxdy_", "dsIBffdxdy")
+BE_FUNCTION(dsIBfsrdxdy, double, (int&, double&, double&), "dsibfsrdxdy_", "dsIBfsrdxdy")
+
+
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")

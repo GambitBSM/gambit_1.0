@@ -98,7 +98,7 @@ all: testxsec libxsec.a libxsec.so
 	@true
 
 testxsec: test_xsec.cpp libxsec.a
-	$(CXX) $(CXXFLAGS) $^ -o $@ -I$(SLHA)/Pythia8
+	$(CXX) $(CXXFLAGS) $^ -o $@ -I$(SLHA)
 
 libxsec.a: $(FILES_NETWORKS) xsec.o SusyLesHouches.o
 	ar rcs $@ $^
@@ -110,11 +110,11 @@ libxsec.so: $(FILES_NETWORKS) xsec.o SusyLesHouches.o
 SusyLesHouches.o:
 	$(CXX) $(CXXFLAGS) -c $(SLHA)/src/SusyLesHouches.cc -I$(SLHA)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $^ -o $@ -I$(SLHA)/Pythia8
+%.o: %.cpp %.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I$(SLHA)
 
-networks/%.o: networks/%.cxx
-	$(CXX) $(CXXFLAGS) -c $^ -o $@
+networks/%.o: networks/%.cxx networks/%.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	rm -f networks/*.o *.o libxsec.a

@@ -37,3 +37,47 @@ end function
 
 
 
+! Tests for Torsten
+
+!... this is the backend library for libav.a
+!...determine "average" of f (over interval [0,1])
+real*8 function average(f,n)
+    implicit none
+    real*8 f
+    external f
+    integer i,n
+    real*8 x
+
+    average=0d0
+    do i=1,n
+    x=rand()
+    average=average+f(x)
+    enddo  
+    average=average/(1.*n)  
+
+    return
+end function
+
+
+!... These are some example functions that could of course also be
+!... provided by either another backend or some c++ function internal to GAMBIT
+
+real*8 function funcGauss(x)
+    implicit none
+    real*8 x
+
+    funcGauss=exp(-x**2)/sqrt(3.141592654)
+
+    return
+end function
+
+real*8 function funcBE(x)
+    implicit none
+    real*8 x
+
+    funcBE=0d0
+    if (x.le.0d0) return
+    funcBE=1./(1.+exp(x))/log(2.)
+
+    return
+end function

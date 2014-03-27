@@ -80,6 +80,25 @@ void Evaluator::_init_pidmap() {
 }
 
 
+string Evaluator::get_process(int pid1, int pid2) const {
+    // Figure out process string
+    map<int,string>::const_iterator it1 = pidmap.find(pid1);
+    map<int,string>::const_iterator it2 = pidmap.find(pid2);
+    if (it1 != pidmap.end() && it2 != pidmap.end())
+        return it1->second + it2->second;
+    return "";
+}
+
+
+double Evaluator::xsec(int pid1, int pid2, double * par) const {
+    const string process = get_process(pid1, pid2);
+    // if (process.empty()) {
+    //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
+    //   return -1;
+    // }
+    return xsec(process, par);
+}
+
 
 double Evaluator::xsec(const vector<int>& pids1,
                        const vector<int>& pids2, double * par) const {
@@ -135,30 +154,22 @@ double Evaluator::xsec(const vector<int>& pids1,
 }
 
 
-string Evaluator::get_process(int pid1, int pid2) const {
-    // Figure out process string
-    map<int,string>::const_iterator it1 = pidmap.find(pid1);
-    map<int,string>::const_iterator it2 = pidmap.find(pid2);
-    if (it1 != pidmap.end() && it2 != pidmap.end())
-        return it1->second + it2->second;
-    return "";
-}
-
-
-double Evaluator::xsec(int pid1, int pid2, double * par) const {
-    const string process = get_process(pid1, pid2);
-    // if (process.empty()) {
-    //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
-    //   return -1;
-    // }
-    return xsec(process, par);
-}
-
-
-double Evaluator::xsec(const string& process, const Pythia8::SusyLesHouches & point) const {
-
-    // Get parameters from SLHA object
+double Evaluator::xsec(const vector<int>& parts1, const vector<int>& parts2, Pythia8::SusyLesHouches& point) const {
     double par[24];
+    _params_from_py8slha(par, point);
+    return xsec(parts1, parts2, par);
+}
+
+
+double Evaluator::xsec(const vector<int>& parts1, const vector<int>& parts2, const string& slhafile) const {
+    Pythia8::SusyLesHouches point(slhafile);
+    return xsec(parts1, parts2, point);
+}
+
+
+
+void Evaluator::_params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const {
+    // Get parameters from SLHA object
     // Uses MSOFT and HMIX blocks defined at scale Q
     // TODO: be carefull about scale definitions!
     par[0] = point.minpar(3); // \tan\beta
@@ -185,19 +196,35 @@ double Evaluator::xsec(const string& process, const Pythia8::SusyLesHouches & po
     par[21] = point.msoft(43); // mqL3
     par[22] = point.msoft(46); // mtR
     par[23] = point.msoft(49); // mbR
+}
 
-    // Evaluate
+
+double Evaluator::xsec(const string& process, Pythia8::SusyLesHouches & point) const {
+    double par[24];
+    _params_from_py8slha(par, point);
     return xsec(process, par);
 }
 
 
-double Evaluator::xsec(int pid1, int pid2, const Pythia8::SusyLesHouches & point) const {
+double Evaluator::xsec(const string& process, const string& slhafile) const {
+    Pythia8::SusyLesHouches point(slhafile);
+    return xsec(process, point);
+}
+
+
+double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches & point) const {
     const string process = get_process(pid1, pid2);
     // if (process.empty()) {
     //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
     //   return -1;
     // }
     return xsec(process, point);
+}
+
+
+double Evaluator::xsec(int pid1, int pid2, const string& slhafile) const {
+    Pythia8::SusyLesHouches point(slhafile);
+    return xsec(pid1, pid2, point);
 }
 
 
@@ -239,7 +266,7 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "chi2+g") return 0;
     if(process == "chi1-g") return 0;
     if(process == "chi2-g") return 0;
-    
+
     // Neutralino & chargino pair production
     if(process == "chi10chi10") return nn_n1n1.Value(0,par);
     if(process == "chi10chi20") return nn_n1n2.Value(0,par);
@@ -282,7 +309,7 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "sRg") return sRg.Value(0,par);
     if(process == "uLg") return uLg.Value(0,par);
     if(process == "uRg") return uRg.Value(0,par);
-    
+
     // Neutralino/chargino + squark
     if(process == "chi10dL") return 0;
     if(process == "chi10dR") return 0;
@@ -429,7 +456,7 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "cLuL") return ss_cLuL.Value(0,par);
     if(process == "cLuR") return ss_cLuR.Value(0,par);
     if(process == "cRcR") return ss_cRcR.Value(0,par);
-    
+
     // Slepton pair production
     // First five are actually sums over first two generations
     if(process == "eLeLbar") return 0;

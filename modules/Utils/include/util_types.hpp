@@ -182,7 +182,7 @@ namespace Gambit
 
   };
 
-  /// Reindexed array type. \todo: Proper error handling
+  /// Reindexed array type.
   template <typename T, int dim>
   class Farray
   {
