@@ -334,14 +334,14 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "gg") return gg.Value(0,par);
 
     // Neutralino/chargino + gluino production
-    if(process == "chi10g") return 0;
-    if(process == "chi20g") return 0;
-    if(process == "chi30g") return 0;
-    if(process == "chi40g") return 0;
-    if(process == "chi1+g") return 0;
-    if(process == "chi2+g") return 0;
-    if(process == "chi1-g") return 0;
-    if(process == "chi2-g") return 0;
+    if(process == "chi10g") return ng_n1g.Value(0,par);
+    if(process == "chi20g") return ng_n2g.Value(0,par);
+    if(process == "chi30g") return ng_n3g.Value(0,par);
+    if(process == "chi40g") return ng_n4g.Value(0,par);
+    if(process == "chi1+g") return ng_n5g.Value(0,par);
+    if(process == "chi2+g") return ng_n6g.Value(0,par);
+    if(process == "chi1-g") return ng_n7g.Value(0,par);
+    if(process == "chi2-g") return ng_n8g.Value(0,par);
 
     // Neutralino & chargino pair production
     if(process == "chi10chi10") return nn_n1n1.Value(0,par);
@@ -349,31 +349,31 @@ double Evaluator::log10xsec(const string& process, double * par) const {
     if(process == "chi10chi30") return nn_n1n3.Value(0,par);
     if(process == "chi10chi40") return nn_n1n4.Value(0,par);
     if(process == "chi10chi1+") return nn_n1n5.Value(0,par);
-    if(process == "chi10chi2+") return 0;
-    if(process == "chi10chi1-") return 0;
-    if(process == "chi10chi2-") return 0;
-    if(process == "chi20chi20") return 0;
-    if(process == "chi20chi30") return 0;
-    if(process == "chi20chi40") return 0;
-    if(process == "chi20chi1+") return 0;
-    if(process == "chi20chi2+") return 0;
-    if(process == "chi20chi1-") return 0;
-    if(process == "chi20chi2-") return 0;
-    if(process == "chi30chi30") return 0;
-    if(process == "chi30chi40") return 0;
-    if(process == "chi30chi1+") return 0;
-    if(process == "chi30chi2+") return 0;
-    if(process == "chi30chi1-") return 0;
-    if(process == "chi30chi2-") return 0;
-    if(process == "chi40chi40") return 0;
+    if(process == "chi10chi2+") return nn_n1n6.Value(0,par);
+    if(process == "chi10chi1-") return nn_n1n7.Value(0,par);
+    if(process == "chi10chi2-") return nn_n1n8.Value(0,par);
+    if(process == "chi20chi20") return nn_n2n2.Value(0,par);
+    if(process == "chi20chi30") return nn_n2n3.Value(0,par);
+    if(process == "chi20chi40") return nn_n2n4.Value(0,par);
+    if(process == "chi20chi1+") return nn_n2n5.Value(0,par);
+    if(process == "chi20chi2+") return nn_n2n6.Value(0,par);
+    if(process == "chi20chi1-") return nn_n2n7.Value(0,par);
+    if(process == "chi20chi2-") return nn_n2n8.Value(0,par);
+    if(process == "chi30chi30") return nn_n3n3.Value(0,par);
+    if(process == "chi30chi40") return nn_n3n4.Value(0,par);
+    if(process == "chi30chi1+") return nn_n3n5.Value(0,par);
+    if(process == "chi30chi2+") return nn_n3n6.Value(0,par);
+    if(process == "chi30chi1-") return nn_n3n7.Value(0,par);
+    if(process == "chi30chi2-") return nn_n3n8.Value(0,par);
+    if(process == "chi40chi40") return nn_n4n4.Value(0,par);
     if(process == "chi40chi1+") return 0;
     if(process == "chi40chi2+") return 0;
     if(process == "chi40chi1-") return 0;
     if(process == "chi40chi2-") return 0;
-    if(process == "chi1+chi1-") return 0;
-    if(process == "chi1+chi2-") return 0;
-    if(process == "chi2+chi1-") return 0;
-    if(process == "chi2+chi2-") return 0;
+    if(process == "chi1+chi1-") return nn_n5n7.Value(0,par);
+    if(process == "chi1+chi2-") return nn_n5n8.Value(0,par);
+    if(process == "chi2+chi1-") return nn_n6n7.Value(0,par);
+    if(process == "chi2+chi2-") return nn_n6n8.Value(0,par);
 
     // Squark + gluino production
     // Adds squark+gluino and antisquark+gluino
