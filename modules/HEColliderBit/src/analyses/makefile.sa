@@ -8,6 +8,7 @@ ANAOBJS := Analysis.o \
   Analysis_ATLAS_1LEPStop_20invfb.o \
   Analysis_ATLAS_2bStop_20invfb.o \
   Analysis_ATLAS_2LEPStop_20invfb.o \
+  Analysis_ATLAS_3LEPEW_20invfb.o \
   Analysis_Perf.o
 
 libGambitHEColliderAnalysis.so: $(ANAOBJS) mt2_bisect.o

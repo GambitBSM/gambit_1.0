@@ -41,6 +41,12 @@ namespace Gambit
     // Abstract base class for double^n --> double functions.  
     class BaseFunction;
     class BFintegrate;
+    class BFsum;
+    class BFmult;
+    class BFlineOfSightIntegral;
+    class BFfixPar;
+    class BFinterpolation;
+    class BFrotSym;
 
     // The most relevant object the user will deal with is a shared pointer to
     // the abstract function base class.
@@ -71,14 +77,79 @@ namespace Gambit
             double operator() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
 
             // Call by list of arguments; up to six dimensions for now (for convenience)
+            double operator() () 
+            { 
+                assertNdim(0); 
+                BFargVec v; 
+                return this->value(v); 
+            }
+            double operator() (double x0) 
+            { 
+                assertNdim(1); 
+                BFargVec v;
+                v.push_back(x0); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1)
+            { 
+                assertNdim(2); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2)
+            { 
+                assertNdim(3); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3)
+            { 
+                assertNdim(4); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3, double x4) 
+            { 
+                assertNdim(5); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                v.push_back(x4); 
+                return this->value(v); 
+            }
+            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) 
+            { 
+                assertNdim(6); 
+                BFargVec v;
+                v.push_back(x0); 
+                v.push_back(x1); 
+                v.push_back(x2); 
+                v.push_back(x3); 
+                v.push_back(x4); 
+                v.push_back(x5); 
+                return this->value(v); 
+            }
+            /*
             template<typename... args>
             double operator()(args... params)
             {
                     assertNdim(getVariadicNumber<args...>::N);
-                    BFargVec v;
+                    BFargVec v(getVariadicNumber<args...>::N);
                     inputVariadicVector(v, params...);
                     return this->value(v);
             }
+            */
 
             // Returns a copy of the shared pointer object.
             BFptr getCopy()  { return shared_from_this(); }  
@@ -88,13 +159,13 @@ namespace Gambit
 
             // Member functions that create new derived base function objects.
             shared_ptr<BFintegrate> integrate(int i, double x0, double x1);
-            BFptr lineOfSightIntegral(double D);
-            BFptr fixPar(int i, double x);
-            BFptr rotSym(int i);
-            BFptr tabulate(std::vector<double> xgrid);
-            BFptr sum(BFptr f2);
-            BFptr mult(BFptr);
-            BFptr mult(double);
+            shared_ptr<BFlineOfSightIntegral> lineOfSightIntegral(double D);
+            shared_ptr<BFfixPar> fixPar(int i, double x);
+            shared_ptr<BFrotSym> rotSym(int i);
+            shared_ptr<BFinterpolation> tabulate(std::vector<double> xgrid);
+            shared_ptr<BFsum> sum(BFptr f2);
+            shared_ptr<BFmult> mult(BFptr);
+            shared_ptr<BFmult> mult(double);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -465,19 +536,19 @@ namespace Gambit
             shared_ptr<BFintegrate> set_epsrel(double epsrel)
             {
                 this->epsrel = epsrel;
-                return dynamic_pointer_cast<BFintegrate> (shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
             shared_ptr<BFintegrate> set_epsabs(double epsabs)
             {
                 this->epsabs = epsabs;
-                return dynamic_pointer_cast<BFintegrate> (shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
             shared_ptr<BFintegrate> set_epsabs(size_t limit)
             {
                 this->limit = limit;
-                return dynamic_pointer_cast<BFintegrate> (shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
         private:
@@ -633,23 +704,27 @@ namespace Gambit
     };
 
     // Definition of factory functions for above helper classes that are provided by the base function object
-    inline BFptr BaseFunction::tabulate(std::vector<double> xgrid) 
+    inline shared_ptr<BFinterpolation> BaseFunction::tabulate(std::vector<double> xgrid) 
     { 
         std::vector<double> ygrid;
         for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
         {
             ygrid.push_back(this->operator()(*it));
         }
-        return BFptr(new BFinterpolation(xgrid, ygrid, 1));  // Generate new interpolation object
+        return shared_ptr<BFinterpolation>(new BFinterpolation(xgrid, ygrid, 1));  // Generate new interpolation object
     }
-    inline BFptr BaseFunction::sum(BFptr f2) { return BFptr(new BFsum(shared_from_this(), f2)); }
-    inline BFptr BaseFunction::mult(BFptr f2) { return BFptr(new BFmult(shared_from_this(), f2)); }
-    inline BFptr BaseFunction::mult(double x) { return BFptr(new BFmult(shared_from_this(), x)); }
-    inline BFptr BaseFunction::lineOfSightIntegral(double D) { return BFptr(new BFlineOfSightIntegral(shared_from_this(), D)); }
-    inline BFptr BaseFunction::fixPar(int i, double x) { return BFptr (new BFfixPar(shared_from_this(), i, x)); }
+    
+    inline shared_ptr<BFsum> BaseFunction::sum(BFptr f2) { return shared_ptr<BFsum>(new BFsum(shared_from_this(), f2)); }
+    inline shared_ptr<BFmult> BaseFunction::mult(BFptr f2) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), f2)); }
+    inline shared_ptr<BFmult> BaseFunction::mult(double x) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), x)); }
+    inline shared_ptr<BFlineOfSightIntegral> BaseFunction::lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral>(new BFlineOfSightIntegral(shared_from_this(), D)); }
+    inline shared_ptr<BFfixPar> BaseFunction::fixPar(int i, double x) { return shared_ptr<BFfixPar>(new BFfixPar(shared_from_this(), i, x)); }
     inline shared_ptr<BFintegrate> BaseFunction::integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate> (new BFintegrate(shared_from_this(), i, x0, x1)); }
-    inline BFptr BaseFunction::rotSym(int i) { return BFptr (new BFrotSym(shared_from_this(), i)); }
+    inline shared_ptr<BFrotSym> BaseFunction::rotSym(int i) { return shared_ptr<BFrotSym>(new BFrotSym(shared_from_this(), i)); }
 
+    
+    inline shared_ptr<BFsum> operator + (const BFptr &f1, const BFptr &f2){ return shared_ptr<BFsum>(new BFsum(f1, f2));}
+    inline shared_ptr<BFmult> operator * (const BFptr &f1, const BFptr &f2){ return shared_ptr<BFmult>(new BFmult(f1, f2));}
 
     ///////////////////////////////////////////////////
     // Explicit implementations of physical functions
