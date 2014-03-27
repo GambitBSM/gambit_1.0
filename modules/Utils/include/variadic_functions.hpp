@@ -79,6 +79,63 @@ namespace Gambit
                 val = *vec;
                 outputVariadicVector(vec+1, params...);
         }
+        
+        template <typename T> struct is_vector {static const bool value = false;};
+        template <typename T> struct is_vector <std::vector<T>> {static const bool value = true;};
+        
+        template <typename type, typename T>
+        struct is_one_member_internal;
+        
+        template <typename type>
+        struct is_one_member_internal <type, void ()>
+        {
+                static const bool value = false;
+        };
+        
+        template <typename T, typename... args>
+        struct is_one_member_internal <T, void (T, args...)>
+        {
+                static const bool value = true;
+        };
+        
+        template <typename type, typename T, typename... args>
+        struct is_one_member_internal <type, void (T, args...)>
+        {
+                static const bool value = is_one_member_internal<type, void (args...)>::value;
+        };
+        
+        template <typename type, typename... args>
+        struct is_one_member
+        {
+                static const bool value = is_one_member_internal<type, void (args...)>::value;
+        };
+        
+        template <typename type, typename T>
+        struct is_all_member_internal;
+        
+        template <typename type>
+        struct is_all_member_internal <type, void ()>
+        {
+                static const bool value = true;
+        };
+        
+        template <typename T, typename... args>
+        struct is_all_member_internal <T, void (T, args...)>
+        {
+                static const bool value = is_all_member_internal<T, void (args...)>::value;
+        };
+        
+        template <typename type, typename T, typename... args>
+        struct is_all_member_internal <type, void (T, args...)>
+        {
+                static const bool value = false;
+        };
+        
+        template <typename type, typename... args>
+        struct is_all_member
+        {
+                static const bool value = is_all_member_internal<type, void (args...)>::value;
+        };
 }
 
 #endif
