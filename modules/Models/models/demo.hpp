@@ -21,6 +21,7 @@
 #define __demo_hpp__
 
 #include <string>
+#include "logging.hpp"
 
 #define MODEL test_parent_I
   START_MODEL
@@ -36,35 +37,31 @@
 #define PARENT test_parent_I
   START_MODEL
   DEFINEPARS(M1,M2,M3,AU1,AU2,AU3)
-  INTERPRET_AS_PARENT__BEGIN
-  INTERPRET_AS_PARENT__DEFINE(MSSM_I_IAPfunc)
-  namespace Gambit{ namespace Models{ namespace MSSM_demo{
-  void MSSM_I_IAPfunc (ModelParameters &parentparams)
-  {
-      cout<<"Running interpret_as_parent calculations for MSSM_demo -> test_parent_I ..."<<endl;
-      using namespace Pipes::test_parent_I_parameters;
-      const ModelParameters &p = *Dep::MSSM_demo_parameters;
-      
-      double M1 = p["M1"];
-      double M2 = p["M2"];
-      double M3 = p["M3"];
-      
-      //Can now get parameters less verbosely:
-      //double M1 = *Param["M1"];
-      //double M2 = *Param["M2"];
-      //double M3 = *Param["M3"];
 
-      //Or alternatively, if you also declare explicit dependencies on any of the parameters:
-      //double M1 = *Dep::M1;
-      //double M2 = *Dep::M2;
-      //double M3 = *Dep::M3;
-      //*Params is the preferred way though.
+  // Declare the interpret as parent function, and build the functor machinery around it.
+  // The user-defined part of the function can go anywhere, so long as you properly attach
+  // it to this declaration (which puts the function here: Gambit::Models::MODEL::<FUNCTION>)
+  // The MODEL_NAMESPACE macro get you the Gambit::Models::MODEL part, if MODEL is defined.
+  INTERPRET_AS_PARENT__FUNCTION(MSSM_I_IAPfunc)
+
+  // Note: "myparams" must be const. You're not allowed to change them here. Change "parentparams".
+  // To be able to access the Pipes, in case dependencies exist, this function has to be put in
+  // the correct namespace, and be defined after the Interpret-As-Parent functor has been defined.
+  // To make it easier to attach the function definition to the correct declaration I made a macro; MODEL_NAMESPACE
+  void MODEL_NAMESPACE::MSSM_I_IAPfunc (const ModelParameters &myparams, ModelParameters &parentparams)
+  {
+      logger()<<"Running interpret_as_parent calculations for MSSM_demo -> test_parent_I ..."<<EOM;
       
+      double M1 = myparams["M1"];
+      double M2 = myparams["M2"];
+      double M3 = myparams["M3"];
+    
       parentparams.setValue("p1", 0.01*M1*M2*M3);
       parentparams.setValue("p2", 0.10*M1*M2*M3);
       parentparams.setValue("p3", 1.00*M1*M2*M3);
-    }
-    }}} //exiting namespaces
+  } 
+ 
+
 #undef PARENT
 #undef MODEL
 
@@ -79,53 +76,51 @@
 #define MODEL CMSSM_demo
 #define PARENT MSSM_demo
   START_MODEL
-  DEFINEPARS(M0, M12, A0, tanb, sgnmu)
+  DEFINEPARS(M0, M12, A0, Mstop, tanb, sgnmu)
   
-    // Add in a sensibly named capability for good measure
-    // -> convert to having ModelParameters as a dependency, no individual functors
-    // by default.
-    #define PARAMETER Mstop
-    MAP_TO_CAPABILITY(Mstop_obs)
-    #undef PARAMETER 
+  // Attach a CAPABILITY to a parameter (creates a "little guys" functor)
+  MAP_TO_CAPABILITY(Mstop, Mstop_obs)
   
   // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
   // object as a CAPABILITY of this model)
-  INTERPRET_AS_PARENT__BEGIN
-  INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
-  INTERPRET_AS_PARENT__DEFINE(CMSSM_demo_IAPfunc)
   
-  namespace Gambit{ namespace Models{ namespace CMSSM_demo{
-  void CMSSM_demo_IAPfunc (ModelParameters &parentparams)
+  // Need to go to a little effort to find the correct pipes to retrieve the dependency.
+  // To save this effort, I made the USE_MODEL_PIPE macro. This requires the PARENT and MODEL
+  // macros to be defined correctly to work (just a warning in case you define the IAP 
+  // function elsewhere, which is perfectly legitimate to do, say in a cpp file so that
+  // recompiling is not necessary whenever you change it. Just #define PARENT and MODEL
+  // if you do this.)
+  // The macro just expands to the following:
+  //   using namespace Gambit::Models::MODEL::Pipes::PARENT_parameters;
+  //
+  INTERPRET_AS_PARENT__FUNCTION(CMSSM_demo_IAPfunc)
+  INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
+
+  void MODEL_NAMESPACE::CMSSM_demo_IAPfunc (const ModelParameters &myparams, ModelParameters &parentparams)
   {
-    std::cout<<"Running interpret_as_parent calculations for CMSSM_demo -> MSSM_demo ..."<<std::endl;
-    /* Get host model parameter object using dependency system 
-       (can technically use parametersptr directly since we have access to it,
-        but I might try and restore proper encapsulation of the 
-        ModelParameters objects in their functors, i.e. this pointer might be
-        removed in the future, so better to use this proper method. */
-    
-    using namespace Pipes::MSSM_demo_parameters;
-    const ModelParameters &p = *Dep::CMSSM_demo_parameters;
+      logger()<<"Running interpret_as_parent calculations for CMSSM_demo -> MSSM_demo ..."<<EOM;
       
-    double M0  = p["M0"];
-    double M12 = p["M12"];
-    double A0  = p["A0"];
-    
-    /* Play around with the extra info obtained from dependency */
-    cout<<"nevents dependency has supplied the value: "<<*Dep::nevents<<endl;
-    
-    /* Grab reference to parent parameter object and set some values. 
-       The parent parameter object already exists if we have gotten this 
-       far (was created along with the functor that wraps this function) */
-    
-    parentparams.setValue("M1", M0);
-    parentparams.setValue("M2", 0.5*M0);
-    parentparams.setValue("M3", 3*M0);
-    parentparams.setValue("AU1", A0);
-    parentparams.setValue("AU2", 2*A0);
-    parentparams.setValue("AU3", 0);
+      USE_MODEL_PIPE
+
+      double M0  = myparams["M0"];
+      double M12 = myparams["M12"];
+      double A0  = myparams["A0"];
+      
+      /* Play around with the extra info obtained from dependency */
+      logger()<<"nevents dependency has supplied the value: "<<*Dep::nevents<<EOM;
+      
+      /* Grab reference to parent parameter object and set some values. 
+         The parent parameter object already exists if we have gotten this 
+         far (was created along with the functor that wraps this function) */
+      
+      parentparams.setValue("M1", M0);
+      parentparams.setValue("M2", 0.5*M0);
+      parentparams.setValue("M3", 3*M0);
+      parentparams.setValue("AU1", A0);
+      parentparams.setValue("AU2", 2*A0);
+      parentparams.setValue("AU3", 0);
   }
-  }}} //exiting namespaces  
+
 #undef PARENT
 #undef MODEL
 
@@ -153,23 +148,12 @@
 #undef PARENT
 #undef MODEL
 
-// Long way of defining a model. Individually specify parameter names and
-// the capabilities they map to. Also allows room to specify other things
-// about parameters if we like. 
 #define MODEL SomeOther_Halo_demo
 #define PARENT DMHalo_base_demo
   START_MODEL
-  
-    #define PARAMETER v_earth
-    MAP_TO_CAPABILITY(earthvel)
-    //DOSOMETHINGELSE(blah)
-    #undef PARAMETER 
-
-    #define PARAMETER blah0
-    MAP_TO_CAPABILITY(blah0cap)
-    //DOSOMETHINGELSE(blah)
-    #undef PARAMETER 
-  
+  DEFINEPARS(v_earth, blah0)
+  MAP_TO_CAPABILITY(v_earth, earthvel)
+  MAP_TO_CAPABILITY(blah0,   blah0cap)
 #undef PARENT
 #undef MODEL
 

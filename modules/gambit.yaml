@@ -16,21 +16,21 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-Standard_Model:
-  alpha_emi:
-    fixed_value: 80
-  G_F:
-    fixed_value: 80
-  alpha_s:
-    fixed_value: 80
-  mZ:
-    fixed_value: 80
-  mb:
-    fixed_value: 80
-  mt:
-    fixed_value: 80
-  mtau:
-    fixed_value: 80
+# Standard_Model:
+#   alpha_emi:
+#     fixed_value: 80
+#   G_F:
+#     fixed_value: 80
+#   alpha_s:
+#     fixed_value: 80
+#   mZ:
+#     fixed_value: 80
+#   mb:
+#     fixed_value: 80
+#   mt:
+#     fixed_value: 80
+#   mtau:
+#     fixed_value: 80
 
 CMSSM_demo:
   A0:

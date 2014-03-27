@@ -175,14 +175,14 @@ namespace xsec{
     double Qxsec = 1000.;
     double Qmsoft = point.msoft.q()*1000;
     double Qextpar = point.extpar(0);
-    double Qhmix = point.hmix.q();
+    double Qhmix = point.hmix.q()*1000;
     cout << "Qmsoft " << Qmsoft << endl;
     cout << "Qextpar " << Qextpar << endl;
 
     // If EXTPAR exists and scale is very near 1 TeV then we use those soft masses
     // extpar(0) will be 0 when the block does not exist
     // Also use if EXTPAR scale is closer to 1 TeV than MSOFT scale.
-    if(abs(Qextpar-Qxsec) < 1.0 || abs(Qextpar-Qxsec) < abs(Qmsoft-Qxsec)){
+    if(abs(Qextpar-Qxsec) < 1.0 || (abs(Qextpar-Qxsec) < abs(Qmsoft-Qxsec) && Qextpar > 1.0)){
       par[0] = point.minpar(3);  // \tan\beta
       par[1] = point.extpar(1);  // M_1
       par[2] = point.extpar(2);  // M_2
