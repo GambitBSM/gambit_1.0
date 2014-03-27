@@ -52,7 +52,7 @@
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
-#define LITTLEGUY_ALLOW_MODEL                             MODULE_ALLOWED_MODEL(MODEL,CAPABILITY,PARAMETER,MODEL)             \
+#define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
 #define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
@@ -230,6 +230,31 @@
                                                                                \
     }                                                                          \
                                                                                \
+  }                                                                            \
+
+//"Littleguys" version of allowed_model
+#define LITTLEGUY_ALLOWED_MODEL(CAPABILITY,FUNCTION,MODEL)                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+   namespace Models                                                            \  
+   {                                                                           \
+    namespace MODEL                                                            \
+    {                                                                          \
+                                                                               \
+      /* Create a safe pointer to the model parameters result. To be filled    \
+      automatically at runtime when the dependency is resolved. */             \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace Dep {extern dep_bucket<ModelParameters>                    \
+           CAT(MODEL,_parameters); }                                           \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+   }                                                                           \
   }                                                                            \
 
 

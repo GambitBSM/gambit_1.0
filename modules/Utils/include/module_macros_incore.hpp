@@ -143,13 +143,9 @@
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
 /// specific model \em MODEL.  If this is absent, all models are allowed but no 
 /// model parameters will be accessible from within the module funtion.
-#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)            \
-  /* Ben: I split this in half to allowed Model(Bit) to circumvent the error checking */ \
-  CORE_ALLOWED_MODEL_ERROR_CHECK(MODULE,CAPABILITY,FUNCTION,MODEL) \
-  CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)             \
+#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
 
-#define LITTLEGUY_ALLOW_MODEL                                      \
-  CORE_ALLOWED_MODEL(MODEL,CAPABILITY,PARAMETER,MODEL)             \
+#define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ() 
@@ -857,9 +853,8 @@
                                                                                \
   }                                                                            \
 
-
-/// Error checking to run prior to calling CORE_ALLOWED_MODEL
-#define CORE_ALLOWED_MODEL_ERROR_CHECK(MODULE,CAPABILITY,FUNCTION,MODEL)
+/// Redirection of ALLOW_MODEL when invoked from within the core.
+#define CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                   \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "ALLOWED_MODEL(S)."))                                                       \
@@ -869,15 +864,28 @@
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
    "ALLOWED_MODEL(S). Please check the rollcall header for "                   \
    STRINGIFY(MODULE) "."))                                                     \
- 
-/// Redirection of ALLOW_MODEL when invoked from within the core.
-#define CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                   \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
     /* Add MODEL to global set of tags of recognised models */                 \
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    CORE_ALLOWED_MODEL_GUTS(MODULE,CAPABILITY,FUNCTION,MODEL)                  \
+  }                                                                            \
+
+/// "Little guys" wrapper for ALLOW_MODEL
+#define CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,FUNCTION,MODEL)                \
+  namespace Gambit                                                             \
+  {                                                                            \
+    /* Add MODEL to global set of tags of recognised models */                 \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    namespace Models                                                           \
+    {                                                                          \
+      CORE_ALLOWED_MODEL_GUTS(MODEL,CAPABILITY,FUNCTION,MODEL)                 \
+    }                                                                          \
+  }
+
+/// Guts of core version of ALLOW_MODEL
+#define CORE_ALLOWED_MODEL_GUTS(MODULE,CAPABILITY,FUNCTION,MODEL)              \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
@@ -979,8 +987,6 @@
       }                                                                        \
                                                                                \
     }                                                                          \
-                                                                               \
-  }                                                                            \
 
 
 

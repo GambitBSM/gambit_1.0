@@ -178,9 +178,6 @@
                                                                                \
         /* Wrap it up in a functor (macro from module_macros_incore.hpp) */    \
         MAKE_FUNCTOR(PARAMETER,double,CAPABILITY,MODEL,0)                      \
-           
-        /* Tell this functor to only activate for MODEL */                     \
-        LITTLEGUY_ALLOW_MODEL                                                  \
                                                                                \
       }                                                                        \
                                                                                \
@@ -218,8 +215,11 @@
                                                                                \
     }                                                                          \
                                                                                \
-  }    
-  
+  }                                                                            \
+  /* Tell this functor to only activate for MODEL */                           \
+  /*LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL)                */            \
+//end LINK_PARAMETER_TO_CAPABILITY
+
   
 // Macro to define parameter WITHOUT creating a corresponding CAPABILITY.
 // Decided it just causes zillions of unused functors to be created. Really only
