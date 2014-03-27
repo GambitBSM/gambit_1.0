@@ -41,6 +41,7 @@ namespace Gambit
 
   namespace Logging
   {
+ 
     using namespace LogTags;  
   
     // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
@@ -68,7 +69,7 @@ namespace Gambit
     std::set<int>& components()
     {
       // We add the core components here, but the module and backend numbers are added later, so the set cannot be const.
-      static LogTag core_a[] = {def, core, logging, models, depres, scan, inifile, printers, utils, backends};
+      static LogTag core_a[] = {def, core, logs, models, dependency_resolver, scanner, inifile, printers, utils, backends};
       static std::set<int> components_set(core_a, core_a+sizeof(core_a)/sizeof(core_a[0]));
       return components_set;
     }
@@ -87,10 +88,10 @@ namespace Gambit
        /* Component tags */
        m[def]     = "Default";
        m[core]    = "Core";
-       m[logging] = "Logger";
+       m[logs] = "Logger";
        m[models]  = "Models";
-       m[depres]  = "Dependency Resolver";
-       m[scan]    = "Scanner";
+       m[dependency_resolver]  = "Dependency Resolver";
+       m[scanner]    = "Scanner";
        m[inifile] = "IniFile";
        m[printers]= "Printers";
        m[utils]   = "Utilities";
@@ -528,14 +529,14 @@ namespace Gambit
     {
        current_backend = i; 
        *this<<"setting current_backend="<<current_backend;
-       *this<<logging<<debug<<EOM;
+       *this<<logs<<debug<<EOM;
        // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
     void LogMaster::leaving_backend()
     { 
        current_backend = -1;
        *this<<"restoring current_backend="<<current_backend;
-       *this<<logging<<debug<<EOM;
+       *this<<logs<<debug<<EOM;
        // TODO: Restore std::out and std::err to normal
     }
  

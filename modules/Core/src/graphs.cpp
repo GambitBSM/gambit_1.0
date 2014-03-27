@@ -24,7 +24,7 @@
 ///
 ///  *********************************************
 
-// #include <regex>
+#include <sstream>
 
 #include "graphs.hpp"
 #include "models.hpp"
@@ -217,14 +217,16 @@ namespace Gambit
       // (cap., typ) --> dep. vertex map
       std::queue<QueueEntry> parQueue;
       QueueEntry queueEntry;
-
-      cout << endl << "Target likelihoods/observables" << endl;
-      cout <<         "------------------------------" << endl;
-      cout <<         "CAPABILITY (TYPE)"   << endl;
+    
+      logger() << LogTags::dependency_resolver;
+      logger() << endl << "Target likelihoods/observables" << endl;
+      logger() <<         "------------------------------" << endl;
+      logger() <<         "CAPABILITY (TYPE)"   << endl;
+      logger() << EOM;
       for (IniParser::ObservablesType::const_iterator it =
           observables.begin(); it != observables.end(); ++it)
       {
-        cout << (*it).capability << " (" << (*it).type << ")" << endl;
+        logger() << LogTags::dependency_resolver << (*it).capability << " (" << (*it).type << ")" << endl << EOM;
         queueEntry.first.first = (*it).capability;
         queueEntry.first.second = (*it).type;
         queueEntry.second = OMEGA_VERTEXID;
@@ -294,13 +296,13 @@ namespace Gambit
     {
       graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
       const str formatString = "%-20s %-32s %-32s %-32s %-15s %-7i %-5i %-5i\n";
-      cout << endl << "Vertices registered in masterGraph" << endl;
-      cout << "----------------------------------" << endl;
-      cout << boost::format(formatString)%
+      logger() << LogTags::dependency_resolver << "Vertices registered in masterGraph" << endl;
+      logger() << "----------------------------------" << endl;
+      logger() << boost::format(formatString)%
        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        cout << boost::format(formatString)%
+        logger() << boost::format(formatString)%
          ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
          (*masterGraph[*vi]).name()%
          (*masterGraph[*vi]).capability()%
@@ -310,29 +312,31 @@ namespace Gambit
          (*masterGraph[*vi]).dependencies().size()%
          (*masterGraph[*vi]).backendreqs().size();
       }
-      cout << endl << "Registered Backend vertices" << endl;
-      cout <<         "---------------------------" << endl;
-      printGenericFunctorList(boundCore->getBackendFunctors());
+      logger() << endl << "Registered Backend vertices" << endl;
+      logger() <<         "---------------------------" << endl;
+      logger() << printGenericFunctorList(boundCore->getBackendFunctors());
+      logger() << EOM;
     }
 
     /// Generic printer of the contents of a functor list
-    void DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList) 
+    str DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList) 
     {
       const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
-      cout << boost::format(formatString)%
-       "ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
+      std::ostringstream stream;
+      stream << boost::format(formatString)%"ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
       for (std::vector<functor *>::const_iterator 
           it  = functorList.begin();
           it != functorList.end();
           ++it)
       {
-        cout << boost::format(formatString)%
+        stream << boost::format(formatString)%
          ((*it)->origin() + " (" + (*it)->version() + ")") %
          (*it)->name()%
          (*it)->capability()%
          (*it)->type()%
          (*it)->status();
       }
+      return stream.str();
     }
 
     /// Pretty print function evaluation order
@@ -347,18 +351,22 @@ namespace Gambit
 
       str formatString = "%-5s %-25s %-25s\n";
       int i = 0;
-      cout << endl << "Initial functor evaluation order" << endl;
-      cout << "----------------------------------" << endl;
-      cout << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
+      logger() << LogTags::dependency_resolver;
+      logger() << endl << "Initial functor evaluation order" << endl;
+      logger() << "----------------------------------" << endl;
+      logger() << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
+      logger() << EOM;
        
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
                   vi != order.end(); ++vi) 
       {
-        cout << boost::format(formatString)%
+        logger() << LogTags::dependency_resolver;
+        logger() << boost::format(formatString)%
          i%
          (*masterGraph[*vi]).name()%
          (*masterGraph[*vi]).origin();
+        logger() << EOM;
         i++;
       }
     
@@ -396,8 +404,8 @@ namespace Gambit
           }
         }
         double prop = masterGraph[*it_min]->getInvalidationRate();
-        cout << "Estimated T [ns]: " << t2p_min*prop << endl;
-        cout << "Estimated p: " << prop << endl;
+        logger() << LogTags::dependency_resolver << "Estimated T [ns]: " << t2p_min*prop << endl << EOM;
+        logger() << LogTags::dependency_resolver << "Estimated p: " << prop << endl << EOM;
         sorted.push_back(*it_min);
         unsorted.erase(it_min);
       }
@@ -419,8 +427,7 @@ namespace Gambit
         {
           std::ostringstream ss;
           ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
-          cout << ss.str() << endl;;
-          logger().send(ss.str(),info,depres);
+          logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << endl << EOM;
         }
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
@@ -604,7 +611,7 @@ namespace Gambit
       if ( vertexCandidates.size() == 0 ) 
       {
         str errmsg = "I could not find any module function that provides capability\n";
-        errmsg += quantity.first + " with type " + quantity.second + ".";
+        errmsg += quantity.first + " with type " + quantity.second + "."
                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
@@ -652,7 +659,7 @@ namespace Gambit
       if ( vertexCandidates.size() > 1 ) 
       {
         str errmsg = "I found too many module functions that provide capability\n";
-        errmsg += quantity.first + " with type " + quantity.second + ".\n";
+        errmsg += quantity.first + " with type " + quantity.second + ".\n"
                +  "Check your inifile for typos, your modules for consistency, etc.";
         if ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
          boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
@@ -692,10 +699,11 @@ namespace Gambit
       int dependency_type;
       bool printme;
 
-      //FIXME this output all needs to be redirected to the logs instead of stdout.
-      cout << endl << "Dependency resolution" << endl;
-      cout <<         "---------------------" << endl;
-      cout <<         "CAPABILITY (TYPE) [FUNCTION, MODULE]" << endl << endl;
+      logger() << LogTags::dependency_resolver;
+      logger() << endl << "Dependency resolution" << endl;
+      logger() <<         "---------------------" << endl;
+      logger() <<         "CAPABILITY (TYPE) [FUNCTION, MODULE]" << endl << endl;
+      logger() << EOM;
       // Repeat until dependency queue is empty
       while (not parQueue.empty()) {
         // Retrieve capability, type and vertex ID of dependency of interest
@@ -705,28 +713,32 @@ namespace Gambit
         printme = parQueue.front().printme;
 
         // Print information
+        logger() << LogTags::dependency_resolver;
         if ( toVertex != OMEGA_VERTEXID )
         {
-          cout << quantity.first << " (" << quantity.second << ")" << endl;
-          cout << "Required by: ";
-          cout << (*masterGraph[toVertex]).capability() << " (";
-          cout << (*masterGraph[toVertex]).type() << ") [";
-          cout << (*masterGraph[toVertex]).name() << ", ";
-          cout << (*masterGraph[toVertex]).origin() << "]" << endl;;
+          logger() << quantity.first << " (" << quantity.second << ")" << endl;
+          logger() << "Required by: ";
+          logger() << (*masterGraph[toVertex]).capability() << " (";
+          logger() << (*masterGraph[toVertex]).type() << ") [";
+          logger() << (*masterGraph[toVertex]).name() << ", ";
+          logger() << (*masterGraph[toVertex]).origin() << "]" << endl;;
         }
         else
         {
-          cout << quantity.first << " (" << quantity.second << ")" << endl;
-          cout << "Required by: Core" << endl;
+          logger() << quantity.first << " (" << quantity.second << ")" << endl;
+          logger() << "Required by: Core" << endl;
         }
+        logger() << EOM;
 
         // Resolve dependency
         std::tie(iniEntry, auxEntry, optEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
-        cout << "Resolved by: [";
-        cout << (*masterGraph[fromVertex]).name() << ", ";
-        cout << (*masterGraph[fromVertex]).origin() << "]" << endl;
+        logger() << LogTags::dependency_resolver;
+        logger() << "Resolved by: [";
+        logger() << (*masterGraph[fromVertex]).name() << ", ";
+        logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
+        logger() << EOM;
 
         // If toVertex is the Core, then fromVertex is one of our target functors, which are
         // the things we want to output to the printer system.  Turn printing on for these.
@@ -777,7 +789,7 @@ namespace Gambit
         // Is fromVertex already activated?
         if ( (*masterGraph[fromVertex]).status() != 2 )
         {
-          cout << "Adding new module function to dependency tree..." << endl;
+          logger() << LogTags::dependency_resolver << "Adding new module function to dependency tree..." << endl << EOM;
           resolveVertexBackend(fromVertex);
           // Generate options object from ini-file entry that corresponds to
           // fromVertex (optEntry) and pass it to the fromVertex for later use
@@ -791,7 +803,6 @@ namespace Gambit
         }
 
         // Done.
-        cout << endl;
         parQueue.pop();
       }
     }
@@ -804,24 +815,26 @@ namespace Gambit
       bool printme_default = false; // for parQueue constructor
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
+      logger() << LogTags::dependency_resolver;
       if (vec.size() > 0)
-        cout << "Adding module function dependencies to resolution queue:" << endl;
+        logger() << "Adding module function dependencies to resolution queue:" << endl;
       else
-        cout << "No further module function dependencies." << endl;
+        logger() << "No further module function dependencies." << endl;
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
-        cout << (*it).first << " (" << (*it).second << ")" << endl;
+        logger() << (*it).first << " (" << (*it).second << ")" << endl;
         (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default)));
       }
       // Digest capability of loop manager (if defined)
       str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
       if (loopManagerCapability != "none")
       {
-        cout << "Adding module function loop manager to resolution queue:" << endl;
-        cout << loopManagerCapability << " ()" << endl;
+        logger() << "Adding module function loop manager to resolution queue:" << endl;
+        logger() << loopManagerCapability << " ()" << endl;
         (*parQueue).push(*(new QueueEntry (*(new sspair
                   (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
       }
+      logger() << EOM;
     }
 
     /// Boost lib topological sort
@@ -847,15 +860,15 @@ namespace Gambit
         }
       }
       if ( auxEntryCandidates.size() == 0 ) return NULL;
-      if ( auxEntryCandidates.size() == 1 ) return auxEntryCandidates[0];
-      else
+      else if ( auxEntryCandidates.size() != 1 )
       {
         dependency_resolver_error().raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex.");
       }
+      return auxEntryCandidates[0]; // auxEntryCandidates.size() == 1
     }
 
     /// Find observable entry that matches capability/type
-    const IniParser::ObservableType *DependencyResolver::findIniEntry(
+    const IniParser::ObservableType* DependencyResolver::findIniEntry(
         sspair quantity, const IniParser::ObservablesType & entries)
     {
       std::vector<const IniParser::ObservableType*> obsEntryCandidates;
@@ -868,13 +881,13 @@ namespace Gambit
         }
       }
       if ( obsEntryCandidates.size() == 0 ) return NULL;
-      if ( obsEntryCandidates.size() == 1 ) return obsEntryCandidates[0];
-      else
+      else if ( obsEntryCandidates.size() != 1 )
       {
         str errmsg = "Multiple matches for identical capability in inifile.";
         errmsg += "\nCapability: " + quantity.first + " (" + quantity.second + ")";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
+      return obsEntryCandidates[0]; // obsEntryCandidates.size() == 1
     }
 
     /// Node-by-node backend resolution
@@ -889,9 +902,8 @@ namespace Gambit
 
       // Collect list of backend requirements of vertex
       std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
-      if (reqs.size() == 0) // nothing to do --> return
-        return;
-      cout << "Backend function resolution: " << endl;
+      if (reqs.size() == 0) return; // nothing to do --> return
+      logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
 
       // Check whether vertex is mentioned in inifile
       auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries());
@@ -900,7 +912,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = reqs.begin();
           it != reqs.end(); ++it)
       {
-        cout << it->first << " (" << it->second << ")" << endl;
+        logger() << LogTags::dependency_resolver << it->first << " (" << it->second << ")" << endl << EOM;
         depEntry = NULL;
         entryExists = false;
         vertexCandidates.clear();
@@ -943,10 +955,12 @@ namespace Gambit
           if (disabledVertexCandidates.size() != 0)
           {
             errmsg += "\nNote that viable candidates exist but have been disabled:"
-                      "\nPlease check that all shared objects exist for the"
-                      "\necessary backends, and that they contain all the"
-                      "\nnecessary functions required for this scan.";
-                   //printGenericFunctorList(&disabledVertexCandidates);  FIXME this needs to return a string, not just print
+                   +     printGenericFunctorList(disabledVertexCandidates)
+                   +  "\nPlease check that all shared objects exist for the"
+                   +  "\necessary backends, and that they contain all the"
+                   +  "\nnecessary functions required for this scan. In "
+                   +  "\nparticular, make sure that your mangled function"
+                   +  "\nnames match the symbol names in your shared lib.";
           }
           dependency_resolver_error().raise(LOCAL_INFO,errmsg);
         }
@@ -958,9 +972,11 @@ namespace Gambit
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
-        cout << "Resolved by: [" << (*vertexCandidates[0]).name();
-        cout << ", " << (*vertexCandidates[0]).origin() << " (";
-        cout << (*vertexCandidates[0]).version() << ")]" << endl;
+        logger() << LogTags::dependency_resolver;
+        logger() << "Resolved by: [" << (*vertexCandidates[0]).name();
+        logger() << ", " << (*vertexCandidates[0]).origin() << " (";
+        logger() << (*vertexCandidates[0]).version() << ")]" << endl;
+        logger() << EOM;
       }
     }
   }

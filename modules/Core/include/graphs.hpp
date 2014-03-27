@@ -92,7 +92,7 @@ namespace Gambit
         void printFunctorList();
 
         // Pretty print backend functor information
-        void printGenericFunctorList(const std::vector<functor*>&);
+        str printGenericFunctorList(const std::vector<functor*>&);
 
         // Pretty print function evaluation order
         void printFunctorEvalOrder();
