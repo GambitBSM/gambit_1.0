@@ -1,11 +1,40 @@
 CXXFLAGS := -std=c++11 -fPIC
 
 FILES_NETWORKS = \
-  networks/NNfunction_n1n1.o \
-  networks/NNfunction_n1n2.o \
-  networks/NNfunction_nn_n1n3.o \
-  networks/NNfunction_nn_n1n4.o \
-  networks/NNfunction_nn_n1n5.o \
+  networks/NNfunction_NN_1_1.o \
+  networks/NNfunction_NN_1_2.o \
+  networks/NNfunction_NN_1_3.o \
+  networks/NNfunction_NN_1_4.o \
+  networks/NNfunction_NN_1_5.o \
+  networks/NNfunction_NN_1_6.o \
+  networks/NNfunction_NN_1_7.o \
+  networks/NNfunction_NN_1_8.o \
+  networks/NNfunction_NN_2_2.o \
+  networks/NNfunction_NN_2_3.o \
+  networks/NNfunction_NN_2_4.o \
+  networks/NNfunction_NN_2_5.o \
+  networks/NNfunction_NN_2_6.o \
+  networks/NNfunction_NN_2_7.o \
+  networks/NNfunction_NN_2_8.o \
+  networks/NNfunction_NN_3_3.o \
+  networks/NNfunction_NN_3_4.o \
+  networks/NNfunction_NN_3_5.o \
+  networks/NNfunction_NN_3_6.o \
+  networks/NNfunction_NN_3_7.o \
+  networks/NNfunction_NN_3_8.o \
+  networks/NNfunction_NN_4_4.o \
+  networks/NNfunction_NN_5_7.o \
+  networks/NNfunction_NN_5_8.o \
+  networks/NNfunction_NN_6_7.o \
+  networks/NNfunction_NN_6_8.o \
+  networks/NNfunction_NG_1.o \
+  networks/NNfunction_NG_2.o \
+  networks/NNfunction_NG_3.o \
+  networks/NNfunction_NG_4.o \
+  networks/NNfunction_NG_5.o \
+  networks/NNfunction_NG_6.o \
+  networks/NNfunction_NG_7.o \
+  networks/NNfunction_NG_8.o \
   networks/NNfunction_b1b1.o \
   networks/NNfunction_sb_cLdL.o \
   networks/NNfunction_sb_dLuR.o \
