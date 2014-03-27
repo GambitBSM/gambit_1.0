@@ -14,9 +14,6 @@ using namespace MCUtils;
       //@{
       /// Momentum vector
       P4 _p4;
-      /// PDG ID code
-      /// @todo What is this? It's not used anywhere and doesn't make sense on a jet...
-      int _pdgId;
       /// B tag
       bool _isB;
       //@}
@@ -28,19 +25,12 @@ using namespace MCUtils;
 
       /// Constructor for a light jet without explicit constituents
       Jet(const P4& mom, bool isB=false)
-        : _p4(mom), _pdgId(0), _isB(isB) {  }
-
-      /// Constructor for a light jet without explicit constituents
-      Jet(const P4& mom, int pdgId=0, bool isB=false)
-        : _p4(mom), _pdgId(pdgId), _isB(isB) {  }
+        : _p4(mom), _isB(isB) {  }
 
       /// "Cartesian" constructor
       Jet(double px, double py, double pz, double E, bool isB=false)
-        : _p4(px, py, pz, E), _pdgId(0), _isB(isB) {  }
+        : _p4(px, py, pz, E), _isB(isB) {  }
 
-      /// "Cartesian" constructor
-      Jet(double px, double py, double pz, double E, int pdgId=0, bool isB=false)
-        : _p4(px, py, pz, E), _pdgId(pdgId), _isB(isB) {  }
       //@}
 
 
@@ -71,15 +61,10 @@ using namespace MCUtils;
 
       /// Is this particle tagged as a b?
       bool isBJet() const { return _isB; }
-      /// Return the ID of the truth particle used to choose the btag efficiency function
-      int getPdgId() const { return _pdgId; }
       /// Set BTag value
       void setBJet(bool isb=true) { _isB = isb; }
-      /// Set the ID of the truth particle used to choose the btag efficiency function
-      void setPdgId(int pdgId=0) { _pdgId = pdgId; }
 
       //@}
-
 
     };
 
