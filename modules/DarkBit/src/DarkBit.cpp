@@ -525,16 +525,9 @@ namespace Gambit {
 
       // Grid and energy range used in interpolating functions.  This should
       // finally depend on the likelihood functions that are called.
-      int n = 1000;  
-      double E0 = 0.1;
-      double E1 = 1000;
-      std::vector<double> xgrid;
-      std::vector<double> ygrid;
-      for (int i = 0; i<n; i++)
-      {
-        xgrid.push_back(E0*pow(E1/E0, (double)i/(n-1)));  // logarithmic grid for dNdE
-        ygrid.push_back(0);
-      }
+      int n = 10000;  
+      std::vector<double> xgrid = logspace(-1., 3., n);
+      std::vector<double> ygrid = linspace(0., 0., n);
 
       // Get annihilation process from process catalog
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
@@ -911,12 +904,12 @@ namespace Gambit {
         // photons
         //std::ofstream os;
         //os.open("test.dat");
-        //(*Dep::GA_AnnYield)->mult(1e30)->writeToFile(logspace(-1., 5., 100000), os);
+        //(*Dep::GA_AnnYield)->writeToFile(logspace(-1., 5., 10000), os);
         //os.close();
         double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100)->set_epsrel(1e-3))();
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
-        // Calculate the phi-value
+        // Calculate phi-value
         double phi = AnnYieldint / 8. / 3.14159265 * 1e26;
 
         // And return final likelihood
