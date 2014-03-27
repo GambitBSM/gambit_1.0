@@ -238,7 +238,7 @@ namespace Gambit
             double (*ptr)(args ...);
             
     public:
-            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("Constant", getVariadicNumber<args...>::N)
+            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("fromPlainFunction", getVariadicNumber<args...>::N)
             {
                     ptr = f;
             }

@@ -221,6 +221,14 @@ START_MODULE
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ      
+      #define BACKEND_REQ dsIBffdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ         
+      #define BACKEND_REQ dsIBfsrdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ        
     #undef FUNCTION
   #undef CAPABILITY
 
