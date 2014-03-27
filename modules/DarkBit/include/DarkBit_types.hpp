@@ -36,6 +36,8 @@
 #ifndef __DarkBit_types_hpp__
 #define __DarkBit_types_hpp__
 
+#include "BaseFunctions.hpp"
+
 #include <cmath>
 #include <algorithm>
 #include <gsl/gsl_integration.h>
@@ -46,7 +48,46 @@ namespace Gambit
 {
 
   namespace DarkBit
-  {
+  {    
+    class DSgamma3bdyKinFunc : public BaseFunction
+    {
+      typedef double(*BEptr)(int&, double&, double&);
+      typedef std::vector<double> BFargVec;
+      public:
+        DSgamma3bdyKinFunc(int& chn, double& M, double& m2, BEptr ib, BEptr fsr, bool *doFSR, bool *doIB)
+        : BaseFunction("DSgamma3bdyKinFunc", 2)
+        {
+          M_DM = M;
+          IBch = chn;
+          IBfunc = ib;
+          FSRfunc = fsr;
+          m_2 = m2;
+          calculateFSR = doFSR;
+          calculateIB = doIB;
+        }
+        double value(const BFargVec &args)
+        {
+          double E_gamma = args[0];
+          double E1 = args[1];
+          double x = E_gamma/M_DM;
+          double y = (m_2*m_2+4*M_DM*(E_gamma+E1-M_DM))/(4*M_DM*M_DM);
+          // TODO: Check if IB and ISR are summed correctly
+          double result = 0;
+          if(calculateFSR && (FSRfunc != NULL)) 
+            result += FSRfunc(IBch,x,y);
+          if(calculateIB) 
+            result += IBfunc(IBch,x,y);
+          return result;
+        }
+      private:
+        bool *calculateIB;
+        bool *calculateFSR;
+        BEptr IBfunc;
+        BEptr FSRfunc;
+        double M_DM;
+        double m_2;
+        int IBch;
+    };
 
     // A simple example
     struct Wstruct
