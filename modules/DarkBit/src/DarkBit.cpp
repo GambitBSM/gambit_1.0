@@ -504,21 +504,17 @@ namespace Gambit {
         // Calculates annihilation spectra for general process catalogs, using
         // DarkSUSY as a backend.  This function returns 
         //
-        //   dN/dE*(sv) (E, v)  [cm^3/s/GeV]
+        //   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
         //
-        // the energy spectrum of photons times sigma*v, as function of energy
-        // (GeV) and velocity (in units of c).  By default, only the v=0
-        // component is calculated.  
+        // the energy spectrum of photons times sigma*v/m^2, as function of
+        // energy (GeV) and velocity (c).  By default, only the v=0 component
+        // is calculated.  
         //
         // The return type is a GAMBIT Base Function object as function which
         // is only defined for v=0.
         //////////////////////////////////////////////////////////////////////////
-
-        // TODO: 
-        // - Move grid initialization (resolution and range) to PointInit
         
       using namespace Pipes::GA_AnnYield_DarkSUSY;
-
 
       ////////////////////
       // 1) Initialization
@@ -526,7 +522,7 @@ namespace Gambit {
 
       // Grid and energy range used in interpolating functions.  This should
       // finally depend on the likelihood functions that are called.
-      int n = 10000;  
+      int n = 10000;  // TODO: remove hardcoding
       std::vector<double> xgrid = logspace(-1., 3., n);
       std::vector<double> ygrid = linspace(0., 0., n);
 
@@ -640,7 +636,7 @@ namespace Gambit {
       // DiffYield3Body = DiffYield3Body->tabulate(logspace(0, 2, 100));
 
       // Sum two- and three-body spectra and devide by mass squared
-      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.));
+      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->addPar(1);
     }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
@@ -867,15 +863,14 @@ namespace Gambit {
         // Construct interpolated function, using GAMBIT base functions.
         BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1, "lin"));
 
-        // Integate spectrum
-        // More precisely, the zero velocity limit of the differential
-        // annihilation cross-section as function of individual final state
-        // photons
+        // Integate spectrum 
+        // (the zero velocity limit of the differential annihilation
+        // cross-section as function of individual final state photons)
         //std::ofstream os;
         //os.open("test.dat");
         //(*Dep::GA_AnnYield)->writeToFile(logspace(-1., 5., 10000), os);
         //os.close();
-        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100)->set_epsrel(1e-3))();
+        double AnnYieldint = (*(*Dep::GA_AnnYield)->fixPar(1, 0.)->integrate(0, 1, 100)->set_epsrel(1e-3))();
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
