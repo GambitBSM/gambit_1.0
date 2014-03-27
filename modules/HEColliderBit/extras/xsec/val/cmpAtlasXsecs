@@ -1,0 +1,22 @@
+#! /usr/bin/env python
+# -*- python -*-
+
+## Get the ATLAS NLO+NLL xsec ROOT file:
+##   scp lxplus:/afs/cern.ch/atlas/groups/susy/SignalCrossSectionsUncert/ModelSpecific/SignalUncertainties-MSUGRA-mc12.root .
+## and SLHA files for each point via this command (requires you to be an ATLAS member):
+##   rsync -avz lxplus:/cvmfs/atlas.cern.ch/repo/sw/Generators/MC12JobOptions/latest/share/DSID156xxx/susy_msugra_*_*_0_10_P_softsusy.slha slha/
+
+import ROOT
+ROOT.gROOT.SetBatch(True)
+
+import sys, os, subprocess
+assert len(sys.argv) == 2
+
+f = ROOT.TFile(sys.argv[1])
+tree = f.Get("SignalUncertainties")
+for e in tree:
+    if e.finalState == 2: ## gluino-gluino
+        #os.system("../evalxsec slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (e.m0, e.m12))
+        s = subprocess.check_output(["../evalxsec", "slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (e.m0, e.m12)])
+        xsec = float(s.splitlines()[-1])
+        print e.m0, e.m12, e.crossSection, xsec, "=>", xsec/e.crossSection  #, e.cteq_NLO, e.cteq_NLL

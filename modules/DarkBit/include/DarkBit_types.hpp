@@ -52,12 +52,20 @@ namespace Gambit
 
   namespace DarkBit
   {    
+    struct DD_couplings
+    {
+      double gps;
+      double gns;
+      double gpa;
+      double gna;
+    };
+
     class DSgamma3bdyKinFunc : public BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);
       typedef std::vector<double> BFargVec;
       public:
-        DSgamma3bdyKinFunc(int& chn, double& M, double& m2, BEptr ib, BEptr fsr, bool *doFSR, bool *doIB)
+        DSgamma3bdyKinFunc(int& chn, double& M, double& m2, BEptr ib, BEptr fsr, bool& doFSR, bool& doIB)
         : BaseFunction("DSgamma3bdyKinFunc", 2)
         {
           M_DM = M;
@@ -68,6 +76,16 @@ namespace Gambit
           calculateFSR = doFSR;
           calculateIB = doIB;
         }
+        shared_ptr<DSgamma3bdyKinFunc> set_calculateFSR(bool doFSR)
+        {
+            this->calculateFSR = doFSR;
+            return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
+        }        
+        shared_ptr<DSgamma3bdyKinFunc> set_calculateIB(bool doIB)
+        {
+            this->calculateFSR = doIB;
+            return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
+        }  
         double value(const BFargVec &args)
         {
           double E_gamma = args[0];
@@ -75,7 +93,7 @@ namespace Gambit
           double x = E_gamma/M_DM;
           double y = (m_2*m_2+4*M_DM*(E_gamma+E1-M_DM))/(4*M_DM*M_DM);
           // TODO: Check if IB and ISR are summed correctly
-          double result = 0;
+          double result = 0;       
           if(calculateFSR && (FSRfunc != NULL)) 
             result += FSRfunc(IBch,x,y);
           if(calculateIB) 
@@ -83,8 +101,8 @@ namespace Gambit
           return result;
         }
       private:
-        bool *calculateIB;
-        bool *calculateFSR;
+        bool calculateIB;
+        bool calculateFSR;
         BEptr IBfunc;
         BEptr FSRfunc;
         double M_DM;

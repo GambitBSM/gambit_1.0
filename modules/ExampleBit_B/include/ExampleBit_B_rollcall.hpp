@@ -106,7 +106,6 @@ START_MODULE
     START_FUNCTION(int)                     // Function calculates an integer variable                  
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
     DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
-    DEPENDENCY(mZ, double)                  // Dependency: some model parameter called mZ; can have problems if many models have such a parameter
     
       #define BACKEND_REQ awesomeness       // awesomeness must be obtained from an external (backend) code, with
       START_BACKEND_REQ(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.

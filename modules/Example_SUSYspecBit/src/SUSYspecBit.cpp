@@ -27,7 +27,7 @@
 // from contrib/SLHAPy8
 //#include "Pythia8/SusyLesHouches.h" -> now in SLHA_types.hpp
 // doesn't handle duplicate blocks at different scales properly, trying slhaea...
-#include "slhaea.h"
+//#include "slhaea.h" -> now in SLHA_types.hpp
 
 #include "gambit_module_headers.hpp"
 #include "SLHA_types.hpp"
@@ -92,9 +92,68 @@ namespace Gambit {
       std::cout<<testinput;      
       //result = ??;
     }
+
+    /// Generate physical MSSM mass spectrum in SLHA2 format (SLHAea version)
+    void getMSSMspectrum (eaSLHA &result)
+    {
+      using namespace Pipes::getMSSMspectrum;
+
+      // Check what model is being scanned
+      // - Pat is adding a vector of strings to the Pipes specifying the active models
+ 
+      // Get model parameters (soft masses, etc)
+
+      // Get Standard Model parameters
+
+      // Call spectrum generator backend
+      // (for now just reading in an slha file)
+      eaSLHA newspectrum;
+      std::ifstream ifs("Example_SUSYspecBit/softsusy_example.slha");
+      ifs >> newspectrum;
+      ifs.close();
+
+      // Change some stuff (note; everything is stored internally as strings)
+      newspectrum["MINPAR"][4][1] = "10";
+      newspectrum["MINPAR"][3][2] = "# tan(beta)";
+ 
+      // SLHAea comes with some routines to convert stuff     
+      // See http://fthomas.github.io/slhaea/doc/api-html/examples.html for examples.
+      double alpha_em = SLHAea::to<double>(newspectrum["SMINPUTS"][1][1]);
+    
+      // Write files like this:
+      ofstream ofs("Example_SUSYspecBit/test_output.slha");
+      ofs << newspectrum;
+      ofs.close();
+
+      // Extract physical, i.e. low scale particle masses and couplings
+
+      // There is probably some unnecessary copy happening here, not sure if we can avoid it...
+      result = newspectrum;
+    }
+ 
+    /// Generate physical NMSSM mass spectrum in SLHA2 format (SLHAea version)
+    void getNMSSMspectrum (eaSLHA &result)
+    {
+      using namespace Pipes::getNMSSMspectrum;
+      eaSLHA newspectrum;
+      std::ifstream ifs("Example_SUSYspecBit/softsusy_example.slha");
+      ifs >> newspectrum;
+      ifs.close();
+      // Change some stuff (note; everything is stored internally as strings)
+      newspectrum["MINPAR"][4][1] = "10";
+      newspectrum["MINPAR"][3][2] = "# tan(beta)";
+      // SLHAea comes with some routines to convert stuff     
+      // See http://fthomas.github.io/slhaea/doc/api-html/examples.html for examples.
+      double alpha_em = SLHAea::to<double>(newspectrum["SMINPUTS"][1][1]);
+      // Write files like this:
+      ofstream ofs("Example_SUSYspecBit/test_output.slha");
+      ofs << newspectrum;
+      ofs.close();
+      result = newspectrum;
+    }
  
     /// Generate physical MSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void getMSSMspectrum (Py8SLHA &result)
+    void getMSSMspectrum_Py8 (Py8SLHA &result)
     {
       using namespace Pipes::getMSSMspectrum;
 
@@ -117,9 +176,9 @@ namespace Gambit {
     }
     
     /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void getNMSSMspectrum (Py8SLHA &result)
+    void getNMSSMspectrum_Py8 (Py8SLHA &result)
     {
-      using namespace Pipes::getNMSSMspectrum;
+      using namespace Pipes::getNMSSMspectrum_Py8;
 
       // See MSSM spectrum for what this should end up like.
 
@@ -130,11 +189,11 @@ namespace Gambit {
 
       result = newspectrum;
     }
-
-    /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
-    void MSSMtestLogL (double &result)
+ 
+    /// Generate physical NMSSM mass spectrum in SLHA2 format (SLHAea version)
+    void MSSMtestLogL_Py8 (double &result)
     {
-      using namespace Pipes::MSSMtestLogL;
+      using namespace Pipes::MSSMtestLogL_Py8;
       // Make a nice const reference for easy use
       const Py8SLHA &spec = *Dep::MSSMspectrum;
 
@@ -162,6 +221,24 @@ namespace Gambit {
       spec_copy.getEntry("sminputs",6,tmpvar);
       std::cout<<"sminputs(6) (Mtop):"<<tmpvar<<std::endl;
  
+      result = 4.0e1; //dummy loglikelihood value
+    }
+
+   
+    /// Generate physical NMSSM mass spectrum in SLHA2 format (Pythia8 version)
+    void MSSMtestLogL (double &result)
+    {
+      using namespace Pipes::MSSMtestLogL;
+      
+      const eaSLHA& spec = *Dep::MSSMspectrum;
+
+      // Demo of retrieving things from a block; see contrib/SLHApy8/Pythia8/SusyLesHouches.h for more block names
+      std::cout<<"Testing retrieval from SLHA blocks:"<<std::endl;
+      // Stuff is stored internally as strings, but SLHAea provides routines to convert it.
+      std::cout<<"sminputs(4) (MZ) [line]:"<<                   spec.at("sminputs").at(4) <<std::endl;
+      std::cout<<"sminputs(4) (MZ)       :"<<SLHAea::to<double>(spec.at("sminputs").at(4).at(1))<<std::endl;
+      std::cout<<"sminputs(6) (Mtop)     :"<<SLHAea::to<double>(spec.at("sminputs").at(6).at(1))<<std::endl;
+
       result = 4.0e1; //dummy loglikelihood value
     }
 
