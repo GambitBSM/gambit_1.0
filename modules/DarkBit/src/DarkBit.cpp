@@ -470,6 +470,7 @@ namespace Gambit {
     void DarkBit_PointInit_CMSSM()
     {
       using namespace Pipes::DarkBit_PointInit_CMSSM;
+      //Py8SLHA mySLHA = *Dep::MSSMspectrum;
       bool static dsinit_flag = false;
       // Initialize DarkSUSY if run for the first time
       if (not dsinit_flag) 
