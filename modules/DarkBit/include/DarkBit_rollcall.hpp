@@ -233,7 +233,19 @@ START_MODULE
       #define BACKEND_REQ dsIBfsrdxdy
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ        
+      #undef BACKEND_REQ   
+      #define BACKEND_REQ dsIBhhdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ   
+      #define BACKEND_REQ dsIBwhdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ   
+      #define BACKEND_REQ dsIBwwdxdy
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ         
     #undef FUNCTION
   #undef CAPABILITY
 
