@@ -130,7 +130,7 @@ using namespace std;
 
 namespace xsec{
 
-class Evaluator {
+  class Evaluator {
 
     // One object of every NN class
     // Mutable so their Value methods can be called despite not being declared const by ROOT...
@@ -169,7 +169,7 @@ class Evaluator {
     mutable NNfunction_NG_6 ng_n6g;
     mutable NNfunction_NG_7 ng_n7g;
     mutable NNfunction_NG_8 ng_n8g;
-    
+
     mutable NNfunction_b1b1 b1b1;
     mutable NNfunction_b2b2 b2b2;
     mutable NNfunction_cLg cLg;
@@ -261,7 +261,7 @@ class Evaluator {
 
     void _params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const;
 
-public:
+  public:
 
     Evaluator() { _init_pidmap(); }
 
@@ -281,8 +281,30 @@ public:
 
     double log10xsec(const string& process, double * par) const;
 
-};
+  };
+
+  /// @name Unbound functions
+  //@{
+  inline double xsec(const vector<int>& pids1, const vector<int>& pids2, double * par) { Evaluator e; return e.xsec(pids1, pids2, par); }
+  inline double xsec(const vector<int>& pids1, const vector<int>& pids2, Pythia8::SusyLesHouches& point) { Evaluator e; return e.xsec(pids1, pids2, point); }
+  inline double xsec(const vector<int>& pids1, const vector<int>& pids2, const string& slhafile) { Evaluator e; return e.xsec(pids1, pids2, slhafile); }
+
+  inline double xsec(int pid1, int pid2, double * par) { Evaluator e; return e.xsec(pid1, pid2, par); }
+  inline double xsec(int pid1, int pid2, Pythia8::SusyLesHouches& point) { Evaluator e; return e.xsec(pid1, pid2, point); }
+  inline double xsec(int pid1, int pid2, const string& slhafile) { Evaluator e; return e.xsec(pid1, pid2, slhafile); }
+
+  inline double xsec(const string& process, double * par) { Evaluator e; return e.xsec(process, par); }
+  inline double xsec(const string& process, Pythia8::SusyLesHouches& point) { Evaluator e; return e.xsec(process, point); }
+  inline double xsec(const string& process, const string& slhafile) { Evaluator e; return e.xsec(process, slhafile); }
+  //@}
+
 
 }
+
+
+// extern "C" {
+//   void foo(); //{ cout << "DIE" << endl; }
+// }
+
 
 #endif // xsec_h
