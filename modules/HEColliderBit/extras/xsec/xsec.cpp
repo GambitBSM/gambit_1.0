@@ -134,7 +134,6 @@ double Evaluator::xsec(const vector<int>& pids1,
   return xs;
 }
 
-
 string Evaluator::get_process(int pid1, int pid2) const {
     // Figure out process string
     map<int,string>::const_iterator it1 = pidmap.find(pid1);
@@ -144,6 +143,113 @@ string Evaluator::get_process(int pid1, int pid2) const {
     return "";
 }
 
+void Evaluator::get_parameters(Pythia8::SusyLesHouches & point, double * par) const {
+    // TODO: fix m_A use in MSOFT
+
+    // Find scales
+    double Qxsec = 1000.;
+    double Qmsoft = point.msoft.q();
+    double Qextpar = point.extpar(0);
+    double Qhmix = point.hmix.q();
+    cout << "Qmsoft " << Qmsoft << endl;
+    cout << "Qextpar " << Qextpar << endl;
+
+    // If EXTPAR exists and scale is very near 1 TeV then we use those soft masses
+    // extpar(0) will be 0 when the block does not exist
+    // Also use if EXTPAR scale is closer to 1 TeV than MSOFT scale.
+    if(abs(Qextpar-Qxsec) < 1.0 || abs(Qextpar-Qxsec) < abs(Qmsoft-Qxsec)){
+        par[0] = point.minpar(3);  // \tan\beta
+        par[1] = point.extpar(1);  // M_1
+        par[2] = point.extpar(2);  // M_2
+        par[3] = point.extpar(3);  // M_3
+        par[4] = point.extpar(11); // A_t
+        par[5] = point.extpar(12); // A_b
+        par[6] = point.extpar(13); // A_\tau
+        par[7] = point.extpar(23); // \mu
+        par[8] = point.extpar(26); // m_A pole mass
+        par[9] = point.extpar(31); // meL
+        par[10] = point.extpar(32); // mmuL
+        par[11] = point.extpar(33); // mtauL
+        par[12] = point.extpar(34); // meR
+        par[13] = point.extpar(35); // mmuR
+        par[14] = point.extpar(36); // mtauR
+        par[15] = point.extpar(41); // mqL1
+        par[16] = point.extpar(44); // muR
+        par[17] = point.extpar(47); // mdR
+        par[18] = point.extpar(42); // mqL2
+        par[19] = point.extpar(45); // mcR
+        par[20] = point.extpar(48); // msR
+        par[21] = point.extpar(43); // mqL3
+        par[22] = point.extpar(46); // mtR
+        par[23] = point.extpar(49); // mbR
+        // Return now if we do not need to do RGE
+        if(abs(Qextpar-Qxsec) < 1.0) return;
+    }
+    // If not, use MSOFT and HMIX blocks.
+    // This uses that HMIX and MSOFT is at the same scale, 
+    // however, exceptions have not been seen in the wild.
+    else if (abs(Qmsoft-Qhmix) < 1.0 && abs(Qmsoft) > 0.1){
+        par[0] = point.hmix(3);  // \tan\beta
+        par[1] = point.msoft(1);  // M_1
+        par[2] = point.msoft(2);  // M_2
+        par[3] = point.msoft(3);  // M_3
+
+        cout << endl << "Started with these masses: " << endl;
+        cout << par[1] << " " << par[2] << " " << par[3] << endl;
+    
+        par[4] = point.au(3,3);   // A_t
+        par[5] = point.ad(3,3);   // A_b
+        par[6] = point.ae(3,3);   // A_\tau
+        par[7] = point.hmix(1);   // \mu
+        par[8] = sqrt(point.hmix(4));  // m_A WARNING: not pole
+        par[9] = point.msoft(31); // meL
+        par[10] = point.msoft(32); // mmuL
+        par[11] = point.msoft(33); // mtauL
+        par[12] = point.msoft(34); // meR
+        par[13] = point.msoft(35); // mmuR
+        par[14] = point.msoft(36); // mtauR
+        par[15] = point.msoft(41); // mqL1
+        par[16] = point.msoft(44); // muR
+        par[17] = point.msoft(47); // mdR
+        par[18] = point.msoft(42); // mqL2
+        par[19] = point.msoft(45); // mcR
+        par[20] = point.msoft(48); // msR
+        par[21] = point.msoft(43); // mqL3
+        par[22] = point.msoft(46); // mtR
+        par[23] = point.msoft(49); // mbR
+    }
+    else{
+        throw runtime_error("Cannot handle your SLHA file");
+    }
+
+    // RGE run parameters to Qxsec = 1 TeV
+    // Constants for RGEs
+    double dt = log(Qxsec/Qmsoft);
+    cout << "dt " << dt << endl;    
+    double pi = 2.*asin(1.);
+    double b[4] = {0,33./5.,1.,-3.};
+    double g[4];
+    g[1] = sqrt(5./3.)*point.gauge(1);
+    g[2] = point.gauge(2);
+    g[3] = point.gauge(3);
+
+    // Loop for running
+    int nt = 10;
+    dt = dt/nt;
+    for(int it = 0; it < nt; it++){
+
+        // Gauge couplings and gaugino soft masses
+        for(int i = 1; i < 4; i++){
+            par[i] = par[i] + 1./8./pow(pi,2)*b[i]*pow(g[i],2)*par[i]*dt;
+            g[i] = g[i] + 1./16./pow(pi,2)*b[i]*pow(g[i],3)*dt;
+        }
+        cout << par[1] << " " << par[2] << " " << par[3] << endl;
+    }
+
+    cout << "Wanted these masses: " << endl;
+    cout << -1.87089880e+02 << " " << 1.53667310e+02 << " " << -5.32953183e+02 << endl;
+    
+}
 
 double Evaluator::xsec(int pid1, int pid2, double * par) const {
     const string process = get_process(pid1, pid2);
@@ -154,44 +260,18 @@ double Evaluator::xsec(int pid1, int pid2, double * par) const {
     return xsec(process, par);
 }
 
-
-double Evaluator::xsec(const string& process, const Pythia8::SusyLesHouches & point) const {
+double Evaluator::xsec(const string& process, Pythia8::SusyLesHouches & point) const {
 
     // Get parameters from SLHA object
     double par[24];
-    // Uses MSOFT and HMIX blocks defined at scale Q
-    // TODO: be carefull about scale definitions!
-    par[0] = point.minpar(3); // \tan\beta
-    par[1] = point.msoft(1);  // M_1
-    par[2] = point.msoft(2);  // M_2
-    par[3] = point.msoft(3);  // M_3
-    par[4] = point.au(3,3);   // A_t
-    par[5] = point.ad(3,3);   // A_b
-    par[6] = point.ae(3,3);   // A_\tau
-    par[7] = point.hmix(1);   // \mu
-    par[8] = sqrt(point.hmix(4));  // m_A
-    par[9] = point.msoft(31); // meL
-    par[10] = point.msoft(32); // mmuL
-    par[11] = point.msoft(33); // mtauL
-    par[12] = point.msoft(34); // meR
-    par[13] = point.msoft(35); // mmuR
-    par[14] = point.msoft(36); // mtauR
-    par[15] = point.msoft(41); // mqL1
-    par[16] = point.msoft(44); // muR
-    par[17] = point.msoft(47); // mdR
-    par[18] = point.msoft(42); // mqL2
-    par[19] = point.msoft(45); // mcR
-    par[20] = point.msoft(48); // msR
-    par[21] = point.msoft(43); // mqL3
-    par[22] = point.msoft(46); // mtR
-    par[23] = point.msoft(49); // mbR
+    get_parameters(point, par);
 
     // Evaluate
     return xsec(process, par);
 }
 
 
-double Evaluator::xsec(int pid1, int pid2, const Pythia8::SusyLesHouches & point) const {
+double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches & point) const {
     const string process = get_process(pid1, pid2);
     // if (process.empty()) {
     //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
