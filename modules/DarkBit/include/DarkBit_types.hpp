@@ -30,6 +30,9 @@
 ///  \date 2013 Oct
 ///  \date 2014 Jan
 ///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Mar
 ///  *********************************************
 
 
