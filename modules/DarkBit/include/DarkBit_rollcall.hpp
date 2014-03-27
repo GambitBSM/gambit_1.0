@@ -28,9 +28,10 @@
 ///  \date 2014 Mar
 ///  *********************************************
 
-
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
+
+#include "DarkBit_types.hpp"
 
 #define MODULE DarkBit
 START_MODULE
@@ -50,6 +51,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DarkBit_PointInit_CMSSM
       START_FUNCTION(void)
+      DEPENDENCY(MSSMspectrum, Py8SLHA) 
       ALLOW_MODELS(CMSSM_demo)
       #define BACKEND_REQ dsinit
         START_BACKEND_REQ(void)
@@ -244,6 +246,25 @@ START_MODULE
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ         
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY DD_couplings
+  START_CAPABILITY
+    #define FUNCTION DD_couplings_DarkSUSY
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      #define BACKEND_REQ dsddgpgn
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ        
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_FakeLux
+  START_CAPABILITY
+    #define FUNCTION lnL_FakeLux
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
     #undef FUNCTION
   #undef CAPABILITY
 

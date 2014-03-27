@@ -123,10 +123,10 @@ FILES_NETWORKS = \
 
 SLHA = ../../../../modules/contrib/SLHAPy8
 
-all: testxsec libxsec.a libxsec.so
+all: testxsec evalxsec libxsec.a libxsec.so
 	@true
 
-testxsec: test_xsec.cpp libxsec.a
+%xsec: %_xsec.cpp libxsec.a
 	$(CXX) $(CXXFLAGS) $^ -o $@ -I$(SLHA)
 
 libxsec.a: $(FILES_NETWORKS) xsec.o SusyLesHouches.o

@@ -195,6 +195,9 @@ multinest:
 - purpose:       Likelihood
   capability:    lnL_oh2
 
+- purpose:       Likelihood
+  capability:    lnL_FakeLux
+
 #- purpose:       Likelihood
 #  capability:    CalcAv
 

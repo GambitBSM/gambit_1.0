@@ -45,6 +45,7 @@ namespace Gambit
     class BFmult;
     class BFlineOfSightIntegral;
     class BFfixPar;
+    class BFaddPar;
     class BFinterpolation;
     class BFrotSym;
 
@@ -166,6 +167,7 @@ namespace Gambit
             shared_ptr<BFsum> sum(BFptr f2);
             shared_ptr<BFmult> mult(BFptr);
             shared_ptr<BFmult> mult(double);
+            shared_ptr<BFaddPar> addPar(int);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -492,6 +494,26 @@ namespace Gambit
             BFptr radialProfile;
     };
 
+    // General mapping n-dim --> (n+1)-dim, by one one parameter
+    class BFaddPar: public BaseFunction
+    {
+        public:
+            BFaddPar(BFptr parent, int i) : 
+                BaseFunction("AddPar", parent->getNdim()+1), 
+                myPointer(parent), index(i) {}
+
+            double value(const BFargVec &args)
+            {
+                BFargVec myArgs = args;
+                myArgs.erase(myArgs.begin() + index);
+                return (*myPointer)(myArgs);
+            }
+
+        private:
+            BFptr myPointer;
+            int index;
+    };
+
     // General mapping n-dim --> (n-1)-dim, by fixing one parameter
     class BFfixPar: public BaseFunction
     {
@@ -719,6 +741,7 @@ namespace Gambit
     inline shared_ptr<BFmult> BaseFunction::mult(double x) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), x)); }
     inline shared_ptr<BFlineOfSightIntegral> BaseFunction::lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral>(new BFlineOfSightIntegral(shared_from_this(), D)); }
     inline shared_ptr<BFfixPar> BaseFunction::fixPar(int i, double x) { return shared_ptr<BFfixPar>(new BFfixPar(shared_from_this(), i, x)); }
+    inline shared_ptr<BFaddPar> BaseFunction::addPar(int i) { return shared_ptr<BFaddPar>(new BFaddPar(shared_from_this(), i)); }
     inline shared_ptr<BFintegrate> BaseFunction::integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate> (new BFintegrate(shared_from_this(), i, x0, x1)); }
     inline shared_ptr<BFrotSym> BaseFunction::rotSym(int i) { return shared_ptr<BFrotSym>(new BFrotSym(shared_from_this(), i)); }
 

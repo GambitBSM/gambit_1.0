@@ -145,6 +145,8 @@
 /// model parameters will be accessible from within the module funtion.
 #define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
 
+#define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ() 
 /// BACKEND_REQ\endlink and type \em TYPE.
@@ -805,10 +807,10 @@
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, IS_MODEL_DEP)             \
                                                                                \
-  IF_EQUAL(CAPABILITY, PointInit,                                              \
+/*  IF_EQUAL(CAPABILITY, PointInit,                                              \
     FAIL("Initialization functions cannot have dependencies. "                 \
     "Please check the rollcall header for " STRINGIFY(MODULE) ".")             \
-  )                                                                            \
+  )*/                                                                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -851,7 +853,6 @@
                                                                                \
   }                                                                            \
 
-
 /// Redirection of ALLOW_MODEL when invoked from within the core.
 #define CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                   \
                                                                                \
@@ -866,9 +867,25 @@
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
     /* Add MODEL to global set of tags of recognised models */                 \
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    CORE_ALLOWED_MODEL_GUTS(MODULE,CAPABILITY,FUNCTION,MODEL)                  \
+  }                                                                            \
+
+/// "Little guys" wrapper for ALLOW_MODEL
+#define CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,FUNCTION,MODEL)                \
+  namespace Gambit                                                             \
+  {                                                                            \
+    /* Add MODEL to global set of tags of recognised models */                 \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    namespace Models                                                           \
+    {                                                                          \
+      CORE_ALLOWED_MODEL_GUTS(MODEL,CAPABILITY,FUNCTION,MODEL)                 \
+    }                                                                          \
+  }
+
+/// Guts of core version of ALLOW_MODEL
+#define CORE_ALLOWED_MODEL_GUTS(MODULE,CAPABILITY,FUNCTION,MODEL)              \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
@@ -970,8 +987,6 @@
       }                                                                        \
                                                                                \
     }                                                                          \
-                                                                               \
-  }                                                                            \
 
 
 

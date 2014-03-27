@@ -191,15 +191,15 @@ namespace Gambit {
       while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
         if (candidate->TauTag) {
-          recoParticle = new HEP_Simple_Lib::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
+          recoParticle = new HEP_Simple_Lib::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
                                       -sign(candidate->Charge) * PID::TAU);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
           //continue;
         }
         else {
-          recoJet = new HEP_Simple_Lib::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000001),
-                            candidate->PID, candidate->BTag);
+          /// @todo Should the jet mass be assigned properly rather than set as microscopic?
+          recoJet = new HEP_Simple_Lib::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
           event.addJet(recoJet);
         }
       }
