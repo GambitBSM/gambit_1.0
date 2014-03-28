@@ -22,7 +22,7 @@
 ///  \date 2012 Mar, 2014 Jan
 ///
 ///  \author Torsten Bringmann
-///          (FIXME @blah.edu)
+///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun
 ///
 ///  \author Pat Scott 

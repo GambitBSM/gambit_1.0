@@ -313,24 +313,20 @@ namespace Gambit
       typename enable_if_not_all_member<allowed_types, const T&, Args...>::type::type
       operator () (Args ... a) const
       {
-            std::ostringstream err;
-            err << "Farray inputs can only be int, short int, or some derivative thereof.";      
-            utils_error().raise(LOCAL_INFO,err.str());
-            
-            T temp;
-            return temp;
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid type.");
+        
+        T temp;
+        return temp;
       }
       
       template <typename ... Args>
       typename enable_if_not_all_member<allowed_types, T&, Args...>::type::type
       operator () (Args ... a)
       {
-            std::ostringstream err;
-            err << "Farray inputs can only be int, short int, or some derivative thereof.";      
-            utils_error().raise(LOCAL_INFO,err.str());
-            
-            T temp;
-            return temp;
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid type.");
+        
+        T temp;
+        return temp;
       }
       
       T* getArray() 

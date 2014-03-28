@@ -11,6 +11,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@desy.de) 
 ///  \date 2013 Jun
+///  \date 2014 Mar [RD interface to DS finally working]
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -38,54 +39,98 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+
+    void DarkBit_PointInit_Default()
+    {
+      using namespace Pipes::DarkBit_PointInit_Default;
+      // Nothing
+    }  // function DarkBit_PointInit_Default()
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+/*
+    void DarkBit_PointInit_MSSM7()
+    //This passes SUSY parameters to DarkSUSY. At the moment, SUSY values
+    //are simply set by hand; eventually, they should be taken from the internal
+    //(SLHA-like?) GAMBIT representation
+    {
+      using namespace Pipes::DarkBit_PointInit_MSSM7;
+      bool static dsinit_flag = false;
+      int i, unphys=0, hwarning=0;
+      DS_MSSMPAR mssmpar;
+      mssmpar.m1 = 500;
+      mssmpar.m2 = 1000;
+      mssmpar.m3 = 3500;
+      mssmpar.mu=400;
+      mssmpar.ma=1000;
+      mssmpar.tanbe=10;
+      for(i=0; i<=2; i++){
+        mssmpar.mass2u[i]=mssmpar.mass2q[i]=mssmpar.mass2d[i]=2000*2000;
+        mssmpar.mass2e[i]=mssmpar.mass2l[i]=2000*2000;
+      }
+      for(i=0; i<=1; i++){
+        mssmpar.asoftu[i]=0;
+        mssmpar.asoftd[i]=0;
+      }
+      mssmpar.asofte[0] = 0;
+      mssmpar.asofte[1] = 0;
+      mssmpar.asoftu[2] = 1;
+      mssmpar.asoftd[2] = 1;
+      mssmpar.asofte[2] = 0;
+
+//      cout << "Set mssmpar:" << endl;
+      *BEreq::mssmpar = mssmpar;
+
+//      cout << "Call dssusy(unphys, hwarning):" << endl;
+      BEreq::dssusy(unphys, hwarning);
+
+    } // function DarkBit_PointInit_MSSM7
+*/
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void RD_spectrum_SUSY(RDspectype &result)
     {
-      /* AK: added this line */
       using namespace Pipes::RD_spectrum_SUSY;
 
       RDspectype myres;
-      int copr[0];           // flag for which coannihilation processes to include
+      int copr[2];           // flag for which coannihilation processes to include
       double mcofr;          // maximal coannihilating particle mass
       int colist[26],lcolist; //potential coannihilating partilces
 
-// NB: eventually, this function should not be BE-dependent anymore!
-// DarkSUSY conventions like the ones below are only used until we have 
-// decided on a format for the model representation
-      int kgamma=13,kw=14,kz=15,kgluon=16,kh1=17,kh2=18,kh3=19,khc=20;
+      // NB: eventually, this function should not be BE-dependent anymore!
+      // DarkSUSY conventions like the ones below are only used until we have 
+      // decided on a format for the model representation
+      // CAREFUL: arrays start with 0 in c++, but with 1 in FORTRAN,
+      // BUT some arrays (e.g. "mass", "width" & "kdof") are defined to start with 0 in DS...
+      int kgamma=13,kw=14,kz=15,kt=11,kh1=17,kh2=18,kh3=19,khc=20;
 
-// read out DS mass spectrum and relevant particle info
-/* AK: replaced these lines
-      DS_PACODES DSpart=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getpacodes_capability);
-      DS_MSPCTM mymspctm=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getmspctm_capability);
-      DS_INTDOF myintdof=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getintdof_capability);
-      DS_WIDTHS mywidths=GET_BE_RESULT(RD_spectrum_SUSY, DarkSUSY_getwidths_capability);
-*/
+      // read out DS mass spectrum and relevant particle info
       DS_PACODES DSpart = *BEreq::pacodes;
       DS_MSPCTM mymspctm= *BEreq::mspctm;
       DS_INTDOF myintdof= *BEreq::intdof;
       DS_WIDTHS mywidths= *BEreq::widths;
 
-// determine relevant coannihilating particles
-// set by hand which coannihilation processes to include
-// this should eventually be done via some driver/init file
+      // determine relevant coannihilating particles
+      // set by hand which coannihilation processes to include
+      // this should eventually be done via some driver/init file
       copr[0]=1;    // charginos and neutrlino
       copr[1]=1;    // sfermions
-      mcofr=1.5;
-      myres.n_co=1;
+      mcofr=2.1;
 
-//CAREFUL: arrays start with 0 in c++, but with 1 in FORTRAN!
-// add neutralino=WIMP=least massive 'coannihilating particle'
+      // first add neutralino=WIMP=least massive 'coannihilating particle'
+      lcolist=0; myres.n_co=1;
       myres.mass_co[0]=mymspctm.mass[DSpart.kn[0]];
       myres.dof_co[0]=myintdof.kdof[DSpart.kn[0]];
       myres.part_co[0]=DSpart.kn[0]; 
-
-      lcolist=0;
-      if  (copr[0]!=0){     //include  neutralino/chargino coannihilation
+      if  (copr[0]!=0){     //include  neutralino & chargino coannihilation
         for (int i=1; i<4; i++) {
          colist[i-1]=DSpart.kn[i];
         }
-        colist[3]=DSpart.kcha[1];
-        colist[4]=DSpart.kcha[2];  // WARNING: Causes subscript out of range warning
+        colist[3]=DSpart.kcha[0];
+        colist[4]=DSpart.kcha[1];
         lcolist=5;
       }
       if (copr[1]!=0){     //include sfermion coannihilation
@@ -103,22 +148,23 @@ namespace Gambit {
         }
         lcolist += 21;
       }
-// now keep all sparticles that are not too heavy
+      // only keep sparticles that are not too heavy
       for (int i=0; i<lcolist; i++) {
         if (mymspctm.mass[colist[i]]/myres.mass_co[0]< mcofr){        
-          myres.n_co += 1; //recall that myres.n_cp=0 corresponds to LSP
-          myres.mass_co[myres.n_co]=mymspctm.mass[colist[i]];
-          myres.dof_co[myres.n_co]=myintdof.kdof[colist[i]];
-          myres.part_co[myres.n_co]=colist[i];
+          myres.n_co += 1;
+          myres.mass_co[myres.n_co-1]=mymspctm.mass[colist[i]];
+          myres.dof_co[myres.n_co-1]=myintdof.kdof[colist[i]];
+          myres.part_co[myres.n_co-1]=colist[i];
+//          std::cout << "coann type, mass: " << colist[i] <<", "<< myres.mass_co[myres.n_co-1] << std::endl;
         }
       }
-
-// determine relevant resonances for LSP annihilation
+            
+      // determine resonances for LSP annihilation
       myres.n_res=0;
       int reslist[] = {kz,kh1,kh2,kh3,kw,khc};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
       if (myres.n_co==1){
-        resmax -= 2;    // the last resonances in the list can only appear for coannihilations
+        resmax -= 2;    // the last 2 resonances in the list can only appear for coannihilations
       }
       for (int i=0; i<resmax; i++) {
         if (mymspctm.mass[reslist[i]]/myres.mass_co[0]>2){        
@@ -128,38 +174,32 @@ namespace Gambit {
             myres.width_res[myres.n_res]=0.1; // narrow res treatment adopted in DS
           }
           myres.n_res += 1;
-          std::cout << "res type: " << reslist[i]  << std::endl;
+//          std::cout << "res type, mass: " << reslist[i] <<", "<< myres.mass_res[myres.n_res-1] << std::endl;
         }
       }
 
-// determine relevant thresholds NOT from coannihilations
-// define lowest threshold = 2*WIMP rest mass  (unlike DS convention!)
+      // determine thresholds; lowest threshold = 2*WIMP rest mass  (unlike DS convention!)
       myres.E_thr[0]=2*myres.mass_co[0];
       myres.n_thr=1;
-      int thrlist[] = {kw,kz,DSpart.kqu[2]};
+      int thrlist[] = {kw,kz,kt};
       int thrmax=sizeof(thrlist) / sizeof(thrlist[0]);
       for (int i=0; i<thrmax; i++) {
         if (mymspctm.mass[thrlist[i]]>myres.mass_co[0]){        
           myres.E_thr[myres.n_thr]=2*mymspctm.mass[thrlist[i]];
           myres.n_thr += 1;
+//          std::cout << "thr type, energy: " << thrlist[i] <<", "<< myres.E_thr[myres.n_thr-1] << std::endl;   
         }
       }
-
-// now add coannihilation thresholds
-/*  CW: I had to comment out this avoid freezing the code
-      if (myres.n_thr > 1){
+      // now add coannihilation thresholds
+      if (myres.n_co > 1){
         for (int i=0; i<myres.n_co; i++) {
-          for (int j=std::max(1,i); j<myres.n_co; i++) {
+          for (int j=std::max(1,i); j<myres.n_co; j++) {
             myres.E_thr[myres.n_thr]=myres.mass_co[i]+myres.mass_co[j];
             myres.n_thr += 1;
+//           std::cout << "coann thr mass1, mass2: " << myres.mass_co[i] <<", "<< myres.mass_co[j] << std::endl;   
           }
         }
       }
-*/
-
-//      std::cout << "# thresholds: " << myres.n_thr << std::endl;
-//      std::cout << "mchi: " <<  myres.mass_co[0] << std::endl;
-
 
       result=myres;
 
@@ -172,7 +212,8 @@ namespace Gambit {
     {
       using namespace Pipes::RD_thresholds_resonances_ordered;
 
-//read out location and number of resonances and thresholds from RDspectrum
+      //read out location and number of resonances and thresholds provided by
+      //capability RD_spectrum
       RDspectype specres = *Dep::RD_spectrum;
       result.n_res=specres.n_res;
       result.n_thr=specres.n_thr;
@@ -183,12 +224,7 @@ namespace Gambit {
       for (int i=0; i<result.n_thr; i++) {
         result.E_thr[i]=specres.E_thr[i];
       }
-
-      for (int i=0; i<result.n_res; i++) {
-        std::cout << "res "<<i<<": " << result.E_res[i] << std::endl;
-    }
-
-//now order
+      //now order
       double tmp;
       for (int i=0; i<result.n_thr-1; i++) {
         for (int j=i+1; j<result.n_thr; j++) {
@@ -211,78 +247,77 @@ namespace Gambit {
           }
         }
       }
+//      for (int i=0; i<result.n_res; i++) {
+//        std::cout << "res "<<i<<": " << result.E_res[i] << std::endl;
+//    }
+//      for (int i=0; i<result.n_thr; i++) {
+//        std::cout << "thr "<<i<<": " << result.E_thr[i] << std::endl;
+//    }
 
-      std::cout << "# resonances: " << result.n_res << std::endl;
-      std::cout << "# thresholds: " << result.n_thr << std::endl;
  
     } // function RD_thresholds_resonances_ordered
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+    void RD_eff_annrate_SUSY_DSprep_func(int &result)
+    {
+      using namespace Pipes::RD_eff_annrate_SUSY_DSprep_func;
+
+      //read out location and number of resonances and thresholds from RDspectrum
+      RDspectype specres = *Dep::RD_spectrum;
+
+      //write info about coannihilating particles to DS common blocks
+      //[this is essentially the model-dependent part of dsrdstart]
+      DS_RDMGEV myrdmgev;
+      myrdmgev.nco = specres.n_co;
+      for (int i=0; i<myrdmgev.nco; i++) {
+         myrdmgev.mco[i]=fabs(specres.mass_co[i]);
+         myrdmgev.mdof[i]=specres.dof_co[i];
+         myrdmgev.kcoann[i]=specres.part_co[i];
+      }
+      // now order
+      double tmp; int itmp;
+      for (int i=0; i<myrdmgev.nco-1; i++) {
+        for (int j=i+1; j<myrdmgev.nco; j++) {
+          if (myrdmgev.mco[j]<myrdmgev.mco[i]) {
+            tmp=myrdmgev.mco[i];
+            myrdmgev.mco[i]=myrdmgev.mco[j];
+            myrdmgev.mco[j]=tmp;
+            itmp=myrdmgev.mdof[i];
+            myrdmgev.mdof[i]=myrdmgev.mdof[j];
+            myrdmgev.mdof[j]=itmp;
+            itmp=myrdmgev.kcoann[i];
+            myrdmgev.kcoann[i]=myrdmgev.kcoann[j];
+            myrdmgev.kcoann[j]=itmp;
+          }
+        }
+      }
+      *BEreq::rdmgev = myrdmgev;
+
+//        for (int i=0; i<myrdmgev.nco; i++) {
+//          std::cout << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
+//        }
+
+      result=1; // everthing OK
+
+    } // function RD_eff_annrate_SUSY_DSprep_func
+
 
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
-      /* AK: added this line */
       using namespace Pipes::RD_eff_annrate_SUSY;
 
-//read out location and number of resonances and thresholds from RDspectrum
-      RDspectype specres;// = GET_DEP(RD_thresholds_resonances_ordered, RD_spectrum$
-      double mwimp = 0; // = specres.E_thr[0]/2;
-
-// HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
-// SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
-     if (1==1) {
-
-//move info about coannihilating particles to DS common blocks
-//[this is essentially the model-dependent part of dsrdstart]
-        DS_RDMGEV myrdmgev;
-        myrdmgev.nco = 0; // = specres.n_co;
-        for (int i=0; i<myrdmgev.nco; i++) {
-           myrdmgev.mco[i]=abs(specres.mass_co[i]);
-           myrdmgev.mdof[i]=specres.dof_co[i];
-           myrdmgev.kcoann[i]=specres.part_co[i];
-        }
-// now order
-        double tmp;
-        int itmp;
-        for (int i=0; i<myrdmgev.nco-1; i++) {
-          for (int j=i+1; j<myrdmgev.nco; j++) {
-            if (myrdmgev.mco[j]<myrdmgev.mco[i]) {
-              tmp=myrdmgev.mco[i];
-              myrdmgev.mco[i]=myrdmgev.mco[j];
-              myrdmgev.mco[j]=tmp;
-              itmp=myrdmgev.mdof[i];
-              myrdmgev.mdof[i]=myrdmgev.mdof[j];
-              myrdmgev.mdof[j]=itmp;
-              itmp=myrdmgev.kcoann[i];
-              myrdmgev.kcoann[i]=myrdmgev.kcoann[j];
-              myrdmgev.kcoann[j]=itmp;
-            }
-          }
-        }
-        /* AK: replaced this line
-        GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdmgev_capability, byVal(myrdmgev));
-        */
-        *BEreq::rdmgev = myrdmgev;
-
-//Now this should be a pointer to dsanwx -- how to implement that???
-//      result=;
-
+      // This is supposed to specify that BE=DS is used to determine Weff
+      if (1==1) {
+        result=BEreq::dsanwx.pointer<double&>();
       }
-// HERE ENDS THE GIANT IF STATEMENT FOR USING BE=DS
-// SIMILAR FOR OTHER BEs...
+      // similar for other BEs...
 
-
-      std::cout << "!!! Remember to change return type in DarkBit_rollcall.hpp(2x!) and DarkBit.cpp !!!" << std::endl;
-
-      /* AK: replaced this line 
-             Note: Here you are accessing a backend requirement for the module function RD_oh2_general
-                   while inside another module function RD_eff_annrate_SUSY. This is probably something we want
-                   should avoid. It's better to repeat the BACKEND_REQ 'block' in DarkBit_rollcall.hpp for this backend requirement.
-                   (In the long run I think we may solve this in a more elegant way...)
-      result = GET_BE_POINTER(RD_oh2_general, dsanwx, double&);
-      */
-      result = Pipes::RD_oh2_general::BEreq::dsanwx.pointer<double&>();
 
     } // function RD_eff_annrate_SUSY
 
@@ -291,182 +326,107 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
     void RD_oh2_general(double &result)
     {
-      /* AK: added this line */
       using namespace Pipes::RD_oh2_general;
 
-//retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
+      //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       RDrestype myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.E_thr[0]/2;
 
-      for (int i=0; i<myres.n_res; i++) {
-        std::cout << "res "<<i<<": " << myres.E_res[i] << std::endl;
-      }
+      // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
+      // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
+      if (1==1) {
+        // what follows below is the standard accurate calculation of oh2 in DS (fast=0 in dsrdomega)
+        // fast=1 to be added...!? Further TODO: keep track of error flags
 
-// HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
-// SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
-     if (1==1) {
-// what follows below is the fast=0 option of DS -- complete and accurate calculation of oh2
-// fast=1 to be added...!?
+        // the following replaces dsrdcom -- which cannot be linked properly!?
+        DS_RDPARS myrdpars;
+        myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
+        myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
+        myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
+        myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;myrdpars.cfr=0.5;
+        *BEreq::rdpars = myrdpars;
+        DS_RDSWITCH myrdswitch;
+        myrdswitch.thavint=1;myrdswitch.rdprt=0;
+        *BEreq::rdswitch = myrdswitch;
+        DS_RDLUN myrdlun;
+        myrdlun.rdlulog=6;myrdlun.rdluerr=6;
+        *BEreq::rdlun = myrdlun;
+        DS_RDPADD myrdpadd;
+        myrdpadd.pdivr=2.0;myrdpadd.dpres=0.5;myrdpadd.nlow=20;myrdpadd.nhigh=10;
+        myrdpadd.npres=4;myrdpadd.nthup=4;myrdpadd.cthtest=0;myrdpadd.spltest=1;
+        *BEreq::rdpadd = myrdpadd;
 
-// this tells DS which DOF parameterization should be used
-// NB: this only needs to be done once -- how to do that in c++? (cf use of data staement in FORTRAN)
-      // GET_BE_RESULT(RD_oh2_general, dsrdset, "dof", 3, "3", 1);
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, dsrdinit);
-      */
-      BEreq::dsrdinit();
+        DS_RDERRORS myrderrors;
+        myrderrors.rderr=0;myrderrors.rdwar=0;myrderrors.rdinit=1234;
+        *BEreq::rderrors = myrderrors;
 
-      std::cout << "Now RD_oh2_general would segfault, so let's stop here before somebody gets hurt." << std::endl;
-      exit(1);
-
-// the following replaces the broken(?) dsrdcom -- should be fixed with higher DS versions
-      DS_RDPARS myrdpars;
-      myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
-      myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
-      myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
-      myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;myrdpars.cfr=0.5;
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdpars_capability, byVal(myrdpars));
-      */
-      *BEreq::rdpars = myrdpars;
-
-      DS_RDSWITCH myrdswitch;
-      myrdswitch.thavint=1;myrdswitch.rdprt=0;
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdswitch_capability, byVal(myrdswitch));
-      */
-      *BEreq::rdswitch = myrdswitch;
-
-      DS_RDLUN myrdlun;
-      myrdlun.rdlulog=6;myrdlun.rdluerr=6;
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdlun_capability, byVal(myrdlun));
-      */
-      *BEreq::rdlun = myrdlun;
-
-      DS_RDPADD myrdpadd;
-      myrdpadd.pdivr=2.0;myrdpadd.dpres=0.5;myrdpadd.nlow=20;myrdpadd.nhigh=10;
-      myrdpadd.npres=4;myrdpadd.nthup=4;myrdpadd.cthtest=0;myrdpadd.spltest=1;
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdpadd_capability, byVal(myrdpadd));
-      */
-      *BEreq::rdpadd = myrdpadd;
-
-// write information about thresholds and resonances to DS common blocks
-// [this is the model-independent part of dsrdstart]
-      DS_RDMGEV myrdmgev;
-      DS_RDPTH myrdpth;
-      myrdmgev.nres=myres.n_res;
-      for (int i=0; i<myres.n_res; i++) {
-        myrdmgev.rgev[i]=myres.E_res[i];
-        myrdmgev.rwid[i]=myres.dE_res[i];
-      }
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdmgev_capability, byVal(myrdmgev));
-      */
-      *BEreq::rdmgev = myrdmgev;
-
-      myrdpth.nth=myres.n_thr-1;   // NB: DS does not count 2* WIMP rest mass as thr
-      myrdpth.pth[0]=0;
-      myrdpth.incth[0]=0;
-      for (int i=1; i<myres.n_thr; i++) {
-        myrdpth.pth[i]=sqrt(pow(myres.E_thr[i],2)/4-pow(mwimp,2));
-        myrdpth.incth[i]=1;
-      }
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, DarkSUSY_setrdpth_capability, byVal(myrdpth));
-      */
-      *BEreq::rdpth = myrdpth;
-
-
-// TODO: introduce & keep track of DS  error flags in /rderrors/ !
-
-// determine starting point for integration of Boltzmann eq
-// (and make sure not to start at higher T than defined in tabulated dof)
-
-      /* AK: replaced this line
-      DS_RDDOF myrddof=GET_BE_RESULT(RD_oh2_general, DarkSUSY_getrddof_capability);
-      */
-      DS_RDDOF myrddof = *BEreq::rddof;
-
-      double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof.tgev[0]);
-      double tstart=mwimp/xstart;
-      int k;
-      myrddof.khi=myrddof.nf-1;    // NB: different array conventions in c++ and FORTRAN...
-      myrddof.klo=0;
-      while (myrddof.khi > myrddof.klo+1){
-        k=(myrddof.khi+myrddof.klo)/2;
-        if (myrddof.tgev[k] < tstart){
-          myrddof.khi=k;
+        // write information about thresholds and resonances to DS common blocks
+        // [this is the model-independent part of dsrdstart]
+        DS_RDMGEV myrdmgev = *BEreq::rdmgev; //NB:the other variables in that block have already been set!!!
+        DS_RDPTH myrdpth;
+        myrdmgev.nres=myres.n_res;
+        for (int i=0; i<myres.n_res; i++) {
+          myrdmgev.rgev[i]=myres.E_res[i];
+          myrdmgev.rwid[i]=myres.dE_res[i];
         }
-        else {
-          myrddof.klo=k;
+        // convert to momenta
+        *BEreq::rdmgev = myrdmgev;
+        myrdpth.nth=myres.n_thr-1;   // NB: DS does not count 2* WIMP rest mass as thr
+        myrdpth.pth[0]=0; myrdpth.incth[0]=1;
+        for (int i=2; i<=myres.n_thr; i++) {
+          myrdpth.pth[i-1]=sqrt(pow(myres.E_thr[i-1],2)/4-pow(mwimp,2));
+          myrdpth.incth[i-1]=1;
         }
-      }
+        *BEreq::rdpth = myrdpth;
 
+        // determine starting point for integration of Boltzmann eq
+        DS_RDDOF myrddof = *BEreq::rddof;
+        double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof.tgev[0]);
+        double tstart=mwimp/xstart;
+        int k; myrddof.khi=myrddof.nf; myrddof.klo=1;
+        while (myrddof.khi > myrddof.klo+1){
+          k=(myrddof.khi+myrddof.klo)/2;
+          if (myrddof.tgev[k-1] < tstart){
+            myrddof.khi=k;
+          }
+          else {
+            myrddof.klo=k;
+          }
+        }
+        *BEreq::rddof=myrddof;
 
-// tabulate invariant rate
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, dsrdtab, byVal(*Dep::RD_eff_annrate),xstart);
-      */
-      BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+        // follow narrow res treatment for SM Higgs adopted in DS
+        DS_WIDTHS mywidths= *BEreq::widths;
+        int kh1=17; double widthkh1= mywidths.width[kh1];    
+        if (mywidths.width[kh1]<0.1) {
+          mywidths.width[kh1]=0.1;
+          *BEreq::widths=mywidths;
+        }
 
-// determine integration limit
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, dsrdthlim);
-      */
-      BEreq::dsrdthlim();
+        BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart); // tabulate invariant rate
+        BEreq::dsrdthlim();                                 // determine integration limit
 
-// solve Boltzmann eqn
-      double xend, yend, xf;
-      int nfcn;
-      /* AK: replaced this line
-      double(*fptr)(double&) = GET_BE_POINTER(RD_oh2_general, dsrdwintp, double&);
-      */
-      double(*fptr)(double&) = BEreq::dsrdwintp.pointer<double&>();
+        // now solve Boltzmann eqn using tabulated rate
+        double xend, yend, xf; int nfcn;
+        BEreq::dsrdeqn(byVal(BEreq::dsrdwintp.pointer<double&>()),xstart,xend,yend,xf,nfcn);
+        // using the untabulated rate gives the same result but is usually slower: 
+        // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
+        
 
-      std::cout << "Starting dsrdeqn" << std::endl;
-      /* AK: replaced this line
-      GET_BE_RESULT(RD_oh2_general, dsrdeqn, byVal(fptr),xstart,xend,yend,xf,nfcn);
-      */
-      BEreq::dsrdeqn(byVal(fptr),xstart,xend,yend,xf,nfcn);
+        // change SM Higgs width back to standard value
+        mywidths.width[kh1]=widthkh1;
+        *BEreq::widths=mywidths;
 
-      result = 0.70365e8*myrddof.fh[myrddof.nf]*mwimp*yend;
+        result = 0.70365e8*myrddof.fh[myrddof.nf-1]*mwimp*yend;
 
-     }
-// HERE ENDS THE GIANT IF STATEMENT FOR USING BE=DS
-// SIMILAR FOR OTHER BEs...
+      } // USING BE=DS
 
-     result=0.01;
-     std::cout << "oh2 =" << result << std::endl;
+      std::cout << "oh2 =" << result << std::endl;
 
     } // function RD_oh2_general
 
-
-
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-    void RD_test_out(double &result)
-    {
-      /* AK: added this line */
-      using namespace Pipes::RD_test_out;
-
-        /* AK: would have replaced this line (if it was not commented out)...
-//      RDspectype specres = GET_DEP( RD_test_out, RD_spectrum);
-        */
-//      RDspectype specres = *Dep::RD_spectrum;
-
-//      std::cout << "mchi =" << specres.mass_co[0] << std::endl;
-//      std::cout << "dof chi =" << specres.dof_co[0] << std::endl;
-//      std::cout << "# coannihilating particles: " << specres.n_co << std::endl;
-    }
-
-
-
-////////////////////////////////////////
-// Part of DarkBit that actually works.
-////////////////////////////////////////
-//
     void DarkBit_PointInit_CMSSM()
     {
       using namespace Pipes::DarkBit_PointInit_CMSSM;
@@ -477,6 +437,7 @@ namespace Gambit {
       {
           std::cout << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
+          BEreq::dsrdinit();
           dsinit_flag = true;
       }
       // Setup mSUGRA model from CMSSM parameters
@@ -492,12 +453,9 @@ namespace Gambit {
       BEreq::dssusy_isasugra(unphys, hwarning);
     }
 
-    void DarkBit_PointInit_Default()
-    {
-      using namespace Pipes::DarkBit_PointInit_Default;
-      // Nothing
-    }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void GA_AnnYield_DarkSUSY(BFptr &result)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -649,6 +607,8 @@ namespace Gambit {
       result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->validRange(0, Emin, Emax)->addPar(1);
     }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_CMSSM;
@@ -778,6 +738,9 @@ namespace Gambit {
         result = catalog;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//TB: This should be obsolete now!?
     void RD_oh2_DarkSUSY(double &result)
     {
         using namespace Pipes::RD_oh2_DarkSUSY;
@@ -846,6 +809,8 @@ namespace Gambit {
     }
 */
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void lnL_FermiLATdwarfsSimple(double &result)
     {
         using namespace Pipes::lnL_FermiLATdwarfsSimple;
@@ -924,6 +889,8 @@ namespace Gambit {
         std::cout << "phi: " << phi << std::endl;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void RD_oh2_SingletDM(double &result)
     {
       using namespace Pipes::RD_oh2_SingletDM;
@@ -932,6 +899,8 @@ namespace Gambit {
       result = 0;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void lnL_oh2_Simple(double &result)
     {
       using namespace Pipes::lnL_oh2_Simple;
@@ -939,6 +908,8 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
@@ -952,6 +923,8 @@ namespace Gambit {
         std::cout << " gna: " << result.gna << std::endl;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
     void lnL_FakeLux(double &result)
     {
         using namespace Pipes::lnL_FakeLux;
