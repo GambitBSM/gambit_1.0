@@ -77,6 +77,7 @@ SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
 HEPSIMPLEDIR = contrib/hep_simple_lib
 FASTSIMDIR = ../extras/fast_sim
+MCUTILSDIR = contrib/mcutils
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
