@@ -156,7 +156,7 @@ namespace Gambit
             }*/
 
             template<typename... args>
-            typename std::enable_if<!is_one_member_vector<args...>::value, double>::type
+            typename enable_if_not_one_member_vector<double, args...>::type::type
             operator()(args... params)
             {
                     assertNdim(sizeof...(args));
@@ -166,7 +166,7 @@ namespace Gambit
             }
             
             template<typename... args>
-            typename std::enable_if<is_one_member_vector<args...>::value, std::vector<double>>::type
+            typename enable_if_one_member_vector<std::vector<double>, args...>::type::type
             operator()(args... params)
             {
                     assertNdim(sizeof...(args));

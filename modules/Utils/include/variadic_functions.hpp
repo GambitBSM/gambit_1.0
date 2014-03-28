@@ -117,6 +117,59 @@ namespace Gambit
                 outputVariadicVector(vec+1, params...);
         }
         
+        ///////////////////////////////
+        //mult_types
+        ///////////////////////////////
+        
+        template <typename... args>
+        struct mult_types
+        {
+                typedef void type (args...);
+        };
+        
+        ////////////////////////////
+        //is_same_type
+        ////////////////////////////
+        
+        template <typename T, typename type>
+        struct is_same_type_internal;
+        
+        template <typename type>
+        struct is_same_type_internal <void (), type>
+        {
+               static const bool value = false;
+        };
+        
+        template <typename T, typename... args>
+        struct is_same_type_internal <void (T, args...), T>
+        {
+                static const bool value = true;
+        };
+        
+        template <typename type, typename T, typename... args>
+        struct is_same_type_internal <void (T, args...), type>
+        {
+                static const bool value = is_same_type_internal <void (args...), type>::value;
+        };
+        
+        template <typename type, typename T>
+        struct is_same_type
+        {
+                static const bool value = false;
+        };
+        
+        template <typename T>
+        struct is_same_type <T, T>
+        {
+                static const bool value = true;
+        };
+        
+        template <typename T, typename... args>
+        struct is_same_type <mult_types<args...>, T>
+        {
+                static const bool value = is_same_type_internal <typename mult_types<args...>::type, T>::value;
+        };
+        
         ///////////////////////////
         //is_one_member
         ///////////////////////////
@@ -130,16 +183,10 @@ namespace Gambit
                 static const bool value = false;
         };
         
-        template <typename T, typename... args>
-        struct is_one_member_internal <T, void (T, args...)>
-        {
-                static const bool value = true;
-        };
-        
         template <typename type, typename T, typename... args>
         struct is_one_member_internal <type, void (T, args...)>
         {
-                static const bool value = is_one_member_internal<type, void (args...)>::value;
+                static const bool value = is_same_type<type, T>::value || is_one_member_internal<type, void (args...)>::value;
         };
         
         template <typename type, typename... args>
@@ -161,16 +208,10 @@ namespace Gambit
                 static const bool value = true;
         };
         
-        template <typename T, typename... args>
-        struct is_all_member_internal <T, void (T, args...)>
-        {
-                static const bool value = is_all_member_internal<T, void (args...)>::value;
-        };
-        
         template <typename type, typename T, typename... args>
         struct is_all_member_internal <type, void (T, args...)>
         {
-                static const bool value = false;
+                static const bool value = is_same_type<type, T>::value && is_all_member_internal<type, void (args...)>::value;
         };
         
         template <typename type, typename... args>
@@ -248,25 +289,25 @@ namespace Gambit
         template <typename T, typename ret, typename... args>
         struct enable_if_one_member
         {
-                typedef typename std::enable_if<is_one_member<T, args...>::value, ret>::type type;
+                typedef std::enable_if<is_one_member<T, args...>::value, ret> type;
         };
         
         template <typename T, typename ret, typename... args>
         struct enable_if_all_member
         {
-                typedef typename std::enable_if<is_all_member<T, args...>::value, ret>::type type;
+                typedef std::enable_if<is_all_member<T, args...>::value, ret> type;
         };
         
         template <typename ret, typename... args>
         struct enable_if_one_member_vector
         {
-                typedef typename std::enable_if<is_one_member_vector<args...>::value, ret>::type type;
+                typedef std::enable_if<is_one_member_vector<args...>::value, ret> type;
         };
         
         template <typename ret, typename... args>
         struct enable_if_all_member_vector
         {
-                typedef typename std::enable_if<is_all_member_vector<args...>::value, ret>::type type;
+                typedef std::enable_if<is_all_member_vector<args...>::value, ret> type;
         };
         
         //////////////////////////////////////
@@ -276,25 +317,25 @@ namespace Gambit
         template <typename T, typename ret, typename... args>
         struct enable_if_not_one_member
         {
-                typedef typename std::enable_if<!is_one_member<T, args...>::value, ret>::type type;
+                typedef std::enable_if<!is_one_member<T, args...>::value, ret> type;
         };
         
         template <typename T, typename ret, typename... args>
         struct enable_if_not_all_member
         {
-                typedef typename std::enable_if<!is_all_member<T, args...>::value, ret>::type type;
+                typedef std::enable_if<!is_all_member<T, args...>::value, ret> type;
         };
         
         template <typename ret, typename... args>
         struct enable_if_not_one_member_vector
-        {
-                typedef typename std::enable_if<!is_one_member_vector<args...>::value, ret>::type type;
+        {      
+                typedef std::enable_if<!is_one_member_vector<args...>::value, ret> type;
         };
         
         template <typename ret, typename... args>
         struct enable_if_not_all_member_vector
         {
-                typedef typename std::enable_if<!is_all_member_vector<args...>::value, ret>::type type;
+                typedef std::enable_if<!is_all_member_vector<args...>::value, ret> type;
         };
 }
 
