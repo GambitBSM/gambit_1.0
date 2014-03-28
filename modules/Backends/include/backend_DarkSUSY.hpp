@@ -24,8 +24,8 @@
 ///  \date 2013 Jul
 ///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de)
-///  \date 2013 Jul
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2013 Jul, 2014 Mar
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -129,6 +129,7 @@ BE_VARIABLE(GENERAL_VAR(DS_WIDTHS, widths),     "widths_",    "widths")
 BE_VARIABLE(GENERAL_VAR(DS_RDMGEV, rdmgev),     "rdmgev_",    "rdmgev")
 BE_VARIABLE(GENERAL_VAR(DS_RDPTH, rdpth),       "rdpth_",     "rdpth")
 BE_VARIABLE(GENERAL_VAR(DS_RDDOF, rddof),       "rddof_",     "rddof")
+BE_VARIABLE(GENERAL_VAR(DS_RDERRORS, rderrors), "rderrors_", "rderrors")
 BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")
 BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
 BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
