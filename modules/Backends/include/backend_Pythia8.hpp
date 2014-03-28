@@ -21,12 +21,12 @@ LOAD_LIBRARY
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
  */
 
-BE_FUNCTION(pythiaFactory,        Abstract__Pythia*,        (std::string, bool),            "_Z14Factory_PythiaSsb",      "pythiaFactory")
-BE_FUNCTION(eventFactory,         Abstract__Event*,         (int),                          "_Z13Factory_Eventi",         "pythiaEventFactory")
-BE_FUNCTION(particleFactory,      Abstract__Particle*,      (),                             "_Z16Factory_Particlev",      "pythiaParticleFactory")
-BE_FUNCTION(particleDataFactory,  Abstract__ParticleData*,  (),                             "_Z20Factory_ParticleDatav",  "pythiaParticleDataFactory")
-BE_FUNCTION(rotBstMatrixFactory,  Abstract__RotBstMatrix*,  (),                             "_Z20Factory_RotBstMatrixv",  "pythiaRotBstMatrixFactory")
-BE_FUNCTION(vec4Factory,          Abstract__Vec4*,          (double,double,double,double),  "_Z12Factory_Vec4dddd",       "pythiaVec4Factory")
+BE_FUNCTION(pythiaFactory,        _Pythia*,        (std::string, bool),            "_Z14Factory_PythiaSsb",      "pythiaFactory")
+BE_FUNCTION(eventFactory,         _Event*,         (int),                          "_Z13Factory_Eventi",         "pythiaEventFactory")
+BE_FUNCTION(particleFactory,      _Particle*,      (),                             "_Z16Factory_Particlev",      "pythiaParticleFactory")
+BE_FUNCTION(particleDataFactory,  _ParticleData*,  (),                             "_Z20Factory_ParticleDatav",  "pythiaParticleDataFactory")
+BE_FUNCTION(rotBstMatrixFactory,  _RotBstMatrix*,  (),                             "_Z20Factory_RotBstMatrixv",  "pythiaRotBstMatrixFactory")
+BE_FUNCTION(vec4Factory,          _Vec4*,          (double,double,double,double),  "_Z12Factory_Vec4dddd",       "pythiaVec4Factory")
 
 
 namespace Gambit

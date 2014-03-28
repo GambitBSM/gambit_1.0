@@ -41,6 +41,14 @@ namespace Gambit
     class Pythia;
 
 
+    // Typedefs for GAMBIT
+    typedef _Particle Abstract__Particle;
+    typedef _ParticleData Abstract__ParticleData;
+    typedef _Vec4 Abstract__Vec4;
+    typedef _RotBstMatrix Abstract__RotBstMatrix;
+    typedef _Event Abstract__Event;
+    typedef _Pythia Abstract__Pythia;
+
 
     class Abstract__Vec4
     {
