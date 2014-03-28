@@ -59,13 +59,15 @@ namespace Gambit
     typedef std::vector<double> BFargVec;
 
     template<typename T>
-    inline std::enable_if<!is_vector<T>::value, T> Enter_Crap(int i, T &vec)
+    inline typename std::enable_if<!is_vector<T>::value, T>::type 
+    Enter_Crap(int i, const T &vec)
     {
             return vec;
     }
     
     template<typename T>
-    inline std::enable_if<is_vector<T>::value, typename is_vector<T>::type> Enter_Crap(int i, T &vec)
+    inline typename std::enable_if<is_vector<T>::value, typename is_vector<T>::type>::type 
+    Enter_Crap(int i, const T &vec)
     {
             return vec[i];
     }
@@ -87,77 +89,9 @@ namespace Gambit
                 //std::cout << "Destructing base function object: " << this->name << std::endl; 
             }
 
-            // Call by std::vector<double> arguments (standard)
-            //double output() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
-
-            // Call by list of arguments; up to six dimensions for now (for convenience)
-            /*double operator() () 
-            { 
-                assertNdim(0); 
-                BFargVec v; 
-                return this->value(v); 
-            }
-            double operator() (double x0) 
-            { 
-                assertNdim(1); 
-                BFargVec v;
-                v.push_back(x0); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1)
-            { 
-                assertNdim(2); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2)
-            { 
-                assertNdim(3); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2, double x3)
-            { 
-                assertNdim(4); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                v.push_back(x3); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2, double x3, double x4) 
-            { 
-                assertNdim(5); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                v.push_back(x3); 
-                v.push_back(x4); 
-                return this->value(v); 
-            }
-            double operator() (double x0, double x1, double x2, double x3, double x4, double x5) 
-            { 
-                assertNdim(6); 
-                BFargVec v;
-                v.push_back(x0); 
-                v.push_back(x1); 
-                v.push_back(x2); 
-                v.push_back(x3); 
-                v.push_back(x4); 
-                v.push_back(x5); 
-                return this->value(v); 
-            }*/
-
             template<typename... args>
             typename enable_if_not_one_member_vector<double, args...>::type::type
-            operator()(args... params)
+            operator()(const args&... params)
             {
                     assertNdim(sizeof...(args));
                     BFargVec v(sizeof...(args));
@@ -167,10 +101,10 @@ namespace Gambit
             
             template<typename... args>
             typename enable_if_one_member_vector<std::vector<double>, args...>::type::type
-            operator()(args... params)
+            operator()(const args&... params)
             {
                     assertNdim(sizeof...(args));
-                    int end = getVariadicMaxVector();
+                    int end = getVariadicMaxVector(params...);
                     BFargVec retval(end);
                     BFargVec v(sizeof...(args));
                     for (int i = 0; i < end; i++)

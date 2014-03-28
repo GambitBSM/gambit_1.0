@@ -44,6 +44,27 @@ namespace Gambit
                 typedef T type;
         };
         
+        template <typename T>
+        struct is_vector<const std::vector<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+        
+        template <typename T>
+        struct is_vector<std::vector<T> &>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+        
+        template <typename T>
+        struct is_vector<const std::vector<T> &>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+        
         //////////////////////////////////////
         //Variadic Node functions
         //////////////////////////////////////
@@ -89,23 +110,32 @@ namespace Gambit
         //Input and Output Variadic functions
         ///////////////////////////////////////////////
         
+        template <typename T>
+        inline typename std::enable_if<is_vector<T>::value, int>::type
+        getVariadicVectorSize(const T &in){return in.size();}
+        
+        template <typename T>
+        inline typename std::enable_if<!is_vector<T>::value, int>::type
+        getVariadicVectorSize(const T &in){return 0;}
+        
         inline int getVariadicMaxVector(){return 0;}
         
         template <typename T, typename... args>
-        inline int getVariadicMaxVector (T &in, args... params)
+        inline int getVariadicMaxVector (const T &in, const args&... params)
         {
                 int N0 = getVariadicMaxVector(params...);
-                int N = (is_vector<T>::value) ? in.size() : N0;
-                
-                return (N > N0) ? N0 : N;
+                int N = getVariadicVectorSize(in);
+
+                return (N > N0 && N0 != 0) ? N0 : N;
         };
         
         inline void inputVariadicVector(std::vector<double>::iterator vec){}
         
         template <typename... args>
-        inline void inputVariadicVector(std::vector<double>::iterator vec, double val, args... params)
+        inline void inputVariadicVector(std::vector<double>::iterator vec, const double &val, const args&... params)
         {
-                *vec = val; inputVariadicVector(vec+1, params...);
+                *vec = val; 
+                inputVariadicVector(vec+1, params...);
         }
         
         inline void outputVariadicVector(std::vector<double>::const_iterator vec) {}
@@ -240,6 +270,18 @@ namespace Gambit
         };
         
         template <typename T, typename... args>
+        struct is_one_member_vector_internal <void (std::vector<T> &, args...)>
+        {
+                static const bool value = true;
+        };
+        
+        template <typename T, typename... args>
+        struct is_one_member_vector_internal <void (const std::vector<T> &, args...)>
+        {
+                static const bool value = true;
+        };
+        
+        template <typename T, typename... args>
         struct is_one_member_vector_internal <void (T, args...)>
         {
                 static const bool value = is_one_member_vector_internal<void (args...)>::value;
@@ -266,6 +308,18 @@ namespace Gambit
         
         template <typename T, typename... args>
         struct is_all_member_vector_internal <void (std::vector<T>, args...)>
+        {
+                static const bool value = is_all_member_vector_internal<void (args...)>::value;
+        };
+        
+        template <typename T, typename... args>
+        struct is_all_member_vector_internal <void (std::vector<T> &, args...)>
+        {
+                static const bool value = is_all_member_vector_internal<void (args...)>::value;
+        };
+        
+        template <typename T, typename... args>
+        struct is_all_member_vector_internal <void (const std::vector<T> &, args...)>
         {
                 static const bool value = is_all_member_vector_internal<void (args...)>::value;
         };
