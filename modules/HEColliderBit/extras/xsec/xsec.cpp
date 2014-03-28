@@ -169,13 +169,12 @@ namespace xsec{
 
   void Evaluator::_params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const {
     // TODO: fix m_A use in MSOFT
-      // Reset SUSY-HIT fix DANGER DANGER DANGER
 
     // Find scales
-    double Qxsec = 1000.;
-    double Qmsoft = point.msoft.q()*1000;
+    double Qxsec = 1000.; // we want params at 1 TeV since that's where the interpolators were fitted
+    double Qmsoft = point.msoft.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     double Qextpar = point.extpar(0);
-    double Qhmix = point.hmix.q()*1000;
+    double Qhmix = point.hmix.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     cout << "Qmsoft " << Qmsoft << endl;
     cout << "Qextpar " << Qextpar << endl;
 
