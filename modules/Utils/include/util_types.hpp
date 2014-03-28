@@ -297,21 +297,18 @@ namespace Gambit
         }   
         return array[idx];   
       }
-      
       template <typename ... Args>
       typename std::enable_if<!is_all_member<int, Args...>::value, const T&>::type
       operator () (Args ... a) const
       {
-              //put stuff here
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid index type. Only int is allowed.");
       }
-      
       template <typename ... Args>
       typename std::enable_if<!is_all_member<int, Args...>::value, T&>::type
       operator () (Args ... a)
       {
-              //put stuff here
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid index type. Only int is allowed.");
       }
-      
       T* getArray() 
       { 
         if(array == NULL) 
