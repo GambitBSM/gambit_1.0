@@ -190,6 +190,13 @@ namespace Gambit
     private:
       T *array;
       int start[dim], end[dim], size[dim];
+      
+      //allowed input types into Farray
+      typedef mult_types<int, unsigned int, short int, unsigned short int, 
+                        const int, const unsigned int, const short int, const unsigned short int,
+                        int &, unsigned int &, short int &, unsigned short int &,
+                        const int &, const unsigned int &, const short int &, const unsigned short int &> allowed_types;
+                        
     public:
       Farray<T,dim>(T *in, int st[dim], int en[dim]) 
       { 
@@ -200,8 +207,10 @@ namespace Gambit
           end[i] = en[i]; 
           size[i] = end[i]-start[i]+1;
         }
-      }  
+      }
+      
       Farray<T,dim>() {array = NULL;}
+      
       Farray<T,dim>& operator= (const Farray<T,dim> &orig)
       {
         if (this == &orig) return *this;
@@ -230,9 +239,10 @@ namespace Gambit
         }  
         array = orig.array;
         return *this;
-      }    
+      }
+      
       template <typename ... Args>
-      typename std::enable_if<is_all_member<int, Args...>::value, const T&>::type
+      typename enable_if_all_member<allowed_types, const T&, Args...>::type::type
       operator () (Args ... a) const
       {      
         int len = sizeof...(a);
@@ -263,9 +273,10 @@ namespace Gambit
           idx += idx_i;
         }   
         return array[idx];   
-      }      
+      }
+      
       template <typename ... Args>
-      typename std::enable_if<is_all_member<int, Args...>::value, T&>::type
+      typename enable_if_all_member<allowed_types, T&, Args...>::type::type
       operator () (Args ... a)
       {      
         int len = sizeof...(a);
@@ -299,17 +310,27 @@ namespace Gambit
       }
       
       template <typename ... Args>
-      typename std::enable_if<!is_all_member<int, Args...>::value, const T&>::type
+      typename enable_if_not_all_member<allowed_types, const T&, Args...>::type::type
       operator () (Args ... a) const
       {
-              //put stuff here
+            std::ostringstream err;
+            err << "Farray inputs can only be int, short int, or some derivative thereof.";      
+            utils_error().raise(LOCAL_INFO,err.str());
+            
+            T temp;
+            return temp;
       }
       
       template <typename ... Args>
-      typename std::enable_if<!is_all_member<int, Args...>::value, T&>::type
+      typename enable_if_not_all_member<allowed_types, T&, Args...>::type::type
       operator () (Args ... a)
       {
-              //put stuff here
+            std::ostringstream err;
+            err << "Farray inputs can only be int, short int, or some derivative thereof.";      
+            utils_error().raise(LOCAL_INFO,err.str());
+            
+            T temp;
+            return temp;
       }
       
       T* getArray() 
@@ -318,7 +339,10 @@ namespace Gambit
         {
           utils_error().raise(LOCAL_INFO,"Trying to call getArray() on uninitialized Farray."); 
         } 
-        return array;}
+        return array;
+              
+      }
+      
       void setLimits(int st[dim], int en[dim]) 
       {
         for (int i = 0; i < dim; ++i) 
@@ -334,6 +358,7 @@ namespace Gambit
           }
         }
       }
+      
       int* getStart(){return start;}
       int* getEnd(){return end;}
       int* getSize(){return size;}
