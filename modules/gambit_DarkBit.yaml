@@ -195,12 +195,20 @@ multinest:
 - purpose:       Likelihood
   capability:    lnL_oh2
 
+- purpose:       Likelihood
+  capability:    lnL_FakeLux
+
 #- purpose:       Likelihood
 #  capability:    CalcAv
 
 #########################
 --- # Auxiliary entries
 #########################
+
+- capability:   GA_AnnYield
+  options:
+    Emin: 10.
+    Emax: 123.
 
 - capability:   lnL_oh2
   dependencies:

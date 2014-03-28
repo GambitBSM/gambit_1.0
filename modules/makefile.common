@@ -77,6 +77,7 @@ SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
 HEPSIMPLEDIR = contrib/hep_simple_lib
 FASTSIMDIR = ../extras/fast_sim
+MCUTILSDIR = contrib/mcutils
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -244,7 +245,7 @@ ifdef COLLIDE
   #   returns:
   #     -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
   #   while I need -L/home/farmer/bin/lib/archive
-  # Andy: lib/archive/ contains just the static libs, lib/ contains the shared one. LD_LIBRARY_PATH also needs to know about that path at runtime
+  # Andy: lib/archive/ contains just the static libs, lib/ contains the shared one, which is present if Py8 was built with the --enable-shared configure option (as it should be). LD_LIBRARY_PATH also needs to know about that path at runtime.
   PY8_LDFLAGS := $(PY8_LD_HACK) $(PY8_LDFLAGS)
 
   ifndef PY8_CXXFLAGS

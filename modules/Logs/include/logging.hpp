@@ -183,7 +183,12 @@ namespace Gambit
         /// Function to construct loggers according to blueprint
         // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
         void initialise(std::map<std::set<std::string>, std::string>&);
- 
+        // Overload of initialise function to allow easier manual initialisation in standalone modules
+        void initialise(std::map<std::string, std::string>&);
+
+        // Function to silence all log messages
+        void disable();
+
         /// Main logging function (user-friendly overloaded version)
         // Need a bunch of overloads of this to deal with 
         void send(const std::string&);
@@ -249,7 +254,10 @@ namespace Gambit
         /// Flag to set whether loggers have been initialised not
         bool loggers_readyQ;
 
-        // int current_function; Can generalise to this if we discover that we really want to...
+        /// Flag to silence logger 
+        bool silenced;
+
+        /// int current_function; Can generalise to this if we discover that we really want to...
         int current_module;  // index -1 means "not in any module"
         int current_backend; // index -1 means "not in any backend"
 

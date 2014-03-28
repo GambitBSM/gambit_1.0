@@ -25,6 +25,8 @@
 #ifndef __SUSYspecBit_rollcall_hpp__
 #define __SUSYspecBit_rollcall_hpp__
 
+#include "SLHA_types.hpp"
+
 #define MODULE SUSYspecBit
 START_MODULE
  
@@ -44,25 +46,45 @@ START_MODULE
 
   #define CAPABILITY NMSSMspectrum          // Retrieves physical NMSSM spectrum
   START_CAPABILITY
+
     #define FUNCTION getNMSSMspectrum             
+    START_FUNCTION(eaSLHA)                     
+    #undef FUNCTION
+
+    #define FUNCTION getNMSSMspectrum_Py8             
     START_FUNCTION(Py8SLHA)                     
     #undef FUNCTION
+
   #undef CAPABILITY
 
   #define CAPABILITY MSSMspectrum           // Retrieves physical MSSM spectrum
   START_CAPABILITY
+
     #define FUNCTION getMSSMspectrum             
+    START_FUNCTION(eaSLHA)                     
+    #undef FUNCTION
+
+    #define FUNCTION getMSSMspectrum_Py8             
     START_FUNCTION(Py8SLHA)                     
     ALLOW_MODELS(CMSSM_demo,MSSM_demo,MSSM)
     #undef FUNCTION
+ 
   #undef CAPABILITY
+
 
   #define CAPABILITY MSSMslha_testLogL      // Dummy function for testing the MSSMspectrum function
   START_CAPABILITY
-    #define FUNCTION MSSMtestLogL             
+
+    #define FUNCTION MSSMtestLogL_Py8             
     START_FUNCTION(double)                     
     DEPENDENCY(MSSMspectrum, Py8SLHA)
     #undef FUNCTION
+
+    #define FUNCTION MSSMtestLogL             
+    START_FUNCTION(double)                     
+    DEPENDENCY(MSSMspectrum, eaSLHA)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
 

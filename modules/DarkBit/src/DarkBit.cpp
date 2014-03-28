@@ -470,6 +470,7 @@ namespace Gambit {
     void DarkBit_PointInit_CMSSM()
     {
       using namespace Pipes::DarkBit_PointInit_CMSSM;
+      //Py8SLHA mySLHA = *Dep::MSSMspectrum;
       bool static dsinit_flag = false;
       // Initialize DarkSUSY if run for the first time
       if (not dsinit_flag) 
@@ -503,29 +504,32 @@ namespace Gambit {
         // Calculates annihilation spectra for general process catalogs, using
         // DarkSUSY as a backend.  This function returns 
         //
-        //   dN/dE*(sv) (E, v)  [cm^3/s/GeV]
+        //   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
         //
-        // the energy spectrum of photons times sigma*v, as function of energy
-        // (GeV) and velocity (in units of c).  By default, only the v=0
-        // component is calculated.  
+        // the energy spectrum of photons times sigma*v/m^2, as function of
+        // energy (GeV) and velocity (c).  By default, only the v=0 component
+        // is calculated.  
         //
         // The return type is a GAMBIT Base Function object as function which
         // is only defined for v=0.
         //////////////////////////////////////////////////////////////////////////
-
-        // TODO: 
-        // - Move grid initialization (resolution and range) to PointInit
         
       using namespace Pipes::GA_AnnYield_DarkSUSY;
-
 
       ////////////////////
       // 1) Initialization
       ////////////////////
 
-      // Grid and energy range used in interpolating functions.  This should
-      // finally depend on the likelihood functions that are called.
-      int n = 10000;  
+      // Grid and energy range used in interpolating functions.
+      double Emin = 1e-1; // Default energy range
+      double Emax = 1e4;  
+      if (runOptions->hasKey("Emin") and runOptions->hasKey("Emax"))
+      {
+          // Energy range from ini-file options
+          Emin = runOptions->getValue<double>("Emin");
+          Emax = runOptions->getValue<double>("Emax");
+      }
+      int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
       std::vector<double> xgrid = logspace(-1., 3., n);
       std::vector<double> ygrid = linspace(0., 0., n);
 
@@ -627,8 +631,9 @@ namespace Gambit {
           // (we just ignore the contributions from the second and third
           // particle and integrate out the corresponding kinematical
           // variable).
-          //dsigmavde = it->dSigmadE->fixPar(2, 0.)->integrate(1, 0., 1000.);  
 
+          //dsigmavde = it->dSigmadE->integrate(1, 0., 1000.);  
+          //std::cout << "Integral evaluates to: " << (*dsigmavde)(10.0) << std::endl;
           // Add up individual constributions
           //DiffYield3Body = DiffYield3Body->sum(dsigmavde);
 
@@ -636,10 +641,12 @@ namespace Gambit {
       }
 
       // Resample function
-      // DiffYield3Body = DiffYield3Body->tabulate(logspace(0, 2, 100));
+      DiffYield3Body = DiffYield3Body->tabulate(xgrid);
 
-      // Sum two- and three-body spectra and devide by mass squared
-      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.));
+      // Sum two- and three-body spectra, devide by mass squared, fix valid
+      // range, and add additional parameter for velocity (though the result is
+      // velocity independent).
+      result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->validRange(0, Emin, Emax)->addPar(1);
     }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
@@ -703,13 +710,13 @@ namespace Gambit {
     
         #undef SETUP_DS_PROCESS
     
-        bool calculateFSR = true;
+        bool calculateFSR = false;
         bool calculateIB  = true;
         
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_2, IBFUNC, FSRFUNC)                                   \
             index = IBCH;                                                                                               \
             BFptr   CAT(kinematicFunction_,NAME)                                                                        \
-                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),&calculateFSR,&calculateIB));   \
+                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),calculateFSR,calculateIB));   \
             /* Create channel identifier string */                                                                      \
             std::vector<std::string> CAT(finalStates_,NAME);                                                            \
             CAT(finalStates_,NAME).push_back("gamma");                                                                  \
@@ -720,12 +727,44 @@ namespace Gambit {
             process.channelList.push_back(CAT(channel_,NAME));
 
         // TODO: Fix masses
-        double m_e  = 0.511e-3; // GeV
-        double m_mu = 0.1057;   // GeV
-        // TODO: Check if IB and ISR are summed correctly
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,    4, e+,  e-,     m_e, 
+        double m_e      = 0.511e-3; // GeV
+        double m_mu     = 0.1057;   // GeV
+        double m_tau    = 177.7;    // GeV
+        double m_u      = 2.3e-3;   // GeV
+        double m_d      = 4.8e-3;   // GeV
+        double m_c      = 1.275;    // GeV
+        double m_s      = 95e-3;    // GeV
+        double m_t      = 173;      // GeV
+        double m_b      = 4.18;     // GeV (MS bar)
+        double m_Hc     = 0;        // Temporary.. FIXME
+        double m_W      = 80.3;     // GeV
+        
+        // TODO: Check if IB and ISR are summed correctly, check if FSR should be included in all the processes
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,     W-,      m_W, 
+            (BEreq::dsIBwwdxdy.pointer<int& ,double&, double&>()),(NULL))     
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,     H-,      m_Hc, 
+        //    (BEreq::dsIBwhdxdy.pointer<int& ,double&, double&>()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this            
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,     H+,      m_Hc, 
+        //    (BEreq::dsIBwhdxdy.pointer<int& ,double&, double&>()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc, 
+        //    (BEreq::dsIBhhdxdy.pointer<int& ,double&, double&>()),(NULL))                    
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e, 
             (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,  5, mu+, mu-,    m_mu, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))            
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t, 
+            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b, 
             (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
 
         #undef SETUP_DS_PROCESS_GAMMA3BODY
@@ -866,15 +905,14 @@ namespace Gambit {
         // Construct interpolated function, using GAMBIT base functions.
         BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1, "lin"));
 
-        // Integate spectrum
-        // More precisely, the zero velocity limit of the differential
-        // annihilation cross-section as function of individual final state
-        // photons
+        // Integate spectrum 
+        // (the zero velocity limit of the differential annihilation
+        // cross-section as function of individual final state photons)
         //std::ofstream os;
         //os.open("test.dat");
         //(*Dep::GA_AnnYield)->writeToFile(logspace(-1., 5., 10000), os);
         //os.close();
-        double AnnYieldint = (*(*Dep::GA_AnnYield)->integrate(0, 1, 100)->set_epsrel(1e-3))();
+        double AnnYieldint = (*(*Dep::GA_AnnYield)->fixPar(1, 0.)->integrate(0, 1, 100)->set_epsrel(1e-3))();
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
@@ -900,6 +938,26 @@ namespace Gambit {
       double oh2 = *Dep::RD_oh2;
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
+
+    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
+    {
+        using namespace Pipes::DD_couplings_DarkSUSY;
+        // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
+        // to set all four couplings.
+        BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
+        std::cout << "dsddgpgn gives: \n";
+        std::cout << " gps: " << result.gps << "\n";
+        std::cout << " gns: " << result.gns << "\n";
+        std::cout << " gpa: " << result.gpa << "\n";
+        std::cout << " gna: " << result.gna << std::endl;
+    }
+
+    void lnL_FakeLux(double &result)
+    {
+        using namespace Pipes::lnL_FakeLux;
+        result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
+    }
+
 
 // Tests for Torsten
 

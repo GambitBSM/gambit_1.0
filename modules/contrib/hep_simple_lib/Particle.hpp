@@ -1,27 +1,15 @@
 #pragma once
 
-#include <boost/serialization/access.hpp>
 #include "MCUtils/MathUtils.h"
 #include "MCUtils/Vectors.h"
 
 namespace HEP_Simple_Lib {
   using namespace MCUtils;
 
+
     /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
     class Particle {
     private:
-
-      /// @name Serialization
-      //@{
-      friend class boost::serialization::access;
-
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version) {
-        ar & _p4;
-        ar & _pdgId;
-        ar & _prompt;
-      }
-      //@}
 
       /// @name Storage
       //@{

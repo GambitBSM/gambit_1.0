@@ -47,7 +47,31 @@ int main()
 
     cout << endl << "Start ExampleBit_A standalone example" << endl;
     cout << "----------" << endl;
+
+    //------- Initialise (or disable) logging -------------
+    // Uncomment to completely silence logger (initialisation will still create output files though, so remove it if you don't want files created)
+    //logger().disable();
+
+    std::string prefix("runs/ExampleBit_A_standalone/logs/");
+  
+    std::map<std::string, std::string> loggerinfo;
+    //(you can use a std::map<std::set<std::string>, std::string> instead, but it is more "wordy" to fill)
     
+    // Add entries to the loggerinfo map
+    loggerinfo["Core, Error"] = prefix+"core_errors.log";
+    loggerinfo["Default"]     = prefix+"default.log";
+    loggerinfo["Warning"]     = prefix+"warnings.log";
+    loggerinfo["ExampleBit_A, Info"] = prefix+"ExampleBit_A_info.log";
+
+    // Initialise global LogMaster object
+    logger().initialise(loggerinfo);
+
+    // Test message
+    // Note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag.
+    logger()<<"Running ExampleBit_A standalone example"<<LogTags::info<<EOM;
+
+    //-----------------------------------------------------
+
     // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
     ModelParameters* CMSSM_primary_parameters = Models::CMSSM_demo::Functown::primary_parameters.getcontentsPtr();
 

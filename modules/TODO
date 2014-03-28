@@ -8,12 +8,15 @@ Core
 ----
 
 Rollcall:
-* Implement point-level initialisation functions in backends (**Pat & Chistoph**)
+* Implement point-level initialisation functions for backends. (**Pat & Chistoph**)
+  - This involves making a new module BackendInitBit, specifically for backend initialisation, containing only functions that initialise backends.  These functions will be have capabilities X_init, where X is the backend name.  They will be able to have regular dependencies, conditional dependencies and allowed_models.  They will be allowed to have backend requirements, but it will be assumed that those requirements can only be filled by the corresponding backend-version pair that the specific initialisation function is for.  They will have result type void.  They will act as point-level initialisation functions, but scan-level will be easy to emulate using a static bool first = false that is set true at the end of the first call of the function.  Every module function (from any other module) that resolves a backend requirement using a given backend X will then be endowed with a dependency on X_init, which will be provided only by functions in BackendInitBit.  
+  - This will remove the need for PointInit functions, as those will no longer be needed for initialising backends.  Initialising module things will also not be required, as any global module variables should be essentially outlawed.  Generally, global module variables should be made local static variables in a given module function instead.  In cases where multiple module functions depend on the result of the same calculation, module functions should be split into smaller pieces anyway, and the later calculations each made to depend on the common earlier calculation.    
 * Allow grouping of backend requirements into blocks, maybe declaration of parameters  (**Pat; discussion with whole collab needed at G3**)
 * Tracking of config files -> lists in module/backend rollcall headers (**Pat; after G3**)
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; after G3**)
 * Investigate whether encapsulation of module functions and the things they can access (Dep::s, Params[], etc) could be straightforwardly implemented.
+* Demand that all capabilities have a matching description in a 'capability database'
 
 IniFile:
 * Allow config file keys to be overridden in the .ini file according to key name, if the config file they belong to has been declared with the OVERIDABLE flag; otherwise, the ini parser should throw an error. (**Christoph; after G3**)
@@ -31,12 +34,19 @@ Backends:
 * Resolve residual issues with passing strings to fortran backends (**all; at G3**)
 * Implement backending of Mathematica codes (**Ben to dabble with; no time pressure**)
 * Implement backending of Python codes (**Ben to dabble with; no time pressure**)
+* Make void to function pointer casting for backend functions happen via a union, in order to suppress the corresponding compiler warning.
 
 Messaging:
 * Write printer functions for all common functor types and print streams (**Hopefully happens a bit on its own as the two points above get dealt with**)
 
 General:
 * Experiment with automake and cmake for build (**Antje to update automake system to current master; Ben, Pat, Chistoph + others to test; Antje to merge into master before G3. Cmake to be left for after G3.**)
+* Add command line gambit diagnostics:
+  gambit capabilities [-v/--verbose]
+  gambit modules      [-v/--verbose]
+  gambit backends     [-v/--verbose]
+  gambit scanners     [-v/--verbose]
+  gambit models       [-v/--verbose]
 * Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat; after G3**)
 * Create SLHA internal representation, plus hook up file reader/writer. (**Ben; progress before G3, completion maybe not**) 
 * General review of legacy code -> cull obsolete stuff (**ALL, but Pat and Ben to pay special attention to legacy SUFit code in ModelParameters**)
@@ -77,9 +87,9 @@ Models
 ------
 
 Ongoing:
-
 * Make it possible to declare in module function rollcall macro calls that multiple models are required to be scanned, e.g. ALLOWED_MODELS(GROUP1, blah), ALLOWED_MODELS(GROUP2, blah), s.t. the function requires something from GROUP1 and GROUP2 to be scanned, in order to be used in a given scan. 
 * Explicitly disallow multiple parents in all parts of Models (and other) code.
+* Remove automatic declaration of "little guys"
 
 Done:
 * Reunify model macros with module macros as much as possible (dependency macro in particular)
