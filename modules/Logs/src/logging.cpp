@@ -171,46 +171,49 @@ namespace Gambit
     /// Keeps track of the individual logging objects.
 
     LogMaster::LogMaster() 
-      : loggers_readyQ(false), current_module(-1), current_backend(-1) 
+      : loggers_readyQ(false), silenced(false), current_module(-1), current_backend(-1) 
     {
     }
  
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN) 
-      : loggers(loggersIN), loggers_readyQ(true), current_module(-1), current_backend(-1) 
+      : loggers(loggersIN), loggers_readyQ(true), silenced(false), current_module(-1), current_backend(-1) 
     {
     }
 
     // Destructor
     LogMaster::~LogMaster()
     {
-       // Later on this should clean up the logger objects
-       std::cout<<"LogMaster is being destructed, checking if messaged left to deliver..."<<std::endl;
-       // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
-       if (prelim_buffer.size()!=0)
-       { 
-         std::cout<<"argh yep buffer has things in it, try to dump them to the logs..."<<std::endl;
-         if (not loggers_readyQ)
-         {
-           std::cout<<"Oh no, loggers were never initialised! creating default logger..."<<std::endl;
-           StdLogger* deflogger = new StdLogger("default.log");
-           std::set<int> deftag;
-           deftag.insert(def);
-           loggers[deftag] = deflogger; 
-           loggers_readyQ = true;
-         }
-         std::cout<<"dumping messages..."<<std::endl;
-         // Dump buffered messages
-         dump_prelim_buffer();
-         std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
-       }
-
-       // Check if there is anything in the output stream that has not been sent, and send it if there is
-       if (not stream.str().empty() or not streamtags.empty())
+       if(not silenced)
        {
-         *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
-       } 
+         // Later on this should clean up the logger objects
+         std::cout<<"Logger is being destructed, checking if messaged left to deliver..."<<std::endl;
+         // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
+         if (prelim_buffer.size()!=0)
+         { 
+           std::cout<<"Logger buffer is not empty; attempting to deliver unsent messages to the logs..."<<std::endl;
+           if (not loggers_readyQ)
+           {
+             std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
+             StdLogger* deflogger = new StdLogger("default.log");
+             std::set<int> deftag;
+             deftag.insert(def);
+             loggers[deftag] = deflogger; 
+             loggers_readyQ = true;
+           }
+           std::cout<<"Delivering messages..."<<std::endl;
+           // Dump buffered messages
+           dump_prelim_buffer();
+           std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
+         }
+
+         // Check if there is anything in the output stream that has not been sent, and send it if there is
+         if (not stream.str().empty() or not streamtags.empty())
+         {
+           *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+         }   
+       }
 
        // Delete logger objects
        for(std::map<std::set<int>,BaseLogger*>::iterator keyvalue = loggers.begin(); keyvalue != loggers.end(); ++keyvalue) 
@@ -259,6 +262,29 @@ namespace Gambit
        dump_prelim_buffer();
     }
 
+    // Overload for initialise, to make it easier to manually initialise the logger in standalone modules
+    void LogMaster::initialise(std::map<std::string, std::string>& loggerinfo)
+    {
+      std::map<std::set<std::string>, std::string> loggerinfo_set;
+      // Translate the string containing the tags into (map of) a set of tags
+      for(std::map<std::string, std::string>::iterator infopair = loggerinfo.begin(); 
+            infopair != loggerinfo.end(); ++infopair)
+      {
+        std::vector<std::string> tags_vec(delimiterSplit(infopair->first, ","));
+        std::set<std::string> tags_set(tags_vec.begin(), tags_vec.end());
+        loggerinfo_set[tags_set] = infopair->second;
+      }
+      // Run the 'normal' initialise function
+      initialise(loggerinfo_set);
+    }
+
+    // Function to completely silence all log messages
+    void LogMaster::disable()
+    {
+       loggers_readyQ = true;
+       silenced = true;
+    }
+ 
     // Dump the prelim buffer to the 'finalsend' function
     void LogMaster::dump_prelim_buffer()
     {
@@ -442,7 +468,8 @@ namespace Gambit
     {
        // Check the 'ignore' set; if any of the specified tags are in this set, then do nothing more, i.e. ignore the message.
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
-       if( not is_disjoint(mail.tags, ignore) ) 
+       // Also ignore the message if logs have been 'silenced'.
+       if( silenced or not is_disjoint(mail.tags, ignore) ) 
        { 
          //std::cout<<"Ignoring message..."<<std::endl;
          return; 

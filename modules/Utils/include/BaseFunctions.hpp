@@ -45,8 +45,10 @@ namespace Gambit
     class BFmult;
     class BFlineOfSightIntegral;
     class BFfixPar;
+    class BFaddPar;
     class BFinterpolation;
     class BFrotSym;
+    class BFvalidRange;
 
     // The most relevant object the user will deal with is a shared pointer to
     // the abstract function base class.
@@ -56,6 +58,18 @@ namespace Gambit
     // argument lists exist.
     typedef std::vector<double> BFargVec;
 
+    template<typename T>
+    inline std::enable_if<!is_vector<T>::value, T> Enter_Crap(int i, T &vec)
+    {
+            return vec;
+    }
+    
+    template<typename T>
+    inline std::enable_if<is_vector<T>::value, typename is_vector<T>::type> Enter_Crap(int i, T &vec)
+    {
+            return vec[i];
+    }
+    
     class BaseFunction : public enable_shared_from_this<BaseFunction>
     {
         public:
@@ -74,10 +88,10 @@ namespace Gambit
             }
 
             // Call by std::vector<double> arguments (standard)
-            double operator() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
+            //double output() (const BFargVec &args) { assertNdim(args.size()); return this->value(args); }
 
             // Call by list of arguments; up to six dimensions for now (for convenience)
-            double operator() () 
+            /*double operator() () 
             { 
                 assertNdim(0); 
                 BFargVec v; 
@@ -139,17 +153,33 @@ namespace Gambit
                 v.push_back(x4); 
                 v.push_back(x5); 
                 return this->value(v); 
-            }
-            /*
+            }*/
+
             template<typename... args>
-            double operator()(args... params)
+            typename enable_if_not_one_member_vector<double, args...>::type::type
+            operator()(args... params)
             {
-                    assertNdim(getVariadicNumber<args...>::N);
-                    BFargVec v(getVariadicNumber<args...>::N);
-                    inputVariadicVector(v, params...);
+                    assertNdim(sizeof...(args));
+                    BFargVec v(sizeof...(args));
+                    inputVariadicVector(v.begin(), params...);
                     return this->value(v);
             }
-            */
+            
+            template<typename... args>
+            typename enable_if_one_member_vector<std::vector<double>, args...>::type::type
+            operator()(args... params)
+            {
+                    assertNdim(sizeof...(args));
+                    int end = getVariadicMaxVector();
+                    BFargVec retval(end);
+                    BFargVec v(sizeof...(args));
+                    for (int i = 0; i < end; i++)
+                    {
+                        inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
+                        retval[i] = this->value(v);
+                    }
+                    return retval;
+            }
 
             // Returns a copy of the shared pointer object.
             BFptr getCopy()  { return shared_from_this(); }  
@@ -166,6 +196,8 @@ namespace Gambit
             shared_ptr<BFsum> sum(BFptr f2);
             shared_ptr<BFmult> mult(BFptr);
             shared_ptr<BFmult> mult(double);
+            shared_ptr<BFaddPar> addPar(int);
+            shared_ptr<BFvalidRange> validRange(int, double, double);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -203,11 +235,11 @@ namespace Gambit
             // TODO: add information about positions and width of poles
 
 
-        private:
+        //private:
             // The central virtual abstract member function that must be
             // implemented by any derived class.
             virtual double value(const BFargVec &args) = 0;
-
+    private:
             // Function that checks for the correct dimensionality of arguments.
             void assertNdim(unsigned int i, std::string msg = "")
             {
@@ -271,7 +303,7 @@ namespace Gambit
     template<typename... args>
     double BFplainFunction(const args&... params)
     {
-            return BFplainFunctionStruct<getVariadicNumber<args...>::N>::BFplainFunction(params...);
+            return BFplainFunctionStruct<sizeof...(args)>::BFplainFunction(params...);
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -312,14 +344,14 @@ namespace Gambit
             double (*ptr)(args ...);
             
     public:
-            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("fromPlainFunction", getVariadicNumber<args...>::N)
+            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("fromPlainFunction", sizeof...(args))
             {
                     ptr = f;
             }
             
             double value(const BFargVec &vec)
             {
-                    return BFfromPlainFunctionStruct<getVariadicNumber<args...>::N, args...>::BFfromPlainFunction(vec.begin(), ptr);
+                    return BFfromPlainFunctionStruct<sizeof...(args), args...>::BFfromPlainFunction(vec.begin(), ptr);
             }
     };
     
@@ -492,6 +524,53 @@ namespace Gambit
             BFptr radialProfile;
     };
 
+    // General mapping n-dim --> (n+1)-dim, by one one parameter
+    class BFaddPar: public BaseFunction
+    {
+        public:
+            BFaddPar(BFptr parent, int i) : 
+                BaseFunction("AddPar", parent->getNdim()+1), 
+                myPointer(parent), index(i) {}
+
+            double value(const BFargVec &args)
+            {
+                BFargVec myArgs = args;
+                myArgs.erase(myArgs.begin() + index);
+                return (*myPointer).value(myArgs);
+            }
+
+        private:
+            BFptr myPointer;
+            int index;
+    };
+
+    // Checks whether a given parameter is within the allowed range, and
+    // otherwise throws an exception
+    class BFvalidRange: public BaseFunction
+    {
+        public:
+            BFvalidRange(BFptr parent, int i, double x0, double x1) : 
+                BaseFunction("validRange", parent->getNdim()), 
+                myPointer(parent), index(i), x0(x0), x1(x1) {}
+
+            double value(const BFargVec &args)
+            {
+                if (x0>args[index] or x1<args[index])
+                {
+                    std::cout << "WARNING: Accessing Base Function object out of range!!!" << std::endl;
+                    std::cout << "Requested: " << args[index] << ", valid range is " << x0 << " to " << x1 << std::endl;
+                    return 0;
+                }
+                return (*myPointer).value(args);
+            }
+
+        private:
+            BFptr myPointer;
+            int index;
+            double x0;
+            double x1;
+    };
+
     // General mapping n-dim --> (n-1)-dim, by fixing one parameter
     class BFfixPar: public BaseFunction
     {
@@ -504,7 +583,7 @@ namespace Gambit
             {
                 BFargVec myArgs = args;
                 myArgs.insert(myArgs.begin() + index, x);
-                return (*myPointer)(myArgs);
+                return (*myPointer).value(myArgs);
             }
 
         private:
@@ -585,7 +664,7 @@ namespace Gambit
             static double invoke(double x, void *params) {
                 BFintegrate * myBF = static_cast<BFintegrate*>(params);
                 (myBF->fullArgs)[myBF->index] = x;  // Set argument
-                return (*myBF->integrand)(myBF->fullArgs);
+                return (*myBF->integrand).value(myBF->fullArgs);
             }
 
             double x0, x1;  // Integration range
@@ -637,7 +716,7 @@ namespace Gambit
 
             double value(const BFargVec &args)
             {
-                return (*ptr)(args);
+                return (*ptr).value(args);
             }
 
         private:
@@ -658,7 +737,7 @@ namespace Gambit
         private:
             double value(const BFargVec &args)
             {
-                return (*f1)(args) + (*f2)(args);
+                return (*f1).value(args) + (*f2).value(args);
             }
 
             BFptr f1;
@@ -689,12 +768,12 @@ namespace Gambit
 
             double multBFs(const BFargVec &args)
             {
-                return (*f1)(args) * (*f2)(args);
+                return (*f1).value(args) * (*f2).value(args);
             }
 
             double multConst(const BFargVec &args)
             {
-                return (*f1)(args) * x;
+                return (*f1).value(args) * x;
             }
 
             BFptr f1;
@@ -719,6 +798,8 @@ namespace Gambit
     inline shared_ptr<BFmult> BaseFunction::mult(double x) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), x)); }
     inline shared_ptr<BFlineOfSightIntegral> BaseFunction::lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral>(new BFlineOfSightIntegral(shared_from_this(), D)); }
     inline shared_ptr<BFfixPar> BaseFunction::fixPar(int i, double x) { return shared_ptr<BFfixPar>(new BFfixPar(shared_from_this(), i, x)); }
+    inline shared_ptr<BFaddPar> BaseFunction::addPar(int i) { return shared_ptr<BFaddPar>(new BFaddPar(shared_from_this(), i)); }
+    inline shared_ptr<BFvalidRange> BaseFunction::validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange>(new BFvalidRange(shared_from_this(), i, x0, x1)); }
     inline shared_ptr<BFintegrate> BaseFunction::integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate> (new BFintegrate(shared_from_this(), i, x0, x1)); }
     inline shared_ptr<BFrotSym> BaseFunction::rotSym(int i) { return shared_ptr<BFrotSym>(new BFrotSym(shared_from_this(), i)); }
 

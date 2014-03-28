@@ -76,7 +76,7 @@
 #define STRIP_PARENS_I(...) 1,1 
 #define EVAL_PAR(test, x) EVAL_PAR_I(test, x) 
 #define EVAL_PAR_I(test, x) MAYBE_STRIP_PARENS(TEST_ARITY test, x) 
-#define TEST_ARITY(...) APPLY(TEST_ARITY_I, (__VA_ARGS__, 2, 1)) 
+#define TEST_ARITY(...) APPLY(TEST_ARITY_I, (__VA_ARGS__, 2, 1, 0)) 
 #define TEST_ARITY_I(a,b,c,...) c 
 #define MAYBE_STRIP_PARENS(cond, x) MAYBE_STRIP_PARENS_I(cond, x) 
 #define MAYBE_STRIP_PARENS_I(cond, x) CAT(MAYBE_STRIP_PARENS_, cond)(x) 
@@ -122,21 +122,25 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// \name Macro chain checking if the argument passed is empty
 /// Example: ISEMPTY() expands to 1; ISEMPTY(1,2,3) expands to 0
 /// @{
-#define ISEMPTY(...) _ISEMPTY( 	HAS_COMMA(__VA_ARGS__), HAS_COMMA(_TRIGGER_PARENTHESIS_ __VA_ARGS__),       \
-          						HAS_COMMA(__VA_ARGS__ ()), HAS_COMMA(_TRIGGER_PARENTHESIS_ __VA_ARGS__ ()))
-
-#define _TRIGGER_PARENTHESIS_(...) ,
-#define PASTE5(_0, _1, _2, _3, _4) _0 ## _1 ## _2 ## _3 ## _4
-#define _ISEMPTY(_0, _1, _2, _3) HAS_COMMA(PASTE5(_IS_EMPTY_CASE_, _0, _1, _2, _3))
-#define _IS_EMPTY_CASE_0001 ,
+#define ISEMPTY(ARG) ISEMPTY_I(_127ONES STRIP_PARENS(ARG) ())
+#define ISEMPTY_I(A) ISEMPTY_II(A,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+#define ISEMPTY_II(...) _ARG128(__VA_ARGS__)
+#define _127ONES() 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, \
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
+    1,1,1,1,1,1,1,1,1,1
 /// @}
 
-/// \name Macro that expands to the argument list with a comma in front if the argument list is not empty.
+/// \name Macro that expands to the argument list with a comma in front 
+/// if the (bracket enclosed) argument list is not empty.
 /// If the agrument list is empty, expands to nothing.
 /// @{
-#define INSERT_NONEMPTY(...) CAT(INSERT_NONEMPTY_I,ISEMPTY(__VA_ARGS__))(__VA_ARGS__)
-#define INSERT_NONEMPTY_I0(...) ,__VA_ARGS__
-#define INSERT_NONEMPTY_I1(...)
+#define INSERT_NONEMPTY(ARG) CAT(INSERT_NONEMPTY_I,ISEMPTY(ARG))(ARG)
+#define INSERT_NONEMPTY_I0(ARG) ,STRIP_PARENS(ARG)
+#define INSERT_NONEMPTY_I1(...) 
 /// @}
 
 /// \name Boost 2-tuple access macros

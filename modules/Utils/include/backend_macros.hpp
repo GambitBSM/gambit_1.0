@@ -54,6 +54,8 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
+#include <boost/preprocessor/punctuation/comma_if.hpp>
 
 /// Macro for adding a tag to the logging system for each backend
 //  We don't strictly need all the namespaces for this, but it's nice to have
@@ -80,6 +82,20 @@ namespace Gambit                                                            \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
+namespace Gambit
+{
+  namespace Backends
+  {
+    typedef void(*voidFptr)();
+    // Hack to suppress warnings about casting between void pointers and function pointers.
+    // "Necessary" as long as dlsym has no separate functionality for retrieving function pointers.
+    union void_voidFptr
+    {
+      void *ptr;      // Use this for objects
+      voidFptr fptr;  // Use this for functions
+    };
+  }
+}
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
@@ -91,7 +107,7 @@ namespace Gambit                                                            \
     {                                                                       \
                                                                             \
       void * pHandle;                                                       \
-      void * pSym;                                                          \
+      void_voidFptr pSym;                                                   \
       bool present;                                                         \
       void loadLibrary()                                                    \
       {                                                                     \
@@ -247,10 +263,10 @@ namespace Gambit                                                            \
         /* -- First clear error code by calling dlerror() */                \
         dlerror();                                                          \
         /* -- Obtain pointer from symbol */                                 \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                  \
+        pSym.ptr = dlsym(pHandle, SYMBOLNAME);                              \
         STRIP_PARENS(PRECONSTR)                                             \
         BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,                                 \
-         reinterpret_cast<BASETYPE*>(pSym), CONSTRARG1, CONSTRARG2)         \
+        reinterpret_cast<BASETYPE*>(pSym.ptr), CONSTRARG1, CONSTRARG2)      \
         /* -- Disable the functor if the library is not present             \
               or the symbol not found. */                                   \
         if(!present)                                                        \
@@ -263,7 +279,7 @@ namespace Gambit                                                            \
           err << "Library symbol " << SYMBOLNAME << " not found."           \
               << std::endl << "The functor generated for this symbol "      \
               << "will get status=0" << std::endl;                          \
-          backend_warning().raise(LOCAL_INFO,err.str());                    \          
+          backend_warning().raise(LOCAL_INFO,err.str());                    \
           Functown::NAME.setStatus(0);                                      \          
         }                                                                   \
                                                                             \
@@ -327,7 +343,6 @@ namespace Gambit
 {
   namespace Backends
   {
-    typedef void(*voidFptr)();
     std::map<voidFptr, voidFptr> frontBackFuncMap;  
     voidFptr accessFrontBackFuncMap(voidFptr frontFunc)
     {
@@ -372,59 +387,59 @@ namespace Gambit
 
 /// Expands to the argument list of the (frontend) function exposed to the user. 
 /// @{
-#define BE_FUNC_GET_ARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_ARGS_FE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
+#define BE_FUNC_GET_ARGS_FE(ARG) (BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_ARGS_FE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_ARGS_FE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_ARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
-#define BE_FUNC_GET_ARGS_FE_I0(ARG,IDX) ,ARG
-#define BE_FUNC_GET_ARGS_FE_I1(ARG,IDX) CAT(BE_FUNC_GET_ARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BE_FUNC_GET_ARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
-#define BE_FUNC_GET_ARGS_FE_II1(ARG,IDX) ,BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(3,ARG)
+#define BE_FUNC_GET_ARGS_FE_I0(ARG,IDX)  BOOST_PP_COMMA_IF(IDX) ARG
+#define BE_FUNC_GET_ARGS_FE_I1(ARG,IDX)  CAT(BE_FUNC_GET_ARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
+#define BE_FUNC_GET_ARGS_FE_II0(ARG,IDX) BOOST_PP_COMMA_IF(IDX) Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
+#define BE_FUNC_GET_ARGS_FE_II1(ARG,IDX) BOOST_PP_COMMA_IF(IDX) BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(3,ARG)
 /// @}
 
 /// Expands to the argument list of the backend function in the library.
 /// @{
-#define BE_FUNC_GET_ARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_ARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
+#define BE_FUNC_GET_ARGS_BE(ARG) (BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_ARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_ARGS_BE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_ARGS_BE_I,HAS_PARENS(ARG))(ARG,IDX)
-#define BE_FUNC_GET_ARGS_BE_I0(ARG,IDX) , ARG
-#define BE_FUNC_GET_ARGS_BE_I1(ARG,IDX) CAT(BE_FUNC_GET_ARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BE_FUNC_GET_ARGS_BE_II0(ARG,IDX) , BOOST_PP_TUPLE_ELEM(1,ARG)*
-#define BE_FUNC_GET_ARGS_BE_II1(ARG,IDX) , BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(4,ARG)
+#define BE_FUNC_GET_ARGS_BE_I0(ARG,IDX)  BOOST_PP_COMMA_IF(IDX) ARG
+#define BE_FUNC_GET_ARGS_BE_I1(ARG,IDX)  CAT(BE_FUNC_GET_ARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
+#define BE_FUNC_GET_ARGS_BE_II0(ARG,IDX) BOOST_PP_COMMA_IF(IDX) BOOST_PP_TUPLE_ELEM(1,ARG)*
+#define BE_FUNC_GET_ARGS_BE_II1(ARG,IDX) BOOST_PP_COMMA_IF(IDX) BOOST_PP_TUPLE_ELEM(1,ARG)(*) BOOST_PP_TUPLE_ELEM(4,ARG)
 /// @}
 
 /// Expands to the argument list needed for calling the wrapper function. Contains named arguments.
 /// @{ 
-#define BE_FUNC_GET_CALLARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_CALLARGS_FE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
+#define BE_FUNC_GET_CALLARGS_FE(ARG) (BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_CALLARGS_FE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_CALLARGS_FE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_CALLARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
-#define BE_FUNC_GET_CALLARGS_FE_I0(ARG,IDX) ,ARG FE_arg##IDX
-#define BE_FUNC_GET_CALLARGS_FE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BE_FUNC_GET_CALLARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>& FE_arg##IDX
-#define BE_FUNC_GET_CALLARGS_FE_II1(ARG,IDX) ,BOOST_PP_TUPLE_ELEM(1,ARG)(*FE_arg##IDX) BOOST_PP_TUPLE_ELEM(3,ARG)
+#define BE_FUNC_GET_CALLARGS_FE_I0(ARG,IDX)  BOOST_PP_COMMA_IF(IDX) ARG FE_arg##IDX
+#define BE_FUNC_GET_CALLARGS_FE_I1(ARG,IDX)  CAT(BE_FUNC_GET_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
+#define BE_FUNC_GET_CALLARGS_FE_II0(ARG,IDX) BOOST_PP_COMMA_IF(IDX) Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>& FE_arg##IDX
+#define BE_FUNC_GET_CALLARGS_FE_II1(ARG,IDX) BOOST_PP_COMMA_IF(IDX) BOOST_PP_TUPLE_ELEM(1,ARG)(*FE_arg##IDX) BOOST_PP_TUPLE_ELEM(3,ARG)
 /// @}
 
 /// Expands to the argument list passed by the wrapper function to the backend function. Contains conversion of named input arguments.
 /// @{ 
-#define BE_FUNC_GET_CALLARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
+#define BE_FUNC_GET_CALLARGS_BE(ARG) (BOOST_PP_SEQ_FOR_EACH_I(BE_FUNC_GET_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BE_FUNC_GET_CALLARGS_BE_I(X,Y,IDX,ARG) CAT(BE_FUNC_GET_CALLARGS_BE_I,HAS_PARENS(ARG))(ARG,IDX)
-#define BE_FUNC_GET_CALLARGS_BE_I0(ARG,IDX) , FE_arg##IDX
-#define BE_FUNC_GET_CALLARGS_BE_I1(ARG,IDX) CAT(BE_FUNC_GET_CALLARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BE_FUNC_GET_CALLARGS_BE_II0(ARG,IDX) , FE_arg##IDX.getArray()
-#define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) , reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(accessFrontBackFuncMap(reinterpret_cast<voidFptr>(FE_arg##IDX)))
+#define BE_FUNC_GET_CALLARGS_BE_I0(ARG,IDX)  BOOST_PP_COMMA_IF(IDX) FE_arg##IDX
+#define BE_FUNC_GET_CALLARGS_BE_I1(ARG,IDX)  CAT(BE_FUNC_GET_CALLARGS_BE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
+#define BE_FUNC_GET_CALLARGS_BE_II0(ARG,IDX) BOOST_PP_COMMA_IF(IDX) FE_arg##IDX.getArray()
+#define BE_FUNC_GET_CALLARGS_BE_II1(ARG,IDX) BOOST_PP_COMMA_IF(IDX) reinterpret_cast<BOOST_PP_TUPLE_ELEM(1,ARG)(*)BOOST_PP_TUPLE_ELEM(4,ARG)>(accessFrontBackFuncMap(reinterpret_cast<voidFptr>(FE_arg##IDX)))
 /// @}
 
 /// Expands to the argument list of a function pointer argument in the (frontend) function exposed to the user.
 /// @{
-#define BEF_FPTR_CALLARGS_FE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_FE_I,x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
+#define BEF_FPTR_CALLARGS_FE(ARG) (BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_FE_I,x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BEF_FPTR_CALLARGS_FE_I(X,Y,IDX,ARG) CAT(BEF_FPTR_CALLARGS_FE_I,HAS_PARENS(ARG))(ARG,IDX)
-#define BEF_FPTR_CALLARGS_FE_I0(ARG,IDX) ,ARG
-#define BEF_FPTR_CALLARGS_FE_I1(ARG,IDX) CAT(BEF_FPTR_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
-#define BEF_FPTR_CALLARGS_FE_II0(ARG,IDX) ,Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
+#define BEF_FPTR_CALLARGS_FE_I0(ARG,IDX)  BOOST_PP_COMMA_IF(IDX) ARG
+#define BEF_FPTR_CALLARGS_FE_I1(ARG,IDX)  CAT(BEF_FPTR_CALLARGS_FE_II,BOOST_PP_TUPLE_ELEM(0,ARG))(ARG,IDX)
+#define BEF_FPTR_CALLARGS_FE_II0(ARG,IDX) BOOST_PP_COMMA_IF(IDX) Gambit::Farray <BOOST_PP_TUPLE_ELEM(1,ARG),BOOST_PP_TUPLE_ELEM(2,ARG)>&
 /// @}
 
 /// Expands to the argument list of a function pointer argument in the backend function in the library.
 /// @{
-#define BEF_FPTR_CALLARGS_BE(ARG) REMFIRST(x BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
+#define BEF_FPTR_CALLARGS_BE(ARG) (BOOST_PP_SEQ_FOR_EACH_I(BEF_FPTR_CALLARGS_BE_I, x, BOOST_PP_TUPLE_TO_SEQ(ARG)))
 #define BEF_FPTR_CALLARGS_BE_I(X,Y,IDX,ARG) CAT(BEF_FPTR_CALLARGS_BE_I,HAS_PARENS(ARG))(ARG,IDX)
-#define BEF_FPTR_CALLARGS_BE_I0(ARG,IDX) , ARG
-#define BEF_FPTR_CALLARGS_BE_I1(ARG,IDX) , BOOST_PP_TUPLE_ELEM(1,ARG)*
+#define BEF_FPTR_CALLARGS_BE_I0(ARG,IDX) BOOST_PP_COMMA_IF(IDX) ARG
+#define BEF_FPTR_CALLARGS_BE_I1(ARG,IDX) BOOST_PP_COMMA_IF(IDX) BOOST_PP_TUPLE_ELEM(1,ARG)*
 /// @}
 
 /// Add a function pointer of type NAME##_BEtype
@@ -440,9 +455,9 @@ namespace Gambit
 /// Connect pointers to the backend library
 /// @{
 #define BE_FUNC_CONNECT_POINTERS(NAME,TRANS) CAT(BE_FUNC_CONNECT_POINTERS,TRANS)(NAME)
-#define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym);
+#define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym.fptr);
 #define BE_FUNC_CONNECT_POINTERS1(NAME)                                                         \
-  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym);                                     \
+  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym.fptr);                                \
   NAME = NAME##_wrapper;             
 /// @}
 
@@ -480,7 +495,7 @@ namespace Gambit                                                                
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \
-        auto NAME = backend_functor<TYPE INSERT_NONEMPTY(STRIP_PARENS(FE_ARGS)) >(              \
+        auto NAME = backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS) >(                            \
          Gambit::Backends::BACKENDNAME::NAME,                                                   \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
@@ -499,7 +514,7 @@ namespace Gambit                                                                
         /* -- First clear error code by calling dlerror() */                                    \
         dlerror();                                                                              \
         /* -- Obtain pointer from symbol */                                                     \
-        pSym = dlsym(pHandle, SYMBOLNAME);                                                      \
+        pSym.ptr = dlsym(pHandle, SYMBOLNAME);                                                  \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
         /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
         BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),                       \
@@ -515,7 +530,7 @@ namespace Gambit                                                                
           std::ostringstream err;                                                               \
           err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
               << "The functor generated for this symbol will get status=0" << std::endl;        \
-          backend_warning().raise(LOCAL_INFO,err.str());                                        \             
+          backend_warning().raise(LOCAL_INFO,err.str());                                        \
           Functown::NAME.setStatus(0);                                                          \
         }                                                                                       \
                                                                                                 \
