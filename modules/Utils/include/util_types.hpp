@@ -40,6 +40,7 @@
 
 #include "ini_code_struct.hpp"
 #include "standalone_error_handlers.hpp"
+#include "variadic_functions.hpp"
 
 namespace Gambit
 {
@@ -231,7 +232,8 @@ namespace Gambit
         return *this;
       }    
       template <typename ... Args>
-      const T& operator () (Args ... a) const
+      typename std::enable_if<is_all_member<int, Args...>::value, const T&>::type
+      operator () (Args ... a) const
       {      
         int len = sizeof...(a);
         if(len != dim) 
@@ -263,7 +265,8 @@ namespace Gambit
         return array[idx];   
       }      
       template <typename ... Args>
-      T& operator () (Args ... a)
+      typename std::enable_if<is_all_member<int, Args...>::value, T&>::type
+      operator () (Args ... a)
       {      
         int len = sizeof...(a);
         if(len != dim) 
@@ -293,7 +296,19 @@ namespace Gambit
           idx += idx_i;
         }   
         return array[idx];   
-      }    
+      }
+      template <typename ... Args>
+      typename std::enable_if<!is_all_member<int, Args...>::value, const T&>::type
+      operator () (Args ... a) const
+      {
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid type.");
+      }
+      template <typename ... Args>
+      typename std::enable_if<!is_all_member<int, Args...>::value, T&>::type
+      operator () (Args ... a)
+      {
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid type.");
+      }
       T* getArray() 
       { 
         if(array == NULL) 
