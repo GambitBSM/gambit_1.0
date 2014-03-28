@@ -301,13 +301,13 @@ namespace Gambit
       typename std::enable_if<!is_all_member<int, Args...>::value, const T&>::type
       operator () (Args ... a) const
       {
-        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid index type. Only int is allowed.");
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid type.");
       }
       template <typename ... Args>
       typename std::enable_if<!is_all_member<int, Args...>::value, T&>::type
       operator () (Args ... a)
       {
-        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid index type. Only int is allowed.");
+        utils_error().raise(LOCAL_INFO,"Trying to access Farray element using an invalid type.");
       }
       T* getArray() 
       { 
