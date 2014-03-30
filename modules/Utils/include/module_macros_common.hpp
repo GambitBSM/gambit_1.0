@@ -58,7 +58,7 @@
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
 
-/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC])
+/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC]) !FIXME DEPRECATED!!
 #define START_BACKEND_REQ_VAR(TYPE)                        DECLARE_BACKEND_REQ(TYPE,1)
 #define START_BACKEND_REQ_FUNC(TYPE)                       DECLARE_BACKEND_REQ(TYPE,0)
 #define START_BACKEND_REQ_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ; should be VAR, FUNC or absent.")
@@ -67,6 +67,17 @@
 #define START_BACKEND_REQ_2(_1, _2)                        CAT(START_BACKEND_REQ_,IF_DEFINED(START_BACKEND_REQ_##_2,_2))(_1)  
 #define START_BACKEND_REQ_1(_1)                            START_BACKEND_REQ_FUNC(_1) 
 #define START_BACKEND_REQ(...)                             VARARG(START_BACKEND_REQ, __VA_ARGS__)
+
+
+/// \name Variadic redirection macro for BACKEND_REQ(GROUP, CAPABILITY, (TAGS), TYPE, [(ARGS)])
+#define BACKEND_REQ_temp_5(_1, _2, _3, _4, _5)            DECLARE_BACKEND_REQ_temp(_1, _2, _3, _4, _5, 0)  
+#define BACKEND_REQ_temp_4(_1, _2, _3, _4)                DECLARE_BACKEND_REQ_temp(_1, _2, _3, _4, none, 1) 
+#define BACKEND_REQ_temp(...)                             VARARG(BACKEND_REQ_temp, __VA_ARGS__)
+
+/// \name Variadic redirection macro for BACKEND_REQ_SIMPLE(CAPABILITY, (TAGS), TYPE, [(ARGS)])
+#define BACKEND_REQ_SIMPLE_temp_4(_1, _2, _3, _4)                DECLARE_BACKEND_REQ_temp(none, _1, _2, _3, _4, 0)  
+#define BACKEND_REQ_SIMPLE_temp_3(_1, _2, _3)                    DECLARE_BACKEND_REQ_temp(none, _1, _2, _3, none, 1) 
+#define BACKEND_REQ_SIMPLE_temp(...)                             VARARG(BACKEND_REQ_SIMPLE_temp, __VA_ARGS__)
 
 
 ///Simple alias for ALLOW_MODEL/S

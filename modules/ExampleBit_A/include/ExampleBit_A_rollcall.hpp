@@ -158,10 +158,13 @@ START_MODULE
 
     #define FUNCTION function_pointer_retriever
     START_FUNCTION(fptr)
+    //BACKEND_REQ_SIMPLE(externalFunction, (), double, (int&))
+    BACKEND_REQ_temp(external_funcs, externalFunction, (), double, (int&))
+     
 
-      #define BACKEND_REQ externalFunction            
-      START_BACKEND_REQ(double)
-      #undef BACKEND_REQ
+      //#define BACKEND_REQ externalFunction            
+      //START_BACKEND_REQ(double)
+      //#undef BACKEND_REQ
 
     #undef FUNCTION
 

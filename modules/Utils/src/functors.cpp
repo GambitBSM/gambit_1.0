@@ -68,8 +68,8 @@ namespace Gambit
      myType          (result_type),
      myOrigin        (origin_name),
      myStatus        (1),
-     verbose         (false),    // For debugging.
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
+     verbose         (false),    // For debugging.
      needs_recalculating (true) {}
     
     /// Virtual calculate(); needs to be redefined in daughters.
@@ -583,8 +583,20 @@ namespace Gambit
     }
 
     /// Add an unconditional backend requirement
-    /// The info gets updated later if this turns out to be contitional on a model. 
-    void module_functor_common::setBackendReq(str req, str type, void(*resolver)(functor*))
+    /// The info gets updated later if this turns out to be conditional on a model. 
+    void module_functor_common::setBackendReq(str group, str req, std::vector<str> tags, str type, void(*resolver)(functor*))
+    { 
+      sspair key (req, type);
+      backendreq_types[req] = type;
+      myBackendReqs.push_back(key);
+      backendreq_map[key] = resolver;
+      backendreq_tags[req] = tags;
+      if (group != "none") backendreq_groups[req] = group;
+    }
+
+    /// Add an unconditional backend requirement
+    /// FIXME The info gets updated later if this turns out to be conditional on a model. 
+    void module_functor_common::setBackendReq_deprecated(str req, str type, void(*resolver)(functor*))
     { 
       sspair key (req, type);
       backendreq_types[req] = type;

@@ -91,7 +91,8 @@ namespace Gambit
     {
       using namespace Pipes::function_pointer_retriever;
       //Two ways to try this: a pointer to a fortran function that has been backended (and takes an int as an input by reference):
-      result = BEreq::externalFunction.pointer<int&>();
+      //result = BEreq::externalFunction.pointer<int&>();
+      result = BEreq::externalFunction.pointer();
       //or a pointer to a local C++ funtion
       //result = &some_other_function;
     }
@@ -326,7 +327,9 @@ namespace Gambit
       // Uncomment to provoke a mysterious bug
       //cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that mysteriously fails..." << endl;
       //BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,function_pointer);      
-      
+ 
+      result = 1.0;     
+ 
     }
 
     /// @} @}

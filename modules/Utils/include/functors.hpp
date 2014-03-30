@@ -89,14 +89,14 @@ namespace Gambit
       virtual void reset_and_calculate();
 
       /// Setter for version
-      void setVersion(str ver);
+      void setVersion(str);
       /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
-      void setStatus(int stat);
+      void setStatus(int);
       /// Setter for purpose (relevant only for next-to-output functors)
-      void setPurpose(str purpose);
+      void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
-      void setVertexID(int vertexID);
-
+      void setVertexID(int);
+   
       /// Getter for the wrapped function's name
       str name() const;
       /// Getter for the wrapped function's reported capability
@@ -119,7 +119,13 @@ namespace Gambit
       virtual bool requiresPrinting() const;
 
       /// Setter for indicating if the wrapped function's result should to be printed
-      virtual void setPrintRequirement(bool flag);
+      virtual void setPrintRequirement(bool);
+
+      /// Getter for capability group of a backend requirement
+      //virtual void group(str);
+
+      /// Getter for backend requirement resolution tags
+      //virtual std::vector<str> tags();
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*>&);
@@ -201,12 +207,12 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
-      /// Debug flag
-      bool verbose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
+      /// Debug flag
+      bool verbose;
 
       /// Internal storage of function options, as a YAML node
       Options myOptions;
@@ -319,7 +325,11 @@ namespace Gambit
 
       /// Add an unconditional backend requirement
       /// The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq(str, str, void(*)(functor*));
+      void setBackendReq(str, str, std::vector<str>, str, void(*)(functor*));
+
+      /// Add an unconditional backend requirement
+      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
+      void setBackendReq_deprecated(str, str, void(*)(functor*));
 
       /// Add a model conditional backend requirement for multiple models
       void setModelConditionalBackendReq(str model, str req, str type);
@@ -401,6 +411,12 @@ namespace Gambit
 
       /// Map from backend requirements to their required types
       std::map<str, str> backendreq_types;
+
+      /// Map from backend requirements to their designated groups
+      std::map<str, str> backendreq_groups;
+
+      /// Map from backend requirements to their rule tags
+      std::map<str, std::vector<str> > backendreq_tags; 
 
       /// Map from (dependency-type pairs) to (pointers to templated void functions 
       /// that set dependency functor pointers)

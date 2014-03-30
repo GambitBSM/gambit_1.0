@@ -127,9 +127,9 @@ namespace Gambit
                 int N = getVariadicVectorSize(in);
 
                 return (N > N0 && N0 != 0) ? N0 : N;
-        };
+        }
         
-        inline void inputVariadicVector(std::vector<double>::iterator vec){}
+        inline void inputVariadicVector(std::vector<double>::iterator){}
         
         template <typename... args>
         inline void inputVariadicVector(std::vector<double>::iterator vec, const double &val, const args&... params)
@@ -138,7 +138,7 @@ namespace Gambit
                 inputVariadicVector(vec+1, params...);
         }
         
-        inline void outputVariadicVector(std::vector<double>::const_iterator vec) {}
+        inline void outputVariadicVector(std::vector<double>::const_iterator) {}
         
         template <typename... args>
         inline void outputVariadicVector(std::vector<double>::const_iterator vec, double &val, args&... params)

@@ -163,7 +163,7 @@ namespace Gambit
         return _functor_base_ptr->version();
       }
 
-      /// Flag indicating whether to operate in safe mode or not (true by default)
+      /// Flag indicating whether to operate in safe mode or not (true by default) !FIXME DEPRECATED
       static bool safe_mode;
 
   };
@@ -279,6 +279,7 @@ namespace Gambit
         return temp_functor_ptr->handoutFunctionPointer();
       }
 
+
     protected:
 
       functor * _functor_ptr;
@@ -315,6 +316,56 @@ namespace Gambit
 
   };
 
+
+  /// An interface class for backend functions.
+  template <typename TYPE, typename... ARGS>
+  class BEfunction_bucket_temp : public BE_bucket_base
+  {
+
+    public:
+
+      /// Constructor for BEfunction_bucket.
+      BEfunction_bucket_temp(backend_functor<TYPE, ARGS...>* functor_ptr_in = NULL)
+      {
+        initialize(functor_ptr_in);
+      }
+
+      /// Initialize this bucket with a functor pointer.
+      void initialize(backend_functor<TYPE, ARGS...>* functor_ptr_in)
+      {
+        _functor_ptr      = functor_ptr_in;
+        _functor_base_ptr = functor_ptr_in;
+
+        if (functor_ptr_in == NULL)  
+        {
+          _initialized = false;
+        }
+        else 
+        { 
+          _initialized = true;
+        }
+      }
+
+      /// Call backend function.
+      TYPE operator ()(ARGS&& ...args)
+      {
+        if (not _initialized) dieGracefully();
+        return (*_functor_ptr)(std::forward<ARGS...>(args)...);
+      }
+
+      /// Return the underlying function pointer.
+      TYPE (*pointer())(ARGS...)
+      {
+        if (not _initialized) dieGracefully();
+        return _functor_ptr->handoutFunctionPointer();
+      }
+
+
+    protected:
+
+      backend_functor<TYPE, ARGS...>* _functor_ptr;
+
+  };
 
 }
 

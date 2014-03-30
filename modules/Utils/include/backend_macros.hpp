@@ -499,6 +499,18 @@ namespace Gambit                                                                
          Gambit::Backends::BACKENDNAME::NAME,                                                   \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
+         STRINGIFY(TYPE) STRINGIFY(FE_ARGS),                                                    \
+         STRINGIFY(BACKENDNAME),                                                                \
+         STRINGIFY(VERSION) );                                                                  \
+      } /* end namespace Functown */                                                            \
+                                                                                                \
+      /* Create functor object FIXME DEPRECATED!!*/                                             \
+      namespace Functown                                                                        \
+      {                                                                                         \
+        auto CAT(NAME,_defunct) = backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS) >(              \
+         Gambit::Backends::BACKENDNAME::NAME,                                                   \
+         STRINGIFY(NAME),                                                                       \
+         CAPABILITY,                                                                            \
          STRINGIFY(TYPE),                                                                       \
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION) );                                                                  \
