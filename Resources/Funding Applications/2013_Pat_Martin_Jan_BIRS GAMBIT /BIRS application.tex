@@ -1,0 +1,421 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[numbers,sort&compress]{natbib}
+
+\bibliographystyle{JHEP_pat}
+\bibpunct{[}{]}{,}{n}{ }{,}
+
+\newif\ifMyDraft% boolean variable whether or not to show xcomments
+\MyDrafttrue
+
+%%%%%%%%%%%%%
+\ifMyDraft % iftrue: this is a draft
+  \newenvironment{xcomment}{\em}{}
+\else
+  \usepackage{xcomment}
+\fi
+%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{xcomment}
+\noindent BIRS proposal text field entries.
+\end{xcomment}
+
+\section{Title of Proposal}
+\textbf{GAMBIT}\\
+Towards a Global And Modular Beyond-the-Standard-Model Inference Tool
+
+\section{Overview}
+\begin{xcomment}
+A short overview of the subject area of your workshop
+\end{xcomment}
+
+The two most pressing and fundamental issues in modern physics are the identity of dark matter (DM) and the nature of physics at the TeV energy scale.  A wealth of theories has been proposed for each, and an enormous amount of experimental data has been collected to test those theories.  Unfortunately though, when it comes to comparing all these theories with all the relevant data, existing computational and statistical tools in particle and astroparticle physics are woefully inadequate.  Our Workshop aims to remedy this situation.
+
+DM constitutes 80\% of the matter in the Universe and was discovered 80 years ago, but its composition remains a mystery.  With the impending activation of the 14\,TeV Large Hadron Collider (LHC), discovery of the Higgs boson and construction of high-energy astrophysics experiments like the \textit{Fermi}-LAT, HESS-II, IceCube and SuperCDMS, we now stand on the doorstep of the TeV scale.  Many popular DM candidates are intrinsically linked to the appearance of new physics beyond the Standard Model (BSM) at precisely this scale \cite{Bertone05}.  The mass of the newly-discovered Higgs itself even compels us to move beyond the Standard Model \cite{BaerTata, Degrassi12}.  We also know that the Standard Model is incomplete because it does not include gravity, nor explain the excess of matter over antimatter in our Universe, nor the fact that neutrinos have mass.
+
+Many different experimental probes of BSM physics exist: direct and indirect searches for DM, accelerator searches, and neutrino experiments.  Experiments such as CRESST \cite{CRESST11}, \textit{Fermi}-LAT \cite{Bringmann12} and PAMELA \cite{Pamelapositron} may even already show tantalizing hints of DM.  To make robust conclusions about the overall level of support for different BSM scenarios from such varied sources, a simultaneous statistical fit of all the data, fully taking into account all relevant uncertainties, assumptions and correlations is an absolute necessity.  This global fit approach is the one we will discuss and develop at BIRS in 2015.  Such holistic analyses exploit the synergy between different experimental approaches to its maximum potential, squeezing every last statistical drop of information possible from each experiment.  Robust analysis of correlated signals, in a range of complementary experiments, is \textit{essential} for claiming a credible discovery of DM or new physics at the TeV scale -- and indeed, even for definitively excluding theories.  This `win-win' situation is a particular feature of a global fit analysis, as even non-detections provide crucial physical insight into which theories and parameter regions are disfavoured.
+
+\section{Objectives}
+\begin{xcomment}
+A statement of the objectives of the workshop and an indication of its relevance, importance, and timeliness
+\end{xcomment}
+
+\subsection*{Statement of objectives}
+
+The primary goals of this BIRS 5-day Half Workshop will be 
+\begin{enumerate}
+\item To re-evaluate the computational and statistical techniques used to carry out global fits in particle and astroparticle physics.
+\item To develop a second generation global-fitting package for particle and astroparticle physics: GAMBIT, the Global And Modular Beyond-the-Standard-Model Inference Tool.
+\item To determine the statistical approach(es) to be supported by GAMBIT.
+\item To identify new computational strategies that optimize the efficiency and accuracy of GAMBIT relative to first-generation codes.  
+\item To prioritize and discuss different physics analyses to be carried out with GAMBIT.
+\end{enumerate}
+
+\subsection*{Relevance, importance and timeliness}
+
+Existing global fits \cite{IC22Methods, Fittino12, Mastercode12b, Roszkowski12, Strege13} cover only a very small subset of interesting particle models; most have dealt with only the very simplest versions of supersymmetry.  This is partly for computational reasons, as efficiently exploring the parameter spaces of more complicated models is extremely time consuming.  Existing optimization and inference techniques are barely capable of dealing with even the models that have been considered so far \cite{Akrami09,SBSpike}.  Efforts to date have rarely been truly `global', as the full range of possible observables and datasets (e.g. indirect searches for dark matter) have not been included in a detailed way.  The present generation of global analysis suites will all hit a brick wall within the next year in their abilities to deal with alternative theories, additional observables and the advanced numerical and statistical algorithms required for producing genuinely robust results.
+
+Future progress in understanding which BSM models are favoured by experimental data will be contingent upon massively expanding the range of theories to which global fits have been applied, and the number of experimental results included in them.  The only way to do this is to reconsider the computational and statistical tools used to carry them out, from the ground up.  Our BIRS Workshop will do exactly this.  
+
+By rewriting the computational and statistical bedrock of BSM global fits, we will be in a position to discuss and develop a new, second-generation global fitting suite for particle and astroparticle physics: GAMBIT.  GAMBIT will transform the budding field of global fits, by providing a framework in which new theories, observables, likelihoods and scanning algorithms can be quickly, easily and consistently combined in order to completely and rigorously test essentially \textit{any} proposed extension of particle physics beyond the Standard Model.
+
+\subsection*{Attendees}
+
+Creating a tool such as GAMBIT is an extremely demanding problem in applied statistics and applied computer science, requiring the use of many specialized statistical techniques and computer codes.  It is also a highly interdisciplinary physics problem, straddling the theoretical and experimental branches of both astronomy and particle physics.  Researchers from such leading institutes as the Oskar Klein Centre for Cosmoparticle Physics (Stockholm), the Imperial Centre for Inference and Cosmology (London) and the Centre of Excellence for Particle Physics at the Terascale (Adelaide, Melbourne, Sydney) have all already expressed their extremely strong interest in taking part in the Workshop.  The combination of guests we envisage for this Workshop is unique, bringing together the broad range of expertise in astrophysics and particle physics, theory and experiment, DM phenomenology, statistical and numerical methods required to make our ambitious vision a reality.
+
+By collecting world experts in all these areas for an intensive, focused week on the problems, strategy and first attempted implementation of a second-generation global-fitting code, the BIRS GAMBIT Workshop will provide new opportunities for exchange of ideas between members of all these fields.  This will drive the field of BSM global fits forward by enabling new collaborations.  The Workshop we hold at BIRS will form the basis for what we hope will be an ongoing formal consortium of experts in the BSM global fitting arena, dedicated to the development and usage of the GAMBIT global-fitting framework.  If this proposal is successful, given the long lead-time for holding a Workshop at BIRS and the urgency of the problem, we will attempt to begin preliminary discussions by email before even arriving at BIRS.  This will ensure that we hit the ground running in Banff, and come away from the Workshop having achieved the maximum progress possible towards our Objectives.
+
+The GAMBIT BIRS Workshop, and the consortium that we hope will rise from it, will also prove a fertile training ground for upcoming talent in the field.  We have identified a number of extremely promising doctoral students and postdoctoral researchers with an interest in BSM global fitting; their involvement in the Workshop and consortium will give them unrivalled experience in the ingredients of BSM global fits, and an excellent opportunity to influence the future directions of the field, all but ensuring that they become its future leaders.
+
+\subsection*{Timetable}
+
+The first 2 days of the Workshop will consist of presentations.  Some of these will evaluate existing statistical frameworks (e.g.\ the composite profile likelihood and Bayesian posterior), computational methods (e.g. nested sampling) and overall code structures used in BSM global fits.  We will encourage those presenters to approach their subject matter with a critical, idealistic eye, with the goal of identifying how a global-fitting framework should be designed so as to reflect best practices in these areas -- rather than just the `simplest thing to get running'.  This will address Objective 1.  Other presentations will give proposals for using new methods in BSM global fits, like Hamiltonian sampling, random forests and differential evolution.  This will address Objectives 3 and 4.  A third set of presentations will focus on specific aspects of the physics that should be addressed by future BSM global fits: dark matter, collider and flavour physics.  This will address Objective 5.
+
+The latter 3 days of the Workshop will be devoted almost entirely to collaborative development of the GAMBIT suite, including group coding sessions and code design mini-workshops.  Towards the end of the week, we also envisage some code presentations and tutorials, where a small number of attendees show the group as a whole the progress they have made, and how others can use or expand on it.  These will address Objective 2.
+
+% Bibliography and bibfile
+\def\lnp{Lec.\ Notes in Physics}
+          % Lecture Notes in Physics
+\def\cpc{Comp.\ Phys.\ Comm.}
+          % Computer Physics Communications
+\def\jpg{J. Phys. G}
+          % Journal of Physics G Nuclear Physics
+\def\ijmpa{Int.\ J.\ Mod.\ Phys.\ A}
+          % International Journal of Modern Physics A
+\def\epjc{Eur.\ Phys.\ J.\ C}
+          % European Physical Journal C
+\def\nima{Nuc.\ Inst.\ Methods A}
+          % Nuclear Instruments and Methods A
+\def\nimb{Nuc.\ Inst.\ Methods B}
+          % Nuclear Instruments and Methods B
+\def\njp{New J.\ Phys.}
+          % New Journal of Physics
+\def\rmp{Rev.\ Mod.\ Phys.}
+          % Reviews of Modern Physics
+\def\app{Astropart.\ Phys.}
+          % Astroparticle Physics
+\def\aj{AJ}%
+          % Astronomical Journal
+\def\actaa{Acta Astron.}%
+          % Acta Astronomica
+\def\araa{ARA\&A}%
+          % Annual Review of Astron and Astrophys
+\def\arnps{Ann.~Rev.~Nucl.~\& Part.~Sci.}%
+          % Annual Review of Astron and Astrophys
+\def\apj{ApJ}%
+          % Astrophysical Journal
+\def\apjl{ApJ}%
+          % Astrophysical Journal, Letters
+\def\apjs{ApJS}%
+          % Astrophysical Journal, Supplement
+\def\ao{Appl.\ Opt.}%
+          % Applied Optics
+\def\apss{Ap\&SS}%
+          % Astrophysics and Space Science
+\def\aap{A\&A}%
+          % Astronomy and Astrophysics
+\def\aapr{A\&A~Rev.}%
+          % Astronomy and Astrophysics Reviews
+\def\aaps{A\&AS}%
+          % Astronomy and Astrophysics, Supplement
+\def\azh{AZh}%
+          % Astronomicheskii Zhurnal
+\def\pos{PoS}%
+          % Proceedings of Science
+\def\baas{BAAS}%
+          % Bulletin of the AAS
+\def\bac{Bull.\ Astr.\ Inst.\ Czechosl.}%
+          % Bulletin of the Astronomical Institutes of Czechoslovakia 
+\def\caa{Chinese Astron.\ Astrophys.}%
+          % Chinese Astronomy and Astrophysics
+\def\cjaa{Chinese J.\ Astron.\ Astrophys.}%
+          % Chinese Journal of Astronomy and Astrophysics
+\def\icarus{Icarus}%
+          % Icarus
+\def\jhep{JHEP}%
+          % Journal of High Energy Physics
+\def\jcap{JCAP}%
+          % Journal of Cosmology and Astroparticle Physics
+\def\jpsj{J.\ Phys.\ Soc.\ Japan}%
+          % Journal of the Physical Society of Japan
+\def\jrasc{JRASC}%
+          % Journal of the RAS of Canada
+\def\canjphys{Can.~J.~Phys.}
+          %Canadian Journal of Physics
+\def\apphys{Astropart.~Phys.}
+          %Astroparticle Physics
+\def\mnras{MNRAS}%
+          % Monthly Notices of the RAS
+\def\memras{MmRAS}%
+          % Memoirs of the RAS
+\def\na{New A}%
+          % New Astronomy
+\def\nar{New A Rev.}%
+          % New Astronomy Review
+\def\pasa{PASA}%
+          % Publications of the Astron. Soc. of Australia
+\def\pra{Phys.\ Rev.\ A}%
+          % Physical Review A: General Physics
+\def\prb{Phys.\ Rev.\ B}%
+          % Physical Review B: Solid State
+\def\prc{Phys.\ Rev.\ C}%
+          % Physical Review C
+\def\prd{Phys.\ Rev.\ D}%
+          % Physical Review D
+\def\pre{Phys.\ Rev.\ E}%
+          % Physical Review E
+\def\prl{Phys.\ Rev.\ Lett.}%
+          % Physical Review Letters
+\def\pasp{PASP}%
+          % Publications of the ASP
+\def\pasj{PASJ}%
+          % Publications of the ASJ
+\def\qjras{QJRAS}%
+          % Quarterly Journal of the RAS
+\def\rmxaa{Rev. Mexicana Astron. Astrofis.}%
+          % Revista Mexicana de Astronomia y Astrofisica
+\def\skytel{S\&T}%
+          % Sky and Telescope
+\def\solphys{Sol.\ Phys.}%
+          % Solar Physics
+\def\sovast{Soviet~Ast.}%
+          % Soviet Astronomy
+\def\ssr{Space~Sci.\ Rev.}%
+          % Space Science Reviews
+\def\zap{ZAp}%
+          % Zeitschrift fuer Astrophysik
+\def\nat{Nature}%
+          % Nature
+\def\science{Science}%
+\def\sci{\science}%
+          % Science
+\def\iaucirc{IAU~Circ.}%
+          % IAU Cirulars
+\def\aplett{Astrophys.\ Lett.}%
+          % Astrophysics Letters
+\def\apspr{Astrophys.\ Space~Phys.\ Res.}%
+          % Astrophysics Space Physics Research
+\def\bain{Bull.\ Astron.\ Inst.\ Netherlands}%
+          % Bulletin Astronomical Institute of the Netherlands
+\def\fcp{Fund.\ Cosmic~Phys.}%
+          % Fundamental Cosmic Physics
+\def\gca{Geochim.\ Cosmochim.\ Acta}%
+          % Geochimica Cosmochimica Acta
+\def\grl{Geophys.\ Res.\ Lett.}%
+          % Geophysics Research Letters
+\def\jcp{J.\ Chem.\ Phys.}%
+          % Journal of Chemical Physics
+\def\jgr{J.\ Geophys.\ Res.}%
+          % Journal of Geophysics Research
+\def\jqsrt{J.\ Quant.\ Spec.\ Radiat.\ Transf.}%
+          % Journal of Quantitiative Spectroscopy and Radiative Trasfer
+\def\memsai{Mem.\ Soc.\ Astron.\ Italiana}%
+          % Mem. Societa Astronomica Italiana
+\def\nphysa{Nucl.\ Phys.\ A}%
+          % Nuclear Physics A
+\def\nphysb{Nucl.\ Phys.\ B}%
+          % Nuclear Physics B
+\def\physrep{Phys.\ Rep.}%
+          % Physics Reports
+\def\physscr{Phys.\ Scr}%
+          % Physica Scripta
+\def\planss{Planet.\ Space~Sci.}%
+          % Planetary Space Science
+\def\procspie{Proc.\ SPIE}%
+          % Proceedings of the SPIE
+\def\repprogphys{Rep.\ Prog.\ Phys.}%
+          % Reports of Progress in Physics
+\def\jpcrd{J. Phys. Chem. Ref. Data}% 
+        %Journal of Physical and Chemical Reference Data 
+\def\jphysb{J. Phys. B}% 
+	%Journal of Physics B Atomic Molecular Physics
+\def\jphysd{J. Phys. D}% 
+	%Journal of Physics D
+\def\jphysconfseries{J. Phys. Conf. Series}% 
+	%Journal of Physics: Conference Series
+\def\physrev{\pr}
+\def\pr{Phys. Rev.}% 
+	%Physical Review
+\def\josa{J. Opt. Soc. Amer. (1917-1983)}% 
+	%Journal of the Optical Society of America (1917-1983) 
+\def\josab{J. Opt. Soc. Amer. B}% 
+	%Journal of the Optical Society of America B Optical Physics
+\def\pla{Phys. Lett. A}% 
+	%Physics Letters A
+\def\plb{Phys. Lett. B}% 
+	%Physics Letters B
+\def\os{Opt. Spectrosc. (Russ.)}% 
+	%Optics and Spectroscopy (Russ. / USSR)
+\def\jas{J. Appl. Spectrosc.}% 
+	%Journal of Applied Spectroscopy (Russ. / USSR)
+\def\annp{Ann. Phys.}% 
+	%Annalen der Physik
+\def\sa{Spectrochim. Acta}% 
+	%Spectrochimica Acta
+\def\prsoca{Proc. R. Soc. London Ser. A}% 
+	%Proceedings of the Royal Society of London, Series A
+\def\zphysa{Z. Phys. A}% 
+	%Zeitschrift fur Physik A
+\def\zphysb{Z. Phys. B}% 
+	%Zeitschrift fur Physik B
+\def\zphysc{Z. Phys. C}% 
+	%Zeitschrift fur Physik C
+\def\zphysd{Z. Phys. D}% 
+	%Zeitschrift fur Physik D
+\def\zphyse{Z. Phys. E}% 
+	%Zeitschrift fur Physik E
+\def\zphys{Z. Phys.}% 
+	%Zeitschrift fur Physik
+\def\adndt{Atom. Data Nuc. Data Tables}% 
+	%Atomic Data and Nuclear Data Tables
+\def\jmolspec{J. Mol. Spectrosc.}% 
+	%Journal of Molecular Spectroscopy
+\def\aphysb{Appl. Phys. B}% 
+	%Applied Physics B: Lasers and Optics
+\def\nim{Nuc. Inst. Meth.}% 
+	%Nuclear Instruments and Methods
+\def\jphysique{J. Phys. (Paris)}% 
+	%Journal de Physique
+\def\epjp{Eur.~Phys.~J.~Plus}%
+        %European Phhysical Journal Plus
+\def\epjc{Eur.~Phys.~J.~C}%
+        %European Phhysical Journal C
+\def\njp{New J.~Phys.}
+        %New Journal of Physics
+\let\astap=\aap
+\let\apjlett=\apjl
+\let\apjsupp=\apjs
+\let\applopt=\ao
+%
+
+\providecommand{\href}[2]{#2}\begingroup\raggedright\begin{thebibliography}{10}
+
+\bibitem{Bertone05}
+G.~{Bertone}, D.~{Hooper}, and J.~{Silk}, {\it {Particle dark matter: evidence,
+  candidates and constraints}},  {\em \physrep} {\bf 405} (2005) 279--390,
+  [\href{http://xxx.lanl.gov/abs/hep-ph/0404175}{{\tt hep-ph/0404175}}].
+
+\bibitem{BaerTata}
+H.~{Baer} and X.~{Tata}, {\em {Weak Scale Supersymmetry}}.
+\newblock Cambridge University Press, 2006.
+
+\bibitem{Degrassi12}
+G.~{Degrassi}, S.~{Di Vita}, {\em et.~al.}, {\it {Higgs mass and vacuum
+  stability in the Standard Model at NNLO}},  {\em \jhep} {\bf 8} (2012) 98,
+  [\href{http://xxx.lanl.gov/abs/1205.6497}{{\tt arXiv:1205.6497}}].
+
+\bibitem{CRESST11}
+G.~{Angloher}, M.~{Bauer}, {\em et.~al.}, {\it {Results from 730 kg days of the
+  CRESST-II Dark Matter search}},  {\em \epjc} {\bf 72} (2012) 1971,
+  [\href{http://xxx.lanl.gov/abs/1109.0702}{{\tt arXiv:1109.0702}}].
+
+\bibitem{Bringmann12}
+T.~{Bringmann}, X.~{Huang}, A.~{Ibarra}, S.~{Vogl}, and C.~{Weniger}, {\it
+  {Fermi LAT search for internal bremsstrahlung signatures from dark matter
+  annihilation}},  {\em \jcap} {\bf 7} (2012) 54,
+  [\href{http://xxx.lanl.gov/abs/1203.1312}{{\tt arXiv:1203.1312}}].
+
+\bibitem{Pamelapositron}
+O.~{Adriani}, G.~C. {Barbarino}, {\em et.~al.}, {\it {An anomalous positron
+  abundance in cosmic rays with energies 1.5--100\,GeV}},  {\em \nat} {\bf 458}
+  (2009) 607--609, [\href{http://xxx.lanl.gov/abs/0810.4995}{{\tt
+  arXiv:0810.4995}}].
+
+\bibitem{IC22Methods}
+P.~{Scott}, C.~{Savage}, J.~{Edsj{\"o}}, and {the IceCube Collaboration:
+  R.~Abbasi et al.}, {\it {Use of event-level neutrino telescope data in global
+  fits for theories of new physics}},  {\em \jcap} {\bf 11} (2012) 57,
+  [\href{http://xxx.lanl.gov/abs/1207.0810}{{\tt arXiv:1207.0810}}].
+
+\bibitem{Fittino12}
+P.~{Bechtle}, T.~{Bringmann}, {\em et.~al.}, {\it {Constrained supersymmetry
+  after two years of LHC data: a global view with Fittino}},  {\em \jhep} {\bf
+  6} (2012) 98, [\href{http://xxx.lanl.gov/abs/1204.4199}{{\tt
+  arXiv:1204.4199}}].
+
+\bibitem{Mastercode12b}
+O.~{Buchmueller}, R.~{Cavanaugh}, {\em et.~al.}, {\it {The CMSSM and NUHM1 in
+  light of 7 TeV LHC, B $_{ s }${$\to$} {$\mu$} $^{+}$ {$\mu$} $^{-}$ and
+  XENON100 data}},  {\em \epjc} {\bf 72} (2012) 2243,
+  [\href{http://xxx.lanl.gov/abs/1207.7315}{{\tt arXiv:1207.7315}}].
+
+\bibitem{Roszkowski12}
+L.~{Roszkowski}, E.~M. {Sessolo}, and Y.-L.~S. {Tsai}, {\it {Bayesian
+  implications of current LHC supersymmetry and dark matter detection searches
+  for the constrained MSSM}},  {\em \prd} {\bf 86} (2012) 095005,
+  [\href{http://xxx.lanl.gov/abs/{arXiv:1202.1503}}{{\tt {arXiv:1202.1503}}}].
+
+\bibitem{Strege13}
+C.~{Strege}, G.~{Bertone}, {\em et.~al.}, {\it {Global fits of the cMSSM and
+  NUHM including the LHC Higgs discovery and new XENON100 constraints}},  {\em
+  \jcap} {\bf 4} (2013) 13,
+  [\href{http://xxx.lanl.gov/abs/{arXiv:1212.2636}}{{\tt {arXiv:1212.2636}}}].
+
+\bibitem{Akrami09}
+Y.~{Akrami}, P.~{Scott}, J.~Edsj{\"o}, J.~{Conrad}, and L.~{Bergstr{\"o}m},
+  {\it {A profile likelihood analysis of the Constrained MSSM with genetic
+  algorithms}},  {\em \jhep} {\bf 4} (2010) 57,
+  [\href{http://xxx.lanl.gov/abs/0910.3950}{{\tt arXiv:0910.3950}}].
+
+\bibitem{SBSpike}
+F.~{Feroz}, K.~{Cranmer}, M.~{Hobson}, R.~{Ruiz de Austri}, and R.~{Trotta},
+  {\it {Challenges of profile likelihood evaluation in multi-dimensional SUSY
+  scans}},  {\em \jhep} {\bf 6} (2011) 42,
+  [\href{http://xxx.lanl.gov/abs/1101.3296}{{\tt arXiv:1101.3296}}].
+
+\end{thebibliography}\endgroup
+
+\section{Press Release}
+\begin{xcomment}
+Please provide 1-2 paragraphs for a press release for your workshop. It should be understandable by the general public
+\end{xcomment}
+
+Imagine living in a house where you don't even know the names or faces of your four housemates. This is where astronomers and particle physicists find themselves right now with the matter in our own Milky Way Galaxy. Dark matter makes up over 80\% of the Milky Way, and the Universe as a whole, but we still don't know what it actually is.  Many theories predict that this mystery is somehow related to the Higgs boson, the origin of mass, and some as-yet-uncovered symmetry about to be discovered at the Large Hadron Collider (LHC).
+
+A group of twenty particle physicists, astronomers, statisticians and computational scientists is meeting at the Banff International Research Station to create the computational tools of the future in the search for dark matter, and the broader particle theory it belongs to.  Using cutting-edge statistical and computational techniques only developed in the last few years, their plan is to combine the results of searches for dark matter and new symmetries from a huge number of different experiments. These range from the LHC to smaller particle colliders, gamma-ray telescopes, cosmic antimatter probes, ultra-clean experiments in the world's deepest mines, and a neutrino telescope embedded in the Antarctic ice at the South Pole. The result will be the first truly comprehensive analysis of theories for dark matter and new physics, painting a much clearer picture of what dark matter is, and what it isn't.
+
+\section{Participants}
+\begin{xcomment}
+A list of potential participants and their affiliations is important to the review process, but you will not be bound by it. The Programme Committee looks favourably on participant lists where there is an indication that the participants have been contacted and have expressed interest in the proposal.
+
+Enter the participants one per line using the following format:
+Family name, Given name, affiliation - department
+
+For example:
+Smith, Sam, Institute of Generic Names - Generic Department 
+\end{xcomment}
+
+The following participants have been contacted and expressed \textbf{very strong interest} in participating.  Students are indicated with asterisks (*) and postdoctoral researchers with daggers ($\dagger$), indicating the potential for training young talent at this Workshop.
+
+\begin{enumerate} \itemsep -0.8mm
+\item \textbf{Andreev}, Andrij, Stockholm University -- Department of Statistics
+\item \textbf{Balazs}, Csaba, Monash University -- School of Physics
+\item \textbf{Bringmann}, Torsten, University of Oslo -- Department of Physics 
+\item \textbf{Buckley}, Andy, University of Edinburgh -- School of Physics and Astronomy
+\item \textbf{*Cornell}, Jonathan M., University of California Santa Cruz -- Santa Cruz Institute for Particle Physics
+\item \textbf{*Dal}, Lars A., University of Oslo -- Department of Physics
+\item \textbf{Jackson}, Paul, University of Adelaide -- School of Chemistry and Physics
+\item \textbf{Edsj\"o}, Joakim, Stockholm University -- Oskar Klein Centre and Department of Physics
+\item \textbf{*Farmer}, Benjamin, Monash University -- School of Physics
+\item \textbf{$^\dagger$Krislock}, Abram, Stockholm University -- Oskar Klein Centre and Department of Physics
+\item \textbf{*Kvellestad}, Anders, University of Oslo -- Department of Physics 
+\item \textbf{Mahmoudi}, Farvah Nazila, LPC Clermont-Ferrand and CERN -- Theory Division
+\item \textbf{$^\dagger$Martinez}, Gregory, Stockholm University -- Oskar Klein Centre and Department of Physics
+\item \textbf{$^\dagger$Putze}, Antje, Aachen University -- Department of Physics IB
+\item \textbf{Raklev}, Are, University of Oslo -- Department of Physics 
+\item \textbf{$^\dagger$Rogan}, Christopher, Harvard University -- Laboratory for Particle Physics and Cosmology
+\item \textbf{$^\dagger$Saavedra}, Aldo, University of Sydney -- Department of Physics 
+\item \textbf{Serra}, Nicola, University of Zurich -- Physik-Insitut der Universit\"at Z\"urich
+\item \textbf{$^\dagger$Savage}, Christopher,  University of Utah -- Department of Physics and Astronomy
+\item \textbf{van Dyk}, David A., Imperial College London -- Chair in Statistics, Department of Mathematics
+\item \textbf{$^\dagger$Weniger}, Christoph, University of Amsterdam -- GRAPPA Institute
+\end{enumerate}
+
+\noindent We also expect that
+\begin{enumerate}
+\item[22.] \textbf{Meinshausen}, Nicolai, ETH Z\"urich -- Department of Statistics
+\end{enumerate}
+will have an interest in attending, although we have not explicitly contacted him about this Workshop as yet.
+
+\end{document}

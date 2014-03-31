@@ -169,50 +169,53 @@ namespace xsec{
 
   void Evaluator::_params_from_py8slha(double par[24], Pythia8::SusyLesHouches & point) const {
     // TODO: fix m_A use in MSOFT
-      // Reset SUSY-HIT fix DANGER DANGER DANGER
 
     // Find scales
-    double Qxsec = 1000.;
-    double Qmsoft = point.msoft.q()*1000;
+    double Qxsec = 1000.; // we want params at 1 TeV since that's where the interpolators were fitted
+    double Qmsoft = point.msoft.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     double Qextpar = point.extpar(0);
-    double Qhmix = point.hmix.q()*1000;
+    double Qhmix = point.hmix.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     cout << "Qmsoft " << Qmsoft << endl;
     cout << "Qextpar " << Qextpar << endl;
 
     // If EXTPAR exists and scale is very near 1 TeV then we use those soft masses
     // extpar(0) will be 0 when the block does not exist
     // Also use if EXTPAR scale is closer to 1 TeV than MSOFT scale.
+    // Order of parameters defined by Martin's NN training string
+    // @tanB,@M_1,@M_2,@M_3,@mA,@meL,@mmuL,@mtauL,@meR,@mmuR,@mtauR,@mqL1,@mqL2,@mqL3,@muR,@mcR,@mtR,@mdR,@msR,@mbR,@At,@Ab,@Atau,@mu
     if(abs(Qextpar-Qxsec) < 1.0 || (abs(Qextpar-Qxsec) < abs(Qmsoft-Qxsec) && Qextpar > 1.0)){
       par[0] = point.minpar(3);  // \tan\beta
       par[1] = point.extpar(1);  // M_1
       par[2] = point.extpar(2);  // M_2
       par[3] = point.extpar(3);  // M_3
-      par[4] = point.extpar(11); // A_t
-      par[5] = point.extpar(12); // A_b
-      par[6] = point.extpar(13); // A_\tau
-      par[7] = point.extpar(23); // \mu
-      par[8] = point.extpar(26); // m_A pole mass
-      par[9] = point.extpar(31); // meL
-      par[10] = point.extpar(32); // mmuL
-      par[11] = point.extpar(33); // mtauL
-      par[12] = point.extpar(34); // meR
-      par[13] = point.extpar(35); // mmuR
-      par[14] = point.extpar(36); // mtauR
-      par[15] = point.extpar(41); // mqL1
-      par[16] = point.extpar(44); // muR
+      par[4] = point.extpar(26); // m_A pole mass
+      par[5] = point.extpar(31); // meL
+      par[6] = point.extpar(32); // mmuL
+      par[7] = point.extpar(33); // mtauL
+      par[8] = point.extpar(34); // meR
+      par[9] = point.extpar(35); // mmuR
+      par[10] = point.extpar(36); // mtauR
+      par[11] = point.extpar(41); // mqL1
+      par[12] = point.extpar(42); // mqL2
+      par[13] = point.extpar(43); // mqL3
+      par[14] = point.extpar(44); // muR
+      par[15] = point.extpar(45); // mcR
+      par[16] = point.extpar(46); // mtR
       par[17] = point.extpar(47); // mdR
-      par[18] = point.extpar(42); // mqL2
-      par[19] = point.extpar(45); // mcR
-      par[20] = point.extpar(48); // msR
-      par[21] = point.extpar(43); // mqL3
-      par[22] = point.extpar(46); // mtR
-      par[23] = point.extpar(49); // mbR
+      par[18] = point.extpar(48); // msR
+      par[19] = point.extpar(49); // mbR
+      par[20] = point.extpar(11); // A_t
+      par[21] = point.extpar(12); // A_b
+      par[22] = point.extpar(13); // A_\tau
+      par[23] = point.extpar(23); // \mu
       // Return now if we do not need to do RGE
       if(abs(Qextpar-Qxsec) < 1.0) return;
     }
     // If not, use MSOFT and HMIX blocks.
     // This uses that HMIX and MSOFT is at the same scale,
     // however, exceptions have not been seen in the wild.
+    // Order of parameters defined by Martin's NN training string
+    // @tanB,@M_1,@M_2,@M_3,@mA,@meL,@mmuL,@mtauL,@meR,@mmuR,@mtauR,@mqL1,@mqL2,@mqL3,@muR,@mcR,@mtR,@mdR,@msR,@mbR,@At,@Ab,@Atau,@mu
     else if (abs(Qmsoft-Qhmix) < 1.0 && abs(Qmsoft) > 0.1){
       par[0] = point.hmix(3);  // \tan\beta
       par[1] = point.msoft(1);  // M_1
@@ -222,26 +225,26 @@ namespace xsec{
       cout << endl << "Started with these masses: " << endl;
       cout << par[1] << " " << par[2] << " " << par[3] << endl;
 
-      par[4] = point.au(3,3);   // A_t
-      par[5] = point.ad(3,3);   // A_b
-      par[6] = point.ae(3,3);   // A_\tau
-      par[7] = point.hmix(1);   // \mu
-      par[8] = sqrt(point.hmix(4));  // m_A WARNING: not pole
-      par[9] = point.msoft(31); // meL
-      par[10] = point.msoft(32); // mmuL
-      par[11] = point.msoft(33); // mtauL
-      par[12] = point.msoft(34); // meR
-      par[13] = point.msoft(35); // mmuR
-      par[14] = point.msoft(36); // mtauR
-      par[15] = point.msoft(41); // mqL1
-      par[16] = point.msoft(44); // muR
+      par[4] = sqrt(point.hmix(4));  // m_A WARNING: not pole
+      par[5] = point.msoft(31); // meL
+      par[6] = point.msoft(32); // mmuL
+      par[7] = point.msoft(33); // mtauL
+      par[8] = point.msoft(34); // meR
+      par[9] = point.msoft(35); // mmuR
+      par[10] = point.msoft(36); // mtauR
+      par[11] = point.msoft(41); // mqL1
+      par[12] = point.msoft(42); // mqL2
+      par[13] = point.msoft(43); // mqL3
+      par[14] = point.msoft(44); // muR
+      par[15] = point.msoft(45); // mcR
+      par[16] = point.msoft(46); // mtR
       par[17] = point.msoft(47); // mdR
-      par[18] = point.msoft(42); // mqL2
-      par[19] = point.msoft(45); // mcR
-      par[20] = point.msoft(48); // msR
-      par[21] = point.msoft(43); // mqL3
-      par[22] = point.msoft(46); // mtR
-      par[23] = point.msoft(49); // mbR
+      par[18] = point.msoft(48); // msR
+      par[19] = point.msoft(49); // mbR
+      par[20] = point.au(3,3);   // A_t
+      par[21] = point.ad(3,3);   // A_b
+      par[22] = point.ae(3,3);   // A_\tau
+      par[23] = point.hmix(1);   // \mu
     }
     else{
       throw runtime_error("Cannot handle your SLHA file");
