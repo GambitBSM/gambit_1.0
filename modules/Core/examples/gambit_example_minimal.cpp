@@ -17,7 +17,7 @@
 ///  *********************************************
 
 #include "backend_rollcall.hpp"
-#include "graphs.hpp"
+#include "depresolver.hpp"
 #include "yaml_parser.hpp"
 #include "scannerbit.hpp"
 #include "module_rollcall.hpp"
@@ -29,7 +29,7 @@
 
 //Pat: no idea why exactly, but the following inclusion order causes a BOOST_PP_IIF compile error on later versions of Boost
 //#include "log.hpp"
-//#include "graphs.hpp"
+//#include "depresolver.hpp"
 //#include "scannerbit.hpp"
 //#include "yaml_parser.hpp"
 //#include "model_rollcall.hpp"
@@ -121,7 +121,7 @@ void beispiel(const char* inifilename)
   Printers::asciiPrinter printer(outfile,infofile);
 
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core(), iniFile, printer);
+  DRes::DependencyResolver dependencyResolver(Core(), iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();

@@ -27,7 +27,7 @@ namespace Gambit
   /// Core warnings
   warning& core_warning();
 
-  namespace Graphs
+  namespace DRes
   {
     /// Dependency resolver errors
     error& dependency_resolver_error();

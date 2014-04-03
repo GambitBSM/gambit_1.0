@@ -32,22 +32,22 @@ namespace Gambit
                 class Scanner_Function_Base : public Function_Base
                 {
                 protected:
-                        std::vector<Graphs::VertexID> vertices;
-                        std::vector<Graphs::VertexID> vertices_phantom;
-                        Graphs::DependencyResolver &dependencyResolver;
+                        std::vector<DRes::VertexID> vertices;
+                        std::vector<DRes::VertexID> vertices_phantom;
+                        DRes::DependencyResolver &dependencyResolver;
                         std::vector<double> realParameters;
                         Priors::CompositePrior &prior;
                         std::map<std::string, double> parameterMap;
                         std::map<std::string, primary_model_functor *> functorMap;
 			
                 public:
-                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : dependencyResolver(dependencyResolver), realParameters(prior.getShownParameters().size()), prior(prior), functorMap(functorMap)
+                        Scanner_Function_Base(const std::map<std::string, primary_model_functor *> &functorMap, DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : dependencyResolver(dependencyResolver), realParameters(prior.getShownParameters().size()), prior(prior), functorMap(functorMap)
                         {
                                 // Find subset of vertices that match requested purpose
                                 vertices = dependencyResolver.getObsLikeOrder();
                                 int size = 0;
                                 auto it = vertices.begin();
-                                std::for_each (vertices.begin(), vertices.end(), [&] (Graphs::VertexID &vert)
+                                std::for_each (vertices.begin(), vertices.end(), [&] (DRes::VertexID &vert)
                                 {
                                         if (dependencyResolver.getIniEntry(vert)->purpose == purpose)
                                         {
@@ -63,12 +63,12 @@ namespace Gambit
                                 vertices.resize(size);
                         }
 			
-                        inline void calcObsLike(Graphs::VertexID &it)
+                        inline void calcObsLike(DRes::VertexID &it)
                         {
                                 dependencyResolver.calcObsLike(it);
                         }
 
-                        inline double getObsLike(Graphs::VertexID &it)
+                        inline double getObsLike(DRes::VertexID &it)
                         {
                                 return dependencyResolver.getObsLike(it);
                         }
@@ -107,7 +107,7 @@ namespace Gambit
                 {
                 public:
 			//#ifndef NO_GCC_4_7
-                        Scanner_Function (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
+                        Scanner_Function (const std::map<std::string, primary_model_functor *> &functorMap, DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
 			//#else                        
                         //using Scanner_Function_Base::Scanner_Function_Base;
 			//#endif			
@@ -120,7 +120,7 @@ namespace Gambit
                                 
                                 setParameters(in);
                                 
-                                //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+                                //std::vector<DRes::VertexID> OL = dependencyResolver.getObsLikeOrder();
                                 std::cout << "Number of vertices to calculate: " << (vertices.size() + vertices_phantom.size()) << std::endl;
                                 
                                 for (auto it = vertices_phantom.begin(), end = vertices_phantom.end(); it != end; ++it)
@@ -152,7 +152,7 @@ namespace Gambit
                 {
                 public:
                         //#ifndef NO_GCC_4_7
-                        Scanner_Function_Minimal (const std::map<std::string, primary_model_functor *> &functorMap, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
+                        Scanner_Function_Minimal (const std::map<std::string, primary_model_functor *> &functorMap, DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose) : Scanner_Function_Base (functorMap, dependencyResolver, prior, purpose) {}
                         //#else                        
                         //using Scanner_Function_Base::Scanner_Function_Base;
                         //#endif                        
@@ -165,7 +165,7 @@ namespace Gambit
                                 
                                 setParameters(in);
                                 
-                                //std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
+                                //std::vector<DRes::VertexID> OL = dependencyResolver.getObsLikeOrder();
                                 std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
                                 
                                 for (auto it = vertices.begin(), end = vertices.end(); it != end; ++it)

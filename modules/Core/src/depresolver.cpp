@@ -11,7 +11,7 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 May, Jun, Jul, Sep
-///  \date 2014 Feb
+///  \date 2014 Feb, Mar, Apr
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
@@ -26,7 +26,7 @@
 
 #include <sstream>
 
-#include "graphs.hpp"
+#include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"
 
@@ -34,15 +34,17 @@
 #include <boost/graph/graphviz.hpp>
 
 // This vertex ID is reserved for nodes that correspond to
-// likelihoods/observables/etc
-#define OMEGA_VERTEXID 52314768 
+// likelihoods/observables/etc (observables of interest)
+#define OOI_VERTEXID 52314768 
+
+// Dependency types
 #define NORMAL_DEPENDENCY 1
 #define LOOP_MANAGER_DEPENDENCY 2
 
 namespace Gambit
 {
 
-  namespace Graphs
+  namespace DRes
   {
     using namespace LogTags;
     //
@@ -51,13 +53,13 @@ namespace Gambit
 
     // Collect parent vertices recursively (including root vertex)
     std::set<VertexID> getParentVertices(const VertexID & vertex, const
-        Graphs::MasterGraphType & graph)
+        DRes::MasterGraphType & graph)
     {
       std::set<VertexID> myVertexList;
       myVertexList.insert(vertex);
       std::set<VertexID> parentVertexList;
 
-      graph_traits<Graphs::MasterGraphType>::in_edge_iterator ibegin, iend;
+      graph_traits<DRes::MasterGraphType>::in_edge_iterator ibegin, iend;
       for (boost::tie(ibegin, iend) = in_edges(vertex, graph);
           ibegin != iend; ++ibegin)
       {
@@ -82,14 +84,14 @@ namespace Gambit
 
     // Get sorted list of parent vertices
     std::vector<VertexID> getSortedParentVertices(const VertexID & vertex, const
-        Graphs::MasterGraphType & graph, std::list<VertexID> topoOrder)
+        DRes::MasterGraphType & graph, std::list<VertexID> topoOrder)
     {
       std::set<VertexID> set = getParentVertices(vertex, graph);
       return sortVertices(set, topoOrder);
     }
 
     // Return time estimate for set of nodes
-    double getTimeEstimate(std::set<VertexID> vertexList, const Graphs::MasterGraphType &graph)
+    double getTimeEstimate(std::set<VertexID> vertexList, const DRes::MasterGraphType &graph)
     {
       double result = 0;
       for (std::set<VertexID>::iterator it = vertexList.begin(); it != vertexList.end(); ++it)
@@ -168,9 +170,9 @@ namespace Gambit
     class edgeWriter
     {
       private:
-        const Graphs::MasterGraphType * myGraph;
+        const DRes::MasterGraphType * myGraph;
       public:
-        edgeWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
+        edgeWriter(const DRes::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
         void operator()(std::ostream&, const EdgeID&) const
         {
           //out << "[style=\"dotted\"]";
@@ -180,9 +182,9 @@ namespace Gambit
     class labelWriter
     {
       private:
-        const Graphs::MasterGraphType * myGraph;
+        const DRes::MasterGraphType * myGraph;
       public:
-        labelWriter(const Graphs::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
+        labelWriter(const DRes::MasterGraphType * masterGraph) : myGraph(masterGraph) {};
         void operator()(std::ostream& out, const VertexID& v) const
         {
           out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
@@ -229,7 +231,7 @@ namespace Gambit
         logger() << LogTags::dependency_resolver << (*it).capability << " (" << (*it).type << ")" << endl << EOM;
         queueEntry.first.first = (*it).capability;
         queueEntry.first.second = (*it).type;
-        queueEntry.second = OMEGA_VERTEXID;
+        queueEntry.second = OUT_VERTEXID;
         queueEntry.printme = (*it).printme;
         parQueue.push(queueEntry);
       }
@@ -294,7 +296,7 @@ namespace Gambit
     /// List of masterGraph content
     void DependencyResolver::printFunctorList() 
     {
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       const str formatString = "%-20s %-32s %-32s %-32s %-15s %-7i %-5i %-5i\n";
       logger() << LogTags::dependency_resolver << "Vertices registered in masterGraph" << endl;
       logger() << "----------------------------------" << endl;
@@ -471,7 +473,7 @@ namespace Gambit
 
     void DependencyResolver::resetAll()
     {
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
         masterGraph[*vi]->reset();
@@ -507,7 +509,7 @@ namespace Gambit
     /// functors that are allowed to be used with the model(s) being scanned.
     void DependencyResolver::makeFunctorsModelCompatible()
     {
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       std::vector<str> modelList = modelClaw().get_activemodels();
       // First make sure to deactivate all the vertices
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
@@ -529,15 +531,15 @@ namespace Gambit
     }
 
     /// Resolve dependency
-    std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
+    std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, DRes::VertexID>
       DependencyResolver::resolveDependency(
-        Graphs::VertexID toVertex, sspair quantity)
+        DRes::VertexID toVertex, sspair quantity)
     {
-      graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       const IniParser::ObservableType *auxEntry = NULL;  // Ptr. on ini-file entry of the dependent vertex (if existent)
       const IniParser::ObservableType *depEntry = NULL;  // Ptr. on ini-file entry that specifies how to resolve 'quantity'
       const IniParser::ObservableType *optEntry = NULL;  // Ptr. on ini-file entry that carries options for 'quantity'
-      std::vector<Graphs::VertexID> vertexCandidates;
+      std::vector<DRes::VertexID> vertexCandidates;
       bool entryExists = false;  // Ini-file entry to resolve 'quantity' found?
 
       // First, we check whether the dependent vertex has a unique
@@ -547,7 +549,7 @@ namespace Gambit
       // we just use the entry from the observable/likelihood section for the
       // resolution of ambiguities.  A pointer to the relevant inifile entry
       // is stored in depEntry.
-      if ( toVertex == OMEGA_VERTEXID)
+      if ( toVertex == OUT_VERTEXID)
       {
         depEntry = findIniEntry(quantity, boundIniFile->getObservables());
         optEntry = depEntry;
@@ -591,7 +593,7 @@ namespace Gambit
       // functions, which can only be resolved from within a given module.
       if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
       {
-        std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin();
+        std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin();
         while (it != vertexCandidates.end())
         {
           if ( masterGraph[toVertex]->origin() != masterGraph[*it]->origin() )
@@ -623,14 +625,14 @@ namespace Gambit
       {
         // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
         // found at a given level in the hierarchy.
-        std::vector<Graphs::VertexID> newVertexCandidates;
+        std::vector<DRes::VertexID> newVertexCandidates;
         std::vector<str> parentModelList = modelClaw().get_activemodels();
         while (newVertexCandidates.size() == 0 and not parentModelList.empty())
         {
           for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)
           {            
             // Test each vertex candidate to see if it has been explicitly set up to work with the model *mit
-            for (std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+            for (std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
             {
               if ( masterGraph[*it]->modelExplicitlyAllowed(*mit) ) newVertexCandidates.push_back(*it);
             }
@@ -665,7 +667,7 @@ namespace Gambit
          boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
          errmsg += "\nAlso consider turning on prefer_model_specific_functions in your inifile.";
         errmsg += "\nCandidate module functions are:";
-        for (std::vector<Graphs::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+        for (std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
         {
           errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
         }
@@ -680,8 +682,8 @@ namespace Gambit
         std::queue<QueueEntry> parQueue)
     {
       OutputVertexInfo outInfo;
-      Graphs::VertexID fromVertex, toVertex;
-      Graphs::EdgeID edge;
+      DRes::VertexID fromVertex, toVertex;
+      DRes::EdgeID edge;
       // relevant observable entry (could be dependency of another observable)
       IniParser::ObservableType observable;
       // Inifile entry relevant for dependency resolution (either something
@@ -714,7 +716,7 @@ namespace Gambit
 
         // Print information
         logger() << LogTags::dependency_resolver;
-        if ( toVertex != OMEGA_VERTEXID )
+        if ( toVertex != OUT_VERTEXID )
         {
           logger() << quantity.first << " (" << quantity.second << ")" << endl;
           logger() << "Required by: ";
@@ -742,12 +744,12 @@ namespace Gambit
 
         // If toVertex is the Core, then fromVertex is one of our target functors, which are
         // the things we want to output to the printer system.  Turn printing on for these.
-        if ( printme and (toVertex==OMEGA_VERTEXID) )
+        if ( printme and (toVertex==OOI_VERTEXID) )
         {
            masterGraph[fromVertex]->setPrintRequirement(true);
         }
 
-        if ( toVertex != OMEGA_VERTEXID)
+        if ( toVertex != OOI_VERTEXID)
         {
           // Resolve dependency on functor level...
           //
@@ -762,7 +764,7 @@ namespace Gambit
               errmsg += "\nmodule function that is not declared as loop manager.";
               dependency_resolver_error().raise(LOCAL_INFO,errmsg);
             }
-            std::set<Graphs::VertexID> v;
+            std::set<DRes::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
             {
               v = loopManagerMap[fromVertex];
@@ -810,7 +812,7 @@ namespace Gambit
     /// Push module function dependencies on parameter queue
     void DependencyResolver::fillParQueue(
         std::queue<QueueEntry> *parQueue,
-        Graphs::VertexID vertex) 
+        DRes::VertexID vertex) 
     {
       bool printme_default = false; // for parQueue constructor
       (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
@@ -847,7 +849,7 @@ namespace Gambit
 
     /// Find auxiliary entry that matches vertex
     const IniParser::ObservableType * DependencyResolver::findIniEntry(
-        Graphs::VertexID toVertex,
+        DRes::VertexID toVertex,
         const IniParser::ObservablesType &entries)
     {
       std::vector<const IniParser::ObservableType*> auxEntryCandidates;

@@ -18,8 +18,8 @@
 ///
 ///  *********************************************
 
-#ifndef __graphs_hpp__
-#define __graphs_hpp__
+#ifndef __depresolver_hpp__
+#define __depresolver_hpp__
 
 #include <string>
 #include <list>
@@ -39,7 +39,7 @@
 namespace Gambit
 {
 
-  namespace Graphs
+  namespace DRes
   {
 
     using namespace boost;
@@ -65,7 +65,7 @@ namespace Gambit
     struct QueueEntry
     {
       QueueEntry() {}
-      QueueEntry(sspair a, Graphs::VertexID b, int c, bool d)
+      QueueEntry(sspair a, DRes::VertexID b, int c, bool d)
       {
         first = a;
         second = b;
@@ -73,7 +73,7 @@ namespace Gambit
         printme = d;
       }
       sspair first;
-      Graphs::VertexID second;
+      DRes::VertexID second;
       int third;
       bool printme;
     };
@@ -121,15 +121,15 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         // Resolution of individual module function dependencies
-        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, Graphs::VertexID>
-          resolveDependency(Graphs::VertexID toVertex, sspair quantity);
+        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, DRes::VertexID>
+          resolveDependency(DRes::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree
         void generateTree(std::queue<QueueEntry> parQueue);
 
         // Helper functions/arrays
         void fillParQueue(std::queue<QueueEntry> *parQueue,
-            Graphs::VertexID vertex);
+            DRes::VertexID vertex);
 
         // Topological sort
         std::list<VertexID> run_topological_sort();
@@ -138,7 +138,7 @@ namespace Gambit
         const IniParser::ObservableType * findIniEntry(
             sspair quantity, const IniParser::ObservablesType &);
         const IniParser::ObservableType * findIniEntry(
-            Graphs::VertexID toVertex, const IniParser::ObservablesType &);
+            DRes::VertexID toVertex, const IniParser::ObservablesType &);
 
         // Resolution of backend dependencies
         void resolveVertexBackend(VertexID);
@@ -177,4 +177,4 @@ namespace Gambit
     };
   }
 }
-#endif /* defined(__graphs_hpp__) */
+#endif /* defined(__depresolver_hpp__) */

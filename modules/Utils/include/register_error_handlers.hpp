@@ -30,8 +30,8 @@ namespace Gambit
     {
       error e = core_error();
       warning w = core_warning();
-      e = Graphs::dependency_resolver_error();
-      w = Graphs::dependency_resolver_warning();
+      e = DRes::dependency_resolver_error();
+      w = DRes::dependency_resolver_warning();
       e = IniParser::inifile_error();
       w = IniParser::inifile_warning();
     }

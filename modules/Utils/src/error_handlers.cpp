@@ -35,7 +35,7 @@ namespace Gambit
     return local;
   }
 
-  namespace Graphs
+  namespace DRes
   {
 
     /// Dependency resolver errors
