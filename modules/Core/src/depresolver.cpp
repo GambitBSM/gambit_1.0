@@ -231,7 +231,7 @@ namespace Gambit
         logger() << LogTags::dependency_resolver << (*it).capability << " (" << (*it).type << ")" << endl << EOM;
         queueEntry.first.first = (*it).capability;
         queueEntry.first.second = (*it).type;
-        queueEntry.second = OUT_VERTEXID;
+        queueEntry.second = OOI_VERTEXID;
         queueEntry.printme = (*it).printme;
         parQueue.push(queueEntry);
       }
@@ -549,7 +549,7 @@ namespace Gambit
       // we just use the entry from the observable/likelihood section for the
       // resolution of ambiguities.  A pointer to the relevant inifile entry
       // is stored in depEntry.
-      if ( toVertex == OUT_VERTEXID)
+      if ( toVertex == OOI_VERTEXID)
       {
         depEntry = findIniEntry(quantity, boundIniFile->getObservables());
         optEntry = depEntry;
@@ -716,7 +716,7 @@ namespace Gambit
 
         // Print information
         logger() << LogTags::dependency_resolver;
-        if ( toVertex != OUT_VERTEXID )
+        if ( toVertex != OOI_VERTEXID )
         {
           logger() << quantity.first << " (" << quantity.second << ")" << endl;
           logger() << "Required by: ";
