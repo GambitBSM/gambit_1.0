@@ -120,10 +120,10 @@ namespace Gambit
         //Square Variadic
         /////////////////////////////////////////////////
         
-        double squareVariadic(){return 0.0;}
+        inline double squareVariadic(){return 0.0;}
         
         template <typename... args>
-        double squareVariadic(const double &val, const args&... params)
+        inline double squareVariadic(const double &val, const args&... params)
         {
                 return val*val + squareVariadic(params...);
         };

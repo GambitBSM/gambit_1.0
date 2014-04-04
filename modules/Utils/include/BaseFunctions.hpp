@@ -39,39 +39,25 @@ namespace Gambit
     //////////////////////////////////////////
 
     // Abstract base class for double^n --> double functions.  
-    template<typename T>
     class BaseFunction;
-    template<typename T>
     class BFintegrate;
-    template<typename T1, typename T2>
     class BFsum;
-    template<typename T1, typename T2>
     class BFmult;
-    template<typename T>
     class BFlineOfSightIntegral;
-    template<typename T>
     class BFfixPar;
-    template<typename T>
     class BFaddPar;
-
-    template<typename T>
-    class BFrotSym;
-    template<typename T>
-    class BFvalidRange;
-    
     class BFinterpolation;
+    class BFrotSym;
+    class BFvalidRange;
 
     // The most relevant object the user will deal with is a shared pointer to
     // the abstract function base class.
-    //typedef shared_ptr<BaseFunction> BFptr;
-#define BFptr(...) shared_ptr<BaseFunction<__VA_ARGS__>>
+    typedef shared_ptr<BaseFunction> BFptr;
 
     // Arguments are by default passed as vectors.  Overloads for calls by
     // argument lists exist.
     typedef std::vector<double> BFargVec;
 
-    shared_ptr<BFinterpolation> BFinterpolationFactory(const std::vector<double> &Xgrid, const std::vector<double> &Ygrid, unsigned int ndim);
-    
     template<typename T>
     inline typename std::enable_if<!is_vector<T>::value, T>::type 
     Enter_Crap(int i, const T &vec)
@@ -86,8 +72,7 @@ namespace Gambit
             return vec[i];
     }
     
-    template <typename T>
-    class BaseFunction : public enable_shared_from_this<BaseFunction<T>>
+    class BaseFunction : public enable_shared_from_this<BaseFunction>
     {
         public:
             // Verbose constructor and destructor
@@ -109,10 +94,9 @@ namespace Gambit
             operator()(const args&... params)
             {
                     assertNdim(sizeof...(args));
-                    //BFargVec v(sizeof...(args));
-                    //inputVariadicVector(v.begin(), params...);
-                    //return static_cast<const T&>(*this).operator()(params...);
-                    return ((T&)*this).operator()(params...);
+                    BFargVec v(sizeof...(args));
+                    inputVariadicVector(v.begin(), params...);
+                    return this->value(v);
             }
             
             template<typename... args>
@@ -122,76 +106,40 @@ namespace Gambit
                     assertNdim(sizeof...(args));
                     int end = getVariadicMaxVector(params...);
                     BFargVec retval(end);
-                    //BFargVec v(sizeof...(args));
+                    BFargVec v(sizeof...(args));
                     for (int i = 0; i < end; i++)
                     {
-                        //inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
-                        retval[i] = static_cast<T&>(*this).operator()(Enter_Crap(i, params)...);
-                        //retval[i] = ((T&)*this).operator()(params...);
+                        inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
+                        retval[i] = this->value(v);
                     }
-                    
                     return retval;
             }
-            
-            //double value(const BFargVec &in)
-            //{
-            //        return static_cast<T&>(*this).value(in);
-            //}
 
             // Returns a copy of the shared pointer object.
-            BFptr(T) getCopy()  { return this->shared_from_this(); }  
+            BFptr getCopy()  { return shared_from_this(); }  
 
             // Getter function for the number of dimensions.
             int getNdim() { return this->ndim; }  
 
             // Member functions that create new derived base function objects.
-//             shared_ptr<BFintegrate> integrate(int i, double x0, double x1);
-//             shared_ptr<BFlineOfSightIntegral> lineOfSightIntegral(double D);
-//             shared_ptr<BFfixPar> fixPar(int i, double x);
-//             shared_ptr<BFrotSym> rotSym(int i);
-//             shared_ptr<BFinterpolation> tabulate(std::vector<double> xgrid);
-//             shared_ptr<BFsum> sum(BFptr f2);
-//             shared_ptr<BFmult> mult(BFptr);
-//             shared_ptr<BFmult> mult(double);
-//             shared_ptr<BFaddPar> addPar(int);
-//             shared_ptr<BFvalidRange> validRange(int, double, double);
-            
-                // Definition of factory functions for above helper classes that are provided by the base function object
-                inline shared_ptr<BFinterpolation> tabulate(std::vector<double> xgrid) 
-                { 
-                        std::vector<double> ygrid;
-                        for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
-                        {
-                        ygrid.push_back(this->operator()(*it));
-                        }
-                        return BFinterpolationFactory(xgrid, ygrid, 1);
-                        //return shared_ptr<BFinterpolation>(new BFinterpolation(xgrid, ygrid, 1));  // Generate new interpolation object
-                }
-                
-                template <typename T1>
-                inline shared_ptr<BFsum<T, T1>> sum(BFptr(T1) f2) { return shared_ptr<BFsum<T, T1>>(new BFsum<T, T1>(this->shared_from_this(), f2)); }
-                template <typename T1>
-                inline shared_ptr<BFmult<T, T1>> mult(BFptr(T1) f2) { return shared_ptr<BFmult<T, T1>>(new BFmult<T, T1>(this->shared_from_this(), f2)); }
-                inline shared_ptr<BFmult<T, double>> mult(double x) { return shared_ptr<BFmult<T, double>>(new BFmult<T, double>(this->shared_from_this(), x)); }
-                inline shared_ptr<BFlineOfSightIntegral<T>> lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral<T>>(new BFlineOfSightIntegral<T>(this->shared_from_this(), D)); }
-                inline shared_ptr<BFfixPar<T>> fixPar(int i, double x) { return shared_ptr<BFfixPar<T>>(new BFfixPar<T>(this->shared_from_this(), i, x)); }
-                inline shared_ptr<BFaddPar<T>> addPar(int i) { return shared_ptr<BFaddPar<T>>(new BFaddPar<T>(this->shared_from_this(), i)); }
-                inline shared_ptr<BFvalidRange<T>> validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange<T>>(new BFvalidRange<T>(this->shared_from_this(), i, x0, x1)); }
-                inline shared_ptr<BFintegrate<T>> integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate<T>> (new BFintegrate<T>(this->shared_from_this(), i, x0, x1)); }
-                inline shared_ptr<BFrotSym<T>> rotSym(int i) { return shared_ptr<BFrotSym<T>>(new BFrotSym<T>(this->shared_from_this(), i)); }
-
-                
-                
+            shared_ptr<BFintegrate> integrate(int i, double x0, double x1);
+            shared_ptr<BFlineOfSightIntegral> lineOfSightIntegral(double D);
+            shared_ptr<BFfixPar> fixPar(int i, double x);
+            shared_ptr<BFrotSym> rotSym(int i);
+            shared_ptr<BFinterpolation> tabulate(std::vector<double> xgrid);
+            shared_ptr<BFsum> sum(BFptr f2);
+            shared_ptr<BFmult> mult(BFptr);
+            shared_ptr<BFmult> mult(double);
+            shared_ptr<BFaddPar> addPar(int);
+            shared_ptr<BFvalidRange> validRange(int, double, double);
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
-            //virtual double integrator(const BFargVec &vec, int i, double E0, double E1)
-            double integrator(const BFargVec &vec, int i, double E0, double E1)
+            virtual double integrator(const BFargVec &vec, int i, double E0, double E1)
             {
-                //(void)vec; (void)i; (void)E0; (void)E1;
-                //failHard("Integrator not implemented.");
-                //return 0;
-                return static_cast<T&>(*this).integrator(vec, i, E0, E1);
+                (void)vec; (void)i; (void)E0; (void)E1;
+                failHard("Integrator not implemented.");
+                return 0;
             }
 
             // Member functions for file IO
@@ -211,8 +159,8 @@ namespace Gambit
             }
 
             // Member functions that change the state of the current base function object.
-            BFptr(T) enableCaching() { cachingFlag = true; return this->shared_from_this(); }
-            BFptr(T) disableCaching() { cachingFlag = false; return this->shared_from_this(); }
+            BFptr enableCaching() { cachingFlag = true; return shared_from_this(); }
+            BFptr disableCaching() { cachingFlag = false; return shared_from_this(); }
 
             // Getter Function
             bool hasIntegrator() { return integratorFlag; }
@@ -224,7 +172,7 @@ namespace Gambit
         //private:
             // The central virtual abstract member function that must be
             // implemented by any derived class.
-            //virtual double value(const BFargVec &args) = 0;
+            virtual double value(const BFargVec &args) = 0;
     private:
             // Function that checks for the correct dimensionality of arguments.
             void assertNdim(unsigned int i, std::string msg = "")
@@ -278,10 +226,10 @@ namespace Gambit
     template <>
     struct BFplainFunctionStruct<1>
     {
-        template<typename T, typename... args>
-        inline static double BFplainFunction(T& void_ptr, const args&... params) 
+        template<typename... args>
+        inline static double BFplainFunction(void* void_ptr, const args&... params) 
         { 
-            return (*void_ptr)(params...);
+                return (**static_cast<BFptr*>(void_ptr))(params...);
         }
     };
     
@@ -298,63 +246,47 @@ namespace Gambit
 
     // Constant n-dim function
     
-//     template <int n, typename... args>
-//     struct BFfromPlainFunctionStruct
-//     {
-//             template <typename... argss>
-//             inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss&... params)
-//             {
-//                     double in;
-//                     return BFfromPlainFunctionStruct<n-1, args...>::BFfromPlainFunction(it, f, in, params...);
-//             }
-//     };
-//     
-//     template <typename... args>
-//     struct BFfromPlainFunctionStruct<0, args...>
-//     {
-//             template <typename... argss>
-//             inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss&... params)
-//             {
-//                     outputVariadicVector(it, params...);
-//                     return f(params...);
-//             }
-//     };
+    template <int n, typename... args>
+    struct BFfromPlainFunctionStruct
+    {
+            template <typename... argss>
+            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss&... params)
+            {
+                    double in;
+                    return BFfromPlainFunctionStruct<n-1, args...>::BFfromPlainFunction(it, f, in, params...);
+            }
+    };
+    
+    template <typename... args>
+    struct BFfromPlainFunctionStruct<0, args...>
+    {
+            template <typename... argss>
+            inline static double BFfromPlainFunction(std::vector<double>::const_iterator it, double (*f)(args...), argss&... params)
+            {
+                    outputVariadicVector(it, params...);
+                    return f(params...);
+            }
+    };
     
     template <typename T>
     class BFfromPlainFunction;
     
     template <typename... args>
-    class BFfromPlainFunction<double (args...)> : public BaseFunction<BFfromPlainFunction<double (args...)>>
+    class BFfromPlainFunction<double (args...)> : public BaseFunction
     {
     private:
             double (*ptr)(args ...);
             
     public:
-            BFfromPlainFunction(double (*f)(args...)) : BaseFunction<BFfromPlainFunction<double (args...)>>("fromPlainFunction", sizeof...(args))
+            BFfromPlainFunction(double (*f)(args...)) : BaseFunction("fromPlainFunction", sizeof...(args))
             {
                     ptr = f;
             }
             
-            //template <typename... argss>
-            double operator()(const args&... params)
+            double value(const BFargVec &vec)
             {
-                    return ptr(params...);
+                    return BFfromPlainFunctionStruct<sizeof...(args), args...>::BFfromPlainFunction(vec.begin(), ptr);
             }
-            
-            template <typename... argss>
-            double operator()(const argss&... params)
-            {
-                    std::ostringstream os;
-                    os << "BFfromPlainFunction:  " << sizeof...(args) << " arguments expected, " << sizeof...(argss) << " recieved.";
-                    this->failHard(os.str());
-                    
-                    return 0.0;
-            }
-            
-            //double value(const BFargVec &vec)
-            //{
-            //        return BFfromPlainFunctionStruct<sizeof...(args), args...>::BFfromPlainFunction(vec.begin(), ptr);
-            //}
     };
     
    /* class BFfromPlainFunction: public BaseFunction
@@ -387,37 +319,31 @@ namespace Gambit
     };*/
 
     // Constant n-dim function 
-    class BFconstant: public BaseFunction<BFconstant>
+    class BFconstant: public BaseFunction
     {
         public:
-            BFconstant(double value, unsigned int ndim) : BaseFunction<BFconstant>("Constant", ndim)
+            BFconstant(double value, unsigned int ndim) : BaseFunction("Constant", ndim)
             {
                 this->myValue = value;
             }
 
         private:
-            template<typename... args>
-            double operator()(const args&... params)
+            double value(const BFargVec &args)
             {
+                (void)args;
                 return myValue;
             }
-            
-            //double value(const BFargVec &args)
-            //{
-            //    (void)args;
-            //    return myValue;
-            //}
 
             double myValue;
     };
 
 
     // 1-dim function from table
-    class BFinterpolation: public BaseFunction<BFinterpolation>
+    class BFinterpolation: public BaseFunction
     {
         public:
-            BFinterpolation(const std::vector<double> &Xgrid, const std::vector<double> &Ygrid, unsigned int ndim, std::string mode = "lin") :
-                BaseFunction<BFinterpolation>("Interpolation", ndim), mode(mode)
+            BFinterpolation(std::vector<double> Xgrid, std::vector<double> Ygrid, unsigned int ndim, std::string mode = "lin") :
+                BaseFunction("Interpolation", ndim), mode(mode)
             {
                 if (ndim != 1) failHard("Only 1-dim interpolation implemented right now.");
                 this->Xgrid = Xgrid;
@@ -429,23 +355,8 @@ namespace Gambit
                 {
                     failHard("expecting mode = 'lin' or mode = 'log' for linear interpolation in lin-lin or log-log space.");
                 }
-            }
+            };
 
-            double operator()(const double &param)
-            {
-                return (this->*ptr)(param);
-            }
-            
-            template <typename... argss>
-            double operator()(const argss&... params)
-            {
-                    std::ostringstream os;
-                    os << "BFinterpolation:  " << 1 << " argument expected, " << sizeof...(argss) << " recieved.";
-                    this->failHard(os.str());
-                    
-                    return 0.0;
-            }
-            
         protected:
             // Implementation specific integrator
             double integrator(const BFargVec &vec, int i, double E0, double E1)
@@ -480,18 +391,17 @@ namespace Gambit
                 }
                 return sum;
             }
-            
-        private:
-            //double value(const BFargVec &args)
-            //{
-            //    return (this->*ptr)(args);
-            //}
 
-            //double logInterp(const BFargVec &args)
-            double logInterp(const double &args)
+        private:
+            double value(const BFargVec &args)
+            {
+                return (this->*ptr)(args);
+            }
+
+            double logInterp(const BFargVec &args)
             {
                 // Linear interpolation in log-log space
-                double energy = args;//[0];
+                double energy = args[0];
                 if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
                 int i = 0; for (; Xgrid[i] < energy; i++) {};  // Find index
                 double x0 = Xgrid[i-1];
@@ -501,11 +411,10 @@ namespace Gambit
                 return y0 * exp(log(y1/y0) * log(energy/x0) / log(x1/x0));
             }
 
-            //double linearInterp(const BFargVec &args)
-            double linearInterp(const double &args)
+            double linearInterp(const BFargVec &args)
             {
                 // Linear interpolation in lin-lin space
-                double energy = args;//[0];
+                double energy = args[0];
                 if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
                 int i = 0; for (; Xgrid[i] < energy; i++) {};  // Find index
                 double x0 = Xgrid[i-1];
@@ -515,157 +424,114 @@ namespace Gambit
                 return y0 + (energy-x0)/(x1-x0)*(y1-y0);
             }
 
-            //double(BFinterpolation::*ptr)(const BFargVec&);
-            double(BFinterpolation::*ptr)(const double&);
+            double(BFinterpolation::*ptr)(const BFargVec&);
             std::vector<double> Xgrid;
             std::vector<double> Ygrid;
             std::string mode;
     };
 
-    inline shared_ptr<BFinterpolation> BFinterpolationFactory(const std::vector<double> &xgrid, const std::vector<double> &ygrid, unsigned int ndim)
-    {
-            return shared_ptr<BFinterpolation>(new BFinterpolation(xgrid, ygrid, ndim));
-    }
 
     /////////////////////////////////////////////////////////////////////
     // Helper classes that create new base functions from existing ones
     /////////////////////////////////////////////////////////////////////
 
     // General mapping 1-dim --> n-dim, assuming rotational symmetry
-    template <typename T>
-    class BFrotSym : public BaseFunction<BFrotSym<T>>
+    class BFrotSym : public BaseFunction
     {
         public:
-            BFrotSym(BFptr(T) radialProfile, unsigned int ndim) : BaseFunction<BFrotSym<T>>("RotSym", ndim)
+            BFrotSym(BFptr radialProfile, unsigned int ndim) : BaseFunction("RotSym", ndim)
             {
-                if (radialProfile->getNdim() != 1) this->failHard("RotSym constructor requires 1-dim radial profile.");
+                if (radialProfile->getNdim() != 1) failHard("RotSym constructor requires 1-dim radial profile.");
                 this->radialProfile = radialProfile;
             };
-            
-            template <typename... args>
-            double operator()(const args&... params)
-            {
-                return (*(this->radialProfile))(sqrt(squareVariadic(params...)));
-            }
-            
         private:
-            //double value(const BFargVec &args)
-//             {
-//                 double r = 0;
-//                 for (unsigned int i = 0; i < ndim; i++)
-//                 {
-//                     r += args[i] * args[i];
-//                 }
-//                 r = sqrt(r);
-//                 return (*(this->radialProfile))(r);
-//             }
-      
-            BFptr(T) radialProfile;
+            double value(const BFargVec &args)
+            {
+                double r = 0;
+                for (unsigned int i = 0; i < ndim; i++)
+                {
+                    r += args[i] * args[i];
+                }
+                r = sqrt(r);
+                return (*(this->radialProfile))(r);
+            }
+            BFptr radialProfile;
     };
 
     // General mapping n-dim --> (n+1)-dim, by one one parameter
-    template <typename T>
-    class BFaddPar: public BaseFunction<BFaddPar<T>>
+    class BFaddPar: public BaseFunction
     {
         public:
-            BFaddPar(BFptr(T) parent, int i) : 
-                BaseFunction<BFaddPar<T>>("AddPar", parent->getNdim()+1), 
+            BFaddPar(BFptr parent, int i) : 
+                BaseFunction("AddPar", parent->getNdim()+1), 
                 myPointer(parent), index(i) {}
 
-            //double value(const BFargVec &args)
-            //{
-            //    BFargVec myArgs = args;
-            //    myArgs.erase(myArgs.begin() + index);
-            //    return (*myPointer).value(myArgs);
-            //}
-            
-            template<typename... args>
-            double operator()(args... params)
+            double value(const BFargVec &args)
             {
-                return rmVariadicPt(index, *myPointer, params...);
+                BFargVec myArgs = args;
+                myArgs.erase(myArgs.begin() + index);
+                return (*myPointer).value(myArgs);
             }
 
         private:
-            BFptr(T) myPointer;
+            BFptr myPointer;
             int index;
     };
 
     // Checks whether a given parameter is within the allowed range, and
     // otherwise throws an exception
-    template <typename T>
-    class BFvalidRange: public BaseFunction<BFvalidRange<T>>
+    class BFvalidRange: public BaseFunction
     {
         public:
-            BFvalidRange(BFptr(T) parent, int i, double x0, double x1) : 
-                BaseFunction<BFvalidRange<T>>("validRange", parent->getNdim()), 
+            BFvalidRange(BFptr parent, int i, double x0, double x1) : 
+                BaseFunction("validRange", parent->getNdim()), 
                 myPointer(parent), index(i), x0(x0), x1(x1) {}
 
-            //double value(const BFargVec &args)
-            //{
-            //    if (x0>args[index] or x1<args[index])
-            //    {
-            //        std::cout << "WARNING: Accessing Base Function object out of range!!!" << std::endl;
-            //        std::cout << "Requested: " << args[index] << ", valid range is " << x0 << " to " << x1 << std::endl;
-            //        return 0;
-            //    }
-            //    return (*myPointer).value(args);
-            //}
-            
-            template<typename... args>
-            double operator()(const args&... params)
+            double value(const BFargVec &args)
             {
-                double val = getVariadicPt(index, params...);
-                if (x0>val or x1<val)
+                if (x0>args[index] or x1<args[index])
                 {
                     std::cout << "WARNING: Accessing Base Function object out of range!!!" << std::endl;
-                    std::cout << "Requested: " << val << ", valid range is " << x0 << " to " << x1 << std::endl;
+                    std::cout << "Requested: " << args[index] << ", valid range is " << x0 << " to " << x1 << std::endl;
                     return 0;
                 }
-                return (*myPointer)(params...);
+                return (*myPointer).value(args);
             }
 
         private:
-            BFptr(T) myPointer;
+            BFptr myPointer;
             int index;
             double x0;
             double x1;
     };
 
     // General mapping n-dim --> (n-1)-dim, by fixing one parameter
-    template <typename T>
-    class BFfixPar: public BaseFunction<BFfixPar<T>>
+    class BFfixPar: public BaseFunction
     {
         public:
-            BFfixPar(BFptr(T) parent, int i, double x) : 
-                BaseFunction<BFfixPar<T>>("FixPar", parent->getNdim()-1), 
+            BFfixPar(BFptr parent, int i, double x) : 
+                BaseFunction("FixPar", parent->getNdim()-1), 
                 myPointer(parent), index(i), x(x) {}
 
-            //double value(const BFargVec &args)
-            //{
-            //    BFargVec myArgs = args;
-            //    myArgs.insert(myArgs.begin() + index, x);
-            //    return (*myPointer).value(myArgs);
-            //}
-            
-            template <typename... args>
-            double operator()(args... params)
+            double value(const BFargVec &args)
             {
-                return addVariadicPt(index, x, *myPointer, params...);
+                BFargVec myArgs = args;
+                myArgs.insert(myArgs.begin() + index, x);
+                return (*myPointer).value(myArgs);
             }
 
         private:
-            BFptr(T) myPointer;
+            BFptr myPointer;
             int index;
             double x;
     };
 
     // General mapping n-dim --> (n-1)-dim, integration along one argument
-    template <typename T>
-    class BFintegrate : public BaseFunction<BFintegrate<T>>, public gsl_function
+    class BFintegrate : public BaseFunction, public gsl_function
     {
         public:
-            BFintegrate(BFptr(T) integrand, unsigned int i, double x0, double x1):
-                BaseFunction<BFintegrate<T>>("Integrate", integrand->getNdim()-1), x0(x0),
+            BFintegrate(BFptr integrand, unsigned int i, double x0, double x1):
+                BaseFunction("Integrate", integrand->getNdim()-1), x0(x0),
                 x1(x1), integrand(integrand), index(i), epsabs(0),
                 epsrel(1e-2), limit(10000)
             {
@@ -680,30 +546,27 @@ namespace Gambit
                 gsl_integration_workspace_free(gsl_workspace);
             }
 
-            shared_ptr<BFintegrate<T>> set_epsrel(double epsrel)
+            shared_ptr<BFintegrate> set_epsrel(double epsrel)
             {
                 this->epsrel = epsrel;
-                return static_pointer_cast<BFintegrate<T>> (this->shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
-            shared_ptr<BFintegrate<T>> set_epsabs(double epsabs)
+            shared_ptr<BFintegrate> set_epsabs(double epsabs)
             {
                 this->epsabs = epsabs;
-                return static_pointer_cast<BFintegrate<T>> (this->shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
-            shared_ptr<BFintegrate<T>> set_epsabs(size_t limit)
+            shared_ptr<BFintegrate> set_epsabs(size_t limit)
             {
                 this->limit = limit;
-                return static_pointer_cast<BFintegrate<T>> (this->shared_from_this());
+                return static_pointer_cast<BFintegrate> (shared_from_this());
             }
 
-            //double value(const BFargVec &args)
-            template <typename... argss>
-            double operator()(const argss&... paramss)
+        private:
+            double value(const BFargVec &args)
             {
-                BFargVec args(sizeof...(argss));
-                inputVariadicVector(args.begin(), paramss...);
                 // If integrand has its own integrator, use that.
                 if (integrand->hasIntegrator())
                 {
@@ -729,18 +592,17 @@ namespace Gambit
                 gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
 
                 return result;
-            }//18002216903 4167762466
-        private:
+            }
+
             // Static member function that invokes integrand
             static double invoke(double x, void *params) {
                 BFintegrate * myBF = static_cast<BFintegrate*>(params);
                 (myBF->fullArgs)[myBF->index] = x;  // Set argument
-                return inputVariadicFunction((*myBF->integrand), (myBF->fullArgs).begin(), (myBF->fullArgs).end());
-                //return (*myBF->integrand).value(myBF->fullArgs);
+                return (*myBF->integrand).value(myBF->fullArgs);
             }
 
             double x0, x1;  // Integration range
-            BFptr(T) integrand;  // n-dim integrand
+            BFptr integrand;  // n-dim integrand
             unsigned int index;  // index of variable to integrate over
             BFargVec fullArgs;  // n-dim temporary argument list for integrand
             gsl_integration_workspace * gsl_workspace;  // GSL workspace
@@ -750,196 +612,150 @@ namespace Gambit
     };
 
     // General mapping 3-dim --> 2-dim, line-of-sight integral
-    template <typename T>
-    class BFlineOfSightIntegral : public BaseFunction <BFlineOfSightIntegral<T>>
+    class BFlineOfSightIntegral : public BaseFunction 
     {
         public:
-            BFlineOfSightIntegral(BFptr(T) integrand, double D) :
-                BaseFunction<BFlineOfSightIntegral<T>>("LineOfSightIntegral", 2), D(D), integrand(integrand) 
+            BFlineOfSightIntegral(BFptr integrand, double D) :
+                BaseFunction("LineOfSightIntegral", 2), D(D), integrand(integrand) 
             {
-                if (integrand->getNdim()!=3) this->failHard("LineOfSightIntegral requires 3-dim density profile.");
+                if (integrand->getNdim()!=3) failHard("LineOfSightIntegral requires 3-dim density profile.");
             }
 
-            //double value(const BFargVec &args)
-            template <typename... args>
-            double operator()(args... params)
+            double value(const BFargVec &args)
             {
                 // TODO: Implement LOS-integral.  Two arguments are (theta, phi).
-                //(void)args;
+                (void)args;
                 return 0;
             }
 
         private:
             double D, theta, phi;
-            BFptr(T) integrand;
+            BFptr integrand;
     };
 
     // General mapping n-dim --> n-dim, tabulate underlying function
     // NOTE: Right now, this is just a dummy function that does actually
     // nothing but passing the original BF.
-    template <typename T>
-    class BFtabulate: public BaseFunction<BFtabulate<T>>
+    class BFtabulate: public BaseFunction
     {
         public:
-            BFtabulate(BFptr(T) ptrOrig, const std::vector<double> &xgrid) : BaseFunction<BFtabulate<T>>("Tabulate", ptrOrig->getNdim())
+            BFtabulate(BFptr ptrOrig, std::vector<double> xgrid) : BaseFunction("Tabulate", ptrOrig->getNdim())
             {
                 for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
                 {
                     ygrid.push_back((*ptrOrig)(*it));
                 }
-                ptr.reset(BFptr(BFinterpolation)(new BFinterpolation(xgrid, ygrid, 1)));
+                ptr.reset(new BFinterpolation(xgrid, ygrid, 1));
             }
 
-            //double value(const BFargVec &args)
-            //{
-            //    return (*ptr).value(args);
-            //}
-            
-            template <typename... args>
-            double operator()(const args&... params)
+            double value(const BFargVec &args)
             {
-                return (*ptr)(params...);
+                return (*ptr).value(args);
             }
 
         private:
             std::vector<double> xgrid;
             std::vector<double> ygrid;
-            BFptr(T) ptr;
+            BFptr ptr;
     };
 
     // Adding two functions (n-dim, n-dim) --> n-dim
-    template <typename T1, typename T2>
-    class BFsum: public BaseFunction<BFsum<T1, T2>>
+    class BFsum: public BaseFunction
     {
         public:
-            BFsum(BFptr(T1) f1, BFptr(T2) f2) : BaseFunction<BFsum<T1, T2>>("Sum", f1->getNdim()), f1(f1), f2(f2)
+            BFsum(BFptr f1, BFptr f2) : BaseFunction("Sum", f1->getNdim()), f1(f1), f2(f2)
             {
-                if (f1->getNdim()!=f2->getNdim()) this->failHard("BFsum can only sum objects with matching dimensionality.");
+                if (f1->getNdim()!=f2->getNdim()) failHard("BFsum can only sum objects with matching dimensionality.");
             }
 
         private:
-            //double value(const BFargVec &args)
-            //{
-            //    return (*f1).value(args) + (*f2).value(args);
-            //}
-
-            template <typename... args>
-            double operator()(args... params)
+            double value(const BFargVec &args)
             {
-                return (*f1)(params...) + (*f2)(params...);
+                return (*f1).value(args) + (*f2).value(args);
             }
-            
-            BFptr(T1) f1;
-            BFptr(T2) f2;
+
+            BFptr f1;
+            BFptr f2;
     };
     
     // Multiplying two functions (n-dim, n-dim) --> n-dim
     // OR multiply function with constant value (n-dim, 0-dim) --> n-dim
-    template <typename T1, typename T2>
-    class BFmult: public BaseFunction<BFmult<T1, T2>>
+    class BFmult: public BaseFunction
     {
         public:
-            BFmult(BFptr(T1) f1, BFptr(T2) f2) : BaseFunction<BFmult<T1, T2>>("Multiplication", f1->getNdim()), f1(f1), f2(f2)
+            BFmult(BFptr f1, BFptr f2) : BaseFunction("Multiplication", f1->getNdim()), f1(f1), f2(f2)
             {
-                if (f1->getNdim()!=f2->getNdim()) this->failHard("BFmult can only multiply objects with matching dimensionality.");
-                //this->ptr = &BFmult::multBFs;
+                if (f1->getNdim()!=f2->getNdim()) failHard("BFmult can only multiply objects with matching dimensionality.");
+                this->ptr = &BFmult::multBFs;
             }
 
-            //BFmult(BFptr(T) f1, double x) : BaseFunction("Multiplication", f1->getNdim()), f1(f1), x(x)
-            //{
-                //this->ptr = &BFmult::multConst;
-            //}
-
-        private:
-            //double value(const BFargVec &args)
-            //{
-            //    return (this->*ptr)(args);
-            //}
-            //
-            //double multBFs(const BFargVec &args)
-            //{
-            //    return (*f1).value(args) * (*f2).value(args);
-            //}
-            //
-            //double multConst(const BFargVec &args)
-            //{
-            //    return (*f1).value(args) * x;
-            //}
-
-            template<typename... args>
-            double operator()(const args... params)
-            {
-                return (*f1)(params...) * (*f2)(params...);
-            }
-         private:
-            BFptr(T1) f1;
-            BFptr(T2) f2;
-            //double (BFmult::*ptr)(const BFargVec &args);
-            //double x;
-    };
-
-    template <typename T1>
-    class BFmult <T1, double> : public BaseFunction<BFmult<T1, double>>
-    {
-        public:
-
-            BFmult(BFptr(T1) f1, double x) : BaseFunction<BFmult<T1, double>>("Multiplication", f1->getNdim()), f1(f1), x(x)
+            BFmult(BFptr f1, double x) : BaseFunction("Multiplication", f1->getNdim()), f1(f1), x(x)
             {
                 this->ptr = &BFmult::multConst;
             }
 
-            template<typename... args>
-            double operator()(const args... params)
+        private:
+            double value(const BFargVec &args)
             {
-                return (*f1)(params...) * x;
+                return (this->*ptr)(args);
             }
-            
-        private:   
-            BFptr(T1) f1;
+
+            double multBFs(const BFargVec &args)
+            {
+                return (*f1).value(args) * (*f2).value(args);
+            }
+
+            double multConst(const BFargVec &args)
+            {
+                return (*f1).value(args) * x;
+            }
+
+            BFptr f1;
+            BFptr f2;
+            double (BFmult::*ptr)(const BFargVec &args);
             double x;
     };
-    
-    // Definition of factory functions for above helper classes that are provided by the base function object
-//     inline shared_ptr<BFinterpolation> BaseFunction::tabulate(std::vector<double> xgrid) 
-//     { 
-//         std::vector<double> ygrid;
-//         for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
-//         {
-//             ygrid.push_back(this->operator()(*it));
-//         }
-//         return shared_ptr<BFinterpolation>(new BFinterpolation(xgrid, ygrid, 1));  // Generate new interpolation object
-//     }
-    
-    //inline shared_ptr<BFsum> BaseFunction::sum(BFptr f2) { return shared_ptr<BFsum>(new BFsum(shared_from_this(), f2)); }
-    //inline shared_ptr<BFmult> BaseFunction::mult(BFptr f2) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), f2)); }
-    //inline shared_ptr<BFmult> BaseFunction::mult(double x) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), x)); }
-    //inline shared_ptr<BFlineOfSightIntegral> BaseFunction::lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral>(new BFlineOfSightIntegral(shared_from_this(), D)); }
-    //inline shared_ptr<BFfixPar> BaseFunction::fixPar(int i, double x) { return shared_ptr<BFfixPar>(new BFfixPar(shared_from_this(), i, x)); }
-    //inline shared_ptr<BFaddPar> BaseFunction::addPar(int i) { return shared_ptr<BFaddPar>(new BFaddPar(shared_from_this(), i)); }
-    //inline shared_ptr<BFvalidRange> BaseFunction::validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange>(new BFvalidRange(shared_from_this(), i, x0, x1)); }
-    //inline shared_ptr<BFintegrate> BaseFunction::integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate> (new BFintegrate(shared_from_this(), i, x0, x1)); }
-    //inline shared_ptr<BFrotSym> BaseFunction::rotSym(int i) { return shared_ptr<BFrotSym>(new BFrotSym(shared_from_this(), i)); }
 
-    template <typename T1, typename T2>
-    inline shared_ptr<BFsum<T1, T2>> operator + (const BFptr(T1) &f1, const BFptr(T2) &f2){ return shared_ptr<BFsum<T1, T2>>(new BFsum<T1, T2>(f1, f2));}
-    template <typename T1, typename T2>
-    inline shared_ptr<BFmult<T1, T2>> operator * (const BFptr(T1) &f1, const BFptr(T2) &f2){ return shared_ptr<BFmult<T1, T2>>(new BFmult<T1, T2>(f1, f2));}
+    // Definition of factory functions for above helper classes that are provided by the base function object
+    inline shared_ptr<BFinterpolation> BaseFunction::tabulate(std::vector<double> xgrid) 
+    { 
+        std::vector<double> ygrid;
+        for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
+        {
+            ygrid.push_back(this->operator()(*it));
+        }
+        return shared_ptr<BFinterpolation>(new BFinterpolation(xgrid, ygrid, 1));  // Generate new interpolation object
+    }
+    
+    inline shared_ptr<BFsum> BaseFunction::sum(BFptr f2) { return shared_ptr<BFsum>(new BFsum(shared_from_this(), f2)); }
+    inline shared_ptr<BFmult> BaseFunction::mult(BFptr f2) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), f2)); }
+    inline shared_ptr<BFmult> BaseFunction::mult(double x) { return shared_ptr<BFmult>(new BFmult(shared_from_this(), x)); }
+    inline shared_ptr<BFlineOfSightIntegral> BaseFunction::lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral>(new BFlineOfSightIntegral(shared_from_this(), D)); }
+    inline shared_ptr<BFfixPar> BaseFunction::fixPar(int i, double x) { return shared_ptr<BFfixPar>(new BFfixPar(shared_from_this(), i, x)); }
+    inline shared_ptr<BFaddPar> BaseFunction::addPar(int i) { return shared_ptr<BFaddPar>(new BFaddPar(shared_from_this(), i)); }
+    inline shared_ptr<BFvalidRange> BaseFunction::validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange>(new BFvalidRange(shared_from_this(), i, x0, x1)); }
+    inline shared_ptr<BFintegrate> BaseFunction::integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate> (new BFintegrate(shared_from_this(), i, x0, x1)); }
+    inline shared_ptr<BFrotSym> BaseFunction::rotSym(int i) { return shared_ptr<BFrotSym>(new BFrotSym(shared_from_this(), i)); }
+
+    
+    inline shared_ptr<BFsum> operator + (const BFptr &f1, const BFptr &f2){ return shared_ptr<BFsum>(new BFsum(f1, f2));}
+    inline shared_ptr<BFmult> operator * (const BFptr &f1, const BFptr &f2){ return shared_ptr<BFmult>(new BFmult(f1, f2));}
 
     ///////////////////////////////////////////////////
     // Explicit implementations of physical functions
     ///////////////////////////////////////////////////
 
-    class DMradialProfile: public BaseFunction<DMradialProfile>
+    class DMradialProfile: public BaseFunction
     {
         public:
-            DMradialProfile(std::string type, unsigned int ndim, BFargVec pars) : BaseFunction<DMradialProfile>("DMradialProfile", ndim), ndim(ndim)
+            DMradialProfile(std::string type, unsigned int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
             {
-                if (ndim != 1 and ndim != 3) this->failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim"
+                if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim"
                         " density function.");
 
                 if (type == "NFW")
                 {
-                    if (pars.size() != 2) this->failHard("NFW profile requires two parameters (scale radius and scale density).");
+                    if (pars.size() != 2) failHard("NFW profile requires two parameters (scale radius and scale density).");
                     this->rs = pars[0];
                     this->rhos = pars[1];
                     this->ptrF = &DMradialProfile::NFW;
@@ -947,7 +763,7 @@ namespace Gambit
 
                 if (type == "Einasto")
                 {
-                    if (pars.size() != 3) this->failHard("Einasto profile requires three parameters (alpha, scale radius and scale"
+                    if (pars.size() != 3) failHard("Einasto profile requires three parameters (alpha, scale radius and scale"
                             " density).");
                     this->rs = pars[0];
                     this->rhos = pars[1];
@@ -957,7 +773,7 @@ namespace Gambit
 
                if (type == "isothermal")
                 {
-                    if (pars.size() != 2) this->failHard("Cored isothermal profile requires two parameters (scale radius and scale density).");
+                    if (pars.size() != 2) failHard("Cored isothermal profile requires two parameters (scale radius and scale density).");
                     this->rs = pars[0];
                     this->rhos = pars[1];
                     this->ptrF = &DMradialProfile::isothermal;
@@ -966,7 +782,7 @@ namespace Gambit
 
                if (type == "alpha-beta-gamma")
                {
-                   if (pars.size() != 5) this->failHard("alpha-beta-gamma profile requires five parameters (alpha, beta, gamma, scale radius"
+                   if (pars.size() != 5) failHard("alpha-beta-gamma profile requires five parameters (alpha, beta, gamma, scale radius"
                            "and scale density).");
                    this->rs = pars[0];
                    this->rhos = pars[1];
@@ -976,33 +792,26 @@ namespace Gambit
                    this->ptrF = &DMradialProfile::alphaBetaGamma;
                }
             }
-            
-            template <typename... args>
-            double operator() (const args&... params)
-            {
-                    return (this->*ptrF)(sqrt(squareVariadic(params...)));
-            }
-            
 
           private:
             // Redirection to profiles
-            //double value(const BFargVec &vec)
-            //{
-            //    if (ndim == 1)
-            //    {
-            //        return (this->*ptrF)(vec[0]);
-            //    }
-            //    else
-            //    {
-            //        double r = 0;
-            //        for (unsigned int i = 0; i < ndim; i++)
-            //        {
-            //            r += vec[i] * vec[i];
-            //        }
-            //        r = sqrt(r);
-            //        return (this->*ptrF)(r);
-            //    }
-            //}
+            double value(const BFargVec &vec)
+            {
+                if (ndim == 1)
+                {
+                    return (this->*ptrF)(vec[0]);
+                }
+                else
+                {
+                    double r = 0;
+                    for (unsigned int i = 0; i < ndim; i++)
+                    {
+                        r += vec[i] * vec[i];
+                    }
+                    r = sqrt(r);
+                    return (this->*ptrF)(r);
+                }
+            }
 
             // Dark matter profile parameters
             double rs;  // Scale radius [kpc]
