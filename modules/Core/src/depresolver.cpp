@@ -212,20 +212,19 @@ namespace Gambit
     
       // Set up list of target ObsLikes
       logger() << LogTags::dependency_resolver;
-      logger() << endl << "Target likelihoods/observables" << endl;
-      logger() <<         "------------------------------" << endl;
-      logger() <<         "CAPABILITY (TYPE)"   << endl;
-      logger() << EOM;
-      for (IniParser::ObservablesType::const_iterator it =
-          observables.begin(); it != observables.end(); ++it)
+      logger() << endl << "OUTPUT LIKELIHOODS AND OBSERVABLES" << endl;
+      logger() <<         "----------------------------------" << endl;
+      logger() <<         "CAPABILITY (TYPE) [PURPOSE]"   << endl;
+      for (auto it = observables.begin(); it != observables.end(); ++it)
       {
-        logger() << LogTags::dependency_resolver << (*it).capability << " (" << (*it).type << ")" << endl << EOM;
-        queueEntry.first.first = (*it).capability;
-        queueEntry.first.second = (*it).type;
+        logger() << LogTags::dependency_resolver << it->capability << " (" << it->type << ") [" << it->purpose << "]" << endl;
+        queueEntry.first.first = it->capability;
+        queueEntry.first.second = it->type;
         queueEntry.second = OBSLIKE_VERTEXID;
-        queueEntry.printme = (*it).printme;
+        queueEntry.printme = it->printme;
         parQueue.push(queueEntry);
       }
+      logger() << EOM;
 
       // Select functors compatible with model we scan over (and deactivate the
       // rest)
@@ -270,7 +269,7 @@ namespace Gambit
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       const str formatString = "%-20s %-32s %-32s %-32s %-15s %-7i %-5i %-5i\n";
-      logger() << LogTags::dependency_resolver << "Vertices registered in masterGraph" << endl;
+      logger() << LogTags::dependency_resolver << endl << "Vertices registered in masterGraph" << endl;
       logger() << "----------------------------------" << endl;
       logger() << boost::format(formatString)%
        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
@@ -618,10 +617,10 @@ namespace Gambit
       // Die if there is no way to fulfill this dependency.
       if ( vertexCandidates.size() == 0 ) 
       {
-        str errmsg = "I could not find any module function that provides capability\n";
-        errmsg += quantity.first + " with type " + quantity.second + "."
+        str errmsg = "I could not find any module function that provides capability \"";
+        errmsg += quantity.first + "\" with type \"" + quantity.second + "\"."
                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
       }
 
       // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
@@ -648,7 +647,7 @@ namespace Gambit
             {
               str errmsg = "Multi-parent models cannot be used in cases where model specific functor rules need";
               errmsg += "to be invoked. Please specify your required dependencies more fully in your inifile.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
             }
             else if (pvec.size() == 0) 
             {
@@ -677,7 +676,7 @@ namespace Gambit
         {
           errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
       }
 
       return std::tie(depEntry, vertexCandidates[0]);
@@ -763,7 +762,7 @@ namespace Gambit
             {
               str errmsg = "Trying to resolve dependency on loop manager with";
               errmsg += "\nmodule function that is not declared as loop manager.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
             }
             std::set<DRes::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
@@ -864,7 +863,7 @@ namespace Gambit
       if ( auxEntryCandidates.size() == 0 ) return NULL;
       else if ( auxEntryCandidates.size() != 1 )
       {
-        dependency_resolver_error().raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex.");
+        dependency_resolver_error().raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex."); // XXX
       }
       return auxEntryCandidates[0]; // auxEntryCandidates.size() == 1
     }
@@ -885,7 +884,7 @@ namespace Gambit
       if ( obsEntryCandidates.size() == 0 ) return NULL;
       else if ( obsEntryCandidates.size() != 1 )
       {
-        str errmsg = "Multiple matches for identical capability in inifile.";
+        str errmsg = "Multiple matches for identical capability in inifile."; // XXX
         errmsg += "\nCapability: " + quantity.first + " (" + quantity.second + ")";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
@@ -964,13 +963,13 @@ namespace Gambit
                    +  "\nparticular, make sure that your mangled function"
                    +  "\nnames match the symbol names in your shared lib.";
           }
-          dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+          dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
         }
 
         // One candidate...
         if (vertexCandidates.size() > 1)
         {
-          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement.");
+          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement."); // XXX
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
