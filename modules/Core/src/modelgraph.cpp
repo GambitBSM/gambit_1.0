@@ -46,10 +46,10 @@ namespace Gambit
     class labelWriter
     {
       private:
-        const Graphs::MasterGraphType * myGraph;
+        const DRes::MasterGraphType * myGraph;
       public:
-        labelWriter(const Graphs::MasterGraphType * modelGraph) : myGraph(modelGraph) {};
-        void operator()(std::ostream& out, const Graphs::VertexID& v) const
+        labelWriter(const DRes::MasterGraphType * modelGraph) : myGraph(modelGraph) {};
+        void operator()(std::ostream& out, const DRes::VertexID& v) const
         {
           if ( (*myGraph)[v]->status() == 2 )
           {
@@ -78,8 +78,8 @@ namespace Gambit
     /// Figure out relationships between primary model functors    
     void ModelHierarchy::makeGraph(const primodel_vec& primaryModelFunctors)
     {
-      boost::graph_traits<Graphs::MasterGraphType>::vertex_iterator vi, vi_end;
-      std::map<str, Graphs::VertexID> vertexIDmap;
+      boost::graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
+      std::map<str, DRes::VertexID> vertexIDmap;
       str model;
       
       std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
@@ -101,7 +101,7 @@ namespace Gambit
       // of each one in modelClaw().myParentsDB, and add an edge from parent to child in the
       // model graph.
       //
-      typedef std::map<str, Graphs::VertexID>::iterator vertexIDmap_it;
+      typedef std::map<str, DRes::VertexID>::iterator vertexIDmap_it;
       for (vertexIDmap_it vimap = vertexIDmap.begin(); 
               vimap != vertexIDmap.end(); vimap++) 
       {

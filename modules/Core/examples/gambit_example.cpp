@@ -17,7 +17,7 @@
 ///  *********************************************
 
 #include "backend_rollcall.hpp"
-#include "graphs.hpp"
+#include "depresolver.hpp"
 #include "yaml_parser.hpp"
 #include "scannerbit.hpp"
 #include "module_rollcall.hpp"
@@ -56,7 +56,7 @@ void beispiel()
   Printers::ostreamPrinter printer(std::cout,1); 
                                    
   // Set up dependency resolver
-  Graphs::DependencyResolver dependencyResolver(Core(), iniFile, printer);
+  DRes::DependencyResolver dependencyResolver(Core(), iniFile, printer);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -80,8 +80,8 @@ void beispiel()
   // Run 100 times
   for (int i = 0; i<100; i++)
   {
-    std::vector<Graphs::VertexID> OL = dependencyResolver.getObsLikeOrder();
-    for (std::vector<Graphs::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
+    std::vector<DRes::VertexID> OL = dependencyResolver.getObsLikeOrder();
+    for (std::vector<DRes::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
     {
       dependencyResolver.calcObsLike(*it);
       dependencyResolver.notifyOfInvalidation(*it);

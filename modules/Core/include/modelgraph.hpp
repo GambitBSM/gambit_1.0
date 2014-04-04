@@ -26,7 +26,7 @@
 #ifndef __modelgraph_hpp__
 #define __modelgraph_hpp__
 
-#include "graphs.hpp"
+#include "depresolver.hpp"
 
 
 namespace Gambit
@@ -44,7 +44,7 @@ namespace Gambit
       void addFunctorsToGraph(const primodel_vec&);
         
       /// The central boost graph object for the model hierarchy
-      Graphs::MasterGraphType modelGraph;
+      DRes::MasterGraphType modelGraph;
 
     public:
 

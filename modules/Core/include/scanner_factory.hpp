@@ -33,7 +33,7 @@
 #include <string>
 
 #include "functors.hpp"
-#include "graphs.hpp"
+#include "depresolver.hpp"
 #include "priors.hpp"
 #include "scanner_utils.hpp"
 #include "scan.hpp"
@@ -46,7 +46,7 @@ namespace Gambit
         {
                 registry
                 {
-                        typedef void* factory_type(const std::map<std::string, primary_model_functor *> &, Graphs::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
+                        typedef void* factory_type(const std::map<std::string, primary_model_functor *> &, DRes::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
                         reg_elem <factory_type> __scanner_factories__;
                 }
                 
@@ -61,12 +61,12 @@ namespace Gambit
                 class Scanner_Function_Factory : public Factory_Base
                 {
                 private:
-                        Graphs::DependencyResolver &dependencyResolver;
+                        DRes::DependencyResolver &dependencyResolver;
                         Priors::CompositePrior &prior;
                         std::map<std::string, primary_model_functor *> functorMap;
                         
                 public:
-                        Scanner_Function_Factory(const gambit_core &core, Graphs::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior);
+                        Scanner_Function_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior);
                         
                         const std::vector<std::string> & getKeys() const {return prior.getShownParameters();}
                         
