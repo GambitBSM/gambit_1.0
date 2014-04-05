@@ -772,7 +772,7 @@ namespace Gambit
     }
 
     /// Do pre-calculate timing things
-    void module_functor_common::startTiming(double nsec, double sec)
+    void module_functor_common::startTiming(double & nsec, double & sec)
     {
 #ifndef HAVE_MAC
       clock_gettime(CLOCK_MONOTONIC, &tp);

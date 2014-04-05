@@ -46,7 +46,7 @@
 #include "yaml_options.hpp"
 #include "log.hpp"
 
-// Decay rate of average runtime estimate
+// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
 #define FUNCTORS_FADE_RATE 0.01
 // Minimum invaldiation rate (should be 0<...<<1)
 #define FUNCTORS_BASE_INVALIDATION_RATE 0.01
@@ -417,7 +417,7 @@ namespace Gambit
       timespec tp;
 
       /// Do pre-calculate timing things
-      virtual void startTiming(double nsec, double sec);
+      virtual void startTiming(double & nsec, double & sec);
 
       /// Do post-calculate timing things
       virtual void finishTiming(double nsec, double sec);
