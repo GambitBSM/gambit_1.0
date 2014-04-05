@@ -998,7 +998,7 @@ namespace Gambit
             errmsg += "\nNote that viable candidates exist but have been disabled:"
                    +     printGenericFunctorList(disabledVertexCandidates)
                    +  "\nPlease check that all shared objects exist for the"
-                   +  "\necessary backends, and that they contain all the"
+                   +  "\nnecessary backends, and that they contain all the"
                    +  "\nnecessary functions required for this scan. In "
                    +  "\nparticular, make sure that your mangled function"
                    +  "\nnames match the symbol names in your shared lib.";
