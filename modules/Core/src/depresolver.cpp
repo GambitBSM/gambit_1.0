@@ -538,7 +538,13 @@ namespace Gambit
         }
       }
       // sent vector of ID's of functors to be printed to printer.
-      // (if we want to only print functor output sometimes, and dynamically switch this on and off, we'll have to rethink the strategy here a little... for now if the print function of a functor does not get called, it is up to the printer how it deals with the missing result. Similarly for extra results, i.e. from any functors not in this initial list, whose "requiresPrinting" flag later gets set to 'true' somehow.)
+      // (if we want to only print functor output sometimes, and dynamically
+      // switch this on and off, we'll have to rethink the strategy here a
+      // little... for now if the print function of a functor does not get
+      // called, it is up to the printer how it deals with the missing result.
+      // Similarly for extra results, i.e. from any functors not in this
+      // initial list, whose "requiresPrinting" flag later gets set to 'true'
+      // somehow.)
       boundPrinter->initialise(functors_to_print);
     }
 
@@ -561,15 +567,15 @@ namespace Gambit
       // is stored in depEntry.
       if ( toVertex == OBSLIKE_VERTEXID )
       {
-        depEntry = findIniEntry(quantity, boundIniFile->getObservables());
+        depEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
         entryExists = true;
       }
       // for all other vertices use the auxiliaries entries
       else 
       {
-        auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries());
+        auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries(), "auxiliary");
         if ( auxEntry != NULL )
-          depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
+          depEntry = findIniEntry(quantity, (*auxEntry).dependencies, "dependency");
         if ( auxEntry != NULL and depEntry != NULL ) 
         {
           entryExists = true;
@@ -700,7 +706,7 @@ namespace Gambit
         errmsg += "\nCandidate module functions are:";
         for (std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
         {
-        errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
+            errmsg += "\n   [" + masterGraph[*it]->name() + "," + masterGraph[*it]->origin() + "]";
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
       }
@@ -823,7 +829,7 @@ namespace Gambit
           resolveVertexBackend(fromVertex);
           // Generate options object from ini-file entry that corresponds to
           // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
-          iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries());
+          iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
           if ( iniEntry != NULL )
           {
             Options myOptions(iniEntry->options);
@@ -877,7 +883,7 @@ namespace Gambit
 
     /// Find auxiliary entry that matches vertex
     const IniParser::ObservableType * DependencyResolver::findIniEntry(
-            DRes::VertexID toVertex, const IniParser::ObservablesType &entries)
+            DRes::VertexID toVertex, const IniParser::ObservablesType &entries, const str & errtag)
     {
       std::vector<const IniParser::ObservableType*> auxEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =
@@ -891,7 +897,7 @@ namespace Gambit
       if ( auxEntryCandidates.size() == 0 ) return NULL;
       else if ( auxEntryCandidates.size() != 1 )
       {
-        str errmsg = "Found multiple auxiliary entries for ";
+        str errmsg = "Found multiple " + errtag + " entries for ";
         errmsg += masterGraph[toVertex]->capability() +" (" +
             masterGraph[toVertex]->type() + ") [" +
             masterGraph[toVertex]->name() + ", " +
@@ -903,7 +909,7 @@ namespace Gambit
 
     /// Find observable entry that matches capability/type
     const IniParser::ObservableType* DependencyResolver::findIniEntry(
-            sspair quantity, const IniParser::ObservablesType & entries)
+            sspair quantity, const IniParser::ObservablesType & entries, const str & errtag)
     {
       std::vector<const IniParser::ObservableType*> obsEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =
@@ -917,8 +923,8 @@ namespace Gambit
       if ( obsEntryCandidates.size() == 0 ) return NULL;
       else if ( obsEntryCandidates.size() != 1 )
       {
-        str errmsg = "Found multiple dependency or ObsLike entries for ";
-        errmsg += quantity.first + " (" + quantity.second + ")\n";
+        str errmsg = "Found multiple " + errtag + " entries for ";
+        errmsg += quantity.first + " (" + quantity.second + ")";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
       return obsEntryCandidates[0]; // obsEntryCandidates.size() == 1
@@ -940,7 +946,7 @@ namespace Gambit
       logger() << LogTags::dependency_resolver << "Backend function resolution" << endl;
 
       // Check whether vertex is mentioned in inifile
-      auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries());
+      auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries(), "auxiliary");
 
       // A loop over all requirements
       for (std::vector<sspair>::iterator it = reqs.begin();
@@ -952,7 +958,7 @@ namespace Gambit
         vertexCandidates.clear();
         // Find relevant iniFile entry from auxiliaries section
         if ( auxEntry != NULL )
-          depEntry = findIniEntry(*it, (*auxEntry).backends);
+          depEntry = findIniEntry(*it, (*auxEntry).backends, "backend");
         if ( auxEntry != NULL and depEntry != NULL ) 
           entryExists = true;
 
@@ -985,7 +991,8 @@ namespace Gambit
 
         if (vertexCandidates.size() == 0)
         {
-          str errmsg = "Found no candidates for backend requirement.";
+          str errmsg = "Found no candidates for backend requirement ";
+          errmsg += it->first + " (" + it->second + ")";
           if (disabledVertexCandidates.size() != 0)
           {
             errmsg += "\nNote that viable candidates exist but have been disabled:"
@@ -1002,7 +1009,15 @@ namespace Gambit
         // One candidate...
         if (vertexCandidates.size() > 1)
         {
-          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement."); // TODO: streamline error message
+          str errmsg = "Found too many candidates for backend requirement ";
+          errmsg += it->first + " (" + it->second + ")";
+          errmsg += "\nCandidate backend functions are :";
+          for (auto it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+          {
+            errmsg += "\n   [" + (*it)->name() + ", " + (*it)->origin() + "]";
+            // TODO: Show also version numbers
+          }
+          dependency_resolver_error().raise(LOCAL_INFO, errmsg);
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);

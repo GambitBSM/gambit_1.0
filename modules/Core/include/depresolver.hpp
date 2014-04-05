@@ -139,9 +139,9 @@ namespace Gambit
 
         // Find entries (comparison of inifile entry with quantity or functor)
         const IniParser::ObservableType * findIniEntry(
-            sspair quantity, const IniParser::ObservablesType &);
+            sspair quantity, const IniParser::ObservablesType &, const str &);
         const IniParser::ObservableType * findIniEntry(
-            DRes::VertexID toVertex, const IniParser::ObservablesType &);
+            DRes::VertexID toVertex, const IniParser::ObservablesType &, const str &);
 
         // Resolution of backend dependencies
         void resolveVertexBackend(VertexID);
