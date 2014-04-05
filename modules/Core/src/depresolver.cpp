@@ -211,12 +211,15 @@ namespace Gambit
       QueueEntry queueEntry;
     
       // Set up list of target ObsLikes
-      logger() << LogTags::dependency_resolver;
-      logger() << endl << "OUTPUT LIKELIHOODS AND OBSERVABLES" << endl;
-      logger() <<         "----------------------------------" << endl;
-      logger() <<         "CAPABILITY (TYPE) [PURPOSE]"   << endl;
+      logger() << LogTags::dependency_resolver << endl;
+      logger() << "#######################################"   << endl;
+      logger() << "#        List of Target ObsLikes      #"   << endl;
+      logger() << "#                                     #"   << endl;
+      logger() << "# format: Capability (Type) [Purpose] #"   << endl;
+      logger() << "#######################################"   << endl << endl;
       for (auto it = observables.begin(); it != observables.end(); ++it)
       {
+        // TODO: Format output
         logger() << LogTags::dependency_resolver << it->capability << " (" << it->type << ") [" << it->purpose << "]" << endl;
         queueEntry.first.first = it->capability;
         queueEntry.first.second = it->type;
@@ -587,13 +590,14 @@ namespace Gambit
                 ( masterGraph[*vi]->type() == quantity.second  or quantity.second == "" ) )
           // with inifile entry, we check capability, type, function name and
           // module name.
-            and ( entryExists ?  funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
+            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
           {
           // Add to vertex candidate list
             vertexCandidates.push_back(*vi);
           }
         }
       }
+
       // Special treatment of dependence on point-level initialization
       // functions, which can only be resolved from within a given module.
       if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
@@ -617,10 +621,21 @@ namespace Gambit
       // Die if there is no way to fulfill this dependency.
       if ( vertexCandidates.size() == 0 ) 
       {
-        str errmsg = "I could not find any module function that provides capability \"";
-        errmsg += quantity.first + "\" with type \"" + quantity.second + "\"."
-               +  "\nCheck your inifile for typos, your modules for consistency, etc.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
+        if ( not entryExists )
+        {
+            str errmsg = "I could not find any module function that provides ";
+            errmsg += quantity.first + " (" + quantity.second + ")"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+            dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        }
+        else
+        {
+            str errmsg = "I could not find any module function that provides ";
+            errmsg += quantity.first + " (" + quantity.second + ") ["
+                + depEntry->function + ", " + depEntry->module + "]"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+            dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        }
       }
 
       // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
@@ -647,7 +662,7 @@ namespace Gambit
             {
               str errmsg = "Multi-parent models cannot be used in cases where model specific functor rules need";
               errmsg += "to be invoked. Please specify your required dependencies more fully in your inifile.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
             }
             else if (pvec.size() == 0) 
             {
@@ -665,18 +680,29 @@ namespace Gambit
 
       if ( vertexCandidates.size() > 1 ) 
       {
-        str errmsg = "I found too many module functions that provide capability\n";
-        errmsg += quantity.first + " with type " + quantity.second + ".\n"
-               +  "Check your inifile for typos, your modules for consistency, etc.";
+        str errmsg = "";
+        if ( not entryExists )
+        {
+            errmsg += "I found too many module functions that provide ";
+            errmsg += quantity.first + " (" + quantity.second + ")"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+        }
+        else
+        {
+            errmsg += "I found too many module functions that provide ";
+            errmsg += quantity.first + " (" + quantity.second + ") ["
+                + depEntry->function + ", " + depEntry->module + "]"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+        }
         if ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
-         boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
-         errmsg += "\nAlso consider turning on prefer_model_specific_functions in your inifile.";
+        boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
+        errmsg += "\nAlso consider turning on prefer_model_specific_functions in your inifile.";
         errmsg += "\nCandidate module functions are:";
         for (std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
         {
-          errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
+        errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
       }
 
       return std::tie(depEntry, vertexCandidates[0]);
@@ -695,10 +721,12 @@ namespace Gambit
       int dependency_type;
       bool printme;
 
-      logger() << LogTags::dependency_resolver;
-      logger() << endl << "DEPENDENCY RESOLUTION" << endl;
-      logger() <<         "---------------------" << endl;
-      logger() <<         "CAPABILITY (TYPE) [FUNCTION, MODULE]" << endl << endl;
+      logger() << LogTags::dependency_resolver << endl;
+      logger() << "################################################" << endl;
+      logger() << "#         Starting dependency resolution       #" << endl;
+      logger() << "#                                              #" << endl;
+      logger() << "# format: Capability (Type) [Function, Module] #" << endl;
+      logger() << "################################################" << endl;
       logger() << EOM;
 
       //
@@ -715,10 +743,10 @@ namespace Gambit
 
         // Print information about required quantity and dependent vertex
         logger() << LogTags::dependency_resolver;
+        logger() << endl << "Resolving " << quantity.first << " (" << quantity.second << ")";
         if ( toVertex != OBSLIKE_VERTEXID )
         {
-          logger() << quantity.first << " (" << quantity.second << ")" << endl;
-          logger() << "Required by: ";
+          logger() << ", required by ";
           logger() << (*masterGraph[toVertex]).capability() << " (";
           logger() << (*masterGraph[toVertex]).type() << ") [";
           logger() << (*masterGraph[toVertex]).name() << ", ";
@@ -726,10 +754,9 @@ namespace Gambit
         }
         else
         {
-          logger() << quantity.first << " (" << quantity.second << ")" << endl;
-          logger() << "Required by: Core" << endl;
+          logger() << ", required by Core" << endl;
         }
-        logger() << EOM;
+        //logger() << EOM;
 
         // Figure out how to resolve dependency
         std::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
@@ -739,7 +766,7 @@ namespace Gambit
         logger() << "Resolved by: [";
         logger() << (*masterGraph[fromVertex]).name() << ", ";
         logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
-        logger() << EOM;
+        //logger() << EOM;
 
         // If toVertex is the Core, then fromVertex is one of our target functors, which are
         // the things we want to output to the printer system.  Turn printing on for these.
@@ -762,7 +789,7 @@ namespace Gambit
             {
               str errmsg = "Trying to resolve dependency on loop manager with";
               errmsg += "\nmodule function that is not declared as loop manager.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
             }
             std::set<DRes::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
@@ -791,7 +818,8 @@ namespace Gambit
         // If fromVertex is new, activate it
         if ( (*masterGraph[fromVertex]).status() != 2 )
         {
-          logger() << LogTags::dependency_resolver << "Adding new module function to dependency tree..." << endl << EOM;
+          logger() << LogTags::dependency_resolver << "Activate new module function" << endl;
+          masterGraph[fromVertex]->setStatus(2); // activate node
           resolveVertexBackend(fromVertex);
           // Generate options object from ini-file entry that corresponds to
           // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
@@ -806,6 +834,7 @@ namespace Gambit
         }
 
         // Done.
+        logger() << EOM;
         parQueue.pop();
       }
     }
@@ -815,13 +844,12 @@ namespace Gambit
             DRes::VertexID vertex) 
     {
       bool printme_default = false; // for parQueue constructor
-      (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
       logger() << LogTags::dependency_resolver;
       if (vec.size() > 0)
-        logger() << "Adding module function dependencies to resolution queue:" << endl;
-      else
-        logger() << "No further module function dependencies." << endl;
+        logger() << "Add dependencies of new module function to queue" << endl;
+      //else
+      //  logger() << "No further module function dependencies" << endl;
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
@@ -836,7 +864,7 @@ namespace Gambit
         (*parQueue).push(*(new QueueEntry (*(new sspair
                   (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
       }
-      logger() << EOM;
+      //logger() << EOM;
     }
 
     /// Boost lib topological sort
@@ -863,7 +891,12 @@ namespace Gambit
       if ( auxEntryCandidates.size() == 0 ) return NULL;
       else if ( auxEntryCandidates.size() != 1 )
       {
-        dependency_resolver_error().raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex."); // XXX
+        str errmsg = "Found multiple auxiliary entries for ";
+        errmsg += masterGraph[toVertex]->capability() +" (" +
+            masterGraph[toVertex]->type() + ") [" +
+            masterGraph[toVertex]->name() + ", " +
+            masterGraph[toVertex]->origin() + "]";
+        dependency_resolver_error().raise(LOCAL_INFO, errmsg);
       }
       return auxEntryCandidates[0]; // auxEntryCandidates.size() == 1
     }
@@ -884,8 +917,8 @@ namespace Gambit
       if ( obsEntryCandidates.size() == 0 ) return NULL;
       else if ( obsEntryCandidates.size() != 1 )
       {
-        str errmsg = "Multiple matches for identical capability in inifile."; // XXX
-        errmsg += "\nCapability: " + quantity.first + " (" + quantity.second + ")";
+        str errmsg = "Found multiple dependency or ObsLike entries for ";
+        errmsg += quantity.first + " (" + quantity.second + ")\n";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
       return obsEntryCandidates[0]; // obsEntryCandidates.size() == 1
@@ -904,7 +937,7 @@ namespace Gambit
       // Collect list of backend requirements of vertex
       std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
       if (reqs.size() == 0) return; // nothing to do --> return
-      logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
+      logger() << LogTags::dependency_resolver << "Backend function resolution" << endl;
 
       // Check whether vertex is mentioned in inifile
       auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries());
@@ -913,7 +946,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = reqs.begin();
           it != reqs.end(); ++it)
       {
-        logger() << LogTags::dependency_resolver << it->first << " (" << it->second << ")" << endl << EOM;
+        logger() << LogTags::dependency_resolver << it->first << " (" << it->second << ")";
         depEntry = NULL;
         entryExists = false;
         vertexCandidates.clear();
@@ -963,21 +996,21 @@ namespace Gambit
                    +  "\nparticular, make sure that your mangled function"
                    +  "\nnames match the symbol names in your shared lib.";
           }
-          dependency_resolver_error().raise(LOCAL_INFO,errmsg); // XXX
+          dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
         }
 
         // One candidate...
         if (vertexCandidates.size() > 1)
         {
-          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement."); // XXX
+          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement."); // TODO: streamline error message
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
         logger() << LogTags::dependency_resolver;
-        logger() << "Resolved by: [" << (*vertexCandidates[0]).name();
+        logger() << ", resolved by [" << (*vertexCandidates[0]).name();
         logger() << ", " << (*vertexCandidates[0]).origin() << " (";
         logger() << (*vertexCandidates[0]).version() << ")]" << endl;
-        logger() << EOM;
+        //logger() << EOM;
       }
     }
   }
