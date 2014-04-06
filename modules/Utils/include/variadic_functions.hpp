@@ -21,6 +21,7 @@
 #include <fstream>
 #include <string>
 #include <type_traits>
+#include <cassert>
 
 #include <yaml-cpp/yaml.h>
 
@@ -187,6 +188,16 @@ namespace Gambit
                 }
         };
         
+        template <typename ret>
+        struct addVariadicPt_internal<0, 1, 1, ret>
+        {
+                template <typename T, typename t1>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val)
+                {
+                        return f(val);
+                }
+        };
+        
         template <typename ret, typename t1, typename... args>
         auto addVariadicPt(const unsigned int &i, const t1& val, ret &f, const args&... params) -> decltype(f(val, params...))
         {
@@ -262,6 +273,24 @@ namespace Gambit
                 }
         };
         
+        template <typename ret>
+        struct rmVariadicPt_internal<0, 1, 1, ret>
+        {
+                template <typename T, typename t1>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val)
+                {
+                        return f();
+                }
+        };
+        
+        template <typename ret>
+        double rmVariadicPt(const unsigned int &i, ret &f)
+        {
+                std::cout << "rmVariadicPt:  need at least one argument" << std::endl;
+                assert(0);
+                return 0.0;
+        }
+        
         template <typename ret, typename T, typename... args>
         auto rmVariadicPt(const unsigned int &i, ret &f, const T& in, const args&... params) -> decltype(f(params...))
         {
@@ -327,6 +356,26 @@ namespace Gambit
                 }
         };
         
+        template <typename ret>
+        struct inputVariadicPt_internal<0, 1, 1, ret>
+        {
+                template <typename T, typename t1, typename t2>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val, const t2& param)
+                {
+                        return f(val);
+                }
+        };
+        
+        template <typename ret>
+        struct inputVariadicPt_internal<0, 0, 0, ret>
+        {
+                template <typename T, typename t1>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val)
+                {
+                        return f();
+                }
+        };
+        
         template <typename ret, typename t1, typename... args>
         auto inputVariadicPt(const unsigned int &i, const t1& val, ret &f, const args&... params) -> decltype(f(params...))
         {
@@ -337,11 +386,32 @@ namespace Gambit
         //input variadic function
         //////////////////////////////////////////////
         
+        template<int N>
+        struct inputVariadicStruct
+        {
+                template <typename T, typename... args>
+                inline static double value(T &f, std::vector<double>::const_iterator it, const args&... params)
+                {
+                        return inputVariadicStruct<N-1>::value(f, it+1, params..., *it);
+                }
+        };
+        
+        template<>
+        struct inputVariadicStruct<0>
+        {
+                template <typename T, typename... args>
+                inline static double value(T &f, std::vector<double>::const_iterator it, const args&... params)
+                {
+                        return f(params...);
+                }
+        };
+        
         template<typename T, typename... args>
         inline double inputVariadicFunction(T&f, std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end,
                 double in1, double in2, double in3, double in4, double in5, double in6, double in7, double in8, double in9, double in10)
         {
                 std::cout << "inputVariadicFunction:  Max argument length exceeded." << std::endl;
+                assert(0);
                 return 0.0;
         }
         
@@ -400,13 +470,13 @@ namespace Gambit
         }
         
         template <typename ret>
-        inline ret getVariadicPt(const unsigned int& i)
+        inline ret getVariadicPt(unsigned int i)
         {
                 return 0.0;
         }
         
         template <typename t, typename ret = t, typename... args>
-        inline ret getVariadicPt(const unsigned int& i, const t& in, const args&... params)
+        inline ret getVariadicPt(unsigned int i, const t& in, const args&... params)
         {
                 return (i) ? getVariadicPt<ret>(i-1, params...) : in;
         }
