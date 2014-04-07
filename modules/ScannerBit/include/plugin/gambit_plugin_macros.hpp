@@ -181,7 +181,7 @@ namespace __gambit_plugin_namespace__                                           
 
 /*Declared the "main" for the module.  This is function that will be ran by module interface*/
 #define PLUGIN_MAIN(...)                                                                                                \
- __gambit_plugin_ret_val__(){}                                                                                          \
+ __gambit_plugin_ret_val__();                                                                                           \
 decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__);                                             \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \

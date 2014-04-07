@@ -21,11 +21,22 @@
 #include <fstream>
 #include <string>
 #include <type_traits>
+#include <cassert>
 
 #include <yaml-cpp/yaml.h>
 
 namespace Gambit
 {       
+        //////////////////////
+        //div_ints_by_half
+        //////////////////////
+        
+        template <int low, int hi>
+        struct div_ints_by_half
+        {
+                static const int value = (low + hi) >> 1;
+        };
+        
         /////////////////////
         //is_vector
         /////////////////////
@@ -106,6 +117,317 @@ namespace Gambit
 //                 enum{N = getVariadicNumber_internal<void (args...)>::N};
 //         };
         
+        /////////////////////////////////////////////////
+        //Square Variadic
+        /////////////////////////////////////////////////
+        
+        inline double squareVariadic(){return 0.0;}
+        
+        template <typename... args>
+        inline double squareVariadic(const double &val, const args&... params)
+        {
+                return val*val + squareVariadic(params...);
+        };
+        
+        ///////////////////////////////////////////////
+        //Add Variadic Point
+        ///////////////////////////////////////////////
+        
+        template <int i, int n, int N, typename ret>
+        struct addVariadicPt_struct
+        {
+                template <typename T, typename t, typename t1, typename... args>
+                inline static ret reducePt(T& f, const t1& val, const t& in, const args&... params)
+                {
+                        return addVariadicPt_struct<i+1, n, N, ret>::reducePt(f, val, params..., in);
+                }
+        };
+        
+        template <int n, int N, typename ret>
+        struct addVariadicPt_struct<n, n, N, ret>
+        {
+                template <typename T, typename t, typename t1, typename... args>
+                inline static ret reducePt(T& f, const t1& val, const t& in, const args&... params)
+                {
+                        return addVariadicPt_struct<n+1, n, N, ret>::reducePt(f, val, in, params..., val);
+                }
+        };
+        
+        template <int n, int N, typename ret>
+        struct addVariadicPt_struct<N, n, N, ret>
+        {
+                template <typename T, typename t1, typename... args>
+                inline static ret reducePt(T& f, const t1& val, const args&... params)
+                {
+                        return f (params...);
+                }
+        };
+        
+        template <int low, int hi, int N, typename ret>
+        struct addVariadicPt_internal
+        {
+                template <typename T, typename t1, typename... args>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val, const args&... params)
+                {
+                        if (i < div_ints_by_half<low, hi>::value)
+                                return addVariadicPt_internal<low, div_ints_by_half<low, hi>::value, N, ret>::reducePt(f, i, val, params...);
+                        else if (div_ints_by_half<low, hi>::value == i)
+                                return addVariadicPt_struct<0, div_ints_by_half<low, hi>::value, N, ret>::reducePt(f, val, params...);
+                        else
+                                return addVariadicPt_internal<div_ints_by_half<low, hi>::value, hi, N, ret>::reducePt(f, i, val, params...);
+                }
+        };
+        
+        template <int low, int N, typename ret>
+        struct addVariadicPt_internal<low, low, N, ret>
+        {
+                template <typename T, typename t1, typename... args>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val, const args&... params)
+                {
+                        return addVariadicPt_struct<0, low, N, ret>::reducePt(f, val, params...);
+                }
+        };
+        
+        template <typename ret>
+        struct addVariadicPt_internal<0, 1, 1, ret>
+        {
+                template <typename T, typename t1>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val)
+                {
+                        return f(val);
+                }
+        };
+        
+        template <typename ret, typename t1, typename... args>
+        auto addVariadicPt(const unsigned int &i, const t1& val, ret &f, const args&... params) -> decltype(f(val, params...))
+        {
+                return addVariadicPt_internal<0, sizeof...(args)+1, sizeof...(args)+1, decltype(f(params...))>::reducePt(f, i, val, params...);
+        }
+        
+        ///////////////////////////////////////////////
+        //remove Variadic Point
+        ///////////////////////////////////////////////
+        
+        template <int i, int n, int N, typename ret>
+        struct rmVariadicPt_struct
+        {
+                template <typename T, typename t, typename... args>
+                inline static ret reducePt(T& f, const t& in, const args&... params)
+                {
+                        return rmVariadicPt_struct<i+1, n, N, ret>::reducePt(f, params..., in);
+                }
+        };
+        
+        template <int n, int N, typename ret>
+        struct rmVariadicPt_struct<n, n, N, ret>
+        {
+                template <typename T, typename t, typename... args>
+                inline static ret reducePt(T& f, const t& in, const args&... params)
+                {
+                        return rmVariadicPt_struct<n+1, n, N, ret>::reducePt(f, params...);
+                }
+        };
+        
+        template <int n, int N, typename ret>
+        struct rmVariadicPt_struct<N, n, N, ret>
+        {
+                template <typename T, typename... args>
+                inline static ret reducePt(T& f, const args&... params)
+                {
+                        return f (params...);
+                }
+        };
+        
+        template <int N, typename ret>
+        struct rmVariadicPt_struct<N, N, N, ret>
+        {
+                template <typename T, typename t, typename... args>
+                inline static ret reducePt(T& f, const t& in, const args&... params)
+                {
+                        return f (params...);
+                }
+        };
+        
+        template <int low, int hi, int N, typename ret>
+        struct rmVariadicPt_internal
+        {
+                template <typename T, typename... args>
+                inline static ret reducePt(T& f, const unsigned int &i, const args&... params)
+                {
+                        if (i < div_ints_by_half<low, hi>::value)
+                                return rmVariadicPt_internal<low, div_ints_by_half<low, hi>::value, N, ret>::reducePt(f, i, params...);
+                        else if (div_ints_by_half<low, hi>::value == i)
+                                return rmVariadicPt_struct<0, div_ints_by_half<low, hi>::value, N, ret>::reducePt(f, params...);
+                        else
+                                return rmVariadicPt_internal<div_ints_by_half<low, hi>::value, hi, N, ret>::reducePt(f, i, params...);
+                }
+        };
+        
+        template <int low, int N, typename ret>
+        struct rmVariadicPt_internal<low, low, N, ret>
+        {
+                template <typename T, typename... args>
+                inline static ret reducePt(T& f, const unsigned int &i, const args&... params)
+                {
+                        return rmVariadicPt_struct<0, low, N, ret>::reducePt(f, params...);
+                }
+        };
+        
+        template <typename ret>
+        struct rmVariadicPt_internal<0, 1, 1, ret>
+        {
+                template <typename T, typename t1>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val)
+                {
+                        return f();
+                }
+        };
+        
+        template <typename ret>
+        double rmVariadicPt(const unsigned int &i, ret &f)
+        {
+                std::cout << "rmVariadicPt:  need at least one argument" << std::endl;
+                assert(0);
+                return 0.0;
+        }
+        
+        template <typename ret, typename T, typename... args>
+        auto rmVariadicPt(const unsigned int &i, ret &f, const T& in, const args&... params) -> decltype(f(params...))
+        {
+                return rmVariadicPt_internal<0, sizeof...(args)+1, sizeof...(args)+1, decltype(f(params...))>::reducePt(f, i, in, params...);
+        }
+        
+        ///////////////////////////////////////////////
+        //input Variadic Point
+        ///////////////////////////////////////////////
+        
+        template <int i, int n, int N, typename ret>
+        struct inputVariadicPt_struct
+        {
+                template <typename T, typename t, typename t1, typename... args>
+                inline static ret reducePt(T& f, const t1& val, const t& in, const args&... params)
+                {
+                        return inputVariadicPt_struct<i+1, n, N, ret>::reducePt(f, val, params..., in);
+                }
+        };
+        
+        template <int n, int N, typename ret>
+        struct inputVariadicPt_struct<n, n, N, ret>
+        {
+                template <typename T, typename t, typename t1, typename... args>
+                inline static ret reducePt(T& f, const t1& val, const t& in, const args&... params)
+                {
+                        return inputVariadicPt_struct<n+1, n, N, ret>::reducePt(f, val, params..., val);
+                }
+        };
+        
+        template <int n, int N, typename ret>
+        struct inputVariadicPt_struct<N, n, N, ret>
+        {
+                template <typename T, typename t1, typename... args>
+                inline static ret reducePt(T& f, const t1& val, const args&... params)
+                {
+                        return f (params...);
+                }
+        };
+        
+        template <int low, int hi, int N, typename ret>
+        struct inputVariadicPt_internal
+        {
+                template <typename T, typename t1, typename... args>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val, const args&... params)
+                {
+                        if (i < div_ints_by_half<low, hi>::value)
+                                return inputVariadicPt_internal<low, div_ints_by_half<low, hi>::value, N, ret>::reducePt(f, i, val, params...);
+                        else if (div_ints_by_half<low, hi>::value == i)
+                                return inputVariadicPt_struct<0, div_ints_by_half<low, hi>::value, N, ret>::reducePt(f, val, params...);
+                        else
+                                return inputVariadicPt_internal<div_ints_by_half<low, hi>::value, hi, N, ret>::reducePt(f, i, val, params...);
+                }
+        };
+        
+        template <int low, int N, typename ret>
+        struct inputVariadicPt_internal<low, low, N, ret>
+        {
+                template <typename T, typename t1, typename... args>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val, const args&... params)
+                {
+                        return inputVariadicPt_struct<0, low, N, ret>::reducePt(f, val, params...);
+                }
+        };
+        
+        template <typename ret>
+        struct inputVariadicPt_internal<0, 1, 1, ret>
+        {
+                template <typename T, typename t1, typename t2>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val, const t2& param)
+                {
+                        return f(val);
+                }
+        };
+        
+        template <typename ret>
+        struct inputVariadicPt_internal<0, 0, 0, ret>
+        {
+                template <typename T, typename t1>
+                inline static ret reducePt(T& f, const unsigned int &i, const t1& val)
+                {
+                        return f();
+                }
+        };
+        
+        template <typename ret, typename t1, typename... args>
+        auto inputVariadicPt(const unsigned int &i, const t1& val, ret &f, const args&... params) -> decltype(f(params...))
+        {
+                return inputVariadicPt_internal<0, sizeof...(args), sizeof...(args), decltype(f(params...))>::reducePt(f, i, val, params...);
+        }
+        
+        //////////////////////////////////////////////
+        //input variadic function
+        //////////////////////////////////////////////
+        
+        template<int N>
+        struct inputVariadicStruct
+        {
+                template <typename T, typename... args>
+                inline static double value(T &f, std::vector<double>::const_iterator it, const args&... params)
+                {
+                        return inputVariadicStruct<N-1>::value(f, it+1, params..., *it);
+                }
+        };
+        
+        template<>
+        struct inputVariadicStruct<0>
+        {
+                template <typename T, typename... args>
+                inline static double value(T &f, std::vector<double>::const_iterator it, const args&... params)
+                {
+                        return f(params...);
+                }
+        };
+        
+        template<typename T, typename... args>
+        inline double inputVariadicFunction(T&f, std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end,
+                double in1, double in2, double in3, double in4, double in5, double in6, double in7, double in8, double in9, double in10)
+        {
+                std::cout << "inputVariadicFunction:  Max argument length exceeded." << std::endl;
+                assert(0);
+                return 0.0;
+        }
+        
+        template<typename T, typename... args>
+        inline double inputVariadicFunction(T&f, std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end, const args&... params)
+        {
+                if(begin != end)
+                {
+                        return inputVariadicFunction(f, begin+1, end, params..., *begin);
+                }
+                else
+                {
+                        return f(params...);
+                }
+        }
+        
         ///////////////////////////////////////////////
         //Input and Output Variadic functions
         ///////////////////////////////////////////////
@@ -145,6 +467,18 @@ namespace Gambit
         {
                 val = *vec;
                 outputVariadicVector(vec+1, params...);
+        }
+        
+        template <typename ret>
+        inline ret getVariadicPt(unsigned int i)
+        {
+                return 0.0;
+        }
+        
+        template <typename t, typename ret = t, typename... args>
+        inline ret getVariadicPt(unsigned int i, const t& in, const args&... params)
+        {
+                return (i) ? getVariadicPt<ret>(i-1, params...) : in;
         }
         
         ///////////////////////////////
