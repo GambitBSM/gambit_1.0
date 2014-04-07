@@ -1,4 +1,66 @@
-Milestones until March 2014 meeting:
+# DarkBit Milestones and Goals
+
+## Goals for first release
+
+(everything at least working until October 1st 2014)
+
+- Backends
+    - DarkSUSY
+    - MicrOMEGAS
+    - NuLike
+    - optional: SuperIsoRelic & simpleCR
+
+- Physics
+    - Gamma-rays (dwarfs, lines, GC)
+    - nu from Sun (IceCube)
+    - DD (Lux, CDMS)
+    - Relic density
+
+
+## Goals until October 1st 2014
+
+0. General stuff [Christoph]
+    - Implementation of coupling to SLHA
+    - Tidy DarkBit structure
+
+1. Relic density calculations
+    - DarkSUSY [Torsten]
+        - DarkSUSY Backend initialization function with SLHA reader
+        - Make use of Lar's farrays
+        - Relic density unit tests (comparison with MicrOmegas) [Torsten]
+    - MicrOmegas
+        - MicrOmegas backend initialzation function with SLHA reader
+          [Christoph]
+        - Module functions for relic density calculation [Christoph]
+        - Comparison with DarkSUSY [Christoph]
+
+2. Gamma + neutrino yields 
+    - Completion gamma-ray yields from DarkSUSY tables
+        - VIB [Lars]
+        - Cascade decays [Lars]
+    - Completion neutrino yields [Pat]
+
+3. DM halo parametrization
+    - Halo catalogue [Christoph]
+    - J-values for dwarf likelihoods [Jonathan]
+    - Necessary BaseFunction extensions [Jonathan]
+    - SuperHealpix [?]
+
+4. Direct detection
+    - finishing CDD [Chris]
+    - backending CDD [Chris]
+    - writing necessary general enough structs [Chris]
+    - writing module functions [Chris]
+
+5. Backend IceCube likelihoods [Pat]
+
+6. SimpleCR
+    - Implement AMS-02 likelihoods [?]
+
+
+
+
+## Milestones until October 1st 2014:
 
 0. Singlet dark matter + MSSM-25 implementation [Christoph]
     - Discuss with collider group + ModelBit about MSSM-25 status (Dec.)            [todo]
@@ -30,3 +92,12 @@ Milestones until March 2014 meeting:
 6. IceCube likelihoods [Pat] (until March meeting)                                  [todo]
 
 7. CMB + Fermi likelihoods (simplified) [Christoph] (until or after Mar.)           [todo]
+
+
+- Backends
+    - DarkSUSY
+    - MicrOmegas
+    - IceCube Likelihood
+    - Simplified CRs
+
+- Time: 1st October
