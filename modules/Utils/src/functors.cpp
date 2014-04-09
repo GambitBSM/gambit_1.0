@@ -70,7 +70,10 @@ namespace Gambit
      myStatus        (1),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
-     needs_recalculating (true) {}
+     needs_recalculating (true)
+    {
+      myType.erase(std::remove(myType.begin(), myType.end(), ' '), myType.end());
+    }
     
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
@@ -586,6 +589,7 @@ namespace Gambit
     /// The info gets updated later if this turns out to be conditional on a model. 
     void module_functor_common::setBackendReq(str group, str req, std::vector<str> tags, str type, void(*resolver)(functor*))
     { 
+      type.erase(std::remove(type.begin(), type.end(), ' '), type.end());
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);

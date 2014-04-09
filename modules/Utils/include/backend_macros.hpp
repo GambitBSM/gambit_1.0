@@ -507,7 +507,7 @@ namespace Gambit                                                                
       /* Create functor object FIXME DEPRECATED!!*/                                             \
       namespace Functown                                                                        \
       {                                                                                         \
-        auto CAT(NAME,_defunct) = backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS) >(              \
+        auto CAT(NAME,_deprecated) = backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS) >(              \
          Gambit::Backends::BACKENDNAME::NAME,                                                   \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
@@ -573,6 +573,8 @@ namespace Gambit                                                                
       {                                                                                         \
         /* Register functor. */                                                                 \
         Core().registerBackendFunctor(Functown::NAME);                                          \
+        /* Register functor. FIXME Deprecated!!*/                                                                 \
+        Core().registerBackendFunctor(Functown::CAT(NAME,_deprecated));                                          \
       }                                                                                         \
                                                                                                 \
       /* The code within the void function 'constructVarPointer_supp_NAME'                      \
