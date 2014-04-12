@@ -549,7 +549,7 @@ namespace Gambit
     }
 
     /// Resolve dependency
-    std::tuple<const IniParser::ObservableType *, DRes::VertexID>
+    boost::tuple<const IniParser::ObservableType *, DRes::VertexID>
         DependencyResolver::resolveDependency( DRes::VertexID toVertex, sspair quantity)
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
@@ -711,7 +711,7 @@ namespace Gambit
         dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
       }
 
-      return std::tie(depEntry, vertexCandidates[0]);
+      return tie(depEntry, vertexCandidates[0]);
     }
 
     /// Set up dependency tree
@@ -765,7 +765,7 @@ namespace Gambit
         //logger() << EOM;
 
         // Figure out how to resolve dependency
-        std::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
         logger() << LogTags::dependency_resolver;
