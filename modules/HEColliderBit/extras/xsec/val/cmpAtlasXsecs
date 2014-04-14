@@ -9,6 +9,11 @@ ROOT.gROOT.SetBatch(True)
 import sys, os, subprocess
 assert len(sys.argv) == 2
 
+def dev(sig, sigref):
+    return (sig-sigref) / sigref
+def regdev(sig, sigref, reg):
+    return (sig-sigref) / (abs(sigref) + abs(reg))
+
 f = ROOT.TFile(sys.argv[1])
 tree = f.Get("SignalUncertainties")
 for e in tree:
@@ -18,5 +23,8 @@ for e in tree:
         #print slhafile
         s = subprocess.check_output(["../evalxsec", slhafile])
         xsec = float(s.splitlines()[-1])
-        print " ", e.m0, e.m12, e.crossSection, xsec, "=>", xsec/e.crossSection  #, e.cteq_NLO, e.cteq_NLL
-        #print xsec/e.crossSection
+        d = dev(xsec, e.crossSection)
+        d = regdev(xsec, e.crossSection, reg=1e-6)
+        #print " ", e.m0, e.m12, e.crossSection, xsec, "=>", d
+        print e.m0, e.m12, e.crossSection, d
+        #print d
