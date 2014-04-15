@@ -38,7 +38,7 @@ for m0, m12 in atlasxsecs.keys():
         return sum(atlasxsecs[m0,m12].get(fs, 0.0) for fs in fss)
 
     out = "%.4g %.4g" % (m0, m12)
-    out += " %.3g %.3g" % (axsec(1), dev(xsecs[3], axsec(1), reg=1e-6))
-    out += " %.3g %.3g" % (axsec(2), dev(xsecs[0], axsec(2), reg=1e-6))
-    out += " %.3g %.3g" % (axsec(3,4), dev(xsecs[5], axsec(3,4), reg=1e-6))
+    out += " %.3g %.3g" % (axsec(1), dev(xsecs[3], axsec(1), reg=1e-6)) # g~q~
+    out += " %.3g %.3g" % (axsec(2), dev(xsecs[0], axsec(2), reg=1e-6)) # g~g~
+    out += " %.3g %.3g" % (axsec(3,4), dev(xsecs[5], axsec(3,4), reg=1e-6)) # q~q~
     print out
