@@ -72,8 +72,8 @@ namespace Gambit
  * 
  * As with BE_FUNCTION, the last argument is optional. */
  
-//BE_CONV_FUNCTION(getCMSSMspectrum,   MSSMspecQ, "BECMSSMspectrum")
-//BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, "BEgenMSSMspectrum")
+//BE_CONV_FUNCTION(getCMSSMspectrum,   MSSMspecQ, (put some args here), "BECMSSMspectrum")
+//BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, (put some args here), "BEgenMSSMspectrum")
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 

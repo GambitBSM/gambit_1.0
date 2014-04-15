@@ -64,31 +64,31 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_bsgamma                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-/*      #define BACKEND_REQ bsgamma_calculator
-        START_BACKEND_REQ(double)
+/*      #define BACKEND_REQ_deprecated bsgamma_calculator
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
 */ 
-      #define BACKEND_REQ bsgamma
-        START_BACKEND_REQ(double)
+      #define BACKEND_REQ_deprecated bsgamma
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ Les_Houches_Reader
-        START_BACKEND_REQ(int)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated Les_Houches_Reader
+        START_BACKEND_REQ_deprecated(int)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ Init_param
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated Init_param
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ CW_calculator
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated CW_calculator
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ C_calculator_base1
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated C_calculator_base1
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -96,18 +96,18 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_Btaunu                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-      #define BACKEND_REQ Btaunu
-        START_BACKEND_REQ(double)
+      #define BACKEND_REQ_deprecated Btaunu
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ Les_Houches_Reader
-        START_BACKEND_REQ(int)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated Les_Houches_Reader
+        START_BACKEND_REQ_deprecated(int)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ Init_param
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated Init_param
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY
 

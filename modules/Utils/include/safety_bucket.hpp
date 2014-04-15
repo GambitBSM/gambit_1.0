@@ -234,13 +234,13 @@ namespace Gambit
 
   /// An interface class for backend functions.
   template <typename TYPE>
-  class BEfunction_bucket : public BE_bucket_base
+  class BEfunction_bucket_deprecated : public BE_bucket_base
   {
 
     public:
 
       /// Constructor for BEfunctions_bucket.
-      BEfunction_bucket(functor * functor_ptr_in = NULL)
+      BEfunction_bucket_deprecated(functor * functor_ptr_in = NULL)
       {
         initialize(functor_ptr_in);
       }
@@ -319,13 +319,13 @@ namespace Gambit
 
   /// An interface class for backend functions.
   template <typename TYPE, typename... ARGS>
-  class BEfunction_bucket_temp : public BE_bucket_base
+  class BEfunction_bucket : public BE_bucket_base
   {
 
     public:
 
       /// Constructor for BEfunction_bucket.
-      BEfunction_bucket_temp(backend_functor<TYPE, ARGS...>* functor_ptr_in = NULL)
+      BEfunction_bucket(backend_functor<TYPE, ARGS...>* functor_ptr_in = NULL)
       {
         initialize(functor_ptr_in);
       }
@@ -350,7 +350,7 @@ namespace Gambit
       TYPE operator ()(ARGS&& ...args)
       {
         if (not _initialized) dieGracefully();
-        return (*_functor_ptr)(std::forward<ARGS...>(args)...);
+        return (*_functor_ptr)(std::forward<ARGS>(args)...);
       }
 
       /// Return the underlying function pointer.

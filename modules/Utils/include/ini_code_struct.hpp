@@ -11,11 +11,6 @@
 ///
 ///  (add name and date if you modify)
 ///
-///  \author Gregory Martinez
-///          (gregory.david.martinez@gmail.com)
-///  \date 2013 July
-///  \date 2014 Feb
-///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2014 Mar

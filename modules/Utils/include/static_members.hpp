@@ -28,7 +28,7 @@ namespace Gambit
   std::map<const char*,exception*> exception::exception_map;
 
   /// Flag indicating whether backend function buckets should 
-  /// operate in safe mode or not.  True by default.
+  /// operate in safe mode or not.  True by default. !FIXME deprecated!!
   bool BE_bucket_base::safe_mode = true;
 
 }

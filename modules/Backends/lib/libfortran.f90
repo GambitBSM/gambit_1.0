@@ -50,7 +50,7 @@ real*8 function average(f,n)
 
     average=0d0
     do i=1,n
-    x=rand()
+    call random_number(x)
     average=average+f(x)
     enddo  
     average=average/(1.*n)  

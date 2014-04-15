@@ -624,12 +624,6 @@ namespace Gambit
 
   };    
 
-  /// Function for creating backend functor objects.
-  /// This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
-  /// in backend_general.hpp work.
-  template<typename OUTTYPE, typename... ARGS>
-  backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*)(ARGS...), str, str, str, str, str);
-
 
 //**********************************************************************
 // Everything below this point is implementation.  If we ever get the 
@@ -738,20 +732,6 @@ namespace Gambit
       this->myFunction(args...);
       logger().leaving_backend();
     }
-
-  /// Function for creating backend functor objects.
-  /// This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
-  /// in backend_general.hpp work.
-  template<typename OUTTYPE, typename... ARGS>
-  backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*f_in)(ARGS...), 
-                                                          str func_name, 
-                                                          str func_capab, 
-                                                          str ret_type, 
-                                                          str origin_name,
-                                                          str origin_ver)
-  { 
-    return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
-  }
 
 }
 
