@@ -5,24 +5,24 @@
 
 \section{Working Groups}
 
-\subsection{Colliders}
+\subsection{Colliders (incorporating B-physics subgroup)}
 
 \textbf{Coordinators}: Martin, Abram
 
-\textbf{Members}: Martin, Abram, Chris R, Aldo, Jack, Are, Anders, Ben, Csaba, Pat, Andy, Oscar, Christophe, Nazila
+\textbf{Members}: Martin, Abram, Chris R, Aldo, Jack, Are, Anders, Ben, Csaba, Pat, Andy, Christophe, Nazila, Nico 
 
-\textbf{Modules}: HEColliderBit, LEColliderBit
+\textbf{Modules}: ColliderBit, FlavBit
 
-\textbf{Physics}: LHC (BSM searches, Higgs), ILC, LEP/TeVatron, $B$ observables, charged Higgs bounds, other flavour physics, electroweak precision observables.  Jack and Nazila are internal WG sub-coordinators for $B$/flavour/precision observables (LEColliderBit)
+\textbf{Physics}: LHC (BSM searches, Higgs), ILC, LEP/TeVatron, $B$ observables, charged Higgs bounds, other flavour physics, electroweak precision observables.  Jack and Nazila are internal WG sub-coordinators for $B$/flavour/precision observables.
 
 
 \subsection{Dark Matter}
 
-\textbf{Coordinators}: The Savage Integrator + (Torsten or Christoph; Christoph to consult with Torsten and decide together)
+\textbf{Coordinators}: Christoph, Torsten, Chris S
 
-\textbf{Members}: Savage Int, Torsten, Christoph, Joakim, Antje, Jan, Pat, Lars, Jonathan
+\textbf{Members}: Chris S, Torsten, Christoph, Joakim, Antje, Jan, Pat, Lars, Jonathan, Miguel
 
-\textbf{Modules}: DarkTheoryBit, DirectBit, IndirectBit, RelicBit
+\textbf{Modules}: DarkBit
 
 \textbf{Physics}: Indirect (gammas, neutrinos, charged cosmic rays, relic density, targets), Direct (rate, modulation, directional)
 
@@ -35,18 +35,29 @@
 
 \textbf{Modules}: ScannerBit
 
-\textbf{Physics}: MCMCs, GAs, DE, nested sampling, others (maybe BAMBI)
+\textbf{Physics}: MCMCs, GAs, DE, nested sampling, others (maybe BAMBI).
 
 
-\subsection{Core/Models}
+\subsection{Core}
 
 \textbf{Coordinators}: Csaba, Pat
 
-\textbf{Members}: m = models, c = core, b = both.  Pat(b), Csaba(b), Hugh(b), Aldo(b), Are(m), Martin(m), Jonathan(m), Christoph(m), Lars(c), Ben(c), Antje(c), Anders(c)
+\textbf{Members}: Csaba, Pat, Ben, Peter, Aldo, Christoph, Lars, Antje, Anders, Greg
 
-\textbf{Modules}: CoreBit, ModelBit
+\textbf{Modules}: Core, Utils, Logs, Printers, Backends, BackendIniBit
 
-\textbf{Physics}: Core code structure including BackEnd, LikelihoodContainer and Model abstract class design. Theoretical models, including nuisance parameter definitions and physicality-checking code.
+\textbf{Physics}: Core code structure including backends, logs, exceptions, dependency resolver, printers, ini-file reader and likelihood container.
+
+
+\subsection{Models}
+
+\textbf{Coordinators}: Ben, Peter
+
+\textbf{Members}: Ben, Peter, Pat, Csaba, Aldo, Are, Martin, Jonathan, Christoph, Anders, Torsten, Chris R
+
+\textbf{Modules}: Models, SpectrumBit, DecayBit
+
+\textbf{Physics}: Model and spectrum abstract class design. Theoretical models, including nuisance parameter definitions and physicality-checking code.
 
 
 \section{Publications (Presentations \& Papers)}
@@ -72,6 +83,6 @@
 \end{itemize}
 
 \section{Gold Clock (Grant/Funding) Committee}
-Csaba, Jan, Joakim, Martin, Pat, Are, Savage Int, Aldo, Christoph, Christophe(?)
+Csaba, Jan, Joakim, Martin, Pat, Are, Savage Int, Aldo, Christoph
 
 \end{document}
