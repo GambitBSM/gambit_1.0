@@ -4,6 +4,8 @@
 ///
 ///  Dependency resolution with boost graph library
 ///
+///          unravels the un-unravelable
+///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -35,7 +37,7 @@
 
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc (observables of interest)
-#define OOI_VERTEXID 52314768 
+#define OBSLIKE_VERTEXID 23051985 
 
 // Dependency types
 #define NORMAL_DEPENDENCY 1
@@ -47,8 +49,12 @@ namespace Gambit
   namespace DRes
   {
     using namespace LogTags;
+    ///////////////////////
+    // Auxiliary functions
+    ///////////////////////
+
     //
-    // Helper functions
+    // Functions that act on a resolved dependency graph
     //
 
     // Collect parent vertices recursively (including root vertex)
@@ -90,27 +96,12 @@ namespace Gambit
       return sortVertices(set, topoOrder);
     }
 
-    // Return time estimate for set of nodes
-    double getTimeEstimate(std::set<VertexID> vertexList, const DRes::MasterGraphType &graph)
-    {
-      double result = 0;
-      for (std::set<VertexID>::iterator it = vertexList.begin(); it != vertexList.end(); ++it)
-      {
-        result += graph[*it]->getRuntimeAverage();
-      }
-      return result;
-    }
+    //
+    // Functions that compare ini-file entries and observables
+    //
 
-    // Compare two strings
-    bool stringComp(str s1, str s2)
-    {
-      if ( s1 == s2 ) return true;
-      if ( s1 == "" ) return true;
-      if ( s1 == "*" ) return true;
-      // if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
-      return false;
-    }
-
+    // Check whether quantity matches observableType
+    // Matches capability
     bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
     {
       // Compares dependency specifications of auxiliary entries or observable
@@ -120,6 +111,8 @@ namespace Gambit
       else return false;
     }
 
+    // Check whether functor matches observableType
+    // Matches capability, type, function and module name
     bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e)
     {
       if (     stringComp( e.capability, (*f).capability() )
@@ -130,43 +123,11 @@ namespace Gambit
       else return false;
     }
 
-    /// Compare backend function with backend entry in inifile
-    bool compareBE(IniParser::ObservableType observable, functor* func)
-    {
-      for (std::vector<IniParser::ObservableType>::iterator be =
-          observable.backends.begin(); be != observable.backends.end(); be++)
-      {
-        // If capability matches...
-        if ( (*be).capability == (*func).capability() )
-        {
-          // ...check function names
-          if ( (*be).function != "" and (*be).function != (*func).name()
-              ) return false;
-          // ...check module name
-          if ( (*be).module != "" and (*be).module != (*func).origin()
-              ) return false;
-          // ...check module version
-          if ( (*be).version != "" and (*be).version != (*func).version()
-              ) return false;
-        }
-      }
-      return true; // everything consistent
-    }
+    //
+    // Graphviz output
+    //
 
-    /// Return a list of backend functors which match in capability and type
-    std::vector<functor *> findBackendCandidates(sspair key, std::vector<functor *> functorList)
-    {
-      std::vector<functor *> candidateList;
-      for (unsigned int i=0; i<functorList.size(); ++i)
-      {
-        if ( functorList[i]->quantity() == key )
-        {
-          candidateList.push_back(functorList[i]);
-        }
-      }
-      return candidateList;
-    }
-
+    // Graphviz output for edges/dependencies
     class edgeWriter
     {
       private:
@@ -179,6 +140,7 @@ namespace Gambit
         }
     };
 
+    // Graphviz output for individual vertices/nodes/module functions
     class labelWriter
     {
       private:
@@ -198,61 +160,100 @@ namespace Gambit
     };
 
     //
-    // Public functions of DependencyResolver
+    // Misc
     //
 
-    /// Constructor. 
-    /// Add module functors to class internal list.
-    DependencyResolver::DependencyResolver(const gambit_core &core, 
-                                           const IniParser::IniFile &iniFile, 
-                                           Printers::BasePrinter &printer)
+    // Return runtime estimate for a set of nodes
+    double getTimeEstimate(std::set<VertexID> vertexList, const DRes::MasterGraphType &graph)
+    {
+      double result = 0;
+      for (std::set<VertexID>::iterator it = vertexList.begin(); it != vertexList.end(); ++it)
+      {
+        result += graph[*it]->getRuntimeAverage();
+      }
+      return result;
+    }
+
+    // Check whether s1 (wildcard + regex allowed) matches s2
+    bool stringComp(str s1, str s2)
+    {
+      if ( s1 == s2 ) return true;
+      if ( s1 == "" ) return true;
+      if ( s1 == "*" ) return true;
+      // if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
+      // TODO: Implement wildcard and regex comparison
+      return false;
+    }
+
+
+    ///////////////////////////////////////////////////
+    // Public definitions of DependencyResolver class
+    ///////////////////////////////////////////////////
+
+    // Constructor
+    DependencyResolver::DependencyResolver(const gambit_core &core, const
+            IniParser::IniFile &iniFile, Printers::BasePrinter &printer)
      : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
     {
       addFunctors();
-      verbose = true;
     }
 
-    /// Main dependency resolution
-    void DependencyResolver::resolveNow()
+    //
+    // Initialization stage
+    //
+
+    // Main dependency resolution
+    void DependencyResolver::doResolution()
     {
       const IniParser::ObservablesType & observables = boundIniFile->getObservables();
       // (cap., typ) --> dep. vertex map
       std::queue<QueueEntry> parQueue;
       QueueEntry queueEntry;
     
-      logger() << LogTags::dependency_resolver;
-      logger() << endl << "Target likelihoods/observables" << endl;
-      logger() <<         "------------------------------" << endl;
-      logger() <<         "CAPABILITY (TYPE)"   << endl;
-      logger() << EOM;
-      for (IniParser::ObservablesType::const_iterator it =
-          observables.begin(); it != observables.end(); ++it)
+      // Set up list of target ObsLikes
+      logger() << LogTags::dependency_resolver << endl;
+      logger() << "#######################################"   << endl;
+      logger() << "#        List of Target ObsLikes      #"   << endl;
+      logger() << "#                                     #"   << endl;
+      logger() << "# format: Capability (Type) [Purpose] #"   << endl;
+      logger() << "#######################################"   << endl << endl;
+      for (auto it = observables.begin(); it != observables.end(); ++it)
       {
-        logger() << LogTags::dependency_resolver << (*it).capability << " (" << (*it).type << ")" << endl << EOM;
-        queueEntry.first.first = (*it).capability;
-        queueEntry.first.second = (*it).type;
-        queueEntry.second = OOI_VERTEXID;
-        queueEntry.printme = (*it).printme;
+        // TODO: Format output
+        logger() << LogTags::dependency_resolver << it->capability << " (" << it->type << ") [" << it->purpose << "]" << endl;
+        queueEntry.first.first = it->capability;
+        queueEntry.first.second = it->type;
+        queueEntry.second = OBSLIKE_VERTEXID;
+        queueEntry.printme = it->printme;
         parQueue.push(queueEntry);
       }
+      logger() << EOM;
+
+      // Select functors compatible with model we scan over (and deactivate the
+      // rest)
       makeFunctorsModelCompatible();
+
+      // Generate dependency tree (the core of the dependency resolution)
       generateTree(parQueue);
+
+      // Find one execution order for activated vertices that is compatible
+      // with dependency structure
       function_order = run_topological_sort();
 
-      // Set nested functions in activated loop managers
+      // Loop manager initialization: Notify them about their nested functions
       for (std::map<VertexID, std::set<VertexID>>::iterator it =
           loopManagerMap.begin(); it != loopManagerMap.end(); ++it)
       {
-        // Topologically sorted list of vertex IDs of functions nested within
-        // given loop manager
+        // Generate topologically sorted list of vertex IDs that are nested
+        // within loop manager (*it) ...
         std::vector<VertexID> vertexList = sortVertices(it->second, function_order);
-        // Map this on topologically sorted list of functor pointers...
+        // ... map this on functor pointers...
         std::vector<functor*> functorList;
         for (std::vector<VertexID>::iterator jt = vertexList.begin(); jt != vertexList.end(); ++jt)
         {
           functorList.push_back(masterGraph[*jt]);
         }
-        // ...and store into loop manager functor
+        // ...and store it into loop manager functor
         masterGraph[it->first]->setNestedList(functorList);
       }
 
@@ -262,43 +263,16 @@ namespace Gambit
       // Generate graphviz plot
       std::ofstream outf("graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
+
+      // Done
     }
 
-    /// Set up printer object
-    // (i.e. give it the list of functors that need printing)
-    void DependencyResolver::initialisePrinter()
-    {
-      std::vector<int> functors_to_print;
-      graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
-      //IndexMap index = get(vertex_index, masterGraph); // Now done in the constructor
-      //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
-      //Ok well it does seem to work in the constructor, not sure why though...
-
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
-      {
-        // Inform the active functors of the vertex ID that the masterGraph has assigned to them
-        // (so that later on they can pass this to the printer object to identify themselves)  
-        masterGraph[*vi]->setVertexID(index[*vi]);  
-
-        // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
-        // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
-        //       how it should be in the end.
-        if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
-        {
-          functors_to_print.push_back(index[*vi]);
-        }
-      }
-      // sent vector of ID's of functors to be printed to printer.
-      // (if we want to only print functor output sometimes, and dynamically switch this on and off, we'll have to rethink the strategy here a little... for now if the print function of a functor does not get called, it is up to the printer how it deals with the missing result. Similarly for extra results, i.e. from any functors not in this initial list, whose "requiresPrinting" flag later gets set to 'true' somehow.)
-      boundPrinter->initialise(functors_to_print);
-    }
-
-    /// List of masterGraph content
+    // List of masterGraph content
     void DependencyResolver::printFunctorList() 
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       const str formatString = "%-20s %-32s %-32s %-32s %-15s %-7i %-5i %-5i\n";
-      logger() << LogTags::dependency_resolver << "Vertices registered in masterGraph" << endl;
+      logger() << LogTags::dependency_resolver << endl << "Vertices registered in masterGraph" << endl;
       logger() << "----------------------------------" << endl;
       logger() << boost::format(formatString)%
        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
@@ -320,34 +294,13 @@ namespace Gambit
       logger() << EOM;
     }
 
-    /// Generic printer of the contents of a functor list
-    str DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList) 
-    {
-      const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
-      std::ostringstream stream;
-      stream << boost::format(formatString)%"ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
-      for (std::vector<functor *>::const_iterator 
-          it  = functorList.begin();
-          it != functorList.end();
-          ++it)
-      {
-        stream << boost::format(formatString)%
-         ((*it)->origin() + " (" + (*it)->version() + ")") %
-         (*it)->name()%
-         (*it)->capability()%
-         (*it)->type()%
-         (*it)->status();
-      }
-      return stream.str();
-    }
-
-    /// Pretty print function evaluation order
-    //
-    // Running this lets us check the order of execution. Also helps
-    // to verify that we actually have pointers to all the required
-    // functors.
+    // Pretty print function evaluation order
     void DependencyResolver::printFunctorEvalOrder()
     { 
+      // Running this lets us check the order of execution. Also helps
+      // to verify that we actually have pointers to all the required
+      // functors.
+      //
       // Get order of evaluation
       std::vector<VertexID> order = getObsLikeOrder();
 
@@ -374,7 +327,11 @@ namespace Gambit
     
     }
 
-    /// New IO routines
+    //
+    // Runtime
+    //
+
+    // Returns list of ObsLike vertices in order of runtime
     std::vector<VertexID> DependencyResolver::getObsLikeOrder()
     {
       std::vector<VertexID> unsorted;
@@ -414,6 +371,8 @@ namespace Gambit
       return sorted;
     }
 
+    // Evaluates ObsLike vertex, and everything it depends on, and prints
+    // results
     void DependencyResolver::calcObsLike(VertexID vertex)
     {
       std::vector<VertexID> order;
@@ -425,12 +384,9 @@ namespace Gambit
       order = getSortedParentVertices(vertex, masterGraph, function_order);
       for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it)
       {
-        if (verbose)
-        {
-          std::ostringstream ss;
-          ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
-          logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << endl << EOM;
-        }
+        std::ostringstream ss;
+        ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
+        logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << endl << EOM;
         masterGraph[*it]->calculate();
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
@@ -443,6 +399,7 @@ namespace Gambit
       }
     }
 
+    // Returns value from ObsLike (only doubles)
     double DependencyResolver::getObsLike(VertexID vertex)
     {
       // Returns just doubles, and crashes for other types
@@ -455,11 +412,14 @@ namespace Gambit
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 
+    // Tell functor that it invalidated the current point in model space (due
+    // to a large contribution to lnL)
     void DependencyResolver::notifyOfInvalidation(VertexID vertex)
     {
       masterGraph[vertex]->notifyOfInvalidation();
     }
 
+    // Returns pointer to ini-file entry associated with ObsLike
     const IniParser::ObservableType * DependencyResolver::getIniEntry(VertexID v)
     {
       for (std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
@@ -471,6 +431,7 @@ namespace Gambit
       return NULL;
     }
 
+    // Resets all functors and delets exisiting results
     void DependencyResolver::resetAll()
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
@@ -482,11 +443,33 @@ namespace Gambit
       boundPrinter->endline();
     }
 
-    //
-    // Private functions of DependencyResolver
-    //
 
-    /// Add module and backend functors to class internal lists.
+    ////////////////////////////////////////////////////
+    // Private definitions of DependencyResolver class
+    ////////////////////////////////////////////////////
+
+    // Generic printer of the contents of a functor list
+    str DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList)
+    {
+      const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
+      std::ostringstream stream;
+      stream << boost::format(formatString)%"ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
+      for (std::vector<functor *>::const_iterator 
+          it  = functorList.begin();
+          it != functorList.end();
+          ++it)
+      {
+        stream << boost::format(formatString)%
+         ((*it)->origin() + " (" + (*it)->version() + ")") %
+         (*it)->name()%
+         (*it)->capability()%
+         (*it)->type()%
+         (*it)->status();
+      }
+      return stream.str();
+    }
+
+    // Add module functors in bound core to class-internal masterGraph object
     void DependencyResolver::addFunctors()
     {
       // - module functors go into masterGraph
@@ -530,15 +513,48 @@ namespace Gambit
       }
     }
 
+    /// Set up printer object
+    // (i.e. give it the list of functors that need printing)
+    void DependencyResolver::initialisePrinter()
+    {
+      std::vector<int> functors_to_print;
+      graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
+      //IndexMap index = get(vertex_index, masterGraph); // Now done in the constructor
+      //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
+      //Ok well it does seem to work in the constructor, not sure why though...
+
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
+        // Inform the active functors of the vertex ID that the masterGraph has assigned to them
+        // (so that later on they can pass this to the printer object to identify themselves)  
+        masterGraph[*vi]->setVertexID(index[*vi]);  
+
+        // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
+        // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
+        //       how it should be in the end.
+        if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
+        {
+          functors_to_print.push_back(index[*vi]);
+        }
+      }
+      // sent vector of ID's of functors to be printed to printer.
+      // (if we want to only print functor output sometimes, and dynamically
+      // switch this on and off, we'll have to rethink the strategy here a
+      // little... for now if the print function of a functor does not get
+      // called, it is up to the printer how it deals with the missing result.
+      // Similarly for extra results, i.e. from any functors not in this
+      // initial list, whose "requiresPrinting" flag later gets set to 'true'
+      // somehow.)
+      boundPrinter->initialise(functors_to_print);
+    }
+
     /// Resolve dependency
-    std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, DRes::VertexID>
-      DependencyResolver::resolveDependency(
-        DRes::VertexID toVertex, sspair quantity)
+    std::tuple<const IniParser::ObservableType *, DRes::VertexID>
+        DependencyResolver::resolveDependency( DRes::VertexID toVertex, sspair quantity)
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       const IniParser::ObservableType *auxEntry = NULL;  // Ptr. on ini-file entry of the dependent vertex (if existent)
       const IniParser::ObservableType *depEntry = NULL;  // Ptr. on ini-file entry that specifies how to resolve 'quantity'
-      const IniParser::ObservableType *optEntry = NULL;  // Ptr. on ini-file entry that carries options for 'quantity'
       std::vector<DRes::VertexID> vertexCandidates;
       bool entryExists = false;  // Ini-file entry to resolve 'quantity' found?
 
@@ -549,19 +565,17 @@ namespace Gambit
       // we just use the entry from the observable/likelihood section for the
       // resolution of ambiguities.  A pointer to the relevant inifile entry
       // is stored in depEntry.
-      if ( toVertex == OOI_VERTEXID)
+      if ( toVertex == OBSLIKE_VERTEXID )
       {
-        depEntry = findIniEntry(quantity, boundIniFile->getObservables());
-        optEntry = depEntry;
+        depEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
         entryExists = true;
       }
       // for all other vertices use the auxiliaries entries
       else 
       {
-        auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries());
-        optEntry = findIniEntry(quantity, boundIniFile->getAuxiliaries());
+        auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries(), "auxiliary");
         if ( auxEntry != NULL )
-          depEntry = findIniEntry(quantity, (*auxEntry).dependencies);
+          depEntry = findIniEntry(quantity, (*auxEntry).dependencies, "dependency");
         if ( auxEntry != NULL and depEntry != NULL ) 
         {
           entryExists = true;
@@ -582,13 +596,14 @@ namespace Gambit
                 ( masterGraph[*vi]->type() == quantity.second  or quantity.second == "" ) )
           // with inifile entry, we check capability, type, function name and
           // module name.
-            and ( entryExists ?  funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
+            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
           {
           // Add to vertex candidate list
             vertexCandidates.push_back(*vi);
           }
         }
       }
+
       // Special treatment of dependence on point-level initialization
       // functions, which can only be resolved from within a given module.
       if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
@@ -612,10 +627,21 @@ namespace Gambit
       // Die if there is no way to fulfill this dependency.
       if ( vertexCandidates.size() == 0 ) 
       {
-        str errmsg = "I could not find any module function that provides capability\n";
-        errmsg += quantity.first + " with type " + quantity.second + "."
-               +  "\nCheck your inifile for typos, your modules for consistency, etc.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        if ( not entryExists )
+        {
+            str errmsg = "I could not find any module function that provides ";
+            errmsg += quantity.first + " (" + quantity.second + ")"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+            dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        }
+        else
+        {
+            str errmsg = "I could not find any module function that provides ";
+            errmsg += quantity.first + " (" + quantity.second + ") ["
+                + depEntry->function + ", " + depEntry->module + "]"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+            dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        }
       }
 
       // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
@@ -642,7 +668,7 @@ namespace Gambit
             {
               str errmsg = "Multi-parent models cannot be used in cases where model specific functor rules need";
               errmsg += "to be invoked. Please specify your required dependencies more fully in your inifile.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
             }
             else if (pvec.size() == 0) 
             {
@@ -660,66 +686,73 @@ namespace Gambit
 
       if ( vertexCandidates.size() > 1 ) 
       {
-        str errmsg = "I found too many module functions that provide capability\n";
-        errmsg += quantity.first + " with type " + quantity.second + ".\n"
-               +  "Check your inifile for typos, your modules for consistency, etc.";
+        str errmsg = "";
+        if ( not entryExists )
+        {
+            errmsg += "I found too many module functions that provide ";
+            errmsg += quantity.first + " (" + quantity.second + ")"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+        }
+        else
+        {
+            errmsg += "I found too many module functions that provide ";
+            errmsg += quantity.first + " (" + quantity.second + ") ["
+                + depEntry->function + ", " + depEntry->module + "]"
+                +  "\nCheck your inifile for typos, your modules for consistency, etc.";
+        }
         if ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
-         boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
-         errmsg += "\nAlso consider turning on prefer_model_specific_functions in your inifile.";
+        boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") )
+        errmsg += "\nAlso consider turning on prefer_model_specific_functions in your inifile.";
         errmsg += "\nCandidate module functions are:";
         for (std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
         {
-          errmsg += "\n  " + masterGraph[*it]->origin() + "::" + masterGraph[*it]->name();
+            errmsg += "\n   [" + masterGraph[*it]->name() + "," + masterGraph[*it]->origin() + "]";
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
       }
 
-      return std::tie(depEntry, auxEntry, optEntry, vertexCandidates[0]);
+      return std::tie(depEntry, vertexCandidates[0]);
     }
 
     /// Set up dependency tree
-    void DependencyResolver::generateTree(
-        std::queue<QueueEntry> parQueue)
+    void DependencyResolver::generateTree( std::queue<QueueEntry> parQueue)
     {
       OutputVertexInfo outInfo;
       DRes::VertexID fromVertex, toVertex;
       DRes::EdgeID edge;
-      // relevant observable entry (could be dependency of another observable)
-      IniParser::ObservableType observable;
-      // Inifile entry relevant for dependency resolution (either something
-      // from the observable/likelihood section, or a dependency from the
-      // auxiliary section).
+      // Inifile entry of ObsLike (if relevant)
       const IniParser::ObservableType * iniEntry; 
-      // Inifile entry to relevant auxiliary entry (required for backend
-      // resolution)
-      const IniParser::ObservableType * auxEntry; 
-      // Inifile option entry to relevant auxiliary or observable entry (passed
-      // to module function
-      const IniParser::ObservableType * optEntry;
       bool ok;
       sspair quantity;
       int dependency_type;
       bool printme;
 
-      logger() << LogTags::dependency_resolver;
-      logger() << endl << "Dependency resolution" << endl;
-      logger() <<         "---------------------" << endl;
-      logger() <<         "CAPABILITY (TYPE) [FUNCTION, MODULE]" << endl << endl;
+      logger() << LogTags::dependency_resolver << endl;
+      logger() << "################################################" << endl;
+      logger() << "#         Starting dependency resolution       #" << endl;
+      logger() << "#                                              #" << endl;
+      logger() << "# format: Capability (Type) [Function, Module] #" << endl;
+      logger() << "################################################" << endl;
       logger() << EOM;
-      // Repeat until dependency queue is empty
-      while (not parQueue.empty()) {
-        // Retrieve capability, type and vertex ID of dependency of interest
-        quantity = parQueue.front().first;
-        toVertex = parQueue.front().second;
-        dependency_type = parQueue.front().third;
-        printme = parQueue.front().printme;
 
-        // Print information
+      //
+      // Main loop: repeat until dependency queue is empty
+      //
+
+      while (not parQueue.empty()) {
+
+        // Retrieve capability, type and vertex ID of dependency of interest
+        quantity = parQueue.front().first;  // (capability, type) pair
+        toVertex = parQueue.front().second;  // dependent vertex
+        dependency_type = parQueue.front().third;  // Normal or loop-manager
+        printme = parQueue.front().printme;  // bool
+
+        // Print information about required quantity and dependent vertex
         logger() << LogTags::dependency_resolver;
-        if ( toVertex != OOI_VERTEXID )
+        logger() << endl << "Resolving " << quantity.first << " (" << quantity.second << ")";
+        if ( toVertex != OBSLIKE_VERTEXID )
         {
-          logger() << quantity.first << " (" << quantity.second << ")" << endl;
-          logger() << "Required by: ";
+          logger() << ", required by ";
           logger() << (*masterGraph[toVertex]).capability() << " (";
           logger() << (*masterGraph[toVertex]).type() << ") [";
           logger() << (*masterGraph[toVertex]).name() << ", ";
@@ -727,34 +760,34 @@ namespace Gambit
         }
         else
         {
-          logger() << quantity.first << " (" << quantity.second << ")" << endl;
-          logger() << "Required by: Core" << endl;
+          logger() << ", required by Core" << endl;
         }
-        logger() << EOM;
+        //logger() << EOM;
 
-        // Resolve dependency
-        std::tie(iniEntry, auxEntry, optEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        // Figure out how to resolve dependency
+        std::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
 
         // Print user info.
         logger() << LogTags::dependency_resolver;
         logger() << "Resolved by: [";
         logger() << (*masterGraph[fromVertex]).name() << ", ";
         logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
-        logger() << EOM;
+        //logger() << EOM;
 
         // If toVertex is the Core, then fromVertex is one of our target functors, which are
         // the things we want to output to the printer system.  Turn printing on for these.
-        if ( printme and (toVertex==OOI_VERTEXID) )
+        if ( printme and (toVertex==OBSLIKE_VERTEXID) )
         {
            masterGraph[fromVertex]->setPrintRequirement(true);
         }
 
-        if ( toVertex != OOI_VERTEXID)
+        // Apply resolved dependency to masterGraph and functors
+        if ( toVertex != OBSLIKE_VERTEXID )
         {
           // Resolve dependency on functor level...
           //
           // In case the fromVertex is a loop manager, store nested function
-          // temporarily in loopManagerMap
+          // temporarily in loopManagerMap (they have to be sorted later)
           if (dependency_type == LOOP_MANAGER_DEPENDENCY)
           {
             // Check whether fromVertex is allowed to manage loops
@@ -762,7 +795,7 @@ namespace Gambit
             {
               str errmsg = "Trying to resolve dependency on loop manager with";
               errmsg += "\nmodule function that is not declared as loop manager.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
             }
             std::set<DRes::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
@@ -781,23 +814,25 @@ namespace Gambit
           // ...and on masterGraph level.
           tie(edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
         }
-        else
+        else // if output vertex
         {
           outInfo.vertex = fromVertex;
           outInfo.iniEntry = iniEntry;
           outputVertexInfos.push_back(outInfo);
         }
 
-        // Is fromVertex already activated?
+        // If fromVertex is new, activate it
         if ( (*masterGraph[fromVertex]).status() != 2 )
         {
-          logger() << LogTags::dependency_resolver << "Adding new module function to dependency tree..." << endl << EOM;
+          logger() << LogTags::dependency_resolver << "Activate new module function" << endl;
+          masterGraph[fromVertex]->setStatus(2); // activate node
           resolveVertexBackend(fromVertex);
           // Generate options object from ini-file entry that corresponds to
-          // fromVertex (optEntry) and pass it to the fromVertex for later use
-          if ( optEntry != NULL )
+          // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
+          iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
+          if ( iniEntry != NULL )
           {
-            Options myOptions(optEntry->options);
+            Options myOptions(iniEntry->options);
             masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex
@@ -805,23 +840,22 @@ namespace Gambit
         }
 
         // Done.
+        logger() << EOM;
         parQueue.pop();
       }
     }
 
     /// Push module function dependencies on parameter queue
-    void DependencyResolver::fillParQueue(
-        std::queue<QueueEntry> *parQueue,
-        DRes::VertexID vertex) 
+    void DependencyResolver::fillParQueue( std::queue<QueueEntry> *parQueue,
+            DRes::VertexID vertex) 
     {
       bool printme_default = false; // for parQueue constructor
-      (*masterGraph[vertex]).setStatus(2); // activate node, TODO: move somewhere else
       std::vector<sspair> vec = (*masterGraph[vertex]).dependencies();
       logger() << LogTags::dependency_resolver;
       if (vec.size() > 0)
-        logger() << "Adding module function dependencies to resolution queue:" << endl;
-      else
-        logger() << "No further module function dependencies." << endl;
+        logger() << "Add dependencies of new module function to queue" << endl;
+      //else
+      //  logger() << "No further module function dependencies" << endl;
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
@@ -836,7 +870,7 @@ namespace Gambit
         (*parQueue).push(*(new QueueEntry (*(new sspair
                   (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
       }
-      logger() << EOM;
+      //logger() << EOM;
     }
 
     /// Boost lib topological sort
@@ -849,8 +883,7 @@ namespace Gambit
 
     /// Find auxiliary entry that matches vertex
     const IniParser::ObservableType * DependencyResolver::findIniEntry(
-        DRes::VertexID toVertex,
-        const IniParser::ObservablesType &entries)
+            DRes::VertexID toVertex, const IniParser::ObservablesType &entries, const str & errtag)
     {
       std::vector<const IniParser::ObservableType*> auxEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =
@@ -864,14 +897,19 @@ namespace Gambit
       if ( auxEntryCandidates.size() == 0 ) return NULL;
       else if ( auxEntryCandidates.size() != 1 )
       {
-        dependency_resolver_error().raise(LOCAL_INFO,"Found multiple matching auxiliary entries for the same vertex.");
+        str errmsg = "Found multiple " + errtag + " entries for ";
+        errmsg += masterGraph[toVertex]->capability() +" (" +
+            masterGraph[toVertex]->type() + ") [" +
+            masterGraph[toVertex]->name() + ", " +
+            masterGraph[toVertex]->origin() + "]";
+        dependency_resolver_error().raise(LOCAL_INFO, errmsg);
       }
       return auxEntryCandidates[0]; // auxEntryCandidates.size() == 1
     }
 
     /// Find observable entry that matches capability/type
     const IniParser::ObservableType* DependencyResolver::findIniEntry(
-        sspair quantity, const IniParser::ObservablesType & entries)
+            sspair quantity, const IniParser::ObservablesType & entries, const str & errtag)
     {
       std::vector<const IniParser::ObservableType*> obsEntryCandidates;
       for (IniParser::ObservablesType::const_iterator it =
@@ -885,8 +923,8 @@ namespace Gambit
       if ( obsEntryCandidates.size() == 0 ) return NULL;
       else if ( obsEntryCandidates.size() != 1 )
       {
-        str errmsg = "Multiple matches for identical capability in inifile.";
-        errmsg += "\nCapability: " + quantity.first + " (" + quantity.second + ")";
+        str errmsg = "Found multiple " + errtag + " entries for ";
+        errmsg += quantity.first + " (" + quantity.second + ")";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
       return obsEntryCandidates[0]; // obsEntryCandidates.size() == 1
@@ -905,22 +943,22 @@ namespace Gambit
       // Collect list of backend requirements of vertex
       std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
       if (reqs.size() == 0) return; // nothing to do --> return
-      logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
+      logger() << LogTags::dependency_resolver << "Backend function resolution" << endl;
 
       // Check whether vertex is mentioned in inifile
-      auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries());
+      auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries(), "auxiliary");
 
       // A loop over all requirements
       for (std::vector<sspair>::iterator it = reqs.begin();
           it != reqs.end(); ++it)
       {
-        logger() << LogTags::dependency_resolver << it->first << " (" << it->second << ")" << endl << EOM;
+        logger() << LogTags::dependency_resolver << it->first << " (" << it->second << ")";
         depEntry = NULL;
         entryExists = false;
         vertexCandidates.clear();
         // Find relevant iniFile entry from auxiliaries section
         if ( auxEntry != NULL )
-          depEntry = findIniEntry(*it, (*auxEntry).backends);
+          depEntry = findIniEntry(*it, (*auxEntry).backends, "backend");
         if ( auxEntry != NULL and depEntry != NULL ) 
           entryExists = true;
 
@@ -953,32 +991,41 @@ namespace Gambit
 
         if (vertexCandidates.size() == 0)
         {
-          str errmsg = "Found no candidates for backend requirement.";
+          str errmsg = "Found no candidates for backend requirement ";
+          errmsg += it->first + " (" + it->second + ")";
           if (disabledVertexCandidates.size() != 0)
           {
             errmsg += "\nNote that viable candidates exist but have been disabled:"
                    +     printGenericFunctorList(disabledVertexCandidates)
                    +  "\nPlease check that all shared objects exist for the"
-                   +  "\necessary backends, and that they contain all the"
+                   +  "\nnecessary backends, and that they contain all the"
                    +  "\nnecessary functions required for this scan. In "
                    +  "\nparticular, make sure that your mangled function"
                    +  "\nnames match the symbol names in your shared lib.";
           }
-          dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+          dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
         }
 
         // One candidate...
         if (vertexCandidates.size() > 1)
         {
-          dependency_resolver_error().raise(LOCAL_INFO,"Found too many candidates for backend requirement.");
+          str errmsg = "Found too many candidates for backend requirement ";
+          errmsg += it->first + " (" + it->second + ")";
+          errmsg += "\nCandidate backend functions are :";
+          for (auto it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+          {
+            errmsg += "\n   [" + (*it)->name() + ", " + (*it)->origin() + "]";
+            // TODO: Show also version numbers
+          }
+          dependency_resolver_error().raise(LOCAL_INFO, errmsg);
         }
         // Resolve it
         (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
         logger() << LogTags::dependency_resolver;
-        logger() << "Resolved by: [" << (*vertexCandidates[0]).name();
+        logger() << ", resolved by [" << (*vertexCandidates[0]).name();
         logger() << ", " << (*vertexCandidates[0]).origin() << " (";
         logger() << (*vertexCandidates[0]).version() << ")]" << endl;
-        logger() << EOM;
+        //logger() << EOM;
       }
     }
   }

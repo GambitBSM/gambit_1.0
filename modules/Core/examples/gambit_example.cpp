@@ -62,7 +62,7 @@ void beispiel()
   dependencyResolver.printFunctorList();
 
   // Do the dependency resolution
-  dependencyResolver.resolveNow();
+  dependencyResolver.doResolution();
 
   // Check that all requested models are used for at least one computation
   modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());

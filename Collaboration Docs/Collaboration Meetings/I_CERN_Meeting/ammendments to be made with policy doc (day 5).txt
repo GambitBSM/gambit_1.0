@@ -1,0 +1,90 @@
+Publication policy
+---
+more definite about the need to announce new papers
+more detail about what would constitute a long and a short author paper
+clarify use of multiple modules in short author papers --- module = Collider, 4x DM, Core, Scanner -- need to dicuss if mroe than 1
+default is to discuss, not to be long author paper
+allowing long author papers with additional external authors
+
+all members *must* read and comment on each paper
+
+short author papers do not need review.  Circulation will be requested a week in advance if it is deemed necessary when the decision is taken that it will be short author.
+
+review process -- option 1 in Jan's list, 1 reviewer only
+
+
+
+Membership
+---
+
+set upper limit of membership to 30
+
+remove assumption of automatic membership of students
+
+no associate or affiliate class
+
+all leavers must 'thank chaps'
+
+
+Co-ordinators
+----
+discuss at each meeting whether to swap co-ordinators or not
+
+
+Meetings:
+----
+Collaboration meetings every ~9 months or so
+All-in collaboration EVO meetings every month
+
+
+ejection:  
+---
+2 strikes and you're out except in very extreme cases, in which case you are just out:
+  re-release of code
+  publishing, talking without showing collab / acknowledging collab / gieveously misrepresenting collab views
+  meeting to be held to decide on a strike / ejection, requires mjaority vote, 2 weeks for those not present to vote
+
+Co-ordinators to be vigilant about people 'going dead', stopping contributing
+
+
+funding WG:
+---
+martin, pat, are, chris, christoph, aldo, csaba, jan, joakim
+
+
+code public availability
+---
+code to be made public with each code paper (full code and modules)
+collider module and main code def not to be public before first physics paper
+exact form of release of collider package 
+
+
+percentage time commitment
+---
+to be stated when agreeing to final policy doc
+absences to be reported in advance please (more than a month mandatory to tell us, more than a week tell please anyway)
+
+talks
+---
+agree that they need to be basically finished for circulatioon 3 days in advance - no style comments on talks, substantive only
+all collb talks to go on public webpage
+talk tsar can enforce removing, modifying things in talks as a last resort
+
+WGs
+----
+people will move amongst WGs
+WGs members should make some contribution to be on a module paper, those not in the WG who contribute any coding or code design should be added
+Collider WG to do HE and LE modules
+
+
+Code
+---
+Write up modularistion stucture / document core structure
+Commit to keeping up doxygen documentation
+
+mention that first scan will not necessarily be MSSM-25
+
+
+Wiki
+---
+should also have info about coding resources (OpenCL etc)

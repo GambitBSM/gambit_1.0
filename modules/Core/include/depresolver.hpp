@@ -78,6 +78,9 @@ namespace Gambit
       bool printme;
     };
 
+    // Check whether s1 (wildcard + regex allowed) matches s2
+    bool stringComp(str s1, str s2);
+
     // Main dependency resolver
     class DependencyResolver
     {
@@ -86,19 +89,13 @@ namespace Gambit
         DependencyResolver(const gambit_core&, const IniParser::IniFile&, Printers::BasePrinter&);
 
         // The dependency resolution
-        void resolveNow();
+        void doResolution();
 
         // Pretty print module functor information
         void printFunctorList();
 
-        // Pretty print backend functor information
-        str printGenericFunctorList(const std::vector<functor*>&);
-
         // Pretty print function evaluation order
         void printFunctorEvalOrder();
-
-        // Initialise the printer object with a list of functors for it to expect to be printed.
-        void initialisePrinter();
 
         // New IO routines
         std::vector<VertexID> getObsLikeOrder();
@@ -117,11 +114,17 @@ namespace Gambit
         // Adds list of functor pointers to master graph
         void addFunctors();
 
+        // Pretty print backend functor information
+        str printGenericFunctorList(const std::vector<functor*>&);
+
+        // Initialise the printer object with a list of functors for it to expect to be printed.
+        void initialisePrinter();
+
         /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
         void makeFunctorsModelCompatible();
 
         // Resolution of individual module function dependencies
-        std::tuple<const IniParser::ObservableType *, const IniParser::ObservableType *, const IniParser::ObservableType *, DRes::VertexID>
+        std::tuple<const IniParser::ObservableType *, DRes::VertexID>
           resolveDependency(DRes::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree
@@ -136,9 +139,9 @@ namespace Gambit
 
         // Find entries (comparison of inifile entry with quantity or functor)
         const IniParser::ObservableType * findIniEntry(
-            sspair quantity, const IniParser::ObservablesType &);
+            sspair quantity, const IniParser::ObservablesType &, const str &);
         const IniParser::ObservableType * findIniEntry(
-            DRes::VertexID toVertex, const IniParser::ObservablesType &);
+            DRes::VertexID toVertex, const IniParser::ObservablesType &, const str &);
 
         // Resolution of backend dependencies
         void resolveVertexBackend(VertexID);
@@ -167,9 +170,6 @@ namespace Gambit
 
         // Temporary map for loop manager -> list of nested functions
         std::map<VertexID, std::set<VertexID>> loopManagerMap;
-
-        // Debug flag
-        bool verbose;
 
         // Indices associated with graph vertices (used by printers to identify functors)
         IndexMap index;

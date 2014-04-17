@@ -6,17 +6,39 @@
 import ROOT
 ROOT.gROOT.SetBatch(True)
 
-import sys, os, subprocess
-assert len(sys.argv) == 2
+import sys
+if len(sys.argv) != 2:
+    print "Usage: %s <atlasrootfile>" % sys.argv[0]
+    sys.exit(1)
 
+
+# def dev(sig, sigref):
+#     return (sig-sigref) / sigref
+def dev(sig, sigref, reg=0):
+    return ( (sig-sigref) / (abs(sigref) + abs(reg)) ) - 1
+
+
+## Extract ATLAS xsecs for each m0-m12 point and process group
 f = ROOT.TFile(sys.argv[1])
 tree = f.Get("SignalUncertainties")
+atlasxsecs = {}
 for e in tree:
-    if e.finalState == 2: ## gluino-gluino
-        #os.system("../evalxsec slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (e.m0, e.m12))
-        slhafile = "slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (e.m0, e.m12)
-        #print slhafile
-        s = subprocess.check_output(["../evalxsec", slhafile])
-        xsec = float(s.splitlines()[-1])
-        print " ", e.m0, e.m12, e.crossSection, xsec, "=>", xsec/e.crossSection  #, e.cteq_NLO, e.cteq_NLL
-        #print xsec/e.crossSection
+    #print e.finalState
+    atlasxsecs.setdefault((e.m0, e.m12), {})[e.finalState] = e.crossSection
+
+## Run eval_xsec and compare
+import subprocess
+for m0, m12 in atlasxsecs.keys():
+    slhafile = "slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (m0, m12)
+    s = subprocess.check_output(["../evalxsec", slhafile])
+    xsecs = [float(x) for x in s.splitlines()[-1].split()]
+    #print xsecs
+
+    def axsec(*fss):
+        return sum(atlasxsecs[m0,m12].get(fs, 0.0) for fs in fss)
+
+    out = "%.4g %.4g" % (m0, m12)
+    out += " %.3g %.3g" % (axsec(1), dev(xsecs[3], axsec(1), reg=1e-6)) # g~q~
+    out += " %.3g %.3g" % (axsec(2), dev(xsecs[0], axsec(2), reg=1e-6)) # g~g~
+    out += " %.3g %.3g" % (axsec(3,4), dev(xsecs[5], axsec(3,4), reg=1e-6)) # q~q~
+    print out

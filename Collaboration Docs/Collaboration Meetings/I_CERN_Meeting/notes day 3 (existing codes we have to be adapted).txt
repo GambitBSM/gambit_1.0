@@ -1,0 +1,58 @@
+Core
+
+Tags to be passed about indicating what order to call stuff in, how long they take.
+Dictionary to be defined that carries parameter, nuisance and previously calculated observable values.
+Nuisances live with model definitions
+
+
+Collider
+
+- Martin: Parallel Herwig; Fortran Herwig with MPI statements
+- Martin: Isajet -> Herwig -> AtlFast
+- Abram: Analysis chain Pythia 6 -> Delphes (hacked to be parallelised)
+- Martin: FeynRules -> Madgraph 5 -> Pythia 8 -> Delphes
+- Pat (Phil & Franc) FeynRules -> Madgraph 5 -> Pythia 8 -> Delphes
+- Are: Herwig (fortran, v6.5, non parallel) inside ACERDET (added fastjet)
+
+
+DM
+
+Direct
+- Chris: Mathematica code, New DD module (F now, C++ coming)
+- Joakim: DarkSUSY
+- MicrOmegas
+
+Indirect
+- iclike
+- Chris: fast/approximate solar capture code
+- fermi dwarf likelihoods
+- fermi approximate dwarf likelihoods 
+- Greg: dwarf J factor code 
+- fermi 'fast detector simulation' FLATlib
+- fermi GC likelihood (+30 parameters)
+- fermi cluster likelihood
+- fermi GC line likelihood
+- Jan: fermi comological gammas
+- USINE dbar likelihood
+- USINE pbar likelihood
+- USINE positron likelihood
+- USINE additional nuisance likelihoods (B/C, etc)
+- USINE propogation code
+- Lars' propogation code
+- Lars' dbar spectrum calculator
+- WimpSim, DarkSUSY, etc
+
+
+Scanners
+
+- Greg: ensemble MCMC
+- Antje: adaptive proposal MCMC
+- Diffuse nested sampling (Brewer code)
+- MuliNest 
+- Greg's nested sampler
+- Differential Evolution (DEvoPack)
+- BAMBI, CosmoNet (longer term)
+- Greg to implement DE in nested sampling algorithm
+- Genetic Algorithms (PIKAIA)
+
+
