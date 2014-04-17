@@ -60,9 +60,43 @@ nor this {
 }
 \end{verbatim}
 
+\section{Target Compilers}
+
+\begin{itemize}
+\item[]\textbf{icc}/\textbf{ifort} v12.1.0 and later
+\item[]\textbf{gcc}/\textbf{gfortran} v4.4.7 and later
+\item[]\textbf{clang}/\textbf{fort equivalent?} first (upcoming) version to support openMP
+\end{itemize}
+
+\subsection{Library requirements/compatibilities}
+
+\begin{itemize}
+\item[]\textbf{Boost} v1.41 and later
+\end{itemize}
+
+Maybe make yaml-cpp and HepMC required libs rather than contributed libs at some point too.
+
+\subsection{Build system}
+
+GNU autotools to start with.  Probably cmake later.
+
+\section{Hosting}
+
+Hosting is on HEPForge, who have kindly implemented git as an alternative to svn just for us.
+
+\section{Documentation}
+
+Doxygen.  All code needs at the very least to come with an email address, detailing who to abuse when the code breaks and needs to be fixed but cannot due to lack of comments.  A less painful alternative, \textbf{very} strongly encouraged, would be to actually document your code properly in the first place.  There is a standard-issue GAMBIT comment/documentation preamble available; see Sec.~\ref{comments}.
+
+\section{Bug Tracking}
+
+Extensive logging and error tracking is implemented in the GAMBIT core now.  Bug tracking should be carried out with the TRAC ticketing system on the Wiki.
+
 \section{Structure}
 
-\textbf{PS:} The following is a first rough attempt to explain some details of the code structure we envisioned at the first meeting.  I'm sure there is probably a better way to explain this, with fancy diagrams and so on, but exactly what that method is didn't yield itself to a half hr of Googling (unless we want to go for full-blown UML diagrams, which seems pretty involved).  Some of this stuff is already implemented in SUFit, some not.
+\textbf{PS, Apr 2014:} This is a bit of a peek into GAMBIT past, at the time the whole thing was conceived.  Some aspects remain accurate today, some don't.
+
+\textbf{PS, Oct 2012:} The following is a first rough attempt to explain some details of the code structure we envisioned at the first meeting.  I'm sure there is probably a better way to explain this, with fancy diagrams and so on, but exactly what that method is didn't yield itself to a half hr of Googling (unless we want to go for full-blown UML diagrams, which seems pretty involved).  Some of this stuff is already implemented in SUFit, some not.
 
 We refer to the different main bits of the code as `modules', with the `core' module (CoreBit) controlling all inter-module communication.  The code will consist of the core, a series of `physics modules' (HEColliderBit, LEColliderBit, DarkTheoryBit, RelicBit, DirectBit, IndirectBit, maybe later some more like NeutrinoBit, CosmoBit, etc), the scanner module (ScannerBit) and the model module (ModelBit).  The scanner module takes care of selecting the scanning algorithm and running it.  The model module defines the actual theory, model parameterisation and spectrum calculation, including full specification of how any nuisance parameters enter (e.g. dark matter halo modelling).  The physics modules provide calculations of observables and likelihoods.  Experimental data is carried within the physics modules, and associated internally in the physics modules with likelihood functions, in whatever way the individual module authors see fit.  The physics modules should be able to operate as standalone packages, and will be released as such.  The scanner module might be useful as a standalone package too.  The general modularisation strategy is that the core handles all administration, the physics modules all physics and likelihood calculations, the model module all model-dependent definitions, and the scanner module all scanning and statistical issues.  Plotting and statistical analysis of samples after a scan is complete will be handled by an additional external package; we can ship one or more such packages as part of GAMBIT (Pippi being one obvious choice).
 
@@ -94,39 +128,5 @@ External codes will be interfaced with via a common object class for each specif
 ModelBit will also make use of the BackEnd class, in order to interface with spectrum generators.  At a later stage of code development (ie after the first physics paper), model specifications created with ModelBit will also implement Lagrangian and/or Feynman rules specifications, and interface with automatic cross-section calculators such as MadGraph via a BackEnd object.  The results of such cross-section calculations will either be somehow `deposited' into other backended external codes (likely a bit messy) or passed into the core for run-time reference by physics modules and (via the physics modules) other BackEnds.  Exactly how to set this up remains to be determined.
 
 The model and scanner `modules' will essentially just be abstract model and scanner object base classes; the physics modules will each be specific daughter classes of an abstract PhysicsModule base class.  The inclusion of observable and likelihood functions into the specific daughter classes of PhysicsModule should also be (somehow) achieved as modularly as possible, with a view to making it possible to include new data and/or observables by adding a single source file rather than modifying existing code.  Adding new physics modules, scanners, models or backend codes should be a matter of writing only a new source file defining a new daughter class of the PhysicsModule, Scanner, Model or BackEnd abstract base classes.  With a bit of thinking, we can hopefully even make it possible to register and load these new libraries dynamically, without recompiling the rest of the GAMBIT code at all.
-
-\section{Target Compilers}
-
-\begin{itemize}
-\item[]\textbf{icc}/\textbf{ifort} v12.1.0 and later
-\item[]\textbf{gcc}/\textbf{gfortran} v4.4.7 and later
-\item[]\textbf{clang}/\textbf{fort equivalent?} v??
-\end{itemize}
-
-These versions to be discussed and ratified/changed at GAMBIT III, March 2014.
-
-\subsection{Library requirements/compatibilities}
-
-\begin{itemize}
-\item[]\textbf{Boost} v1.41 and later
-\end{itemize}
-
-Maybe make yaml-cpp and HepMC required libs rather than contributed libs at some point too.
-
-\subsection{Build system}
-
-GNU autotools to start with.  Probably cmake later.
-
-\section{Hosting}
-
-Hosting is on HEPForge, who have kindly implemented git as an alternative to svn just for us.
-
-\section{Documentation}
-
-Doxygen documentation is implemented into the SUFit proto-core already -- so we have committed to continuing to add and maintain all code documentation within this system.  All code needs at the very least to come with an email address, detailing who to abuse when the code breaks and needs to be fixed but cannot due to lack of comments.  A less painful alternative, \textbf{very} strongly encouraged, would be to actually document your code properly in the first place.  There is a standard-issue GAMBIT comment/documentation preamble available; see Sec.~\ref{comments}.
-
-\section{Bug Tracking}
-
-Extensive nested error tracking is implemented into the SUFit proto-core already, so we need to keep that going and expanding as we rewrite/extend the code.  Bug tracking should be carried out within the HEPForge bug tracking system.
 
 \end{document}

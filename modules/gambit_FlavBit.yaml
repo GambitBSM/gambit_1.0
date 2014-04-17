@@ -1,0 +1,135 @@
+# GAMBIT Initialization file (in YAML)
+#
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+
+########################
+--- # Input parameters
+########################
+
+CMSSM_I:
+  A0:
+    range: [1,1]
+    fixed: true
+  M0:
+    range: [1,1]
+    fixed: true
+  M12:
+    range: [1,1]
+    fixed: true
+    same_as: CMSSM_I::M0
+  Mstop:
+    range: [1,1]
+    fixed: true
+    same_as: CMSSM_I::M12
+  sgnmu:
+    range: [1,1]
+    fixed: true
+  tanb:
+    range: [1,1]
+    fixed: true
+  param_not_in_gambit:
+
+# The "adhoc" model bypasses ModelBit and produces some model parameter nodes
+# on the fly. This can be used for testing purposes.
+adhoc:
+  m0:
+    range: [2, 4.5]
+    fixed: true
+  m1:
+    range: [2, 4.5]
+    fixed: true
+  m2:
+    range: [2, 4.5]
+    fixed: true
+  m3:
+    range: [2, 4.5]
+    fixed: true
+
+###############################
+--- # Observables of interest
+###############################
+
+# Uncomment to test DarkBit
+# - purpose:      Likelihood
+#   capability:   RD_oh2
+
+# Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
+- purpose:      Likelihood
+  capability:   lnL_ExampleBitB
+  type:         double
+  function:     ""
+  module:       ""
+
+# Test loop manager
+#- purpose:      Likelihood
+#  capability:   nevents_like
+#  type:         double
+
+# Uncomment to test FlavBit
+- purpose:      Likelihood
+  capability:   SI_bsgamma
+- purpose:      Likelihood
+  capability:   SI_Bsmumu
+- purpose:      Likelihood
+  capability:   SI_Bsmumu_untag
+- purpose:      Likelihood
+  capability:   SI_Bdmumu
+- purpose:      Likelihood
+  capability:   SI_Btaunu
+
+
+#########################
+--- # Auxiliary entries
+#########################
+
+#- capability:   "omega_DM"
+#  type:         ""
+#  function:     ""
+#  module:       ""
+#  dependencies:
+#  - {capability: "Weff", type: "", function: "Weff", module: ""}
+#  backends:
+#  - {capability: "", function: "", backend: "", version: ""}
+
+#- capability:   "awesomeness"
+#  type:         ""
+#  function:     ""
+#  backend:      "libFirst"
+
+##########################
+--- # Name/Value Section
+##########################
+
+# Some exemplary keys and subkeys
+my_key: 123
+another_key:
+  subkey3:
+    subsubkey1: value2
+
+#scanner:
+#  module:  crapsample
+#  file_path:  ScannerBit/lib/libsample.so
+
+scanner:
+  module:  multinest
+  file_path:  ScannerBit/lib/libmultinest_interface.so
+    
+enable_redirect: true
+
+redirect_output:
+   CMSSM_I:  xterm
+    
+crapsample:
+  point_number: 1
+  output_file:  output
+  like:  Likelihood
+
+loopsample:
+  point_number: 1
+  output_file:  output
+  like:  Likelihood
+  
+multnest:
+  output_file:  output

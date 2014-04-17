@@ -60,15 +60,18 @@
 #define MODULE FlavBit
 START_MODULE
  
+  /// Initialization capabilities
+  #define CAPABILITY PointInit
+  START_CAPABILITY
+    #define FUNCTION PointInit_Default
+      START_FUNCTION(void)
+     #undef FUNCTION
+  #undef CAPABILITY
+ 
   #define CAPABILITY SI_bsgamma               // Observable: BR(B -> Xs gamma)
   START_CAPABILITY
     #define FUNCTION SI_bsgamma                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-/*      #define BACKEND_REQ bsgamma_calculator
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(SuperIso, 0.1)
-      #undef BACKEND_REQ
-*/ 
       #define BACKEND_REQ bsgamma
         START_BACKEND_REQ(double)
         BACKEND_OPTION(SuperIso, 0.1)
@@ -86,6 +89,107 @@ START_MODULE
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ
       #define BACKEND_REQ C_calculator_base1
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+   #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY SI_Bsmumu               // Observable: BR(Bs -> mu+ mu-)
+  START_CAPABILITY
+    #define FUNCTION SI_Bsmumu                 // Name of specific function providing the observable
+    START_FUNCTION(double)                  // Function calculates a double precision variable
+      #define BACKEND_REQ Bsmumu
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Les_Houches_Reader
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Init_param
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CW_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ C_calculator_base2
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CQ_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Cprime_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+   #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY SI_Bsmumu_untag               // Observable: BR(Bs -> mu+ mu-)_untag
+  START_CAPABILITY
+    #define FUNCTION SI_Bsmumu_untag                 // Name of specific function providing the observable
+    START_FUNCTION(double)                  // Function calculates a double precision variable
+      #define BACKEND_REQ Bsmumu_untag
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Les_Houches_Reader
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Init_param
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CW_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ C_calculator_base2
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CQ_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Cprime_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+   #undef FUNCTION
+  #undef CAPABILITY
+
+ #define CAPABILITY SI_Bdmumu             // Observable: BR(Bd -> mu+ mu-)
+  START_CAPABILITY
+    #define FUNCTION SI_Bdmumu                // Name of specific function providing the observable
+    START_FUNCTION(double)                  // Function calculates a double precision variable
+      #define BACKEND_REQ Bdmumu
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Les_Houches_Reader
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ Init_param
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CW_calculator
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ C_calculator_base2
+        START_BACKEND_REQ(void)
+        BACKEND_OPTION(SuperIso, 0.1)
+      #undef BACKEND_REQ
+      #define BACKEND_REQ CQ_calculator
         START_BACKEND_REQ(void)
         BACKEND_OPTION(SuperIso, 0.1)
       #undef BACKEND_REQ

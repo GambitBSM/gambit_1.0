@@ -50,6 +50,8 @@ namespace Gambit
     template<typename T1, typename T2>
     class BFsum;
     template<typename T1, typename T2>
+    class BFdiff;
+    template<typename T1, typename T2>
     class BFmult;
     template<typename T>
     class BFlineOfSightIntegral;
@@ -150,6 +152,8 @@ namespace Gambit
             template <typename T1>
             shared_ptr<BFsum<T, T1>> sum(BF_temp_ptr(T1) f2) { return shared_ptr<BFsum<T, T1>>(new BFsum<T, T1>(this->shared_from_this(), f2)); }
             template <typename T1>
+            shared_ptr<BFdiff<T, T1>> diff(BF_temp_ptr(T1) f2) { return shared_ptr<BFdiff<T, T1>>(new BFdiff<T, T1>(this->shared_from_this(), f2)); }
+            template <typename T1>
             shared_ptr<BFmult<T, T1>> mult(BF_temp_ptr(T1) f2) { return shared_ptr<BFmult<T, T1>>(new BFmult<T, T1>(this->shared_from_this(), f2)); }
             shared_ptr<BFmult<T, double>> mult(double x) { return shared_ptr<BFmult<T, double>>(new BFmult<T, double>(this->shared_from_this(), x)); }
             shared_ptr<BFlineOfSightIntegral<T>> lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral<T>>(new BFlineOfSightIntegral<T>(this->shared_from_this(), D)); }
@@ -239,16 +243,17 @@ namespace Gambit
     class BaseFunction : public FunctionExpression<BaseFunction>
     {
         private:
+            BFargVec v;
                 
         public:
-            BaseFunction(const std::string &str, const int &ndim) : FunctionExpression<BaseFunction>(str, ndim) {}
+            BaseFunction(const std::string &str, const int &ndim) : FunctionExpression<BaseFunction>(str, ndim), v(ndim) {}
             
             template<typename... args>
             typename enable_if_not_one_member_vector<double, args...>::type::type
             operator()(const args&... params)
             {
                     assertNdim(sizeof...(args));
-                    BFargVec v(sizeof...(args));
+                    //BFargVec v(sizeof...(args));
                     inputVariadicVector(v.begin(), params...);
                     return this->value(v);
             }
@@ -260,7 +265,7 @@ namespace Gambit
                     assertNdim(sizeof...(args));
                     int end = getVariadicMaxVector(params...);
                     BFargVec retval(end);
-                    BFargVec v(sizeof...(args));
+                    //BFargVec v(sizeof...(args));
                     for (int i = 0; i < end; i++)
                     {
                         inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
@@ -867,6 +872,27 @@ namespace Gambit
             BF_temp_ptr(T2) f2;
     };
     
+    // Substracting two functions (n-dim, n-dim) --> n-dim
+    template <typename T1, typename T2>
+    class BFdiff: public FunctionExpression<BFsum<T1, T2>>
+    {
+        public:
+            BFdiff(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFsum<T1, T2>>("Sum", f1->getNdim()), f1(f1), f2(f2)
+            {
+                if (f1->getNdim()!=f2->getNdim()) this->failHard("BFsum can only sum objects with matching dimensionality.");
+            }
+
+            template <typename... args>
+            double operator()(args... params)
+            {
+                return (*f1)(params...) - (*f2)(params...);
+            }
+            
+        private:    
+            BF_temp_ptr(T1) f1;
+            BF_temp_ptr(T2) f2;
+    };
+    
     // Multiplying two functions (n-dim, n-dim) --> n-dim
     // OR multiply function with constant value (n-dim, 0-dim) --> n-dim
     template <typename T1, typename T2>
@@ -914,6 +940,10 @@ namespace Gambit
     
     template <typename T1, typename T2>
     inline shared_ptr<BFsum<T1, T2>> operator + (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFsum<T1, T2>>(new BFsum<T1, T2>(f1, f2));}
+
+    template <typename T1, typename T2>
+    inline shared_ptr<BFdiff<T1, T2>> operator - (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFdiff<T1, T2>>(new BFdiff<T1, T2>(f1, f2));}
+    
     template <typename T1, typename T2>
     inline shared_ptr<BFmult<T1, T2>> operator * (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFmult<T1, T2>>(new BFmult<T1, T2>(f1, f2));}
 
@@ -1062,9 +1092,9 @@ namespace Gambit
     }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Expression template versions of BFfromPlainFunction, BFconstant, BFinterpolation versions
-///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // 'Base Class' versions of BFfromPlainFunction, BFconstant, BFinterpolation
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Constant n-dim function
     
