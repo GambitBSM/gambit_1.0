@@ -127,7 +127,7 @@ namespace Gambit
         inline double squareVariadic(const double &val, const args&... params)
         {
                 return val*val + squareVariadic(params...);
-        };
+        }
         
         ///////////////////////////////////////////////
         //Add Variadic Point
@@ -449,7 +449,7 @@ namespace Gambit
                 int N = getVariadicVectorSize(in);
 
                 return (N > N0 && N0 != 0) ? N0 : N;
-        };
+        }
         
         inline void inputVariadicVector(std::vector<double>::iterator vec){}
         
