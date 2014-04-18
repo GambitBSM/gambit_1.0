@@ -16,29 +16,16 @@
 ///
 ///  *********************************************
 
-#include "backend_rollcall.hpp"
+#include "log.hpp"
 #include "depresolver.hpp"
-#include "yaml_parser.hpp"
 #include "scannerbit.hpp"
-#include "module_rollcall.hpp"
+#include "yaml_parser.hpp"
 #include "model_rollcall.hpp"
+#include "module_rollcall.hpp"
+#include "backend_rollcall.hpp"
+#include "register_error_handlers.hpp"
 #include "stream_printers.hpp"
 #include "priors.hpp"
-#include "register_error_handlers.hpp"
-#include "log.hpp"
-
-//Pat: no idea why exactly, but the following inclusion order causes a BOOST_PP_IIF compile error on later versions of Boost
-//#include "log.hpp"
-//#include "depresolver.hpp"
-//#include "scannerbit.hpp"
-//#include "yaml_parser.hpp"
-//#include "model_rollcall.hpp"
-//#include "module_rollcall.hpp"
-//#include "backend_rollcall.hpp"
-//#include "register_error_handlers.hpp"
-//#include "stream_printers.hpp"
-//#include "priors.hpp"
-
 #include "modelgraph.hpp"
 #include "priorfactory.hpp"
 #include "test_factory.hpp"

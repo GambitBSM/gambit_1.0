@@ -188,7 +188,7 @@ namespace Gambit
        if(not silenced)
        {
          // Later on this should clean up the logger objects
-         std::cout<<"Logger is being destructed, checking if messaged left to deliver..."<<std::endl;
+         std::cout<<"Logger is being destroyed. Checking if there are messages left to deliver..."<<std::endl;
          // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
          if (prelim_buffer.size()!=0)
          { 
