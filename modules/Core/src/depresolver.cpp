@@ -276,7 +276,7 @@ namespace Gambit
       logger() << "----------------------------------" << endl;
       logger() << boost::format(formatString)%
        "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         logger() << boost::format(formatString)%
          ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
@@ -435,7 +435,7 @@ namespace Gambit
     void DependencyResolver::resetAll()
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
         masterGraph[*vi]->reset();
       }
@@ -495,14 +495,14 @@ namespace Gambit
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       std::vector<str> modelList = modelClaw().get_activemodels();
       // First make sure to deactivate all the vertices
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         masterGraph[*vi]->setStatus(0);
       }
       // Then reactivate those that match one of the models being scanned.
       for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
       {
-        for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+        for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
         {
           if (masterGraph[*vi]->modelAllowed(*it))
           {
@@ -523,7 +523,7 @@ namespace Gambit
       //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
       //Ok well it does seem to work in the constructor, not sure why though...
 
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
         // (so that later on they can pass this to the printer object to identify themselves)  
@@ -711,7 +711,7 @@ namespace Gambit
         dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
       }
 
-      return tie(depEntry, vertexCandidates[0]);
+      return boost::tie(depEntry, vertexCandidates[0]);
     }
 
     /// Set up dependency tree
@@ -812,7 +812,7 @@ namespace Gambit
           }
           // 
           // ...and on masterGraph level.
-          tie(edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
+          boost::tie(edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
         }
         else // if output vertex
         {
