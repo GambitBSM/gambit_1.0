@@ -16,13 +16,14 @@
 ///           (gregory.david.martinez@gmail.com)
 ///  \date 2014 Apr
 ///
+///  \author Pat Scott
+///           (patscott@physics.mcgill.ca)
+///  \date 2014 Apr
 ///  *********************************************
 
-#ifndef __BaseFunctions_hpp__
-#define __BaseFunctions_hpp__
+#ifndef __base_functions_hpp__
+#define __base_functions_hpp__
 
-#include "shared_ptr.hpp"
-#include "variadic_functions.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -30,6 +31,10 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+
+#include "shared_ptr.hpp"
+#include "variadic_functions.hpp"
+
 //#include "boost/lambda/lambda.hpp"
 //#include "boost/function/function.hpp"
 #include <gsl/gsl_integration.h>
@@ -70,7 +75,7 @@ namespace Gambit
     // The most relevant object the user will deal with is a shared pointer to
     // the abstract function base class.
     //typedef shared_ptr<FunctionExpression> BF_temp_ptr;
-#define BF_temp_ptr(...) shared_ptr<FunctionExpression<__VA_ARGS__>>
+#define BF_temp_ptr(...) shared_ptr<FunctionExpression<__VA_ARGS__> >
     // Arguments are by default passed as vectors.  Overloads for calls by
     // argument lists exist.
     typedef std::vector<double> BFargVec;
@@ -92,7 +97,7 @@ namespace Gambit
     }
     
     template <typename T>
-    class FunctionExpression : public enable_shared_from_this<FunctionExpression<T>>
+    class FunctionExpression : public enable_shared_from_this<FunctionExpression<T> >
     {
         public:
             // Verbose constructor and destructor
@@ -150,18 +155,18 @@ namespace Gambit
             }
                 
             template <typename T1>
-            shared_ptr<BFsum<T, T1>> sum(BF_temp_ptr(T1) f2) { return shared_ptr<BFsum<T, T1>>(new BFsum<T, T1>(this->shared_from_this(), f2)); }
+            shared_ptr<BFsum<T, T1> > sum(BF_temp_ptr(T1) f2) { return shared_ptr<BFsum<T, T1> >(new BFsum<T, T1>(this->shared_from_this(), f2)); }
             template <typename T1>
-            shared_ptr<BFdiff<T, T1>> diff(BF_temp_ptr(T1) f2) { return shared_ptr<BFdiff<T, T1>>(new BFdiff<T, T1>(this->shared_from_this(), f2)); }
+            shared_ptr<BFdiff<T, T1> > diff(BF_temp_ptr(T1) f2) { return shared_ptr<BFdiff<T, T1> >(new BFdiff<T, T1>(this->shared_from_this(), f2)); }
             template <typename T1>
-            shared_ptr<BFmult<T, T1>> mult(BF_temp_ptr(T1) f2) { return shared_ptr<BFmult<T, T1>>(new BFmult<T, T1>(this->shared_from_this(), f2)); }
-            shared_ptr<BFmult<T, double>> mult(double x) { return shared_ptr<BFmult<T, double>>(new BFmult<T, double>(this->shared_from_this(), x)); }
-            shared_ptr<BFlineOfSightIntegral<T>> lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral<T>>(new BFlineOfSightIntegral<T>(this->shared_from_this(), D)); }
-            shared_ptr<BFfixPar<T>> fixPar(int i, double x) { return shared_ptr<BFfixPar<T>>(new BFfixPar<T>(this->shared_from_this(), i, x)); }
-            shared_ptr<BFaddPar<T>> addPar(int i) { return shared_ptr<BFaddPar<T>>(new BFaddPar<T>(this->shared_from_this(), i)); }
-            shared_ptr<BFvalidRange<T>> validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange<T>>(new BFvalidRange<T>(this->shared_from_this(), i, x0, x1)); }
-            shared_ptr<BFintegrate<T>> integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate<T>> (new BFintegrate<T>(this->shared_from_this(), i, x0, x1)); }
-            shared_ptr<BFrotSym<T>> rotSym(int i) { return shared_ptr<BFrotSym<T>>(new BFrotSym<T>(this->shared_from_this(), i)); }
+            shared_ptr<BFmult<T, T1> > mult(BF_temp_ptr(T1) f2) { return shared_ptr<BFmult<T, T1> >(new BFmult<T, T1>(this->shared_from_this(), f2)); }
+            shared_ptr<BFmult<T, double> > mult(double x) { return shared_ptr<BFmult<T, double> >(new BFmult<T, double>(this->shared_from_this(), x)); }
+            shared_ptr<BFlineOfSightIntegral<T> > lineOfSightIntegral(double D) { return shared_ptr<BFlineOfSightIntegral<T> >(new BFlineOfSightIntegral<T>(this->shared_from_this(), D)); }
+            shared_ptr<BFfixPar<T> > fixPar(int i, double x) { return shared_ptr<BFfixPar<T> >(new BFfixPar<T>(this->shared_from_this(), i, x)); }
+            shared_ptr<BFaddPar<T> > addPar(int i) { return shared_ptr<BFaddPar<T> >(new BFaddPar<T>(this->shared_from_this(), i)); }
+            shared_ptr<BFvalidRange<T> > validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange<T> >(new BFvalidRange<T>(this->shared_from_this(), i, x0, x1)); }
+            shared_ptr<BFintegrate<T> > integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate<T> > (new BFintegrate<T>(this->shared_from_this(), i, x0, x1)); }
+            shared_ptr<BFrotSym<T> > rotSym(int i) { return shared_ptr<BFrotSym<T> >(new BFrotSym<T>(this->shared_from_this(), i)); }
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
@@ -324,14 +329,14 @@ namespace Gambit
         };
         
         template <typename T>
-        struct is_shared_ptr<shared_ptr<T>>
+        struct is_shared_ptr<shared_ptr<T> >
         {
                 static const bool value = true;
                 typedef T type;
         };
         
         template <typename T>
-        struct is_shared_ptr<const shared_ptr<T>>
+        struct is_shared_ptr<const shared_ptr<T> >
         {
                 static const bool value = true;
                 typedef T type;
@@ -362,7 +367,7 @@ namespace Gambit
         };
         
         template <typename T>
-        struct ExpressionType <FunctionExpression<T>>
+        struct ExpressionType <FunctionExpression<T> >
         {
                 typedef T type;
         };
@@ -422,19 +427,19 @@ namespace Gambit
         // Actual BFptr class
         //////////////////////////////
     
-        class BFptr : public shared_ptr<FunctionExpression<BaseFunction>>
+        class BFptr : public shared_ptr<FunctionExpression<BaseFunction> >
         {
         public:
                 BFptr() {}
                 
                 template <typename T>
-                BFptr(const T &ptr) : shared_ptr<FunctionExpression<BaseFunction>>(expressfunc(ptr)) {}
+                BFptr(const T &ptr) : shared_ptr<FunctionExpression<BaseFunction> >(expressfunc(ptr)) {}
                 
                 template <typename T>
                 BFptr operator=(const T &ptr)
                 {
-                        return static_cast<shared_ptr<FunctionExpression<BaseFunction>> &>(*this).operator=
-                        (shared_ptr<FunctionExpression<BaseFunction>>(expressfunc(ptr)));
+                        return static_cast<shared_ptr<FunctionExpression<BaseFunction> > &>(*this).operator=
+                        (shared_ptr<FunctionExpression<BaseFunction> >(expressfunc(ptr)));
                 }
         };
     
@@ -618,40 +623,43 @@ namespace Gambit
 
     // General mapping 1-dim --> n-dim, assuming rotational symmetry
     template <typename T>
-    class BFrotSym : public FunctionExpression<BFrotSym<T>>
+    class BFrotSym : public FunctionExpression<BFrotSym<T> >
     {
         public:
-            BFrotSym(BF_temp_ptr(T) radialProfile, unsigned int ndim) : FunctionExpression<BFrotSym<T>>("RotSym", ndim)
+            BFrotSym(BF_temp_ptr(T) radProf, unsigned int ndim) :
+                FunctionExpression<BFrotSym<T> >("RotSym", ndim),
+                radialProfile(radProf)
             {
-                if (radialProfile->getNdim() != 1) this->failHard("RotSym constructor requires 1-dim radial profile.");
-                this->radialProfile = radialProfile;
-            };
+                if (radProf->getNdim() != 1) this->failHard("RotSym constructor requires 1-dim radial profile.");
+            }
             
             template <typename... args>
             double operator()(const args&... params)
             {
                 return (*(this->radialProfile))(sqrt(squareVariadic(params...)));
             }
-            
+
         private:
             BF_temp_ptr(T) radialProfile;
+
     };
 
     // General mapping n-dim --> (n+1)-dim, by one one parameter
     template <typename T>
-    class BFaddPar: public FunctionExpression<BFaddPar<T>>
+    class BFaddPar: public FunctionExpression<BFaddPar<T> >
     {
         public:
-            BFaddPar(BF_temp_ptr(T) parent, int i) : 
-                FunctionExpression<BFaddPar<T>>("AddPar", parent->getNdim()+1), 
-                myPointer(parent), index(i) {}
-            
             template<typename... args>
             double operator()(args... params)
             {
                 return rmVariadicPt(index, *myPointer, params...);
             }
 
+            BFaddPar(BF_temp_ptr(T) parent, int i) : 
+                FunctionExpression<BFaddPar<T> >("AddPar", parent->getNdim()+1), 
+                myPointer(parent), 
+                index(i) {}
+            
         private:
             BF_temp_ptr(T) myPointer;
             int index;
@@ -660,13 +668,9 @@ namespace Gambit
     // Checks whether a given parameter is within the allowed range, and
     // otherwise throws an exception
     template <typename T>
-    class BFvalidRange: public FunctionExpression<BFvalidRange<T>>
+    class BFvalidRange: public FunctionExpression<BFvalidRange<T> >
     {
         public:
-            BFvalidRange(BF_temp_ptr(T) parent, int i, double x0, double x1) : 
-                FunctionExpression<BFvalidRange<T>>("validRange", parent->getNdim()), 
-                myPointer(parent), index(i), x0(x0), x1(x1) {}
-
             template<typename... args>
             double operator()(const args&... params)
             {
@@ -680,6 +684,10 @@ namespace Gambit
                 return (*myPointer)(params...);
             }
 
+            BFvalidRange(BF_temp_ptr(T) parent, int i, double x0, double x1) : 
+                FunctionExpression<BFvalidRange<T> >("validRange", parent->getNdim()), 
+                myPointer(parent), index(i), x0(x0), x1(x1) {}
+
         private:
             BF_temp_ptr(T) myPointer;
             unsigned int index;
@@ -689,18 +697,18 @@ namespace Gambit
 
     // General mapping n-dim --> (n-1)-dim, by fixing one parameter
     template <typename T>
-    class BFfixPar: public FunctionExpression<BFfixPar<T>>
+    class BFfixPar: public FunctionExpression<BFfixPar<T> >
     {
         public:
-            BFfixPar(BF_temp_ptr(T) parent, int i, double x) : 
-                FunctionExpression<BFfixPar<T>>("FixPar", parent->getNdim()-1), 
-                myPointer(parent), index(i), x(x) {}
-
             template <typename... args>
             double operator()(args... params)
             {
                 return addVariadicPt(index, x, *myPointer, params...);
             }
+
+            BFfixPar(BF_temp_ptr(T) parent, int i, double x) : 
+                FunctionExpression<BFfixPar<T> >("FixPar", parent->getNdim()-1), 
+                myPointer(parent), index(i), x(x) {}
 
         private:
             BF_temp_ptr(T) myPointer;
@@ -710,11 +718,11 @@ namespace Gambit
 
     // General mapping n-dim --> (n-1)-dim, integration along one argument
     template <typename T>
-    class BFintegrate : public FunctionExpression<BFintegrate<T>>, public gsl_function
+    class BFintegrate : public FunctionExpression<BFintegrate<T> >, public gsl_function
     {
         public:
             BFintegrate(BF_temp_ptr(T) integrand, unsigned int i, double x0, double x1):
-                FunctionExpression<BFintegrate<T>>("Integrate", integrand->getNdim()-1), x0(x0),
+                FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), x0(x0),
                 x1(x1), integrand(integrand), index(i), epsabs(0),
                 epsrel(1e-2), limit(10000)
             {
@@ -729,22 +737,22 @@ namespace Gambit
                 gsl_integration_workspace_free(gsl_workspace);
             }
 
-            shared_ptr<BFintegrate<T>> set_epsrel(double epsrel)
+            shared_ptr<BFintegrate<T> > set_epsrel(double epsrel)
             {
                 this->epsrel = epsrel;
-                return static_pointer_cast<BFintegrate<T>> (this->shared_from_this());
+                return static_pointer_cast<BFintegrate<T> > (this->shared_from_this());
             }
 
-            shared_ptr<BFintegrate<T>> set_epsabs(double epsabs)
+            shared_ptr<BFintegrate<T> > set_epsabs(double epsabs)
             {
                 this->epsabs = epsabs;
-                return static_pointer_cast<BFintegrate<T>> (this->shared_from_this());
+                return static_pointer_cast<BFintegrate<T> > (this->shared_from_this());
             }
 
-            shared_ptr<BFintegrate<T>> set_epsabs(size_t limit)
+            shared_ptr<BFintegrate<T> > set_epsabs(size_t limit)
             {
                 this->limit = limit;
-                return static_pointer_cast<BFintegrate<T>> (this->shared_from_this());
+                return static_pointer_cast<BFintegrate<T> > (this->shared_from_this());
             }
 
             //double value(const BFargVec &args)
@@ -800,11 +808,11 @@ namespace Gambit
 
     // General mapping 3-dim --> 2-dim, line-of-sight integral
     template <typename T>
-    class BFlineOfSightIntegral : public FunctionExpression <BFlineOfSightIntegral<T>>
+    class BFlineOfSightIntegral : public FunctionExpression <BFlineOfSightIntegral<T> >
     {
         public:
             BFlineOfSightIntegral(BF_temp_ptr(T) integrand, double D) :
-                FunctionExpression<BFlineOfSightIntegral<T>>("LineOfSightIntegral", 2), D(D), integrand(integrand) 
+                FunctionExpression<BFlineOfSightIntegral<T> >("LineOfSightIntegral", 2), D(D), integrand(integrand) 
             {
                 if (integrand->getNdim()!=3) this->failHard("LineOfSightIntegral requires 3-dim density profile.");
             }
@@ -827,10 +835,11 @@ namespace Gambit
     // NOTE: Right now, this is just a dummy function that does actually
     // nothing but passing the original BF.
     template <typename T>
-    class BFtabulate: public FunctionExpression<BFtabulate<T>>
+    class BFtabulate: public FunctionExpression<BFtabulate<T> >
     {
         public:
-            BFtabulate(BF_temp_ptr(T) ptrOrig, const std::vector<double> &xgrid) : FunctionExpression<BFtabulate<T>>("Tabulate", ptrOrig->getNdim())
+            BFtabulate(BF_temp_ptr(T) ptrOrig, const std::vector<double> &xgrid) :
+             FunctionExpression<BFtabulate<T> >("Tabulate", ptrOrig->getNdim())
             {
                 for (auto it = xgrid.begin(); it != xgrid.end(); ++it)
                 {
@@ -853,10 +862,10 @@ namespace Gambit
 
     // Adding two functions (n-dim, n-dim) --> n-dim
     template <typename T1, typename T2>
-    class BFsum: public FunctionExpression<BFsum<T1, T2>>
+    class BFsum: public FunctionExpression<BFsum<T1, T2> >
     {
         public:
-            BFsum(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFsum<T1, T2>>("Sum", f1->getNdim()), f1(f1), f2(f2)
+            BFsum(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFsum<T1, T2> >("Sum", f1->getNdim()), f1(f1), f2(f2)
             {
                 if (f1->getNdim()!=f2->getNdim()) this->failHard("BFsum can only sum objects with matching dimensionality.");
             }
@@ -874,10 +883,10 @@ namespace Gambit
     
     // Substracting two functions (n-dim, n-dim) --> n-dim
     template <typename T1, typename T2>
-    class BFdiff: public FunctionExpression<BFsum<T1, T2>>
+    class BFdiff: public FunctionExpression<BFsum<T1, T2> >
     {
         public:
-            BFdiff(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFsum<T1, T2>>("Sum", f1->getNdim()), f1(f1), f2(f2)
+            BFdiff(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFsum<T1, T2> >("Sum", f1->getNdim()), f1(f1), f2(f2)
             {
                 if (f1->getNdim()!=f2->getNdim()) this->failHard("BFsum can only sum objects with matching dimensionality.");
             }
@@ -896,10 +905,10 @@ namespace Gambit
     // Multiplying two functions (n-dim, n-dim) --> n-dim
     // OR multiply function with constant value (n-dim, 0-dim) --> n-dim
     template <typename T1, typename T2>
-    class BFmult: public FunctionExpression<BFmult<T1, T2>>
+    class BFmult: public FunctionExpression<BFmult<T1, T2> >
     {
         public:
-            BFmult(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFmult<T1, T2>>("Multiplication", f1->getNdim()), f1(f1), f2(f2)
+            BFmult(BF_temp_ptr(T1) f1, BF_temp_ptr(T2) f2) : FunctionExpression<BFmult<T1, T2> >("Multiplication", f1->getNdim()), f1(f1), f2(f2)
             {
                 if (f1->getNdim()!=f2->getNdim()) this->failHard("BFmult can only multiply objects with matching dimensionality.");
                 //this->ptr = &BFmult::multBFs;
@@ -919,11 +928,11 @@ namespace Gambit
     };
 
     template <typename T1>
-    class BFmult <T1, double> : public FunctionExpression<BFmult<T1, double>>
+    class BFmult <T1, double> : public FunctionExpression<BFmult<T1, double> >
     {
         public:
 
-            BFmult(BF_temp_ptr(T1) f1, double x) : FunctionExpression<BFmult<T1, double>>("Multiplication", f1->getNdim()), f1(f1), x(x)
+            BFmult(BF_temp_ptr(T1) f1, double x) : FunctionExpression<BFmult<T1, double> >("Multiplication", f1->getNdim()), f1(f1), x(x)
             {
             }
 
@@ -939,13 +948,13 @@ namespace Gambit
     };
     
     template <typename T1, typename T2>
-    inline shared_ptr<BFsum<T1, T2>> operator + (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFsum<T1, T2>>(new BFsum<T1, T2>(f1, f2));}
+    inline shared_ptr<BFsum<T1, T2> > operator + (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFsum<T1, T2> >(new BFsum<T1, T2>(f1, f2));}
 
     template <typename T1, typename T2>
-    inline shared_ptr<BFdiff<T1, T2>> operator - (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFdiff<T1, T2>>(new BFdiff<T1, T2>(f1, f2));}
+    inline shared_ptr<BFdiff<T1, T2> > operator - (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFdiff<T1, T2> >(new BFdiff<T1, T2>(f1, f2));}
     
     template <typename T1, typename T2>
-    inline shared_ptr<BFmult<T1, T2>> operator * (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFmult<T1, T2>>(new BFmult<T1, T2>(f1, f2));}
+    inline shared_ptr<BFmult<T1, T2> > operator * (const BF_temp_ptr(T1) &f1, const BF_temp_ptr(T2) &f2){ return shared_ptr<BFmult<T1, T2> >(new BFmult<T1, T2>(f1, f2));}
 
     ///////////////////////////////////////////////////
     // Explicit implementations of physical functions
@@ -1102,13 +1111,13 @@ namespace Gambit
     class BFfromPlainFunctionExpression;
     
     template <typename... args>
-    class BFfromPlainFunctionExpression<double (args...)> : public FunctionExpression<BFfromPlainFunction<double (args...)>>
+    class BFfromPlainFunctionExpression<double (args...)> : public FunctionExpression<BFfromPlainFunction<double (args...)> >
     {
     private:
             double (*ptr)(args ...);
             
     public:
-            BFfromPlainFunctionExpression(double (*f)(args...)) : FunctionExpression<BFfromPlainFunction<double (args...)>>("fromPlainFunction", sizeof...(args))
+            BFfromPlainFunctionExpression(double (*f)(args...)) : FunctionExpression<BFfromPlainFunction<double (args...)> >("fromPlainFunction", sizeof...(args))
             {
                     ptr = f;
             }
@@ -1256,4 +1265,4 @@ namespace Gambit
   }
 }
 
-#endif // defined __BaseFunctions_hpp__
+#endif // defined __base_functions_hpp__

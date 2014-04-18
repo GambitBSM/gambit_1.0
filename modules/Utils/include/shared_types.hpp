@@ -35,9 +35,6 @@
 // Definitions required to understand model parameter objects
 #include "model_types.hpp"
 
-// GAMBIT BaseFunction Objects
-#include "BaseFunctions.hpp"
-
 // All the types from the different backends
 #include "SLHA_types.hpp"
 #include "DarkSUSY_types.hpp"
@@ -45,6 +42,9 @@
 #include "libFarrayTest_types.hpp"
 #include "FastSim_types.hpp"
 #include "Pythia_types.hpp"
+
+// GAMBIT BaseFunction Objects
+#include "base_functions.hpp"
 
 // Other types that don't belong in any of the existing includes.  Should be progressively
 // organised into new headers and included from here as their number grows.
