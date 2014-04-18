@@ -124,7 +124,7 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         // Resolution of individual module function dependencies
-        std::tuple<const IniParser::ObservableType *, DRes::VertexID>
+        boost::tuple<const IniParser::ObservableType *, DRes::VertexID>
           resolveDependency(DRes::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree
