@@ -118,6 +118,14 @@ START_MODULE
         BACKEND_OPTION(DarkSUSY, 0.1)
       #undef BACKEND_REQ
     #undef FUNCTION
+
+    #define FUNCTION RD_spectrum_micromegas
+      START_FUNCTION(int)
+      #define BACKEND_REQ mass_spectrum
+        START_BACKEND_REQ(int)
+        BACKEND_OPTION(micromegas)
+      #undef BACKEND_REQ
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_thresholds_resonances
@@ -225,6 +233,15 @@ START_MODULE
       #define BACKEND_REQ dsrdomega
         START_BACKEND_REQ(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
+      #undef BACKEND_REQ
+    #undef FUNCTION
+
+    #define FUNCTION RD_oh2_micromegas
+      START_FUNCTION(double)
+      DEPENDENCY(RD_spectrum, int)
+      #define BACKEND_REQ oh2
+        START_BACKEND_REQ(double)
+        BACKEND_OPTION(micromegas)
       #undef BACKEND_REQ
     #undef FUNCTION
   #undef CAPABILITY

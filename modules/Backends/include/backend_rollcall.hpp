@@ -34,6 +34,7 @@
 #include "backend_DarkSUSY.hpp"
 #include "backend_SuperIso.hpp"
 #include "backend_libFarrayTest.hpp"
+#include "backend_micromegas.hpp"
 
 //Aldo
 #include "backend_FastSim.hpp"

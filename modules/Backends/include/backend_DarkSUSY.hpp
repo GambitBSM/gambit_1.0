@@ -194,4 +194,5 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME
+#undef VERSION
 

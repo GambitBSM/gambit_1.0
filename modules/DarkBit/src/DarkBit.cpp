@@ -923,6 +923,35 @@ namespace Gambit {
         std::cout << " gna: " << result.gna << std::endl;
     }
 
+/////////////////////////////
+/////////////////////////////
+
+    void RD_spectrum_micromegas(int &err)
+    /* For now this just calculates and stores the micrOMEGAs particle spectrum
+        for micrOMEGAs' internal use. The spectrum is calculated using the
+        default CalcHEP model file parameters. Eventually it should
+        be modified to set the model parameters to arbitrary values and
+        return the spectrum as an RDspectype object or something similar. It
+        returns an int because it has to return something. */
+    {
+        using namespace Pipes::RD_spectrum_micromegas;
+
+        char cdmName[10];
+        err = BEreq::mass_spectrum(cdmName);
+    }
+
+    void RD_oh2_micromegas(double &oh2)
+    {
+    	using namespace Pipes::RD_oh2_micromegas;
+
+    	int fast=1;
+    	double Beps=1.E-5;
+    	double Xf;
+
+        oh2 = BEreq::oh2(&Xf,fast,Beps);
+        cout << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
+    }
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
     void lnL_FakeLux(double &result)
