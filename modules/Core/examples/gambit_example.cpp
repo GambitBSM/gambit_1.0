@@ -428,7 +428,7 @@ int main( int, const char*[] )
   
 
   // for the fastsim backend
-  ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim::Functown::FastSim_Init);
+  ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim::Functown::FastSim_Init_deprecated);
 
 
 
@@ -642,12 +642,12 @@ int main( int, const char*[] )
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::commonBlock);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::printStuff); 
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::set_d);  
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::fptrRoutine);    
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray1);      
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray2);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc);            
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::printStuff_deprecated); 
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::set_d_deprecated);  
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::fptrRoutine_deprecated);    
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray1_deprecated);      
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray2_deprecated);
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc_deprecated);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
     
 

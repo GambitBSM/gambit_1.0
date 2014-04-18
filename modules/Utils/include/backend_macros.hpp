@@ -246,8 +246,7 @@ namespace Gambit                                                            \
       /* Create functor objects */                                          \
       namespace Functown                                                    \
       {                                                                     \
-        /* new, simpler functor that can return the pointer */              \
-        auto NAME = makeBackendFunctor<STRIP_PARENS(TYPE)*>(                \
+        backend_functor<STRIP_PARENS(TYPE)*> NAME(                          \
          Gambit::Backends::BACKENDNAME::CAT(getptr,NAME),                   \
          STRINGIFY(NAME),   /* functor name */                              \
          CAPABILITY,        /* functor capability */                        \
@@ -495,7 +494,19 @@ namespace Gambit                                                                
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \
-        auto NAME = backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS) >(                            \
+        backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> NAME(                                    \
+         Gambit::Backends::BACKENDNAME::NAME,                                                   \
+         STRINGIFY(NAME),                                                                       \
+         CAPABILITY,                                                                            \
+         STRINGIFY(TYPE) STRINGIFY(FE_ARGS),                                                    \
+         STRINGIFY(BACKENDNAME),                                                                \
+         STRINGIFY(VERSION) );                                                                  \
+      } /* end namespace Functown */                                                            \
+                                                                                                \
+      /* Create functor object FIXME DEPRECATED!!*/                                             \
+      namespace Functown                                                                        \
+      {                                                                                         \
+        backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> CAT(NAME,_deprecated)(                   \
          Gambit::Backends::BACKENDNAME::NAME,                                                   \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
@@ -520,10 +531,12 @@ namespace Gambit                                                                
         BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),                       \
                                      BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
         Functown::NAME.updatePointer(NAME);                                                     \
+        Functown::CAT(NAME,_deprecated).updatePointer(NAME);                                    \
         /* -- Disable the functor if the library is not present or the symbol not found. */     \
         if(!present)                                                                            \
         {                                                                                       \
           Functown::NAME.setStatus(0);                                                          \
+          Functown::CAT(NAME,_deprecated).setStatus(0);                                         \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
@@ -532,6 +545,7 @@ namespace Gambit                                                                
               << "The functor generated for this symbol will get status=0" << std::endl;        \
           backend_warning().raise(LOCAL_INFO,err.str());                                        \
           Functown::NAME.setStatus(0);                                                          \
+          Functown::CAT(NAME,_deprecated).setStatus(0);                                         \
         }                                                                                       \
                                                                                                 \
       }                                                                                         \
@@ -561,6 +575,8 @@ namespace Gambit                                                                
       {                                                                                         \
         /* Register functor. */                                                                 \
         Core().registerBackendFunctor(Functown::NAME);                                          \
+        /* Register functor. FIXME Deprecated!!*/                                               \
+        Core().registerBackendFunctor(Functown::CAT(NAME,_deprecated));                         \
       }                                                                                         \
                                                                                                 \
       /* The code within the void function 'constructVarPointer_supp_NAME'                      \
@@ -578,19 +594,19 @@ namespace Gambit                                                                
 
 // Determine whether to make registration calls to the Core or not in BE_CONV_FUNCTION, depending on STANDALONE flag 
 #ifdef STANDALONE
-  #define BE_CONV_FUNCTION(NAME, TYPE, CAPABILITY)                                             \
-          BE_CONV_FUNCTION_MAIN(NAME, TYPE, CAPABILITY)
+  #define BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY)                                    \
+          BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)
 #else
-  #define BE_CONV_FUNCTION(NAME, TYPE, CAPABILITY)                                             \
-          BE_CONV_FUNCTION_MAIN(NAME, TYPE, CAPABILITY)                                        \
+  #define BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY)                                    \
+          BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)                               \
           BE_CONV_FUNCTION_SUPP(NAME)
 #endif
 
 
 /// \name Main wrapping macro for convenience functions
-/// BE_CONV_FUNCTION(NAME, TYPE, CAPABILITY) is the macro used for wrapping 
-/// convenience functions in backend functors.
-#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, CAPABILITY)                       \
+/// BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY) is the macro used 
+/// for wrapping convenience functions in backend functors.
+#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)             \
 namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
@@ -601,11 +617,11 @@ namespace Gambit                                                            \
       /* Create functor object */                                           \
       namespace Functown                                                    \
       {                                                                     \
-        auto NAME = makeBackendFunctor<TYPE>(                               \
+        backend_functor<TYPE INSERT_NONEMPTY(ARGSLIST)> NAME(               \
          Gambit::Backends::BACKENDNAME::NAME,                               \
          STRINGIFY(NAME),                                                   \
          CAPABILITY,                                                        \
-         STRINGIFY(TYPE),                                                   \
+         STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                               \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION) );                                              \
       } /* end namespace Functown */                                        \

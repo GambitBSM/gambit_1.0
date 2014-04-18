@@ -27,6 +27,7 @@
 ///
 ///  *********************************************
 
+#include <regex>
 
 #include "functors.hpp"
 #include "all_functor_types.hpp"
@@ -65,12 +66,13 @@ namespace Gambit
                       str origin_name) :      
      myName          (func_name),
      myCapability    (func_capability),
-     myType          (result_type),
+     myType          (strip_whitespace_except_after_const(result_type)),
      myOrigin        (origin_name),
      myStatus        (1),
-     verbose         (false),    // For debugging.
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
-     needs_recalculating (true) {}
+     verbose         (false),    // For debugging.
+     needs_recalculating (true)
+    {}
     
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
@@ -160,8 +162,22 @@ namespace Gambit
       std::vector<sspair> empty;
       return empty;
     }
-    /// Getter for listing backend requirements
+    /// Getter for listing backend requirement groups
+    std::vector<str> functor::backendgroups()                   
+    {
+      utils_error().raise(LOCAL_INFO,"The backendgroups method has not been defined in this class.");
+      std::vector<str> empty;
+      return empty;
+    }
+    /// Getter for listing all backend requirements
     std::vector<sspair> functor::backendreqs()                   
+    {
+      utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
+      std::vector<sspair> empty;
+      return empty;
+    }
+    /// Getter for listing backend requirements from a specific group
+    std::vector<sspair> functor::backendreqs(str)                   
     {
       utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
       std::vector<sspair> empty;
@@ -393,6 +409,14 @@ namespace Gambit
       return safe_ptr< std::vector<str> >(&myModels);       
     }
 
+    /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
+    safe_ptr<str> module_functor_common::getChosenReqFromGroup(str group)
+    {
+      if (this == NULL) functor::failBigTime("getChosenReqFromGroup");
+      chosenReqsFromGroups[group] = "none";
+      return safe_ptr<str>(&chosenReqsFromGroups[group]);       
+    }
+
     /// Execute a single iteration in the loop managed by this functor.
     void module_functor_common::iterate(int iteration)
     {
@@ -432,8 +456,23 @@ namespace Gambit
 
     /// Getter for listing currently activated dependencies
     std::vector<sspair> module_functor_common::dependencies() { return myDependencies; }
-    /// Getter for listing backend requirements
+    /// Getter for listing backend requirement groups
+    std::vector<str> module_functor_common::backendgroups() { return myGroups; }                    
+    /// Getter for listing all backend requirements
     std::vector<sspair> module_functor_common::backendreqs() { return myBackendReqs; }
+    /// Getter for listing backend requirements from a specific group
+    std::vector<sspair> module_functor_common::backendreqs(str group)
+    { 
+      if (myGroupedBackendReqs.find(group) != myGroupedBackendReqs.end())
+      {
+        return myGroupedBackendReqs[group]; 
+      }
+      else
+      {
+        std::vector<sspair> empty;
+        return empty;
+      }
+    }
     /// Getter for listing permitted backends
     std::vector<sspair> module_functor_common::backendspermitted(sspair quant) 
     { 
@@ -583,13 +622,40 @@ namespace Gambit
     }
 
     /// Add an unconditional backend requirement
-    /// The info gets updated later if this turns out to be contitional on a model. 
-    void module_functor_common::setBackendReq(str req, str type, void(*resolver)(functor*))
+    /// The info gets updated later if this turns out to be conditional on a model. 
+    void module_functor_common::setBackendReq(str group, str req, std::vector<str> tags, str type, void(*resolver)(functor*))
+    { 
+      type = strip_whitespace_except_after_const(type);
+      sspair key (req, type);
+      backendreq_types[req] = type;
+      myBackendReqs.push_back(key);
+      if ( std::find(myGroups.begin(), myGroups.end(), group) == myGroups.end() )
+      {
+        myGroups.push_back(group);
+        std::vector<sspair> empty;
+        myGroupedBackendReqs[group] = empty;
+      }
+      myGroupedBackendReqs[group].push_back(key);
+      backendreq_map[key] = resolver;
+      backendreq_tags[req] = tags;      
+      backendreq_groups[req] = group;
+    }
+
+    /// Add an unconditional backend requirement
+    /// FIXME This is deprecated... 
+    void module_functor_common::setBackendReq_deprecated(str req, str type, void(*resolver)(functor*))
     { 
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
       backendreq_map[key] = resolver;
+      if ( std::find(myGroups.begin(), myGroups.end(), "none") == myGroups.end() )
+      {
+        myGroups.push_back("none");
+        std::vector<sspair> empty;
+        myGroupedBackendReqs["none"] = empty;
+      }
+      myGroupedBackendReqs["none"].push_back(key);
     }
 
     /// Add a model conditional backend requirement for multiple models
@@ -700,12 +766,16 @@ namespace Gambit
     /// Resolve a backend requirement using a pointer to another functor object
     void module_functor_common::resolveBackendReq (functor* be_functor)
     {
+
       sspair key (be_functor->quantity());
+
       //First make sure that the proposed backend function fulfills a known requirement of the module function.
       if (backendreq_map.find(key) != backendreq_map.end())                            
       { 
+
         sspair proposal (be_functor->origin(), be_functor->version());  //Proposed backend-version pair
         sspair generic_proposal (be_functor->origin(), "any");          //Proposed backend, any version 
+
         if ( //Check for a condition under which the proposed backend function is an acceptable fit for this requirement.
          //Check whether there are have been any permitted backends stated for this requirement (if not, anything goes).
          (permitted_map.find(key) == permitted_map.end()) || 
@@ -716,30 +786,57 @@ namespace Gambit
          //proposed had been explicitly permitted.
          (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )         
         {
-          (*backendreq_map[key])(be_functor);   //One of the conditions was met, so do the resolution.
+
+          //One of the conditions was met, so do the resolution.
+          (*backendreq_map[key])(be_functor);
+       
           //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
           std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
           for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
           {
             myDependencies.push_back(*it);        
-          }   
+          }
+   
+          //Check if this backend requirement is part of a group.
+          str group = backendreq_groups[key.first];
+          if (group != "none" and group !="") //FIXME second condition is decprecated!!           
+          {                                                      
+            //If it is part of a group, make sure another backend requirement from the same group has not already been activated.
+            if (chosenReqsFromGroups[group] == "none")          
+            {
+              //If not, then this this specific backend requirement is now the active one within its group.
+              chosenReqsFromGroups[group] = key.first; 
+            }
+            else //This backend requirement is not the first from its group to be resolved.
+            {
+              str errmsg = "Cannot resolve backend requirement in group " + group + ":";
+              errmsg +=  "\nFunction " + myName + " in " + myOrigin + " has already had backend " 
+                         "\nrequirement " + chosenReqsFromGroups[group] + " from the same group filled.";
+              utils_error().raise(LOCAL_INFO,errmsg);
+            }
+          }
+
         }
-        else          
+
+        else //The proposed backend function is not an acceptable fit for this requirement.
         { 
           str errmsg = "Cannot resolve backend requirement:";
-          errmsg +=  "\nBackend capability " + key.first + " with type " + key.second + "."
+          errmsg +=  "\nBackend capability " + key.first + " with type " + key.second +
                      "\nrequired by function " + myName + " in " + myOrigin + " is not permitted"
                      "\nto use " + proposal.first + ", version " + proposal.second + ".";
           utils_error().raise(LOCAL_INFO,errmsg);
         } 
+
       }
-      else
+
+      else //The proposed backend function does not fulfill any known requirement of the module function.
       {                                                                      
         str errmsg = "Cannot resolve backend requirement:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not require"
                    "\nbackend capability " + key.first + " with type " + key.second + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
       }        
+
     }
 
     /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.

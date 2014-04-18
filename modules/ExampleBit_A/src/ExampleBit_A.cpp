@@ -29,6 +29,7 @@
 #include <random>
 #include <chrono>
 #include <cmath>
+#include <functional>
 
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
@@ -54,13 +55,17 @@ namespace Gambit
     /// Not wrapped in rollcall header.
     /// @{
 
+    /// Pointer to some function
+    double(*callback_pointer)(int&, const double&);
+
     /// Some other example function
     double some_other_function(int &input)
     {
       ostringstream ss;      
       ss << "  This is some_other_function, invoked with argument " << input;
       logger().send(ss.str(),info);
-      return input * 2.0;
+      double offset = 2.0;
+      return callback_pointer(input, offset);
     }
 
     /// Un-normalised gaussian log-likelihood
@@ -90,10 +95,19 @@ namespace Gambit
     void function_pointer_retriever( double(*&result)(int&) )
     {
       using namespace Pipes::function_pointer_retriever;
-      //Two ways to try this: a pointer to a fortran function that has been backended (and takes an int as an input by reference):
-      result = BEreq::externalFunction.pointer<int&>();
-      //or a pointer to a local C++ funtion
-      //result = &some_other_function;
+      //Two ways to return this result, depending on how the group dependency BEgroup::external_funcs is fulfilled: 
+      if (*BEgroup::external_funcs == "externalFunction") 
+      {
+        //1. A pointer to a fortran function that has been backended (and takes an int as an input by reference):
+        result = BEreq::externalFunction.pointer();
+      }
+      else if (*BEgroup::external_funcs == "externalComplicatedFunction")
+      {
+        //2. A pointer to a local C++ function (that, e.g. calls a function provided by a backend)
+        callback_pointer = BEreq::externalComplicatedFunction.pointer();
+        result = &some_other_function;
+      }
+      else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from external_funcs BEgroup.");
     }
 
 
@@ -326,7 +340,9 @@ namespace Gambit
       // Uncomment to provoke a mysterious bug
       //cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that mysteriously fails..." << endl;
       //BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,function_pointer);      
-      
+ 
+      result = 1.0;     
+ 
     }
 
     /// @} @}

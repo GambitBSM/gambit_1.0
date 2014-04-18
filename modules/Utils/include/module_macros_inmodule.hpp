@@ -38,7 +38,8 @@
 #include "safety_bucket.hpp"
 #include "module_macros_common.hpp"
 
-#include <boost/preprocessor/control/if.hpp>
+#include <boost/preprocessor/punctuation/comma.hpp>
+#include <boost/preprocessor/control/iif.hpp>
 
 /// \name Rollcall macros
 /// These are called from within rollcall headers in each module to 
@@ -53,7 +54,10 @@
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
 #define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
-#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
+#define BE_GROUP(GROUP)                                   MODULE_BE_GROUP(GROUP)
+#define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
+                                                          MODULE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
+#define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
@@ -237,7 +241,7 @@
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
-   namespace Models                                                            \  
+   namespace Models                                                            \
    {                                                                           \
     namespace MODEL                                                            \
     {                                                                          \
@@ -258,7 +262,57 @@
   }                                                                            \
 
 
-/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within
+/// Redirection of BACKEND_GROUP(GROUP) when invoked from within the Core.
+#define MODULE_BE_GROUP(GROUP)                                                 \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEgroup                                                    \
+          {                                                                    \
+            /* Declare a safe pointer to the functor's internal register of    \
+            which backend requirement is activated from this group. */         \
+            extern safe_ptr<str> GROUP;                                        \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+
+
+/// Redirection of BACKEND_REQ(GROUP, REQUIREMENT, (TAGS), TYPE, [(ARGS)]) 
+/// for declaring backend requirements when invoked from within a module.
+#define MODULE_BACKEND_REQ(GROUP, REQ, TAGS, TYPE, ARGS, IS_VARIABLE)          \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEreq                                                      \
+          {                                                                    \
+            /* Create a safety_bucket for the backend variable/function.       \
+            To be initialized by the dependency resolver at runtime. */        \
+            typedef BEvariable_bucket<TYPE> CAT(REQ,var);                      \
+            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>         \
+             CAT(REQ,func);                                                    \
+            extern CAT(REQ,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQ;            \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+
+
+/// Redirection of START_BACKEND_REQ_deprecated(TYPE, [VAR/FUNC]) when invoked from within
 /// a module. 
 #define MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                          \
                                                                                \
@@ -276,9 +330,9 @@
             To be initialized by the dependency resolver at runtime. */        \
             BOOST_PP_IIF(IS_VARIABLE,                                          \
               /* If IS_VARIABLE = 1: */                                        \
-              extern BEvariable_bucket<TYPE> BACKEND_REQ;                      \
+              extern BEvariable_bucket<TYPE> BACKEND_REQ_deprecated;                      \
               , /* If IS_VARAIBLE = 0: */                                      \
-              extern BEfunction_bucket<TYPE> BACKEND_REQ;                      \
+              extern BEfunction_bucket_deprecated<TYPE> BACKEND_REQ_deprecated;           \
             ) /* End BOOST_PP_IIF */                                           \
           }                                                                    \
         }                                                                      \

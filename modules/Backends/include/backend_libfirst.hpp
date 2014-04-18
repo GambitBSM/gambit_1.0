@@ -112,11 +112,11 @@ namespace Gambit
 /* Now register any convenience functions and wrap them in functors. 
  *
  * Syntax for BE_CONV_FUNCTION:
- * BE_CONV_FUNCTION([function name], type, "[choose capability name]")
+ * BE_CONV_FUNCTION([function name], type, (arguments), "[choose capability name]")
  * 
  * As with BE_FUNCTION, the last argument is optional. */
 
-BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
+BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness")
 
 
 // Undefine macros to avoid conflict with other backends

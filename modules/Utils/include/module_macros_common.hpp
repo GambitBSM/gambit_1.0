@@ -58,21 +58,34 @@
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
 
-/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC])
-#define START_BACKEND_REQ_VAR(TYPE)                        DECLARE_BACKEND_REQ(TYPE,1)
-#define START_BACKEND_REQ_FUNC(TYPE)                       DECLARE_BACKEND_REQ(TYPE,0)
-#define START_BACKEND_REQ_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ; should be VAR, FUNC or absent.")
-#define DEFINED_START_BACKEND_REQ_VAR  ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
-#define DEFINED_START_BACKEND_REQ_FUNC ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
-#define START_BACKEND_REQ_2(_1, _2)                        CAT(START_BACKEND_REQ_,IF_DEFINED(START_BACKEND_REQ_##_2,_2))(_1)  
-#define START_BACKEND_REQ_1(_1)                            START_BACKEND_REQ_FUNC(_1) 
-#define START_BACKEND_REQ(...)                             VARARG(START_BACKEND_REQ, __VA_ARGS__)
+/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC]) !FIXME DEPRECATED!!
+#define START_BACKEND_REQ_deprecated_VAR(TYPE)                        DECLARE_BACKEND_REQ_deprecated(TYPE,1)
+#define START_BACKEND_REQ_deprecated_FUNC(TYPE)                       DECLARE_BACKEND_REQ_deprecated(TYPE,0)
+#define START_BACKEND_REQ_deprecated_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ_deprecated; should be VAR, FUNC or absent.")
+#define DEFINED_START_BACKEND_REQ_deprecated_VAR  ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
+#define DEFINED_START_BACKEND_REQ_deprecated_FUNC ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
+#define START_BACKEND_REQ_deprecated_2(_1, _2)                        CAT(START_BACKEND_REQ_deprecated_,IF_DEFINED(START_BACKEND_REQ_deprecated_##_2,_2))(_1)  
+#define START_BACKEND_REQ_deprecated_1(_1)                            START_BACKEND_REQ_deprecated_FUNC(_1) 
+#define START_BACKEND_REQ_deprecated(...)                             VARARG(START_BACKEND_REQ_deprecated, __VA_ARGS__)
+
+
+/// \name Variadic redirection macro for BACKEND_REQ(GROUP, CAPABILITY, (TAGS), TYPE, [(ARGS)])
+#define BACKEND_REQ_FROM_GROUP_5(_1, _2, _3, _4, _5)          DECLARE_BACKEND_REQ(_1, _2, _3, _4, _5, 0)  
+#define BACKEND_REQ_FROM_GROUP_4(_1, _2, _3, _4)              DECLARE_BACKEND_REQ(_1, _2, _3, _4, none, 1) 
+#define BACKEND_REQ_FROM_GROUP(...)                           VARARG(BACKEND_REQ_FROM_GROUP, __VA_ARGS__)
+
+/// \name Variadic redirection macro for BACKEND_REQ_SIMPLE(CAPABILITY, (TAGS), TYPE, [(ARGS)])
+#define BACKEND_REQ_4(_1, _2, _3, _4)                DECLARE_BACKEND_REQ(none, _1, _2, _3, _4, 0)  
+#define BACKEND_REQ_3(_1, _2, _3)                    DECLARE_BACKEND_REQ(none, _1, _2, _3, none, 1) 
+#define BACKEND_REQ(...)                             VARARG(BACKEND_REQ, __VA_ARGS__)
 
 
 ///Simple alias for ALLOW_MODEL/S
 #define ALLOW_MODEL ALLOW_MODELS
 ///Simple alias for ACTIVATE_FOR_MODEL/S
 #define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
+///Simple alias for BACKEND_GROUP/S
+#define BACKEND_GROUP BACKEND_GROUPS
 
 /// \name Variadic redirection macros for ALLOW_MODELS([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may
@@ -109,8 +122,31 @@
 /// @}
 
 
+/// \name Variadic redirection macros for BACKEND_GROUP([GROUPS])
+/// Declare one or more backend GROUPS, from each of which one
+/// constituent backend requirement must be fulfilled.
+/// @{
+#define BACKEND_GROUPS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) BE_GROUP(_8) BE_GROUP(_9) BE_GROUP(_10)
+#define BACKEND_GROUPS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) BE_GROUP(_8) BE_GROUP(_9) 
+#define BACKEND_GROUPS_8(_1, _2, _3, _4, _5, _6, _7, _8)           BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) BE_GROUP(_8) 
+#define BACKEND_GROUPS_7(_1, _2, _3, _4, _5, _6, _7)               BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) 
+#define BACKEND_GROUPS_6(_1, _2, _3, _4, _5, _6)                   BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) 
+#define BACKEND_GROUPS_5(_1, _2, _3, _4, _5)                       BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5)
+#define BACKEND_GROUPS_4(_1, _2, _3, _4)                           BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4)
+#define BACKEND_GROUPS_3(_1, _2, _3)                               BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) 
+#define BACKEND_GROUPS_2(_1, _2)                                   BE_GROUP(_1) BE_GROUP(_2)  
+#define BACKEND_GROUPS_1(_1)                                       BE_GROUP(_1)
+#define BACKEND_GROUPS(...)                                        VARARG(BACKEND_GROUPS, __VA_ARGS__)
+/// @}
+
+
 /// \name Variadic redirection macros for BACKEND_OPTION(BACKEND, [VERSIONS])
-/// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
+/// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
 /// be provided by backend \em BACKEND, versions \em [VERSIONS].  Permitted
 /// versions are passed as optional additional arguments; if no version 
 /// information is passed, all versions of \em BACKEND are considered valid.
