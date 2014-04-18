@@ -84,6 +84,8 @@
 #define ALLOW_MODEL ALLOW_MODELS
 ///Simple alias for ACTIVATE_FOR_MODEL/S
 #define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
+///Simple alias for BACKEND_GROUP/S
+#define BACKEND_GROUP BACKEND_GROUPS
 
 /// \name Variadic redirection macros for ALLOW_MODELS([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may
@@ -117,6 +119,29 @@
 #define ALLOW_MODELS_1(A,B,C,_1)                                       ALLOWED_MODEL(A,B,C,_1) 
 #define ALLOW_MODELS_ABC(A,B,C,...)                                    VARARG_ABC(ALLOW_MODELS, A, B, C, __VA_ARGS__)
 #define ALLOW_MODELS(...)                                              ALLOW_MODELS_ABC(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)
+/// @}
+
+
+/// \name Variadic redirection macros for BACKEND_GROUP([GROUPS])
+/// Declare one or more backend GROUPS, from each of which one
+/// constituent backend requirement must be fulfilled.
+/// @{
+#define BACKEND_GROUPS_10(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) BE_GROUP(_8) BE_GROUP(_9) BE_GROUP(_10)
+#define BACKEND_GROUPS_9(_1, _2, _3, _4, _5, _6, _7, _8, _9)       BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) BE_GROUP(_8) BE_GROUP(_9) 
+#define BACKEND_GROUPS_8(_1, _2, _3, _4, _5, _6, _7, _8)           BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) BE_GROUP(_8) 
+#define BACKEND_GROUPS_7(_1, _2, _3, _4, _5, _6, _7)               BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) BE_GROUP(_7) 
+#define BACKEND_GROUPS_6(_1, _2, _3, _4, _5, _6)                   BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5) \
+                                                                   BE_GROUP(_6) 
+#define BACKEND_GROUPS_5(_1, _2, _3, _4, _5)                       BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4) BE_GROUP(_5)
+#define BACKEND_GROUPS_4(_1, _2, _3, _4)                           BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) BE_GROUP(_4)
+#define BACKEND_GROUPS_3(_1, _2, _3)                               BE_GROUP(_1) BE_GROUP(_2) BE_GROUP(_3) 
+#define BACKEND_GROUPS_2(_1, _2)                                   BE_GROUP(_1) BE_GROUP(_2)  
+#define BACKEND_GROUPS_1(_1)                                       BE_GROUP(_1)
+#define BACKEND_GROUPS(...)                                        VARARG(BACKEND_GROUPS, __VA_ARGS__)
 /// @}
 
 

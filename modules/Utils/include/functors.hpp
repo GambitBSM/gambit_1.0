@@ -121,12 +121,6 @@ namespace Gambit
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool);
 
-      /// Getter for capability group of a backend requirement
-      //virtual void group(str);
-
-      /// Getter for backend requirement resolution tags
-      //virtual std::vector<str> tags();
-
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*>&);
 
@@ -141,8 +135,12 @@ namespace Gambit
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies();
-      /// Getter for listing backend requirements
+      /// Getter for listing backend requirement groups
+      virtual std::vector<str> backendgroups();                   
+      /// Getter for listing all backend requirements
       virtual std::vector<sspair> backendreqs();
+      /// Getter for listing backend requirements from a specific group
+      virtual std::vector<sspair> backendreqs(str);
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair);
 
@@ -264,6 +262,9 @@ namespace Gambit
       /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
       safe_ptr< std::vector<str> > getModels();
 
+      /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
+      safe_ptr<str> getChosenReqFromGroup(str);
+
       /// Execute a single iteration in the loop managed by this functor.
       void iterate(int iteration);
 
@@ -288,8 +289,12 @@ namespace Gambit
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies();
-      /// Getter for listing backend requirements
+      /// Getter for listing backend requirement groups
+      virtual std::vector<str> backendgroups();                   
+      /// Getter for listing all backend requirements
       virtual std::vector<sspair> backendreqs();
+      /// Getter for listing backend requirements from a specific group
+      virtual std::vector<sspair> backendreqs(str);
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair quant);
 
@@ -395,10 +400,20 @@ namespace Gambit
       /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
       const int globlMaxThreads;
 
+      /// Internal list of backend groups that this functor's requirements fall into.
+      std::vector<str> myGroups;
+
+      /// Map from groups to backend reqs, indicating which backend req has been activated for which backend group.
+      std::map<str,str> chosenReqsFromGroups;
+
+      /// Vector of all backend requirement-type string pairs        
+      std::vector<sspair> myBackendReqs;
+
+      /// Vector of backend requirement-type string pairs for specific backend groups       
+      std::map<str,std::vector<sspair> > myGroupedBackendReqs;
+
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
-      /// Vector of backend requirement-type string pairs        
-      std::vector<sspair> myBackendReqs;
 
       /// Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
       std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;

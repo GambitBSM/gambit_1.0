@@ -165,6 +165,9 @@
 /// BACKEND_REQ_deprecated\endlink and type \em TYPE.  !FIXME DEPRECATED!!
 #define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 
+/// Declare a backend group, from which one backend requirement must be activated.
+#define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
+
 /// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
 /// \em VERSTRING.
@@ -1026,9 +1029,52 @@
                                                                                \
     }                                                                          \
 
+/// Redirection of BACKEND_GROUP(GROUP) when invoked from within the Core.
+#define CORE_BE_GROUP(GROUP)                                                   \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "BACKEND_GROUP."))                                                          \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling BACKEND_GROUP. Please check the rollcall header "                  \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "BACKEND_GROUP. Please check the rollcall header for "                      \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEgroup                                                    \
+          {                                                                    \
+            /* Declare a safe pointer to the functor's internal register of    \
+            which backend requirement is activated from this group. */         \
+            safe_ptr<str> GROUP;                                               \
+                                                                               \
+            /* Define command to be called at runtime to register the group*/  \
+            void rt_register_group()                                           \
+            {                                                                  \
+              GROUP=Functown::FUNCTION.getChosenReqFromGroup(STRINGIFY(GROUP));\
+            }                                                                  \
+                                                                               \
+            /* Create the group initialisation object */                       \
+            namespace Ini                                                      \
+            {                                                                  \
+              ini_code GROUP (&rt_register_group);                             \
+            }                                                                  \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+
 
 /// Redirection of BACKEND_REQ(GROUP, REQUIREMENT, (TAGS), TYPE, [(ARGS)]) 
-/// for declaring backend requirements when invoked from within the core.
+/// for declaring backend requirements when invoked from within the Core.
 #define CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE)    \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \

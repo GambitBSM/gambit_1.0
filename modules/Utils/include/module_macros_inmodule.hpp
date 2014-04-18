@@ -54,6 +54,7 @@
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
 #define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
+#define BE_GROUP(GROUP)                                   MODULE_BE_GROUP(GROUP)
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
                                                           MODULE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 #define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
@@ -258,6 +259,29 @@
                                                                                \
     }                                                                          \
    }                                                                           \
+  }                                                                            \
+
+
+/// Redirection of BACKEND_GROUP(GROUP) when invoked from within the Core.
+#define MODULE_BE_GROUP(GROUP)                                                 \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEgroup                                                    \
+          {                                                                    \
+            /* Declare a safe pointer to the functor's internal register of    \
+            which backend requirement is activated from this group. */         \
+            extern safe_ptr<str> GROUP;                                        \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
   }                                                                            \
 
 

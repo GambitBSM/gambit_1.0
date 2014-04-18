@@ -140,8 +140,14 @@ namespace Gambit
         const IniParser::ObservableType * findIniEntry(
             Graphs::VertexID toVertex, const IniParser::ObservablesType &);
 
-        // Resolution of backend dependencies
+        // Main function for resolution of backend requirements
         void resolveVertexBackend(VertexID);
+
+        // Find backend function matching any one of a number of capability-type pairs. 
+        functor* solveRequirement(std::vector<sspair>, VertexID, const IniParser::ObservableType*, str group="none");
+
+        /// Resolve a specific backend requirement.
+        void resolveRequirement(functor*, VertexID);
 
         //
         // Private data members

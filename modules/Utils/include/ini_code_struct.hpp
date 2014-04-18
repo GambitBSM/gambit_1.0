@@ -21,6 +21,9 @@
 #ifndef __ini_code_struct_hpp__
 #define __ini_code_struct_hpp__
 
+#include <exception>
+#include "terminator.hpp"
+
 namespace Gambit
 {
 
@@ -28,7 +31,21 @@ namespace Gambit
   /// and executed as initialisation code at startup.
   struct ini_code
   {
-    ini_code(void (*unroll)()) { (*unroll)(); }
+
+    ini_code(void (*unroll)())
+    {
+      std::set_terminate(terminator);
+      try
+      {
+        (*unroll)();
+      }
+      catch (std::exception& e)
+      {
+        std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
+        throw(e);
+      }
+    }
+
   };
   
 }

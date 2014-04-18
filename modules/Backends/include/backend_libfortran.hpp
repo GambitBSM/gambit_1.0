@@ -21,6 +21,7 @@ LOAD_LIBRARY
 
 BE_FUNCTION(runMe, void, ( double (*)(int&), int&), "runme_", "runMe")
 BE_FUNCTION(externalFunction, double, (int&), "externalfunction_", "externalFunction")
+BE_FUNCTION(externalFunction2, double, (int&, const double&), "externalfunction2_", "externalComplicatedFunction")
 
 // Tests for Torsten
 BE_FUNCTION(average, double, (double(*)(double&), int&), "average_", "average")

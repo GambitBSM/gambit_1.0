@@ -16,6 +16,8 @@
 ///
 ///  *********************************************
 
+#include <iostream>
+
 #include "backend_rollcall.hpp"
 #include "graphs.hpp"
 #include "yaml_parser.hpp"
@@ -200,16 +202,20 @@ void beispiel(const char* inifilename)
   */
 }
 
+
 int main( int argc, const char* argv[] )
 {
-  const char* inifilename;
 
-  std::streambuf *coutbuf = std::cout.rdbuf(); 
-  std::cout.rdbuf(coutbuf);
-   
+  std::set_terminate(terminator);
+
   try
   {
 
+    const char* inifilename;
+
+    std::streambuf *coutbuf = std::cout.rdbuf(); 
+    std::cout.rdbuf(coutbuf);
+   
     // Parse command line arguments
     if (argc < 2) { // Check the value of argc. If not enough parameters have been passed, inform user and exit.
       str errmsg = "Error! No input file specified!";

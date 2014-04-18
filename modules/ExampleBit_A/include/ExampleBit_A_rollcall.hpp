@@ -161,8 +161,9 @@ START_MODULE
 
     #define FUNCTION function_pointer_retriever
     START_FUNCTION(fptr)
-    //BACKEND_REQ(externalFunction, (), double, (int&))
+    BACKEND_GROUP(external_funcs)
     BACKEND_REQ_FROM_GROUP(external_funcs, externalFunction, (), double, (int&))
+    BACKEND_REQ_FROM_GROUP(external_funcs, externalComplicatedFunction, (), double, (int&, const double&))
     #undef FUNCTION
 
   #undef CAPABILITY
