@@ -279,7 +279,7 @@ namespace Gambit                                                            \
               << std::endl << "The functor generated for this symbol "      \
               << "will get status=0" << std::endl;                          \
           backend_warning().raise(LOCAL_INFO,err.str());                    \
-          Functown::NAME.setStatus(0);                                      \          
+          Functown::NAME.setStatus(0);                                      \
         }                                                                   \
                                                                             \
       }                                                                     \

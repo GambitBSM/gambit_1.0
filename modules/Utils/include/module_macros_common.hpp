@@ -69,14 +69,14 @@
 #define START_BACKEND_REQ_deprecated(...)                             VARARG(START_BACKEND_REQ_deprecated, __VA_ARGS__)
 
 
-/// \name Variadic redirection macro for BACKEND_REQ(GROUP, CAPABILITY, (TAGS), TYPE, [(ARGS)])
+/// \name Variadic redirection macro for BACKEND_REQ_FROM_GROUP(GROUP, CAPABILITY, (TAGS), TYPE, [(ARGS)])
 #define BACKEND_REQ_FROM_GROUP_5(_1, _2, _3, _4, _5)          DECLARE_BACKEND_REQ(_1, _2, _3, _4, _5, 0)  
-#define BACKEND_REQ_FROM_GROUP_4(_1, _2, _3, _4)              DECLARE_BACKEND_REQ(_1, _2, _3, _4, none, 1) 
+#define BACKEND_REQ_FROM_GROUP_4(_1, _2, _3, _4)              DECLARE_BACKEND_REQ(_1, _2, _3, _4, (), 1) 
 #define BACKEND_REQ_FROM_GROUP(...)                           VARARG(BACKEND_REQ_FROM_GROUP, __VA_ARGS__)
 
-/// \name Variadic redirection macro for BACKEND_REQ_SIMPLE(CAPABILITY, (TAGS), TYPE, [(ARGS)])
+/// \name Variadic redirection macro for BACKEND_REQ(CAPABILITY, (TAGS), TYPE, [(ARGS)])
 #define BACKEND_REQ_4(_1, _2, _3, _4)                DECLARE_BACKEND_REQ(none, _1, _2, _3, _4, 0)  
-#define BACKEND_REQ_3(_1, _2, _3)                    DECLARE_BACKEND_REQ(none, _1, _2, _3, none, 1) 
+#define BACKEND_REQ_3(_1, _2, _3)                    DECLARE_BACKEND_REQ(none, _1, _2, _3, (), 1) 
 #define BACKEND_REQ(...)                             VARARG(BACKEND_REQ, __VA_ARGS__)
 
 

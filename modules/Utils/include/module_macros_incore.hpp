@@ -61,7 +61,8 @@
 #endif
 
 #include <boost/preprocessor/logical/bitand.hpp>
-//#include <boost/preprocessor/logical/compl.hpp>
+#include <boost/preprocessor/tuple/to_seq.hpp>
+#include <boost/preprocessor/seq/cat.hpp>
 #include <boost/preprocessor/punctuation/comma.hpp>
 #include <boost/preprocessor/control/iif.hpp>
 
@@ -160,13 +161,21 @@
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
                                                           CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 
+/// Define a rule that uses TAGS to determine which backend requirements of the current
+/// \link FUNCTION() FUNCTION\endlink are explicitly activated when one or more models 
+/// from the set MODELS are being scanned.  Declaring this rule makes backend requirements
+/// that match one or more TAGS conditional on the model being scanned.  Backend 
+/// requirements that do not match any such rule are considered unconditional, and are
+/// activated regardless of the model(s) being scanned.
+#define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      CORE_BE_MODEL_RULE(MODELS,TAGS)                   
+
+/// Declare a backend group, from which one backend requirement must be activated.
+#define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ_deprecated() 
 /// BACKEND_REQ_deprecated\endlink and type \em TYPE.  !FIXME DEPRECATED!!
 #define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
-
-/// Declare a backend group, from which one backend requirement must be activated.
-#define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
 
 /// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
@@ -185,10 +194,9 @@
 /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 
-/// Expander for ACTIVATE_FOR_MODELS
 /// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
 /// should be activated if the model being scanned matches one of the models passed as an argument.
-#define ACTIVATE_FOR_MODELS(...)                         IF_ELSE_TOKEN_DEFINED(BACKEND_REQ_deprecated, ACTIVATE_BE_MODEL, ACTIVATE_DEP_MODEL)(#__VA_ARGS__)
+#define ACTIVATE_FOR_MODELS(...)                         ACTIVATE_DEP_MODEL(#__VA_ARGS__)
 /// @}
 
 /// \name Initialisation dependency switches.
@@ -491,16 +499,7 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
-                                                                               \
-      /* Runtime registration function for conditional backend req BE_REQ of   \
-      function TAG*/                                                           \
-      template <typename BE_REQ, typename TAG>                                 \
-      void rt_register_conditional_backend_req ()                              \
-      {                                                                        \
-        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
-        cout<<"have this conditional backend requirement for this function.";  \
-      }                                                                        \
-                                                                               \
+
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
@@ -1464,9 +1463,52 @@
                                                                                \
   }                                                                            \
 
+
+/// Redirection of ACTIVATE_BACKEND_REQ_FOR_MODELS when invoked from the Core. 
+#define CORE_BE_MODEL_RULE(MODELS,TAGS)                                        \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ACTIVATE_BACKEND_REQ_FOR_MODEL(S)."))                                      \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling ACTIVATE_BACKEND_REQ_FOR_MODEL(S). Please check the rollcall heade"\
+   "r for " STRINGIFY(MODULE) "."))                                            \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ACTIVATE_BACKEND_REQ_FOR_MODEL(S). Please check the rollcall header for "  \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to apply the rule.*/      \
+      void CAT_4(apply_rule_,                                                  \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,      \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
+      {                                                                        \
+        Functown::FUNCTION.makeBackendRuleForModel(#MODELS, #TAGS);            \
+      }                                                                        \
+                                                                               \
+      /* Create the rule's initialisation object. */                           \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(                                                        \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
+         (&CAT_4(apply_rule_,                                                  \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
 /// Redirection of ACTIVATE_FOR_MODELS(MODELSTRING) when invoked from within 
 /// the core, inside a BACKEND_REQ_deprecated definition.
-#define ACTIVATE_BE_MODEL(MODELSTRING)                                         \
+#define ACTIVATE_BE_MODEL_deprecated(MODELSTRING)                              \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "ACTIVATE_FOR_MODEL(S)."))                                                  \

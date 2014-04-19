@@ -459,7 +459,7 @@ namespace Gambit
     /// Getter for listing backend requirement groups
     std::vector<str> module_functor_common::backendgroups() { return myGroups; }                    
     /// Getter for listing all backend requirements
-    std::vector<sspair> module_functor_common::backendreqs() { return myBackendReqs; }
+    std::vector<sspair> module_functor_common::backendreqs() { return myResolvableBackendReqs; }
     /// Getter for listing backend requirements from a specific group
     std::vector<sspair> module_functor_common::backendreqs(str group)
     { 
@@ -629,6 +629,7 @@ namespace Gambit
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
+      myResolvableBackendReqs.push_back(key);
       if ( std::find(myGroups.begin(), myGroups.end(), group) == myGroups.end() )
       {
         myGroups.push_back(group);
@@ -637,8 +638,8 @@ namespace Gambit
       }
       myGroupedBackendReqs[group].push_back(key);
       backendreq_map[key] = resolver;
-      backendreq_tags[req] = tags;      
-      backendreq_groups[req] = group;
+      backendreq_tags[key] = tags;      
+      backendreq_groups[key] = group;
     }
 
     /// Add an unconditional backend requirement
@@ -648,7 +649,7 @@ namespace Gambit
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
-      backendreq_map[key] = resolver;
+      myResolvableBackendReqs.push_back(key);
       if ( std::find(myGroups.begin(), myGroups.end(), "none") == myGroups.end() )
       {
         myGroups.push_back("none");
@@ -656,6 +657,37 @@ namespace Gambit
         myGroupedBackendReqs["none"] = empty;
       }
       myGroupedBackendReqs["none"].push_back(key);
+      backendreq_map[key] = resolver;
+      std::vector<str> empty;
+      backendreq_tags[key] = empty;      
+      backendreq_groups[key] = "none";
+    }
+
+    /// Add a rule for activating backend requirements according to the model being scanned.
+    void module_functor_common::makeBackendRuleForModel(str model, str tag)
+    {
+      //Strip the tag and model strings of their parentheses
+      if (model.front() == '(') model = model.substr(1, model.size());
+      if (model.back() == ')') model = model.substr(0, model.size()-1);
+      if (tag.front() == '(') tag = tag.substr(1, tag.size());
+      if (tag.back() == ')') tag = tag.substr(0, tag.size()-1);
+
+      //Split the tag string and sort it.
+      std::vector<str> tags = delimiterSplit(tag, ",");
+      std::sort(tags.begin(), tags.end());
+
+      //Find all declared backend requirements that fit one of the tags within the passed tag set.
+      for (auto it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+      {
+        std::vector<str> tagset = backendreq_tags[*it];
+        std::sort(tagset.begin(), tagset.end());
+        if (not is_disjoint(tags, tagset))
+        {
+          // Make each of the matching backend requirements conditional on the models passed in.
+          setModelConditionalBackendReq(model,it->first,it->second);
+        }
+      }
+
     }
 
     /// Add a model conditional backend requirement for multiple models
@@ -675,8 +707,16 @@ namespace Gambit
      (str model, str req, str type)
     { 
       sspair key (req, type);
-      // Remove the entry from the unconditional backend reqs list...
-      myBackendReqs.erase(std::remove(myBackendReqs.begin(), myBackendReqs.end(), key), myBackendReqs.end());
+
+      // Remove the entry from the resolvable backend reqs list...
+      myResolvableBackendReqs.erase(std::remove(myResolvableBackendReqs.begin(), 
+       myResolvableBackendReqs.end(), key), myResolvableBackendReqs.end());
+
+      // Remove the entry from the resolvable backend reqs list of the group this req is in...
+      std::vector<sspair> resolvableGroupBackendReqs = myGroupedBackendReqs[backendreq_groups[key]];
+      resolvableGroupBackendReqs.erase(std::remove(resolvableGroupBackendReqs.begin(), 
+       resolvableGroupBackendReqs.end(), key), resolvableGroupBackendReqs.end());
+
       // Check that the model is not already in the conditional backend reqs list, then add it
       if (myModelConditionalBackendReqs.find(model) == myModelConditionalBackendReqs.end())
       {
@@ -798,20 +838,32 @@ namespace Gambit
           }
    
           //Check if this backend requirement is part of a group.
-          str group = backendreq_groups[key.first];
+          str group = backendreq_groups[key];
           if (group != "none" and group !="") //FIXME second condition is decprecated!!           
           {                                                      
-            //If it is part of a group, make sure another backend requirement from the same group has not already been activated.
-            if (chosenReqsFromGroups[group] == "none")          
+            //If it is part of a group, make sure that group has actually been declared.
+            if (chosenReqsFromGroups.find(group) != chosenReqsFromGroups.end() )
             {
-              //If not, then this this specific backend requirement is now the active one within its group.
-              chosenReqsFromGroups[group] = key.first; 
+              //If it is part of a group, make sure another backend requirement from the same group has not already been activated.
+              if (chosenReqsFromGroups[group] == "none")          
+              {
+                //If not, then this this specific backend requirement is now the active one within its group.
+                chosenReqsFromGroups[group] = key.first; 
+              }
+              else //This backend requirement is not the first from its group to be resolved.
+              {
+                str errmsg = "Cannot resolve backend requirement in group " + group + ":";
+                errmsg +=  "\nFunction " + myName + " in " + myOrigin + " has already had backend " 
+                           "\nrequirement " + chosenReqsFromGroups[group] + " from the same group filled.";
+                utils_error().raise(LOCAL_INFO,errmsg);
+              }
             }
-            else //This backend requirement is not the first from its group to be resolved.
+            else //This backend requirement is part of group that was not declared.
             {
               str errmsg = "Cannot resolve backend requirement in group " + group + ":";
-              errmsg +=  "\nFunction " + myName + " in " + myOrigin + " has already had backend " 
-                         "\nrequirement " + chosenReqsFromGroups[group] + " from the same group filled.";
+              errmsg +=  "\nThis group has not been declared.  Please add"
+                         "\n BACKEND_GROUP("+group+")"
+                         "\nTo the rollcall declaration of " + myName + " in " + myOrigin + ".";
               utils_error().raise(LOCAL_INFO,errmsg);
             }
           }
@@ -862,7 +914,8 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
       {
         if (verbose) cout << "req: " << it->first << " " << it->second << endl;
-        myBackendReqs.push_back(*it);        
+        myResolvableBackendReqs.push_back(*it);
+        myGroupedBackendReqs[backendreq_groups[*it]].push_back(*it);
       }
       //Add the model to the internal list of models being scanned.
       myModels.push_back(model);

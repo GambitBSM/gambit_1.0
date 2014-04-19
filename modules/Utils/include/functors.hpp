@@ -328,6 +328,9 @@ namespace Gambit
       /// Add a model conditional dependency for a single model
       void setModelConditionalDependencySingular(str, str, str, void(*)(functor*, module_functor_common*));
 
+      /// Add a rule for activating backend requirements according to the model being scanned.
+      void makeBackendRuleForModel(str, str);
+
       /// Add an unconditional backend requirement
       /// The info gets updated later if this turns out to be contitional on a model. 
       void setBackendReq(str, str, std::vector<str>, str, void(*)(functor*));
@@ -406,8 +409,11 @@ namespace Gambit
       /// Map from groups to backend reqs, indicating which backend req has been activated for which backend group.
       std::map<str,str> chosenReqsFromGroups;
 
-      /// Vector of all backend requirement-type string pairs        
+      /// Vector of all backend requirement-type string pairs.
       std::vector<sspair> myBackendReqs;
+
+      /// Vector of all backend requirement-type string pairs currently available for resolution.        
+      std::vector<sspair> myResolvableBackendReqs;
 
       /// Vector of backend requirement-type string pairs for specific backend groups       
       std::map<str,std::vector<sspair> > myGroupedBackendReqs;
@@ -424,18 +430,18 @@ namespace Gambit
       /// Map from models to (vector of {conditional backend requirement-type} pairs)
       std::map< str, std::vector<sspair> > myModelConditionalBackendReqs;
 
+      /// Map from (dependency-type pairs) to (pointers to templated void functions 
+      /// that set dependency functor pointers)
+      std::map<sspair, void(*)(functor*, module_functor_common*)> dependency_map;
+
       /// Map from backend requirements to their required types
       std::map<str, str> backendreq_types;
 
       /// Map from backend requirements to their designated groups
-      std::map<str, str> backendreq_groups;
+      std::map<sspair, str> backendreq_groups;
 
       /// Map from backend requirements to their rule tags
-      std::map<str, std::vector<str> > backendreq_tags; 
-
-      /// Map from (dependency-type pairs) to (pointers to templated void functions 
-      /// that set dependency functor pointers)
-      std::map<sspair, void(*)(functor*, module_functor_common*)> dependency_map;
+      std::map<sspair, std::vector<str> > backendreq_tags; 
 
       /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
       /// that set backend requirement functor pointers)

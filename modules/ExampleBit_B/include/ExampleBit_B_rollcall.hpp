@@ -111,6 +111,10 @@ START_MODULE
     BACKEND_REQ(refex, (), double, (double&))
     BACKEND_REQ(refex2, (), void, (double&, double))
     BACKEND_REQ(runMe, (), void, (double (*)(int&), int&))
+    BACKEND_REQ(SomeInt, (modeldep), int)
+
+    ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM_demo, UED), (modeldep) )
+
 
       //#define BACKEND_REQ_deprecated awesomeness       // awesomeness must be obtained from an external (backend) code, with
       //START_BACKEND_REQ_deprecated(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
@@ -119,12 +123,12 @@ START_MODULE
       //BACKEND_OPTION(LibThird,1.2,1.3 , 1.5)// Specify that v1.2/1.3/1.5 of LibThird are also a viable providers of awesomeness
       //#undef BACKEND_REQ_deprecated                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
       
-      #define BACKEND_REQ_deprecated SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
-      START_BACKEND_REQ_deprecated(int, VAR)           // is on a backend variable or a backend function. A backend function is assumed if no flag is given. 
-      BACKEND_OPTION(LibFirst)              // 
+      //#define BACKEND_REQ_deprecated SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
+      //START_BACKEND_REQ_deprecated(int, VAR)           // is on a backend variable or a backend function. A backend function is assumed if no flag is given. 
+      //BACKEND_OPTION(LibFirst)              // 
       //ACTIVATE_FOR_MODEL(MSSM_demo)         // Demonstrating how backend requirements can be made conditional on one
-      ACTIVATE_FOR_MODELS(CMSSM_demo, UED)  // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
-      #undef BACKEND_REQ_deprecated
+      //ACTIVATE_FOR_MODELS(CMSSM_demo, UED)  // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
+      //#undef BACKEND_REQ_deprecated
 
       #define BACKEND_REQ_deprecated someFunction      // (This backend function is used to test that the above backend variable works.)
       START_BACKEND_REQ_deprecated(void, FUNC)
