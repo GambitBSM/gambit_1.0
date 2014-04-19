@@ -17,7 +17,7 @@
 
 void Gambit::terminator()
 {
-  std::cout << std::endl << "Gambit terminator called.  Sleep faster." << std::endl << std::endl;
+  std::cout << std::endl << "This is The Gambit Terminator.  Sleep faster." << std::endl << std::endl;
   exit(1);
 }
 

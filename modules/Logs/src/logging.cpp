@@ -44,6 +44,8 @@ namespace Gambit
  
     using namespace LogTags;  
   
+    const bool verbose = false;
+
     // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
     // These won't compile in g++ if the LogTags are const, something about how standard containers work...
 
@@ -98,11 +100,14 @@ namespace Gambit
        m[backends]= "Backends";       
        
        // Test numbers:
-       std::cout<<"Checking LogTag numbers..."<<std::endl;
-       for(std::map<int,std::string>::iterator tag = m.begin(); tag != m.end(); ++tag) 
+       if (verbose)
        {
-         std::cout<<"  "<<tag->first<<" : "<<tag->second<<std::endl; 
-       }    
+         std::cout<<"Checking LogTag numbers..."<<std::endl;
+         for(std::map<int,std::string>::iterator tag = m.begin(); tag != m.end(); ++tag) 
+         {
+           std::cout<<"  "<<tag->first<<" : "<<tag->second<<std::endl; 
+         }    
+       }
 
        return m;
     }
