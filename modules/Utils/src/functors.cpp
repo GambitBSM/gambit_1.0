@@ -667,10 +667,10 @@ namespace Gambit
     void module_functor_common::makeBackendRuleForModel(str model, str tag)
     {
       //Strip the tag and model strings of their parentheses
-      if (model.front() == '(') model = model.substr(1, model.size());
-      if (model.back() == ')') model = model.substr(0, model.size()-1);
-      if (tag.front() == '(') tag = tag.substr(1, tag.size());
-      if (tag.back() == ')') tag = tag.substr(0, tag.size()-1);
+      if (model.at(0) == '(')     model = model.substr(1, model.size());
+      if (*model.rbegin() == ')') model = model.substr(0, model.size()-1);
+      if (tag.at(0) == '(')       tag = tag.substr(1, tag.size());
+      if (*tag.rbegin() == ')')   tag = tag.substr(0, tag.size()-1);
 
       //Split the tag string and sort it.
       std::vector<str> tags = delimiterSplit(tag, ",");
