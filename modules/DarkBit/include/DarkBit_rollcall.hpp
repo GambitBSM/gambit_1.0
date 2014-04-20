@@ -54,22 +54,22 @@ START_MODULE
       START_FUNCTION(void)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo)
-      #define BACKEND_REQ dsinit
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ_deprecated dsinit
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdinit
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dsrdinit
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsgive_model_isasugra
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dsgive_model_isasugra
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dssusy_isasugra
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dssusy_isasugra
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
     #define FUNCTION DarkBit_PointInit_Default
       START_FUNCTION(void)
@@ -81,18 +81,18 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION dssusy
     START_FUNCTION(int)
-      #define BACKEND_REQ dsinit
-      START_BACKEND_REQ(void)
+      #define BACKEND_REQ_deprecated dsinit
+      START_BACKEND_REQ_deprecated(void)
       BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dssusy
-      START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dssusy
+      START_BACKEND_REQ_deprecated(void)
       BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ mssmpar
-      START_BACKEND_REQ(DS_MSSMPAR,VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated mssmpar
+      START_BACKEND_REQ_deprecated(DS_MSSMPAR,VAR)
       BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 */
@@ -101,22 +101,22 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_spectrum_SUSY
       START_FUNCTION(RDspectype)
-      #define BACKEND_REQ mspctm
-        START_BACKEND_REQ(DS_MSPCTM, VAR)
+      #define BACKEND_REQ_deprecated mspctm
+        START_BACKEND_REQ_deprecated(DS_MSPCTM, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ widths
-        START_BACKEND_REQ(DS_WIDTHS, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated widths
+        START_BACKEND_REQ_deprecated(DS_WIDTHS, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ intdof
-        START_BACKEND_REQ(DS_INTDOF, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated intdof
+        START_BACKEND_REQ_deprecated(DS_INTDOF, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ pacodes
-        START_BACKEND_REQ(DS_PACODES, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated pacodes
+        START_BACKEND_REQ_deprecated(DS_PACODES, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
 
     #define FUNCTION RD_spectrum_micromegas
@@ -141,10 +141,10 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_SUSY_DSprep_func
       START_FUNCTION(int)
       DEPENDENCY(RD_spectrum, RDspectype)
-      #define BACKEND_REQ rdmgev
-        START_BACKEND_REQ(DS_RDMGEV, VAR)
+      #define BACKEND_REQ_deprecated rdmgev
+        START_BACKEND_REQ_deprecated(DS_RDMGEV, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -153,10 +153,10 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
         DEPENDENCY(RD_eff_annrate_SUSY_DSprep, int)
-        #define BACKEND_REQ dsanwx
-          START_BACKEND_REQ(double)
+        #define BACKEND_REQ_deprecated dsanwx
+          START_BACKEND_REQ_deprecated(double)
           BACKEND_OPTION(DarkSUSY, 0.1)
-        #undef BACKEND_REQ
+        #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -166,62 +166,62 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_thresholds_resonances, RDrestype)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
-      #define BACKEND_REQ dsrdthlim
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ_deprecated dsrdthlim
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdtab
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dsrdtab
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdeqn
-        START_BACKEND_REQ(void)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dsrdeqn
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdwintp
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dsrdwintp
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsanwx
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dsanwx
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ widths
-        START_BACKEND_REQ(DS_WIDTHS, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated widths
+        START_BACKEND_REQ_deprecated(DS_WIDTHS, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdmgev
-        START_BACKEND_REQ(DS_RDMGEV, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rdmgev
+        START_BACKEND_REQ_deprecated(DS_RDMGEV, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdpth
-        START_BACKEND_REQ(DS_RDPTH, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rdpth
+        START_BACKEND_REQ_deprecated(DS_RDPTH, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdpars
-        START_BACKEND_REQ(DS_RDPARS, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rdpars
+        START_BACKEND_REQ_deprecated(DS_RDPARS, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdswitch
-        START_BACKEND_REQ(DS_RDSWITCH, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rdswitch
+        START_BACKEND_REQ_deprecated(DS_RDSWITCH, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdlun
-        START_BACKEND_REQ(DS_RDLUN, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rdlun
+        START_BACKEND_REQ_deprecated(DS_RDLUN, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdpadd
-        START_BACKEND_REQ(DS_RDPADD, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rdpadd
+        START_BACKEND_REQ_deprecated(DS_RDPADD, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rddof
-        START_BACKEND_REQ(DS_RDDOF, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rddof
+        START_BACKEND_REQ_deprecated(DS_RDDOF, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rderrors
-        START_BACKEND_REQ(DS_RDERRORS, VAR)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated rderrors
+        START_BACKEND_REQ_deprecated(DS_RDERRORS, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
     #define FUNCTION RD_oh2_SingletDM
       START_FUNCTION(double)
@@ -230,10 +230,10 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      #define BACKEND_REQ dsrdomega
-        START_BACKEND_REQ(double)
+      #define BACKEND_REQ_deprecated dsrdomega
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
 
     #define FUNCTION RD_oh2_micromegas
@@ -251,10 +251,10 @@ START_MODULE
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Gambit::BF::BFptr)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      #define BACKEND_REQ dshayield
-        START_BACKEND_REQ(double)
+      #define BACKEND_REQ_deprecated dshayield
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -263,34 +263,34 @@ START_MODULE
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(CMSSM_demo)
-      #define BACKEND_REQ mspctm
-        START_BACKEND_REQ(DS_MSPCTM, VAR)
+      #define BACKEND_REQ_deprecated mspctm
+        START_BACKEND_REQ_deprecated(DS_MSPCTM, VAR)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dssigmav
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated dssigmav
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ      
-      #define BACKEND_REQ dsIBffdxdy
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated      
+      #define BACKEND_REQ_deprecated dsIBffdxdy
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ         
-      #define BACKEND_REQ dsIBfsrdxdy
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated         
+      #define BACKEND_REQ_deprecated dsIBfsrdxdy
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ   
-      #define BACKEND_REQ dsIBhhdxdy
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated   
+      #define BACKEND_REQ_deprecated dsIBhhdxdy
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ   
-      #define BACKEND_REQ dsIBwhdxdy
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated   
+      #define BACKEND_REQ_deprecated dsIBwhdxdy
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ   
-      #define BACKEND_REQ dsIBwwdxdy
-        START_BACKEND_REQ(double)
+      #undef BACKEND_REQ_deprecated   
+      #define BACKEND_REQ_deprecated dsIBwwdxdy
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ         
+      #undef BACKEND_REQ_deprecated         
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -298,10 +298,10 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DD_couplings_DarkSUSY
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      #define BACKEND_REQ dsddgpgn
-        START_BACKEND_REQ(void)
+      #define BACKEND_REQ_deprecated dsddgpgn
+        START_BACKEND_REQ_deprecated(void)
         BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ        
+      #undef BACKEND_REQ_deprecated        
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -343,9 +343,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION provideF_func
     START_FUNCTION(fptr_dd)
-      #define BACKEND_REQ funcGauss
-        START_BACKEND_REQ(double)
-      #undef BACKEND_REQ
+      #define BACKEND_REQ_deprecated funcGauss
+        START_BACKEND_REQ_deprecated(double)
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -355,9 +355,9 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(provideN, int) 
       DEPENDENCY(provideF, fptr_dd) 
-      #define BACKEND_REQ average
-        START_BACKEND_REQ(double)
-      #undef BACKEND_REQ
+      #define BACKEND_REQ_deprecated average
+        START_BACKEND_REQ_deprecated(double)
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 

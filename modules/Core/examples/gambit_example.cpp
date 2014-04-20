@@ -28,9 +28,14 @@
 #include "log.hpp"
 
 using namespace Gambit;
+using namespace LogTags;
 
 void beispiel()
 {
+
+  std::streambuf *coutbuf = std::cout.rdbuf(); 
+  std::cout.rdbuf(coutbuf);
+   
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
   cout << "Registered module functors [Core().getModuleFunctors().size()]: " <<
@@ -38,6 +43,46 @@ void beispiel()
   cout << "Registered backend functors [Core().getBackendFunctors().size()]: " <<
     Core().getBackendFunctors().size() << endl;
 
+  //%%%%%% LOGGING DEMO %%%%%%%%%%%%%%%%
+  // Probably move to gambit_example.cpp to keep this minimal, but for a little while lets leave it here for educational purposes
+  
+  // Check the logging tags were registered correctly (for testing)
+  Logging::checktags();
+
+  // There are several different ways to send log messages. To use any of them, you have to include the header "log.hpp" and use 'logger()' to retrieve the logging object.
+  // First, the "send" function:
+  logger().send("Logger demo test message 1");
+
+  // Log messages can be redirected use commands in the yaml file, if you attach some tags to them. To see the allowed tags, please inspect the LogTag enum in logging/include/logging.hpp
+  // Tags can be entered into the send function in any arguments after the first
+  // (I think I only defined enough overloads for 5 tags currently, but extension to more is trivial.
+  logger().send("Logger demo test message 2",core,info);
+
+  // If you like, you can collect your tags into a set and send them that way
+  std::set<LogTag> mytags;
+  //std::set<int> mytags; // secretly you can use ints too (via std::set<int> only), but its takes some work to find out what integers you want to use.
+  mytags.insert(core);
+  mytags.insert(info);
+  logger().send("Logger demo test message 3",mytags);
+
+  // You also may supply your message as a stringstream (useful for sticking numbers etc in)
+  std::ostringstream ss;
+  ss << "Logger demo test message " << 4;
+  logger().send(ss,mytags); //of course you can also just do ss.str() to change it to a string yourself; this is all that the send function overload does anyway.
+
+  // Finally, you can just stream everything into the logger directly. The only catch is that you need to use a special end of message character to signal to the logger that you are done and it should send the message.
+  // Tags can be anywhere in the stream; they will just be plucked out by the logger 
+  logger() << "Logger demo test message " << 5 << core << info << EOM;
+
+  // std::endl and other stream manipulators are theoretically allowed, and will just treat the message as a stringstream, but this is not thoroughly tested, so let me (Ben) know if anything weird happens if you try to do this.
+
+  // Uberfinally; if you send log messages from within module or backend (convenience) function, they should be automatically tagged according to the module and backend that sent them.
+
+  // %%%%%% END LOGGING DEMO %%%%%%%%%%%%%%
+
+  // Test the log
+  logger() << core << "log message with two tags!" << std::endl << "New line, but not new message!" << err << nonfatal << EOM;
+  
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile("gambit.yaml");
@@ -428,7 +473,7 @@ int main( int, const char*[] )
   
 
   // for the fastsim backend
-  ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim::Functown::FastSim_Init);
+  //ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim::Functown::FastSim_Init_deprecated);
 
 
 
@@ -642,12 +687,12 @@ int main( int, const char*[] )
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::commonBlock);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::printStuff); 
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::set_d);  
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::fptrRoutine);    
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray1);      
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray2);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc);            
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::printStuff_deprecated); 
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::set_d_deprecated);  
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::fptrRoutine_deprecated);    
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray1_deprecated);      
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFuncArray2_deprecated);
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest::Functown::doubleFunc_deprecated);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
     
 

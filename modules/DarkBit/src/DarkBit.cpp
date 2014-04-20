@@ -33,6 +33,9 @@
 #include "DarkBit_rollcall.hpp"
 #include "util_macros.hpp"
 
+//PS: this is OK here, in a source file, *but not in headers like DarkBit_types.hpp*!!!
+using namespace Gambit::BF;
+
 namespace Gambit {
 
   namespace DarkBit {

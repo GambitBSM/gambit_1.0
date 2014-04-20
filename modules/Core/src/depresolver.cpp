@@ -18,7 +18,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Jul, Aug, Nov
-///  \date 2014 Jan, Mar
+///  \date 2014 Jan, Mar, Apr
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu)
@@ -933,100 +933,149 @@ namespace Gambit
     /// Node-by-node backend resolution
     void DependencyResolver::resolveVertexBackend(VertexID vertex)
     {
-      // Find relevant ini file entry
-      const IniParser::ObservableType * auxEntry = NULL;
-      const IniParser::ObservableType * depEntry = NULL;
-      bool entryExists = false;
-      std::vector<functor *> vertexCandidates;
-      std::vector<functor *> disabledVertexCandidates;
+      functor* solution; 
+ 
+      // If there are no backend requirements, and thus nothing to do, return.
+      if ((*masterGraph[vertex]).backendreqs().size() == 0) return;
 
-      // Collect list of backend requirements of vertex
-      std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs();
-      if (reqs.size() == 0) return; // nothing to do --> return
-      logger() << LogTags::dependency_resolver << "Backend function resolution" << endl;
+      // Get started.
+      logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
 
-      // Check whether vertex is mentioned in inifile
-      auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries(), "auxiliary");
+      // Check whether this vertex is mentioned in the inifile.
+      const IniParser::ObservableType * auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries(), "auxiliary");
 
-      // A loop over all requirements
-      for (std::vector<sspair>::iterator it = reqs.begin();
-          it != reqs.end(); ++it)
-      {
-        logger() << LogTags::dependency_resolver << it->first << " (" << it->second << ")";
-        depEntry = NULL;
-        entryExists = false;
-        vertexCandidates.clear();
-        // Find relevant iniFile entry from auxiliaries section
-        if ( auxEntry != NULL )
-          depEntry = findIniEntry(*it, (*auxEntry).backends, "backend");
-        if ( auxEntry != NULL and depEntry != NULL ) 
-          entryExists = true;
+      // Collect the list of groups that the backend requirements of this vertex exist in.
+      std::vector<str> groups = (*masterGraph[vertex]).backendgroups();
 
-        // Loop over all existing backend vertices, and make a list of
-        // functors that are available and fulfill the backend dependency requirement
-        for (std::vector<functor *>::const_iterator
-            itf  = boundCore->getBackendFunctors().begin(); 
-            itf != boundCore->getBackendFunctors().end();
-            ++itf) 
+      // Loop over all groups, including the null group (group="none").
+      for (std::vector<str>::iterator it = groups.begin(); it != groups.end(); ++it)
+      {       
+
+        // Collect the list of backend requirements in this group.
+        std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs(*it);
+
+        // Switch depending on whether this is a real group or not.
+        if (*it == "none")
         {
-          // Without inifile entry, just match capabilities and types exactly
-           if( (*itf)->capability() == it->first and (*itf)->type() == it->second
-          // with inifile entry, we check capability, type, function name and
-          // module name.
-           and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
-          {
-            // If the vertex has not been disabled by the backend system
-            if ( (*itf)->status() != 0 )
-            {
-              // add it to vertex candidate list
-              vertexCandidates.push_back(*itf);
-            }
-            else
-            {
-              // otherwise, add it to disabled vertex candidate list
-              disabledVertexCandidates.push_back(*itf);
-            }            
+          // Loop over all the orphan requirements.
+          for (std::vector<sspair>::iterator req = reqs.begin(); req != reqs.end(); ++req)
+          {       
+            logger() << LogTags::dependency_resolver;
+            logger() << "Resolving ungrouped requirement " << req->first;
+            logger() << " (" << req->second << ")..." << endl << EOM;
+            // Find a backend function that fulfills the backend requirement.          
+            std::vector<sspair> reqsubset;
+            reqsubset.push_back(*req);
+            solution = solveRequirement(reqsubset,auxEntry);
+            // Resolve the backend requirement with that function.
+            resolveRequirement(solution,vertex);
           }
         }
-
-        if (vertexCandidates.size() == 0)
+        else
         {
-          str errmsg = "Found no candidates for backend requirement ";
-          errmsg += it->first + " (" + it->second + ")";
-          if (disabledVertexCandidates.size() != 0)
-          {
-            errmsg += "\nNote that viable candidates exist but have been disabled:"
-                   +     printGenericFunctorList(disabledVertexCandidates)
-                   +  "\nPlease check that all shared objects exist for the"
-                   +  "\nnecessary backends, and that they contain all the"
-                   +  "\nnecessary functions required for this scan. In "
-                   +  "\nparticular, make sure that your mangled function"
-                   +  "\nnames match the symbol names in your shared lib.";
-          }
-          dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
+          logger() << LogTags::dependency_resolver;
+          logger() << "Resolving from group " << *it;
+          logger() << "..." << endl << EOM;
+          // Find a backend function that fulfills one of the backend requirements in the group.
+          solution = solveRequirement(reqs,auxEntry,*it);
+          // Resolve the backend requirement with that function.
+          resolveRequirement(solution,vertex);
         }
-
-        // One candidate...
-        if (vertexCandidates.size() > 1)
-        {
-          str errmsg = "Found too many candidates for backend requirement ";
-          errmsg += it->first + " (" + it->second + ")";
-          errmsg += "\nCandidate backend functions are :";
-          for (auto it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
-          {
-            errmsg += "\n   [" + (*it)->name() + ", " + (*it)->origin() + "]";
-            // TODO: Show also version numbers
-          }
-          dependency_resolver_error().raise(LOCAL_INFO, errmsg);
-        }
-        // Resolve it
-        (*masterGraph[vertex]).resolveBackendReq(vertexCandidates[0]);
-        logger() << LogTags::dependency_resolver;
-        logger() << ", resolved by [" << (*vertexCandidates[0]).name();
-        logger() << ", " << (*vertexCandidates[0]).origin() << " (";
-        logger() << (*vertexCandidates[0]).version() << ")]" << endl;
-        //logger() << EOM;
+         
       }
     }
+
+    /// Find a backend function that matches any one of a vector of capability-type pairs. 
+    functor* DependencyResolver::solveRequirement(std::vector<sspair> reqs, 
+     const IniParser::ObservableType * auxEntry, str group)
+    {
+      std::vector<functor *> vertexCandidates;
+      std::vector<functor *> vertexCandidatesWithIniEntry;
+      std::vector<functor *> disabledVertexCandidates;
+
+      // Loop over all existing backend vertices, and make a list of
+      // functors that are available and fulfill the backend dependency requirement
+      for (std::vector<functor *>::const_iterator
+          itf  = boundCore->getBackendFunctors().begin(); 
+          itf != boundCore->getBackendFunctors().end();
+          ++itf) 
+      {
+        const IniParser::ObservableType * depEntry = NULL;
+        bool entryExists = false;
+
+        // Find relevant iniFile entry from auxiliaries section
+        if ( auxEntry != NULL ) depEntry = findIniEntry((*itf)->quantity(), (*auxEntry).backends, "backend");
+        if ( auxEntry != NULL and depEntry != NULL) entryExists = true;
+
+        // Without inifile entry, just match any capability-type pair exactly.
+        if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end() 
+        // With inifile entry, we also check capability, type, function name and module name.
+        and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
+        {
+          // If the backend vertex has not been disabled by the backend system
+          if ( (*itf)->status() != 0 )
+          {
+            // add it to the overall vertex candidate list
+            vertexCandidates.push_back(*itf);
+            // if it has an inifile entry, add it to the candidate list with inifile entries
+            if (entryExists) vertexCandidatesWithIniEntry.push_back(*itf);
+          }
+          else
+          {
+            // otherwise, add it to disabled vertex candidate list
+            disabledVertexCandidates.push_back(*itf);
+          }            
+        }
+      }
+
+      if (vertexCandidates.size() == 0)
+      {
+        str errmsg = "Found no candidates for backend requirement.";
+        if (disabledVertexCandidates.size() != 0)
+        {
+          errmsg += "\nNote that viable candidates exist but have been disabled:"
+                 +     printGenericFunctorList(disabledVertexCandidates)
+                 +  "\nPlease check that all shared objects exist for the"
+                 +  "\necessary backends, and that they contain all the"
+                 +  "\nnecessary functions required for this scan. In "
+                 +  "\nparticular, make sure that your mangled function"
+                 +  "\nnames match the symbol names in your shared lib.";
+        }
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
+      }
+
+      // If too many candidates, prefer those with entries in the inifile.
+      if (vertexCandidates.size() > 1)
+      {
+        if (vertexCandidatesWithIniEntry.size() >= 1) vertexCandidates = vertexCandidatesWithIniEntry;
+      }
+
+      // Still more than one candidate...
+      if (vertexCandidates.size() > 1)
+      {
+        str errmsg = "Found too many candidates for backend requirement ";
+        if (reqs.size() == 1) errmsg += reqs[0].first + " (" + reqs[0].second + ")...";
+        else errmsg += "group " + group + ".";
+        errmsg += "\nViable candidates are:\n" + printGenericFunctorList(vertexCandidates);
+       dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+      }
+
+      // Just one candidate.
+      return vertexCandidates[0];
+
+    }
+
+    /// Resolve a backend requirement of a specific module function using a specific backend function.
+    void DependencyResolver::resolveRequirement(functor* func, VertexID vertex)
+    {
+      (*masterGraph[vertex]).resolveBackendReq(func);
+      logger() << LogTags::dependency_resolver;
+      logger() << "Resolved by: [" << func->name() << ", ";
+      logger() << func->origin() << " (" << func->version() << ")]";
+      logger() << endl << EOM;
+    }
+
+
   }
+
 }

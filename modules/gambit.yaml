@@ -227,6 +227,10 @@ multinest:
   options:
     scale: 15.5
 
+- capability:    "function_pointer"
+  backends:
+  - {function: "externalFunction2"}
+
 #- capability:   "awesomeness"
 #  type:         ""
 #  function:     ""

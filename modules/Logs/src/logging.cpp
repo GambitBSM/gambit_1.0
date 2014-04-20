@@ -44,6 +44,8 @@ namespace Gambit
  
     using namespace LogTags;  
   
+    const bool verbose = false;
+
     // If you add to the following message tags, make sure to update the enum in log_tags.hpp that tracks the number of them!
     // These won't compile in g++ if the LogTags are const, something about how standard containers work...
 
@@ -98,11 +100,14 @@ namespace Gambit
        m[backends]= "Backends";       
        
        // Test numbers:
-       std::cout<<"Checking LogTag numbers..."<<std::endl;
-       for(std::map<int,std::string>::iterator tag = m.begin(); tag != m.end(); ++tag) 
+       if (verbose)
        {
-         std::cout<<"  "<<tag->first<<" : "<<tag->second<<std::endl; 
-       }    
+         std::cout<<"Checking LogTag numbers..."<<std::endl;
+         for(std::map<int,std::string>::iterator tag = m.begin(); tag != m.end(); ++tag) 
+         {
+           std::cout<<"  "<<tag->first<<" : "<<tag->second<<std::endl; 
+         }    
+       }
 
        return m;
     }
@@ -188,7 +193,7 @@ namespace Gambit
        if(not silenced)
        {
          // Later on this should clean up the logger objects
-         std::cout<<"Logger is being destructed, checking if messaged left to deliver..."<<std::endl;
+         std::cout<<"Logger is being destroyed. Checking if there are messages left to deliver..."<<std::endl;
          // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
          if (prelim_buffer.size()!=0)
          { 
