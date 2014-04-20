@@ -54,22 +54,12 @@ START_MODULE
       START_FUNCTION(void)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo)
-      #define BACKEND_REQ_deprecated dsinit
-        START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ_deprecated
-      #define BACKEND_REQ_deprecated dsrdinit
-        START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ_deprecated
-      #define BACKEND_REQ_deprecated dsgive_model_isasugra
-        START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ_deprecated
-      #define BACKEND_REQ_deprecated dssusy_isasugra
-        START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ_deprecated
+      BACKEND_REQ(dsprep, (), void, ())
+      BACKEND_REQ(dsinit, (), void, ())
+      BACKEND_REQ(dsrdinit, (), void, ())
+      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
+      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
     #undef FUNCTION
     #define FUNCTION DarkBit_PointInit_Default
       START_FUNCTION(void)
@@ -121,10 +111,19 @@ START_MODULE
 
     #define FUNCTION RD_spectrum_micromegas
       START_FUNCTION(int)
-      #define BACKEND_REQ mass_spectrum
-        START_BACKEND_REQ(int)
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
+      #define BACKEND_REQ_deprecated lesHinput
+        START_BACKEND_REQ_deprecated(int)
         BACKEND_OPTION(micromegas)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated mass_spectrum
+        START_BACKEND_REQ_deprecated(int)
+        BACKEND_OPTION(micromegas)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated suspectSUGRA
+        START_BACKEND_REQ_deprecated(int)
+        BACKEND_OPTION(micromegas)
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -239,10 +238,10 @@ START_MODULE
     #define FUNCTION RD_oh2_micromegas
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum, int)
-      #define BACKEND_REQ oh2
-        START_BACKEND_REQ(double)
+      #define BACKEND_REQ_deprecated oh2
+        START_BACKEND_REQ_deprecated(double)
         BACKEND_OPTION(micromegas)
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 

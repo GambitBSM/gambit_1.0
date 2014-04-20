@@ -167,15 +167,15 @@ multinest:
 #  capability:   RD_oh2
 
 # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-- purpose:      Likelihood
-  capability:   lnL_ExampleBitB
-  type:         double
-  function:     ""
-  module:       ""
+#- purpose:      Likelihood
+#  capability:   lnL_ExampleBitB
+#  type:         double
+#  function:     ""
+#  module:       ""
 
 # Uncomment to test FastSim
-- purpose:      Likelihood
-  capability:   fast_sim
+#- purpose:      Likelihood
+#  capability:   fast_sim
 
 # Test loop manager
 #- purpose:      Likelihood
@@ -191,15 +191,20 @@ multinest:
 #  capability:   analysisAccumulator
 
 # Test Pythia8 SLHA reader
-- purpose:      Likelihood
-  capability:   MSSMslha_testLogL
-  function:     MSSMtestLogL
-#  printme:      false
+#- purpose:      Likelihood
+#  capability:   MSSMslha_testLogL
+#  function:     MSSMtestLogL
+##  printme:      false
 
 # Test vector output of printer
-- purpose:      Observable
-  capability:   test_vector
-  type:         std::vector<double>
+#- purpose:      Observable
+#  capability:   test_vector
+#  type:         std::vector<double>
+
+- purpose:      Likelihood
+  capability:   RD_oh2
+  type:         double
+  function:     RD_oh2_DarkSUSY
 
 #########################
 --- # Auxiliary entries

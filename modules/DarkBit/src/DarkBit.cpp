@@ -25,6 +25,7 @@
 ///  *********************************************
 
 #include <dlfcn.h>
+#include <fstream>
 #include <iostream>
 #include <algorithm>
 
@@ -431,10 +432,11 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
     void DarkBit_PointInit_CMSSM()
+    /* This should go into the point-level initialization of darksusy */
     {
       using namespace Pipes::DarkBit_PointInit_CMSSM;
-      //Py8SLHA mySLHA = *Dep::MSSMspectrum;
       bool static dsinit_flag = false;
+
       // Initialize DarkSUSY if run for the first time
       if (not dsinit_flag) 
       {
@@ -443,17 +445,29 @@ namespace Gambit {
           BEreq::dsrdinit();
           dsinit_flag = true;
       }
+
       // Setup mSUGRA model from CMSSM parameters
-      double am0 = *Param["M0"];  // m0
-      double amhf = *Param["M12"];  // m_1/2
-      double aa0 = *Param["A0"];  // A0
-      double asgnmu = *Param["sgnmu"];  // sign(mu)
-      double atanbe = *Param["tanb"];  // tan(beta)
-      int unphys, hwarning;
-      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
-      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
-      BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
-      BEreq::dssusy_isasugra(unphys, hwarning);
+      //double am0 = *Param["M0"];  // m0
+      //double amhf = *Param["M12"];  // m_1/2
+      //double aa0 = *Param["A0"];  // A0
+      //double asgnmu = *Param["sgnmu"];  // sign(mu)
+      //double atanbe = *Param["tanb"];  // tan(beta)
+      //int unphys, hwarning;
+      //std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
+      //std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+      //BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+      //BEreq::dssusy_isasugra(unphys, hwarning);
+
+      // Initialize SUSY spectrum
+      eaSLHA mySLHA = *Dep::MSSMspectrum;
+      ofstream ofs("DarkBit_temp.slha");
+      ofs << mySLHA;
+      ofs.close();
+      int len = 17;
+      int flag = 15;
+      char * filename = "DarkBit_temp.slha";
+      BEreq::dsSLHAread(byVal(filename), flag, byVal(len));
+      BEreq::dsprep();
     }
 
 
@@ -931,16 +945,46 @@ namespace Gambit {
 
     void RD_spectrum_micromegas(int &err)
     /* For now this just calculates and stores the micrOMEGAs particle spectrum
-        for micrOMEGAs' internal use. The spectrum is calculated using the
-        default CalcHEP model file parameters. Eventually it should
-        be modified to set the model parameters to arbitrary values and
-        return the spectrum as an RDspectype object or something similar. It
-        returns an int because it has to return something. */
+       for micrOMEGAs' internal use. The spectrum is calculated using the
+       default CalcHEP model file parameters. Eventually it should
+       be modified to set the model parameters to arbitrary values and
+       return the spectrum as an RDspectype object or something similar. It
+       returns an int because it has to return something. */
+    /* This should go into the point-level backend initialization. */
     {
         using namespace Pipes::RD_spectrum_micromegas;
 
+        //// Setup at high scale via suspectSUGRA
+        //
+        //double m0,mhf,a0,tb;
+        //double gMG1, gMG2, gMG3,  gAl, gAt, gAb,  sgn, gMHu,  gMHd,
+        //        gMl2, gMl3, gMr2, gMr3, gMq2, gMq3, gMu2, gMu3, gMd2, gMd3;
+        //m0 = 100;
+        //mhf = 100;
+        //a0 = 10;
+        //tb = 10;
+        //gMG1=mhf, gMG2=mhf,gMG3=mhf;
+        //gAl=a0,   gAt=a0,  gAb=a0;  gMHu=m0,  gMHd=m0;
+        //gMl2=m0,  gMl3=m0, gMr2=m0, gMr3=m0;
+        //gMq2=m0,  gMq3=m0, gMu2=m0, gMd2=m0, gMu3=m0, gMd3=m0;
+        //sgn = 1;
+        //err= BEreq::suspectSUGRA( byVal(tb),  
+        //byVal(gMG1), byVal(gMG2), byVal(gMG3),  byVal(gAl),  byVal(gAt), byVal(gAb),  byVal(sgn), byVal(gMHu), byVal(gMHd),
+        //byVal(gMl2), byVal(gMl3), byVal(gMr2), byVal(gMr3), byVal(gMq2),  byVal(gMq3), byVal(gMu2), byVal(gMu3), byVal(gMd2), byVal(gMd3)); 
+
+        // Setup via SLHA file
+        //
         char cdmName[10];
-        err = BEreq::mass_spectrum(cdmName);
+        // Save spectrum in temporary SLHA file
+        eaSLHA mySLHA = *Dep::MSSMspectrum;
+        ofstream ofs("DarkBit_temp.slha");
+        ofs << mySLHA;
+        ofs.close();
+        // And load it back into micromegas
+        char * filename = "DarkBit_temp.slha";
+        err = BEreq::lesHinput(byVal(filename));
+        // Initialize micromegas mass spectrum
+        err = BEreq::mass_spectrum(byVal(cdmName));
     }
 
     void RD_oh2_micromegas(double &oh2)
@@ -951,7 +995,7 @@ namespace Gambit {
     	double Beps=1.E-5;
     	double Xf;
 
-        oh2 = BEreq::oh2(&Xf,fast,Beps);
+        oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
         cout << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
     }
 
