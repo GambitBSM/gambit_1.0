@@ -204,11 +204,23 @@ multinest:
 - purpose:      Likelihood
   capability:   RD_oh2
   type:         double
-  function:     RD_oh2_DarkSUSY
+  function:     RD_oh2_micromegas
 
 #########################
 --- # Auxiliary entries
 #########################
+
+- capability:   RD_oh2
+  function:     RD_oh2_micromegas
+  options:
+    fast: 1
+    Beps: 1e-5
+
+- capability:   RD_oh2
+  function:     RD_oh2_DarkSUSY
+  options:
+    fast: 0
+    omtype: 1
 
 - capability:   "omega_DM"
   type:         ""

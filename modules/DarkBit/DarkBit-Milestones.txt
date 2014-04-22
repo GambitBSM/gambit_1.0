@@ -20,8 +20,9 @@
 ## Goals until October 1st 2014
 
 0. General stuff [Christoph]
-    - Implementation of coupling to SLHA
-    - Tidy DarkBit structure
+    - Implementation of coupling to SLHA [done]
+        --> tests
+    - Tidy DarkBit structure [done]
 
 1. Relic density calculations
     - DarkSUSY [Torsten]
