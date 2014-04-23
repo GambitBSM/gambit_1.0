@@ -28,7 +28,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
-///  \date 2014 Jan
+///  \date 2014 Jan, Apr
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -39,13 +39,10 @@
 #ifndef __DarkBit_types_hpp__
 #define __DarkBit_types_hpp__
 
-#include "BaseFunctions.hpp"
-
 #include <cmath>
 #include <algorithm>
-#include <gsl/gsl_integration.h>
 
-using namespace Gambit::BF;
+#include <gsl/gsl_integration.h>
 
 namespace Gambit
 {
@@ -60,13 +57,12 @@ namespace Gambit
       double gna;
     };
 
-    class DSgamma3bdyKinFunc : public BaseFunction
+    class DSgamma3bdyKinFunc : public BF::BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);
-      typedef std::vector<double> BFargVec;
       public:
         DSgamma3bdyKinFunc(int& chn, double& M, double& m2, BEptr ib, BEptr fsr, bool& doFSR, bool& doIB)
-        : BaseFunction("DSgamma3bdyKinFunc", 2)
+        : BF::BaseFunction("DSgamma3bdyKinFunc", 2)
         {
           M_DM = M;
           IBch = chn;
@@ -86,7 +82,7 @@ namespace Gambit
             this->calculateFSR = doIB;
             return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
         }  
-        double value(const BFargVec &args)
+        double value(const BF::BFargVec &args)
         {
           double E_gamma = args[0];
           double E1 = args[1];
@@ -168,7 +164,7 @@ namespace Gambit
     struct TH_Channel
     {
         // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, BFptr dSigmadE) :
+        TH_Channel(std::vector<std::string> finalStateIDs, BF::BFptr dSigmadE) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
             dSigmadE(dSigmadE)
         {
@@ -188,7 +184,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-        BFptr dSigmadE;  
+        BF::BFptr dSigmadE;  
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 =
@@ -285,7 +281,7 @@ namespace Gambit
             // Dummy constructor doing nothing
             DMhalo() {}
 
-            DMhalo(std::string name, double r0, BFptr rho, BFptr drho2dv)
+            DMhalo(std::string name, double r0, BF::BFptr rho, BF::BFptr drho2dv)
             {
                 this->name = name;
                 this->r0 = r0;
@@ -295,14 +291,14 @@ namespace Gambit
             }
 
             std::string getName() {return name;}
-            BFptr getDensity() {return rho;}
-            BFptr getDensitySquared() {return drho2dv;}
+            BF::BFptr getDensity() {return rho;}
+            BF::BFptr getDensitySquared() {return drho2dv;}
 
         private:
             std::string name;  // Name of this halo (Milky Way, M31, ...)
             double r0;  // Position in comoving Galactic coordinates (l [-180...180 deg], b [deg], R [kpc])
-            BFptr rho;
-            BFptr drho2dv;
+            BF::BFptr rho;
+            BF::BFptr drho2dv;
     };
 
     // This catalog is supposed to contain all DM halos that are relevant for a
@@ -387,10 +383,10 @@ namespace Gambit
     // Physics implementation 
     //////////////////////////
 
-    class BFdmradialProfile: public BaseFunction
+    class BFdmradialProfile: public BF::BaseFunction
     {
         public:
-            BFdmradialProfile(std::string type, int ndim, BFargVec pars) : BaseFunction("DMradialProfile", ndim), ndim(ndim)
+            BFdmradialProfile(std::string type, int ndim, BF::BFargVec pars) : BF::BaseFunction("DMradialProfile", ndim), ndim(ndim)
             {
                 if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim density function.");
 
@@ -409,7 +405,7 @@ namespace Gambit
 
         private:
             // Redirection to profiles
-            double value(const BFargVec &vec)
+            double value(const BF::BFargVec &vec)
             {
                 if (ndim == 1)
                 {

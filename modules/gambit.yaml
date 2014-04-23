@@ -201,9 +201,28 @@ multinest:
   capability:   test_vector
   type:         std::vector<double>
 
+## Test DarkBit relic density with Micromegas
+#- purpose:      Likelihood
+#  capability:   RD_oh2
+#  type:         double
+#  function:     RD_oh2_micromegas
+#  function:     RD_oh2_DarkSUSY
+
 #########################
 --- # Auxiliary entries
 #########################
+
+- capability:   RD_oh2
+  function:     RD_oh2_micromegas
+  options:
+    fast: 1
+    Beps: 1e-5
+
+- capability:   RD_oh2
+  function:     RD_oh2_DarkSUSY
+  options:
+    fast: 0
+    omtype: 1
 
 - capability:   "omega_DM"
   type:         ""
@@ -226,6 +245,10 @@ multinest:
 - capability:    "xsection"
   options:
     scale: 15.5
+
+- capability:    "function_pointer"
+  backends:
+  - {function: "externalFunction2"}
 
 #- capability:   "awesomeness"
 #  type:         ""

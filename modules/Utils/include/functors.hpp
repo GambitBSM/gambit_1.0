@@ -89,14 +89,14 @@ namespace Gambit
       virtual void reset_and_calculate();
 
       /// Setter for version
-      void setVersion(str ver);
+      void setVersion(str);
       /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
-      void setStatus(int stat);
+      void setStatus(int);
       /// Setter for purpose (relevant only for next-to-output functors)
-      void setPurpose(str purpose);
+      void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
-      void setVertexID(int vertexID);
-
+      void setVertexID(int);
+   
       /// Getter for the wrapped function's name
       str name() const;
       /// Getter for the wrapped function's reported capability
@@ -119,7 +119,7 @@ namespace Gambit
       virtual bool requiresPrinting() const;
 
       /// Setter for indicating if the wrapped function's result should to be printed
-      virtual void setPrintRequirement(bool flag);
+      virtual void setPrintRequirement(bool);
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*>&);
@@ -135,8 +135,12 @@ namespace Gambit
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies();
-      /// Getter for listing backend requirements
+      /// Getter for listing backend requirement groups
+      virtual std::vector<str> backendgroups();                   
+      /// Getter for listing all backend requirements
       virtual std::vector<sspair> backendreqs();
+      /// Getter for listing backend requirements from a specific group
+      virtual std::vector<sspair> backendreqs(str);
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair);
 
@@ -201,12 +205,12 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
-      /// Debug flag
-      bool verbose;
       /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
+      /// Debug flag
+      bool verbose;
 
       /// Internal storage of function options, as a YAML node
       Options myOptions;
@@ -258,6 +262,9 @@ namespace Gambit
       /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
       safe_ptr< std::vector<str> > getModels();
 
+      /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
+      safe_ptr<str> getChosenReqFromGroup(str);
+
       /// Execute a single iteration in the loop managed by this functor.
       void iterate(int iteration);
 
@@ -282,8 +289,12 @@ namespace Gambit
 
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies();
-      /// Getter for listing backend requirements
+      /// Getter for listing backend requirement groups
+      virtual std::vector<str> backendgroups();                   
+      /// Getter for listing all backend requirements
       virtual std::vector<sspair> backendreqs();
+      /// Getter for listing backend requirements from a specific group
+      virtual std::vector<sspair> backendreqs(str);
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair quant);
 
@@ -317,9 +328,16 @@ namespace Gambit
       /// Add a model conditional dependency for a single model
       void setModelConditionalDependencySingular(str, str, str, void(*)(functor*, module_functor_common*));
 
+      /// Add a rule for activating backend requirements according to the model being scanned.
+      void makeBackendRuleForModel(str, str);
+
       /// Add an unconditional backend requirement
       /// The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq(str, str, void(*)(functor*));
+      void setBackendReq(str, str, std::vector<str>, str, void(*)(functor*));
+
+      /// Add an unconditional backend requirement
+      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
+      void setBackendReq_deprecated(str, str, void(*)(functor*));
 
       /// Add a model conditional backend requirement for multiple models
       void setModelConditionalBackendReq(str model, str req, str type);
@@ -385,10 +403,23 @@ namespace Gambit
       /// Maximum number of OpenMP threads this MPI process is permitted to launch in total.
       const int globlMaxThreads;
 
+      /// Internal list of backend groups that this functor's requirements fall into.
+      std::vector<str> myGroups;
+
+      /// Map from groups to backend reqs, indicating which backend req has been activated for which backend group.
+      std::map<str,str> chosenReqsFromGroups;
+
+      /// Vector of all backend requirement-type string pairs.
+      std::vector<sspair> myBackendReqs;
+
+      /// Vector of all backend requirement-type string pairs currently available for resolution.        
+      std::vector<sspair> myResolvableBackendReqs;
+
+      /// Vector of backend requirement-type string pairs for specific backend groups       
+      std::map<str,std::vector<sspair> > myGroupedBackendReqs;
+
       /// Vector of dependency-type string pairs 
       std::vector<sspair> myDependencies;
-      /// Vector of backend requirement-type string pairs        
-      std::vector<sspair> myBackendReqs;
 
       /// Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
       std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;
@@ -399,12 +430,18 @@ namespace Gambit
       /// Map from models to (vector of {conditional backend requirement-type} pairs)
       std::map< str, std::vector<sspair> > myModelConditionalBackendReqs;
 
-      /// Map from backend requirements to their required types
-      std::map<str, str> backendreq_types;
-
       /// Map from (dependency-type pairs) to (pointers to templated void functions 
       /// that set dependency functor pointers)
       std::map<sspair, void(*)(functor*, module_functor_common*)> dependency_map;
+
+      /// Map from backend requirements to their required types
+      std::map<str, str> backendreq_types;
+
+      /// Map from backend requirements to their designated groups
+      std::map<sspair, str> backendreq_groups;
+
+      /// Map from backend requirements to their rule tags
+      std::map<sspair, std::vector<str> > backendreq_tags; 
 
       /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
       /// that set backend requirement functor pointers)
@@ -608,12 +645,6 @@ namespace Gambit
 
   };    
 
-  /// Function for creating backend functor objects.
-  /// This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
-  /// in backend_general.hpp work.
-  template<typename OUTTYPE, typename... ARGS>
-  backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*)(ARGS...), str, str, str, str, str);
-
 
 //**********************************************************************
 // Everything below this point is implementation.  If we ever get the 
@@ -722,20 +753,6 @@ namespace Gambit
       this->myFunction(args...);
       logger().leaving_backend();
     }
-
-  /// Function for creating backend functor objects.
-  /// This is needed due to the way the BE_FUNCTION / BE_VARIABLE macros
-  /// in backend_general.hpp work.
-  template<typename OUTTYPE, typename... ARGS>
-  backend_functor<OUTTYPE,ARGS...> makeBackendFunctor( OUTTYPE(*f_in)(ARGS...), 
-                                                          str func_name, 
-                                                          str func_capab, 
-                                                          str ret_type, 
-                                                          str origin_name,
-                                                          str origin_ver)
-  { 
-    return backend_functor<OUTTYPE,ARGS...>(f_in, func_name,func_capab,ret_type,origin_name,origin_ver);
-  }
 
 }
 
