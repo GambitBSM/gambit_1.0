@@ -966,7 +966,7 @@ namespace Gambit
             // Find a backend function that fulfills the backend requirement.          
             std::vector<sspair> reqsubset;
             reqsubset.push_back(*req);
-            solution = solveRequirement(reqsubset,auxEntry);
+            solution = solveRequirement(reqsubset,auxEntry,vertex);
             // Resolve the backend requirement with that function.
             resolveRequirement(solution,vertex);
           }
@@ -977,7 +977,7 @@ namespace Gambit
           logger() << "Resolving from group " << *it;
           logger() << "..." << endl << EOM;
           // Find a backend function that fulfills one of the backend requirements in the group.
-          solution = solveRequirement(reqs,auxEntry,*it);
+          solution = solveRequirement(reqs,auxEntry,vertex,*it);
           // Resolve the backend requirement with that function.
           resolveRequirement(solution,vertex);
         }
@@ -987,7 +987,7 @@ namespace Gambit
 
     /// Find a backend function that matches any one of a vector of capability-type pairs. 
     functor* DependencyResolver::solveRequirement(std::vector<sspair> reqs, 
-     const IniParser::ObservableType * auxEntry, str group)
+     const IniParser::ObservableType * auxEntry, VertexID vertex, str group)
     {
       std::vector<functor *> vertexCandidates;
       std::vector<functor *> vertexCandidatesWithIniEntry;
@@ -1012,8 +1012,25 @@ namespace Gambit
         // With inifile entry, we also check capability, type, function name and module name.
         and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
         {
-          // If the backend vertex has not been disabled by the backend system
-          if ( (*itf)->status() != 0 )
+
+          // Has the backend vertex already been disabled by the backend system?
+          bool disabled = ( (*itf)->status() == 0 );
+
+          // Is it permitted to be used to fill this backend requirement?
+          // First we create the backend-version pair for the backend vertex and its semi-generic form (where any version is OK).
+          sspair itf_signature((*itf)->origin(), (*itf)->version());
+          sspair itf_generic((*itf)->origin(), "any");
+          // Then we find the set of backend-version pairs that are permitted.
+          std::vector<sspair> permitted_bes = (*masterGraph[vertex]).backendspermitted((*itf)->quantity());
+          // Then we see if any match.  First we test for generic matches, where any version of any backend is allowed.
+          bool permitted = ( permitted_bes.empty()
+          // Next we test for semi-generic matches, where the backend matches and any version of that backend is allowed. 
+          or std::find(permitted_bes.begin(), permitted_bes.end(), itf_generic) != permitted_bes.end()
+          // Finally we test for specific matches, where both the backend and version match what is allowed.
+          or std::find(permitted_bes.begin(), permitted_bes.end(), itf_signature) != permitted_bes.end() );    
+            
+          // If the backend vertex is able and allowed,
+          if (permitted and not disabled)
           {
             // add it to the overall vertex candidate list
             vertexCandidates.push_back(*itf);

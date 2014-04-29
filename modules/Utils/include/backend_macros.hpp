@@ -65,12 +65,13 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
-    namespace BACKENDNAME                                                   \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
       void rt_register_backend_with_log ()                                  \
       {                                                                     \
         int mytag = Logging::getfreetag();                                  \
-        Logging::tag2str()[mytag] = STRINGIFY(BACKENDNAME);                 \
+        Logging::tag2str()[mytag] =                                         \
+         STRINGIFY(BACKENDNAME) /*"v" STRINGIFY(VERSION)*/;                 \
         Logging::components().insert(mytag);                                \
       }                                                                     \
                                                                             \
@@ -78,7 +79,7 @@ namespace Gambit                                                            \
       {                                                                     \
         ini_code register_backend_with_log (&rt_register_backend_with_log); \
       }                                                                     \
-    } /* end namespace BACKENDNAME */                                       \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
@@ -103,7 +104,7 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
-    namespace BACKENDNAME                                                   \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
                                                                             \
       void * pHandle;                                                       \
@@ -134,10 +135,10 @@ namespace Gambit                                                            \
         when we create the following instance of the 'ini_code' struct. */  \
       namespace ini                                                         \
       {                                                                     \
-        ini_code BACKENDNAME(&loadLibrary);                                 \
+        ini_code CAT_3(BACKENDNAME,_,SAFE_VERSION)(&loadLibrary);           \
       }                                                                     \
                                                                             \
-    } /* end namespace BACKENDNAME */                                       \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 /* Register a LogTag for this backend with the logging system */            \
@@ -234,7 +235,7 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
-    namespace BACKENDNAME                                                   \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
                                                                             \
       BE_VAR_INSTANCE(TYPEOPT,TYPE,NAME)                                    \
@@ -247,7 +248,8 @@ namespace Gambit                                                            \
       namespace Functown                                                    \
       {                                                                     \
         backend_functor<STRIP_PARENS(TYPE)*> NAME(                          \
-         Gambit::Backends::BACKENDNAME::CAT(getptr,NAME),                   \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,                             \
+          SAFE_VERSION)::CAT(getptr,NAME),                                  \
          STRINGIFY(NAME),   /* functor name */                              \
          CAPABILITY,        /* functor capability */                        \
          SAFE_STRINGIFY(STRIP_PARENS(TYPE)*),                               \
@@ -292,7 +294,7 @@ namespace Gambit                                                            \
         ini_code NAME(&CAT(constructVarPointer_,NAME));                     \
       }                                                                     \
                                                                             \
-    } /* end namespace BACKENDNAME */                                       \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
@@ -303,7 +305,7 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
-    namespace BACKENDNAME                                                   \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
                                                                             \
       void CAT(constructVarPointer_supp_,NAME)()                            \
@@ -320,7 +322,7 @@ namespace Gambit                                                            \
         ini_code CAT(NAME,_supp)(&CAT(constructVarPointer_supp_,NAME));     \
       }                                                                     \
                                                                             \
-    } /* end namespace BACKENDNAME */                                       \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
@@ -481,7 +483,7 @@ namespace Gambit                                                                
 {                                                                                               \
   namespace Backends                                                                            \
   {                                                                                             \
-    namespace BACKENDNAME                                                                       \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
                                                                                                 \
       /* Define a type NAME_type to be a suitable function pointer. */                          \
@@ -495,7 +497,7 @@ namespace Gambit                                                                
       namespace Functown                                                                        \
       {                                                                                         \
         backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> NAME(                                    \
-         Gambit::Backends::BACKENDNAME::NAME,                                                   \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
          STRINGIFY(TYPE) STRINGIFY(FE_ARGS),                                                    \
@@ -507,7 +509,7 @@ namespace Gambit                                                                
       namespace Functown                                                                        \
       {                                                                                         \
         backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> CAT(NAME,_deprecated)(                   \
-         Gambit::Backends::BACKENDNAME::NAME,                                                   \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
          STRINGIFY(TYPE),                                                                       \
@@ -558,7 +560,7 @@ namespace Gambit                                                                
         ini_code NAME(&CAT(constructFuncPointer_,NAME));                                        \
       }                                                                                         \
                                                                                                 \
-    } /* end namespace BACKENDNAME */                                                           \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
   } /* end namespace Backends */                                                                \
 } /* end namespace Gambit */                                                                    \
 
@@ -568,7 +570,7 @@ namespace Gambit                                                                
 {                                                                                               \
   namespace Backends                                                                            \
   {                                                                                             \
-    namespace BACKENDNAME                                                                       \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
                                                                                                 \
       void CAT(constructFuncPointer_supp_,NAME)()                                               \
@@ -587,7 +589,7 @@ namespace Gambit                                                                
         ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_supp_,NAME));                        \
       }                                                                                         \
                                                                                                 \
-    } /* end namespace BACKENDNAME */                                                           \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
   } /* end namespace Backends */                                                                \
 } /* end namespace Gambit */                                                                    \
 
@@ -611,14 +613,14 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
-    namespace BACKENDNAME                                                   \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
                                                                             \
       /* Create functor object */                                           \
       namespace Functown                                                    \
       {                                                                     \
         backend_functor<TYPE INSERT_NONEMPTY(ARGSLIST)> NAME(               \
-         Gambit::Backends::BACKENDNAME::NAME,                               \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,         \
          STRINGIFY(NAME),                                                   \
          CAPABILITY,                                                        \
          STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                               \
@@ -626,7 +628,7 @@ namespace Gambit                                                            \
          STRINGIFY(VERSION) );                                              \
       } /* end namespace Functown */                                        \
                                                                             \
-    } /* end namespace BACKENDNAME */                                       \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
@@ -637,7 +639,7 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
   {                                                                         \
-    namespace BACKENDNAME                                                   \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
                                                                             \
       void CAT(constructFuncPointer_,NAME)()                                \
@@ -650,7 +652,7 @@ namespace Gambit                                                            \
         ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_,NAME));         \
       }                                                                     \
                                                                             \
-    } /* end namespace BACKENDNAME */                                       \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 

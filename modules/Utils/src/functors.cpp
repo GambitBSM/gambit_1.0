@@ -362,9 +362,15 @@ namespace Gambit
       // Check for failure
       if(myLogTag==-1)
       {
-        logger() <<"Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name "
-                 <<"in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="
-                 <<myOrigin<<", myName="<<myName<<")";
+        std::ostringstream ss;
+        ss << "Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name "
+           << "in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="
+           << myOrigin << ", myName=" << myName << ")";
+        utils_warning().raise(LOCAL_INFO,ss.str());
+      }
+
+      if(myLogTag==-1)
+      {
         logger() <<warn<<debug<<EOM;
       }
     }
@@ -749,6 +755,7 @@ namespace Gambit
       //Seperate the backend from the versions
       str be = be_plus_versions.at(0);
       std::vector<str> versions(be_plus_versions.begin()+1,be_plus_versions.end());
+      if (versions.empty()) versions.push_back("any");
 
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
       for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)

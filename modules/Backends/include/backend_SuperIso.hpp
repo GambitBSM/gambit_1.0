@@ -14,7 +14,7 @@
   #define BACKENDNAME SuperIso
 #endif
 #define VERSION 0.1
-
+#define SAFE_VERSION 0_1
 
 /* The following macro loads the library (using dlmopen) in LIBPATH 
  * when this header file is included somewhere. */
@@ -65,4 +65,4 @@ BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
-
+#undef SAFE_VERSION

@@ -108,8 +108,8 @@ START_MODULE
     DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
     
     BACKEND_REQ(awesomeness, (lib123), double, (int))
-    BACKEND_REQ(refex, (), double, (double&))
-    BACKEND_REQ(refex2, (), void, (double&, double))
+    BACKEND_REQ(refex, (libfirst1_only), double, (double&))
+    BACKEND_REQ(refex2, (libfirst1_only), void, (double&, double))
     BACKEND_REQ(runMe, (), void, (double (*)(int&), int&))
     BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
     BACKEND_REQ(someFunction, (libfirst1_only), void, ())

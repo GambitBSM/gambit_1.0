@@ -28,7 +28,8 @@
 
 // Just include these backends 'as-is'
 
-#include "backend_libfirst.hpp"
+#include "backend_libfirst_1_0.hpp"
+#include "backend_libfirst_1_1.hpp"
 #include "backend_libfortran.hpp"
 #include "backend_fakeSoftSUSY.hpp"
 #include "backend_DarkSUSY.hpp"

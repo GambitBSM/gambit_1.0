@@ -12,6 +12,7 @@
   #define BACKENDNAME micromegas
 #endif
 #define VERSION 0.1
+#define SAFE_VERSION 0_1
 
 LOAD_LIBRARY
 
@@ -24,3 +25,5 @@ BE_FUNCTION(lesHinput, int, (char*), "lesHinput", "lesHinput")
 #undef LIBPATH
 #undef BACKENDNAME
 #undef VERSION
+#undef SAFE_VERSION
+

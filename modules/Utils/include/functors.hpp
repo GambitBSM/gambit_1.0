@@ -675,14 +675,17 @@ namespace Gambit
       myVersion = origin_version; 
       // Determine LogTag number
       myLogTag = Logging::str2tag(myOrigin);
+      // Or in the case where we prefer to include the version number in the LogTag too
+      //myLogTag = Logging::str2tag(myOrigin+"v"+myVersion);
       // Check for failure
       if(myLogTag==-1)
       {
         std::ostringstream ss;
-        ss << "Error retrieving LogTag number (in functors.hpp, constructor for backend_functor_common)! No match for backend name in tag2str map! This is supposed to be a backend functor, so this is a fatal error. (myOrigin="<<myOrigin<<", myName="<<myName<<")";
-        logger().send(ss.str(),LogTags::err,LogTags::fatal);
-        //TODO: gambit error
-        exit(0);
+        ss << "Error retrieving LogTag number (in functors.hpp, constructor for "
+              "backend_functor_common)! No match for backend name in tag2str map! "
+              "This is supposed to be a backend functor, so this is a fatal error. "
+              "(myOrigin=" << myOrigin << ", myName=" << myName << ")";
+        utils_error().raise(LOCAL_INFO,ss.str());
       }
     }
 

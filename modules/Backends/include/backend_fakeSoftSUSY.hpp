@@ -19,7 +19,7 @@
   #define BACKENDNAME FakeSoftSUSY
 #endif
 #define VERSION 1.0
-
+#define SAFE_VERSION 1_0
 
 /* The following macro loads the library (using dlmopen) in LIBPATH 
  * when this header file is included somewhere. */

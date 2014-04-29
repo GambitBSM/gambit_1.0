@@ -41,6 +41,7 @@
   #define BACKENDNAME DarkSUSY
 #endif
 #define VERSION 0.1
+#define SAFE_VERSION 0_1
 
 
 /* The following macro loads the library (using dlmopen) in LIBPATH 
@@ -166,7 +167,7 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 // {
 //   namespace Backends
 //   {
-//     namespace BACKENDNAME
+//     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 //     {
 // 
 //       /* Convenience functions go here */
@@ -178,7 +179,7 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 //         return returnResult();
 //       }
 // 
-//     } /* end namespace BACKENDNAME */                                          
+//     } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
 //   } /* end namespace Backends */                                                
 // } /* end namespace Gambit */                                                   
 
@@ -197,4 +198,5 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
+#undef SAFE_VERSION
 
