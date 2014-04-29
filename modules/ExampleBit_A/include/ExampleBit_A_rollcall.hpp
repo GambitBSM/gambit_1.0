@@ -122,7 +122,7 @@ START_MODULE
     START_FUNCTION(int)                    // returns the number of events for now
       #define BACKEND_REQ_deprecated Read_Aldo_Sim            
       START_BACKEND_REQ_deprecated(int)
-      BACKEND_OPTION(LibAldo)         // Specify that backend libfastsim possesses initialize
+      BACKEND_OPTION_deprecated(LibAldo)         // Specify that backend libfastsim possesses initialize
       #undef BACKEND_REQ_deprecated
 
     #undef FUNCTION
@@ -148,7 +148,7 @@ START_MODULE
 
       #define BACKEND_REQ_deprecated init_fastsim            
       START_BACKEND_REQ_deprecated(int)
-      BACKEND_OPTION(LibFastSim)         // Specify that backend libfastsim possesses initialize
+      BACKEND_OPTION_deprecated(LibFastSim)         // Specify that backend libfastsim possesses initialize
       #undef BACKEND_REQ_deprecated
 
     #undef FUNCTION
@@ -212,31 +212,31 @@ START_MODULE
     START_FUNCTION(double)
       #define BACKEND_REQ_deprecated libFarrayTestCommonBlock
         START_BACKEND_REQ_deprecated(libFarrayTest_CB_type, VAR)
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated libFarrayTest_printStuff
         START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated      
       #define BACKEND_REQ_deprecated libFarrayTest_set_d
         START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated      
       #define BACKEND_REQ_deprecated libFarrayTest_fptrRoutine
         START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated     
       #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray1
         START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated    
       #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray2
         START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated             
       #define BACKEND_REQ_deprecated libFarrayTest_doubleFunc
         START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION(LibFarrayTest)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
       #undef BACKEND_REQ_deprecated                           
     #undef FUNCTION
   #undef CAPABILITY

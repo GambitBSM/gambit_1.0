@@ -145,21 +145,21 @@
 /// @}
 
 
-/// \name Variadic redirection macros for BACKEND_OPTION(BACKEND, [VERSIONS])
+/// \name Variadic redirection macros for BACKEND_OPTION_deprecated(BACKEND, [VERSIONS])
 /// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
 /// be provided by backend \em BACKEND, versions \em [VERSIONS].  Permitted
 /// versions are passed as optional additional arguments; if no version 
 /// information is passed, all versions of \em BACKEND are considered valid.
 /// @{
 
-/// BACKEND_OPTION() called with no versions; allow any backend version
-#define BE_OPTION_0(_1)      BE_OPTION(_1, "any")
-/// BACKEND_OPTION() called with more than one argument; allow specified backend versions
-#define BE_OPTION_1(_1, ...) BE_OPTION(_1, #__VA_ARGS__)
-///  Redirects the BACKEND_OPTION(BACKEND, [VERSIONS]) macro to the 
-///  BE_OPTION(BACKEND, VERSTRING) macro according to whether it has been called with 
+/// BACKEND_OPTION_deprecated() called with no versions; allow any backend version
+#define BE_OPTION_deprecated_0(_1)      BE_OPTION_deprecated(_1, "any")
+/// BACKEND_OPTION_deprecated() called with more than one argument; allow specified backend versions
+#define BE_OPTION_deprecated_1(_1, ...) BE_OPTION_deprecated(_1, #__VA_ARGS__)
+///  Redirects the BACKEND_OPTION_deprecated(BACKEND, [VERSIONS]) macro to the 
+///  BE_OPTION_deprecated(BACKEND, VERSTRING) macro according to whether it has been called with 
 ///  version numbers or not (making the version number 'any' if it is omitted).
-#define BACKEND_OPTION(...)  CAT(BE_OPTION_, BOOST_PP_GREATER \
+#define BACKEND_OPTION_deprecated(...)  CAT(BE_OPTION_deprecated_, BOOST_PP_GREATER \
                              (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
 /// @}
 

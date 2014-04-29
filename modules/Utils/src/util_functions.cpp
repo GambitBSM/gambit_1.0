@@ -73,5 +73,12 @@ namespace Gambit
     return s;
   }
 
+  /// Strips leading and/or trailing parentheses from a string.
+  void strip_parentheses(str &s)
+  {
+    if (s.at(0) == '(')       s = s.substr(1, s.size());
+    if (*s.rbegin() == ')')   s = s.substr(0, s.size()-1);
+  }
+
 }
 

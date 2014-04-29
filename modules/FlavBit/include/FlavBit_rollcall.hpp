@@ -74,23 +74,23 @@ START_MODULE
     START_FUNCTION(double)                  // Function calculates a double precision variable
       #define BACKEND_REQ_deprecated bsgamma
         START_BACKEND_REQ_deprecated(double)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Les_Houches_Reader
         START_BACKEND_REQ_deprecated(int)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Init_param
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CW_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated C_calculator_base1
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY
@@ -101,31 +101,31 @@ START_MODULE
     START_FUNCTION(double)                  // Function calculates a double precision variable
       #define BACKEND_REQ_deprecated Bsmumu
         START_BACKEND_REQ_deprecated(double)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Les_Houches_Reader
         START_BACKEND_REQ_deprecated(int)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Init_param
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CW_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated C_calculator_base2
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CQ_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Cprime_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY
@@ -136,31 +136,31 @@ START_MODULE
     START_FUNCTION(double)                  // Function calculates a double precision variable
       #define BACKEND_REQ_deprecated Bsmumu_untag
         START_BACKEND_REQ_deprecated(double)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Les_Houches_Reader
         START_BACKEND_REQ_deprecated(int)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Init_param
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CW_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated C_calculator_base2
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CQ_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Cprime_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY
@@ -171,27 +171,27 @@ START_MODULE
     START_FUNCTION(double)                  // Function calculates a double precision variable
       #define BACKEND_REQ_deprecated Bdmumu
         START_BACKEND_REQ_deprecated(double)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Les_Houches_Reader
         START_BACKEND_REQ_deprecated(int)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Init_param
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CW_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated C_calculator_base2
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated CQ_calculator
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY
@@ -202,15 +202,15 @@ START_MODULE
     START_FUNCTION(double)                  // Function calculates a double precision variable
       #define BACKEND_REQ_deprecated Btaunu
         START_BACKEND_REQ_deprecated(double)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Les_Houches_Reader
         START_BACKEND_REQ_deprecated(int)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
       #define BACKEND_REQ_deprecated Init_param
         START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION(SuperIso, 0.1)
+        BACKEND_OPTION_deprecated(SuperIso, 0.1)
       #undef BACKEND_REQ_deprecated
    #undef FUNCTION
   #undef CAPABILITY

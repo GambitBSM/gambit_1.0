@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar
+///  \date 2014 Jan, Mar, Apr
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -623,7 +623,7 @@ namespace Gambit
 
     /// Add an unconditional backend requirement
     /// The info gets updated later if this turns out to be conditional on a model. 
-    void module_functor_common::setBackendReq(str group, str req, std::vector<str> tags, str type, void(*resolver)(functor*))
+    void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
     { 
       type = strip_whitespace_except_after_const(type);
       sspair key (req, type);
@@ -638,7 +638,8 @@ namespace Gambit
       }
       myGroupedBackendReqs[group].push_back(key);
       backendreq_map[key] = resolver;
-      backendreq_tags[key] = tags;      
+      strip_parentheses(tags);
+      backendreq_tags[key] = delimiterSplit(tags, ",");      
       backendreq_groups[key] = group;
     }
 
@@ -667,17 +668,15 @@ namespace Gambit
     void module_functor_common::makeBackendRuleForModel(str model, str tag)
     {
       //Strip the tag and model strings of their parentheses
-      if (model.at(0) == '(')     model = model.substr(1, model.size());
-      if (*model.rbegin() == ')') model = model.substr(0, model.size()-1);
-      if (tag.at(0) == '(')       tag = tag.substr(1, tag.size());
-      if (*tag.rbegin() == ')')   tag = tag.substr(0, tag.size()-1);
+      strip_parentheses(tag);
+      strip_parentheses(model);
 
       //Split the tag string and sort it.
       std::vector<str> tags = delimiterSplit(tag, ",");
       std::sort(tags.begin(), tags.end());
 
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
-      for (auto it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+      for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
       {
         std::vector<str> tagset = backendreq_tags[*it];
         std::sort(tagset.begin(), tagset.end());
@@ -726,19 +725,61 @@ namespace Gambit
       myModelConditionalBackendReqs[model].push_back(key);
     }
 
-    /// Add multiple versions of a permitted backend 
-    void module_functor_common::setPermittedBackend(str req, str be, str ver)
+    /// Add a rule for dictating which backends can be used to fulfill which backend requirements.
+    void module_functor_common::makeBackendOptionRule(str be_and_ver, str tag)
+    {
+      //Strip the tag and be-ver strings of their parentheses, then split them
+      strip_parentheses(tag);
+      strip_parentheses(be_and_ver);
+      std::vector<str> tags = delimiterSplit(tag, ",");
+      std::vector<str> be_plus_versions = delimiterSplit(be_and_ver, ",");
+
+      //Die if no backend and/or no tags were given.      
+      if (tags.empty() or be_plus_versions.empty())  
+      {
+        str errmsg = "Error whilst attempting to set permitted backends:";
+        errmsg +=  "\nA BACKEND_OPTION must include a backend name and at least one tag."
+                   "\nThis is " + this->name() + " in " + this->origin() + ".";
+        utils_error().raise(LOCAL_INFO,errmsg);
+      }
+     
+      //Sort the tags vector.
+      std::sort(tags.begin(), tags.end());
+
+      //Seperate the backend from the versions
+      str be = be_plus_versions.at(0);
+      std::vector<str> versions(be_plus_versions.begin()+1,be_plus_versions.end());
+
+      //Find all declared backend requirements that fit one of the tags within the passed tag set.
+      for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+      {
+        std::vector<str> tagset = backendreq_tags[*it];
+        std::sort(tagset.begin(), tagset.end());
+        if (not is_disjoint(tags, tagset))
+        {
+          // For each of the matching backend requirements, set the chosen backend-version pairs as permitted 
+          for (std::vector<str>::iterator vit = versions.begin() ; vit != versions.end(); ++vit)
+          {
+            setPermittedBackend(it->first, be, *vit);
+          }
+        }
+      }
+
+    }
+
+    /// Add multiple versions of a permitted backend !FIXME deprecated!!
+    void module_functor_common::setPermittedBackend_deprecated(str req, str be, str ver)
     {
       // Split the version string and send each version to be registered
       std::vector<str> versions = delimiterSplit(ver, ",");
       for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
       {
-        setPermittedBackendSingular(req, be, *it);
+        setPermittedBackend(req, be, *it);
       }
     }
 
     /// Add a single permitted backend version
-    void module_functor_common::setPermittedBackendSingular(str req, str be, str ver)
+    void module_functor_common::setPermittedBackend(str req, str be, str ver)
     { 
       sspair key;
       if (backendreq_types.find(req) != backendreq_types.end())
@@ -839,7 +880,7 @@ namespace Gambit
    
           //Check if this backend requirement is part of a group.
           str group = backendreq_groups[key];
-          if (group != "none" and group !="") //FIXME second condition is decprecated!!           
+          if (group != "none" and group !="") //FIXME second condition is deprecated!!           
           {                                                      
             //If it is part of a group, make sure that group has actually been declared.
             if (chosenReqsFromGroups.find(group) != chosenReqsFromGroups.end() )

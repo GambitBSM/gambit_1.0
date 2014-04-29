@@ -49,6 +49,9 @@ namespace Gambit
   /// in which case the whitespace is replaced by a single space.
   str strip_whitespace_except_after_const(str);
 
+  /// Strips leading and/or trailing parentheses from a string.
+  void strip_parentheses(str&);
+
   /// Redirection function to turn an lvalue into an rvalue, so that it
   /// is correctly passed by value when doing perfect forwarding with
   /// functor typecasting.

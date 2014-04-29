@@ -62,7 +62,8 @@
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
 #define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
-#define BE_OPTION(BACKEND,VERSTRING)                      DUMMYARG(BACKEND,VERSTRING)
+#define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
+#define BE_OPTION_deprecated(BACKEND,VERSTRING)           DUMMYARG(BACKEND,VERSTRING)
 /// @}
 
 /// \name Initialisation dependency switches.
@@ -303,7 +304,7 @@
             /* Create a safety_bucket for the backend variable/function.       \
             To be initialized by the dependency resolver at runtime. */        \
             typedef BEvariable_bucket<TYPE> CAT(REQ,var);                      \
-            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>         \
+            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
              CAT(REQ,func);                                                    \
             extern CAT(REQ,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQ;            \
           }                                                                    \

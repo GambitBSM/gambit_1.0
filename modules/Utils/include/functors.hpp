@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar
+///  \date 2014 Jan, Mar, Apr
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -333,7 +333,7 @@ namespace Gambit
 
       /// Add an unconditional backend requirement
       /// The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq(str, str, std::vector<str>, str, void(*)(functor*));
+      void setBackendReq(str, str, str, str, void(*)(functor*));
 
       /// Add an unconditional backend requirement
       /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
@@ -345,11 +345,14 @@ namespace Gambit
       /// Add a model conditional backend requirement for a single model
       void setModelConditionalBackendReqSingular(str model, str req, str type);
 
-      /// Add multiple versions of a permitted backend 
-      void setPermittedBackend(str req, str be, str ver);
+      /// Add a rule for dictating which backends can be used to fulfill which backend requirements.
+      void makeBackendOptionRule(str, str);
+
+      /// Add multiple versions of a permitted backend !FIXME deprecated!!
+      void setPermittedBackend_deprecated(str req, str be, str ver);
 
       /// Add a single permitted backend version
-      void setPermittedBackendSingular(str req, str be, str ver);
+      void setPermittedBackend(str req, str be, str ver);
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);

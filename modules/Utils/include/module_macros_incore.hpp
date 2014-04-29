@@ -62,6 +62,7 @@
 
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/seq/cat.hpp>
 #include <boost/preprocessor/punctuation/comma.hpp>
 #include <boost/preprocessor/control/iif.hpp>
@@ -169,6 +170,18 @@
 /// activated regardless of the model(s) being scanned.
 #define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      CORE_BE_MODEL_RULE(MODELS,TAGS)                   
 
+/// Define a rule that uses TAGS to determine a set of backend requirements of the current
+/// \link FUNCTION() FUNCTION\endlink that are permitted to be fulfilled by the indicated
+/// BACKEND_AND_VERSIONS.  If no versions are given, all versions of the stated backend are
+/// considered allowed.  Declaring this rule makes all backend requirements that match
+/// the rule resolvable _only_ by the backend-version pairs passed into 
+/// \link BACKEND_OPTION() BACKEND_OPTION\endlink. Additional options provided by subsequent
+/// calls to \link BACKEND_OPTION() BACKEND_OPTION\endlink are added to the options provided
+/// by each previous declaration. In the case of multiple contradictory calls to 
+/// \link BACKEND_OPTION() BACKEND_OPTION\endlink, the rule defined by the latest call takes
+/// precedence.
+#define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         CORE_BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)                   
+
 /// Declare a backend group, from which one backend requirement must be activated.
 #define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
 
@@ -179,8 +192,8 @@
 
 /// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
-/// \em VERSTRING.
-#define BE_OPTION(BACKEND,VERSTRING)                      CORE_BACKEND_OPTION(BACKEND,VERSTRING)
+/// \em VERSTRING.  !FIXME DEPRECATED!!
+#define BE_OPTION_deprecated(BACKEND,VERSTRING)           CORE_BACKEND_OPTION_deprecated(BACKEND,VERSTRING)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may depend on the 
 /// presence of another module function that can supply capability 
@@ -1174,7 +1187,7 @@
         Functown::FUNCTION.setBackendReq(                                      \
          STRINGIFY(GROUP),                                                     \
          STRINGIFY(REQUIREMENT),                                               \
-         delimiterSplit(STRINGIFY(STRIP_PARENS(TAGS)), ","),                   \
+         #TAGS,                                                                \
          BOOST_PP_IIF(IS_VARIABLE, varsig, funcsig),                           \
          &resolve_backendreq<BETags::REQUIREMENT,Tags::FUNCTION>);             \
                                                                                \
@@ -1297,9 +1310,52 @@
   }                                                                            \
 
 
+/// Redirection of BACKEND_OPTION(BACKEND_AND_VERSIONS, TAGS) when invoked from
+/// within the core.
+#define CORE_BACKEND_OPTION(BE_AND_VER,TAGS)                                   \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "BACKEND_OPTION."))                                                         \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling BACKEND_OPTION. Please check the rollcall header "                 \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "BACKEND_OPTION. Please check the rollcall header for "                     \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to apply the rule.*/      \
+      void CAT_4(apply_rule_,                                                  \
+       BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                    \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
+      {                                                                        \
+        Functown::FUNCTION.makeBackendOptionRule(#BE_AND_VER, #TAGS);          \
+      }                                                                        \
+                                                                               \
+      /* Create the rule's initialisation object. */                           \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(                                                        \
+         BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
+         (&CAT_4(apply_rule_,                                                  \
+         BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
 /// Redirection of BE_OPTION(BACKEND, VERSTRING) when invoked from within the 
 /// core.
-#define CORE_BACKEND_OPTION(BACKEND,VERSTRING)                                 \
+#define CORE_BACKEND_OPTION_deprecated(BACKEND,VERSTRING)                                 \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "BE_OPTION."))                                                              \
@@ -1325,7 +1381,7 @@
       /* Set up the command to be called at runtime to register the option */  \
       void CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ_deprecated,_be_,FUNCTION)()   \
       {                                                                        \
-        Functown::FUNCTION.setPermittedBackend(STRINGIFY(BACKEND_REQ_deprecated),         \
+        Functown::FUNCTION.setPermittedBackend_deprecated(STRINGIFY(BACKEND_REQ_deprecated),         \
          STRINGIFY(BACKEND), VERSTRING);                                       \
       }                                                                        \
                                                                                \
