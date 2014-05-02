@@ -90,12 +90,6 @@ void print_build_info(std::ostream& ostr)
 #else
       "no"
 #endif
-      "Use fflite:                      "
-#ifdef ENABLE_FFLITE
-      "yes"
-#else
-      "no"
-#endif
       "\n"
       ;
 }

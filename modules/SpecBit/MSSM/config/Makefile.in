@@ -10,17 +10,9 @@ FLEXIBLESUSY_TAG   := v$(FLEXIBLESUSY_VERSION)
 ABSBASEDIR         := @ABSBASEDIR@
 INSTALL_DIR        := @INSTALL_DIR@
 
-# Switches
-ENABLE_COMPILE     := @ENABLE_COMPILE@
-ENABLE_FFLITE      := @ENABLE_FFLITE@
-ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
-ENABLE_META        := @ENABLE_META@
-ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
-ENABLE_THREADS     := @ENABLE_THREADS@
-
 # Makefile modules
 MODELS             := @MODELS@
-MODULES            := config src fflite legacy slhaea doc
+MODULES            := config src legacy slhaea doc
 MODULES            += $(MODELS)
 
 # Variables for Mathematica meta code
@@ -50,14 +42,12 @@ LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
 THREADLIBS         := @THREADLIBS@
 
-ifeq ($(ENABLE_LOOPTOOLS),yes)
-LOOPFUNCFLAGS	   := $(LOOPTOOLSFLAGS)
-LOOPFUNCLIBS	   := $(LOOPTOOLSLIBS)
-endif
-ifeq ($(ENABLE_FFLITE),yes)
-LOOPFUNCFLAGS	   :=
-LOOPFUNCLIBS	    = $(LIBFFLITE)
-endif
+# Switches
+ENABLE_COMPILE     := @ENABLE_COMPILE@
+ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
+ENABLE_META        := @ENABLE_META@
+ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_THREADS     := @ENABLE_THREADS@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -153,11 +143,6 @@ depend:  $(ALLDEP)
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
-%.d: %.F
-# the sed script ensures that the target contains the full path
-	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
-	sed 's|.*\.o:|$*.o:|' > $@
-
 clean-executables:
 	-rm -f $(ALLEXE)
 
@@ -195,12 +180,11 @@ showbuild:
 	@echo "GSLLIBS            = $(GSLLIBS)"
 	@echo "GSLFLAGS           = $(GSLFLAGS)"
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
-	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
-	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "LOOPTOOLSFLAGS     = $(LOOPTOOLSFLAGS)"
+	@echo "LOOPTOOLSLIBS      = $(LOOPTOOLSLIBS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
-	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
@@ -214,11 +198,7 @@ tag:
 	git tag $(FLEXIBLESUSY_TAG)
 
 release:
-	git archive --worktree-attributes --prefix=$(FLEXIBLESUSY_PKG)/ \
-		--output=$(FLEXIBLESUSY_PKG).tar.gz $(FLEXIBLESUSY_TAG)
+	git archive --worktree-attributes --format=tar \
+		--prefix=$(FLEXIBLESUSY_PKG)/ \
+		$(FLEXIBLESUSY_TAG) | gzip > $(FLEXIBLESUSY_PKG).tar.gz
 	md5sum $(FLEXIBLESUSY_PKG).tar.gz > $(FLEXIBLESUSY_PKG).tar.gz.md5
-
-release-head:
-	git archive --worktree-attributes --prefix=$(PKGNAME)/ \
-		--output=$(PKGNAME).tar.gz HEAD
-	md5sum $(PKGNAME).tar.gz > $(PKGNAME).tar.gz.md5

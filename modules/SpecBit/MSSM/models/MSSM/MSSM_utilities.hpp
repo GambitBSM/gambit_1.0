@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:26:47
+// File generated at Fri 2 May 2014 14:57:47
 
 #ifndef MSSM_UTILITIES_H
 #define MSSM_UTILITIES_H
@@ -39,7 +39,7 @@ namespace flexiblesusy {
 class MSSM_parameter_getter {
 public:
    Eigen::ArrayXd get_parameters(const MSSM<Two_scale>& model) {
-      return model.get();
+      return model.display();
    }
    std::vector<std::string> get_parameter_names(const MSSM<Two_scale>&) const {
       using namespace MSSM_info;
@@ -75,9 +75,6 @@ private:
    unsigned width;
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
-   static std::valarray<double> to_valarray(double);
-   template <class Scalar, int M, int N>
-   static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
 
 
@@ -87,34 +84,28 @@ void MSSM_spectrum_plotter::extract_spectrum(const MSSM<T>& model)
    spectrum.clear();
    scale = model.get_scale();
 
-   spectrum.push_back(TParticle("Glu", "\\tilde{g}", to_valarray(PHYSICAL(MGlu))));
-   spectrum.push_back(TParticle("Sd", "\\tilde{d}", to_valarray(PHYSICAL(MSd))));
-   spectrum.push_back(TParticle("Sv", "\\tilde{\\nu}", to_valarray(PHYSICAL(MSv))));
-   spectrum.push_back(TParticle("Su", "\\tilde{u}", to_valarray(PHYSICAL(MSu))));
-   spectrum.push_back(TParticle("Se", "\\tilde{e}", to_valarray(PHYSICAL(MSe))));
-   spectrum.push_back(TParticle("hh", "h", to_valarray(PHYSICAL(Mhh))));
-   spectrum.push_back(TParticle("Ah", "A^0", to_valarray(PHYSICAL(MAh))));
-   spectrum.push_back(TParticle("Hpm", "H^-", to_valarray(PHYSICAL(MHpm))));
-   spectrum.push_back(TParticle("Chi", "\\tilde{\\chi}^0", to_valarray(PHYSICAL(MChi))));
-   spectrum.push_back(TParticle("Cha", "\\tilde{\\chi}^-", to_valarray(PHYSICAL(MCha))));
+   spectrum.push_back(TParticle("Glu", "\\tilde{g}", ToValarray(PHYSICAL(MGlu))));
+   spectrum.push_back(TParticle("Sd", "\\tilde{d}", ToValarray(PHYSICAL(MSd))));
+   spectrum.push_back(TParticle("Sv", "\\tilde{\\nu}", ToValarray(PHYSICAL(MSv))));
+   spectrum.push_back(TParticle("Su", "\\tilde{u}", ToValarray(PHYSICAL(MSu))));
+   spectrum.push_back(TParticle("Se", "\\tilde{e}", ToValarray(PHYSICAL(MSe))));
+   spectrum.push_back(TParticle("hh", "h", ToValarray(PHYSICAL(Mhh))));
+   spectrum.push_back(TParticle("Ah", "A^0", ToValarray(PHYSICAL(MAh))));
+   spectrum.push_back(TParticle("Hpm", "H^-", ToValarray(PHYSICAL(MHpm))));
+   spectrum.push_back(TParticle("Chi", "\\tilde{\\chi}^0", ToValarray(PHYSICAL(MChi))));
+   spectrum.push_back(TParticle("Cha", "\\tilde{\\chi}^-", ToValarray(PHYSICAL(MCha))));
 
    if (model.do_calculate_sm_pole_masses()) {
-      spectrum.push_back(TParticle("Fd", "d", to_valarray(PHYSICAL(MFd))));
-      spectrum.push_back(TParticle("Fe", "e", to_valarray(PHYSICAL(MFe))));
-      spectrum.push_back(TParticle("Fu", "u", to_valarray(PHYSICAL(MFu))));
-      spectrum.push_back(TParticle("Fv", "\\nu", to_valarray(PHYSICAL(MFv))));
-      spectrum.push_back(TParticle("VG", "g", to_valarray(PHYSICAL(MVG))));
-      spectrum.push_back(TParticle("VP", "\\gamma", to_valarray(PHYSICAL(MVP))));
-      spectrum.push_back(TParticle("VWm", "W^-", to_valarray(PHYSICAL(MVWm))));
-      spectrum.push_back(TParticle("VZ", "Z", to_valarray(PHYSICAL(MVZ))));
+      spectrum.push_back(TParticle("Fd", "d", ToValarray(PHYSICAL(MFd))));
+      spectrum.push_back(TParticle("Fe", "e", ToValarray(PHYSICAL(MFe))));
+      spectrum.push_back(TParticle("Fu", "u", ToValarray(PHYSICAL(MFu))));
+      spectrum.push_back(TParticle("Fv", "\\nu", ToValarray(PHYSICAL(MFv))));
+      spectrum.push_back(TParticle("VG", "g", ToValarray(PHYSICAL(MVG))));
+      spectrum.push_back(TParticle("VP", "\\gamma", ToValarray(PHYSICAL(MVP))));
+      spectrum.push_back(TParticle("VWm", "W^-", ToValarray(PHYSICAL(MVWm))));
+      spectrum.push_back(TParticle("VZ", "Z", ToValarray(PHYSICAL(MVZ))));
 
    }
-}
-
-template <class Scalar, int M, int N>
-std::valarray<double> MSSM_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
-{
-   return std::valarray<double>(v.data(), v.size());
 }
 
 } // namespace flexiblesusy

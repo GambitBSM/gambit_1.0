@@ -1,0 +1,160 @@
+(2014-10-31T05:55:44.448416)(32ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=test_parent_I, myName=primary_parameters)
+(2014-10-31T05:55:44.448433)(32ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.456734)(40ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=NormalDist, myName=primary_parameters)
+(2014-10-31T05:55:44.456738)(40ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.456782)(40ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=MSSM_demo, myName=primary_parameters)
+(2014-10-31T05:55:44.456785)(40ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.456810)(40ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=MSSM_demo, myName=test_parent_I_parameters)
+(2014-10-31T05:55:44.456813)(40ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.456969)(40ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM_demo, myName=primary_parameters)
+(2014-10-31T05:55:44.456973)(40ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.457018)(40ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM_demo, myName=Mstop)
+(2014-10-31T05:55:44.457021)(40ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.457038)(40ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM_demo, myName=MSSM_demo_parameters)
+(2014-10-31T05:55:44.457041)(40ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.457092)(41ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM_II_demo, myName=primary_parameters)
+(2014-10-31T05:55:44.457095)(41ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.457141)(41ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=DMHalo_base_demo, myName=primary_parameters)
+(2014-10-31T05:55:44.457145)(41ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461557)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=Gaussian_Halo_demo, myName=primary_parameters)
+(2014-10-31T05:55:44.461560)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461597)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=SomeOther_Halo_demo, myName=primary_parameters)
+(2014-10-31T05:55:44.461600)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461617)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=SomeOther_Halo_demo, myName=v_earth)
+(2014-10-31T05:55:44.461620)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461636)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=SomeOther_Halo_demo, myName=blah0)
+(2014-10-31T05:55:44.461639)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461686)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=Standard_Model, myName=primary_parameters)
+(2014-10-31T05:55:44.461689)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461720)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=MSSM29, myName=primary_parameters)
+(2014-10-31T05:55:44.461722)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461808)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=MSSM25, myName=primary_parameters)
+(2014-10-31T05:55:44.461811)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461886)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=MSSM, myName=primary_parameters)
+(2014-10-31T05:55:44.461891)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461937)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=GUTMSSMA, myName=primary_parameters)
+(2014-10-31T05:55:44.461940)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.461984)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=GUTMSSMA, myName=MSSM_parameters)
+(2014-10-31T05:55:44.461987)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462035)(45ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=GUTMSSMB, myName=primary_parameters)
+(2014-10-31T05:55:44.462038)(45ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462077)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=GUTMSSMB, myName=MSSM_parameters)
+(2014-10-31T05:55:44.462079)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462114)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM, myName=primary_parameters)
+(2014-10-31T05:55:44.462117)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462156)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM, myName=GUTMSSMA_parameters)
+(2014-10-31T05:55:44.462159)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462195)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM, myName=GUTMSSMB_parameters)
+(2014-10-31T05:55:44.462198)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462228)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=CMSSM, myName=MSSM_parameters)
+(2014-10-31T05:55:44.462231)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462282)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=extraCMSSM, myName=primary_parameters)
+(2014-10-31T05:55:44.462285)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462300)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=extraCMSSM, myName=CMSSM_parameters)
+(2014-10-31T05:55:44.462302)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.462340)(46ms)[Default,Utilities][Warning][Non-fatal] : WARNING: A problem has been raised by one of the utility codes.
+Raised at line 396 in function Gambit::module_functor_common::module_functor_common(Gambit::str, Gambit::str, Gambit::str, Gambit::str, Gambit::Models::ModelFunctorClaw&) of Utils/src/functors.cpp.
+Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin=SingletDM, myName=primary_parameters)
+(2014-10-31T05:55:44.462343)(46ms)[Default][Debug,Warning] : 
+(2014-10-31T05:55:44.484038)(67ms)[Default,Backends][Info] : Succeeded in loading Backends/lib/libfirst.so
+
+(2014-10-31T05:55:44.484299)(68ms)[Default,Backends][Info] : Succeeded in loading Backends/lib/libfirst.so
+
+(2014-10-31T05:55:44.502126)(86ms)[Default,Backends][Info] : Succeeded in loading Backends/lib/libfortran.so
+
+(2014-10-31T05:55:44.502699)(86ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 50 in function void Gambit::Backends::DarkSUSY_0_1::loadLibrary() of Backends/include/frontends/DarkSUSY.hpp.
+Failed loading library from libdarksusy.so due to error: libdarksusy.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.503691)(87ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 22 in function void Gambit::Backends::SuperIso_3_3::loadLibrary() of Backends/include/frontends/SuperIso.hpp.
+Failed loading library from Backends/lib/libsuperiso.so due to error: Backends/lib/libsuperiso.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.509451)(93ms)[Default,Backends][Info] : Succeeded in loading Backends/lib/libFarrayTest.so
+
+(2014-10-31T05:55:44.509829)(93ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 17 in function void Gambit::Backends::micromegas_0_1::loadLibrary() of Backends/include/frontends/micromegas.hpp.
+Failed loading library from micromegas.so due to error: micromegas.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.510032)(93ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 24 in function void Gambit::Backends::LibFastSim_1_0::loadLibrary() of Backends/include/frontends/FastSim.hpp.
+Failed loading library from Backends/lib/libfastsim.so due to error: Backends/lib/libfastsim.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.524125)(108ms)[Default,Backends][Info] : Succeeded in loading Backends/lib/libnulike.so
+
+(2014-10-31T05:55:44.524270)(108ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 31 in function void Gambit::Backends::DDCalc0_0_0::loadLibrary() of Backends/include/frontends/DDCalc0.hpp.
+Failed loading library from Backends/lib/DDCalc0.so due to error: Backends/lib/DDCalc0.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.524442)(108ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 22 in function void Gambit::Backends::HiggsBounds_4_1::loadLibrary() of Backends/include/frontends/HiggsBounds.hpp.
+Failed loading library from Backends/lib/libhiggsbounds.so due to error: Backends/lib/libhiggsbounds.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.524674)(108ms)[Default,Backends][Warning][Non-fatal] : WARNING: A problem has been raised by the backend system.
+Raised at line 22 in function void Gambit::Backends::HiggsSignals_1_2::loadLibrary() of Backends/include/frontends/HiggsSignals.hpp.
+Failed loading library from Backends/lib/libhiggssignals.so due to error: Backends/lib/libhiggssignals.so: cannot open shared object file: No such file or directory
+All functors generated from this library will get status=-1.
+(2014-10-31T05:55:44.632235)(216ms)[Default,Core] : Command invoked: ./gambit -f SpecBit.yaml 
+Starting GAMBIT
+
+(2014-10-31T05:55:44.632246)(216ms)[Default,Core] : Registered module functors [Core().getModuleFunctors().size()]: 121
+Registered backend functors [Core().getBackendFunctors().size()]: 109
+
+(2014-10-31T05:55:44.661636)(245ms)[Default,IniFile][Error][Fatal] : ERROR: A problem has been encountered in the iniFile reader subsystem.
+Raised at line 113 in function void Gambit::IniParser::IniFile::readFile(std::string) of Core/src/yaml_parser.cpp.
+Error reading Inifile "SpecBit.yaml"! Please check that file exist!
+(yaml-cpp error: yaml-cpp: error at line 72, column 6: end of map not found )

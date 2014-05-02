@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:30:26
+// File generated at Fri 2 May 2014 14:58:17
 
 #ifndef MSSM_PHYSICAL_H
 #define MSSM_PHYSICAL_H
@@ -34,8 +34,10 @@ struct MSSM_physical {
    void clear();
    void print(std::ostream&) const;
 
+   double MVG;
    double MGlu;
    Eigen::Array<double,3,1> MFv;
+   double MVP;
    double MVZ;
    Eigen::Array<double,6,1> MSd;
    Eigen::Array<double,3,1> MSv;
@@ -49,8 +51,6 @@ struct MSSM_physical {
    Eigen::Array<double,3,1> MFe;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
-   double MVG;
-   double MVP;
    double MVWm;
 
    Eigen::Matrix<double,6,6> ZD;

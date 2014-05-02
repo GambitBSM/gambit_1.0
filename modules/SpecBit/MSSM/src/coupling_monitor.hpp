@@ -28,7 +28,6 @@
 
 #include <Eigen/Dense>
 #include "logger.hpp"
-#include "error.hpp"
 
 namespace flexiblesusy {
 
@@ -46,7 +45,7 @@ namespace flexiblesusy {
  * class MSSM_parameter_getter {
  * public:
  *    Eigen::ArrayXd get_parameters(const MSSM& model) {
- *       return model.get();
+ *       return model.display();
  *    }
  *    std::vector<std::string> get_parameter_names(const MSSM& model) const {
  *       return model.get_parameter_names();
@@ -79,7 +78,7 @@ public:
    /// get maximum scale
    TTouple get_max_scale() const;
    /// delete all saved couplings
-   void clear();
+   void reset();
    /// write couplings to file
    void write_to_file(const std::string&) const;
 
@@ -134,7 +133,7 @@ typename Coupling_monitor<Model,DataGetter>::TTouple Coupling_monitor<Model,Data
  * Delete all internal couplings.
  */
 template <class Model, class DataGetter>
-void Coupling_monitor<Model,DataGetter>::clear()
+void Coupling_monitor<Model,DataGetter>::reset()
 {
    couplings.clear();
 }
@@ -239,9 +238,8 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
    // run from q1 to q2
    for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
       const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
-      try {
-         model.run_to(scale);
-      } catch (const Error&) {
+      const unsigned error = model.run_to(scale);
+      if (error) {
          ERROR("Coupling_monitor::run: run to scale "
                << scale << " failed");
          break;

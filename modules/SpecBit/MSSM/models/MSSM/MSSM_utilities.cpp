@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:26:47
+// File generated at Fri 2 May 2014 14:57:47
 
 #include "MSSM_utilities.hpp"
 #include "MSSM_input_parameters.hpp"
@@ -93,11 +93,6 @@ void MSSM_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std::ofstr
                  << '\n';
       }
    }
-}
-
-std::valarray<double> MSSM_spectrum_plotter::to_valarray(double v)
-{
-   return std::valarray<double>(&v, 1);
 }
 
 } // namespace flexiblesusy

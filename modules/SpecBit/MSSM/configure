@@ -4,9 +4,9 @@
 # Author: Alexander Voigt
 
 PROGRAM_NAME=FlexibleSUSY
-FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=0
-FLEXIBLESUSY_PATCH=1
+FLEXIBLESUSY_MAJOR=0
+FLEXIBLESUSY_MINOR=5
+FLEXIBLESUSY_PATCH=3
 FLEXIBLESUSY_EXTRA=
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 
@@ -81,11 +81,6 @@ TOWER_MAKEFILES="
  ${BASEDIR}/examples/tower/Makefile"
 TOWER_MAKEFILE_TMPL="${BASEDIR}/config/Makefile.tower.in"
 
-# target makefile file for the customized betas example
-CUSTOMBETAS_MAKEFILES="
- ${BASEDIR}/examples/customized-betas/Makefile"
-CUSTOMBETAS_MAKEFILE_TMPL="${BASEDIR}/config/Makefile.customized-betas.in"
-
 # options
 deprecated_options=""
 options="                    \
@@ -93,7 +88,6 @@ options="                    \
    enable_compile            \
    enable_compiler_warnings  \
    enable_debug              \
-   enable_fflite             \
    enable_looptools          \
    enable_silent             \
    enable_static_libs        \
@@ -106,7 +100,6 @@ enable_compile="yes"
 enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
-enable_fflite="no"
 enable_looptools="no"
 enable_meta="no"
 enable_silent="no"
@@ -117,7 +110,6 @@ enable_verbose="no"
 # corresponding preprocessor define statements
 DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
-DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
@@ -1103,26 +1095,6 @@ check_boost_thread_incl() {
 }
 
 #_____________________________________________________________________
-check_std_threads() {
-    # check for C++ std::thread and std::mutex
-    if test "x${enable_threads}" = "xyes" ; then
-        checking_msg "std::thread"
-        if try_compile_cpp_program "#include <thread>
-#include <mutex>" "std::mutex mtx; std::thread thr;";
-        then
-            result "ok"
-        else
-            result "not available"
-            message "Error: C++ std::thread and std::mutex is not available."
-            message "   Either reconfigure with \`--disable-threads' or use a"
-            message "   C++ compiler which supports C++ std::thread and std::mutex."
-            enable_threads="no"
-            exit 1
-        fi
-    fi
-}
-
-#_____________________________________________________________________
 check_thread_libs() {
     check_library "libpthread" "" "$default_lib_paths"
     if [ -z "$found_lib" ]; then
@@ -1781,27 +1753,9 @@ enable_defines() {
         logmsg "   CPPFLAGS = ${CPPFLAGS}"
     fi
 
-    if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
-	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
-	exit 1
-    fi
-
-    if test "x$enable_fflite" = "xyes" ; then
-        DEFINE_ENABLE_FFLITE="#define ENABLE_FFLITE 1"
-        message "Enabling usage of fflite"
-    else
-        DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
-        logmsg "Disabling usage of fflite"
-    fi
-    logmsg "   ${DEFINE_ENABLE_FFLITE}"
-
     if test "x$enable_looptools" = "xyes" ; then
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
         message "Enabling usage of LoopTools"
-	message "Warning: LoopTools is thread-unsafe since it accepts the renormalization scale"
-	message "   via a global variable.  This might lead to a race condition if different"
-	message "   RGE solvers run in multiple threads.  For such an application, consider the"
-	message "   alternative \`--enable-fflite'."
         logmsg "   ${DEFINE_ENABLE_LOOPTOOLS}"
     else
         DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
@@ -1868,7 +1822,6 @@ enable/disable options, prefix with either --enable- or --disable-
   compile           Compile the source code (default: $enable_compile)
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
-  fflite            Use fflite to compute the loop functions (default: $enable_fflite)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
 EOF
 cat <<EOF
@@ -2036,7 +1989,6 @@ if test "x${enable_compile}" = "xyes"; then
     fi
     check_makelib
     check_random_number_generator
-    check_std_threads
     check_thread_libs
 fi
 
@@ -2079,7 +2031,6 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
     -e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
     -e "s|@ENABLE_COMPILE@|$enable_compile|" \
-    -e "s|@ENABLE_FFLITE@|$enable_fflite|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_META@|$enable_meta|" \
     -e "s|@ENABLE_THREADS@|$enable_threads|"  \
@@ -2132,7 +2083,6 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DATE@|$DATE|"                             \
     -e "s|@DEFINE_ENABLE_COLOR_PRINTOUT@|$DEFINE_ENABLE_COLOR_PRINTOUT|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
-    -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \

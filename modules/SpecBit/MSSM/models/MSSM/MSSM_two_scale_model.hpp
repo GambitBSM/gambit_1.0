@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:30:26
+// File generated at Fri 2 May 2014 14:58:17
 
 #ifndef MSSM_TWO_SCALE_H
 #define MSSM_TWO_SCALE_H
@@ -49,46 +49,6 @@ class MSSM<Two_scale> : public Two_scale_model, public MSSM_soft_parameters {
 public:
    explicit MSSM(const MSSM_input_parameters& input_ = MSSM_input_parameters());
    virtual ~MSSM();
-   
-   //extra wrapper routines for cases where the state
-   //is a vector but we want to call elements with a 
-   // different string
-   double get_Pole_neut_goldstone() const;
-   double get_Pole_neut_CPodd_higgs() const;
-   double get_Pole_ch_goldstone() const;
-   double get_Pole_ch_higgs() const;
-   double get_Pole_mtop() const;
-   double get_Pole_mcharm() const;
-   double get_Pole_mup() const;
-   double get_Pole_mbottom() const;
-   double get_Pole_mstrange() const;
-   double get_Pole_mdown() const;
-   double get_Pole_mtau() const;
-   double get_Pole_mmuon() const;
-   double get_Pole_melectron() const;
-   double get_Pole_MFu(int i) const; 
-   double get_Pole_MFd(int i) const; 
-   double get_Pole_MFe(int i) const; 
-
-   double get_DRbar_neut_goldstone() const;
-   double get_DRbar_neut_CPodd_higgs() const;
-   double get_DRbar_ch_goldstone() const;
-   double get_DRbar_ch_higgs() const;
-   double get_DRbar_mtop() const;
-   double get_DRbar_mcharm() const;
-   double get_DRbar_mup() const;
-   double get_DRbar_mbottom() const;
-   double get_DRbar_mstrange() const;
-   double get_DRbar_mdown() const;
-   double get_DRbar_mtau() const;
-   double get_DRbar_mmuon() const;
-   double get_DRbar_melectron() const;
-   
-   double get_Pole_MZ() const;
-   double get_Pole_MW() const;
-   double get_Pole_MGlu() const;
-   double get_Pole_MGluon() const;
-   double get_Pole_MPhoton() const;
 
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
@@ -96,8 +56,6 @@ public:
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
-   void reorder_DRbar_masses();
-   void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(unsigned);
    void set_number_of_ewsb_iterations(std::size_t);
@@ -119,137 +77,49 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set_precision(double);
 
-   double get_lsp(MSSM_info::Particles&) const;
-
+   double get_MVG() const { return MVG; }
    double get_MGlu() const { return MGlu; }
    const Eigen::Array<double,3,1>& get_MFv() const { return MFv; }
-   double get_MFv(int i) const {return MFv(i);}
+   double get_MVP() const { return MVP; }
    double get_MVZ() const { return MVZ; }
    const Eigen::Array<double,6,1>& get_MSd() const { return MSd; }
-   double get_MSd(int i) const {return MSd(i);}
    const Eigen::Array<double,3,1>& get_MSv() const { return MSv; }
-   double get_MSv(int i) const {return MSv(i);}
    const Eigen::Array<double,6,1>& get_MSu() const { return MSu; }
-   double get_MSu(int i) const {return MSu(i);}
    const Eigen::Array<double,6,1>& get_MSe() const { return MSe; }
-   double get_MSe(int i) const {return MSe(i);}
    const Eigen::Array<double,2,1>& get_Mhh() const { return Mhh; }
-   double get_Mhh(int i) const {return Mhh(i);}
    const Eigen::Array<double,2,1>& get_MAh() const { return MAh; }
-   double get_MAh(int i) const {return MAh(i);}
    const Eigen::Array<double,2,1>& get_MHpm() const { return MHpm; }
-   double get_MHpm(int i) const {return MHpm(i);}
    const Eigen::Array<double,4,1>& get_MChi() const { return MChi; }
-   double get_MChi(int i) const {return MChi(i);}
    const Eigen::Array<double,2,1>& get_MCha() const { return MCha; }
-   double get_MCha(int i) const {return MCha(i);}
    const Eigen::Array<double,3,1>& get_MFe() const { return MFe; }
-   double get_MFe(int i) const {return MFe(i);}
    const Eigen::Array<double,3,1>& get_MFd() const { return MFd; }
-   double get_MFd(int i) const {return MFd(i);}
    const Eigen::Array<double,3,1>& get_MFu() const { return MFu; }
-   double get_MFu(int i) const {return MFu(i);}
-   double get_MVG() const { return MVG; }
-   double get_MVP() const { return MVP; }
    double get_MVWm() const { return MVWm; }
 
-   //newly added getters for Pole masses
-   const Eigen::Array<double,6,1>& get_Pole_MSd() const { return get_physical().MSd; }
-   double get_Pole_MSd(int i) const {return get_physical().MSd(i);}
-   const Eigen::Array<double,3,1>& get_Pole_MSv() const { return get_physical().MSv; }
-   double get_Pole_MSv(int i) const {return get_physical().MSv(i);}
-   const Eigen::Array<double,6,1>& get_Pole_MSu() const { return get_physical().MSu; }
-   double get_Pole_MSu(int i) const {return get_physical().MSu(i);}
-   const Eigen::Array<double,6,1>& get_Pole_MSe() const { return get_physical().MSe; }
-   double get_Pole_MSe(int i) const {return get_physical().MSe(i);}
-   const Eigen::Array<double,2,1>& get_Pole_Mhh() const { return get_physical().Mhh; }
-   double get_Pole_Mhh(int i) const {return get_physical().Mhh(i);}
-   const Eigen::Array<double,2,1>& get_Pole_MAh() const { return get_physical().MAh; }
-   double get_Pole_MAh(int i) const {return get_physical().MAh(i);}
-   const Eigen::Array<double,2,1>& get_Pole_MHpm() const { return get_physical().MHpm; }
-   double get_Pole_MHpm(int i) const {return get_physical().MHpm(i);}
-   const Eigen::Array<double,4,1>& get_Pole_MChi() const { return get_physical().MChi; }
-   double get_Pole_MChi(int i) const {return get_physical().MChi(i);}
-   const Eigen::Array<double,2,1>& get_Pole_MCha() const { return get_physical().MCha; }
-   double get_Pole_MCha(int i) const {return get_physical().MCha(i);}
-  
-
-   
    const Eigen::Matrix<double,6,6>& get_ZD() const { return ZD; }
-   const double get_ZD(int i, int j) const { return ZD(i,j); }
    const Eigen::Matrix<double,3,3>& get_ZV() const { return ZV; }
-   const double get_ZV(int i, int j) const { return ZV(i,j); }
    const Eigen::Matrix<double,6,6>& get_ZU() const { return ZU; }
-   const double get_ZU(int i, int j) const { return ZU(i,j); }
    const Eigen::Matrix<double,6,6>& get_ZE() const { return ZE; }
-   const double get_ZE(int i, int j) const { return ZE(i,j); }
    const Eigen::Matrix<double,2,2>& get_ZH() const { return ZH; }
-   const double get_ZH(int i, int j) const { return ZH(i,j); }
    const Eigen::Matrix<double,2,2>& get_ZA() const { return ZA; }
-   const double get_ZA(int i, int j) const { return ZA(i,j); }
    const Eigen::Matrix<double,2,2>& get_ZP() const { return ZP; }
-   const double get_ZP(int i, int j) const { return ZP(i,j); }
    const Eigen::Matrix<std::complex<double>,4,4>& get_ZN() const { return ZN; }
-   const std::complex<double> get_ZN(int i, int j) const { return ZN(i,j); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UM() const { return UM; }
-   const std::complex<double> get_UM(int i, int j) const { return UM(i,j); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UP() const { return UP; }
-   const std::complex<double> get_UP(int i, int j) const { return UP(i,j); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZEL() const { return ZEL; }
-   const std::complex<double> get_ZEL(int i, int j) const { return ZEL(i,j); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZER() const { return ZER; }
-   const std::complex<double> get_ZER(int i, int j) const { return ZER(i,j); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZDL() const { return ZDL; }
-   const std::complex<double> get_ZDL(int i, int j) const { return ZDL(i,j); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZDR() const { return ZDR; }
-   const std::complex<double> get_ZDR(int i, int j) const { return ZDR(i,j); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZUL() const { return ZUL; }
-   const std::complex<double> get_ZUL(int i, int j) const { return ZUL(i,j); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZUR() const { return ZUR; }
-   const std::complex<double> get_ZUR(int i, int j) const { return ZUR(i,j); }
- 
+
    void set_PhaseGlu(const std::complex<double>& PhaseGlu_) { PhaseGlu = PhaseGlu_; }
    const std::complex<double>& get_PhaseGlu() const { return PhaseGlu; }
 
-   
-   const Eigen::Matrix<double,6,6>& get_Pole_ZD() const { return get_physical().ZD; }
-   const double get_Pole_ZD(int i, int j) const { return get_physical().ZD(i,j); }
-   const Eigen::Matrix<double,3,3>& get_Pole_ZV() const { return get_physical().ZV; }
-   const double get_Pole_ZV(int i, int j) const { return get_physical().ZV(i,j); }
-   const Eigen::Matrix<double,6,6>& get_Pole_ZU() const { return get_physical().ZU; }
-   const double get_Pole_ZU(int i, int j) const { return get_physical().ZU(i,j); }
-   const Eigen::Matrix<double,6,6>& get_Pole_ZE() const { return get_physical().ZE; }
-   const double get_Pole_ZE(int i, int j) const { return get_physical().ZE(i,j); }
-   const Eigen::Matrix<double,2,2>& get_Pole_ZH() const { return get_physical().ZH; }
-   const double get_Pole_ZH(int i, int j) const { return get_physical().ZH(i,j); }
-   const Eigen::Matrix<double,2,2>& get_Pole_ZA() const { return get_physical().ZA; }
-   const double get_Pole_ZA(int i, int j) const { return get_physical().ZA(i,j); }
-   const Eigen::Matrix<double,2,2>& get_Pole_ZP() const { return get_physical().ZP; }
-   const double get_Pole_ZP(int i, int j) const { return get_physical().ZP(i,j); }
-   const Eigen::Matrix<std::complex<double>,4,4>& get_Pole_ZN() const { return get_physical().ZN; }
-   const std::complex<double> get_Pole_ZN(int i, int j) const { return get_physical().ZN(i,j); }
-   const Eigen::Matrix<std::complex<double>,2,2>& get_Pole_UM() const { return get_physical().UM; }
-   const std::complex<double> get_Pole_UM(int i, int j) const { return get_physical().UM(i,j); }
-   const Eigen::Matrix<std::complex<double>,2,2>& get_Pole_UP() const { return get_physical().UP; }
-   const std::complex<double> get_Pole_UP(int i, int j) const { return get_physical().UP(i,j); }
-   const Eigen::Matrix<std::complex<double>,3,3>& get_Pole_ZEL() const { return get_physical().ZEL; }
-   const std::complex<double> get_Pole_ZEL(int i, int j) const { return get_physical().ZEL(i,j); }
-   const Eigen::Matrix<std::complex<double>,3,3>& get_Pole_ZER() const { return get_physical().ZER; }
-   const std::complex<double> get_Pole_ZER(int i, int j) const { return get_physical().ZER(i,j); }
-   const Eigen::Matrix<std::complex<double>,3,3>& get_Pole_ZDL() const { return get_physical().ZDL; }
-   const std::complex<double> get_Pole_ZDL(int i, int j) const { return get_physical().ZDL(i,j); }
-   const Eigen::Matrix<std::complex<double>,3,3>& get_Pole_ZDR() const { return get_physical().ZDR; }
-   const std::complex<double> get_Pole_ZDR(int i, int j) const { return get_physical().ZDR(i,j); }
-   const Eigen::Matrix<std::complex<double>,3,3>& get_Pole_ZUL() const { return get_physical().ZUL; }
-   const std::complex<double> get_Pole_ZUL(int i, int j) const { return get_physical().ZUL(i,j); }
-   const Eigen::Matrix<std::complex<double>,3,3>& get_Pole_ZUR() const { return get_physical().ZUR; }
-   const std::complex<double> get_Pole_ZUR(int i, int j) const { return get_physical().ZUR(i,j); }
- 
-   
-   
-
+   void calculate_MVG();
    void calculate_MGlu();
    void calculate_MFv();
+   void calculate_MVP();
    void calculate_MVZ();
    Eigen::Matrix<double,6,6> get_mass_matrix_Sd() const;
    void calculate_MSd();
@@ -275,8 +145,6 @@ public:
    void calculate_MFd();
    Eigen::Matrix<double,3,3> get_mass_matrix_Fu() const;
    void calculate_MFu();
-   void calculate_MVG();
-   void calculate_MVP();
    void calculate_MVWm();
 
    double get_ewsb_eq_hh_1() const;
@@ -718,8 +586,10 @@ public:
 
    void tadpole_hh_2loop(double result[2]) const;
 
+   void calculate_MVG_pole();
    void calculate_MGlu_pole();
    void calculate_MFv_pole();
+   void calculate_MVP_pole();
    void calculate_MVZ_pole();
    void calculate_MSd_pole();
    void calculate_MSv_pole();
@@ -733,17 +603,15 @@ public:
    void calculate_MFe_pole();
    void calculate_MFd_pole();
    void calculate_MFu_pole();
-   void calculate_MVG_pole();
-   void calculate_MVP_pole();
    void calculate_MVWm_pole();
 
    double calculate_MFu_DRbar(double, int) const;
    double calculate_MFd_DRbar(double, int) const;
    double calculate_MFe_DRbar(double, int) const;
    double calculate_MFv_DRbar(double, int) const;
-   double calculate_MVP_DRbar(double);
-   double calculate_MVZ_DRbar(double);
-   double calculate_MVWm_DRbar(double);
+   double calculate_MVP_DRbar(double) const;
+   double calculate_MVZ_DRbar(double) const;
+   double calculate_MVWm_DRbar(double) const;
 
    double ThetaW() const;
    double v() const;
@@ -803,8 +671,10 @@ private:
    double F0(double, double, double) const;
    double G0(double, double, double) const;
 
+   double MVG;
    double MGlu;
    Eigen::Array<double,3,1> MFv;
+   double MVP;
    double MVZ;
    Eigen::Array<double,6,1> MSd;
    Eigen::Array<double,3,1> MSv;
@@ -818,8 +688,6 @@ private:
    Eigen::Array<double,3,1> MFe;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
-   double MVG;
-   double MVP;
    double MVWm;
 
    Eigen::Matrix<double,6,6> ZD;

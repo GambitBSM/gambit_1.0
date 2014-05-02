@@ -22,7 +22,7 @@
 
 namespace flexiblesusy {
 
-softsusy::DoubleVector AbsSqrt(const softsusy::DoubleVector& x)
+DoubleVector AbsSqrt(const DoubleVector& x)
 {
    return x.apply(AbsSqrt_d);
 }
@@ -34,8 +34,8 @@ softsusy::DoubleVector AbsSqrt(const softsusy::DoubleVector& x)
  * @param u mixing matrix
  * @param eigenvalues eigenvalues (sorted)
  */
-void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
-                 softsusy::DoubleVector& eigenvalues)
+void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
+                 DoubleVector& eigenvalues)
 {
    const int c = m.displayCols();
 #ifdef ENABLE_DEBUG
@@ -47,7 +47,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
    }
 #endif
    // Numerical recipes routine replaces argument, so make a copy of elements
-   softsusy::DoubleMatrix a(m);
+   DoubleMatrix a(m);
    int nrot;
    diagonaliseJac(a, c, eigenvalues, u, &nrot);
    u.associateOrderAbs(eigenvalues);
@@ -62,10 +62,10 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
  *
  * @return phase rotation matrix
  */
-softsusy::ComplexMatrix phase_rotation(const softsusy::DoubleVector& v)
+ComplexMatrix phase_rotation(const DoubleVector& v)
 {
    const int len = v.size();
-   softsusy::ComplexMatrix rot(len, len);
+   ComplexMatrix rot(len, len);
 
    for (int i = 1; i <= len; i++) {
       if (v(i) < 0.0)
@@ -84,7 +84,7 @@ softsusy::ComplexMatrix phase_rotation(const softsusy::DoubleVector& v)
  * @param u mixing matrix
  * @param eigenvalues eigenvalues (sorted)
  */
-void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u, softsusy::DoubleVector& eigenvalues)
+void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u, DoubleVector& eigenvalues)
 {
    const int c = m.displayCols();
 #ifdef ENABLE_DEBUG
@@ -96,7 +96,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u, so
    }
 #endif
    // Numerical recipes routine replaces argument, so make a copy of elements
-   softsusy::DoubleMatrix a(m), k(c, c);
+   DoubleMatrix a(m), k(c, c);
    int nrot;
    diagonaliseJac(a, c, eigenvalues, k, &nrot);
 
@@ -107,13 +107,13 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u, so
 
    // We want to change the PHASES of the neutralino mixing matrix in order to
    // produce POSITIVE neutralino masses, a la Matchev, Pierce and Zhang
-   const softsusy::ComplexMatrix trans(phase_rotation(eigenvalues));
+   const ComplexMatrix trans(phase_rotation(eigenvalues));
    u = trans * k.transpose();
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-void Diagonalize2by2(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
-                     softsusy::DoubleVector& eigenvalues)
+void Diagonalize2by2(const DoubleMatrix& m, DoubleMatrix& u,
+                     DoubleVector& eigenvalues)
 {
    double theta;
    eigenvalues = m.sym2by2(theta);
@@ -121,20 +121,20 @@ void Diagonalize2by2(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
       theta += 0.5 * M_PI;
       std::swap(eigenvalues(1), eigenvalues(2));
    }
-   u = softsusy::rot2d(theta);
+   u = rot2d(theta);
 }
 
-void Diagonalize2by2(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u,
-                     softsusy::DoubleVector& eigenvalues)
+void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
+                     DoubleVector& eigenvalues)
 {
    double theta;
    eigenvalues = m.sym2by2(theta);
-   const softsusy::ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
-   u = a * softsusy::rot2d(theta);
+   const ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
+   u = a * rot2d(theta);
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-void AssociateOrderAbs(softsusy::DoubleMatrix& u, softsusy::DoubleMatrix& v, softsusy::DoubleVector& w)
+void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
 {
 #ifdef ENABLE_DEBUG
    if ((u.displayRows() != w.displayEnd()) ||
@@ -164,8 +164,8 @@ void AssociateOrderAbs(softsusy::DoubleMatrix& u, softsusy::DoubleMatrix& v, sof
  * @param v mixing matrix
  * @param eigenvalues eigenvalues (sorted)
  */
-void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
-                 softsusy::DoubleMatrix& v, softsusy::DoubleVector& eigenvalues)
+void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
+                 DoubleMatrix& v, DoubleVector& eigenvalues)
 {
 #ifdef ENABLE_DEBUG
    const int c = m.displayCols();
@@ -205,8 +205,8 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
  * @param v mixing matrix
  * @param eigenvalues eigenvalues (sorted)
  */
-void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u,
-                 softsusy::ComplexMatrix& v, softsusy::DoubleVector& eigenvalues)
+void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u,
+                 ComplexMatrix& v, DoubleVector& eigenvalues)
 {
 #ifdef ENABLE_DEBUG
    const int c = m.displayCols();
@@ -217,17 +217,17 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u,
       throw ii.str();
    }
 #endif
-   softsusy::DoubleMatrix realU(u.real()), realV(v.real());
+   DoubleMatrix realU(u.real()), realV(v.real());
    Diagonalize(m, realU, realV, eigenvalues);
 
-   const softsusy::ComplexMatrix trans(phase_rotation(eigenvalues));
+   const ComplexMatrix trans(phase_rotation(eigenvalues));
    u = trans * realU;
    v = trans * realV;
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-void Diagonalize2by2(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u,
-                     softsusy::ComplexMatrix& v, softsusy::DoubleVector& eigenvalues)
+void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
+                     ComplexMatrix& v, DoubleVector& eigenvalues)
 {
    double thetaL, thetaR;
    eigenvalues = m.asy2by2(thetaL, thetaR);
@@ -235,12 +235,12 @@ void Diagonalize2by2(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-double MaxRelDiff(const softsusy::DoubleVector& a, const softsusy::DoubleVector& b)
+double MaxRelDiff(const DoubleVector& a, const DoubleVector& b)
 {
    return a.compare(b);
 }
 
-void Symmetrize(softsusy::DoubleMatrix& m)
+void Symmetrize(DoubleMatrix& m)
 {
    const int r = m.displayRows();
    const int c = m.displayCols();
@@ -249,7 +249,7 @@ void Symmetrize(softsusy::DoubleMatrix& m)
          m(i,k) = m(k,i);
 }
 
-softsusy::DoubleVector ZeroSqrt(const softsusy::DoubleVector& x)
+DoubleVector ZeroSqrt(const DoubleVector& x)
 {
    return x.apply(ZeroSqrt_d);
 }

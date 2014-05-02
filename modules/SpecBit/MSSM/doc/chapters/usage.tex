@@ -213,6 +213,20 @@ EXTPAR = { {61, LambdaInput},
          };
 \end{lstlisting}
 
+\subparagraph{DefaultParameterPoint} This list of two-component lists
+defines default values for the model input parameters.
+\\
+Example (MSSM):
+\begin{lstlisting}[language=Mathematica]
+DefaultParameterPoint = {
+    {m0, 125},
+    {m12, 500},
+    {TanBeta, 10},
+    {Sign[\[Mu]], 1},
+    {Azero, 0}
+};
+\end{lstlisting}
+
 \paragraph{Constraints}
 Currently three constraints are supported: low-scale, susy-scale and
 high-scale constraints.  In \flexisusy\ they are named as
@@ -295,6 +309,7 @@ TreeLevelEWSBSolution = {
     OnlyLowEnergyFlexibleSUSY & False & low-energy model \\
     MINPAR & \{\} & list of input parameters in SLHA MINPAR block \\
     EXTPAR & \{\} & list of input parameters in SLHA EXTPAR block \\
+    DefaultParameterPoint & \{\} & list of default values for the input parameters \\
     LowScale & SM[MZ] & Standard Model matching scale (in GeV) \\
     LowScaleFirstGuess & SM[MZ] & first guess for the Standard Model matching scale (in GeV) \\
     LowScaleInput & \{\} & settings applied at the low scale \\

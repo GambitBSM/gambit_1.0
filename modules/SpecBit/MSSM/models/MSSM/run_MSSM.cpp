@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:30:27
+// File generated at Fri 2 May 2014 14:58:18
 
 #include "MSSM_input_parameters.hpp"
 #include "MSSM_slha_io.hpp"
@@ -42,31 +42,24 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
-   const std::string rgflow_file(options.get_rgflow_file());
    const std::string slha_input_file(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
-   const std::string spectrum_file(options.get_spectrum_file());
    MSSM_slha_io slha_io;
    Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
    MSSM_input_parameters input;
 
-   if (slha_input_file.empty()) {
-      ERROR("No SLHA input file given!\n"
-            "   Please provide one via the option --slha-input-file=");
-      return EXIT_FAILURE;
+   if (!slha_input_file.empty()) {
+      try {
+         slha_io.read_from_file(slha_input_file);
+         slha_io.fill(oneset);
+         slha_io.fill(input);
+         slha_io.fill(spectrum_generator_settings);
+      } catch (const Error& error) {
+         ERROR(error.what());
+         return EXIT_FAILURE;
+      }
    }
-
-   try {
-      slha_io.read_from_file(slha_input_file);
-      slha_io.fill(oneset);
-      slha_io.fill(input);
-      slha_io.fill(spectrum_generator_settings);
-   } catch (const Error& error) {
-      ERROR(error.what());
-      return EXIT_FAILURE;
-   }
-
    oneset.toMz(); // run SM fermion masses to MZ
 
    MSSM_spectrum_generator<algorithm_type> spectrum_generator;
@@ -84,10 +77,6 @@ int main(int argc, const char* argv[])
       spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order));
    spectrum_generator.set_ewsb_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order));
-   spectrum_generator.set_beta_loop_order(
-      spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order));
-   spectrum_generator.set_threshold_corrections(
-      spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections));
 
    spectrum_generator.run(oneset, input);
 
@@ -110,11 +99,9 @@ int main(int argc, const char* argv[])
       slha_io.write_to_file(slha_output_file);
    }
 
-   if (!spectrum_file.empty())
-      spectrum_generator.write_spectrum(spectrum_file);
-
-   if (!rgflow_file.empty())
-      spectrum_generator.write_running_couplings(rgflow_file);
+   // model.print(std::cout);
+   // spectrum_generator.write_spectrum("MSSM_spectrum.dat");
+   // spectrum_generator.write_running_couplings("MSSM_rge_running.dat");
 
    const int exit_code = spectrum_generator.get_exit_code();
 

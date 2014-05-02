@@ -88,17 +88,20 @@ inline double ArcCos(double a)
    return std::acos(a);
 }
 
-template <typename Derived>
-unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
-{
-   unsigned pos;
-   typename Derived::PlainObject tmp;
-   tmp.setConstant(mass);
-
-   (v - tmp).abs().minCoeff(&pos);
-
-   return pos;
-}
+// <<<<<<< HEAD
+// template <typename Derived>
+// unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
+// {
+//    unsigned pos;
+//    typename Derived::PlainObject tmp;
+//    tmp.setConstant(mass);
+// 
+//    (v - tmp).abs().minCoeff(&pos);
+// 
+//    return pos;
+// }
+// =======
+// >>>>>>> Added MSSM directory.
 
 inline double Conj(double a)
 {
@@ -201,6 +204,7 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
+<<<<<<< HEAD
 /**
  * The element of v, which is closest to mass, is moved to the
  * position idx.
@@ -220,6 +224,8 @@ void move_goldstone_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>
    z.row(idx).swap(z.row(pos));
 }
 
+=======
+>>>>>>> Added MSSM directory.
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)
 {
@@ -252,6 +258,7 @@ inline int Sign(double x)
    return (x >= 0.0 ? 1 : -1);
 }
 
+<<<<<<< HEAD
 namespace {
    struct CompareAbs_d {
       bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
@@ -264,6 +271,8 @@ void Sort(Eigen::Array<double, N, 1>& v)
    std::sort(v.data(), v.data() + v.size(), CompareAbs_d());
 }
 
+=======
+>>>>>>> Added MSSM directory.
 inline double Sqrt(double a)
 {
    return std::sqrt(a);

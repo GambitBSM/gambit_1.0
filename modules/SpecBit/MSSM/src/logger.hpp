@@ -34,9 +34,6 @@
  * ERROR(message)
  * FATAL(message)        aborts program execution
  *
- * VERBOSE_MSG, DEBUG_MSG and INFO print to std::cout .
- * WARNING, ERROR and FATAL print to std::cerr .
- *
  * All output can be disabled if ENABLE_SILENT is defined.
  * To define a preprocessor symbol, use either
  *
@@ -82,7 +79,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
    #define FATAL(message)                                             \
       do {                                                            \
          LOG(kFatal, message);                                        \
-         std::cerr << "*** abort program execution" << std::endl;     \
+         std::cout << "*** abort program execution" << std::endl;     \
          exit(EXIT_FAILURE);                                          \
          assert(false);                                               \
       } while (0)
@@ -94,9 +91,9 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
    #define PRINT_PREFIX(level)                                        \
       do {                                                            \
          switch (level) {                                             \
-         case kWarning: std::cerr << "Warning: "; break;              \
-         case kError:   std::cerr << "Error: "; break;                \
-         case kFatal:   std::cerr << "Fatal: "; break;                \
+         case kWarning: std::cout << "Warning: "; break;              \
+         case kError:   std::cout << "Error: "; break;                \
+         case kFatal:   std::cout << "Fatal: "; break;                \
          default:                                                     \
             break;                                                    \
          }                                                            \
@@ -109,7 +106,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
    #define PRINT_FILE_LINE(level)                                     \
       do {                                                            \
          switch (level) {                                             \
-         case kFatal:   std::cerr << "(file: " << __FILE__            \
+         case kFatal:   std::cout << "(file: " << __FILE__            \
                                   << ", line: " << __LINE__ << ") ";  \
             break;                                                    \
          default:                                                     \
@@ -125,77 +122,11 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       do {                                                       \
          switch (level) {                                        \
          case kDebug:   std::cout << "\033[0;34m"; break;        \
-         case kWarning: std::cerr << "\033[0;31m"; break;        \
-         case kError:   std::cerr << "\033[1;31m"; break;        \
-         case kFatal:   std::cerr << "\033[41;1;37m"; break;     \
+         case kWarning: std::cout << "\033[0;31m"; break;        \
+         case kError:   std::cout << "\033[1;31m"; break;        \
+         case kFatal:   std::cout << "\033[41;1;37m"; break;     \
          case kInfo:                                             \
          case kVerbose:                                          \
-         default:                                                \
-            break;                                               \
-         }                                                       \
-      } while (0)
-#endif
-
-#ifdef ENABLE_SILENT
-   #define RESET_COLOR(level)
-#else
-   #define RESET_COLOR(level)                               \
-      do {                                                       \
-         switch (level) {                                        \
-         case kDebug:                                            \
-         case kInfo:                                             \
-         case kVerbose:                                          \
-            std::cout << "\033[0m";                              \
-            break;                                               \
-         case kWarning:                                          \
-         case kError:                                            \
-         case kFatal:                                            \
-            std::cerr << "\033[0m";                              \
-            break;                                               \
-         default:                                                \
-            break;                                               \
-         }                                                       \
-      } while (0)
-#endif
-
-#ifdef ENABLE_SILENT
-   #define PRINT_MESSAGE(level, message)
-#else
-   #define PRINT_MESSAGE(level, message)                         \
-      do {                                                       \
-         switch (level) {                                        \
-         case kDebug:                                            \
-         case kInfo:                                             \
-         case kVerbose:                                          \
-            std::cout << message;                                \
-            break;                                               \
-         case kWarning:                                          \
-         case kError:                                            \
-         case kFatal:                                            \
-            std::cerr << message;                                \
-            break;                                               \
-         default:                                                \
-            break;                                               \
-         }                                                       \
-      } while (0)
-#endif
-
-#ifdef ENABLE_SILENT
-   #define PRINT_ENDL(level)
-#else
-   #define PRINT_ENDL(level)                                     \
-      do {                                                       \
-         switch (level) {                                        \
-         case kDebug:                                            \
-         case kInfo:                                             \
-         case kVerbose:                                          \
-            std::cout << std::endl;                              \
-            break;                                               \
-         case kWarning:                                          \
-         case kError:                                            \
-         case kFatal:                                            \
-            std::cerr << std::endl;                              \
-            break;                                               \
          default:                                                \
             break;                                               \
          }                                                       \
@@ -211,17 +142,14 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          PRINT_COLOR_CODE(level);                                \
          PRINT_PREFIX(level);                                    \
          PRINT_FILE_LINE(level);                                 \
-         PRINT_MESSAGE(level, message);                          \
-         RESET_COLOR(level);                                     \
-         PRINT_ENDL(level);                                      \
+         std::cout << message << "\033[0m" << std::endl;         \
       } while (0)
    #else
       #define LOG(level, message)                  \
       do {                                         \
          PRINT_PREFIX(level);                      \
          PRINT_FILE_LINE(level);                   \
-         PRINT_MESSAGE(level, message);            \
-         PRINT_ENDL(level);                        \
+         std::cout << message << std::endl;        \
       } while (0)
    #endif
 #endif

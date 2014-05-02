@@ -21,7 +21,7 @@ using namespace std;
 #include <iosfwd>
 #include <valarray>
 #include <sstream>
-namespace softsusy {
+
 /************************************
  * 
  *   *** DOUBLE VECTOR CLASS ***
@@ -794,5 +794,5 @@ inline Complex ComplexMatrix::display(int i, int j) const {
 #endif
   return elmt(i,j); 
 }  
-}//namespace softsusy
+
 #endif

@@ -25,7 +25,6 @@
 #include <gsl/gsl_multiroots.h>
 
 #include "logger.hpp"
-#include "error.hpp"
 
 namespace flexiblesusy {
 
@@ -98,9 +97,6 @@ Root_finder<dimension>::Root_finder()
    , solver_type(gsl_multiroot_fsolver_hybrid)
 {
    root = gsl_vector_alloc(dimension);
-
-   if (!root)
-      throw OutOfMemoryError("GSL vector allocation failed in Root_finder()");
 }
 
 /**
@@ -122,10 +118,6 @@ Root_finder<dimension>::Root_finder(Function_t function_, void* parameters_,
    , solver_type(gsl_multiroot_fsolver_hybrid)
 {
    root = gsl_vector_alloc(dimension);
-
-   if (!root)
-      throw OutOfMemoryError("GSL vector allocation failed in Root_finder("
-                             "Function_t, void*, size_t, double)");
 }
 
 template <std::size_t dimension>
@@ -159,21 +151,11 @@ int Root_finder<dimension>::find_root(const double start[dimension])
    assert(function && "Root_finder<dimension>::minimize: function pointer"
           " must not be zero!");
 
+   gsl_multiroot_fsolver* solver
+      = gsl_multiroot_fsolver_alloc(solver_type, dimension);
    int status;
    std::size_t iter = 0;
    gsl_multiroot_function f = {function, dimension, parameters};
-
-   gsl_multiroot_fsolver* solver
-      = gsl_multiroot_fsolver_alloc(solver_type, dimension);
-
-   if (!solver) {
-      throw OutOfMemoryError(std::string("Cannot allocate gsl_multiroot_fsolver ") +
-                             gsl_multiroot_fsolver_name(solver));
-   }
-
-#ifndef ENABLE_DEBUG
-   gsl_set_error_handler_off();
-#endif
 
    for (std::size_t i = 0; i < dimension; ++i)
       gsl_vector_set(root, i, start[i]);

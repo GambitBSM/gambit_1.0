@@ -23,43 +23,43 @@
 
 namespace flexiblesusy {
 
-softsusy::DoubleVector AbsSqrt(const softsusy::DoubleVector&);
+DoubleVector AbsSqrt(const DoubleVector&);
 
-void Diagonalize(const softsusy::DoubleMatrix&, softsusy::DoubleMatrix& , softsusy::DoubleVector&);
-void Diagonalize(const softsusy::DoubleMatrix&, softsusy::ComplexMatrix&, softsusy::DoubleVector&);
-void Diagonalize2by2(const softsusy::DoubleMatrix&, softsusy::DoubleMatrix& , softsusy::DoubleVector&);
-void Diagonalize2by2(const softsusy::DoubleMatrix&, softsusy::ComplexMatrix&, softsusy::DoubleVector&);
+void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
+void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
+void Diagonalize2by2(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
+void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
 
 // SVD
-void Diagonalize(const softsusy::DoubleMatrix&, softsusy::DoubleMatrix& , softsusy::DoubleMatrix& , softsusy::DoubleVector&);
-void Diagonalize(const softsusy::DoubleMatrix&, softsusy::ComplexMatrix&, softsusy::ComplexMatrix&, softsusy::DoubleVector&);
-void Diagonalize2by2(const softsusy::DoubleMatrix&, softsusy::ComplexMatrix&, softsusy::ComplexMatrix&, softsusy::DoubleVector&);
+void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleMatrix& , DoubleVector&);
+void Diagonalize(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
+void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
 
-double MaxRelDiff(const softsusy::DoubleVector&, const softsusy::DoubleVector&);
+double MaxRelDiff(const DoubleVector&, const DoubleVector&);
 
-void Symmetrize(softsusy::DoubleMatrix&);
+void Symmetrize(DoubleMatrix&);
 
-inline softsusy::DoubleMatrix Re(const softsusy::DoubleMatrix& m)
+inline DoubleMatrix Re(const DoubleMatrix& m)
 {
    return m;
 }
 
-inline softsusy::DoubleMatrix Re(const softsusy::ComplexMatrix& m)
+inline DoubleMatrix Re(const ComplexMatrix& m)
 {
    return m.real();
 }
 
-inline softsusy::ComplexMatrix Transpose(const softsusy::ComplexMatrix& m)
+inline ComplexMatrix Transpose(const ComplexMatrix& m)
 {
    return m.transpose();
 }
 
-inline softsusy::DoubleMatrix Transpose(const softsusy::DoubleMatrix& m)
+inline DoubleMatrix Transpose(const DoubleMatrix& m)
 {
    return m.transpose();
 }
 
-softsusy::DoubleVector ZeroSqrt(const softsusy::DoubleVector&);
+DoubleVector ZeroSqrt(const DoubleVector&);
 
 } // namespace flexiblesusy
 

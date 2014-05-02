@@ -30,10 +30,8 @@ Command_line_options::Command_line_options()
    , do_print_model_info(false)
    , exit_status(EXIT_SUCCESS)
    , program()
-   , rgflow_file()
    , slha_input_file()
    , slha_output_file()
-   , spectrum_file()
 {
 }
 
@@ -70,10 +68,6 @@ void Command_line_options::parse(int argc, const char* argv[])
          slha_output_file = option.substr(19);
          if (slha_output_file.empty())
             WARNING("no SLHA output file name given");
-      } else if (starts_with(option,"--spectrum-output-file=")) {
-         spectrum_file = option.substr(23);
-      } else if (starts_with(option,"--rgflow-output-file=")) {
-         rgflow_file = option.substr(21);
       } else if (option == "--help" || option == "-h") {
          print_usage(std::cout);
          do_exit = true;
@@ -110,18 +104,16 @@ void Command_line_options::print_usage(std::ostream& ostr) const
 {
    ostr << "Usage: " << program << " [options]\n"
            "Options:\n"
-           "  --slha-input-file=<filename>      SLHA input file\n"
-           "                                    If not given, the default point"
+           "  --slha-input-file=<filename>   SLHA input file\n"
+           "                                 If not given, the default point"
            " is used.\n"
-           "  --slha-output-file=<filename>     SLHA output file\n"
-           "                                    If not given, the output is\n"
-           "                                    printed to stdout.\n"
-           "  --spectrum-output-file=<filename> file to write spectrum to\n"
-           "  --rgflow-output-file=<filename>   file to write rgflow to\n"
-           "  --build-info                      print build information\n"
-           "  --model-info                      print model information\n"
-           "  --help,-h                         print this help message\n"
-           "  --version,-v                      print program version"
+           "  --slha-output-file=<filename>  SLHA output file\n"
+           "                                 If not given, the output is\n"
+           "                                 printed to stdout.\n"
+           "  --build-info                   print build information\n"
+           "  --model-info                   print model information\n"
+           "  --help,-h                      print this help message\n"
+           "  --version,-v                   print program version"
         << std::endl;
 }
 

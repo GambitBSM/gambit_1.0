@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:26:52
+// File generated at Fri 2 May 2014 14:57:49
 
 #include "MSSM_two_scale_low_scale_constraint.hpp"
 #include "MSSM_two_scale_model.hpp"
@@ -45,8 +45,6 @@ namespace flexiblesusy {
 
 MSSM_low_scale_constraint<Two_scale>::MSSM_low_scale_constraint()
    : Constraint<Two_scale>()
-   , scale(0.)
-   , initial_scale_guess(0.)
    , model(0)
    , inputPars()
    , oneset()
@@ -54,8 +52,10 @@ MSSM_low_scale_constraint<Two_scale>::MSSM_low_scale_constraint()
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
-   , threshold_corrections(1)
 {
+   initial_scale_guess = SM(MZ);
+
+   scale = initial_scale_guess;
 }
 
 MSSM_low_scale_constraint<Two_scale>::MSSM_low_scale_constraint(const MSSM_input_parameters& inputPars_, const QedQcd& oneset_)
@@ -67,7 +67,9 @@ MSSM_low_scale_constraint<Two_scale>::MSSM_low_scale_constraint(const MSSM_input
    , new_g2(0.)
    , new_g3(0.)
 {
-   initialize();
+   initial_scale_guess = SM(MZ);
+
+   scale = initial_scale_guess;
 }
 
 MSSM_low_scale_constraint<Two_scale>::~MSSM_low_scale_constraint()
@@ -126,25 +128,11 @@ void MSSM_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& onese
    oneset = oneset_;
 }
 
-void MSSM_low_scale_constraint<Two_scale>::clear()
+void MSSM_low_scale_constraint<Two_scale>::reset()
 {
-   scale = 0.;
-   initial_scale_guess = 0.;
+   scale = initial_scale_guess;
    model = NULL;
    oneset = QedQcd();
-   MZDRbar = 0.;
-   new_g1 = 0.;
-   new_g2 = 0.;
-   new_g3 = 0.;
-}
-
-void MSSM_low_scale_constraint<Two_scale>::initialize()
-{
-   initial_scale_guess = SM(MZ);
-
-   scale = initial_scale_guess;
-
-   MZDRbar = 0.;
    new_g1 = 0.;
    new_g2 = 0.;
    new_g3 = 0.;
@@ -167,13 +155,8 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
 
-   double delta_alpha_em = 0.;
-   double delta_alpha_s  = 0.;
-
-   if (model->get_thresholds()) {
-      delta_alpha_em = calculate_delta_alpha_em(alpha_em);
-      delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
-   }
+   const double delta_alpha_em = calculate_delta_alpha_em(alpha_em);
+   const double delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
 
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
    const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
@@ -272,10 +255,7 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = oneset.displayMass(mUp);
    topDRbar(1,1)      = oneset.displayMass(mCharm);
-   topDRbar(2,2)      = oneset.displayMass(mTop);
-
-   if (model->get_thresholds())
-      topDRbar(2,2) = model->calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
+   topDRbar(2,2)      = model->calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
 
    const auto vu = MODELPARAMETER(vu);
    MODEL->set_Yu(((1.4142135623730951*topDRbar)/vu).transpose());
@@ -287,10 +267,7 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
    Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
    bottomDRbar(0,0)   = oneset.displayMass(mDown);
    bottomDRbar(1,1)   = oneset.displayMass(mStrange);
-   bottomDRbar(2,2)   = oneset.displayMass(mBottom);
-
-   if (model->get_thresholds())
-      bottomDRbar(2,2) = model->calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
+   bottomDRbar(2,2)   = model->calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
 
    const auto vd = MODELPARAMETER(vd);
    MODEL->set_Yd(((1.4142135623730951*bottomDRbar)/vd).transpose());
@@ -302,10 +279,7 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    electronDRbar(0,0) = oneset.displayMass(mElectron);
    electronDRbar(1,1) = oneset.displayMass(mMuon);
-   electronDRbar(2,2) = oneset.displayMass(mTau);
-
-   if (model->get_thresholds())
-      electronDRbar(2,2) = model->calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
+   electronDRbar(2,2) = model->calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
 
    const auto vd = MODELPARAMETER(vd);
    MODEL->set_Ye(((1.4142135623730951*electronDRbar)/vd).transpose());

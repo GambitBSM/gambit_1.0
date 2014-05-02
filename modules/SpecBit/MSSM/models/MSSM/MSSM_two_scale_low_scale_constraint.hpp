@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:26:52
+// File generated at Fri 2 May 2014 14:57:49
 
 #ifndef MSSM_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 #define MSSM_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
@@ -43,13 +43,10 @@ public:
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
-
-   void clear();
    double get_initial_scale_guess() const;
-   void initialize();
    void set_input_parameters(const MSSM_input_parameters&);
    void set_sm_parameters(const QedQcd&);
-   void set_threshold_corrections(unsigned); ///< diable/enable threshold corrections
+   void reset(); ///< reset to initial state
 
 private:
    double scale;
@@ -59,7 +56,6 @@ private:
    QedQcd oneset;
    double MZDRbar;
    double new_g1, new_g2, new_g3;
-   unsigned threshold_corrections; ///< diable/enable threshold corrections
 
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();

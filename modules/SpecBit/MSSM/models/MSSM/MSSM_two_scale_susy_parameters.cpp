@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:25:37
+// File generated at Fri 2 May 2014 14:57:26
 
 #include "MSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -62,7 +62,7 @@ MSSM_susy_parameters::MSSM_susy_parameters(
 
 Eigen::ArrayXd MSSM_susy_parameters::beta() const
 {
-   return calc_beta().get();
+   return calc_beta().display();
 }
 
 MSSM_susy_parameters MSSM_susy_parameters::calc_beta() const
@@ -100,7 +100,6 @@ MSSM_susy_parameters MSSM_susy_parameters::calc_beta() const
 
 void MSSM_susy_parameters::clear()
 {
-   reset();
    Yd = Eigen::Matrix<double,3,3>::Zero();
    Ye = Eigen::Matrix<double,3,3>::Zero();
    Yu = Eigen::Matrix<double,3,3>::Zero();
@@ -248,7 +247,7 @@ Eigen::Matrix<double,3,3> CLASSNAME::get_SeRSeR() const
 }
 
 
-const Eigen::ArrayXd MSSM_susy_parameters::get() const
+const Eigen::ArrayXd MSSM_susy_parameters::display() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 
@@ -348,7 +347,7 @@ const MSSM_input_parameters& MSSM_susy_parameters::get_input() const
    return input;
 }
 
-void MSSM_susy_parameters::set_input_parameters(const MSSM_input_parameters& input_)
+void MSSM_susy_parameters::set_input(const MSSM_input_parameters& input_)
 {
    input = input_;
 }

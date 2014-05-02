@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:26:42
+// File generated at Fri 2 May 2014 14:57:46
 
 #ifndef MSSM_INPUT_PARAMETERS_H
 #define MSSM_INPUT_PARAMETERS_H
@@ -34,7 +34,7 @@ struct MSSM_input_parameters {
    double Azero;
 
    MSSM_input_parameters()
-      : m0(0), m12(0), TanBeta(0), SignMu(0), Azero(0)
+      : m0(125), m12(500), TanBeta(10), SignMu(1), Azero(0)
 
    {}
 };

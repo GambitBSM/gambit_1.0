@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 11 Jun 2014 15:26:49
+// File generated at Fri 2 May 2014 14:57:48
 
 #include "MSSM_two_scale_high_scale_constraint.hpp"
 #include "MSSM_two_scale_model.hpp"
@@ -47,21 +47,23 @@ namespace flexiblesusy {
 
 MSSM_high_scale_constraint<Two_scale>::MSSM_high_scale_constraint()
    : Constraint<Two_scale>()
-   , scale(0.)
-   , initial_scale_guess(0.)
    , fixed_scale(0.)
    , model(0)
    , inputPars()
 {
+   initial_scale_guess = 2.e16;
+
+   scale = initial_scale_guess;
 }
 
 MSSM_high_scale_constraint<Two_scale>::MSSM_high_scale_constraint(const MSSM_input_parameters& inputPars_)
    : Constraint<Two_scale>()
-   , fixed_scale(0.)
    , model(0)
    , inputPars(inputPars_)
 {
-   initialize();
+   initial_scale_guess = 2.e16;
+
+   scale = initial_scale_guess;
 }
 
 MSSM_high_scale_constraint<Two_scale>::~MSSM_high_scale_constraint()
@@ -145,19 +147,11 @@ void MSSM_high_scale_constraint<Two_scale>::set_scale(double s)
    fixed_scale = s;
 }
 
-void MSSM_high_scale_constraint<Two_scale>::clear()
+void MSSM_high_scale_constraint<Two_scale>::reset()
 {
-   scale = 0.;
-   initial_scale_guess = 0.;
+   scale = initial_scale_guess;
    fixed_scale = 0.;
    model = NULL;
-}
-
-void MSSM_high_scale_constraint<Two_scale>::initialize()
-{
-   initial_scale_guess = 2.e16;
-
-   scale = initial_scale_guess;
 }
 
 void MSSM_high_scale_constraint<Two_scale>::update_scale()
@@ -181,10 +175,7 @@ void MSSM_high_scale_constraint<Two_scale>::update_scale()
    if (errno == ERANGE) {
 #ifdef ENABLE_VERBOSE
       ERROR("MSSM_high_scale_constraint<Two_scale>: Overflow error"
-            " during calculation of high scale: " << strerror(errno) << '\n'
-            << "   current scale = " << currentScale << '\n'
-            << "   new scale = " << scale << '\n'
-            << "   resetting scale to " << get_initial_scale_guess());
+            " during calculation of high scale: " << strerror(errno));
 #endif
       scale = get_initial_scale_guess();
       errno = 0;
