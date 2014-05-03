@@ -106,48 +106,114 @@ CLASSNAME::MSSM(const MSSM_input_parameters& input_)
 CLASSNAME::~MSSM()
 {
 }
+//inspired by softsusy's lsp method.  
+//This MSSM version assumes all states mass ordered. 
+//returns lsp mass and gives 3 integers to specify the state 
+// for most general case of a particle type with mass matrix 
+// row and col set to -1 when not needed 
+//(row only is used for vector) 
+//particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
+//3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
+double CLASSNAME::get_lsp_mass(int & particle_type, int & row, int & col) const
+{
+   row = -1; col = -1;  particle_type =-1;//set default
+   double minmass = fabs(MChi(0)); //most common lsp
+   particle_type = 0;
+   row = 0;
+  
+   /// sneutrinos 1
+   double lightest = MSv(0);
+   if (lightest < minmass) { 
+      minmass = lightest; 
+      particle_type = 1; 
+      row=0;
+   }
+   
 
-   double CLASSNAME::get_lsp_mass() {
-      std::cout << "Error: Sorry I don't know the LSP mass yet" << std::endl;
-      return 6666666666666.6666666666666;
-   };
+   /// up squarks 2
+   lightest = MSu(0);
+   if (lightest < minmass) { 
+      minmass = lightest; 
+      particle_type = 2;
+      row=0;
+   }
+   
+   /// down squarks 3
+   lightest = MSd(0);
+   if (lightest < minmass) { 
+      minmass = lightest; 
+      particle_type = 3;
+      row=0;      
+   }
+   
+   /// sleptons 4
+   lightest = MSe(0);
+   if (lightest < minmass) { 
+      minmass = lightest; 
+      particle_type = 4; 
+      row=0;    
+   }
+   
+  /// charginos 5
+   lightest = fabs(MCha(0));
+   if (lightest < minmass) { 
+      minmass = lightest; 
+      particle_type = 5; 
+      row=0;    
+   }
+   
+   /// gluino 6
+   lightest = fabs(MGlu);
+   if (lightest < minmass) {
+      minmass = lightest; 
+      particle_type = 6; 
+      row=0;    
+   }
+   
+   //We have no gravitino mass right now.   this should be added.
+   // /// gravitino -1 
+   // lightest = displayGravitino();
+   // if (lightest < minmass) {
+   //   minmass = lightest; posi = 0; posj = 0; particle_type = -1; }  
+   
+   return minmass;
+}
 
-   int CLASSNAME::get_numbers_stable_particles() {
-      std::cout << "Error: Sorry I have not learned to count yet" << std::endl; 
-      return 666;
-   }
-    void CLASSNAME::RunToScale(double scale){
-       std::cout << "Error: Sorry I have not learned to even crawl yet" << std::endl; 
-   }
-   double CLASSNAME::GetScale(){
-       std::cout << "Error: Sorry I have not read pesking and schroder yet" << std::endl; 
-       return 6666666666666.6666666666666;
-   }
-     void CLASSNAME::SetScale(double scale){
-       std::cout << "Error: Sorry I have not read pesking and schroder yet" << std::endl;
-   }
+//The MSSM has just one LSP - often the lightest neutralino
+int CLASSNAME::get_numbers_stable_particles() const {
+   return 1;
+}
+void CLASSNAME::RunToScale(double scale){
+   std::cout << "Error: Sorry I have not learned to even crawl yet" << std::endl; 
+}
+double CLASSNAME::GetScale() const {
+   return get_scale();
+}
+void CLASSNAME::SetScale(double scale){
+   std::cout << "Error: Sorry I have not read Peskin and Schroeder yet" << std::endl;
+}
 
 
-    double CLASSNAME::get_Pole_Mass(string){
-       std::cout << "Error: Sorry I know nothing" << std::endl;
-       return 6666666666666.6666666666666;
-   }
-    double CLASSNAME::get_Mixing(string){
-       std::cout << "Error: Sorry I know nothing" << std::endl;
-       return 6666666666666.6666666666666;
-   }
-    double CLASSNAME::get_mass2_parameter(string){
-       std::cout << "Error: Sorry I know nothing" << std::endl;
-       return 6666666666666.6666666666666;
-   }
-    double CLASSNAME::get_mass_parameter(string){
-       std::cout << "Error: Sorry I know nothing" << std::endl;
-       return 6666666666666.6666666666666;
-   }
-    double CLASSNAME::get_dimensionless_parameter(string){
-       std::cout << "Error: Sorry I know nothing" << std::endl;
-       return 6666666666666.6666666666666;
-   }
+double CLASSNAME::get_Pole_Mass(string) const {
+   std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+}
+double CLASSNAME::get_Mixing(string) const {
+   std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+}
+double CLASSNAME::get_mass2_parameter(string) const {
+   std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+}
+double CLASSNAME::get_mass_parameter(string) const {
+   std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+}
+double CLASSNAME::get_dimensionless_parameter(string) const {
+   std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+}
 
 
 void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
