@@ -184,7 +184,7 @@ int CLASSNAME::get_numbers_stable_particles() const {
    return 1;
 }
 void CLASSNAME::RunToScale(double scale){
-   std::cout << "Error: Sorry I have not learned to even crawl yet" << std::endl; 
+   run_to(scale);
 }
 double CLASSNAME::GetScale() const {
    return get_scale();
