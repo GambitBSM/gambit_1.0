@@ -52,16 +52,16 @@ public:
    explicit MSSM(const MSSM_input_parameters& input_ = MSSM_input_parameters());
    virtual ~MSSM();
    //methods from Spectrum to be defined.
-   virtual double get_lsp_mass();
-   virtual int get_numbers_stable_particles(); 
+   virtual double get_lsp_mass(int & particle_type, int & row, int & col) const;
+   virtual int get_numbers_stable_particles() const; 
    virtual void RunToScale(double scale);
-   virtual double GetScale();
+   virtual double GetScale() const;
    virtual void SetScale(double scale);
-   virtual double get_Pole_Mass(string);
-   virtual double get_Mixing(string);
-   virtual double get_mass2_parameter(string);
-   virtual double get_mass_parameter(string);
-   virtual double get_dimensionless_parameter(string);
+   virtual double get_Pole_Mass(string) const;
+   virtual double get_Mixing(string) const;
+   virtual double get_mass2_parameter(string) const;
+   virtual double get_mass_parameter(string) const;
+   virtual double get_dimensionless_parameter(string) const;
 
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
