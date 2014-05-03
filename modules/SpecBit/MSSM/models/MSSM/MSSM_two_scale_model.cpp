@@ -196,24 +196,168 @@ void CLASSNAME::SetScale(double scale){
    set_scale(scale);
 }
 
+//Takes a string and an index. 
+double CLASSNAME::get_Pole_Mass(std::string polemass) const {
+   if(polemass == "MZ") 
+      {
+         return get_MVZ();
+      }
+   else if(polemass == "MW") 
+      {
+         return get_MVWm();
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+   else if(polemass == "MA0") 
+      {
+         return get_MAh()(2);
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+    else if(polemass == "MHpm") 
+      {
+         return get_MHpm()(2);
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+   else if(polemass == "MGoldstone0") 
+      {
+         return get_MAh()(1);
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+    else if(polemass == "MGoldstonePM") 
+      {
+         return get_MHpm()(1);
+      }
+    else if (polemass == "MGluino")
+       {
+          return get_MGlu();
+       }
+    else if(polemass == "MGluon")
+      {
+         return get_MVG();
+      }
+   else if(polemass == "MPhoton")
+      {
+         return get_MVP();
+      }
+   else if(polemass == "Mtop")
+      {
+         return get_MFu()(3);
+      }
+    else if(polemass == "Mcharm")
+      {
+         return get_MFu()(2);
+      }
+    else if(polemass == "Mup")
+      {
+         return get_MFu()(1);
+      }
+    else if(polemass == "Mbottom")
+      {
+         return get_MFd()(3);
+      }
+    else if(polemass == "Mstrange")
+      {
+         return get_MFd()(2);
+      }
+    else if(polemass == "Mdown")
+      {
+         return get_MFd()(1);
+      }
+    else if(polemass == "Mtau")
+      {
+         return get_MFe()(3);
+      }
+    else if(polemass == "Mmuon")
+      {
+         return get_MFe()(2);
+      }
+    else if(polemass == "Melectron")
+      {
+         return get_MFe()(1);
+      }
+   else{ 
+   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
+}
 
-double CLASSNAME::get_Pole_Mass(string) const {
+//Takes a string and an index. 
+double CLASSNAME::get_Pole_Mass(std::string polemass, int i) const {
+   if(polemass == "MSd") 
+      {
+         return get_MSd()(i);
+      }
+   else if(polemass == "MSv") 
+      {
+         return get_MSv()(i);
+      }
+   else if(polemass == "MSu")
+      {
+         return get_MSu()(i);
+      }
+   else if(polemass == "MSe")
+      {
+         return get_MSe()(i);
+      } 
+   else if(polemass == "Mh0") 
+      {
+         return get_Mhh()(i);
+      }
+   //Here we may access the goldstone boson
+   //this is probably too dangerous to keep!
+   else if(polemass == "MA0") 
+      {
+         return get_MAh()(i);
+      }
+   //Here we may access the goldstone boson
+   //this is probably too dangerous to keep!
+    else if(polemass == "MHpm") 
+      {
+         return get_MHpm()(i);
+      }
+   else if(polemass == "MCha") 
+      {
+         return get_MCha()(i);
+      }
+   else if(polemass == "MChi") 
+      {
+         return get_MChi()(i);
+      }
+   else{ 
+   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
+}
+
+
+//Takes a string and an index. 
+double CLASSNAME::get_Pole_Mass(std::string polemass, int i, int j) const {
+   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+
+}
+
+double CLASSNAME::get_Mixing_angle(std::string) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
-double CLASSNAME::get_Mixing(string) const {
+
+double CLASSNAME::get_Mixing_element(std::string, int i, int j) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
-double CLASSNAME::get_mass2_parameter(string) const {
+double CLASSNAME::get_mass2_parameter(std::string) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
-double CLASSNAME::get_mass_parameter(string) const {
+double CLASSNAME::get_mass_parameter(std::string) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
-double CLASSNAME::get_dimensionless_parameter(string) const {
+double CLASSNAME::get_dimensionless_parameter(std::string) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
