@@ -31,11 +31,14 @@ public:
    //I'm splitting this up into types fpr just now
    //may reduce errors from typing when parameters and
    //pole masses have similar names etc
-   virtual double get_Pole_Mass(string) const = 0;
-   virtual double get_Mixing(string) const = 0;
-   virtual double get_mass2_parameter(string) const = 0;
-   virtual double get_mass_parameter(string) const = 0;
-   virtual double get_dimensionless_parameter(string) const = 0;
+   virtual double get_Pole_Mass(std::string) const = 0;
+   virtual double get_Pole_Mass(std::string, int) const = 0;
+   virtual double get_Pole_Mass(std::string, int, int) const = 0;
+   virtual double get_Mixing_angle(std::string) const = 0;
+   virtual double get_Mixing_element(std::string, int, int) const = 0;
+   virtual double get_mass2_parameter(std::string) const = 0;
+   virtual double get_mass_parameter(std::string) const = 0;
+   virtual double get_dimensionless_parameter(std::string) const = 0;
 
 };
 #endif

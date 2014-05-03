@@ -57,11 +57,14 @@ public:
    virtual void RunToScale(double scale);
    virtual double GetScale() const;
    virtual void SetScale(double scale);
-   virtual double get_Pole_Mass(string) const;
-   virtual double get_Mixing(string) const;
-   virtual double get_mass2_parameter(string) const;
-   virtual double get_mass_parameter(string) const;
-   virtual double get_dimensionless_parameter(string) const;
+   virtual double get_Pole_Mass(std::string) const;
+   virtual double get_Pole_Mass(std::string, int) const;
+   virtual double get_Pole_Mass(std::string, int, int) const;
+   virtual double get_Mixing_angle(std::string) const;
+   virtual double get_Mixing_element(std::string, int, int) const;
+   virtual double get_mass2_parameter(std::string) const;
+   virtual double get_mass_parameter(std::string) const;
+   virtual double get_dimensionless_parameter(std::string) const;
 
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
