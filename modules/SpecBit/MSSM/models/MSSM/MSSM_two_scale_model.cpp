@@ -107,6 +107,49 @@ CLASSNAME::~MSSM()
 {
 }
 
+   double CLASSNAME::get_lsp_mass() {
+      std::cout << "Error: Sorry I don't know the LSP mass yet" << std::endl;
+      return 6666666666666.6666666666666;
+   };
+
+   int CLASSNAME::get_numbers_stable_particles() {
+      std::cout << "Error: Sorry I have not learned to count yet" << std::endl; 
+      return 666;
+   }
+    void CLASSNAME::RunToScale(double scale){
+       std::cout << "Error: Sorry I have not learned to even crawl yet" << std::endl; 
+   }
+   double CLASSNAME::GetScale(){
+       std::cout << "Error: Sorry I have not read pesking and schroder yet" << std::endl; 
+       return 6666666666666.6666666666666;
+   }
+     void CLASSNAME::SetScale(double scale){
+       std::cout << "Error: Sorry I have not read pesking and schroder yet" << std::endl;
+   }
+
+
+    double CLASSNAME::get_Pole_Mass(string){
+       std::cout << "Error: Sorry I know nothing" << std::endl;
+       return 6666666666666.6666666666666;
+   }
+    double CLASSNAME::get_Mixing(string){
+       std::cout << "Error: Sorry I know nothing" << std::endl;
+       return 6666666666666.6666666666666;
+   }
+    double CLASSNAME::get_mass2_parameter(string){
+       std::cout << "Error: Sorry I know nothing" << std::endl;
+       return 6666666666666.6666666666666;
+   }
+    double CLASSNAME::get_mass_parameter(string){
+       std::cout << "Error: Sorry I know nothing" << std::endl;
+       return 6666666666666.6666666666666;
+   }
+    double CLASSNAME::get_dimensionless_parameter(string){
+       std::cout << "Error: Sorry I know nothing" << std::endl;
+       return 6666666666666.6666666666666;
+   }
+
+
 void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 {
    calculate_sm_pole_masses = flag;
