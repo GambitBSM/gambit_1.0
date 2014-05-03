@@ -183,6 +183,9 @@ double CLASSNAME::get_lsp_mass(int & particle_type, int & row, int & col) const
 int CLASSNAME::get_numbers_stable_particles() const {
    return 1;
 }
+
+   //these are just wrappers.  Need to test this carefully though
+   //inheritance is complicated
 void CLASSNAME::RunToScale(double scale){
    run_to(scale);
 }
@@ -190,7 +193,7 @@ double CLASSNAME::GetScale() const {
    return get_scale();
 }
 void CLASSNAME::SetScale(double scale){
-   std::cout << "Error: Sorry I have not read Peskin and Schroeder yet" << std::endl;
+   set_scale(scale);
 }
 
 
