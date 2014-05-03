@@ -162,12 +162,17 @@
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
                                                           CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 
+/// Declare a backend group, from which one backend requirement must be activated.
+#define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
+
 /// Define a rule that uses TAGS to determine which backend requirements of the current
 /// \link FUNCTION() FUNCTION\endlink are explicitly activated when one or more models 
 /// from the set MODELS are being scanned.  Declaring this rule makes backend requirements
 /// that match one or more TAGS conditional on the model being scanned.  Backend 
 /// requirements that do not match any such rule are considered unconditional, and are
-/// activated regardless of the model(s) being scanned.
+/// activated regardless of the model(s) being scanned.  Note that all rules have
+/// _immediate_ effect, so only apply to BACKEND_REQs of the current FUNCTION that have 
+/// already been declared!
 #define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      CORE_BE_MODEL_RULE(MODELS,TAGS)                   
 
 /// Define a rule that uses TAGS to determine a set of backend requirements of the current
@@ -179,11 +184,17 @@
 /// calls to \link BACKEND_OPTION() BACKEND_OPTION\endlink are added to the options provided
 /// by each previous declaration. In the case of multiple contradictory calls to 
 /// \link BACKEND_OPTION() BACKEND_OPTION\endlink, the rule defined by the latest call takes
-/// precedence.
+/// precedence.  Note that all rules have _immediate_ effect, so only apply to BACKEND_REQs
+/// of the current FUNCTION that have already been declared!
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         CORE_BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)                   
 
-/// Declare a backend group, from which one backend requirement must be activated.
-#define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
+/// Define a rule that certain sets of backend requirements need to be resolved by the same backend.
+/// The sets are identified by tags, any number of which can be passed to FORCE_SAME_BACKEND.
+/// All backend requirements with a given tag passed into FORCE_SAME_BACKEND will be forced
+/// by the dependency resolver to use functions from the same backend.  Note that all rules have
+/// _immediate_ effect, so only apply to BACKEND_REQs of the current FUNCTION that have 
+/// already been declared!
+#define FORCE_SAME_BACKEND(...)                           CORE_FORCE_SAME_BACKEND(__VA_ARGS__)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
 /// a backend variable to be available with capability \link BACKEND_REQ_deprecated() 
@@ -358,7 +369,7 @@
           return (*map_bools["BE_"+quant+obs])();                              \
         }                                                                      \
                                                                                \
-        /* Module currently requires BE_TAG from a backend to compute TAG*/    \
+        /* Module currently requires quant from a backend to compute obs*/     \
         bool currently_needs_from_backend(str quant, str obs)                  \
         {                                                                      \
           if (map_bools.find("BE_"+quant+obs+"now") == map_bools.end())        \
@@ -1330,7 +1341,7 @@
     {                                                                          \
                                                                                \
       /* Set up the commands to be called at runtime to apply the rule.*/      \
-      void CAT_4(apply_rule_,                                                  \
+      void CAT_6(apply_rule_,FUNCTION,_,                                       \
        BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                    \
        BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
       {                                                                        \
@@ -1340,10 +1351,10 @@
       /* Create the rule's initialisation object. */                           \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT_3(                                                        \
+        ini_code CAT_5(FUNCTION,_,                                             \
          BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
-         (&CAT_4(apply_rule_,                                                  \
+         (&CAT_6(apply_rule_,FUNCTION,_,                                       \
          BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
       }                                                                        \
@@ -1395,6 +1406,46 @@
     }                                                                          \
                                                                                \
   }                                                                            \
+
+
+/// Redirection of FORCE_SAME_BACKEND(TAGS) when invoked from within the core.
+#define CORE_FORCE_SAME_BACKEND(...)                                           \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "FORCE_SAME_BACKEND."))                                                     \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling FORCE_SAME_BACKEND. Please check the rollcall header "             \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "FORCE_SAME_BACKEND. Please check the rollcall header for "                 \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to apply the rule.*/      \
+      void CAT_4(apply_rule_,FUNCTION,_,                                       \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))) ()\
+      {                                                                        \
+        Functown::FUNCTION.makeBackendMatchingRule(#__VA_ARGS__);              \
+      }                                                                        \
+                                                                               \
+      /* Create the rule's initialisation object. */                           \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(FUNCTION,_,                                             \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))) \
+         (&CAT_4(apply_rule_,FUNCTION,_,BOOST_PP_SEQ_CAT(                      \
+         BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))));                \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
 
 
 /// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
@@ -1539,7 +1590,7 @@
     {                                                                          \
                                                                                \
       /* Set up the commands to be called at runtime to apply the rule.*/      \
-      void CAT_4(apply_rule_,                                                  \
+      void CAT_6(apply_rule_,FUNCTION,_,                                       \
        BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,      \
        BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
       {                                                                        \
@@ -1549,10 +1600,10 @@
       /* Create the rule's initialisation object. */                           \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT_3(                                                        \
+        ini_code CAT_5(FUNCTION,_,                                             \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
-         (&CAT_4(apply_rule_,                                                  \
+         (&CAT_6(apply_rule_,FUNCTION,_,                                       \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
       }                                                                        \

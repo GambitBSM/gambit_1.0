@@ -108,16 +108,17 @@ START_MODULE
     DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
     
     BACKEND_REQ(awesomeness, (lib123), double, (int))
-    BACKEND_REQ(refex, (libfirst1_only), double, (double&))
-    BACKEND_REQ(refex2, (libfirst1_only), void, (double&, double))
+    BACKEND_REQ(refex, (common_be), double, (double&))
+    BACKEND_REQ(refex2, (common_be), void, (double&, double))
     BACKEND_REQ(runMe, (), void, (double (*)(int&), int&))
     BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
-    BACKEND_REQ(someFunction, (libfirst1_only), void, ())
+    BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())
 
     ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM_demo, UED), (model_dependent_reqs) )
     BACKEND_OPTION( (LibFirst, 1.0), (libfirst1_only, lib123) )
     BACKEND_OPTION( (LibSecond), (lib123) )
     BACKEND_OPTION( (LibThird, 1.2, 1.3 , 1.5), (lib123) )
+    FORCE_SAME_BACKEND(common_be)
 
       //#define BACKEND_REQ_deprecated awesomeness       // awesomeness must be obtained from an external (backend) code, with
       //START_BACKEND_REQ_deprecated(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.

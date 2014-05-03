@@ -63,6 +63,7 @@
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
 #define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
+#define FORCE_SAME_BACKEND(...)                           DUMMYARG(__VA_ARGS__)                               
 #define BE_OPTION_deprecated(BACKEND,VERSTRING)           DUMMYARG(BACKEND,VERSTRING)
 /// @}
 
