@@ -1,0 +1,78 @@
+The spectrum members can be accessed using special accessors derived from the abstract base class Spectrum:
+
+   virtual double get_Pole_Mass(std::string) const = 0;
+   virtual double get_Pole_Mass(std::string, int) const = 0;
+   virtual double get_Pole_Mass(std::string, int, int) const = 0;
+   virtual double get_Mixing_angle(std::string) const = 0;
+   virtual double get_Mixing_element(std::string, int, int) const = 0;
+   virtual double get_mass2_parameter(std::string) const = 0;
+   virtual double get_mass_parameter(std::string) const = 0;
+   virtual double get_dimensionless_parameter(std::string) const = 0;
+
+The name of the member is passed as a string.  Some data members will be matrix or vector objects with elements accessed with additional indices, e.g for up type Yukawas, Yu, must be passes with two indices : 3,3.  
+
+
+FlexibleSUSY also generates automatically getters of the form get_<parameter
+name>() so variable g1 would be accessed from passed object m by
+m.get_g1() and the top qurk Yukawa coupling with m.get_Yu(3,3) to access the top quark Yukawa coupling.  These may also be used to access the provide members if you know which model you are working on and have identified the derived class. Currently several names are different to those used in the string accessors but these names will be changed soon to match the sting names.  For now I will list the altered names which are different at the end of the file.
+
+One may prefer the get_<parametername>() method to the string accessor method for reasons of safety (these will give a compile-time error the string getter will give a run-time error).  However it will fix you to using FlexibleSUSY as the internal storage in GAMBIT for that model.  There is no real reason to change a specific model from FlexibleSUSY as we are just using it internally for storage but nonetheless the base class does allow us the option of doing so at some point, as well as adding models that even FlexibleSUSY cannot do.    
+   
+We follow the conventions of SLHA: http://arxiv.org/pdf/hep-ph/0311123v4.pdf for exact meaning (e.g, sign convention on the mu parameter etc.) 
+
+Names fpr string accessors
+
+********************** DRbar dimensionless couplings*****************
+Yukawas: Yu, Yd, Ye for up quark, down quark and lepton Yukawas, where
+individual elements are specified by two indices.
+
+gauge couplings: g1,g2,g3 where g1 is the GUT normalised U(1) gauge
+coupling, g2 SU(2) gauge coupling and g3 SU(3) gauge coupling
+
+********************** DRbar dimension 1 SUSY parameters**************
+Mu - Higgsino bilinear
+vu - up type Higgs VEV (note 1/sqrt(2) factor in SLHA definition)
+vd - down type Higgs VEV (note 1/sqrt(2) factor in SLHA definition)
+We can also have tanb for vu/vd and v for sqrt(vu^2 + vd^2)
+ 
+scale - the renormalisation scale of the parameters
+
+********************* DRbar soft SUSY breakingmasses *****************
+soft scalar mass squared: mQ2, mL2, mu2, md2, me2, mHu2, mHd2 
+(with two indices for family) for left squark, left slepton, right up
+squark, right down squark, up Higgs and down Higgs.
+
+SoftTrilinears: au, ad, ae for up quark, down quark and lepton, (two
+indices for family) where these are the complete trilinear couplings
+rather than the SUGRA style 'A' where a = y A.
+
+Gaugino masses: M1, M2, M3
+
+Bilinear: m3sq
+
+********************* Physical Masses ******************************
+Higgs: Mh0, MA0, MHpm for CP even, CP odd and charged where the first
+has an index, elements ordered lightest to heaviest (extensions with extra cp
+odd and charged will then also have an index).
+
+Gaugiunos: MGluino, MChi, MCha where the the neutralino and chargino
+carry an index with elements ordered lightest to heaviest  .
+
+Sfermions: MSu, MSd, MSe, MSv, with mass ordered index.
+
+Fermions: MFu, MFd, MFe with index over generation
+
+Gauge bosons:  MZ, MW
+
+Goldstone bosons: Goldstone0, GoldstonePM (These are unlikely to be needed but are computed as a by product by FlexibleSUSY, not all spectrum generators calculate them, so they may not get filled.   Masses in R-Xi, Xi=1 gauge at one loop -- note: only the tree level DRbar mass is equal to the gauge bosons. )
+
+********************* Mixings ******************************
+
+sfermion: ZU, ZD, ZE, ZV mass matrix for sup, sdown, slepton and
+sneutino sfermions, defined as in Eqn 16 of
+http://arxiv.org/pdf/hep-ph/0311123v4.pdf
+
+gauginos: UP, UM for charginos and ZN for neutralinos
+
+Higgs: ZH, ZA, ZP for CP even, CP odd and charged (In the MSSM ZA and
+ZP are just 2 by 2 and are fixed by the angle beta.)
