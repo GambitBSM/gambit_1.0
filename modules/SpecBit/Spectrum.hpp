@@ -40,7 +40,11 @@ public:
    virtual double get_Mixing_angle(std::string) const = 0;
    virtual double get_Mixing_element(std::string, int, int) const = 0;
    virtual double get_mass2_parameter(std::string) const = 0;
+   virtual double get_mass2_parameter(std::string, int) const = 0;
+   virtual double get_mass2_parameter(std::string, int, int) const = 0;
    virtual double get_mass_parameter(std::string) const = 0;
+   virtual double get_mass_parameter(std::string, int) const = 0;
+   virtual double get_mass_parameter(std::string, int, int) const = 0;
    virtual double get_dimensionless_parameter(std::string) const = 0;
    virtual double get_dimensionless_parameter(std::string, int) const = 0;
    virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
