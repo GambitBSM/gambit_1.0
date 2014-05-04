@@ -503,13 +503,97 @@ double CLASSNAME::get_Mixing_element(std::string, int i, int j) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
-double CLASSNAME::get_mass2_parameter(std::string) const {
-   std::cout << "Error: Sorry I know nothing" << std::endl;
-   return 6666666666666.6666666666666;
+double CLASSNAME::get_mass2_parameter(std::string mass) const {
+   if(mass == "BMu"){
+      return get_BMu();
+   }
+   else if (mass == "mHd2"){
+      return get_mHd2();
+   }
+    else if (mass == "mHu2"){
+      return get_mHu2();
+   }
+   else{
+ std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
 }
-double CLASSNAME::get_mass_parameter(std::string) const {
-   std::cout << "Error: Sorry I know nothing" << std::endl;
-   return 6666666666666.6666666666666;
+double CLASSNAME::get_mass2_parameter(std::string, int i) const {
+   std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+}
+double CLASSNAME::get_mass2_parameter(std::string mass, int i, int j) const {
+   if(mass == "mq2"){
+      return get_mq2(i,j);
+   }
+   else if (mass == "ml2"){
+      return get_ml2(i,j);
+   }
+    else if (mass == "md2"){
+      return get_md2(i,j);
+   }
+    else if (mass == "mu2"){
+      return get_mu2(i,j);
+   }
+    else if (mass == "me2"){
+      return get_me2(i,j);
+   }
+ else{
+  std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
+}
+
+double CLASSNAME::get_mass_parameter(std::string mass) const {
+   if(mass == "Mu"){
+      return get_Mu();
+   }
+   else if (mass == "vu") {
+      return get_vu();
+   }
+   else if (mass == "vd") {
+      return get_vd();
+   }
+   else if (mass == "vev") {
+      return sqrt(get_vu()*get_vu() + get_vd()*get_vd());
+   }
+   else if (mass == "M1") {
+      //This name may change at some point.
+      return get_MassB();
+   } 
+    else if (mass == "M2") {
+      //This name may change at some point.
+      return get_MassWB();
+   } 
+    else if (mass == "M3") {
+      //This name may change at some point.
+      return get_MassG();
+   } 
+   else{
+  std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
+}
+
+double CLASSNAME::get_mass_parameter(std::string, int) const {
+
+  std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+}
+double CLASSNAME::get_mass_parameter(std::string mass, int i, int j) const {
+   if (mass == "TYd" || mass == "ad"){
+      return get_TYd(i,j);
+   }
+   else if (mass == "TYe" || mass == "ae"){
+      return get_TYe(i,j);
+   } 
+   else if (mass == "TYu" || mass == "au"){
+      return get_TYu(i,j);
+   } 
+   else{
+  std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
 }
    
    double CLASSNAME::get_dimensionless_parameter(std::string coupling) const {
@@ -521,6 +605,9 @@ double CLASSNAME::get_mass_parameter(std::string) const {
       }
       else if (coupling == "g3"){
          return get_g3();
+      }
+      else if (coupling == "tanbeta"){
+         return get_vu() / get_vd();
       }
       else{
   std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
