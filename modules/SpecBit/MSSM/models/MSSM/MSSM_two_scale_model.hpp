@@ -57,6 +57,9 @@ public:
    virtual void RunToScale(double scale);
    virtual double GetScale() const;
    virtual void SetScale(double scale);
+   virtual double get_DRbar_MassEigenstate(std::string) const;
+   virtual double get_DRbar_MassEigenstate(std::string, int) const;
+   virtual double get_DRbar_MassEigenstate(std::string, int, int) const;
    virtual double get_Pole_Mass(std::string) const;
    virtual double get_Pole_Mass(std::string, int) const;
    virtual double get_Pole_Mass(std::string, int, int) const;

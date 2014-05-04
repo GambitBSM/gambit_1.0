@@ -201,8 +201,10 @@ std::string CLASSNAME::AccessError(std::string state) const {
    errormsg = "Error accessing "+ state + " element is out of bounds";
    return errormsg;
 }
+
+
 //Takes a string and an index. 
-double CLASSNAME::get_Pole_Mass(std::string polemass) const {
+double CLASSNAME::get_DRbar_MassEigenstate(std::string polemass) const {
    if(polemass == "MZ") 
       {
          return get_MVZ();
@@ -290,7 +292,7 @@ double CLASSNAME::get_Pole_Mass(std::string polemass) const {
 }
 
 //Takes a string and an index. 
-double CLASSNAME::get_Pole_Mass(std::string polemass, int i) const {
+double CLASSNAME::get_DRbar_MassEigenstate(std::string polemass, int i) const {
    if(polemass == "MSd") 
       {
          return get_MSd()(i);
@@ -339,11 +341,158 @@ double CLASSNAME::get_Pole_Mass(std::string polemass, int i) const {
 
 
 //Takes a string and an index. 
+double CLASSNAME::get_DRbar_MassEigenstate(std::string polemass, int i, int j) const {
+   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+
+}
+
+
+//Takes a string and an index. 
+double CLASSNAME::get_Pole_Mass(std::string polemass) const {
+   if(polemass == "MZ") 
+      {
+         return get_physical().MVZ;
+      }
+   else if(polemass == "MW") 
+      {
+         return get_physical().MVWm;
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+   else if(polemass == "MA0") 
+      {
+         return get_physical().MAh(1);
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+    else if(polemass == "MHpm") 
+      {
+         return get_physical().MHpm(1);
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+   else if(polemass == "MGoldstone0") 
+      {
+         return get_physical().MAh(0);
+      }
+   //I really need to know goldstone index here!
+   //Dangerous otherwise
+    else if(polemass == "MGoldstonePM") 
+      {
+         return get_physical().MHpm(0);
+      }
+    else if (polemass == "MGluino")
+       {
+          return get_physical().MGlu;
+       }
+    else if(polemass == "MGluon")
+      {
+         return get_physical().MVG;
+      }
+   else if(polemass == "MPhoton")
+      {
+         return get_physical().MVP;
+      }
+   else if(polemass == "Mtop")
+      {
+         return get_physical().MFu(2);
+      }
+    else if(polemass == "Mcharm")
+      {
+         return get_physical().MFu(1);
+      }
+    else if(polemass == "Mup")
+      {
+         return get_physical().MFu(0);
+      }
+    else if(polemass == "Mbottom")
+      {
+         return get_physical().MFd(2);
+      }
+    else if(polemass == "Mstrange")
+      {
+         return get_physical().MFd(1);
+      }
+    else if(polemass == "Mdown")
+      {
+         return get_physical().MFd(0);
+      }
+    else if(polemass == "Mtau")
+      {
+         return get_physical().MFe(2);
+      }
+    else if(polemass == "Mmuon")
+      {
+         return get_physical().MFe(1);
+      }
+    else if(polemass == "Melectron")
+      {
+         return get_physical().MFe(0);
+      }
+   else{ 
+   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
+}
+
+//Takes a string and an index. 
+double CLASSNAME::get_Pole_Mass(std::string polemass, int i) const {
+   if(polemass == "MSd") 
+      {
+         return get_physical().MSd(i);
+      }
+   else if(polemass == "MSv") 
+      {
+         return get_physical().MSv(i);
+      }
+   else if(polemass == "MSu")
+      {
+         return get_physical().MSu(i);
+      }
+   else if(polemass == "MSe")
+      {
+         return get_physical().MSe(i);
+      } 
+   else if(polemass == "Mh0") 
+      {
+         return get_physical().Mhh(i);
+      }
+   //Here we may access the goldstone boson
+   //this is probably too dangerous to keep!
+   else if(polemass == "MA0") 
+      {
+         return get_physical().MAh(i);
+      }
+   //Here we may access the goldstone boson
+   //this is probably too dangerous to keep!
+    else if(polemass == "MHpm") 
+      {
+         return get_physical().MHpm(i);
+      }
+   else if(polemass == "MCha") 
+      {
+         return get_physical().MCha(i);
+      }
+   else if(polemass == "MChi") 
+      {
+         return get_physical().MChi(i);
+      }
+   else{ 
+   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+   }
+}
+
+
+//Takes a string and an index. 
 double CLASSNAME::get_Pole_Mass(std::string polemass, int i, int j) const {
    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 
 }
+
+
 
 double CLASSNAME::get_Mixing_angle(std::string) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
