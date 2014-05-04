@@ -511,9 +511,44 @@ double CLASSNAME::get_mass_parameter(std::string) const {
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
-double CLASSNAME::get_dimensionless_parameter(std::string) const {
-   std::cout << "Error: Sorry I know nothing" << std::endl;
-   return 6666666666666.6666666666666;
+   
+   double CLASSNAME::get_dimensionless_parameter(std::string coupling) const {
+      if(coupling == "g1"){
+         return get_g1();
+      }
+      else if (coupling == "g2"){
+         return get_g2();
+      }
+      else if (coupling == "g3"){
+         return get_g3();
+      }
+      else{
+  std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+      }
+}
+
+   double CLASSNAME::get_dimensionless_parameter(std::string coupling, int i) const {   
+  std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+}
+
+
+
+   double CLASSNAME::get_dimensionless_parameter(std::string coupling, int i, int j) const {
+      if(coupling == "Yu"){
+         return get_Yu(i,j);
+      }
+      else if(coupling == "Yd"){
+         return get_Yd(i,j);
+      }
+      else if(coupling == "Ye"){
+         return get_Ye(i,j);
+      }
+      else{
+  std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+      }
 }
 
 
