@@ -196,6 +196,11 @@ void CLASSNAME::SetScale(double scale){
    set_scale(scale);
 }
 
+std::string CLASSNAME::AccessError(std::string state) const {
+   std::string errormsg;
+   errormsg = "Error accessing "+ state + " element is out of bounds";
+   return errormsg;
+}
 //Takes a string and an index. 
 double CLASSNAME::get_Pole_Mass(std::string polemass) const {
    if(polemass == "MZ") 
@@ -210,25 +215,25 @@ double CLASSNAME::get_Pole_Mass(std::string polemass) const {
    //Dangerous otherwise
    else if(polemass == "MA0") 
       {
-         return get_MAh()(2);
+         return get_MAh()(1);
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
     else if(polemass == "MHpm") 
       {
-         return get_MHpm()(2);
+         return get_MHpm()(1);
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
    else if(polemass == "MGoldstone0") 
       {
-         return get_MAh()(1);
+         return get_MAh()(0);
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
     else if(polemass == "MGoldstonePM") 
       {
-         return get_MHpm()(1);
+         return get_MHpm()(0);
       }
     else if (polemass == "MGluino")
        {
@@ -244,39 +249,39 @@ double CLASSNAME::get_Pole_Mass(std::string polemass) const {
       }
    else if(polemass == "Mtop")
       {
-         return get_MFu()(3);
+         return get_MFu()(2);
       }
     else if(polemass == "Mcharm")
       {
-         return get_MFu()(2);
+         return get_MFu()(1);
       }
     else if(polemass == "Mup")
       {
-         return get_MFu()(1);
+         return get_MFu()(0);
       }
     else if(polemass == "Mbottom")
       {
-         return get_MFd()(3);
+         return get_MFd()(2);
       }
     else if(polemass == "Mstrange")
       {
-         return get_MFd()(2);
+         return get_MFd()(1);
       }
     else if(polemass == "Mdown")
       {
-         return get_MFd()(1);
+         return get_MFd()(0);
       }
     else if(polemass == "Mtau")
       {
-         return get_MFe()(3);
+         return get_MFe()(2);
       }
     else if(polemass == "Mmuon")
       {
-         return get_MFe()(2);
+         return get_MFe()(1);
       }
     else if(polemass == "Melectron")
       {
-         return get_MFe()(1);
+         return get_MFe()(0);
       }
    else{ 
    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
