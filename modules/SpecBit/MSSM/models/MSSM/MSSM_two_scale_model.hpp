@@ -65,6 +65,7 @@ public:
    virtual double get_mass2_parameter(std::string) const;
    virtual double get_mass_parameter(std::string) const;
    virtual double get_dimensionless_parameter(std::string) const;
+   virtual std::string AccessError(std::string state) const;
 
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
