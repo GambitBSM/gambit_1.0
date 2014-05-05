@@ -2,6 +2,8 @@
 //  *********************************************
 /// \file
 ///  Utility Functions for the Gambit Scanner
+///  (now also used by printer system to register
+///   the available printers; see baseprinter.hpp)
 ///
 ///  *********************************************
 ///
@@ -18,6 +20,10 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2014 Mar
+///
+///  \author Ben Farmer
+///          (ben.farmer@gmail.com)
+///  \date 2014 May
 ///
 ///  *********************************************
 

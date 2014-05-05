@@ -46,7 +46,9 @@ namespace Gambit
         // Constructor
         ostreamPrinter(std::ostream&, bool);
    
-        // default destructor should be fine?
+        /// Destructor
+        // Overload the base class virtual destructor
+        ~ostreamPrinter();
  
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
@@ -71,7 +73,15 @@ namespace Gambit
         std::ostream& my_ostream;
         bool verbose;
     };
-    
+ 
+  // Register printer so it can be constructed via inifile instructions
+  // First argument is string label for inifile access, second is class from which to construct printer
+  //LOAD_PRINTER(ostream, ostreamPrinter)
+  //
+  // Ben> I have commented out the above because this printer can't really be used via the inifile, since it needs some particular
+  // ostream to be specified. Could build various wrappers that use this printer hooked up to various ostreams, if we really want.
+  // This printer is mostly just a toy example, however.    
+
   } // end namespace printers
 } // end namespace Gambit
 

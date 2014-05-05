@@ -25,6 +25,7 @@
 #include "module_rollcall.hpp"
 #include "register_error_handlers.hpp"
 #include "stream_printers.hpp"
+#include "printermanager.hpp"
 #include "priors.hpp"
 #include "modelgraph.hpp"
 #include "priorfactory.hpp"
@@ -87,12 +88,15 @@ int main( int argc, const char* argv[] )
     // Printers::ostreamPrinter printer(std::cout,1); 
     // For now the asciiPrinter can be constructed using any stream, so for file output
     // we need to give it a file stream object.
-    std::ofstream outfile("gambit_output.txt", std::ofstream::out);
-    std::ofstream infofile("gambit_output.info", std::ofstream::out);
-    Printers::asciiPrinter printer(outfile,infofile);
+    //std::ofstream outfile("gambit_output.txt", std::ofstream::out);
+    //std::ofstream infofile("gambit_output.info", std::ofstream::out);
+    //Printers::asciiPrinter printer(outfile,infofile);
+
+    // Set up the printer (redirection of scan output)
+    Gambit::Printers::PrinterManager printerManager(iniFile.getPrinterNode());
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), iniFile, printer);
+    DRes::DependencyResolver dependencyResolver(Core(), iniFile, *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();
