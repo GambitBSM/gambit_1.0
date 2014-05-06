@@ -250,7 +250,8 @@ namespace MCUtils {
     delete gp;
 
     // If start/end vertices are valid and distinct, and this was the only particle that
-    // connected them, then reassign the end vertex decay products to the start vertex.
+    // connected them, then reassign the end vertex decay products to the start vertex
+    // and rewrite the vertex position as most appropriate.
     /// @note The disconnected end vertex will be picked up by the final "sweeper" loop if necessary.
     /// @note We do the reassigning this way since GV::add_particle_*() modifies the end vertex
     if (vstart != NULL && vend != NULL && vend != vstart) {
@@ -259,6 +260,8 @@ namespace MCUtils {
         if (pchild->end_vertex() == vend) is_only_link = false;
       }
       if (is_only_link) {
+        if (vend->position() != HepMC::FourVector())
+          vstart->set_position(vend->position()); //< @todo Always use end position if defined... ok?
         while (vend->particles_out_size() > 0) {
           vstart->add_particle_out(*vend->particles_out_const_begin());
         }

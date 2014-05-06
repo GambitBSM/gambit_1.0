@@ -11,9 +11,8 @@
 namespace MCUtils {
 
 
-  /// @name Converters between MCUtils, HepMC and FastJet momentum types
+  /// @name Converters between MCUtils and FastJet momentum types
   //@{
-
 
   /// @todo Enable... conditionally on FJ version?
   // /// For attaching the GenParticle provenance info to a PseudoJet
@@ -30,6 +29,7 @@ namespace MCUtils {
     return fastjet::PseudoJet(p.px(), p.py(), p.pz(), p.E());
   }
 
+
   /// Convert a FastJet PseudoJet to a P4
   inline P4 mk_p4(const fastjet::PseudoJet& p) {
     const double m = p.m();
@@ -37,28 +37,20 @@ namespace MCUtils {
     return P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
   }
 
-  // /// Convert a HepMC FourVector to a FastJet PseudoJet
-  // inline fastjet::PseudoJet mk_pseudojet(const HepMC::FourVector& p4) {
-  //   return fastjet::PseudoJet(p4.px(), p4.py(), p4.pz(), p4.e());
-  // }
-
-  // /// Convert a HepMC GenParticle to a FastJet PseudoJet
-  // inline fastjet::PseudoJet mk_pseudojet(const HepMC::GenParticle* gp) {
-  //   fastjet::PseudoJet pj = mk_pseudojet(gp->momentum());
-  //   //pj.set_user_info(new HepMCInfo(p));
-  //   return pj;
-  // }
+  //@}
 
 
+  /// @name Jet builders
+  //@{
 
-  // /// Convert a vector of HepMC GenParticles to a vector of FastJet PseudoJets
-  // inline std::vector<fastjet::PseudoJet> mk_pseudojets(const std::vector<const HepMC::GenParticle*>& gps) {
-  //   std::vector<fastjet::PseudoJet> pjs;
-  //   BOOST_FOREACH (const HepMC::GenParticle* gp, gps) {
-  //     pjs.push_back( mk_pseudojet(gp) );
-  //   }
-  //   return pjs;
-  // }
+  /// Construct pT-sorted jets using the @a alg measure with jet @a R parameter, and min pT @a ptmin (in MeV)
+  inline std::vector<fastjet::PseudoJet> get_jets(const std::vector<fastjet::PseudoJet>& particles, double R, double ptmin,
+                                                  fastjet::JetAlgorithm alg=fastjet::antikt_algorithm) {
+    const fastjet::JetDefinition jet_def(alg, R);
+    /// @todo Add area definition?
+    fastjet::ClusterSequence cseq(particles, jet_def); //< @todo Need new + auto_ptr?
+    return sorted_by_pt(cseq.inclusive_jets(ptmin));
+  }
 
   //@}
 
