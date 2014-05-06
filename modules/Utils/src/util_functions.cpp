@@ -19,23 +19,20 @@
 namespace Gambit
 {
 
+  const char* whitespaces[] = {" ", "\t", "\n", "\f", "\r"};
+
   /// Split a string into a vector of strings using a delimiter,
   /// and remove any whitespace around the delimiters.
-  std::vector<std::string> delimiterSplit(std::string s, std::string delim)
+  std::vector<str> delimiterSplit(str s, str delim)
   {
-    std::vector<std::string> vec;
+    std::vector<str> vec;
     // Get rid of any whitespace around the delimiters
-    #if GAMBIT_CONFIG_FLAG_use_std_regex     // Using std::regex :D
-      std::regex rgx1("\\s+"+delim), rgx2(delim+"\\s+");
-      s = std::regex_replace(s, rgx1, delim);
-      s = std::regex_replace(s, rgx2, delim);
-    #elif GAMBIT_CONFIG_FLAG_use_boost_regex // Using boost::regex :|
-      boost::regex rgx1("\\s+"+delim), rgx2(delim+"\\s+");
-      s = boost::regex_replace(s, rgx1, delim);
-      s = boost::regex_replace(s, rgx2, delim);
-    #else                                    // Using lame-o methods >:(
-      const char* whitespaces[] = {" ", "\t", "\n", "\f", "\r"};
-      std::string previous = s+".";
+    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D 
+      regex rgx1("\\s+"+delim), rgx2(delim+"\\s+");
+      s = regex_replace(s, rgx1, delim);
+      s = regex_replace(s, rgx2, delim);
+    #else                                // Using lame-o methods >:(
+      str previous = s+".";
       while (s != previous) 
       {
         previous = s;
@@ -51,6 +48,37 @@ namespace Gambit
     return vec;
   }
 
+  /// Strips all whitespaces from a string, but re-inserts a single regular space after "const".
+  str strip_whitespace_except_after_const(str s)
+  {
+    str tempstr("__TEMP__"), empty(""), constdec2("const ");
+    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
+      regex constdec1("const\\s+"), temp(tempstr), whitespace("\\s+");
+      s = regex_replace(s, constdec1, tempstr);
+      s = regex_replace(s, whitespace, empty);
+      s = regex_replace(s, temp, constdec2); 
+    #else                                // Using lame-o methods >:(
+      str previous = s+".";
+      while (s != previous) 
+      {
+        previous = s;
+        for (int i = 0; i != 5; i++)
+        {
+          boost::replace_all(s, str("const")+whitespaces[i], tempstr);
+          s.erase(std::remove(s.begin(), s.end(), *whitespaces[i]), s.end());
+        }
+      }
+      boost::replace_all(s, tempstr, constdec2);
+    #endif
+    return s;
+  }
+
+  /// Strips leading and/or trailing parentheses from a string.
+  void strip_parentheses(str &s)
+  {
+    if (s.at(0) == '(')       s = s.substr(1, s.size());
+    if (*s.rbegin() == ')')   s = s.substr(0, s.size()-1);
+  }
 
 }
 

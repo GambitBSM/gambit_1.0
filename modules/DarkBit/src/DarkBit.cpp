@@ -16,7 +16,7 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 Jul
-///  \date 2014 Jan
+///  \date 2014 Jan, Feb, Mar, Apr
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -25,6 +25,7 @@
 ///  *********************************************
 
 #include <dlfcn.h>
+#include <fstream>
 #include <iostream>
 #include <algorithm>
 
@@ -33,30 +34,43 @@
 #include "DarkBit_rollcall.hpp"
 #include "util_macros.hpp"
 
+//PS: this is OK here, in a source file, *but not in headers like DarkBit_types.hpp*!!!
+using namespace Gambit::BF;
+
 namespace Gambit {
 
   namespace DarkBit {
 
 //////////////////////////////////////////////////////////////////////////
+//
+//                 Initialization functions for DarkBit
+//
+// Note: This goes into the backend init functions, once they are there
+//
 //////////////////////////////////////////////////////////////////////////
 
     void DarkBit_PointInit_Default()
     {
       using namespace Pipes::DarkBit_PointInit_Default;
       // Nothing
-    }  // function DarkBit_PointInit_Default()
+    }
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-
-/*
     void DarkBit_PointInit_MSSM7()
-    //This passes SUSY parameters to DarkSUSY. At the moment, SUSY values
-    //are simply set by hand; eventually, they should be taken from the internal
-    //(SLHA-like?) GAMBIT representation
     {
       using namespace Pipes::DarkBit_PointInit_MSSM7;
-      bool static dsinit_flag = false;
+
+      // Initialize DarkSUSY if run for the first time
+      bool static first_time = true;
+      if (first_time) 
+      {
+          std::cout << "DarkSUSY initialization" << std::endl;
+          BEreq::dsinit();
+          BEreq::dsrdinit();
+          first_time = false;
+      }
+
+      // Set up mssmpar structure
+      // Hard-coded values for now
       int i, unphys=0, hwarning=0;
       DS_MSSMPAR mssmpar;
       mssmpar.m1 = 500;
@@ -79,18 +93,79 @@ namespace Gambit {
       mssmpar.asoftd[2] = 1;
       mssmpar.asofte[2] = 0;
 
-//      cout << "Set mssmpar:" << endl;
+      // And initialize DS
       *BEreq::mssmpar = mssmpar;
-
-//      cout << "Call dssusy(unphys, hwarning):" << endl;
       BEreq::dssusy(unphys, hwarning);
+    }
 
-    } // function DarkBit_PointInit_MSSM7
-*/
+    void DarkBit_PointInit_MSSM()
+    {
+      using namespace Pipes::DarkBit_PointInit_MSSM;
+
+      // Initialize DarkSUSY if run for the first time
+      bool static first_time = true;
+      if (first_time) 
+      {
+          std::cout << "DarkSUSY initialization" << std::endl;
+          BEreq::dsinit();
+          BEreq::dsrdinit();
+          first_time = false;
+      }
+
+      // Save eaSLHA file to disc
+      eaSLHA mySLHA = *Dep::MSSMspectrum;
+      ofstream ofs("DarkBit_temp.slha");
+      ofs << mySLHA;
+      ofs.close();
+
+      // Initialize SUSY spectrum from SLHA
+      int len = 17;
+      int flag = 15;
+      char * filename = "DarkBit_temp.slha";
+      BEreq::dsSLHAread(byVal(filename), flag, byVal(len));
+      BEreq::dsprep();
+
+      // Initialize micromegas mass spectrum from SLHA
+      char cdmName[10];
+      int err;
+      err = BEreq::lesHinput(byVal(filename));
+      err = BEreq::mass_spectrum(byVal(cdmName));
+    }
+
+    void DarkBit_PointInit_CMSSM()
+    {
+      using namespace Pipes::DarkBit_PointInit_CMSSM;
+
+      // Initialize DarkSUSY if run for the first time
+      bool static first_time = true;
+      if (first_time) 
+      {
+          std::cout << "DarkSUSY initialization" << std::endl;
+          BEreq::dsinit();
+          BEreq::dsrdinit();
+          first_time = false;
+      }
+
+      // Setup mSUGRA model from CMSSM parameters
+      double am0 = *Param["M0"];  // m0
+      double amhf = *Param["M12"];  // m_1/2
+      double aa0 = *Param["A0"];  // A0
+      double asgnmu = *Param["sgnmu"];  // sign(mu)
+      double atanbe = *Param["tanb"];  // tan(beta)
+      int unphys, hwarning;
+      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
+      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+      BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+      BEreq::dssusy_isasugra(unphys, hwarning);
+    }
 
 
 //////////////////////////////////////////////////////////////////////////
+//
+//                    DarkSUSY Relic density routines
+//
 //////////////////////////////////////////////////////////////////////////
+
     void RD_spectrum_SUSY(RDspectype &result)
     {
       using namespace Pipes::RD_spectrum_SUSY;
@@ -205,9 +280,6 @@ namespace Gambit {
 
     } // function RD_spectrum_SUSY
 
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
     void RD_thresholds_resonances_ordered(RDrestype &result)
     {
       using namespace Pipes::RD_thresholds_resonances_ordered;
@@ -257,10 +329,6 @@ namespace Gambit {
  
     } // function RD_thresholds_resonances_ordered
 
-
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
     void RD_eff_annrate_SUSY_DSprep_func(int &result)
     {
       using namespace Pipes::RD_eff_annrate_SUSY_DSprep_func;
@@ -304,26 +372,18 @@ namespace Gambit {
 
     } // function RD_eff_annrate_SUSY_DSprep_func
 
-
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
       using namespace Pipes::RD_eff_annrate_SUSY;
 
       // This is supposed to specify that BE=DS is used to determine Weff
       if (1==1) {
-        result=BEreq::dsanwx.pointer<double&>();
+        result=BEreq::dsanwx.pointer();
       }
       // similar for other BEs...
 
-
     } // function RD_eff_annrate_SUSY
 
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
     void RD_oh2_general(double &result)
     {
       using namespace Pipes::RD_oh2_general;
@@ -408,7 +468,7 @@ namespace Gambit {
 
         // now solve Boltzmann eqn using tabulated rate
         double xend, yend, xf; int nfcn;
-        BEreq::dsrdeqn(byVal(BEreq::dsrdwintp.pointer<double&>()),xstart,xend,yend,xf,nfcn);
+        BEreq::dsrdeqn(byVal(BEreq::dsrdwintp.pointer()),xstart,xend,yend,xf,nfcn);
         // using the untabulated rate gives the same result but is usually slower: 
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
         
@@ -425,37 +485,13 @@ namespace Gambit {
 
     } // function RD_oh2_general
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-    void DarkBit_PointInit_CMSSM()
-    {
-      using namespace Pipes::DarkBit_PointInit_CMSSM;
-      //Py8SLHA mySLHA = *Dep::MSSMspectrum;
-      bool static dsinit_flag = false;
-      // Initialize DarkSUSY if run for the first time
-      if (not dsinit_flag) 
-      {
-          std::cout << "DarkSUSY initialization" << std::endl;
-          BEreq::dsinit();
-          BEreq::dsrdinit();
-          dsinit_flag = true;
-      }
-      // Setup mSUGRA model from CMSSM parameters
-      double am0 = *Param["M0"];  // m0
-      double amhf = *Param["M12"];  // m_1/2
-      double aa0 = *Param["A0"];  // A0
-      double asgnmu = *Param["sgnmu"];  // sign(mu)
-      double atanbe = *Param["tanb"];  // tan(beta)
-      int unphys, hwarning;
-      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
-      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
-      BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
-      BEreq::dssusy_isasugra(unphys, hwarning);
-    }
-
 
 //////////////////////////////////////////////////////////////////////////
+//
+//                        Gamma-ray yields
+//
 //////////////////////////////////////////////////////////////////////////
+
     void GA_AnnYield_DarkSUSY(BFptr &result)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -607,8 +643,13 @@ namespace Gambit {
       result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->validRange(0, Emin, Emax)->addPar(1);
     }
 
+
 //////////////////////////////////////////////////////////////////////////
+//
+//      General catalogue for annihilation/decay process definition
+//
 //////////////////////////////////////////////////////////////////////////
+
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_CMSSM;
@@ -739,15 +780,24 @@ namespace Gambit {
         result = catalog;
     }
 
+
 //////////////////////////////////////////////////////////////////////////
+//
+//             Simple relic density routines for cross-checks
+//                      (micromegas vs darksusy)
+//
 //////////////////////////////////////////////////////////////////////////
-//TB: This should be obsolete now!?
+
     void RD_oh2_DarkSUSY(double &result)
     {
         using namespace Pipes::RD_oh2_DarkSUSY;
         // Input
-        int omtype = 0;  // 0: no coann; 1: all coann
+        int omtype = 1;  // 0: no coann; 1: all coann
         int fast = 0;  // 0: standard; 1: fast; 2: dirty
+
+        // Set options via ini-file
+        if (runOptions->hasKey("omtype")) omtype = runOptions->getValue<int>("omtype");
+        if (runOptions->hasKey("fast")) fast = runOptions->getValue<int>("fast");
 
         // Output
         double xf;  // freeze-out temperature
@@ -759,59 +809,31 @@ namespace Gambit {
         result = oh2;
     }
 
-/*    
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void RD_oh2_micromegas(double &oh2)
     {
-        using namespace Pipes::TH_ProcessCatalog_CMSSM;
+    	using namespace Pipes::RD_oh2_micromegas;
+        // Input
+        int fast=0;  // fast: 1, accurate: 0
+        double Beps=1.E-5;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
 
-        DS_MSPCTM mymspctm= *BEreq::mspctm;
-        // TODO:  Check if this is really DM mass
-        double mass = mymspctm.mass[41];  // Hardcoded array index
-        double sigmaTot = 3e-26;
+        // Set options via ini-file
+        if (runOptions->hasKey("fast")) fast = runOptions->getValue<int>("fast");
+        if (runOptions->hasKey("Beps")) Beps = runOptions->getValue<double>("Beps");
+        cout << "Using fast: " << fast << " and Beps: " << Beps << endl;
 
-        std::cout << "Generate ProcessCatalog for chi with mass=" << mass << " GeV and cs=" << sigmaTot << " cm3/s." << std::endl;
-
-        TH_ProcessCatalog catalog;  // Instantiate new ProcessCatalog
-        TH_Process process((std::string)"chi", (std::string)"chi");  // and annihilation process
-
-        // Set cross-sections
-        double sigma_mumu = 0.5 * sigmaTot;
-        double sigma_bbbar = 0.5 * sigmaTot;
-
-        // Create associated kinematical functions (just dependent on vrel)
-        // here: s-wave, vrel independent 1-dim constant function
-        BFptr kinematicFunction_mumu(new BFconstant(sigma_mumu, 1));
-        BFptr kinematicFunction_bbbar(new BFconstant(sigma_bbbar, 1));
-
-        // Create channel identifier strings
-        std::vector<std::string> finalStates_mumu;// {"mu+", "mu-"};
-        finalStates_mumu.push_back("mu+");
-        finalStates_mumu.push_back("mu-");
-        std::vector<std::string> finalStates_bbbar;// {"b", "bbar"};
-        finalStates_bbbar.push_back("b");
-        finalStates_bbbar.push_back("bbar");
-
-        // Create channels
-        TH_Channel channel_mumu(finalStates_mumu, kinematicFunction_mumu);
-        TH_Channel channel_bbbar(finalStates_bbbar, kinematicFunction_bbbar);
-
-        // Push them on channel list of process
-        process.channelList.push_back(channel_mumu);
-        process.channelList.push_back(channel_bbbar);
-
-        // And process on processe list
-        catalog.processList.push_back(process);
-
-        // Finally, store properties of "chi" in particleProperty list
-        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi", chiProperty));
-
-        result = catalog;
+        // Output
+        double Xf;
+        oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
+        cout << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
     }
-*/
+
 
 //////////////////////////////////////////////////////////////////////////
+//
+//                    Simple likelihood functions
+//
 //////////////////////////////////////////////////////////////////////////
+
     void lnL_FermiLATdwarfsSimple(double &result)
     {
         using namespace Pipes::lnL_FermiLATdwarfsSimple;
@@ -890,18 +912,6 @@ namespace Gambit {
         std::cout << "phi: " << phi << std::endl;
     }
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-    void RD_oh2_SingletDM(double &result)
-    {
-      using namespace Pipes::RD_oh2_SingletDM;
-      //double sigmaV = (*Dep::GA_BRs).sigmaV;
-      //result = 0.11/sigmaV * 3e-26;
-      result = 0;
-    }
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
     void lnL_oh2_Simple(double &result)
     {
       using namespace Pipes::lnL_oh2_Simple;
@@ -909,8 +919,13 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
+
 //////////////////////////////////////////////////////////////////////////
+//
+//                 Some direct detection toy stuff
+//
 //////////////////////////////////////////////////////////////////////////
+
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
@@ -924,15 +939,13 @@ namespace Gambit {
         std::cout << " gna: " << result.gna << std::endl;
     }
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
     void lnL_FakeLux(double &result)
     {
         using namespace Pipes::lnL_FakeLux;
         result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
     }
 
-
+/*
 // Tests for Torsten
 
     void provideN_func(int &result)
@@ -944,7 +957,7 @@ namespace Gambit {
     void provideF_func(double(*&result)(double&))
     {
       using namespace Pipes::provideF_func;
-      result = BEreq::funcGauss.pointer<double&>();
+      result = BEreq::funcGauss.pointer();
     }
 
     void CalcAv_func(double &result)
@@ -954,6 +967,65 @@ namespace Gambit {
       result = BEreq::average(byVal(*Dep::provideF), n);
       std::cout << "CalcAv_func: " << result << std::endl;
     }
+*/
+/*    
+    void RD_oh2_SingletDM(double &result)
+    {
+      using namespace Pipes::RD_oh2_SingletDM;
+      //double sigmaV = (*Dep::GA_BRs).sigmaV;
+      //result = 0.11/sigmaV * 3e-26;
+      result = 0;
+    }
+
+    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    {
+        using namespace Pipes::TH_ProcessCatalog_CMSSM;
+
+        DS_MSPCTM mymspctm= *BEreq::mspctm;
+        // TODO:  Check if this is really DM mass
+        double mass = mymspctm.mass[41];  // Hardcoded array index
+        double sigmaTot = 3e-26;
+
+        std::cout << "Generate ProcessCatalog for chi with mass=" << mass << " GeV and cs=" << sigmaTot << " cm3/s." << std::endl;
+
+        TH_ProcessCatalog catalog;  // Instantiate new ProcessCatalog
+        TH_Process process((std::string)"chi", (std::string)"chi");  // and annihilation process
+
+        // Set cross-sections
+        double sigma_mumu = 0.5 * sigmaTot;
+        double sigma_bbbar = 0.5 * sigmaTot;
+
+        // Create associated kinematical functions (just dependent on vrel)
+        // here: s-wave, vrel independent 1-dim constant function
+        BFptr kinematicFunction_mumu(new BFconstant(sigma_mumu, 1));
+        BFptr kinematicFunction_bbbar(new BFconstant(sigma_bbbar, 1));
+
+        // Create channel identifier strings
+        std::vector<std::string> finalStates_mumu;// {"mu+", "mu-"};
+        finalStates_mumu.push_back("mu+");
+        finalStates_mumu.push_back("mu-");
+        std::vector<std::string> finalStates_bbbar;// {"b", "bbar"};
+        finalStates_bbbar.push_back("b");
+        finalStates_bbbar.push_back("bbar");
+
+        // Create channels
+        TH_Channel channel_mumu(finalStates_mumu, kinematicFunction_mumu);
+        TH_Channel channel_bbbar(finalStates_bbbar, kinematicFunction_bbbar);
+
+        // Push them on channel list of process
+        process.channelList.push_back(channel_mumu);
+        process.channelList.push_back(channel_bbbar);
+
+        // And process on processe list
+        catalog.processList.push_back(process);
+
+        // Finally, store properties of "chi" in particleProperty list
+        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi", chiProperty));
+
+        result = catalog;
+    }
+*/
 
   }
 }

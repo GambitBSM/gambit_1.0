@@ -20,6 +20,7 @@
 #define __FastSim_types_hpp__
 
 #include "FastSim.hpp"
+#include "Event.hpp"
 /*
 #include "Jet.hpp"
 

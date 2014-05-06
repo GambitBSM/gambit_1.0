@@ -28,7 +28,7 @@
 #include <queue>
 
 #include "gambit_core.hpp"
-#include "printers_rollcall.hpp"
+#include "baseprinter.hpp"
 #include "functors.hpp"
 #include "error_handlers.hpp"
 #include "yaml_parser.hpp"
@@ -124,7 +124,7 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         // Resolution of individual module function dependencies
-        std::tuple<const IniParser::ObservableType *, DRes::VertexID>
+        boost::tuple<const IniParser::ObservableType *, DRes::VertexID>
           resolveDependency(DRes::VertexID toVertex, sspair quantity);
 
         // Generate full dependency tree
@@ -143,8 +143,14 @@ namespace Gambit
         const IniParser::ObservableType * findIniEntry(
             DRes::VertexID toVertex, const IniParser::ObservablesType &, const str &);
 
-        // Resolution of backend dependencies
+        // Main function for resolution of backend requirements
         void resolveVertexBackend(VertexID);
+
+        // Find backend function matching any one of a number of capability-type pairs. 
+        functor* solveRequirement(std::vector<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
+
+        /// Resolve a specific backend requirement.
+        void resolveRequirement(functor*, VertexID);
 
         //
         // Private data members

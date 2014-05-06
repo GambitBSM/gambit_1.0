@@ -34,7 +34,6 @@
 #define __util_types_hpp__
 
 #include <string>
-#include <iostream>
 #include <sstream>
 #include <omp.h>
 

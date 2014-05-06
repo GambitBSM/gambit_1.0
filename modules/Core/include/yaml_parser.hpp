@@ -150,6 +150,7 @@ namespace Gambit
         
         YAML::Node getParametersNode() const {return parametersNode;}
         YAML::Node getPriorsNode() const {return priorsNode;}
+        YAML::Node getPrinterNode() const {return printerNode;}
         YAML::Node getScannerNode() const {return scannerNode;}
         YAML::Node getKeyValuePairNode() const {return keyValuePairNode;}
         
@@ -223,6 +224,7 @@ namespace Gambit
         YAML::Node keyValuePairNode;
         YAML::Node parametersNode;
         YAML::Node priorsNode;
+        YAML::Node printerNode;
         YAML::Node scannerNode;
         // Central inifile structures: observables and scan parameteres 
         ObservablesType observables;

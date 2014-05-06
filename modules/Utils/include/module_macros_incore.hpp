@@ -61,7 +61,11 @@
 #endif
 
 #include <boost/preprocessor/logical/bitand.hpp>
-#include <boost/preprocessor/logical/compl.hpp>
+#include <boost/preprocessor/tuple/to_seq.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
+#include <boost/preprocessor/seq/cat.hpp>
+#include <boost/preprocessor/punctuation/comma.hpp>
+#include <boost/preprocessor/control/iif.hpp>
 
 
 /// \name Tag-registration macros
@@ -147,15 +151,60 @@
 
 #define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
 
-/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
-/// a backend variable to be available with capability \link BACKEND_REQ() 
-/// BACKEND_REQ\endlink and type \em TYPE.
-#define DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)            CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
+/// BACKEND_REQ indicates that the current \link FUNCTION() FUNCTION\endlink requires one
+/// backend variable or function to be available from a capability group \em GROUP,
+/// and then declares a viable member of that group, with capability \em REQUIREMENT, 
+/// type \em TYPE and (in the case of functions) arguments \em ARGS.  BACKEND_REQ also 
+/// allows the user to specify a list of \em TAGS that apply to this specific group member,
+/// which can then be used for easily implementing rules for choosing between different 
+/// members of the same \em GROUP.  Note that \em GROUPs are automatically declared the 
+/// first time that they are mentioned in a BACKEND_REQ statement.
+#define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
+                                                          CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 
-/// Register that the current \link BACKEND_REQ() BACKEND_REQ\endlink may
+/// Declare a backend group, from which one backend requirement must be activated.
+#define BE_GROUP(GROUP)                                   CORE_BE_GROUP(GROUP)
+
+/// Define a rule that uses TAGS to determine which backend requirements of the current
+/// \link FUNCTION() FUNCTION\endlink are explicitly activated when one or more models 
+/// from the set MODELS are being scanned.  Declaring this rule makes backend requirements
+/// that match one or more TAGS conditional on the model being scanned.  Backend 
+/// requirements that do not match any such rule are considered unconditional, and are
+/// activated regardless of the model(s) being scanned.  Note that all rules have
+/// _immediate_ effect, so only apply to BACKEND_REQs of the current FUNCTION that have 
+/// already been declared!
+#define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      CORE_BE_MODEL_RULE(MODELS,TAGS)                   
+
+/// Define a rule that uses TAGS to determine a set of backend requirements of the current
+/// \link FUNCTION() FUNCTION\endlink that are permitted to be fulfilled by the indicated
+/// BACKEND_AND_VERSIONS.  If no versions are given, all versions of the stated backend are
+/// considered allowed.  Declaring this rule makes all backend requirements that match
+/// the rule resolvable _only_ by the backend-version pairs passed into 
+/// \link BACKEND_OPTION() BACKEND_OPTION\endlink. Additional options provided by subsequent
+/// calls to \link BACKEND_OPTION() BACKEND_OPTION\endlink are added to the options provided
+/// by each previous declaration. In the case of multiple contradictory calls to 
+/// \link BACKEND_OPTION() BACKEND_OPTION\endlink, the rule defined by the latest call takes
+/// precedence.  Note that all rules have _immediate_ effect, so only apply to BACKEND_REQs
+/// of the current FUNCTION that have already been declared!
+#define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         CORE_BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)                   
+
+/// Define a rule that certain sets of backend requirements need to be resolved by the same backend.
+/// The sets are identified by tags, any number of which can be passed to FORCE_SAME_BACKEND.
+/// All backend requirements with a given tag passed into FORCE_SAME_BACKEND will be forced
+/// by the dependency resolver to use functions from the same backend.  Note that all rules have
+/// _immediate_ effect, so only apply to BACKEND_REQs of the current FUNCTION that have 
+/// already been declared!
+#define FORCE_SAME_BACKEND(...)                           CORE_FORCE_SAME_BACKEND(__VA_ARGS__)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires a
+/// a backend variable to be available with capability \link BACKEND_REQ_deprecated() 
+/// BACKEND_REQ_deprecated\endlink and type \em TYPE.  !FIXME DEPRECATED!!
+#define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
+
+/// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
 /// be provided by backend \em BACKEND.  Permitted versions are passed in
-/// \em VERSTRING.
-#define BE_OPTION(BACKEND,VERSTRING)                      CORE_BACKEND_OPTION(BACKEND,VERSTRING)
+/// \em VERSTRING.  !FIXME DEPRECATED!!
+#define BE_OPTION_deprecated(BACKEND,VERSTRING)           CORE_BACKEND_OPTION_deprecated(BACKEND,VERSTRING)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may depend on the 
 /// presence of another module function that can supply capability 
@@ -169,12 +218,9 @@
 /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 
-/// Expander for ACTIVATE_FOR_MODELS
-/// Depends on whether the macro has been called inside a \em BACKEND_REQ block or a \em CONDITIONAL_DEPENDENCY block.
-/// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink or
-/// \link BACKEND_REQ() BACKEND_REQ\endlink should be activated if the model being scanned matches one of the
-/// models passed as an argument.
-#define ACTIVATE_FOR_MODELS(...)                         IF_ELSE_TOKEN_DEFINED(BACKEND_REQ, ACTIVATE_BE_MODEL, ACTIVATE_DEP_MODEL)(#__VA_ARGS__)
+/// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
+/// should be activated if the model being scanned matches one of the models passed as an argument.
+#define ACTIVATE_FOR_MODELS(...)                         ACTIVATE_DEP_MODEL(#__VA_ARGS__)
 /// @}
 
 /// \name Initialisation dependency switches.
@@ -232,8 +278,8 @@
                                                                                \
       CORE_START_MODULE_COMMON(MODULE)                                         \
                                                                                \
-      /* Runtime registeration of module with the log system */                \
-      /* Not in CORE_START_MODULE_COMMON because we don't want models to have
+      /* Runtime registration of module with the log system */                 \
+      /* Not in CORE_START_MODULE_COMMON because we don't want models to have  \
          their own logging tags... probably */                                 \
       void rt_register_module_with_log ()                                      \
       {                                                                        \
@@ -246,7 +292,7 @@
       {                                                                        \
         ini_code register_module_with_log (&rt_register_module_with_log);      \
       }                                                                        \
-                                                                               \ 
+                                                                               \
     }                                                                          \
   }                                                                            \
 
@@ -312,11 +358,30 @@
           return requires(dep, obs, req, be, "any");                           \
         }                                                                      \
                                                                                \
-        /* Module requires quantity BE_TAG from a backend to compute TAG */    \
+        /* Module could require quantity BE_TAG from a backend to compute TAG*/\
+        template <typename BE_TAG, typename TAG>                               \
+        bool could_need_from_backend() { return false; }                       \
+                                                                               \
+        /* Overloaded, non-templated version */                                \
+        bool could_need_from_backend(str quant, str obs)                       \
+        {                                                                      \
+          if (map_bools.find("BE_"+quant+obs) == map_bools.end()) return false;\
+          return (*map_bools["BE_"+quant+obs])();                              \
+        }                                                                      \
+                                                                               \
+        /* Module currently requires quant from a backend to compute obs*/     \
+        bool currently_needs_from_backend(str quant, str obs)                  \
+        {                                                                      \
+          if (map_bools.find("BE_"+quant+obs+"now") == map_bools.end())        \
+           return false;                                                       \
+          return (*map_bools["BE_"+quant+obs+"now"])();                        \
+        }                                                                      \
+                                                                               \
+        /* Module requires quantity BE_TAG from a backend to compute TAG FIXME DEPRECATED*/    \
         template <typename BE_TAG, typename TAG>                               \
         bool needs_from_backend() { return false; }                            \
                                                                                \
-        /* Overloaded, non-templated version */                                \
+        /* Overloaded, non-templated version FIXME DEPRECATED*/                                \
         bool needs_from_backend(str quant, str obs)                            \
         {                                                                      \
           if (map_bools.find("BE_"+quant+obs) == map_bools.end()) return false;\
@@ -324,11 +389,11 @@
         }                                                                      \
                                                                                \
         /* Module requires quantity BE_TAG from a backend to compute TAG if    \
-        scanning a given model. */                                             \
+        scanning a given model. FIXME DEPRECATED*/                                             \
         template <typename BE_TAG, typename TAG>                               \
         bool needs_from_backend_conditional_on_model(str) { return false; }    \
                                                                                \
-        /* Additional overloaded, non-templated version of needs_from_backend*/\
+        /* Additional overloaded, non-templated version of needs_from_backend FIXME DEPRECATED*/\
         bool needs_from_backend(str quant, str obs, str model)                 \
         {                                                                      \
           if (condit_bools.find("BE_"+quant+obs) == condit_bools.end())        \
@@ -385,6 +450,14 @@
       /* Resolve backend requirement BE_REQ in function TAG */                 \
       template <typename BE_REQ, typename TAG>                                 \
       void resolve_backendreq(functor* be_functor)                             \
+      {                                                                        \
+        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
+        cout<<"have this backend requirement for this function.";              \
+      }                                                                        \
+                                                                               \
+      /* Resolve backend requirement BE_REQ in function TAG */                 \
+      template <typename BE_REQ, typename TAG>                                 \
+      void resolve_backendreq_deprecated(functor* be_functor)                  \
       {                                                                        \
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
@@ -450,16 +523,7 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
-                                                                               \
-      /* Runtime registration function for conditional backend req BE_REQ of   \
-      function TAG*/                                                           \
-      template <typename BE_REQ, typename TAG>                                 \
-      void rt_register_conditional_backend_req ()                              \
-      {                                                                        \
-        cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
-        cout<<"have this conditional backend requirement for this function.";  \
-      }                                                                        \
-                                                                               \
+
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
 /// invoked from within the core.
@@ -776,7 +840,7 @@
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          str errmsg = "Error: Null returned from dynamic cast of";            \
+          str errmsg = "Null returned from dynamic cast of";                   \
           errmsg +=  "\ndependency functor in MODULE::resolve_dependency, for" \
                      "\ndependency DEP of function FUNCTION.  Attempt was to"  \
                      "\nresolve to " + dep_functor->name() + " in " +          \
@@ -922,7 +986,7 @@
         /* Now test if that cast worked */                                     \
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
-          str errmsg = "Error: Null returned from dynamic cast in";            \
+          str errmsg = "Null returned from dynamic cast in";                   \
           errmsg +=  "\nMODULE::resolve_dependency, for model"                 \
                      "\nMODEL with function FUNCTION.  Attempt was to"         \
                      "\nresolve to " + params_functor->name() + " in " +       \
@@ -988,23 +1052,61 @@
                                                                                \
     }                                                                          \
 
-
-
-/// Redirection of START_BACKEND_REQ(TYPE, [VAR/FUNC]) when invoked from within 
-/// the core. The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC 
-/// (or no flag) corresponds to IS_VARIABLE=0.
-#define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
+/// Redirection of BACKEND_GROUP(GROUP) when invoked from within the Core.
+#define CORE_BE_GROUP(GROUP)                                                   \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
-   "START_BACKEND_REQ."))                                                      \
+   "BACKEND_GROUP."))                                                          \
   IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
-   "calling START_BACKEND_REQ. Please check the rollcall header "              \
+   "calling BACKEND_GROUP. Please check the rollcall header "                  \
    "for " STRINGIFY(MODULE) "."))                                              \
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
-   "START_BACKEND_REQ. Please check the rollcall header for "                  \
+   "BACKEND_GROUP. Please check the rollcall header for "                      \
    STRINGIFY(MODULE) "."))                                                     \
-  IF_TOKEN_UNDEFINED(BACKEND_REQ,FAIL("You must define BACKEND_REQ before "    \
-   "calling START_BACKEND_REQ. Please check the rollcall header for "          \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEgroup                                                    \
+          {                                                                    \
+            /* Declare a safe pointer to the functor's internal register of    \
+            which backend requirement is activated from this group. */         \
+            safe_ptr<str> GROUP;                                               \
+                                                                               \
+            /* Define command to be called at runtime to register the group*/  \
+            void rt_register_group()                                           \
+            {                                                                  \
+              GROUP=Functown::FUNCTION.getChosenReqFromGroup(STRINGIFY(GROUP));\
+            }                                                                  \
+                                                                               \
+            /* Create the group initialisation object */                       \
+            namespace Ini                                                      \
+            {                                                                  \
+              ini_code GROUP (&rt_register_group);                             \
+            }                                                                  \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+
+
+/// Redirection of BACKEND_REQ(GROUP, REQUIREMENT, (TAGS), TYPE, [(ARGS)]) 
+/// for declaring backend requirements when invoked from within the Core.
+#define CORE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE)    \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "BACKEND_REQ."))                                                            \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling BACKEND_REQ. Please check the rollcall header "                    \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "BACKEND_REQ. Please check the rollcall header for "                        \
    STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
@@ -1014,8 +1116,132 @@
     fail here if the user has tried to declare that a scan-level initialisation\
     function has a backend requirement. */                                     \
                                                                                \
-    /* Add BACKEND_REQ to global set of recognised backend func tags */        \
-    ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQ)                                \
+    /* Add REQUIREMENT to global set of recognised backend func tags */        \
+    ADD_BETAG_IN_CURRENT_NAMESPACE(REQUIREMENT)                                \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+      namespace Pipes                                                          \
+      {                                                                        \
+        namespace FUNCTION                                                     \
+        {                                                                      \
+          namespace BEreq                                                      \
+          {                                                                    \
+            /* Create a safety_bucket for the backend variable/function.       \
+            To be initialized by the dependency resolver at runtime. */        \
+            typedef BEvariable_bucket<TYPE> CAT(REQUIREMENT,var);              \
+            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
+             CAT(REQUIREMENT,func);                                            \
+            CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT;   \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Indicate that FUNCTION has a potential REQUIREMENT */                 \
+      namespace Accessors                                                      \
+      {                                                                        \
+        template <>                                                            \
+        bool could_need_from_backend<BETags::REQUIREMENT, Tags::FUNCTION>()    \
+        {                                                                      \
+          return true;                                                         \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Resolve REQUIREMENT in FUNCTION */                                    \
+      template <>                                                              \
+      void resolve_backendreq<BETags::REQUIREMENT, Tags::FUNCTION>             \
+       (functor* be_functor)                                                   \
+      {                                                                        \
+        /* Indicate that this is a current backend requirement */              \
+        Accessors::map_bools[STRINGIFY(CAT_4(BE_,REQUIREMENT,FUNCTION,now))] = \
+         &Accessors::could_need_from_backend<BETags::REQUIREMENT,              \
+         Tags::FUNCTION>;                                                      \
+                                                                               \
+        /* First try casting the pointer passed in to a backend_functor*/      \
+        typedef backend_functor<TYPE*>* var;                                   \
+        typedef backend_functor<TYPE INSERT_NONEMPTY(ARGS)>* func;             \
+        auto ptr =                                                             \
+          dynamic_cast<BOOST_PP_IIF(IS_VARIABLE,var,func)>(be_functor);        \
+                                                                               \
+        /* Now test if that cast worked */                                     \
+        if (ptr == 0)  /* It didn't; throw an error. */                        \
+        {                                                                      \
+          str errmsg = "Null returned from dynamic cast in";                   \
+          errmsg +=  "\nMODULE::resolve_backendreq, for backend requirement"   \
+                     "\nREQUIREMENT of function FUNCTION.  Attempt was to"     \
+                     "\nresolve to " + be_functor->name() + " in " +           \
+                     be_functor->origin() + ".";                               \
+          utils_error().raise(LOCAL_INFO,errmsg);                              \
+        }                                                                      \
+                                                                               \
+        /* It did! Now use the cast functor pointer to initialize              \
+        the safety_bucket Pipes::FUNCTION::BEreq::REQUIREMENT. */              \
+        Pipes::FUNCTION::BEreq::REQUIREMENT.initialize(ptr);                   \
+      }                                                                        \
+                                                                               \
+      /* Set up the commands to be called at runtime to register req.          \
+      (Note that TYPE is used for backend functions, while TYPE* is used       \
+      for backend variables.) */                                               \
+      template <>                                                              \
+      void rt_register_req<BETags::REQUIREMENT, Tags::FUNCTION>()              \
+      {                                                                        \
+        Accessors::map_bools[STRINGIFY(CAT_3(BE_,REQUIREMENT,FUNCTION))] =     \
+         &Accessors::could_need_from_backend<BETags::REQUIREMENT,              \
+         Tags::FUNCTION>;                                                      \
+                                                                               \
+        str varsig = STRINGIFY(TYPE*);                                         \
+        str funcsig = STRINGIFY(TYPE) STRINGIFY(ARGS);                         \
+                                                                               \
+        Accessors::iMayNeedFromBackends[STRINGIFY(REQUIREMENT)] =              \
+          BOOST_PP_IIF(IS_VARIABLE, varsig, funcsig);                          \
+                                                                               \
+        Functown::FUNCTION.setBackendReq(                                      \
+         STRINGIFY(GROUP),                                                     \
+         STRINGIFY(REQUIREMENT),                                               \
+         #TAGS,                                                                \
+         BOOST_PP_IIF(IS_VARIABLE, varsig, funcsig),                           \
+         &resolve_backendreq<BETags::REQUIREMENT,Tags::FUNCTION>);             \
+                                                                               \
+      }                                                                        \
+                                                                               \
+      /* Create the backend requirement initialisation object */               \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(REQUIREMENT,_backend_for_,FUNCTION)                     \
+         (&rt_register_req<BETags::REQUIREMENT,Tags::FUNCTION>);               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Redirection of START_BACKEND_REQ_deprecated(TYPE, [VAR/FUNC]) when invoked from within 
+/// the core. The optional flag VAR corresponds to IS_VARIABLE=1, while FUNC 
+/// (or no flag) corresponds to IS_VARIABLE=0.
+#define CORE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                            \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "START_BACKEND_REQ_deprecated."))                                                      \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling START_BACKEND_REQ_deprecated. Please check the rollcall header "              \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "START_BACKEND_REQ_deprecated. Please check the rollcall header for "                  \
+   STRINGIFY(MODULE) "."))                                                     \
+  IF_TOKEN_UNDEFINED(BACKEND_REQ_deprecated,FAIL("You must define BACKEND_REQ_deprecated before "    \
+   "calling START_BACKEND_REQ_deprecated. Please check the rollcall header for "          \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    /* If scan-level initialisation functions are implemented, the macro should\
+    fail here if the user has tried to declare that a scan-level initialisation\
+    function has a backend requirement. */                                     \
+                                                                               \
+    /* Add BACKEND_REQ_deprecated to global set of recognised backend func tags */        \
+    ADD_BETAG_IN_CURRENT_NAMESPACE(BACKEND_REQ_deprecated)                                \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
@@ -1029,40 +1255,40 @@
             To be initialized by the dependency resolver at runtime. */        \
             BOOST_PP_IIF(IS_VARIABLE,                                          \
               /* If IS_VARIABLE = 1: */                                        \
-              BEvariable_bucket<TYPE> BACKEND_REQ;                             \
+              BEvariable_bucket<TYPE> BACKEND_REQ_deprecated;                             \
               , /* If IS_VARAIBLE = 0: */                                      \
-              BEfunction_bucket<TYPE> BACKEND_REQ;                             \
+              BEfunction_bucket_deprecated<TYPE> BACKEND_REQ_deprecated;                             \
             )  /* End BOOST_PP_IIF */                                          \
           }                                                                    \
         }                                                                      \
       }                                                                        \
                                                                                \
-      /* Indicate that FUNCTION has a BACKEND_REQ */                           \
+      /* Indicate that FUNCTION has a BACKEND_REQ_deprecated */                           \
       namespace Accessors                                                      \
       {                                                                        \
         template <>                                                            \
-        bool needs_from_backend<BETags::BACKEND_REQ, Tags::FUNCTION>()         \
+        bool needs_from_backend<BETags::BACKEND_REQ_deprecated, Tags::FUNCTION>()         \
         {                                                                      \
           return true;                                                         \
         }                                                                      \
       }                                                                        \
                                                                                \
-      /* Resolve backend requirement BACKEND_REQ in FUNCTION */                \
+      /* Resolve backend requirement BACKEND_REQ_deprecated in FUNCTION */                \
       template <>                                                              \
-      void resolve_backendreq<BETags::BACKEND_REQ, Tags::FUNCTION>             \
+      void resolve_backendreq_deprecated<BETags::BACKEND_REQ_deprecated, Tags::FUNCTION>             \
        (functor* be_functor)                                                   \
       {                                                                        \
                                                                                \
         /* Use the given functor pointer (be_functor) to initialize the        \
-        safety_bucket Pipes::FUNCTION::BEreq::BACKEND_REQ.                     \
+        safety_bucket Pipes::FUNCTION::BEreq::BACKEND_REQ_deprecated.                     \
         If IS_VARIABLE = 1 we do a type cast of the functor first. */          \
         BOOST_PP_IIF(IS_VARIABLE,                                              \
           /* If IS_VARIABLE = 1: */                                            \
           backend_functor<TYPE*> * ptr =                                       \
             dynamic_cast<backend_functor<TYPE*>*>(be_functor);                 \
-          Pipes::FUNCTION::BEreq::BACKEND_REQ.initialize(ptr);                 \
+          Pipes::FUNCTION::BEreq::BACKEND_REQ_deprecated.initialize(ptr);                 \
           , /* If IS_VARIABLE = 0: */                                          \
-          Pipes::FUNCTION::BEreq::BACKEND_REQ.initialize(be_functor);          \
+          Pipes::FUNCTION::BEreq::BACKEND_REQ_deprecated.initialize(be_functor);          \
         ) /* End BOOST_PP_IIF */                                               \
       }                                                                        \
                                                                                \
@@ -1070,24 +1296,67 @@
       (Note that TYPE is used for backend functions, while TYPE* is used       \
       for backend variables.) */                                               \
       template <>                                                              \
-      void rt_register_req<BETags::BACKEND_REQ, Tags::FUNCTION>()              \
+      void rt_register_req<BETags::BACKEND_REQ_deprecated, Tags::FUNCTION>()              \
       {                                                                        \
-        Accessors::map_bools[STRINGIFY(CAT_3(BE_,BACKEND_REQ,FUNCTION))] =     \
-         &Accessors::needs_from_backend<BETags::BACKEND_REQ,Tags::FUNCTION>;   \
+        Accessors::map_bools[STRINGIFY(CAT_3(BE_,BACKEND_REQ_deprecated,FUNCTION))] =     \
+         &Accessors::needs_from_backend<BETags::BACKEND_REQ_deprecated,Tags::FUNCTION>;   \
                                                                                \
-        Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)] =              \
+        Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ_deprecated)] =              \
           BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE));        \
                                                                                \
-        Functown::FUNCTION.setBackendReq(STRINGIFY(BACKEND_REQ),               \
+        Functown::FUNCTION.setBackendReq_deprecated(STRINGIFY(BACKEND_REQ_deprecated),               \
           BOOST_PP_IIF(IS_VARIABLE, STRINGIFY(TYPE*), STRINGIFY(TYPE)),        \
-         &resolve_backendreq<BETags::BACKEND_REQ,Tags::FUNCTION>);             \
+         &resolve_backendreq_deprecated<BETags::BACKEND_REQ_deprecated,Tags::FUNCTION>);             \
       }                                                                        \
                                                                                \
       /* Create the backend requirement initialisation object */               \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT_3(BACKEND_REQ,_backend_for_,FUNCTION)                     \
-         (&rt_register_req<BETags::BACKEND_REQ,Tags::FUNCTION>);               \
+        ini_code CAT_3(BACKEND_REQ_deprecated,_backend_for_,FUNCTION)                     \
+         (&rt_register_req<BETags::BACKEND_REQ_deprecated,Tags::FUNCTION>);               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Redirection of BACKEND_OPTION(BACKEND_AND_VERSIONS, TAGS) when invoked from
+/// within the core.
+#define CORE_BACKEND_OPTION(BE_AND_VER,TAGS)                                   \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "BACKEND_OPTION."))                                                         \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling BACKEND_OPTION. Please check the rollcall header "                 \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "BACKEND_OPTION. Please check the rollcall header for "                     \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to apply the rule.*/      \
+      void CAT_6(apply_rule_,FUNCTION,_,                                       \
+       BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                    \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
+      {                                                                        \
+        Functown::FUNCTION.makeBackendOptionRule(#BE_AND_VER, #TAGS);          \
+      }                                                                        \
+                                                                               \
+      /* Create the rule's initialisation object. */                           \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_5(FUNCTION,_,                                             \
+         BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
+         (&CAT_6(apply_rule_,FUNCTION,_,                                       \
+         BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1097,7 +1366,7 @@
 
 /// Redirection of BE_OPTION(BACKEND, VERSTRING) when invoked from within the 
 /// core.
-#define CORE_BACKEND_OPTION(BACKEND,VERSTRING)                                 \
+#define CORE_BACKEND_OPTION_deprecated(BACKEND,VERSTRING)                                 \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "BE_OPTION."))                                                              \
@@ -1107,7 +1376,7 @@
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
    "BE_OPTION. Please check the rollcall header for "                          \
    STRINGIFY(MODULE) "."))                                                     \
-  IF_TOKEN_UNDEFINED(BACKEND_REQ,FAIL("You must define BACKEND_REQ before "    \
+  IF_TOKEN_UNDEFINED(BACKEND_REQ_deprecated,FAIL("You must define BACKEND_REQ_deprecated before "    \
    "calling BE_OPTION. Please check the rollcall header for "                  \
    STRINGIFY(MODULE) "."))                                                     \
                                                                                \
@@ -1121,22 +1390,62 @@
     {                                                                          \
                                                                                \
       /* Set up the command to be called at runtime to register the option */  \
-      void CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION)()   \
+      void CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ_deprecated,_be_,FUNCTION)()   \
       {                                                                        \
-        Functown::FUNCTION.setPermittedBackend(STRINGIFY(BACKEND_REQ),         \
+        Functown::FUNCTION.setPermittedBackend_deprecated(STRINGIFY(BACKEND_REQ_deprecated),         \
          STRINGIFY(BACKEND), VERSTRING);                                       \
       }                                                                        \
                                                                                \
       /* Create the option registration initialisation object */               \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT_5(BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION)                \
-         (& CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ,_be_,FUNCTION));  \
+        ini_code CAT_5(BACKEND,_opt_,BACKEND_REQ_deprecated,_be_,FUNCTION)                \
+         (& CAT_6(rt_register_opt_,BACKEND,_opt_,BACKEND_REQ_deprecated,_be_,FUNCTION));  \
       }                                                                        \
                                                                                \
     }                                                                          \
                                                                                \
   }                                                                            \
+
+
+/// Redirection of FORCE_SAME_BACKEND(TAGS) when invoked from within the core.
+#define CORE_FORCE_SAME_BACKEND(...)                                           \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "FORCE_SAME_BACKEND."))                                                     \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling FORCE_SAME_BACKEND. Please check the rollcall header "             \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "FORCE_SAME_BACKEND. Please check the rollcall header for "                 \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to apply the rule.*/      \
+      void CAT_4(apply_rule_,FUNCTION,_,                                       \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))) ()\
+      {                                                                        \
+        Functown::FUNCTION.makeBackendMatchingRule(#__VA_ARGS__);              \
+      }                                                                        \
+                                                                               \
+      /* Create the rule's initialisation object. */                           \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(FUNCTION,_,                                             \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))) \
+         (&CAT_4(apply_rule_,FUNCTION,_,BOOST_PP_SEQ_CAT(                      \
+         BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))));                \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
 
 
 /// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
@@ -1261,9 +1570,52 @@
                                                                                \
   }                                                                            \
 
+
+/// Redirection of ACTIVATE_BACKEND_REQ_FOR_MODELS when invoked from the Core. 
+#define CORE_BE_MODEL_RULE(MODELS,TAGS)                                        \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ACTIVATE_BACKEND_REQ_FOR_MODEL(S)."))                                      \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling ACTIVATE_BACKEND_REQ_FOR_MODEL(S). Please check the rollcall heade"\
+   "r for " STRINGIFY(MODULE) "."))                                            \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ACTIVATE_BACKEND_REQ_FOR_MODEL(S). Please check the rollcall header for "  \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to apply the rule.*/      \
+      void CAT_6(apply_rule_,FUNCTION,_,                                       \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,      \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
+      {                                                                        \
+        Functown::FUNCTION.makeBackendRuleForModel(#MODELS, #TAGS);            \
+      }                                                                        \
+                                                                               \
+      /* Create the rule's initialisation object. */                           \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_5(FUNCTION,_,                                             \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
+         (&CAT_6(apply_rule_,FUNCTION,_,                                       \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
 /// Redirection of ACTIVATE_FOR_MODELS(MODELSTRING) when invoked from within 
-/// the core, inside a BACKEND_REQ definition.
-#define ACTIVATE_BE_MODEL(MODELSTRING)                                         \
+/// the core, inside a BACKEND_REQ_deprecated definition.
+#define ACTIVATE_BE_MODEL_deprecated(MODELSTRING)                              \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "ACTIVATE_FOR_MODEL(S)."))                                                  \
@@ -1273,7 +1625,7 @@
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
    "ACTIVATE_FOR_MODEL(S). Please check the rollcall header for "              \
    STRINGIFY(MODULE) "."))                                                     \
-  IF_TOKEN_UNDEFINED(BACKEND_REQ,FAIL("You must define either BACKEND_REQ or " \
+  IF_TOKEN_UNDEFINED(BACKEND_REQ_deprecated,FAIL("You must define either BACKEND_REQ_deprecated or " \
    "CONDITIONAL_DEPENDENCY before calling ACTIVATE_FOR_MODEL(S). Please check "\
    "the rollcall header for " STRINGIFY(MODULE) "."))                          \
                                                                                \
@@ -1285,11 +1637,11 @@
                                                                                \
       namespace Accessors                                                      \
       {                                                                        \
-        /* Indicate that FUNCTION requires BACKEND_REQ if one of the models in \
+        /* Indicate that FUNCTION requires BACKEND_REQ_deprecated if one of the models in \
         MODELSTRING is scanned.*/  \
         template <>                                                            \
         bool needs_from_backend_conditional_on_model                           \
-         <BETags::BACKEND_REQ, Tags::FUNCTION>(str model)                      \
+         <BETags::BACKEND_REQ_deprecated, Tags::FUNCTION>(str model)                      \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
           vec models = delimiterSplit(MODELSTRING, ",");                       \
@@ -1305,25 +1657,25 @@
       the conditional backend requirement. */                                  \
       template <>                                                              \
       void rt_register_conditional_backend_req                                 \
-         <BETags::BACKEND_REQ, Tags::FUNCTION> ()                              \
+         <BETags::BACKEND_REQ_deprecated, Tags::FUNCTION> ()                              \
       {                                                                        \
-        Accessors::map_bools.erase(STRINGIFY(CAT_3(BE_,BACKEND_REQ,FUNCTION)));\
+        Accessors::map_bools.erase(STRINGIFY(CAT_3(BE_,BACKEND_REQ_deprecated,FUNCTION)));\
                                                                                \
-        Accessors::condit_bools[STRINGIFY(CAT_3(BE_,BACKEND_REQ,FUNCTION))] =  \
+        Accessors::condit_bools[STRINGIFY(CAT_3(BE_,BACKEND_REQ_deprecated,FUNCTION))] =  \
          &Accessors::needs_from_backend_conditional_on_model                   \
-         <BETags::BACKEND_REQ, Tags::FUNCTION>;                                \
+         <BETags::BACKEND_REQ_deprecated, Tags::FUNCTION>;                                \
                                                                                \
         Functown::FUNCTION.setModelConditionalBackendReq                       \
-         (MODELSTRING, STRINGIFY(BACKEND_REQ),                                 \
-         Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ)]);             \
+         (MODELSTRING, STRINGIFY(BACKEND_REQ_deprecated),                                 \
+         Accessors::iMayNeedFromBackends[STRINGIFY(BACKEND_REQ_deprecated)]);             \
       }                                                                        \
                                                                                \
       /* Create the second conditional backend requirement init object. */     \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code CAT_4(BACKEND_REQ,_backend_for_,FUNCTION,_with_models)        \
+        ini_code CAT_4(BACKEND_REQ_deprecated,_backend_for_,FUNCTION,_with_models)        \
          (&rt_register_conditional_backend_req                                 \
-         <BETags::BACKEND_REQ, Tags::FUNCTION>);                               \
+         <BETags::BACKEND_REQ_deprecated, Tags::FUNCTION>);                               \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1343,7 +1695,7 @@
    "ACTIVATE_FOR_MODEL(S). Please check the rollcall header for "              \
    STRINGIFY(MODULE) "."))                                                     \
   IF_TOKEN_UNDEFINED(CONDITIONAL_DEPENDENCY,FAIL("You must define either "     \
-  "BACKEND_REQ or CONDITIONAL_DEPENDENCY before calling ACTIVATE_FOR_MODEL(S)."\
+  "BACKEND_REQ_deprecated or CONDITIONAL_DEPENDENCY before calling ACTIVATE_FOR_MODEL(S)."\
   " Please check the rollcall header for " STRINGIFY(MODULE) "."))             \
                                                                                \
   namespace Gambit                                                             \

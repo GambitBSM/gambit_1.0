@@ -155,7 +155,7 @@ namespace Gambit
       logger() << endl;
       logger() << "Will now call 'someFunction' once more, this time using the function pointer." << endl;
       logger() <<info<<EOM;
-      void (*function_pointer)() = BEreq::someFunction.pointer<>();
+      void (*function_pointer)() = BEreq::someFunction.pointer();
       function_pointer();
 
       logger() << endl;

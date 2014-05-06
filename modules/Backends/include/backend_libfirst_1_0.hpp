@@ -19,7 +19,7 @@
   #define BACKENDNAME LibFirst
 #endif
 #define VERSION 1.0
-
+#define SAFE_VERSION 1_0
 
 /* The following macro loads the library (using dlopen) in LIBPATH 
  * when this header file is included somewhere. */
@@ -91,7 +91,7 @@ namespace Gambit
 {
   namespace Backends
   {
-    namespace BACKENDNAME
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
 
       /* Convenience functions go here */
@@ -104,7 +104,7 @@ namespace Gambit
         return returnResult();
       }
 
-    } /* end namespace BACKENDNAME */                                          
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
   } /* end namespace Backends */                                                
 } /* end namespace Gambit */                                                   
 
@@ -112,15 +112,16 @@ namespace Gambit
 /* Now register any convenience functions and wrap them in functors. 
  *
  * Syntax for BE_CONV_FUNCTION:
- * BE_CONV_FUNCTION([function name], type, "[choose capability name]")
+ * BE_CONV_FUNCTION([function name], type, (arguments), "[choose capability name]")
  * 
  * As with BE_FUNCTION, the last argument is optional. */
 
-BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
+BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness")
 
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
+#undef SAFE_VERSION
 

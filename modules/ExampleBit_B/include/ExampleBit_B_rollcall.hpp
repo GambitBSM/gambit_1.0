@@ -107,44 +107,44 @@ START_MODULE
     DEPENDENCY(nevents, double)             // Dependency: post-cut events needs pre-cut events
     DEPENDENCY(function_pointer, fptr)      // Dependency: some function pointer
     
-      #define BACKEND_REQ awesomeness       // awesomeness must be obtained from an external (backend) code, with
-      START_BACKEND_REQ(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-      BACKEND_OPTION(LibFirst, 1.0)         // Specify that backend LibFirst v1.0 is permitted to provide the awesomeness.
-      BACKEND_OPTION(LibSecond)             // Omit version info to specify that any version of LibSecond can provide awesomeness.
-      BACKEND_OPTION(LibThird,1.2,1.3 , 1.5)// Specify that v1.2/1.3/1.5 of LibThird are also a viable providers of awesomeness
-      #undef BACKEND_REQ                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
-       
-      #define BACKEND_REQ runMe             // runMe subroutine needs to come from a backend
-      START_BACKEND_REQ(void)               
-      #undef BACKEND_REQ
+    BACKEND_REQ(awesomeness, (lib123), double, (int))
+    BACKEND_REQ(refex, (common_be), double, (double&))
+    BACKEND_REQ(refex2, (common_be), void, (double&, double))
+    BACKEND_REQ(runMe, (), void, (double (*)(int&), int&))
+    BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
+    BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())
 
-      #define CONDITIONAL_DEPENDENCY id     // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
-      START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
-      ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
-      ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
-      ACTIVATE_FOR_MODEL(MSSM_demo)                          // Dependency counts when scanning the MSSM or one of its sub-models
-      #undef CONDITIONAL_DEPENDENCY
+    ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM_demo, UED), (model_dependent_reqs) )
+    BACKEND_OPTION( (LibFirst, 1.0), (libfirst1_only, lib123) )
+    BACKEND_OPTION( (LibSecond), (lib123) )
+    BACKEND_OPTION( (LibThird, 1.2, 1.3 , 1.5), (lib123) )
+    FORCE_SAME_BACKEND(common_be)
 
-      #define BACKEND_REQ refex
-      START_BACKEND_REQ(double)             // A backend requirement added for the purposes of testing the ability to pass parameters
-      #undef BACKEND_REQ                    // to backends both by reference and by value.
-
-      #define BACKEND_REQ refex2
-      START_BACKEND_REQ(void)               // A backend requirement added for the purposes of testing the ability to pass parameters
-      #undef BACKEND_REQ                    // to backends both by reference and by value.
-
-      #define BACKEND_REQ SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
-      START_BACKEND_REQ(int, VAR)           // is on a backend variable or a backend function. A backend function is assumed if no flag is given. 
-      BACKEND_OPTION(LibFirst)              // 
+      //#define BACKEND_REQ_deprecated awesomeness       // awesomeness must be obtained from an external (backend) code, with
+      //START_BACKEND_REQ_deprecated(double)             // type double.  Only one type is permitted per BACKEND_REQ per FUNCTION.
+      //BACKEND_OPTION_deprecated(LibFirst, 1.0)         // Specify that backend LibFirst v1.0 is permitted to provide the awesomeness.
+      //BACKEND_OPTION_deprecated(LibSecond)             // Omit version info to specify that any version of LibSecond can provide awesomeness.
+      //BACKEND_OPTION_deprecated(LibThird,1.2,1.3 , 1.5)// Specify that v1.2/1.3/1.5 of LibThird are also a viable providers of awesomeness
+      //#undef BACKEND_REQ_deprecated                    // If there are no BACKEND_OPTION_deprecated statements, all backends are considered viable.
+      
+      //#define BACKEND_REQ_deprecated SomeInt           // Demonstrating a new macro flag 'VAR/FUNC' for specifying whether the requirement
+      //START_BACKEND_REQ_deprecated(int, VAR)           // is on a backend variable or a backend function. A backend function is assumed if no flag is given. 
+      //BACKEND_OPTION_deprecated(LibFirst)              // 
       //ACTIVATE_FOR_MODEL(MSSM_demo)         // Demonstrating how backend requirements can be made conditional on one
-      ACTIVATE_FOR_MODELS(CMSSM_demo, UED)  // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
-      #undef BACKEND_REQ
+      //ACTIVATE_FOR_MODELS(CMSSM_demo, UED)  // or more models.  Only one ACTIVATE_FOR_MODELS statement is allowed per BACKEND_REQ or CONDITIONAL_DEPENDENCY.
+      //#undef BACKEND_REQ_deprecated
 
-      #define BACKEND_REQ someFunction      // (This backend function is used to test that the above backend variable works.)
-      START_BACKEND_REQ(void, FUNC)
-      BACKEND_OPTION(LibFirst)
-      #undef BACKEND_REQ
+      //#define BACKEND_REQ_deprecated someFunction      // (This backend function is used to test that the above backend variable works.)
+      //START_BACKEND_REQ_deprecated(void, FUNC)
+      //BACKEND_OPTION_deprecated(LibFirst)
+      //#undef BACKEND_REQ_deprecated
 
+    #define CONDITIONAL_DEPENDENCY id     // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
+    START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
+    ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
+    ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
+    ACTIVATE_FOR_MODEL(MSSM_demo)                          // Dependency counts when scanning the MSSM or one of its sub-models
+    #undef CONDITIONAL_DEPENDENCY
 
     #undef FUNCTION
 

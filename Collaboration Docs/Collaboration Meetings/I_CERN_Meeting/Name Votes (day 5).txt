@@ -1,0 +1,36 @@
+1.   D C F B A G E 
+
+2.   A
+
+3.   G F C A B D E
+
+4.   A E F C D B G
+
+5.   A B F C D E G
+
+6.   A F C
+
+7.   A E F G 
+
+8.   D B A
+
+9.   A F B G C D E 
+
+10.  D A E C B F G
+
+11.  A E B D
+
+12.  F E C B
+
+13.  F D G E A C B 
+
+14.  G A
+
+15.  F A D B G
+
+16.  A B G C
+
+17.  F A D C G E B
+
+
+Voted (in no particular order):  Are Lars Torsten Jan Hugh Pat Antje Abram Chris Ben Jonathan Csaba Aldo Anders Christoph Greg Martin

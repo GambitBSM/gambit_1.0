@@ -56,7 +56,7 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        for (int i = 0; i < sigs.size(); i++)
+                                        for (int i = 0, end = sigs.size(); i < end; i++)
                                         {
                                                 cov[i][i] = sigs[i]*sigs[i];
                                         }

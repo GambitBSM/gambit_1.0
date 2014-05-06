@@ -127,7 +127,20 @@ namespace Gambit
           return Options(node);
         }
       }
-                                
+           
+      /// Retrieve raw YAML node 
+      template<typename... args>
+      YAML::Node getNode(const args&... keys) const
+      {
+        const YAML::Node node = getVariadicNode(options, keys...);
+        if (not node)
+        {
+          std::ostringstream os;
+          os << "No options entry for [" << stringifyVariadic(keys...) << "]\n Node contents:  " << options;
+          utils_error().raise(LOCAL_INFO,os.str());
+        }
+        return node;
+      }
       
     private:
 

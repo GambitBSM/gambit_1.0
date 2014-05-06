@@ -28,18 +28,18 @@
 
 // Just include these backends 'as-is'
 
-#include "backend_libfirst.hpp"
+#include "backend_libfirst_1_0.hpp"
+#include "backend_libfirst_1_1.hpp"
 #include "backend_libfortran.hpp"
 #include "backend_fakeSoftSUSY.hpp"
 #include "backend_DarkSUSY.hpp"
 #include "backend_SuperIso.hpp"
 #include "backend_libFarrayTest.hpp"
+#include "backend_micromegas.hpp"
 
 //Aldo
 #include "backend_FastSim.hpp"
-
-//Anders
-#include "backend_Pythia8.hpp"
+//#include "backend_Pythia8.hpp"
 
 // Get a bit fancy and include duplicate backends 
 

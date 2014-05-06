@@ -13,7 +13,7 @@
   #define BACKENDNAME Pythia
 #endif
 #define VERSION 1.0
-
+#define SAFE_VERSION 1_0
 
 LOAD_LIBRARY
 
@@ -33,10 +33,10 @@ namespace Gambit
 {
   namespace Backends
   {
-    namespace BACKENDNAME
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
 
-    } /* end namespace BACKENDNAME */                                          
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
   } /* end namespace Backends */                                                
 } /* end namespace Gambit */                                                   
 
@@ -44,4 +44,4 @@ namespace Gambit
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
-
+#undef SAFE_VERSION

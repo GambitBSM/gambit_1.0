@@ -16,7 +16,7 @@
   #define BACKENDNAME LibFastSim
 #endif
 #define VERSION 1.0
-
+#define SAFE_VERSION 1_0
 
 /* The following macro loads the library (using dlopen) in LIBPATH 
  * when this header file is included somewhere. */
@@ -84,7 +84,7 @@ BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
 //{
 //  namespace Backends
 //  {
-//    namespace BACKENDNAME
+//    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 //    {
 
 //      /* Convenience functions go here */
@@ -96,7 +96,7 @@ BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
 //        return returnResult();
 //      }
 
-//    } /* end namespace BACKENDNAME */                                          
+//    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
 //  } /* end namespace Backends */                                                
 //} /* end namespace Gambit */                                                   
 
@@ -115,4 +115,5 @@ BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
+#undef SAFE_VERSION
 

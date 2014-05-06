@@ -6,17 +6,81 @@
 import ROOT
 ROOT.gROOT.SetBatch(True)
 
-import sys, os, subprocess
-assert len(sys.argv) == 2
+import sys
+if len(sys.argv) != 2:
+    print "Usage: %s <atlasrootfile>" % sys.argv[0]
+    sys.exit(1)
 
+
+# def dev(sig, sigref):
+#     return (sig-sigref) / sigref
+def dev(sig, sigref, reg=0):
+    return (sig-sigref) / (abs(sigref) + abs(reg))
+
+
+## Extract ATLAS xsecs for each m0-m12 point and process group
 f = ROOT.TFile(sys.argv[1])
 tree = f.Get("SignalUncertainties")
+atlasxsecs = {}
 for e in tree:
-    if e.finalState == 2: ## gluino-gluino
-        #os.system("../evalxsec slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (e.m0, e.m12))
-        slhafile = "slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (e.m0, e.m12)
-        #print slhafile
-        s = subprocess.check_output(["../evalxsec", slhafile])
-        xsec = float(s.splitlines()[-1])
-        print " ", e.m0, e.m12, e.crossSection, xsec, "=>", xsec/e.crossSection  #, e.cteq_NLO, e.cteq_NLL
-        #print xsec/e.crossSection
+    #print e.finalState
+    atlasxsecs.setdefault((e.m0, e.m12), {})[e.finalState] = e.crossSection
+
+## Counters for stddevs of deviation distributions
+devs_gq = []
+devs_gg = []
+devs_qq = []
+
+## Run eval_xsec and compare
+import subprocess
+for m0, m12 in atlasxsecs.keys():
+    slhafile = "slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (m0, m12)
+    s = subprocess.check_output(["../evalxsec", slhafile])
+    xsecs = [float(x) for x in s.splitlines()[-1].split()]
+    #print xsecs
+
+    def axsec(*fss):
+        return sum(atlasxsecs[m0,m12].get(fs, 0.0) for fs in fss)
+
+    ## m0, m12 params
+    out = "%.4g %.4g" % (m0, m12)
+    ## g~q~
+    xsec_gq = xsecs[3]
+    axsec_gq = axsec(1)
+    dev_gq = dev(xsec_gq, axsec_gq, reg=1e-6)
+    devs_gq.append(dev_gq)
+    out += " %.3g %.3g" % (axsec_gq, dev_gq)
+    ## g~g~
+    xsec_gg = xsecs[0]
+    axsec_gg = axsec(2)
+    dev_gg = dev(xsec_gg, axsec_gg, reg=1e-6)
+    devs_gg.append(dev_gg)
+    out += " %.3g %.3g" % (axsec_gg, dev_gg)
+    ## q~q~
+    xsec_qq = xsecs[5]
+    axsec_qq = axsec(3,4)
+    dev_qq = dev(xsec_qq, axsec_qq, reg=1e-6)
+    devs_qq.append(dev_qq)
+    out += " %.3g %.3g" % (axsec_qq, dev_qq)
+    print out
+
+
+def mean(xs):
+    return sum(x for x in xs)/float(len(xs))
+def rms(xs):
+    from math import sqrt
+    return sqrt(sum(x**2 for x in xs)/float(len(xs)))
+def absmean(xs):
+    return sum(abs(x) for x in xs)/float(len(xs))
+
+# print
+# print devs_gq
+# print mean(devs_gq), rms(devs_gq), absmean(devs_gq)
+# print
+# print devs_gg
+# print mean(devs_gg), rms(devs_gq), absmean(devs_gq)
+# print
+# print devs_qq
+# print mean(devs_qq), rms(devs_qq), absmean(devs_qq)
+# print
+# print rms(devs_gq), rms(devs_gg), rms(devs_qq)

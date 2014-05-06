@@ -120,10 +120,10 @@ START_MODULE
 
     #define FUNCTION  Aldo_test          // Name of the function that initializes the fastsim
     START_FUNCTION(int)                    // returns the number of events for now
-      #define BACKEND_REQ Read_Aldo_Sim            
-      START_BACKEND_REQ(int)
-      BACKEND_OPTION(LibAldo)         // Specify that backend libfastsim possesses initialize
-      #undef BACKEND_REQ
+      #define BACKEND_REQ_deprecated Read_Aldo_Sim            
+      START_BACKEND_REQ_deprecated(int)
+      BACKEND_OPTION_deprecated(LibAldo)         // Specify that backend libfastsim possesses initialize
+      #undef BACKEND_REQ_deprecated
 
     #undef FUNCTION
 
@@ -145,24 +145,25 @@ START_MODULE
 
     #define FUNCTION  init_sim          // Name of the function that initializes the fastsim
     START_FUNCTION(double)              // returns the number of events for now
-      #define BACKEND_REQ init_fastsim            
-      START_BACKEND_REQ(int)
-      BACKEND_OPTION(LibFastSim)         // Specify that backend libfastsim possesses initialize
-      #undef BACKEND_REQ
+
+      #define BACKEND_REQ_deprecated init_fastsim            
+      START_BACKEND_REQ_deprecated(int)
+      BACKEND_OPTION_deprecated(LibFastSim)         // Specify that backend libfastsim possesses initialize
+      #undef BACKEND_REQ_deprecated
 
     #undef FUNCTION
 
   #undef CAPABILITY
+
+
   #define CAPABILITY function_pointer
   START_CAPABILITY
 
     #define FUNCTION function_pointer_retriever
     START_FUNCTION(fptr)
-
-      #define BACKEND_REQ externalFunction            
-      START_BACKEND_REQ(double)
-      #undef BACKEND_REQ
-
+    BACKEND_GROUP(external_funcs)
+    BACKEND_REQ_FROM_GROUP(external_funcs, externalFunction, (), double, (int&))
+    BACKEND_REQ_FROM_GROUP(external_funcs, externalComplicatedFunction, (), double, (int&, const double&))
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -209,34 +210,34 @@ START_MODULE
   START_CAPABILITY   
     #define FUNCTION do_Farray_stuff
     START_FUNCTION(double)
-      #define BACKEND_REQ libFarrayTestCommonBlock
-        START_BACKEND_REQ(libFarrayTest_CB_type, VAR)
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ libFarrayTest_printStuff
-        START_BACKEND_REQ(void)      
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ      
-      #define BACKEND_REQ libFarrayTest_set_d
-        START_BACKEND_REQ(void)      
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ      
-      #define BACKEND_REQ libFarrayTest_fptrRoutine
-        START_BACKEND_REQ(void)      
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ     
-      #define BACKEND_REQ libFarrayTest_doubleFuncArray1
-        START_BACKEND_REQ(double)      
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ    
-      #define BACKEND_REQ libFarrayTest_doubleFuncArray2
-        START_BACKEND_REQ(double)      
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ             
-      #define BACKEND_REQ libFarrayTest_doubleFunc
-        START_BACKEND_REQ(double)      
-        BACKEND_OPTION(LibFarrayTest)
-      #undef BACKEND_REQ                           
+      #define BACKEND_REQ_deprecated libFarrayTestCommonBlock
+        START_BACKEND_REQ_deprecated(libFarrayTest_CB_type, VAR)
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated
+      #define BACKEND_REQ_deprecated libFarrayTest_printStuff
+        START_BACKEND_REQ_deprecated(void)      
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated      
+      #define BACKEND_REQ_deprecated libFarrayTest_set_d
+        START_BACKEND_REQ_deprecated(void)      
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated      
+      #define BACKEND_REQ_deprecated libFarrayTest_fptrRoutine
+        START_BACKEND_REQ_deprecated(void)      
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated     
+      #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray1
+        START_BACKEND_REQ_deprecated(double)      
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated    
+      #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray2
+        START_BACKEND_REQ_deprecated(double)      
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated             
+      #define BACKEND_REQ_deprecated libFarrayTest_doubleFunc
+        START_BACKEND_REQ_deprecated(double)      
+        BACKEND_OPTION_deprecated(LibFarrayTest)
+      #undef BACKEND_REQ_deprecated                           
     #undef FUNCTION
   #undef CAPABILITY
 

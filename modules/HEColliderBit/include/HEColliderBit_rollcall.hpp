@@ -33,11 +33,11 @@ START_MODULE
     #define FUNCTION PointInit_Default
       START_FUNCTION(void)
       /* \todo set up pythia as a backend
-      #define BACKEND_REQ pyinit
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(Pythia, 8.xx)
+      #define BACKEND_REQ_deprecated pyinit
+        START_BACKEND_REQ_deprecated(void)
+        BACKEND_OPTION_deprecated(Pythia, 8.xx)
         // HERE!!!!
-      #undef BACKEND_REQ
+      #undef BACKEND_REQ_deprecated
       */
     #undef FUNCTION
   #undef CAPABILITY

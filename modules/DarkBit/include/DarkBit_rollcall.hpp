@@ -37,86 +37,58 @@
 #define MODULE DarkBit
 START_MODULE
 
-// Init functions:
-// - must have return type void
-// - must be created with one of the following equivalent statements:
-//   START_INIT_FUNCTION, START_FUNCTION(void) or START_FUNCTION(void, INIT_FUNCTION)
-// - can have backend requirements
-// - cannot have module-function dependencies
-// - cannot manage loops
-// - are required as a default dependence of all module functions on the
-//   capability PointInit
-// - do not themselves depend on the initialization function
-
   #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
   START_CAPABILITY
-    #define FUNCTION DarkBit_PointInit_CMSSM
+
+    #define FUNCTION DarkBit_PointInit_MSSM
       START_FUNCTION(void)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo)
-      #define BACKEND_REQ dsinit
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdinit
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsgive_model_isasugra
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dssusy_isasugra
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      // Initialize DarkSUSY with SLHA file
+      BACKEND_REQ(dsinit, (), void, ())
+      BACKEND_REQ(dsrdinit, (), void, ())
+      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+      BACKEND_REQ(dsprep, (), void, ())
+      // Initialize MicrOMEGAs with SLHA file
+      BACKEND_REQ(lesHinput, (), int, (char*))
+      BACKEND_REQ(mass_spectrum, (), int, (char*))
     #undef FUNCTION
+
+    #define FUNCTION DarkBit_PointInit_CMSSM
+      START_FUNCTION(void)
+      //ALLOW_MODELS(CMSSM_demo)
+      // Initialize DarkSUSY with isasugra
+      BACKEND_REQ(dsinit, (), void, ())
+      BACKEND_REQ(dsrdinit, (), void, ())
+      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
+      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
+    #undef FUNCTION
+
+    #define FUNCTION DarkBit_PointInit_MSSM7
+      START_FUNCTION(void)
+      //ALLOW_MODELS(CMSSM_demo)
+      // Initialize DarkSUSY with dssusy
+      BACKEND_REQ(dsinit, (), void, ())
+      BACKEND_REQ(dsrdinit, (), void, ())
+      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
+      BACKEND_REQ(dssusy, (), void, (int&,int&))
+    #undef FUNCTION
+
     #define FUNCTION DarkBit_PointInit_Default
       START_FUNCTION(void)
     #undef FUNCTION
-  #undef CAPABILITY
 
-/*
-  #define CAPABILITY dssusy
-  START_CAPABILITY
-    #define FUNCTION dssusy
-    START_FUNCTION(int)
-      #define BACKEND_REQ dsinit
-      START_BACKEND_REQ(void)
-      BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dssusy
-      START_BACKEND_REQ(void)
-      BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ mssmpar
-      START_BACKEND_REQ(DS_MSSMPAR,VAR)
-      BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-    #undef FUNCTION
-  #undef CAPABILITY
-*/
+  #undef CAPABILITY  // PointInit
+
 
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
     #define FUNCTION RD_spectrum_SUSY
       START_FUNCTION(RDspectype)
-      #define BACKEND_REQ mspctm
-        START_BACKEND_REQ(DS_MSPCTM, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ widths
-        START_BACKEND_REQ(DS_WIDTHS, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ intdof
-        START_BACKEND_REQ(DS_INTDOF, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ pacodes
-        START_BACKEND_REQ(DS_PACODES, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      BACKEND_REQ(widths, (), DS_WIDTHS)
+      BACKEND_REQ(intdof, (), DS_INTDOF)
+      BACKEND_REQ(pacodes, (), DS_PACODES)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -133,10 +105,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_SUSY_DSprep_func
       START_FUNCTION(int)
       DEPENDENCY(RD_spectrum, RDspectype)
-      #define BACKEND_REQ rdmgev
-        START_BACKEND_REQ(DS_RDMGEV, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -145,10 +114,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
         DEPENDENCY(RD_eff_annrate_SUSY_DSprep, int)
-        #define BACKEND_REQ dsanwx
-          START_BACKEND_REQ(double)
-          BACKEND_OPTION(DarkSUSY, 0.1)
-        #undef BACKEND_REQ
+        BACKEND_REQ(dsanwx, (), double, (double&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -158,74 +124,32 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_thresholds_resonances, RDrestype)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
-      #define BACKEND_REQ dsrdthlim
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdtab
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdeqn
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsrdwintp
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dsanwx
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ widths
-        START_BACKEND_REQ(DS_WIDTHS, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdmgev
-        START_BACKEND_REQ(DS_RDMGEV, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdpth
-        START_BACKEND_REQ(DS_RDPTH, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdpars
-        START_BACKEND_REQ(DS_RDPARS, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdswitch
-        START_BACKEND_REQ(DS_RDSWITCH, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdlun
-        START_BACKEND_REQ(DS_RDLUN, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rdpadd
-        START_BACKEND_REQ(DS_RDPADD, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rddof
-        START_BACKEND_REQ(DS_RDDOF, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ rderrors
-        START_BACKEND_REQ(DS_RDERRORS, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      BACKEND_REQ(dsrdthlim, (), void, ())
+      BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
+      BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
+      BACKEND_REQ(dsrdwintp, (), double, (double&))
+      BACKEND_REQ(dsanwx, (), double, (double&))
+      BACKEND_REQ(widths, (), DS_WIDTHS)
+      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
+      BACKEND_REQ(rdpth, (), DS_RDPTH)
+      BACKEND_REQ(rdpars, (), DS_RDPARS)
+      BACKEND_REQ(rdswitch, (), DS_RDSWITCH)
+      BACKEND_REQ(rdlun, (), DS_RDLUN)
+      BACKEND_REQ(rdpadd, (), DS_RDPADD)
+      BACKEND_REQ(rddof, (), DS_RDDOF)
+      BACKEND_REQ(rderrors, (), DS_RDERRORS)
     #undef FUNCTION
-    #define FUNCTION RD_oh2_SingletDM
-      START_FUNCTION(double)
-      ALLOW_MODELS(SingletDM)
-    #undef FUNCTION
+
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      #define BACKEND_REQ dsrdomega
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
+    #undef FUNCTION
+
+    // Routine for cross checking RD density results
+    #define FUNCTION RD_oh2_micromegas
+      START_FUNCTION(double)
+      BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -234,10 +158,7 @@ START_MODULE
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Gambit::BF::BFptr)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      #define BACKEND_REQ dshayield
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
+      BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -246,34 +167,13 @@ START_MODULE
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(CMSSM_demo)
-      #define BACKEND_REQ mspctm
-        START_BACKEND_REQ(DS_MSPCTM, VAR)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ
-      #define BACKEND_REQ dssigmav
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ      
-      #define BACKEND_REQ dsIBffdxdy
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ         
-      #define BACKEND_REQ dsIBfsrdxdy
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ   
-      #define BACKEND_REQ dsIBhhdxdy
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ   
-      #define BACKEND_REQ dsIBwhdxdy
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ   
-      #define BACKEND_REQ dsIBwwdxdy
-        START_BACKEND_REQ(double)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ         
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      BACKEND_REQ(dssigmav, (), double, (int&))
+      BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(dsIBfsrdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -281,10 +181,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DD_couplings_DarkSUSY
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      #define BACKEND_REQ dsddgpgn
-        START_BACKEND_REQ(void)
-        BACKEND_OPTION(DarkSUSY, 0.1)
-      #undef BACKEND_REQ        
+      BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -314,7 +211,7 @@ START_MODULE
 
 
 // Tests for Torsten
-
+/*
   #define CAPABILITY provideN
   START_CAPABILITY
     #define FUNCTION provideN_func
@@ -326,9 +223,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION provideF_func
     START_FUNCTION(fptr_dd)
-      #define BACKEND_REQ funcGauss
-        START_BACKEND_REQ(double)
-      #undef BACKEND_REQ
+      #define BACKEND_REQ_deprecated funcGauss
+        START_BACKEND_REQ_deprecated(double)
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -338,11 +235,12 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(provideN, int) 
       DEPENDENCY(provideF, fptr_dd) 
-      #define BACKEND_REQ average
-        START_BACKEND_REQ(double)
-      #undef BACKEND_REQ
+      #define BACKEND_REQ_deprecated average
+        START_BACKEND_REQ_deprecated(double)
+      #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
+*/
 
 #undef MODULE
 

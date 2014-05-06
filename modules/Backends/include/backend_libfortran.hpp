@@ -11,7 +11,7 @@
   #define BACKENDNAME LibFortran
 #endif
 #define VERSION 1.0
-
+#define SAFE_VERSION 1_0
 
 LOAD_LIBRARY
 
@@ -21,6 +21,7 @@ LOAD_LIBRARY
 
 BE_FUNCTION(runMe, void, ( double (*)(int&), int&), "runme_", "runMe")
 BE_FUNCTION(externalFunction, double, (int&), "externalfunction_", "externalFunction")
+BE_FUNCTION(externalFunction2, double, (int&, const double&), "externalfunction2_", "externalComplicatedFunction")
 
 // Tests for Torsten
 BE_FUNCTION(average, double, (double(*)(double&), int&), "average_", "average")
@@ -39,12 +40,12 @@ namespace Gambit
 {
   namespace Backends
   {
-    namespace BACKENDNAME
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
 
       /* Convenience functions go here */
 
-    } /* end namespace BACKENDNAME */                                          
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
   } /* end namespace Backends */                                                
 } /* end namespace Gambit */                                                   
 
@@ -55,4 +56,5 @@ namespace Gambit
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
+#undef SAFE_VERSION
 

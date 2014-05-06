@@ -35,6 +35,13 @@ real*8 function externalFunction(i)
   return
 end function
 
+real*8 function externalFunction2(i,j)
+  integer i
+  real*8 j
+  write(*,*) " This is externalFunction2 called with arguments:",i,j
+  externalFunction2 = i*3.14 + j
+  return
+end function
 
 
 ! Tests for Torsten
@@ -50,7 +57,7 @@ real*8 function average(f,n)
 
     average=0d0
     do i=1,n
-    x=rand()
+    call random_number(x)
     average=average+f(x)
     enddo  
     average=average/(1.*n)  

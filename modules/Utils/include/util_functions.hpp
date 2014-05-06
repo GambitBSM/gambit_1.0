@@ -19,17 +19,23 @@
 #define __util_functions_hpp__
 
 #include <vector>
-#include <string>
+
+#include "util_types.hpp"
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
 # if GAMBIT_CONFIG_FLAG_use_std_regex
   #include <regex>
+  #define GAMBIT_CONFIG_FLAG_use_regex 1
+  namespace Gambit { using std::regex; using std::regex_replace; }
 #elif GAMBIT_CONFIG_FLAG_use_boost_regex
   #include <boost/regex.hpp>
+  #define GAMBIT_CONFIG_FLAG_use_regex 1
+  namespace Gambit { using boost::regex; using boost::regex_replace; }
 #else
   #include <boost/algorithm/string/replace.hpp>
+  #define GAMBIT_CONFIG_FLAG_use_regex 0
 #endif
 
 namespace Gambit
@@ -37,7 +43,14 @@ namespace Gambit
 
   /// Split a string into a vector of strings, using a delimiter,
   /// and removing any whitespace around the delimiter.
-  std::vector<std::string> delimiterSplit(std::string s, std::string delim);
+  std::vector<str> delimiterSplit(str, str);
+
+  /// Strip all whitespace except that following "const", 
+  /// in which case the whitespace is replaced by a single space.
+  str strip_whitespace_except_after_const(str);
+
+  /// Strips leading and/or trailing parentheses from a string.
+  void strip_parentheses(str&);
 
   /// Redirection function to turn an lvalue into an rvalue, so that it
   /// is correctly passed by value when doing perfect forwarding with

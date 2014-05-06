@@ -29,7 +29,25 @@ namespace Gambit
 
   namespace FlavBit
   {
-  
+ 
+     /// ********************************************
+    /// Non-rollcalled Functions and Local Variables
+    /// ********************************************
+
+    /// @todo void? 
+    void PointInit_Default()
+    {
+      logger() << "==================" << endl;
+      logger() << "FlavBit says,";
+      logger() << "\"Hi there. Initializing...\"" << endl;
+      logger() << LogTags::info << endl << EOM;
+    }
+
+
+    /// *************************************************
+    /// Rollcalled functions properly hooked up to Gambit
+    /// *************************************************
+ 
     void initialize () 
     {
       cout << endl;
@@ -43,22 +61,12 @@ namespace Gambit
     {
       using namespace Pipes::SI_bsgamma;
 
-      char name[50];
-      
-      sprintf(name,"../../superiso_v3.3/example.lha");
-
-      printf("test FlavBit\n");
-       
-      /*cout << "My backend requirement of bsgamma_calculator has been filled by " << 
-      BEreq::bsgamma_calculator.name() << " from " <<
-      BEreq::bsgamma_calculator.backend() << ", v" << 
-      BEreq::bsgamma_calculator.version() << "." << endl;
-      cout << "Its value is: ";*/
+      char name[]="Example_SUSYspecBit/softsusy_example.slha";
 
      struct parameters param;
 
       BEreq::Init_param(&param);
-
+      
       if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
       else
       {
@@ -71,16 +79,108 @@ namespace Gambit
 		result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),byVal(mu_W),&param);
 	  }
       
-      printf("BR(b->s gamma)=%.3e\n",result);
+      //printf("BR(b->s gamma)=%.3e\n",result);
+    }
+     
+     /// *************************************************
+   
+    void SI_Bsmumu(double &result)          
+    {
+      using namespace Pipes::SI_Bsmumu;
+
+      char name[]="Example_SUSYspecBit/softsusy_example.slha";
+
+      struct parameters param;
+
+      BEreq::Init_param(&param);
+      
+      if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
+      else
+      {
+		double mu_W=2.*param.mass_W;
+		double mu_b=param.mass_b_1S/2.;
+		double C0b[11],C1b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+
+		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+		BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
+		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+
+		result = BEreq::Bsmumu(byVal(C0b),byVal(C1b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	  }
+      
+      //printf("BR(Bs->mumu)=%.3e\n",result);
+    }
+
+     /// *************************************************
+   
+    void SI_Bsmumu_untag(double &result)          
+    {
+      using namespace Pipes::SI_Bsmumu_untag;
+
+      char name[]="Example_SUSYspecBit/softsusy_example.slha";
+
+      struct parameters param;
+
+      BEreq::Init_param(&param);
+      
+      if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
+      else
+      {
+		double mu_W=2.*param.mass_W;
+		double mu_b=param.mass_b_1S/2.;
+		double C0b[11],C1b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+
+		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+		BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
+		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+
+		result = BEreq::Bsmumu_untag(byVal(C0b),byVal(C1b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+	  }
+      
+      //printf("BR(Bs->mumu)_untag=%.3e\n",result);
     }
     
+     /// *************************************************
+   
+    void SI_Bdmumu(double &result)          
+    {
+      using namespace Pipes::SI_Bdmumu;
+
+      char name[]="Example_SUSYspecBit/softsusy_example.slha";
+
+      struct parameters param;
+
+      BEreq::Init_param(&param);
+      
+      if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
+      else
+      {
+		double mu_W=2.*param.mass_W;
+		double mu_b=param.mass_b_1S/2.;
+		double C0b[11],C1b[11],C0w[11],C1w[11],C2w[11];
+	    std::complex<double> CQ0b[3],CQ1b[3];
+
+		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
+		BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
+		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
+
+		result = BEreq::Bdmumu(byVal(C0b),byVal(C1b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+	  }
+      
+      //printf("BR(Bd->mumu)=%.3e\n",result);
+    }
+
+      /// *************************************************
+   
     void SI_Btaunu(double &result)          
     {
       using namespace Pipes::SI_Btaunu;
 
-      char name[50];
-     
-      sprintf(name,"../../superiso_v3.3/example.lha");
+      char name[]="Example_SUSYspecBit/softsusy_example.slha";
 
       struct parameters param;
 
@@ -89,7 +189,7 @@ namespace Gambit
       if(!BEreq::Les_Houches_Reader(byVal(name),&param)) result=0.;
       else result = BEreq::Btaunu(&param);
       
-      printf("BR(B->tau nu)=%.3e\n",result);
+      //printf("BR(B->tau nu)=%.3e\n",result);
     }
     
   }

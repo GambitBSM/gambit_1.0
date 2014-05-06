@@ -19,7 +19,7 @@
   #define BACKENDNAME FakeSoftSUSY
 #endif
 #define VERSION 1.0
-
+#define SAFE_VERSION 1_0
 
 /* The following macro loads the library (using dlmopen) in LIBPATH 
  * when this header file is included somewhere. */
@@ -72,11 +72,11 @@ namespace Gambit
  * 
  * As with BE_FUNCTION, the last argument is optional. */
  
-//BE_CONV_FUNCTION(getCMSSMspectrum,   MSSMspecQ, "BECMSSMspectrum")
-//BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, "BEgenMSSMspectrum")
+//BE_CONV_FUNCTION(getCMSSMspectrum,   MSSMspecQ, (put some args here), "BECMSSMspectrum")
+//BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, (put some args here), "BEgenMSSMspectrum")
 
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
-
+#undef SAFE_VERSION
