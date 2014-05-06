@@ -38,6 +38,7 @@
 #include <map>
 #include <sstream>
 
+#include "static_members.hpp"
 #include "util_macros.hpp"
 #include "util_types.hpp"
 #include "functors.hpp"
