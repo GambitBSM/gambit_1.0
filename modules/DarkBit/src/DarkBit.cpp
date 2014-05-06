@@ -626,8 +626,8 @@ namespace Gambit {
           // particle and integrate out the corresponding kinematical
           // variable).
 
-          dsigmavde = it->dSigmadE->integrate(1, 0., 1000.);  
-          std::cout << "Integral evaluates to: " << (*dsigmavde)(10.0) << std::endl;
+          //dsigmavde = it->dSigmadE->integrate(1, 0., 1000.);  
+          //std::cout << "Integral evaluates to: " << (*dsigmavde)(10.0) << std::endl;
           // Add up individual constributions
           //DiffYield3Body = DiffYield3Body->sum(dsigmavde);
 
@@ -751,23 +751,23 @@ namespace Gambit {
         //SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc, m_Hc 
         //    (BEreq::dsIBhhdxdy.pointer<int& ,double&, double&>()),(NULL))                    
         SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e,    m_e,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu,   m_mu,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau,  m_tau,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u,    m_u,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d,    m_d,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))            
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))            
         SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c,    m_c,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s,    m_s,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t,    m_t,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
         SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b,    m_b,
-            (BEreq::dsIBffdxdy.pointer<int& ,double&, double&>()), (BEreq::dsIBfsrdxdy.pointer<int& ,double&, double&>()))
+            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
 
         #undef SETUP_DS_PROCESS_GAMMA3BODY
         // And process on process list
