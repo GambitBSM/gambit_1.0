@@ -1,6 +1,6 @@
 /* 
  * Example of how to use the macros in 'backend_macros.hpp' 
- * to set up a backend for a specific library.
+ * to set up a frontend for a specific library.
  * 
  * \author Anders Kvellestad
  * \date 2013-03-26  

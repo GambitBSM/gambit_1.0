@@ -33,6 +33,7 @@
 #include "yaml_options.hpp"
 #include "priors.hpp"
 
+
 namespace Gambit 
 {
         namespace Priors 

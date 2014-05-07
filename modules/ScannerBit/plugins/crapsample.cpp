@@ -21,9 +21,11 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <plugin/scanner_plugin.hpp>
 #include <typeinfo>
 #include <cxxabi.h>
+
+#include "scanner_plugin.hpp"
+
   
 class Ran
 {

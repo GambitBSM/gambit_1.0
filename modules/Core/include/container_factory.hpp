@@ -35,7 +35,7 @@
 
 #include "functors.hpp"
 #include "depresolver.hpp"
-#include "priors.hpp"
+#include "priors_rollcall.hpp"
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 

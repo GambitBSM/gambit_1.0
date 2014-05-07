@@ -36,7 +36,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "ModelParametersBase.hpp"
+#include "model_parameters.hpp"
 #include "shared_ptr.hpp"
 //DEPRECIATED #include "logs.hpp"
 

@@ -24,7 +24,8 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <plugin/scanner_plugin.hpp>
+
+#include "scanner_plugin.hpp"
 
 // Auxilliary classes and functions needed by multinest
 // (cloned largely from eggbox.cc, and modified to use cwrapper.f90 interface instead of multinest.h)

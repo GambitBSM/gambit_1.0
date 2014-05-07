@@ -23,7 +23,7 @@
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
-#include "priors.hpp"
+#include "priors_rollcall.hpp"
 #include "register_error_handlers.hpp"
 #include "log.hpp"
 

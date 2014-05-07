@@ -21,8 +21,8 @@
 #ifndef __printers_rollcall_hpp__
 #define __printers_rollcall_hpp__
 
-#include "ostreamprinter.hpp"
-#include "asciiprinter.hpp"
+#include "printers/ostreamprinter.hpp"
+#include "printers/asciiprinter.hpp"
 
 #endif
 

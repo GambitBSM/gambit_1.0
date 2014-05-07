@@ -19,6 +19,9 @@
 
 #include <algorithm>
 
+#include "priors.hpp"
+
+
 namespace Gambit
 {
         namespace Priors

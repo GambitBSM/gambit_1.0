@@ -17,12 +17,6 @@
 #ifndef __egg_box_hpp__
 #define __egg_box_hpp__
 
-#include <vector>
-#include <algorithm>
-#include <cmath>
-
-#include "priors.hpp"
-#include "test_factory.hpp"
 #include "test_functions/uniform.hpp"
 
 

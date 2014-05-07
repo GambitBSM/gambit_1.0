@@ -17,12 +17,7 @@
 #ifndef __test_gaussian_hpp__
 #define __test_gaussian_hpp__
 
-#include <vector>
-#include <algorithm>
-#include <cmath>
-
-#include "priors.hpp"
-#include "test_factory.hpp"
+#include "cholesky.hpp"
 #include "test_functions/uniform.hpp"
 
 

@@ -82,10 +82,8 @@ MCUTILSDIR = contrib/mcutils
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
   -I$(MODELDIR)/include \
-  -I$(MODELDIR)/models \
   -I$(UTILSDIR)/include \
   -I$(PRINTERSDIR)/include \
-  -I$(PRINTERSDIR)/printers \
   -I$(LOGGINGDIR)/include \
   -I$(SCANDIR)/include \
   -I$(BACKENDDIR)/include \
@@ -377,7 +375,7 @@ clean:
 	@rm -f *.gv
 	@rm -rf $(DOCDIR)/html
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
-	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/lib/*.o
+	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/plugins/*.o
 	@rm -rf $(FUNCTOR_TYPES)
 	@rm -f $(FASTSIMDIR)/src/*.o
 
@@ -617,13 +615,13 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
-$(SCANDIR)/lib/libsample.so: $(SCANDIR)/lib/crapsample.cpp
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/crapsample.cpp -o $(SCANDIR)/lib/crapsample.o
-	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/crapsample.o
+$(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/crapsample.cpp
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/crapsample.cpp -o $(SCANDIR)/build/crapsample.o
+	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/build/crapsample.o
 
-$(SCANDIR)/lib/libtest.so: $(SCANDIR)/lib/test.cpp
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/test.cpp -o $(SCANDIR)/lib/test.o
-	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/lib/test.o
+$(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
+	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/test.o
 
 $(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cpp
 	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
@@ -638,8 +636,8 @@ $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/D
 
 #libmultinest_interface.so
 multinest:
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/lib/multinest.cpp -o $(SCANDIR)/lib/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
-	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/lib/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/multinest.cpp -o $(SCANDIR)/build/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
+	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/build/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."

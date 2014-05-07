@@ -18,7 +18,8 @@
 ///
 ///  *********************************************
 
-#include "test_factory.hpp"
+#include "test_function_rollcall.hpp"
+
 
 namespace Gambit
 {
