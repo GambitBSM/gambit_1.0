@@ -25,7 +25,7 @@
 
 #include "scanner_utils.hpp"
 #include "scan.hpp"
-#include "scanner_factory.hpp"
+#include "container_factory.hpp"
 
 #include "yaml_options.hpp"
 
@@ -74,6 +74,6 @@ namespace Gambit
         }
 }
 
-#include <test_functions/test_function_list.hpp>
+#include <test_function_rollcall.hpp>
 
 #endif

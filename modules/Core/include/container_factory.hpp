@@ -87,6 +87,6 @@ namespace Gambit
         }
 }
 
-#include <scanner_functions/scanner_function_list.hpp>
+#include <likelihood_container.hpp>
 
 #endif

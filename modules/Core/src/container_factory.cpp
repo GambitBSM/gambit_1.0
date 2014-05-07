@@ -23,7 +23,7 @@
 ///
 ///  *********************************************
 
-#include <scanner_factory.hpp>
+#include <container_factory.hpp>
 
 namespace Gambit
 {

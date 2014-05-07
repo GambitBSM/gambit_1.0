@@ -20,7 +20,7 @@
 #include "depresolver.hpp"
 #include "scannerbit.hpp"
 #include "yaml_parser.hpp"
-#include "scanner_factory.hpp"
+#include "container_factory.hpp"
 #include "model_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "register_error_handlers.hpp"
