@@ -21,8 +21,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "yaml_options.hpp"
-#include "scanner_utils.hpp"
 #include "priors.hpp"
 #include "test_factory.hpp"
 #include "test_functions/uniform.hpp"

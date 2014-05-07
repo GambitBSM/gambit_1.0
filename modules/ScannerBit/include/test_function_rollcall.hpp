@@ -2,7 +2,9 @@
 //  *********************************************
 ///  \file
 ///
-///  declaration for scanner module
+///  Rollcall header for ScannerBit test functions.
+///  Include here the header for any test function
+///  that you want ScannerBit to be able to use.
 ///
 ///  *********************************************
 ///
@@ -14,11 +16,11 @@
 ///
 ///  *********************************************
 
-#ifndef TEST_FUNCTION_LIST_HPP
-#define TEST_FUNCTION_LIST_HPP
+#ifndef test_function_rollcall_hpp
+#define test_function_rollcall_hpp
 
-#include <test_functions/uniform.hpp>
-#include <test_functions/gaussian.hpp>
-#include <test_functions/eggbox.hpp>
+#include "test_functions/uniform.hpp"
+#include "test_functions/gaussian.hpp"
+#include "test_functions/eggbox.hpp"
 
 #endif

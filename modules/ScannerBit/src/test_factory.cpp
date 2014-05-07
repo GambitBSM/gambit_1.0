@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  Scanner inifile interface implementations.
+///  Test function implementations.
 ///
 ///  *********************************************
 ///
@@ -12,9 +12,13 @@
 ///          (gregory.david.martinez@gmail.com)
 ///  \date 2013 July 2013 Feb 2014
 ///
+///  \author Pat Scott
+///    (patscott@physics.mcgill.ca)
+///  \date 2014 May
+///
 ///  *********************************************
 
-#include <test_factory.hpp>
+#include "test_factory.hpp"
 
 namespace Gambit
 {

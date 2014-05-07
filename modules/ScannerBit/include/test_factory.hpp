@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  test functions implementations.
+///  Test function declarations.
 ///
 ///  *********************************************
 ///
@@ -11,6 +11,10 @@
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
 ///  \date Feb 2014
+///
+///  \author Pat Scott
+///    (patscott@physics.mcgill.ca)
+///  \date 2014 May
 ///
 ///  *********************************************
 
@@ -29,8 +33,8 @@
 
 #include "yaml_options.hpp"
 
-
 #define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )
+
 
 namespace Gambit
 {

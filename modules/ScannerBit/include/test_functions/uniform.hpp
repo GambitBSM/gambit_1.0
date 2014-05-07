@@ -17,12 +17,11 @@
 #ifndef __test_uniform_hpp__
 #define __test_uniform_hpp__
 
-#include <priors.hpp>
 #include <algorithm>
 #include <cmath>
 
-#include "yaml_options.hpp"
-#include "scanner_utils.hpp"
+#include "priors.hpp"
+#include "test_factory.hpp"
 
 
 namespace Gambit
