@@ -25,6 +25,9 @@
 #ifndef __scanner_function_hpp__
 #define __scanner_function_hpp__
 
+#include "container_factory.hpp"
+
+
 namespace Gambit
 {
         namespace Scanner

@@ -18,19 +18,19 @@
 
 #include "log.hpp"
 #include "depresolver.hpp"
-#include "scannerbit.hpp"
 #include "yaml_parser.hpp"
-#include "container_factory.hpp"
+#include "likelihood_container.hpp"
+#include "scannerbit.hpp"
+#include "test_function_rollcall.hpp"
+#include "priors.hpp"
+#include "priorfactory.hpp"
+#include "modelgraph.hpp"
 #include "model_rollcall.hpp"
+#include "backend_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "register_error_handlers.hpp"
 #include "stream_printers.hpp"
-#include "priors.hpp"
-#include "modelgraph.hpp"
-#include "priorfactory.hpp"
-#include "test_function_rollcall.hpp"
 #include "inifile_interface.hpp"
-#include "backend_rollcall.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
@@ -129,6 +129,7 @@ int main( int argc, const char* argv[] )
     Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
     //cout << "keys = " << scanner->getKeys() << endl;
     //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+    logger() << core << "Starting scan." << EOM;
     scanner->Run(); 
  
     std::cout << "GAMBIT has finished successfully! Any errors following this message ";
