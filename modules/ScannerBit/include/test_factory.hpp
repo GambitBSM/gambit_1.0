@@ -78,6 +78,4 @@ namespace Gambit
         }
 }
 
-#include <test_function_rollcall.hpp>
-
 #endif

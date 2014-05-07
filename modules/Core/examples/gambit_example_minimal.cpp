@@ -28,7 +28,7 @@
 #include "priors.hpp"
 #include "modelgraph.hpp"
 #include "priorfactory.hpp"
-#include "test_factory.hpp"
+#include "test_function_rollcall.hpp"
 #include "inifile_interface.hpp"
 #include "backend_rollcall.hpp"
 
