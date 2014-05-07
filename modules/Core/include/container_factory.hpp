@@ -42,15 +42,13 @@
 
 namespace Gambit
 {
-        namespace Scanner
-        {
                 registry
                 {
                         typedef void* factory_type(const std::map<std::string, primary_model_functor *> &, DRes::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
                         reg_elem <factory_type> __scanner_factories__;
                 }
                 
-                class Scanner_Function_Factory : public Factory_Base
+                class Scanner_Function_Factory : public Scanner::Factory_Base
                 {
                 private:
                         DRes::DependencyResolver &dependencyResolver;
@@ -71,12 +69,11 @@ namespace Gambit
                         
                         void remove(void *a) const
                         {
-                                delete (Function_Base *)a;
+                                delete (Scanner::Function_Base *)a;
                         }
 
                         ~Scanner_Function_Factory(){}
                 };
-        }
 }
 
 #include <likelihood_container.hpp>

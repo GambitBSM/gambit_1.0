@@ -28,8 +28,6 @@
 
 namespace Gambit
 {
-        namespace Scanner
-        {
                 Scanner_Function_Factory::Scanner_Function_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior) : dependencyResolver(dependencyResolver), prior(prior)
                 {
                         functorMap = core.getActiveModelFunctors();
@@ -65,5 +63,4 @@ namespace Gambit
                                 }
                         }
                 }
-        }
 }

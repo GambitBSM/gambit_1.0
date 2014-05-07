@@ -36,18 +36,18 @@
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
                 registry
                 {
-                        typedef Scanner::Function_Base *func_type(const Options &);
+                        typedef Function_Base *func_type(const Options &);
                         reg_elem <func_type> __test_functor_map__;
                 }
                 
-                class Test_Function_Factory : public Scanner::Factory_Base
+                class Test_Function_Factory : public Factory_Base
                 {
                 private:
-                        Scanner::Function_Base *func;
+                        Function_Base *func;
                         std::vector<std::string> keys;
                         
                 public:

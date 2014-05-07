@@ -22,7 +22,7 @@
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
                 Test_Function_Factory::Test_Function_Factory(const Options &test_options)
                 {

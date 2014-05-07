@@ -117,9 +117,9 @@ int main( int argc, const char* argv[] )
     Gambit::Scanner::Factory_Base *factory = [&]()->Gambit::Scanner::Factory_Base *
     {
       if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-        return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile.getKeyValuePairNode());
+        return new Gambit::Scanner::Test_Function_Factory(iniFile.getKeyValuePairNode());
       else
-        return new Gambit::Scanner::Scanner_Function_Factory (Core(), dependencyResolver, prior);
+        return new Gambit::Scanner_Function_Factory (Core(), dependencyResolver, prior);
     }();
   
     //Define the iniFile interface for the scanner

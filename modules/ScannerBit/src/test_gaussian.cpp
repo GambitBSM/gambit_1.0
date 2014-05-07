@@ -23,7 +23,7 @@
 
 namespace Gambit
 {       
-        namespace Scanner_Testing
+        namespace Scanner
         {
                 Test_Gaussian::Test_Gaussian (const Options &options) : Test_Uniform(options), param(getKeys()), values(getParameters()), chol(getKeys().size())
                 {

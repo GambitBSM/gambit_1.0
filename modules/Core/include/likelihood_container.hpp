@@ -30,9 +30,7 @@
 
 namespace Gambit
 {
-        namespace Scanner
-        {       
-                class Scanner_Function_Base : public Function_Base
+                class Scanner_Function_Base : public Scanner::Function_Base
                 {
                 protected:
                         std::vector<DRes::VertexID> vertices;
@@ -119,7 +117,7 @@ namespace Gambit
                         {
                                 double ret = 0;
                                 
-                                outputHandler::out.defout();
+                                Scanner::outputHandler::out.defout();
                                 
                                 setParameters(in);
                                 
@@ -145,7 +143,7 @@ namespace Gambit
 				
                                 resetAll();
                                 
-                                outputHandler::out.redir("scanner");
+                                Scanner::outputHandler::out.redir("scanner");
 				
                                 return ret;
                         }
@@ -164,7 +162,7 @@ namespace Gambit
                         {
                                 double ret = 0;
                                 
-                                outputHandler::out.defout();
+                                Scanner::outputHandler::out.defout();
                                 
                                 setParameters(in);
                                 
@@ -183,7 +181,7 @@ namespace Gambit
                                 
                                 resetAll();
                                 
-                                outputHandler::out.redir("scanner");
+                                Scanner::outputHandler::out.redir("scanner");
                                 
                                 return ret;
                         }
@@ -191,7 +189,6 @@ namespace Gambit
                 
                 LOAD_SCANNER_FUNCTION(Scanner_Function, Scanner_Function)
                 LOAD_SCANNER_FUNCTION(Scanner_Function_Minimal, Scanner_Function_Minimal)
-        }
 }
 
 #endif

@@ -28,7 +28,7 @@
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
                 class Test_Gaussian : public Test_Uniform
                 {

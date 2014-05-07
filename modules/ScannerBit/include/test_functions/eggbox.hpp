@@ -28,9 +28,9 @@
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
-                class EggBox : public Scanner::Function_Base
+                class EggBox : public Function_Base
                 {
                 private:
                         std::vector <double> params;
