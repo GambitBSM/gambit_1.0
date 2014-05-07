@@ -50,14 +50,6 @@ namespace Gambit
                         reg_elem <factory_type> __scanner_factories__;
                 }
                 
-                class Function_Base
-                {
-                public:
-                        virtual const std::vector<double> & getParameters() const = 0;
-                        virtual double operator () (std::vector<double> &) = 0;
-                        virtual ~Function_Base(){} 
-                };
-
                 class Scanner_Function_Factory : public Factory_Base
                 {
                 private:

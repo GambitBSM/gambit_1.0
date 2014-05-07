@@ -29,9 +29,10 @@
 
 #include "scanner_utils.hpp"
 #include "scan.hpp"
-#include "container_factory.hpp"
-
 #include "yaml_options.hpp"
+
+//FIXME this needs to be removed if ScannerBit is to be compiled without the Core!!
+#include "container_factory.hpp"
 
 #define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )
 
