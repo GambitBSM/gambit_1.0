@@ -119,7 +119,7 @@ int main( int argc, const char* argv[] )
       if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
         return new Gambit::Scanner::Test_Function_Factory(iniFile.getKeyValuePairNode());
       else
-        return new Gambit::Scanner_Function_Factory (Core(), dependencyResolver, prior);
+        return new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, prior);
     }();
   
     //Define the iniFile interface for the scanner
