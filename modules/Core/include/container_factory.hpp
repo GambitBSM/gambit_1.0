@@ -69,6 +69,4 @@ namespace Gambit
 
 }
 
-#include "likelihood_container.hpp"
-
 #endif

@@ -23,7 +23,7 @@
 ///
 ///  *********************************************
 
-#include "container_factory.hpp"
+#include "likelihood_container.hpp"
 
 
 namespace Gambit
