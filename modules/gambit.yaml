@@ -164,6 +164,18 @@ loopsample:
   
 multinest:
   output_file:  output
+  
+twalk_beta:
+  kwalk_ratio: 0.9836
+  projection_dimension: 4
+  gaussian_distance: 2.4
+  walk_distance: 2.5
+  transverse_distance: 6.0
+  ran_seed: 0
+  file_name: output_file
+  tolorance: 1.01
+  thread_number: 10
+  cut: 100
     
 ###############################
 --- # Observables of interest

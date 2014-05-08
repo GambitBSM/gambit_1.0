@@ -615,9 +615,13 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
-$(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/crapsample.cpp
+$(SCANDIR)/build/twalk.o:
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/twalk.cpp -o $(SCANDIR)/build/twalk.o
+	
+$(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/crapsample.cpp $(SCANDIR)/plugins/twalk.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/crapsample.cpp -o $(SCANDIR)/build/crapsample.o
-	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/build/crapsample.o
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/twalk.cpp -o $(SCANDIR)/build/twalk.o
+	$(CC) -shared -o $(SCANDIR)/lib/libsample.so $(SCANDIR)/build/crapsample.o $(SCANDIR)/build/twalk.o
 
 $(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
