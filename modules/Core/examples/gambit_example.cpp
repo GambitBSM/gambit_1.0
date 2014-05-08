@@ -688,12 +688,12 @@ int main( int, const char*[] )
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::commonBlock);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::printStuff_deprecated); 
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::set_d_deprecated);  
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::fptrRoutine_deprecated);    
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray1_deprecated);      
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray2_deprecated);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFunc_deprecated);            
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::printStuff); 
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::set_d);  
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::fptrRoutine);    
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray1);      
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray2);
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFunc);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
     
 

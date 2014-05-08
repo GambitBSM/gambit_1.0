@@ -210,34 +210,14 @@ START_MODULE
   START_CAPABILITY   
     #define FUNCTION do_Farray_stuff
     START_FUNCTION(double)
-      #define BACKEND_REQ_deprecated libFarrayTestCommonBlock
-        START_BACKEND_REQ_deprecated(libFarrayTest_CB_type, VAR)
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated
-      #define BACKEND_REQ_deprecated libFarrayTest_printStuff
-        START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated      
-      #define BACKEND_REQ_deprecated libFarrayTest_set_d
-        START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated      
-      #define BACKEND_REQ_deprecated libFarrayTest_fptrRoutine
-        START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated     
-      #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray1
-        START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated    
-      #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray2
-        START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated             
-      #define BACKEND_REQ_deprecated libFarrayTest_doubleFunc
-        START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated                           
+    BACKEND_REQ(libFarrayTestCommonBlock, (match), libFarrayTest_CB_type)
+    BACKEND_REQ(libFarrayTest_printStuff, (match), void, ())      
+    BACKEND_REQ(libFarrayTest_set_d, (match), void, ())      
+    BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Gambit::Farray<double,1>&, int&, double(*)(Gambit::Farray<double,1>&)) )
+    BACKEND_REQ(libFarrayTest_doubleFuncArray1, (match), double, (Gambit::Farray<double,1>&))
+    BACKEND_REQ(libFarrayTest_doubleFuncArray2, (match), double, (Gambit::Farray<double,1>&))
+    BACKEND_REQ(libFarrayTest_doubleFunc, (match), double, (double&))      
+    BACKEND_OPTION((LibFarrayTest), (match))
     #undef FUNCTION
   #undef CAPABILITY
 
