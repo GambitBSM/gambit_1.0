@@ -7,6 +7,13 @@
 # Dec 2013
 #
 
+# TODO Ben> We might want to rethink the yaml file structure we are using. Currently it is all going to break if people leave
+# a section out of their yaml file, or specify them in the wrong order, etc. It is impossible to "name" yaml documents (i.e.
+# our sections seperated via ---) so we might just want all the inifile options inside the one document, under their own
+# named key entries. The order will then not matter, and we could deal with missing sections. This might also facilitate the
+# ability to have some options in their own files, for easier re-use, by say having an option for listing other yaml files to
+# load here. We'd have to deal with conflicts etc of couse, but that is all doable.
+ 
 ############################
 --- # Input parameter declarations
 ###################################
@@ -108,6 +115,24 @@ tanbMstop_prior:
   options:
     cov: [[0.5, 0.1],[0.1, 0.6]]
     demo: 45
+
+##############################
+--- # Printer setup
+##############################
+
+# Select printer to use via string tag
+# (currently only ascii printer available)
+printer: ascii
+
+# This options node is passed on wholesale to
+# the printer object; required options may
+# therefore vary according to the selected
+# printer. 
+options:
+  # name of output file
+  output_file: "runs/example_minimal_test/samples/gambit_output.txt"
+  # name of info file (explains content of output file)
+  info_file: "runs/example_minimal_test/samples/gambit_output.info"
 
 ##############################
 --- # Scanner setup

@@ -32,6 +32,7 @@
 
 // Gambit
 #include "baseprinter.hpp"
+#include "yaml_options.hpp"
 
 // Code!
 namespace Gambit
@@ -56,10 +57,15 @@ namespace Gambit
  
        // } 
    
-        // Constructor
-        asciiPrinter(std::ofstream&, std::ofstream&);
+        // Old Constructor
+        //asciiPrinter(std::ofstream&, std::ofstream&);
   
-        // default destructor should be fine?
+        // Constructor (for construction via inifile options)
+        asciiPrinter(const Options&);
+
+        /// Destructor
+        // Overload the base class virtual destructor
+        ~asciiPrinter();
  
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
@@ -89,9 +95,9 @@ namespace Gambit
       
       private:
         // Main output file stream
-        std::ofstream& my_fstream;
+        std::ofstream my_fstream;
         // "Info file" output stream
-        std::ofstream& info_fstream;
+        std::ofstream info_fstream;
 
         // Buffer of results to print on a single line
         LineBuf linebuffer; //(std::map<int,std::vector<double>>)
@@ -108,7 +114,10 @@ namespace Gambit
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
         bool info_file_written; // Flag to let us know that the info file has been written
     };
-  
+
+  // Register printer so it can be constructed via inifile instructions
+  // First argument is string label for inifile access, second is class from which to construct printer
+  LOAD_PRINTER(ascii, asciiPrinter)
      
   } // end namespace Printers
 } // end namespace Gambit

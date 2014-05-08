@@ -28,7 +28,7 @@
 #include <queue>
 
 #include "gambit_core.hpp"
-#include "printers_rollcall.hpp"
+#include "baseprinter.hpp"
 #include "functors.hpp"
 #include "error_handlers.hpp"
 #include "yaml_parser.hpp"

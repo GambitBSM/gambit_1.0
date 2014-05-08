@@ -24,6 +24,7 @@
 #include "model_rollcall.hpp"
 #include "stream_printers.hpp"
 #include "priors_rollcall.hpp"
+#include "printermanager.hpp"
 #include "register_error_handlers.hpp"
 #include "log.hpp"
 
@@ -97,11 +98,11 @@ void beispiel()
   // Activate "primary" model functors
   Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
-  // Set up a printer object
-  Printers::ostreamPrinter printer(std::cout,1); 
-                                   
+  // Set up the printer (redirection of scan output)
+  Printers::PrinterManager printerManager(iniFile.getPrinterNode());
+                                
   // Set up dependency resolver
-  DRes::DependencyResolver dependencyResolver(Core(), iniFile, printer);
+  DRes::DependencyResolver dependencyResolver(Core(), iniFile, *printerManager.printerptr);
 
   // Log module function infos
   dependencyResolver.printFunctorList();

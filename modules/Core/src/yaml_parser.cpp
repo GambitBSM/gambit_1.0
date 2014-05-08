@@ -39,13 +39,18 @@ namespace Gambit
       std::vector<YAML::Node> roots = YAML::LoadAllFromFile(filename);
 
       // Set central nodes
+      ///TODO Ben> We might want to rethink the yaml file structure we are using. Currently it is all going to break if people leave
+      // a section out of their yaml file, or specify them in the wrong order, etc. It is impossible to "name" yaml documents (i.e.
+      // our sections seperated via ---) so we might just want all the inifile options inside the one document, under their own
+      // named key entries. The order will then not matter, and we could deal with missing sections. 
       parametersNode = roots[0];
       priorsNode = roots[1];
-      scannerNode = roots[2];
-      YAML::Node outputNode = roots[3];
-      YAML::Node auxNode = roots[4];
-      YAML::Node logNode = roots[5];
-      keyValuePairNode = roots[6];
+      printerNode = roots[2];
+      scannerNode = roots[3];
+      YAML::Node outputNode = roots[4];
+      YAML::Node auxNode = roots[5];
+      YAML::Node logNode = roots[6];
+      keyValuePairNode = roots[7];
 
       // Set fatality of exceptions
       if (hasKey("exceptions"))
@@ -76,18 +81,6 @@ namespace Gambit
         }
       }
 
-      // Read likelihood/observables
-      for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)
-      {
-        observables.push_back((*it).as<Types::Observable>());
-      }
-
-      // Read auxiliaries
-      for(YAML::const_iterator it=auxNode.begin(); it!=auxNode.end(); ++it)
-      {
-        auxiliaries.push_back((*it).as<Types::Observable>());
-      }
-
       // Parse the logging setup node, and initialise the LogMaster object
       std::string prefix = logNode["prefix"].as<std::string>();
       YAML::Node redir = logNode["redirection"];
@@ -111,6 +104,21 @@ namespace Gambit
       // Initialise global LogMaster object
       logger().initialise(loggerinfo);
 
+
+      // Read likelihood/observables
+      for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)
+      {
+        observables.push_back((*it).as<Types::Observable>());
+      }
+
+
+      // Read auxiliaries
+      for(YAML::const_iterator it=auxNode.begin(); it!=auxNode.end(); ++it)
+      {
+        auxiliaries.push_back((*it).as<Types::Observable>());
+      }
+
+      
       // Set safe mode for the backend safety buckets
       if (hasKey("safe_mode"))
       {       
