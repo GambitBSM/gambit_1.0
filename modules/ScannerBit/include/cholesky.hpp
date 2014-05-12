@@ -17,6 +17,7 @@
 #ifndef CHOLESKY_HPP
 #define CHOLESKY_HPP
 
+#include <vector>
 #include <cmath>
 
 namespace Gambit

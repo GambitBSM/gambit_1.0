@@ -7,12 +7,12 @@
 ///  backend.
 ///
 ///  To add a new backend, just add another line:
-///   #include "backend_your_backend_name.hpp"
+///   #include "frontend_your_backend_name.hpp"
 ///
 ///  If you have a backend that you want to 
-///  use in a standalone code, instead of
-///  including this file, just include 
-///  backend_name.hpp in your driver program.
+///  use in a standalone code directly, instead
+///  of including this file, just include 
+///  frontend_name.hpp in your driver program.
 ///
 ///  *********************************************
 
@@ -20,35 +20,29 @@
 #ifndef __backend_rollcall_hpp__
 #define __backend_rollcall_hpp__
 
-// Define the static members of utility classes
-#include "static_members.hpp"
-
 // Include the backend macro definitions
 #include "backend_macros.hpp"
 
 // Just include these backends 'as-is'
-
-#include "backend_libfirst_1_0.hpp"
-#include "backend_libfirst_1_1.hpp"
-#include "backend_libfortran.hpp"
-#include "backend_fakeSoftSUSY.hpp"
-#include "backend_DarkSUSY.hpp"
-#include "backend_SuperIso.hpp"
-#include "backend_libFarrayTest.hpp"
-#include "backend_micromegas.hpp"
-
-//Aldo
-#include "backend_FastSim.hpp"
-//#include "backend_Pythia8.hpp"
+#include "frontends/libfirst_1_0.hpp"
+#include "frontends/libfirst_1_1.hpp"
+#include "frontends/libfortran.hpp"
+#include "frontends/fakeSoftSUSY.hpp"
+#include "frontends/DarkSUSY.hpp"
+#include "frontends/SuperIso.hpp"
+#include "frontends/libFarrayTest.hpp"
+#include "frontends/micromegas.hpp"
+#include "frontends/FastSim.hpp"
+//#include "frontend_Pythia8.hpp"
 
 // Get a bit fancy and include duplicate backends 
 
 //#define BACKENDRENAME LibSecond
-//  #include "backend_libfirst.hpp"
+//  #include "frontend_libfirst_1_0.hpp"
 //#undef BACKENDRENAME
 
 //#define BACKENDRENAME LibThird
-//  #include "backend_libfirst.hpp"
+//  #include "frontend_libfirst_1_0.hpp"
 //#undef BACKENDRENAME
 
 

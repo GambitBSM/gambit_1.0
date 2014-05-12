@@ -14,6 +14,10 @@
 ///          (benjamin.farmer@monash.edu.au)
 ///  \date 2014 May
 ///
+///  \author Pat Scott
+///          (patscott@physics.mcgill.ca)
+///  \date 2014 May
+///
 ///  *********************************************
 
 #include "printermanager.hpp"
@@ -43,7 +47,7 @@ namespace Gambit
          std::ostringstream os;
          os << "Inifile entry 'printer:\""<<tag<<"\"' does not specify a valid printer! Please choose from one of the following:"<<std::endl;
 
-         for (auto it = std::begin(printer_creators); it != std::end(printer_creators); ++it)
+         for (auto it = printer_creators.begin(); it != printer_creators.end(); ++it)
          {
             os << "  " << it->first << std::endl;
          }

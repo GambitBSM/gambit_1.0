@@ -50,6 +50,7 @@
 
 #include <map>
 
+#include "static_members.hpp"
 #include "functors.hpp"
 #include "exceptions.hpp"
 #include "types_rollcall.hpp"

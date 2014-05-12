@@ -91,7 +91,7 @@ int main()
     }  
 
     // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
-    function_pointer_retriever.resolveBackendReq(&Backends::LibFortran::Functown::externalFunction);
+    function_pointer_retriever.resolveBackendReq(&Backends::LibFortran_1_0::Functown::externalFunction);
     
     // Notify any module functions that care of the model(s) being scanned.
     // 'Care' means where they depend on model parameters directly, or have dependencies or backend requirements that are

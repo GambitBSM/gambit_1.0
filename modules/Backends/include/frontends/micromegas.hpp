@@ -1,4 +1,4 @@
-/* micrOMEGAs Backend
+/* Frontend for micrOMEGAs backend
  *
  * \author Jonathan Cornell
  * \date 2013-10-11

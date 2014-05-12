@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  test functions implementations.
+///  Test function declarations.
 ///
 ///  *********************************************
 ///
@@ -11,6 +11,10 @@
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
 ///  \date Feb 2014
+///
+///  \author Pat Scott
+///    (patscott@physics.mcgill.ca)
+///  \date 2014 May
 ///
 ///  *********************************************
 
@@ -25,27 +29,25 @@
 
 #include "scanner_utils.hpp"
 #include "scan.hpp"
-#include "scanner_factory.hpp"
-
 #include "yaml_options.hpp"
-
 
 #define LOAD_TEST_FUNCTOR(tag, ...) REGISTER( __test_functor_map__, tag, __VA_ARGS__ )
 
+
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
                 registry
                 {
-                        typedef Scanner::Function_Base *func_type(const Options &);
+                        typedef Function_Base *func_type(const Options &);
                         reg_elem <func_type> __test_functor_map__;
                 }
                 
-                class Test_Function_Factory : public Scanner::Factory_Base
+                class Test_Function_Factory : public Factory_Base
                 {
                 private:
-                        Scanner::Function_Base *func;
+                        Function_Base *func;
                         std::vector<std::string> keys;
                         
                 public:
@@ -73,7 +75,5 @@ namespace Gambit
                 };
         }
 }
-
-#include <test_functions/test_function_list.hpp>
 
 #endif

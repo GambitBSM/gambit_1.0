@@ -17,7 +17,8 @@
 #ifndef SCANNER_PLUGIN_HPP
 #define SCANNER_PLUGIN_HPP
 
-#include <plugin/gambit_plugin.hpp>
+#include "plugin_defs.hpp"
+#include "plugin_macros.hpp"
 #include <yaml-cpp/yaml.h>
 
 using namespace std;

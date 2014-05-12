@@ -34,8 +34,13 @@
 ///  communicate with a backend X:
 ///      Add it to a header
 ///      Backends/include/X_types.hpp
+///      **FIXME currently you then do this:**
 ///      and include that header from the file
 ///      Utils/include/shared_types.hpp.       
+///      **FIXME in future this will be true instead:**
+///      and it will be automatically included in 
+///      Utils/include/shared_types.hpp by the functor
+///      type harvester.
 ///
 ///  MODELS AND MODULES
 ///  ------------------

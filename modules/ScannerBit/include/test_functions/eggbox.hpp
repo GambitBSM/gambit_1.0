@@ -17,22 +17,14 @@
 #ifndef __egg_box_hpp__
 #define __egg_box_hpp__
 
-#include <vector>
-#include <algorithm>
-#include <cmath>
-
-#include "yaml_options.hpp"
-#include "scanner_utils.hpp"
-#include "priors.hpp"
-#include "test_factory.hpp"
 #include "test_functions/uniform.hpp"
 
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
-                class EggBox : public Scanner::Function_Base
+                class EggBox : public Function_Base
                 {
                 private:
                         std::vector <double> params;

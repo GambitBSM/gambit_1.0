@@ -26,7 +26,7 @@
 #include <algorithm>
 
 #include "yaml_options.hpp"
-#include "priors/composite.hpp"
+#include "priors_rollcall.hpp"
 
 namespace Gambit 
 {

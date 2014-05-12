@@ -22,6 +22,8 @@
 #ifndef PRIOR_DEFS_HPP
 #define PRIOR_DEFS_HPP
 
+#include "priors.hpp"
+
    /// Registry of priors
    /// Here we specify mappings from strings to prior objects.
    /// We need this so that strings in the inifile can be used to choose

@@ -28,7 +28,7 @@
 #include <iomanip>
 
 // Gambit
-#include "asciiprinter.hpp"
+#include "printers/asciiprinter.hpp"
 #include "stream_printers.hpp"
 
 // Code!

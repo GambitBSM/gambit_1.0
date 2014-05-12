@@ -76,7 +76,5 @@ namespace Gambit
         } // end namespace Priors
 } // end namespace Gambit
 
-#include<priors/prior_list.hpp>
-
 #endif /* defined(__priors_hpp__) */
 

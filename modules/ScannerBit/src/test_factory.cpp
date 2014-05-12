@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  Scanner inifile interface implementations.
+///  Test function implementations.
 ///
 ///  *********************************************
 ///
@@ -12,13 +12,18 @@
 ///          (gregory.david.martinez@gmail.com)
 ///  \date 2013 July 2013 Feb 2014
 ///
+///  \author Pat Scott
+///    (patscott@physics.mcgill.ca)
+///  \date 2014 May
+///
 ///  *********************************************
 
-#include <test_factory.hpp>
+#include "test_function_rollcall.hpp"
+
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
                 Test_Function_Factory::Test_Function_Factory(const Options &test_options)
                 {

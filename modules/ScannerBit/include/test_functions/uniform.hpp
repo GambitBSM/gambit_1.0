@@ -17,19 +17,18 @@
 #ifndef __test_uniform_hpp__
 #define __test_uniform_hpp__
 
-#include <priors.hpp>
 #include <algorithm>
 #include <cmath>
 
-#include "yaml_options.hpp"
-#include "scanner_utils.hpp"
+#include "priors.hpp"
+#include "test_factory.hpp"
 
 
 namespace Gambit
 {
-        namespace Scanner_Testing
+        namespace Scanner
         {
-                class Test_Uniform : public Scanner::Function_Base
+                class Test_Uniform : public Function_Base
                 {
                 private:
                         std::vector<std::string> keys;
