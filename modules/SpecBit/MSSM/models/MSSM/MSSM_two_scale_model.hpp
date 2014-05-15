@@ -33,6 +33,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <map>
 
 #ifdef ENABLE_THREADS
 #include <mutex>
@@ -45,6 +46,7 @@
 namespace flexiblesusy {
 
 class Two_scale;
+  
 
 template<>
 class MSSM<Two_scale> : public Two_scale_model, public MSSM_soft_parameters, public Spectrum {
@@ -75,6 +77,23 @@ public:
    virtual double get_dimensionless_parameter(std::string, int) const;
    virtual double get_dimensionless_parameter(std::string, int, int) const;
    virtual std::string AccessError(std::string state) const;
+   virtual double get_mass2_par(std::string) const;
+
+   //define type for method of this class
+   typedef double(MSSM<Two_scale>::*getmethod)() const;
+   //define map type
+   typedef std::map<std::string,getmethod>  par_Map;
+   // typedef std::map<std::string,double>  par_Map;
+   
+   
+   //data store as intanstiation of map type
+   par_Map mass2_par_map;
+   //the actual mapping
+   // const mass2_par_mapping;
+   //constructor only in this class
+   void  mass2_par_mapping();
+ 
+
 
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
@@ -734,8 +753,11 @@ private:
    Eigen::Matrix<std::complex<double>,3,3> ZUR;
 
    std::complex<double> PhaseGlu;
-
+  
 };
+
+
+
 
 std::ostream& operator<<(std::ostream&, const MSSM<Two_scale>&);
 
