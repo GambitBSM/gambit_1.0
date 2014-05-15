@@ -64,6 +64,8 @@ std::mutex CLASSNAME::mtx_fortran;
 #define UNLOCK_MUTEX()
 #endif
 
+  
+
 CLASSNAME::MSSM(const MSSM_input_parameters& input_)
    : Two_scale_model()
    , MSSM_soft_parameters(input_)
@@ -117,66 +119,65 @@ CLASSNAME::~MSSM()
 double CLASSNAME::get_lsp_mass(int & particle_type, int & row, int & col) const
 {
    row = -1; col = -1;  particle_type =-1;//set default
-   double minmass = fabs(MChi(0)); //most common lsp
+   double mlsp = fabs(MChi(0)); //most common lsp
    particle_type = 0;
    row = 0;
   
    /// sneutrinos 1
-   double lightest = MSv(0);
-   if (lightest < minmass) { 
-      minmass = lightest; 
+   double temp = MSv(0);
+   if (temp < mlsp) { 
+      mlsp = temp; 
       particle_type = 1; 
       row=0;
    }
    
-
    /// up squarks 2
-   lightest = MSu(0);
-   if (lightest < minmass) { 
-      minmass = lightest; 
+   temp = MSu(0);
+   if (temp < mlsp) { 
+      mlsp = temp; 
       particle_type = 2;
       row=0;
    }
    
    /// down squarks 3
-   lightest = MSd(0);
-   if (lightest < minmass) { 
-      minmass = lightest; 
+   temp = MSd(0);
+   if (temp < mlsp) { 
+      mlsp = temp; 
       particle_type = 3;
       row=0;      
    }
    
    /// sleptons 4
-   lightest = MSe(0);
-   if (lightest < minmass) { 
-      minmass = lightest; 
+   temp = MSe(0);
+   if (temp < mlsp) { 
+      mlsp = temp; 
       particle_type = 4; 
       row=0;    
    }
    
   /// charginos 5
-   lightest = fabs(MCha(0));
-   if (lightest < minmass) { 
-      minmass = lightest; 
+   temp = fabs(MCha(0));
+   if (temp < mlsp) { 
+      mlsp = temp; 
       particle_type = 5; 
       row=0;    
    }
    
    /// gluino 6
-   lightest = fabs(MGlu);
-   if (lightest < minmass) {
-      minmass = lightest; 
+   temp = fabs(MGlu);
+   if (temp < mlsp) {
+      mlsp = temp; 
       particle_type = 6; 
       row=0;    
    }
    
    //We have no gravitino mass right now.   this should be added.
    // /// gravitino -1 
-   // lightest = displayGravitino();
-   // if (lightest < minmass) {
-   //   minmass = lightest; posi = 0; posj = 0; particle_type = -1; }  
+   // temp = displayGravitino();
+   // if (temp < mlsp) {
+   //   mlsp = temp; posi = 0; posj = 0; particle_type = -1; }  
    
-   return minmass;
+   return mlsp;
 }
 
 //The MSSM has just one LSP - often the lightest neutralino
@@ -184,12 +185,13 @@ int CLASSNAME::get_numbers_stable_particles() const {
    return 1;
 }
 
-   //these are just wrappers.  Need to test this carefully though
-   //inheritance is complicated
+//these are just wrappers.  Need to test this carefully though
+//inheritance is complicated
 void CLASSNAME::RunToScale(double scale){
    run_to(scale);
 }
 double CLASSNAME::GetScale() const {
+   std::cout << "In mssm implementation of GetSacle" << std::endl;
    return get_scale();
 }
 void CLASSNAME::SetScale(double scale){
@@ -499,10 +501,128 @@ double CLASSNAME::get_Mixing_angle(std::string) const {
    return 6666666666666.6666666666666;
 }
 
-double CLASSNAME::get_Mixing_element(std::string, int i, int j) const {
+double CLASSNAME::get_Mixing_element(std::string MixMat, int i, int j) const {
+   //Down squark mixing matrix
+   if(MixMat == "ZD") {
+      return get_physical().ZD(i,j);
+   }
+   //Up squark mixing matrix
+   else if(MixMat == "ZU") {
+      return get_physical().ZU(i,j);
+   }
+   //Charged slepton mixing matrix
+   else if(MixMat == "ZE") {
+      return get_physical().ZE(i,j);
+   }
+   //Charged sneutrino mixing matrix
+   else if(MixMat == "ZV") {
+      return get_physical().ZV(i,j);
+   }
+   //CP even Higgs mixing matrix
+   else if(MixMat == "ZH") {
+      return get_physical().ZH(i,j);
+   }
+    //CP odd Higgs mixing matrix
+   else if(MixMat == "ZA") {
+      return get_physical().ZA(i,j);
+   }
+   //Charged Higgs mixing matrix
+   else if(MixMat == "ZPM") {
+      return get_physical().ZP(i,j);
+   }
+   // //Neutralino mass matrix
+   // else if(MixMat == "ZN") {
+   //    return get_physical().ZN(i,j);
+   // }
+   //  //Chargino mass matrices
+   // else if(MixMat == "UM") {
+   //    return get_physical().UM(i,j);
+   // }
+   // //Chargino mass matrices
+   // else if(MixMat == "UP") {
+   //    return get_physical().UP(i,j);
+   // }  
+    
+   // //Down quark left mixing matrix
+   // if(MixMat == "ZDL") {
+   //    return get_physical().ZDL(i,j);
+   // }
+   // //Down quark right mixing matrix
+   // if(MixMat == "ZDR") {
+   //    return get_physical().ZDL(i,j);
+   // }
+   // //Up quark left mixing matrix
+   // else if(MixMat == "ZUL") {
+   //    return get_physical().ZUL(i,j);
+   // }
+   //  //Up quark right mixing matrix
+   // else if(MixMat == "ZUR") {
+   //    return get_physical().ZUR(i,j);
+   // }
+   // //Charged lepton left mixing matrix
+   // else if(MixMat == "ZEL") {
+   //    return get_physical().ZEL(i,j);
+   // }
+   // //Charged lepton left mixing matrix
+   // else if(MixMat == "ZER") {
+   //    return get_physical().ZER(i,j);
+   // }
+ 
    std::cout << "Error: Sorry I know nothing" << std::endl;
    return 6666666666666.6666666666666;
 }
+
+   // typedef void (*func)();
+   // map<string,func> get_mass2_par_Map;
+  
+   // get_mass2_par_Map["mHd2"] = get_mHd2();
+   // get_mass2_par_Map["mHu2"] = get_mHu2();
+   // get_mass2_par_Map["BMu"] = get_BMu();
+   
+// void CLASSNAME::mass2_par_mapping() {
+//    mass2_par_map["mHd2"] = MSSM<Two_scale>::get_mHd2();
+//       mass2_par_map["mHu2"] = MSSM<Two_scale>::get_mHu2();
+//       mass2_par_map["BMu"] = MSSM<Two_scale>::get_BMu();
+//    }
+
+// double CLASSNAME::get_mass2_par(std::string masssq) const {
+//    //  mass2_par_mapping();
+//    //  return mass2_par_map[masssq];
+//    return mass2_par_map.find(masssq)->second;
+// }
+
+// void CLASSNAME::mass2_par_mapping() {
+//       mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_mHd2;
+//       mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_mHu2;
+//       mass2_par_map["BMu"] = &MSSM<Two_scale>::get_BMu;
+//    }
+
+
+void MSSM<Two_scale>::mass2_par_mapping() {
+      mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_mHd2;
+      mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_mHu2;
+      mass2_par_map["BMu"] = &MSSM<Two_scale>::get_BMu;
+
+   // mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_MVG;
+   //    mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_MVG;
+   //    mass2_par_map["BMu"] = &MSSM<Two_scale>::get_MVG;
+
+      //get_MVG()
+   }
+
+double MSSM<Two_scale>::get_mass2_par(std::string masssq) const {
+   std::map<std::string,getmethod>::const_iterator found= mass2_par_map.find(masssq);
+   if(found!=mass2_par_map.end()){
+      getmethod func = found->second;
+      double result = (this->*func)();
+      return result;
+   }
+   
+//  mass2_par_mapping();
+   //  return mass2_par_map[masssq];
+   // return mass2_par_map.find(masssq)->second;
+}
+
 double CLASSNAME::get_mass2_parameter(std::string mass) const {
    if(mass == "BMu"){
       return get_BMu();
@@ -1641,6 +1761,7 @@ void CLASSNAME::calculate_MChi()
 {
    const auto mass_matrix_Chi(get_mass_matrix_Chi());
    fs_diagonalize_symmetric(mass_matrix_Chi, MChi, ZN);
+   std::cout << "ZN = " << ZN << std::endl;
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Cha() const
@@ -17264,6 +17385,7 @@ void CLASSNAME::calculate_MChi_pole()
       Eigen::Array<double,4,1> eigen_values;
       decltype(ZN) mix_ZN;
       fs_diagonalize_symmetric(M_1loop, eigen_values, mix_ZN);
+      std::cout << "mix_ZN = " << mix_ZN << std::endl;
       if (es == 0)
          PHYSICAL(ZN) = mix_ZN;
       PHYSICAL(MChi(es)) = Abs(eigen_values(es));
