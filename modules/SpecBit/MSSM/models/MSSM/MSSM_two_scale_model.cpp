@@ -572,42 +572,11 @@ double CLASSNAME::get_Mixing_element(std::string MixMat, int i, int j) const {
    return 6666666666666.6666666666666;
 }
 
-   // typedef void (*func)();
-   // map<string,func> get_mass2_par_Map;
-  
-   // get_mass2_par_Map["mHd2"] = get_mHd2();
-   // get_mass2_par_Map["mHu2"] = get_mHu2();
-   // get_mass2_par_Map["BMu"] = get_BMu();
-   
-// void CLASSNAME::mass2_par_mapping() {
-//    mass2_par_map["mHd2"] = MSSM<Two_scale>::get_mHd2();
-//       mass2_par_map["mHu2"] = MSSM<Two_scale>::get_mHu2();
-//       mass2_par_map["BMu"] = MSSM<Two_scale>::get_BMu();
-//    }
-
-// double CLASSNAME::get_mass2_par(std::string masssq) const {
-//    //  mass2_par_mapping();
-//    //  return mass2_par_map[masssq];
-//    return mass2_par_map.find(masssq)->second;
-// }
-
-// void CLASSNAME::mass2_par_mapping() {
-//       mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_mHd2;
-//       mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_mHu2;
-//       mass2_par_map["BMu"] = &MSSM<Two_scale>::get_BMu;
-//    }
-
-
 void MSSM<Two_scale>::mass2_par_mapping() {
       mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_mHd2;
       mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_mHu2;
       mass2_par_map["BMu"] = &MSSM<Two_scale>::get_BMu;
 
-   // mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_MVG;
-   //    mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_MVG;
-   //    mass2_par_map["BMu"] = &MSSM<Two_scale>::get_MVG;
-
-      //get_MVG()
    }
 
 double MSSM<Two_scale>::get_mass2_par(std::string masssq) const {
@@ -618,9 +587,6 @@ double MSSM<Two_scale>::get_mass2_par(std::string masssq) const {
       return result;
    }
    
-//  mass2_par_mapping();
-   //  return mass2_par_map[masssq];
-   // return mass2_par_map.find(masssq)->second;
 }
 
 double CLASSNAME::get_mass2_parameter(std::string mass) const {
