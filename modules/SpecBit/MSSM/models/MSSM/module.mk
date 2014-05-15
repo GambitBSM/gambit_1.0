@@ -36,7 +36,8 @@ LIBMSSM_SRC += \
 		$(DIR)/MSSM_two_scale_susy_scale_constraint.cpp
 EXEMSSM_SRC += \
 		$(DIR)/run_MSSM.cpp \
-		$(DIR)/scan_MSSM.cpp
+		$(DIR)/scan_MSSM.cpp \
+		$(DIR)/example_MSSM.cpp
 LIBMSSM_HDR += \
 		$(DIR)/MSSM_convergence_tester.hpp \
 		$(DIR)/MSSM_high_scale_constraint.hpp \
@@ -100,6 +101,7 @@ LIBMSSM_SRC += \
 		$(DIR)/MSSM_lattice_susy_scale_constraint.cpp
 EXEMSSM_SRC += \
 		$(DIR)/run_MSSM.cpp \
+		$(DIR)/example_MSSM.cpp \
 		$(DIR)/scan_MSSM.cpp
 LIBMSSM_HDR += \
 		$(DIR)/MSSM_convergence_tester.hpp \
@@ -145,6 +147,9 @@ LIBMSSM     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 RUN_MSSM_OBJ := $(DIR)/run_MSSM.o
 RUN_MSSM_EXE := $(DIR)/run_MSSM.x
 
+EXAMPLE_MSSM_OBJ := $(DIR)/example_MSSM.o
+EXAMPLE_MSSM_EXE := $(DIR)/example_MSSM.x
+
 SCAN_MSSM_OBJ := $(DIR)/scan_MSSM.o
 SCAN_MSSM_EXE := $(DIR)/scan_MSSM.x
 
@@ -180,6 +185,7 @@ clean-$(MODNAME)-obj:
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBMSSM)
 		-rm -f $(RUN_MSSM_EXE)
+		-rm -f $(EXAMPLE_MSSM_EXE)
 		-rm -f $(SCAN_MSSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
@@ -220,10 +226,13 @@ $(LIBMSSM): $(LIBMSSM_OBJ)
 $(RUN_MSSM_EXE): $(RUN_MSSM_OBJ) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
+$(EXAMPLE_MSSM_EXE): $(EXAMPLE_MSSM_OBJ) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
 $(SCAN_MSSM_EXE): $(SCAN_MSSM_OBJ) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 ALLDEP += $(LIBMSSM_DEP) $(EXEMSSM_DEP)
 ALLSRC += $(LIBMSSM_SRC) $(EXEMSSM_SRC)
 ALLLIB += $(LIBMSSM)
-ALLEXE += $(RUN_MSSM_EXE) $(SCAN_MSSM_EXE)
+ALLEXE += $(RUN_MSSM_EXE) $(SCAN_MSSM_EXE) $(EXAMPLE_MSSM_EXE)
