@@ -41,6 +41,14 @@ namespace Gambit
                         virtual ~Factory_Base() {};
                 };
                 
+                class Function_Base
+                {
+                public:
+                        virtual const std::vector<double> & getParameters() const = 0;
+                        virtual double operator () (std::vector<double> &) = 0;
+                        virtual ~Function_Base(){} 
+                };
+
                 class IniFileInterface_Base
                 {
                 public:

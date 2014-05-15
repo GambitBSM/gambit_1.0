@@ -1,5 +1,5 @@
 /* 
- * SuperIso Backend
+ * Frontend for SuperIso backend
  * 
  * Last modified:
  * Nazila Mahmoudi 2013-12-31

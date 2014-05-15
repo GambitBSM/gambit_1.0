@@ -934,6 +934,10 @@ namespace Gambit
     void DependencyResolver::resolveVertexBackend(VertexID vertex)
     {
       functor* solution; 
+      std::vector<functor*> previous_successes;
+      std::vector<str> remaining_groups;
+      std::vector<sspair> remaining_reqs;
+      bool allow_deferral = true;
  
       // If there are no backend requirements, and thus nothing to do, return.
       if ((*masterGraph[vertex]).backendreqs().size() == 0) return;
@@ -947,47 +951,98 @@ namespace Gambit
       // Collect the list of groups that the backend requirements of this vertex exist in.
       std::vector<str> groups = (*masterGraph[vertex]).backendgroups();
 
-      // Loop over all groups, including the null group (group="none").
-      for (std::vector<str>::iterator it = groups.begin(); it != groups.end(); ++it)
-      {       
+      // Collect the list of orphan (i.e. groupless) backend requirements.
+      std::vector<sspair> orphan_reqs = (*masterGraph[vertex]).backendreqs("none");
 
-        // Collect the list of backend requirements in this group.
-        std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs(*it);
+      // Loop until no further backend resolutions are possible, or no more are required.
+      while ( not ( groups.empty() and orphan_reqs.empty() ) )
+      {
 
-        // Switch depending on whether this is a real group or not.
-        if (*it == "none")
-        {
-          // Loop over all the orphan requirements.
-          for (std::vector<sspair>::iterator req = reqs.begin(); req != reqs.end(); ++req)
-          {       
-            logger() << LogTags::dependency_resolver;
-            logger() << "Resolving ungrouped requirement " << req->first;
-            logger() << " (" << req->second << ")..." << endl << EOM;
-            // Find a backend function that fulfills the backend requirement.          
-            std::vector<sspair> reqsubset;
-            reqsubset.push_back(*req);
-            solution = solveRequirement(reqsubset,auxEntry,vertex);
-            // Resolve the backend requirement with that function.
-            resolveRequirement(solution,vertex);
+        // Loop over all groups, including the null group (group="none").
+        for (std::vector<str>::iterator it = groups.begin(); it != groups.end(); ++it)
+        {       
+          // Switch depending on whether this is a real group or not.
+          if (*it == "none")
+          {
+            // Loop over all the orphan requirements.
+            for (std::vector<sspair>::iterator req = orphan_reqs.begin(); req != orphan_reqs.end(); ++req)
+            {       
+              logger() << LogTags::dependency_resolver;
+              logger() << "Resolving ungrouped requirement " << req->first;
+              logger() << " (" << req->second << ")..." << endl << EOM;
+
+              // Find a backend function that fulfills the backend requirement.          
+              std::vector<sspair> reqsubset;
+              reqsubset.push_back(*req);
+              solution = solveRequirement(reqsubset,auxEntry,vertex,previous_successes,allow_deferral);
+
+              // Check if a valid solution has been returned
+              if (solution != NULL)
+              {
+                // It has, so resolve the backend requirement with that function and add it to the list of successful resolutions.
+                resolveRequirement(solution,vertex);
+                previous_successes.push_back(solution);
+              }
+              else // No valid solution found, but deferral has been suggested - so defer resolution of this group until later.
+              {
+                remaining_reqs.push_back(*req);
+                logger() << LogTags::dependency_resolver;
+                logger() << "Resolution of ungrouped requirement " << req->first;
+                logger() << " (" << req->second << ") deferred until later." << endl << EOM;
+              }
+            }
+            if (not remaining_reqs.empty()) remaining_groups.push_back(*it);
           }
+          else
+          {
+            logger() << LogTags::dependency_resolver;
+            logger() << "Resolving from group " << *it;
+            logger() << "..." << endl << EOM;
+
+            // Collect the list of backend requirements in this group.
+            std::vector<sspair> reqs = (*masterGraph[vertex]).backendreqs(*it);
+
+            // Find a backend function that fulfills one of the backend requirements in the group.
+            solution = solveRequirement(reqs,auxEntry,vertex,previous_successes,allow_deferral,*it);
+
+            // Check if a valid solution has been returned
+            if (solution != NULL)
+            {
+              // It has, so resolve the backend requirement with that function and add it to the list of successful resolutions.
+              resolveRequirement(solution,vertex);
+              previous_successes.push_back(solution);
+            }
+            else // No valid solution found, but deferral has been suggested - so defer resolution of this group until later.
+            {
+              remaining_groups.push_back(*it);
+              logger() << LogTags::dependency_resolver;
+              logger() << "Resolution from group " << *it;
+              logger() << "deferred until later." << endl << EOM;
+            }
+          }   
         }
-        else
+       
+        // If there has been no improvement this round, turn off deferral and make the next round the last attempt.
+        if (orphan_reqs == remaining_reqs and groups == remaining_groups)
         {
-          logger() << LogTags::dependency_resolver;
-          logger() << "Resolving from group " << *it;
-          logger() << "..." << endl << EOM;
-          // Find a backend function that fulfills one of the backend requirements in the group.
-          solution = solveRequirement(reqs,auxEntry,vertex,*it);
-          // Resolve the backend requirement with that function.
-          resolveRequirement(solution,vertex);
+          allow_deferral = false;
         }
-         
-      }
+        else // Otherwise try again to resolve the remaining groups and orphan requirements, now that some others are known. 
+        {
+          orphan_reqs = remaining_reqs;
+          groups = remaining_groups;
+          remaining_reqs.clear();
+          remaining_groups.clear();
+        }
+
+    }
+
     }
 
     /// Find a backend function that matches any one of a vector of capability-type pairs. 
     functor* DependencyResolver::solveRequirement(std::vector<sspair> reqs, 
-     const IniParser::ObservableType * auxEntry, VertexID vertex, str group)
+     const IniParser::ObservableType * auxEntry, VertexID vertex, std::vector<functor*> previous_successes, 
+     bool allow_deferral, str group)
     {
       std::vector<functor *> vertexCandidates;
       std::vector<functor *> vertexCandidatesWithIniEntry;
@@ -1045,6 +1100,91 @@ namespace Gambit
         }
       }
 
+      // If too many candidates, prefer those with entries in the inifile.
+      if (vertexCandidates.size() > 1 and vertexCandidatesWithIniEntry.size() >= 1)
+      {
+        // Loop over the remaining candidates, and disable those without entries in the inifile.
+        for (std::vector<functor *>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+        {
+          if (std::find(vertexCandidatesWithIniEntry.begin(), vertexCandidatesWithIniEntry.end(), *it) == vertexCandidatesWithIniEntry.end() )
+            disabledVertexCandidates.push_back(*it);
+        }
+        // Set the new list of vertex candidates to be only those with inifile entries.
+        vertexCandidates = vertexCandidatesWithIniEntry;
+      }
+
+      // Purge all candidates that conflict with a backend-matching rule.
+      // Start by making a new vector to hold the candidates that survive the purge. 
+      std::vector<functor *> survivingVertexCandidates;
+      // Loop over the current candidates.
+      for (std::vector<functor *>::const_iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+      {
+        // Set up a flag to keep track of whether anything has indicated that the candidate should be thrown out.
+        bool keeper = true;
+        // Retrieve the tags of the candidate.
+        std::vector<str> tags = (*masterGraph[vertex]).backendreq_tags((*it)->quantity());
+        // Loop over the tags
+        for (std::vector<str>::iterator tagit = tags.begin(); tagit != tags.end(); ++tagit)
+        {
+          // Find out which other backend requirements exhibiting this tag must be filled from the same backend as the req this candidate would fill.
+          std::vector<sspair> must_match = (*masterGraph[vertex]).forcematchingbackend(*tagit);          
+          // Set up a flag to keep track of whether any of the other backend reqs have already been filled. 
+          bool others_filled = false;
+          // Set up a string to keep track of which backend the other backend reqs have been filled from (if any).
+          str common_backend_and_version;
+          // Loop over the other backend reqs.
+          for (std::vector<sspair>::iterator mit = must_match.begin(); mit != must_match.end(); ++mit)
+          {
+            // Set up a flag to indicate if the other backend req in question has been filled yet.  
+            bool other_filled = false;
+            // Set up a string to keep track of which backend the other backend req in question has been filled from (if any).            
+            str filled_from;
+            // Loop over the backend functors that have successfully filled backend reqs already for this funcition
+            for (std::vector<functor*>::const_iterator 
+                 itf  = previous_successes.begin();
+                 itf != previous_successes.end();    
+                 ++itf)
+            {
+              // Check if the current previous successful resolution (itf) was of the same backend requirement as the 
+              // current one of the backend requirements (mit) that must be filled from the same backend as the current candidate (it).
+              if ((*itf)->quantity() == *mit) 
+              {
+                // Note that mit (the current backend req that must be filled from the same backend as the current candidate) has indeed been filled, by itf
+                other_filled = true;
+                // Note which backend mit has been filled from (i.e. where does itf come from?)
+                filled_from = (*itf)->origin() + " v" + (*itf)->version();
+                break;
+              }
+            }
+            // If the other req has been filled, updated the tracker of whether any of the reqs linked to this flag have been filled, 
+            // and compare the filling backend to the one used to fill any other reqs associated with this tag.
+            if (other_filled)
+            {
+              others_filled = true;
+              if (common_backend_and_version.empty()) common_backend_and_version = filled_from; // Save the filling backend
+              if (filled_from != common_backend_and_version) // Something buggy has happened and the rule is already broken(!)
+              {
+                str errmsg = "A backend-matching rule has been violated!";
+                errmsg  += "\nFound whilst checking which backends have been used"
+                           "\nto fill requirements with tag " + *tagit + " in function "
+                           "\n" + (*masterGraph[vertex]).name() + " of " + (*masterGraph[vertex]).origin() + "."
+                           "\nOne requirement was filled from " + common_backend_and_version + ", "
+                           "\nwhereas another was filled from " + filled_from + "."
+                           "\nThis is probably a bug in GAMBIT.  The apocalypse has come.";
+                dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+              }
+            }
+          }
+          // Try to keep this candidate if it comes from the same backend as those already filled, or if none of the others are filled yet.
+          keeper = (not others_filled or common_backend_and_version == (*it)->origin() + " v" + (*it)->version());
+          if (not keeper) break;
+        } 
+        if (keeper) survivingVertexCandidates.push_back(*it); else disabledVertexCandidates.push_back(*it);
+      }
+      // Replace the previous list of candidates with the survivors.
+      vertexCandidates = survivingVertexCandidates;
+
+      // No candidates? Death.
       if (vertexCandidates.size() == 0)
       {
         str errmsg = "Found no candidates for backend requirement.";
@@ -1054,30 +1194,50 @@ namespace Gambit
                  +     printGenericFunctorList(disabledVertexCandidates)
                  +  "\nPlease check that all shared objects exist for the"
                  +  "\necessary backends, and that they contain all the"
-                 +  "\nnecessary functions required for this scan. In "
-                 +  "\nparticular, make sure that your mangled function"
-                 +  "\nnames match the symbol names in your shared lib.";
+                 +  "\nnecessary functions required for this scan. Also "
+                 +  "\ncheck your backend rules and YAML file.";
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
-      }
-
-      // If too many candidates, prefer those with entries in the inifile.
-      if (vertexCandidates.size() > 1)
-      {
-        if (vertexCandidatesWithIniEntry.size() >= 1) vertexCandidates = vertexCandidatesWithIniEntry;
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       // Still more than one candidate...
       if (vertexCandidates.size() > 1)
       {
-        str errmsg = "Found too many candidates for backend requirement ";
-        if (reqs.size() == 1) errmsg += reqs[0].first + " (" + reqs[0].second + ")...";
-        else errmsg += "group " + group + ".";
-        errmsg += "\nViable candidates are:\n" + printGenericFunctorList(vertexCandidates);
-       dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        // Check whether any of the remaining candidates is subject to a backend-matching rule, 
+        // and might therefore be uniquely chosen over the other(s) if resolution for this req is attempted again, after
+        // another of the reqs subject to the same rule is resolved.
+        bool rule_exists = false;
+        // Loop over the remaining candidates.
+        for (std::vector<functor *>::const_iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
+        {
+          // Retrieve the tags of the candidate.
+          std::vector<str> tags = (*masterGraph[vertex]).backendreq_tags((*it)->quantity());
+          // Loop over the tags
+          for (std::vector<str>::iterator tagit = tags.begin(); tagit != tags.end(); ++tagit)
+          {
+            // Find if there is a backend-matching rule associated with this tag.
+            rule_exists = not (*masterGraph[vertex]).forcematchingbackend(*tagit).empty();          
+            if (rule_exists) break;
+          }
+          if (rule_exists) break;
+        }
+
+        // If deferral is allowed and appears to be potentially useful, defer resolution until later.
+        if (allow_deferral and rule_exists)
+        {
+          return NULL;
+        }
+        else  // If not, the game is up.
+        {
+          str errmsg = "Found too many candidates for backend requirement ";
+          if (reqs.size() == 1) errmsg += reqs[0].first + " (" + reqs[0].second + ")...";
+          else errmsg += "group " + group + ".";
+          errmsg += "\nViable candidates are:\n" + printGenericFunctorList(vertexCandidates);
+          dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        }
       }
 
-      // Just one candidate.
+      // Just one candidate.  Jackpot.
       return vertexCandidates[0];
 
     }

@@ -21,8 +21,9 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <plugin/plugin_exception.hpp>
 #include <typeinfo>
+
+#include "plugin_exception.hpp"
 
 using namespace std;
 

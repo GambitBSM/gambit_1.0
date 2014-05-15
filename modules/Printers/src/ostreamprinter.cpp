@@ -25,7 +25,7 @@
 #include <iomanip>
 
 // Gambit
-#include "ostreamprinter.hpp"
+#include "printers/ostreamprinter.hpp"
 #include "stream_printers.hpp"
 
 // Code!
@@ -45,7 +45,8 @@ namespace Gambit
     ostreamPrinter::ostreamPrinter(std::ostream& mystrm, bool vrbs) :
       my_ostream(mystrm), verbose(vrbs) { }
    
-    // default destructor should be fine?
+    // Destructor
+    ostreamPrinter::~ostreamPrinter() {}
  
     // Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.

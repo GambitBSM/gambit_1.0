@@ -61,13 +61,14 @@ namespace Gambit
     {
       typedef double(*BEptr)(int&, double&, double&);
       public:
-        DSgamma3bdyKinFunc(int& chn, double& M, double& m2, BEptr ib, BEptr fsr, bool& doFSR, bool& doIB)
-        : BF::BaseFunction("DSgamma3bdyKinFunc", 2)
+        DSgamma3bdyKinFunc(int& chn, double& M, double& m1, double& m2, BEptr ib, BEptr fsr, bool& doFSR, bool& doIB)
+        : BaseFunction("DSgamma3bdyKinFunc", 2)
         {
           M_DM = M;
           IBch = chn;
           IBfunc = ib;
           FSRfunc = fsr;
+          m_1 = m1;
           m_2 = m2;
           calculateFSR = doFSR;
           calculateIB = doIB;
@@ -86,6 +87,9 @@ namespace Gambit
         {
           double E_gamma = args[0];
           double E1 = args[1];
+          double E2 = 2*M_DM-E_gamma-E1;  
+          if((E1 < m_1) || (E_gamma+E1 > 2*M_DM) || (E2 < m_2))
+            return 0;
           double x = E_gamma/M_DM;
           double y = (m_2*m_2+4*M_DM*(E_gamma+E1-M_DM))/(4*M_DM*M_DM);
           // TODO: Check if IB and ISR are summed correctly
@@ -94,6 +98,7 @@ namespace Gambit
             result += FSRfunc(IBch,x,y);
           if(calculateIB) 
             result += IBfunc(IBch,x,y);
+          std::cout << E_gamma << "\t" << E1 << "\t" << x << "\t" << y << "\t" << result << std::endl;
           return result;
         }
       private:
@@ -102,6 +107,7 @@ namespace Gambit
         BEptr IBfunc;
         BEptr FSRfunc;
         double M_DM;
+        double m_1;        
         double m_2;
         int IBch;
     };

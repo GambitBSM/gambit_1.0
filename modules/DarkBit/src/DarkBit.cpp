@@ -714,10 +714,10 @@ namespace Gambit {
         bool calculateFSR = false;
         bool calculateIB  = true;
         
-        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_2, IBFUNC, FSRFUNC)                                   \
+        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_1, M_2, IBFUNC, FSRFUNC)                                   \
             index = IBCH;                                                                                               \
             BFptr   CAT(kinematicFunction_,NAME)                                                                        \
-                    (new DSgamma3bdyKinFunc(index, mass, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),calculateFSR,calculateIB));   \
+                    (new DSgamma3bdyKinFunc(index, mass, M_1, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),calculateFSR,calculateIB));   \
             /* Create channel identifier string */                                                                      \
             std::vector<std::string> CAT(finalStates_,NAME);                                                            \
             CAT(finalStates_,NAME).push_back("gamma");                                                                  \
@@ -741,31 +741,32 @@ namespace Gambit {
         double m_W      = 80.3;     // GeV
         
         // TODO: Check if IB and ISR are summed correctly, check if FSR should be included in all the processes
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,     W-,      m_W, 
-            (BEreq::dsIBwwdxdy.pointer()),(NULL))     
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,     H-,      m_Hc, 
-        //    (BEreq::dsIBwhdxdy.pointer()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this            
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,     H+,      m_Hc, 
-        //    (BEreq::dsIBwhdxdy.pointer()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc, 
-        //    (BEreq::dsIBhhdxdy.pointer()),(NULL))                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e, 
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,     W-,      m_W,    m_W,
+        //    (BEreq::dsIBwwdxdy.pointer<int& ,double&, double&>()),(NULL))     
+            
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,     H-,      m_W,  m_Hc, 
+        //    (BEreq::dsIBwhdxdy.pointer<int& ,double&, double&>()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this            
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,     H+,      m_W,  m_Hc, 
+        //    (BEreq::dsIBwhdxdy.pointer<int& ,double&, double&>()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this
+        //SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc, m_Hc 
+        //    (BEreq::dsIBhhdxdy.pointer<int& ,double&, double&>()),(NULL))                    
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e,    m_e,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu,   m_mu,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau,  m_tau,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u,    m_u,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d,    m_d,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c,    m_c,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s,    m_s,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t,    m_t,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b, 
+        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b,    m_b,
             (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()))
 
         #undef SETUP_DS_PROCESS_GAMMA3BODY

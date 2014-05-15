@@ -29,9 +29,9 @@
 
 // Include the individual models.
 // Each header may define multiple related models if desired.
-#include "demo.hpp"
-#include "MSSM.hpp"
-#include "SingletDM.hpp"
+#include "models/demo.hpp"
+#include "models/MSSM.hpp"
+#include "models/SingletDM.hpp"
       
 #endif /* defined(__model_rollcall_hpp__) */
 

@@ -28,7 +28,7 @@
 #include <queue>
 
 #include "gambit_core.hpp"
-#include "printers_rollcall.hpp"
+#include "baseprinter.hpp"
 #include "functors.hpp"
 #include "error_handlers.hpp"
 #include "yaml_parser.hpp"
@@ -147,7 +147,7 @@ namespace Gambit
         void resolveVertexBackend(VertexID);
 
         // Find backend function matching any one of a number of capability-type pairs. 
-        functor* solveRequirement(std::vector<sspair>, const IniParser::ObservableType*, VertexID, str group="none");
+        functor* solveRequirement(std::vector<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
         void resolveRequirement(functor*, VertexID);

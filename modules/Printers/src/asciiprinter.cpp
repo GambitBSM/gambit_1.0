@@ -28,7 +28,7 @@
 #include <iomanip>
 
 // Gambit
-#include "asciiprinter.hpp"
+#include "printers/asciiprinter.hpp"
 #include "stream_printers.hpp"
 
 // Code!
@@ -40,18 +40,33 @@ namespace Gambit
 
     // Printer to ascii file (i.e. table of doubles)
 
-    // Constructor
-    asciiPrinter::asciiPrinter(std::ofstream& myfstrm, std::ofstream& inffstrm) :
-      my_fstream(myfstrm), info_fstream(inffstrm)
+    // Old Constructor (no longer allowing arbitrary filestreams; printer will create and take care of its own streams now)
+    // asciiPrinter::asciiPrinter(std::ofstream& myfstrm, std::ofstream& inffstrm) :
+    //   my_fstream(myfstrm), info_fstream(inffstrm)
+    // {
+    //   buf_loc = 0;
+    //   info_file_written = false;
+    //   bufferlength = 10;
+    //   buffer.resize(bufferlength); 
+    //   my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
+    // }
+ 
+    // Constructor (accepts 
+    asciiPrinter::asciiPrinter(const Options& options):
+      buf_loc(0),
+      info_file_written(false),
+      bufferlength(10),
+      my_fstream(options.getValue<std::string>("output_file"), std::ofstream::out),
+      info_fstream(options.getValue<std::string>("info_file"), std::ofstream::out)
     {
-      buf_loc = 0;
-      info_file_written = false;
-      bufferlength = 10;
+      // Could set these things via options also if we like.
       buffer.resize(bufferlength); 
       my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
     }
   
-    // default destructor should be fine?
+    /// Destructor
+    // Overload the base class virtual destructor
+    asciiPrinter::~asciiPrinter() {}
  
     // Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.

@@ -26,10 +26,11 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
-#include <yaml_parser.hpp>
-#include <cholesky.hpp>
-#include <scanner_utils.hpp>
-#include <priors.hpp>
+
+#include "yaml_parser.hpp"
+#include "cholesky.hpp"
+#include "scanner_utils.hpp"
+#include "priors.hpp"
 
 namespace Gambit
 {

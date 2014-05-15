@@ -29,9 +29,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dlfcn.h>
-#include <scanner_utils.hpp>
-#include <plugin/plugin_exception.hpp>
 #include <typeinfo>
+
+#include "scanner_utils.hpp"
+#include "plugin_exception.hpp"
 
 namespace Gambit
 {

@@ -1,22 +1,25 @@
 /* 
  * Example of how to use the macros in 'backend_macros.hpp' 
- * to set up a backend for a specific library.
+ * to set up a frontend for a specific library.
  * 
- * \author Aldo Saavedra
- * \date 2014-02-27  
+ * \author Anders Kvellestad
+ * \date 2013-03-26  
  * 
+ * Modified: 2013-04-05
+ * Pat Scott 2013-04-22
+ * Anders Kvellestad 2013, Nov
  */
 
 /* Specify the path to the shared library along with a backend name. */
 
-#define LIBPATH      "Backends/lib/libfastsim.so"
+#define LIBPATH      "Backends/lib/libfirst.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME LibFastSim
+  #define BACKENDNAME LibFirst
 #endif
-#define VERSION 1.0
-#define SAFE_VERSION 1_0
+#define VERSION 1.1
+#define SAFE_VERSION 1_1
 
 /* The following macro loads the library (using dlopen) in LIBPATH 
  * when this header file is included somewhere. */
@@ -32,17 +35,13 @@ LOAD_LIBRARY
 
 /* Syntax for BE_FUNCTION:
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
- * 
- * The last argument (capability name) is optional. 
- * If left out (as done in some of the examples below) it will default to "[backend name]_[function name]_capability"
- * (e.g. "LibFirst_initialize_capability") */
-  
-BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
-//BE_FUNCTION(FastSim_Init, int, (Event&), "_Z12FastSim_Initi", "evgen")
-//BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
-//BE_FUNCTION(returnResult, double, (), "_Z12returnResultv")
-//BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
-//BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
+ */
+
+BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
+BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
+BE_FUNCTION(returnResult, double, (), "_Z12returnResultv","LibFirst_returnResult_capability")
+BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
+BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
 
 /* We have now created the following:
  *
@@ -58,10 +57,18 @@ BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
 
 
 /* Syntax for BE_VARIABLE:
- * BE_VARIABLE([choose variable name], [type], "[exact symbol name]", "[choose capability name]")  */
+ * BE_VARIABLE([type macro], "[exact symbol name]", "[choose capability name]")  
+ * Valid type macros are:
+ * GENERAL_VAR([type],[choose variable name])
+ * for ordinary variables (int, double, classes).
+ * FORTRAN_ARRAY([type], [choose array name], ([lower index, dimension 1],[upper index, dimension 1]), [upper/lower index pairs for higher array dimensions] )
+ * for arrays in Fortran backends. 
+ * FORT_COMMONB([commonblock struct type], [choose commonblock name])
+ * for Fortran commonblocks.
+ * */
 
-//BE_VARIABLE(SomeInt, int, "someInt", "SomeInt")
-//BE_VARIABLE(SomeDouble, double, "someDouble", "SomeDouble")
+BE_VARIABLE(GENERAL_VAR(int,SomeInt), "someInt", "SomeInt")
+BE_VARIABLE(GENERAL_VAR(double,SomeDouble), "someDouble", "SomeDouble")
 
 /* We have now created the following:
  *
@@ -80,35 +87,36 @@ BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
  * registred/wrapped via the macro BE_CONV_FUNCTION (see below). */
 
 
-//namespace Gambit
-//{
-//  namespace Backends
-//  {
-//    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
-//    {
+namespace Gambit
+{
+  namespace Backends
+  {
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
+    {
 
-//      /* Convenience functions go here */
+      /* Convenience functions go here */
 
-//      double awesomenessByAnders(int a)
-//      {
-//        initialize(a);
-//        someFunction();
-//        return returnResult();
-//      }
+      double awesomenessByAnders(int a)
+      {
+        logger().send("Message from 'awesomenessByAnders' backend convenience function in libfirst wrapper",LogTags::info);
+        initialize(a);
+        someFunction();
+        return returnResult();
+      }
 
-//    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
-//  } /* end namespace Backends */                                                
-//} /* end namespace Gambit */                                                   
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
+  } /* end namespace Backends */                                                
+} /* end namespace Gambit */                                                   
 
 
 /* Now register any convenience functions and wrap them in functors. 
  *
  * Syntax for BE_CONV_FUNCTION:
- * BE_CONV_FUNCTION([function name], type, "[choose capability name]")
+ * BE_CONV_FUNCTION([function name], type, (arguments), "[choose capability name]")
  * 
  * As with BE_FUNCTION, the last argument is optional. */
 
-//BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
+BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness")
 
 
 // Undefine macros to avoid conflict with other backends

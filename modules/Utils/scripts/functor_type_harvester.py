@@ -192,7 +192,7 @@ def main(argv):
         collide = True
 
 
-    headers      = set(["module_rollcall.hpp"])
+    headers      = set(["module_rollcall.hpp"])  #FIXME this needs to be different for standalone module compilation
     type_headers = set(["types_rollcall.hpp"])
     fullheaders=[]
     fulltypeheaders=[]

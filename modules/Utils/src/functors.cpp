@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar, Apr
+///  \date 2014 Jan, Mar-May
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -27,7 +27,6 @@
 ///
 ///  *********************************************
 
-#include <regex>
 
 #include "functors.hpp"
 #include "all_functor_types.hpp"
@@ -187,6 +186,20 @@ namespace Gambit
     std::vector<sspair> functor::backendspermitted(sspair) 
     { 
       utils_error().raise(LOCAL_INFO,"The backendspermitted method has not been defined in this class.");
+      std::vector<sspair> empty;
+      return empty;
+    }
+    /// Getter for listing tags associated with backend requirements
+    std::vector<str> functor::backendreq_tags(sspair)
+    { 
+      utils_error().raise(LOCAL_INFO,"The backendreq_tags method has not been defined in this class.");
+      std::vector<str> empty;
+      return empty;
+    }
+    /// Getter for listing backend requirements that must be resolved from the same backend
+    std::vector<sspair> functor::forcematchingbackend(str)
+    { 
+      utils_error().raise(LOCAL_INFO,"The forcematchingbackend method has not been defined in this class.");
       std::vector<sspair> empty;
       return empty;
     }
@@ -492,6 +505,32 @@ namespace Gambit
         return empty;
       }
     }
+    /// Getter for listing tags associated with backend requirements
+    std::vector<str> module_functor_common::backendreq_tags(sspair quant)
+    { 
+      if (backendreq_tagmap.find(quant) != backendreq_tagmap.end())
+      {
+        return backendreq_tagmap[quant]; 
+      }
+      else
+      {
+        std::vector<str> empty;
+        return empty;
+      }
+    }
+    /// Getter for listing backend requirements that must be resolved from the same backend
+    std::vector<sspair> module_functor_common::forcematchingbackend(str tag)
+    { 
+      if (myForcedMatches.find(tag) != myForcedMatches.end())
+      {
+        return myForcedMatches[tag]; 
+      }
+      else
+      {
+        std::vector<sspair> empty;
+        return empty;
+      }
+    }
 
     /// Getter for listing backend-specific conditional dependencies (4-string version)
     std::vector<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be, str ver)  
@@ -645,29 +684,8 @@ namespace Gambit
       myGroupedBackendReqs[group].push_back(key);
       backendreq_map[key] = resolver;
       strip_parentheses(tags);
-      backendreq_tags[key] = delimiterSplit(tags, ",");      
+      backendreq_tagmap[key] = delimiterSplit(tags, ",");      
       backendreq_groups[key] = group;
-    }
-
-    /// Add an unconditional backend requirement
-    /// FIXME This is deprecated... 
-    void module_functor_common::setBackendReq_deprecated(str req, str type, void(*resolver)(functor*))
-    { 
-      sspair key (req, type);
-      backendreq_types[req] = type;
-      myBackendReqs.push_back(key);
-      myResolvableBackendReqs.push_back(key);
-      if ( std::find(myGroups.begin(), myGroups.end(), "none") == myGroups.end() )
-      {
-        myGroups.push_back("none");
-        std::vector<sspair> empty;
-        myGroupedBackendReqs["none"] = empty;
-      }
-      myGroupedBackendReqs["none"].push_back(key);
-      backendreq_map[key] = resolver;
-      std::vector<str> empty;
-      backendreq_tags[key] = empty;      
-      backendreq_groups[key] = "none";
     }
 
     /// Add a rule for activating backend requirements according to the model being scanned.
@@ -684,7 +702,7 @@ namespace Gambit
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
       for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
       {
-        std::vector<str> tagset = backendreq_tags[*it];
+        std::vector<str> tagset = backendreq_tagmap[*it];
         std::sort(tagset.begin(), tagset.end());
         if (not is_disjoint(tags, tagset))
         {
@@ -718,9 +736,9 @@ namespace Gambit
        myResolvableBackendReqs.end(), key), myResolvableBackendReqs.end());
 
       // Remove the entry from the resolvable backend reqs list of the group this req is in...
-      std::vector<sspair> resolvableGroupBackendReqs = myGroupedBackendReqs[backendreq_groups[key]];
-      resolvableGroupBackendReqs.erase(std::remove(resolvableGroupBackendReqs.begin(), 
-       resolvableGroupBackendReqs.end(), key), resolvableGroupBackendReqs.end());
+      std::vector<sspair>* resolvableGroupBackendReqs = &(myGroupedBackendReqs[backendreq_groups[key]]);
+      resolvableGroupBackendReqs->erase(std::remove(resolvableGroupBackendReqs->begin(), 
+       resolvableGroupBackendReqs->end(), key), resolvableGroupBackendReqs->end());
 
       // Check that the model is not already in the conditional backend reqs list, then add it
       if (myModelConditionalBackendReqs.find(model) == myModelConditionalBackendReqs.end())
@@ -760,7 +778,7 @@ namespace Gambit
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
       for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
       {
-        std::vector<str> tagset = backendreq_tags[*it];
+        std::vector<str> tagset = backendreq_tagmap[*it];
         std::sort(tagset.begin(), tagset.end());
         if (not is_disjoint(tags, tagset))
         {
@@ -772,17 +790,6 @@ namespace Gambit
         }
       }
 
-    }
-
-    /// Add multiple versions of a permitted backend !FIXME deprecated!!
-    void module_functor_common::setPermittedBackend_deprecated(str req, str be, str ver)
-    {
-      // Split the version string and send each version to be registered
-      std::vector<str> versions = delimiterSplit(ver, ",");
-      for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
-      {
-        setPermittedBackend(req, be, *it);
-      }
     }
 
     /// Add a single permitted backend version
@@ -810,6 +817,47 @@ namespace Gambit
       permitted_map[key].push_back(vector_entry);       
     }
 
+    /// Add one or more rules that force backends reqs with the same tag to always be resolved from the same backend.
+    void module_functor_common::makeBackendMatchingRule(str tag)
+    {
+      //Strip the tag string of any parentheses, then split it
+      strip_parentheses(tag);
+      std::vector<str> tags = delimiterSplit(tag, ",");
+
+      //Die if no tags were given.      
+      if (tags.empty())  
+      {
+        str errmsg = "Problem whilst attempting to set backend-matching rule:";
+        errmsg +=  "\nA call to FORCE_SAME_BACKEND must include at least one tag!"
+                   "\nThis is " + this->name() + " in " + this->origin() + ".";
+        utils_error().raise(LOCAL_INFO,errmsg);
+      }
+
+      //Work with one tag at a time
+      for (std::vector<str>::iterator tagit = tags.begin(); tagit != tags.end(); ++tagit)
+      {
+        std::vector<sspair> matches;
+        //Find all declared backend requirements that fit the current tag
+        for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+        {
+          //Test if the current tag is amongst the tags listed for the current backend requirement
+          std::vector<str> its_tags = backendreq_tagmap[*it];
+          if ( std::find(its_tags.begin(), its_tags.end(), *tagit) != its_tags.end() )
+          {
+            //It is; now place the current backend requirement into the set of matches
+            matches.push_back(*it);
+          }
+        }
+        //Save the matched set of backend requirements as needing to be filled using the same backend.
+        myForcedMatches[*tagit] = matches;
+      }
+
+      //Note that overlapping sets are explicitly left unmerged, as the common elements 
+      //may or may not be activated in a given scan, making the disjointedness of the 
+      //different sets determinable only at resolution time, not initialisation time.
+
+    }
+
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void module_functor_common::setNestedList (std::vector<functor*> &newNestedList)
     { 
@@ -825,6 +873,42 @@ namespace Gambit
         utils_error().raise(LOCAL_INFO,errmsg);
       }
     } 
+
+
+    /// FIXME!  delete! delete!
+    /// Add multiple versions of a permitted backend !FIXME deprecated!!
+    void module_functor_common::setPermittedBackend_deprecated(str req, str be, str ver)
+    {
+      // Split the version string and send each version to be registered
+      std::vector<str> versions = delimiterSplit(ver, ",");
+      for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
+      {
+        setPermittedBackend(req, be, *it);
+      }
+    }
+    /// Add an unconditional backend requirement
+    /// FIXME This is deprecated... 
+    void module_functor_common::setBackendReq_deprecated(str req, str type, void(*resolver)(functor*))
+    { 
+      sspair key (req, type);
+      backendreq_types[req] = type;
+      myBackendReqs.push_back(key);
+      myResolvableBackendReqs.push_back(key);
+      if ( std::find(myGroups.begin(), myGroups.end(), "none") == myGroups.end() )
+      {
+        myGroups.push_back("none");
+        std::vector<sspair> empty;
+        myGroupedBackendReqs["none"] = empty;
+      }
+      myGroupedBackendReqs["none"].push_back(key);
+      backendreq_map[key] = resolver;
+      std::vector<str> empty;
+      backendreq_tagmap[key] = empty;      
+      backendreq_groups[key] = "none";
+    }
+
+
+
 
     /// Resolve a dependency using a pointer to another functor object
     void module_functor_common::resolveDependency (functor* dep_functor)

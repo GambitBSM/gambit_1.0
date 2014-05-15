@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar, Apr
+///  \date 2014 Jan, Mar-May
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -143,6 +143,10 @@ namespace Gambit
       virtual std::vector<sspair> backendreqs(str);
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair);
+      /// Getter for listing tags associated with backend requirements
+      virtual std::vector<str> backendreq_tags(sspair);
+      /// Getter for listing backend requirements that must be resolved from the same backend
+      virtual std::vector<sspair> forcematchingbackend(str);
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
       virtual std::vector<sspair> backend_conditional_dependencies (str, str, str, str);
@@ -297,6 +301,10 @@ namespace Gambit
       virtual std::vector<sspair> backendreqs(str);
       /// Getter for listing permitted backends
       virtual std::vector<sspair> backendspermitted(sspair quant);
+      /// Getter for listing tags associated with backend requirements
+      virtual std::vector<str> backendreq_tags(sspair);
+      /// Getter for listing backend requirements that must be resolved from the same backend
+      virtual std::vector<sspair> forcematchingbackend(str);
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
       virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver);
@@ -335,10 +343,6 @@ namespace Gambit
       /// The info gets updated later if this turns out to be contitional on a model. 
       void setBackendReq(str, str, str, str, void(*)(functor*));
 
-      /// Add an unconditional backend requirement
-      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq_deprecated(str, str, void(*)(functor*));
-
       /// Add a model conditional backend requirement for multiple models
       void setModelConditionalBackendReq(str model, str req, str type);
 
@@ -348,11 +352,20 @@ namespace Gambit
       /// Add a rule for dictating which backends can be used to fulfill which backend requirements.
       void makeBackendOptionRule(str, str);
 
-      /// Add multiple versions of a permitted backend !FIXME deprecated!!
-      void setPermittedBackend_deprecated(str req, str be, str ver);
-
       /// Add a single permitted backend version
       void setPermittedBackend(str req, str be, str ver);
+
+      /// Add one or more rules for forcing backends reqs with the same tags to always be resolved from the same backend.
+      void makeBackendMatchingRule(str tag);
+
+      // !FIXME delete!!
+      /// Add multiple versions of a permitted backend !FIXME deprecated!!
+      void setPermittedBackend_deprecated(str req, str be, str ver);
+      /// Add an unconditional backend requirement
+      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
+      void setBackendReq_deprecated(str, str, void(*)(functor*));
+      //
+
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);
@@ -368,6 +381,12 @@ namespace Gambit
 
 
     protected:
+
+      /// Do pre-calculate timing things
+      virtual void startTiming(double & nsec, double & sec);
+
+      /// Do post-calculate timing things
+      virtual void finishTiming(double nsec, double sec);
 
       /// Current runtime in ns
       double runtime;
@@ -444,7 +463,7 @@ namespace Gambit
       std::map<sspair, str> backendreq_groups;
 
       /// Map from backend requirements to their rule tags
-      std::map<sspair, std::vector<str> > backendreq_tags; 
+      std::map<sspair, std::vector<str> > backendreq_tagmap; 
 
       /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
       /// that set backend requirement functor pointers)
@@ -453,14 +472,11 @@ namespace Gambit
       /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
       std::map< sspair, std::vector<sspair> > permitted_map;
 
+      /// Map from tags to sets of matching (backend requirement-type pairs) that are forced to use the same backend
+      std::map< str, std::vector<sspair> > myForcedMatches;
+
       /// Internal timespec object
       timespec tp;
-
-      /// Do pre-calculate timing things
-      virtual void startTiming(double & nsec, double & sec);
-
-      /// Do post-calculate timing things
-      virtual void finishTiming(double nsec, double sec);
 
       /// Integer LogTag, for tagging log messages
       int myLogTag; 

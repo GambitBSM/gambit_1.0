@@ -18,19 +18,19 @@
 
 #include "log.hpp"
 #include "depresolver.hpp"
-#include "scannerbit.hpp"
 #include "yaml_parser.hpp"
-#include "scanner_factory.hpp"
+#include "likelihood_container.hpp"
+#include "scannerbit.hpp"
+#include "test_function_rollcall.hpp"
+#include "priors_rollcall.hpp"
+#include "modelgraph.hpp"
 #include "model_rollcall.hpp"
+#include "backend_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "register_error_handlers.hpp"
 #include "stream_printers.hpp"
-#include "priors.hpp"
-#include "modelgraph.hpp"
-#include "priorfactory.hpp"
-#include "test_factory.hpp"
+#include "printermanager.hpp"
 #include "inifile_interface.hpp"
-#include "backend_rollcall.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
@@ -87,12 +87,15 @@ int main( int argc, const char* argv[] )
     // Printers::ostreamPrinter printer(std::cout,1); 
     // For now the asciiPrinter can be constructed using any stream, so for file output
     // we need to give it a file stream object.
-    std::ofstream outfile("gambit_output.txt", std::ofstream::out);
-    std::ofstream infofile("gambit_output.info", std::ofstream::out);
-    Printers::asciiPrinter printer(outfile,infofile);
+    //std::ofstream outfile("gambit_output.txt", std::ofstream::out);
+    //std::ofstream infofile("gambit_output.info", std::ofstream::out);
+    //Printers::asciiPrinter printer(outfile,infofile);
+
+    // Set up the printer (redirection of scan output)
+    Gambit::Printers::PrinterManager printerManager(iniFile.getPrinterNode());
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), iniFile, printer);
+    DRes::DependencyResolver dependencyResolver(Core(), iniFile, *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();
@@ -117,9 +120,9 @@ int main( int argc, const char* argv[] )
     Gambit::Scanner::Factory_Base *factory = [&]()->Gambit::Scanner::Factory_Base *
     {
       if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-        return new Gambit::Scanner_Testing::Test_Function_Factory(iniFile.getKeyValuePairNode());
+        return new Gambit::Scanner::Test_Function_Factory(iniFile.getKeyValuePairNode());
       else
-        return new Gambit::Scanner::Scanner_Function_Factory (Core(), dependencyResolver, prior);
+        return new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, prior);
     }();
   
     //Define the iniFile interface for the scanner
@@ -129,6 +132,7 @@ int main( int argc, const char* argv[] )
     Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
     //cout << "keys = " << scanner->getKeys() << endl;
     //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+    logger() << core << "Starting scan." << EOM;
     scanner->Run(); 
  
     std::cout << "GAMBIT has finished successfully! Any errors following this message ";

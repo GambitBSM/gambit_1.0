@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Backend header for the DarkSUSY backend
+///  Fronted header for the DarkSUSY backend
 ///
 ///  Compile-time registration of available 
 ///  functions and variables from this backend.
