@@ -74,5 +74,7 @@ http://arxiv.org/pdf/hep-ph/0311123v4.pdf
 
 gauginos: UP, UM for charginos and ZN for neutralinos
 
-Higgs: ZH, ZA, ZP for CP even, CP odd and charged (In the MSSM ZA and
-ZP are just 2 by 2 and are fixed by the angle beta.)
+Higgs: ZH, ZA, ZPM for CP even, CP odd and charged (In the MSSM ZA and
+ZPM are just 2 by 2 and are fixed by the angle beta.)
+
+SM Fermions ZEL, ZER (left right charged lepton), ZDL, ZDR (left right down quark) ZUL, ZUR (left right up quark) 
