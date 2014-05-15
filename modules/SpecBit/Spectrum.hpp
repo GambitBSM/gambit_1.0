@@ -34,7 +34,7 @@ public:
    //may reduce errors from typing when parameters and
    //pole masses have similar names etc
    
-   //this set use dumbest possible approach of if-else statements
+   //this get uses dumbest possible approach of if-else statements
    virtual double get_Pole_Mass(std::string) const = 0;
    virtual double get_Pole_Mass(std::string, int) const = 0;
    virtual double get_Pole_Mass(std::string, int, int) const = 0;
