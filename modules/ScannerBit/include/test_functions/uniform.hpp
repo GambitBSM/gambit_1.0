@@ -84,6 +84,8 @@ namespace Gambit
                                 return 0.0;
                         }
 
+                        void print(double in, const std::string & type) const {}
+                        
                         //~Test_Uniform() noexcept
                         ~Test_Uniform()
                         {
