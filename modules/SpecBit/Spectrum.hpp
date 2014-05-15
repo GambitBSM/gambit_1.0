@@ -5,6 +5,8 @@
 
 class Spectrum {
 public:
+   Spectrum(){};
+   
    // returns the lightest stable particle (lsp) mass 
    //  gives 3 integers to specify the state 
    // for most general case of a particle type with mass matrix 
@@ -28,9 +30,11 @@ public:
    virtual void SetScale(double scale) = 0;
 
    //return data member matching string
-   //I'm splitting this up into types fpr just now
+   //I'm splitting this up into types for just now
    //may reduce errors from typing when parameters and
    //pole masses have similar names etc
+   
+   //this set use dumbest possible approach of if-else statements
    virtual double get_Pole_Mass(std::string) const = 0;
    virtual double get_Pole_Mass(std::string, int) const = 0;
    virtual double get_Pole_Mass(std::string, int, int) const = 0;
@@ -48,6 +52,9 @@ public:
    virtual double get_dimensionless_parameter(std::string) const = 0;
    virtual double get_dimensionless_parameter(std::string, int) const = 0;
    virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
+   
+   //alternative getter using map
+   virtual double get_mass2_par(std::string) const = 0;
 };
 #endif
 
