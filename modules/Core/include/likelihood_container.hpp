@@ -52,6 +52,7 @@ namespace Gambit
       void resetAll();
       const std::vector<double> & getParameters() const;
       const std::vector<std::string> & getKeys() const;
+      void print(double, const std::string &) const;
   };
 		
   class Likelihood_Container : public Likelihood_Container_Base

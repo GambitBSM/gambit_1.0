@@ -47,9 +47,9 @@ namespace Gambit
                 public:
                         IniFileInterface(const YAML::Node &node);
                         
-                        const std::string pluginName() const {return name;};
+                        const std::string pluginName() const {return name;}
                         
-                        const std::string fileName() const {return file;};
+                        const std::string fileName() const {return file;}
                         
                         const std::string getValue(const std::string &in) const
                         {
@@ -62,7 +62,7 @@ namespace Gambit
                                         return std::string("");
                                 }
                         }
-                        //~IniFileInterface() noexcept {} //If we move to demanding C++11 noexcept to be supported
+                        
                         ~IniFileInterface(){}
                 };
         }
