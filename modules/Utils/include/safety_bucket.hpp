@@ -111,40 +111,31 @@ namespace Gambit
         return origin();
       }
 
+      /// Check if the thread index needs to be used to access the functor's result
+      static bool use_thread_index(module_functor<TYPE>* f1, module_functor_common* f2)
+      {
+        return (f1->loopManagerCapability() != "none" and
+          f1->loopManagerCapability() == f2->loopManagerCapability() and
+          f1->loopManagerName()       == f2->loopManagerName()       and
+          f1->loopManagerOrigin()     == f2->loopManagerOrigin() );        
+      }
+
       /// Dereference the dependency pointer stored as a safe_ptr.
       const TYPE& operator *() const
       {
-        int index = 0;
         if (not _initialized) dieGracefully();
-        if (_functor_ptr->loopManagerCapability() != "none" and
-            _functor_ptr->loopManagerCapability() == _dependent_functor_ptr->loopManagerCapability() and
-            _functor_ptr->loopManagerName()       == _dependent_functor_ptr->loopManagerName()       and
-            _functor_ptr->loopManagerOrigin()     == _dependent_functor_ptr->loopManagerOrigin()         )
-        { 
-          index = omp_get_thread_num();      //Choose the index of the thread if the dependency and the dependent functor 
-        }                                    //are running inside the same loop.  If not, just access the first element.
+        //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just access the first element.
+        int index = dep_bucket::use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr[index];                 
       }
 
 
-      /// Dereference the dependency pointer stored as a safe_ptr as if it is an array
-      const TYPE& operator[](int second_index) const
-      {
-        return (*(*this))[second_index];                 
-      }
-
       /// Access is allowed to const member functions only
       const TYPE* operator->() const
       { 
-       int index = 0;
         if (not _initialized) dieGracefully();
-        if (_functor_ptr->loopManagerCapability() != "none" and
-            _functor_ptr->loopManagerCapability() == _dependent_functor_ptr->loopManagerCapability() and
-            _functor_ptr->loopManagerName()       == _dependent_functor_ptr->loopManagerName()       and
-            _functor_ptr->loopManagerOrigin()     == _dependent_functor_ptr->loopManagerOrigin()         )
-        { 
-          index = omp_get_thread_num();      //Choose the index of the thread if the dependency and the dependent functor 
-        }                                    //are running inside the same loop.  If not, just choose the first element.
+        //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just choose the first element.
+        int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr.operator->() + index;   //Call a const member function of the indexth element of the array pointed to by the safe pointer.
       }        
 
@@ -196,6 +187,11 @@ namespace Gambit
   class BEvariable_bucket : public BE_bucket_base
   {
 
+    protected:
+
+      backend_functor<TYPE*> * _functor_ptr;
+      safe_variable_ptr<TYPE> _svptr;
+
     public:
 
       /// Constructor for BEvariable_bucket.
@@ -231,12 +227,6 @@ namespace Gambit
         return *_svptr;
       }
 
-      /// Dereference the variable pointer stored as a safe_variable_ptr as if it is an array
-      TYPE& operator[](int index)
-      {
-        return _svptr[index];
-      }
-
       /// Access member functions
       TYPE* operator->()
       { 
@@ -257,11 +247,6 @@ namespace Gambit
         return _svptr;
       }
 
-
-    protected:
-
-      backend_functor<TYPE*> * _functor_ptr;
-      safe_variable_ptr<TYPE> _svptr;
   };
 
 

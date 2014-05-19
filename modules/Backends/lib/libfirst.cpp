@@ -8,12 +8,16 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 //
 // Some global variables:
 //
+const int array_length = 10;
 int someInt;
 double someDouble;
+double someArray[array_length];
+std::vector<double> someVector;
 bool isInitialized = false;
 std::string prefix = "libfirst: ";
 
@@ -27,6 +31,9 @@ void initialize(int a)
   std::cout << std::endl;
   std::cout << prefix << "This is function 'initialize'." << std::endl;
   someInt = a;
+  for ( int x = 0; x < array_length; x++ ) { someArray[x] = 2.0*x; }
+  someVector.push_back(1.5);
+  someVector.push_back(1.6);
   isInitialized = true;
   std::cout << prefix << "Initialization done. Variable 'someInt' set to: " << someInt << std::endl;
 } // end initialize

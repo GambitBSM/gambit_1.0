@@ -214,10 +214,14 @@ twalk_beta:
 - purpose:      Likelihood
   capability:   fast_sim
 
+# Uncomment to test array and -> operators in safety buckets.
+- purpose:      Observable
+  capability:   ptrmeth_arr_tester
+
 # Test loop manager
 #- purpose:      Likelihood
-#  capability:   nevents_like
-#  type:         double
+  capability:   nevents_like
+  type:         double
 
 # Uncomment to test FlavBit
 #- purpose:      Likelihood

@@ -31,6 +31,7 @@
 #include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"
+#include "stream_printers.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -1187,17 +1188,18 @@ namespace Gambit
       // No candidates? Death.
       if (vertexCandidates.size() == 0)
       {
-        str errmsg = "Found no candidates for backend requirement.";
+        std::ostringstream errmsg;
+        errmsg << "Found no candidates for backend requirements:\n" << reqs << "\nfrom group: " << group;
         if (disabledVertexCandidates.size() != 0)
         {
-          errmsg += "\nNote that viable candidates exist but have been disabled:"
-                 +     printGenericFunctorList(disabledVertexCandidates)
-                 +  "\nPlease check that all shared objects exist for the"
-                 +  "\necessary backends, and that they contain all the"
-                 +  "\nnecessary functions required for this scan. Also "
-                 +  "\ncheck your backend rules and YAML file.";
+          errmsg << "\nNote that viable candidates exist but have been disabled:"
+                 <<     printGenericFunctorList(disabledVertexCandidates)
+                 << "\nPlease check that all shared objects exist for the"
+                 << "\necessary backends, and that they contain all the"
+                 << "\nnecessary functions required for this scan. Also "
+                 << "\ncheck your backend rules and YAML file.";
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
       // Still more than one candidate...

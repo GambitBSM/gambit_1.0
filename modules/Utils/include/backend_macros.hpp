@@ -41,6 +41,7 @@
 #include "static_members.hpp"
 #include "util_macros.hpp"
 #include "util_types.hpp"
+#include "types_rollcall.hpp"
 #include "functors.hpp"
 #include "backend_type_macros.hpp"
 #include "log.hpp"

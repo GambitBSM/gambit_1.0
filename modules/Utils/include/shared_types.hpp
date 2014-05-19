@@ -41,6 +41,7 @@
 #include "SuperIso_types.hpp"
 #include "libFarrayTest_types.hpp"
 #include "FastSim_types.hpp"
+#include "libfirst_types.hpp"
 //#include "Pythia_types.hpp"
 
 // GAMBIT BaseFunction Objects

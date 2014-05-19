@@ -177,6 +177,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY ptrmeth_arr_tester
+  START_CAPABILITY
+    #define FUNCTION ptrMethArrTester
+    START_FUNCTION(int)
+    DEPENDENCY(test_vector, std::vector<double>)
+    BACKEND_REQ(test_vector, (), std::vector<double>)
+    BACKEND_REQ(SomeArray, (), dblarr)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Some likelihood of type double that depends on postcuts
   #define CAPABILITY lnL_ExampleBitB
