@@ -87,7 +87,7 @@ namespace Gambit
         if (ptr == NULL) dieGracefully();
         return ptr;
       }        
-          
+
     protected:
 
       /// The actual underlying pointer, interpreted as a pointer to constant value
@@ -156,6 +156,13 @@ namespace Gambit
       { 
         if (ptr == NULL) dieGracefully();
         return *ptr;
+      }        
+
+      /// Dereference pointer as if it is an array
+      TYPE& operator[](int index)
+      { 
+        if (ptr == NULL) dieGracefully();
+        return *(ptr+index);
       }        
 
       /// Access member functions

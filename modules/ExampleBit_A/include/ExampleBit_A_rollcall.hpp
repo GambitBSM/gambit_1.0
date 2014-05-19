@@ -212,7 +212,7 @@ START_MODULE
     START_FUNCTION(double)
     BACKEND_REQ(libFarrayTestCommonBlock, (match), libFarrayTest_CB_type)
     BACKEND_REQ(libFarrayTest_printStuff, (match), void, ())      
-    BACKEND_REQ(libFarrayTest_set_d, (match), void, ())      
+    BACKEND_REQ(libFarrayTest_set_d, (match), void, ()) //FIXME the leading Gambit:: qualification will need to get removed automatically by these macros and the backend macros.
     BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Gambit::Farray<double,1>&, int&, double(*)(Gambit::Farray<double,1>&)) )
     BACKEND_REQ(libFarrayTest_doubleFuncArray1, (match), double, (Gambit::Farray<double,1>&))
     BACKEND_REQ(libFarrayTest_doubleFuncArray2, (match), double, (Gambit::Farray<double,1>&))

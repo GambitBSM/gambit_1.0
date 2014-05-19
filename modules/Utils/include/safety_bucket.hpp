@@ -126,6 +126,28 @@ namespace Gambit
         return _sptr[index];                 
       }
 
+
+      /// Dereference the dependency pointer stored as a safe_ptr as if it is an array
+      const TYPE& operator[](int second_index) const
+      {
+        return (*(*this))[second_index];                 
+      }
+
+      /// Access is allowed to const member functions only
+      const TYPE* operator->() const
+      { 
+       int index = 0;
+        if (not _initialized) dieGracefully();
+        if (_functor_ptr->loopManagerCapability() != "none" and
+            _functor_ptr->loopManagerCapability() == _dependent_functor_ptr->loopManagerCapability() and
+            _functor_ptr->loopManagerName()       == _dependent_functor_ptr->loopManagerName()       and
+            _functor_ptr->loopManagerOrigin()     == _dependent_functor_ptr->loopManagerOrigin()         )
+        { 
+          index = omp_get_thread_num();      //Choose the index of the thread if the dependency and the dependent functor 
+        }                                    //are running inside the same loop.  If not, just choose the first element.
+        return _sptr.operator->() + index;   //Call a const member function of the indexth element of the array pointed to by the safe pointer.
+      }        
+
       /// Get the safe_ptr.
       safe_ptr<TYPE>& safe_pointer()
       {
@@ -208,6 +230,18 @@ namespace Gambit
         if (not _initialized) dieGracefully();
         return *_svptr;
       }
+
+      /// Dereference the variable pointer stored as a safe_variable_ptr as if it is an array
+      TYPE& operator[](int index)
+      {
+        return _svptr[index];
+      }
+
+      /// Access member functions
+      TYPE* operator->()
+      { 
+        return _svptr.operator->();
+      }        
 
       /// Get the underlying variable pointer.
       TYPE * pointer()
