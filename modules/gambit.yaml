@@ -223,6 +223,10 @@ twalk_beta:
   capability:   nevents_like
   type:         double
 
+# Test marginalised Poisson likelihood
+- purpose:	Likelihood
+  capability:	marg_lnlike_test
+
 # Uncomment to test FlavBit
 #- purpose:      Likelihood
 #  capability:   SI_bsgamma
@@ -252,6 +256,12 @@ twalk_beta:
 #########################
 --- # Auxiliary entries
 #########################
+
+#Choose either a log-normal or a Gaussian distribution to marginalise over
+#for the marginalised Poisson likelihood example.
+- capability:	marg_lnlike_test
+  backends:
+  - {capability: lnlike_marg_poisson_lognormal_error}
 
 - capability:   RD_oh2
   function:     RD_oh2_micromegas

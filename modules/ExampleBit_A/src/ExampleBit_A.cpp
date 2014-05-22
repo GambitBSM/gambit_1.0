@@ -345,7 +345,32 @@ namespace Gambit
  
     }
 
-    /// @} @}
+    /// @}
+
+
+    /// Test inline marginalisation of a Poisson likelihood over a log-normally or Gaussianly-distributed nuisance parameter.
+    void marg_poisson_test(double &result)
+    {
+        using namespace Pipes::marg_poisson_test;
+        int n_obs = 5;                      // Actual observed number of events
+        double n_predicted_exact = 1.5;     // A contribution to the predicted number of events that is know exactly (e.g. from data-driven background estimate)
+        double n_predicted_uncertain = 3.1; // A contribution to the predicted number of events that is not know exactly
+        double uncertainty = 0.2;           // A fractional uncertainty on n_predicted_uncertain (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+
+        if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") 
+        {
+          // Use a log-normal distribution for the nuisance parameter (more correct)
+          result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+        }
+        else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error")
+        {
+          // Use a Gaussian distribution for the nuisance parameter (marginally faster)
+          result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);          
+        }
+        else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from lnlike_marg_poisson BEgroup.");
+
+        logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
+    }
 
 
     /// \name SLHA Examples

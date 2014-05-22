@@ -221,6 +221,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+
+  // Tester for marginalised Poisson likelihood.
+  #define CAPABILITY marg_lnlike_test
+  START_CAPABILITY
+    #define FUNCTION marg_poisson_test
+      START_FUNCTION(double)
+      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+      BACKEND_GROUP(lnlike_marg_poisson)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 #undef MODULE
 
 
