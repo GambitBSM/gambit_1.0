@@ -42,6 +42,9 @@ BE_FUNCTION(nulike_lnpin,  double, (int&, double&, double&, double&), "nulike_ln
 // predicition has the fractional uncertainty associated with it.  If the uncertainty is on
 // the entire prediction, set npred1 = 0 and npred2 = total predicted events.
 
+BE_INI_FUNCTION{}
+DONE
+
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME

@@ -139,6 +139,9 @@ BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
 BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 
 
+BE_INI_FUNCTION{}
+DONE
+
 // BE_VARIABLE(SomeInt, int, "someInt")
 // BE_VARIABLE(SomeDouble, double, "someDouble")
 

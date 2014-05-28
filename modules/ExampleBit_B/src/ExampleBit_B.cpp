@@ -43,14 +43,6 @@ namespace Gambit
   
     //************************************************************
 
-    /// Initialisation function, called anew for each new model point before all other module functions are called.
-    void PointInit_Default()
-    {
-      logger() <<"  Initialising ExampleBit_B for current point."<<info<<EOM;
-    }
-
-    //************************************************************
-
     /// \name Module functions
     /// @{
     void exampleCharge    (int    &result) { result = 1; }

@@ -111,6 +111,10 @@ BE_FUNCTION(FastSim_Init, int, (int), "_Z12FastSim_Initi", "init_fastsim")
 //BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
 
 
+BE_INI_FUNCTION{}
+DONE
+
+
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME

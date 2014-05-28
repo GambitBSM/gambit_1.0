@@ -88,8 +88,6 @@ namespace Gambit
       /// Reset-then-recalculate method
       virtual void reset_and_calculate();
 
-      /// Setter for version
-      void setVersion(str);
       /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
       void setStatus(int);
       /// Setter for purpose (relevant only for next-to-output functors)
@@ -107,6 +105,8 @@ namespace Gambit
       str origin() const;
       /// Getter for the version of the wrapped function's origin (module or backend)
       str version() const;
+      /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
+      virtual str safe_version() const;
       /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
       int status() const;
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
@@ -578,16 +578,22 @@ namespace Gambit
       /// Integer LogTag, for tagging log messages
       int myLogTag; 
 
+      /// Internal storage of the 'safe' version of the version (for use in namespaces, variable names, etc).
+      str mySafeVersion;    
+
     public:
 
       /// Constructor 
-      backend_functor_common (funcPtrType, str, str, str, str, str);
+      backend_functor_common (funcPtrType, str, str, str, str, str, str);
 
       /// Update the internal function pointer wrapped by the functor
       void updatePointer(funcPtrType inputFunction);
 
       /// Hand out the internal function pointer wrapped by the functor
       funcPtrType handoutFunctionPointer();
+
+      /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
+      virtual str safe_version() const;
 
   };
 
@@ -600,7 +606,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str);
+      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str);
 
       /// Operation (execute function and return value) 
       TYPE operator()(ARGS... args);
@@ -620,7 +626,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor (void (*)(ARGS...), str, str, str, str, str);
+      backend_functor (void (*)(ARGS...), str, str, str, str, str, str);
     
       /// Operation (execute function and return value) 
       void operator()(ARGS... args);
@@ -683,12 +689,14 @@ namespace Gambit
                                                                    str func_capability, 
                                                                    str result_type,
                                                                    str origin_name,
-                                                                   str origin_version) 
+                                                                   str origin_version,
+                                                                   str origin_safe_version) 
     : functor (func_name, func_capability, result_type, origin_name),
       myFunction (inputFunction),
       myLogTag(-1) 
     {
       myVersion = origin_version; 
+      mySafeVersion = origin_safe_version;
       // Determine LogTag number
       myLogTag = Logging::str2tag(myOrigin);
       // Or in the case where we prefer to include the version number in the LogTag too
@@ -719,6 +727,11 @@ namespace Gambit
       return myFunction;
     }
 
+    /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
+    template <typename TYPE, typename... ARGS>
+    str backend_functor_common<TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
+
+
     // Actual backend functor class method definitions for TYPE != void
 
     /// Constructor 
@@ -728,9 +741,10 @@ namespace Gambit
                                                      str func_capability, 
                                                      str result_type,
                                                      str origin_name,
-                                                     str origin_version)
+                                                     str origin_version,
+                                                     str safe_version)
     : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version) {}
+      func_capability, result_type, origin_name, origin_version, safe_version) {}
 
     /// Operation (execute function and return value) 
     template <typename TYPE, typename... ARGS>
@@ -762,9 +776,10 @@ namespace Gambit
                                                      str func_capability, 
                                                      str result_type,
                                                      str origin_name,
-                                                     str origin_version)
+                                                     str origin_version,
+                                                     str safe_version)
     : backend_functor_common<void, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version) {}
+      func_capability, result_type, origin_name, origin_version, safe_version) {}
     
     /// Operation (execute function and return value) 
     template <typename... ARGS>

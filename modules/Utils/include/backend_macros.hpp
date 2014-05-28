@@ -21,7 +21,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July
-///  \date 2014 Jan, Mar
+///  \date 2014 Jan, Mar, May
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -46,6 +46,7 @@
 #include "backend_type_macros.hpp"
 #include "log.hpp"
 #include "standalone_error_handlers.hpp"
+#include "module_macros_incore.hpp"
 #ifndef STANDALONE
   #include "gambit_core.hpp"
 #endif
@@ -58,6 +59,45 @@
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
+
+
+/// Declare the backend initialisation module BackendIniBit.
+#define MODULE BackendIniBit
+  START_MODULE
+#undef MODULE
+
+/// Dependency macro for point-level backend initialisation functions (in BackendIniBit)
+#define BE_INI_DEPENDENCY(DEP, TYPE) CORE_DEPENDENCY(DEP, TYPE, BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), NOT_MODEL)
+
+/// Model-conditional dependency macro for point-level backend initialisation functions (in BackendIniBit)
+#define BE_INI_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...)                                                                                             \
+  CORE_START_CONDITIONAL_DEPENDENCY(BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), DEP, TYPE) \
+  ACTIVATE_DEP_MODEL(BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), DEP, #__VA_ARGS__)
+
+/// Boilerplate code for point-level backend initialisation function definitions
+#define BE_INI_FUNCTION                                                     \
+  namespace Gambit                                                          \
+  {                                                                         \
+    namespace BackendIniBit                                                 \
+    {                                                                       \
+      void CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)()                       \
+      {                                                                     \
+        using namespace Pipes::CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init);    \
+        using namespace Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION);        \
+        
+/// Boilerplate code for convenience function definitions
+#define BE_NAMESPACE                                                        \
+  namespace Gambit                                                          \
+  {                                                                         \
+    namespace Backends                                                      \
+    {                                                                       \
+      namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                           \
+      {                                                                     \
+        namespace                                                           \       
+
+/// Closer for convenience and initialisation function definitional boilerplate.
+#define DONE }}}    
+
 
 /// Macro for adding a tag to the logging system for each backend
 //  We don't strictly need all the namespaces for this, but it's nice to have
@@ -145,6 +185,13 @@ namespace Gambit                                                            \
 } /* end namespace Gambit */                                                \
 /* Register a LogTag for this backend with the logging system */            \
 REGISTER_BACKEND_LOGTAG                                                     \
+/* Register the initialisation function for this backend */                 \
+CORE_START_CAPABILITY(BackendIniBit,                                        \
+ CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))                                  \
+CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
+ CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
+ CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
+ void,2)                                                                    \
 
 
 /// Macro for constructing pointers to library variables,
@@ -256,7 +303,8 @@ namespace Gambit                                                            \
          CAPABILITY,        /* functor capability */                        \
          SAFE_STRINGIFY(STRIP_PARENS(TYPE)*),                               \
          STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION) );                                              \
+         STRINGIFY(VERSION),                                                \
+         STRINGIFY(SAFE_VERSION) );                                         \
                                                                             \
       } /* end namespace Functown */                                        \
                                                                             \
@@ -504,7 +552,8 @@ namespace Gambit                                                                
          CAPABILITY,                                                                            \
          STRINGIFY(TYPE) STRINGIFY(FE_ARGS),                                                    \
          STRINGIFY(BACKENDNAME),                                                                \
-         STRINGIFY(VERSION) );                                                                  \
+         STRINGIFY(VERSION),                                                                    \
+         STRINGIFY(SAFE_VERSION) );                                                             \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* Create functor object FIXME DEPRECATED!!*/                                             \
@@ -516,7 +565,8 @@ namespace Gambit                                                                
          CAPABILITY,                                                                            \
          STRINGIFY(TYPE),                                                                       \
          STRINGIFY(BACKENDNAME),                                                                \
-         STRINGIFY(VERSION) );                                                                  \
+         STRINGIFY(VERSION),                                                                    \
+         STRINGIFY(SAFE_VERSION) );                                                             \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
@@ -610,53 +660,52 @@ namespace Gambit                                                                
 /// \name Main wrapping macro for convenience functions
 /// BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY) is the macro used 
 /// for wrapping convenience functions in backend functors.
-#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)             \
-namespace Gambit                                                            \
-{                                                                           \
-  namespace Backends                                                        \
-  {                                                                         \
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
-    {                                                                       \
-                                                                            \
-      /* Create functor object */                                           \
-      namespace Functown                                                    \
-      {                                                                     \
-        backend_functor<TYPE INSERT_NONEMPTY(ARGSLIST)> NAME(               \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,         \
-         STRINGIFY(NAME),                                                   \
-         CAPABILITY,                                                        \
-         STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                               \
-         STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION) );                                              \
-      } /* end namespace Functown */                                        \
-                                                                            \
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
-  } /* end namespace Backends */                                            \
-} /* end namespace Gambit */                                                \
-
+#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)                                 \
+namespace Gambit                                                                                \
+{                                                                                               \
+  namespace Backends                                                                            \
+  {                                                                                             \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
+    {                                                                                           \
+      /* Forward declare function */                                                            \
+      namespace { TYPE NAME(STRIP_PARENS(ARGSLIST)); }                                          \
+      /* Create functor object */                                                               \
+      namespace Functown                                                                        \
+      {                                                                                         \
+        backend_functor<TYPE INSERT_NONEMPTY(ARGSLIST)> NAME(                                   \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
+         STRINGIFY(NAME),                                                                       \
+         CAPABILITY,                                                                            \
+         STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                                                   \
+         STRINGIFY(BACKENDNAME),                                                                \
+         STRINGIFY(VERSION),                                                                    \
+         STRINGIFY(SAFE_VERSION) );                                                             \
+      } /* end namespace Functown */                                                            \
+    }                                                                                           \
+  }                                                                                             \
+}                                                                                               \
 
 /// \name Supplementary wrapping macro for convenience functions
-#define BE_CONV_FUNCTION_SUPP(NAME)                                         \
-namespace Gambit                                                            \
-{                                                                           \
-  namespace Backends                                                        \
-  {                                                                         \
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
-    {                                                                       \
-                                                                            \
-      void CAT(constructFuncPointer_,NAME)()                                \
-      {                                                                     \
-        Core().registerBackendFunctor(Functown::NAME);                      \
-      }                                                                     \
-                                                                            \
-      namespace ini                                                         \
-      {                                                                     \
-        ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_,NAME));         \
-      }                                                                     \
-                                                                            \
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
-  } /* end namespace Backends */                                            \
-} /* end namespace Gambit */                                                \
-
+#define BE_CONV_FUNCTION_SUPP(NAME)                                                             \
+namespace Gambit                                                                                \
+{                                                                                               \
+  namespace Backends                                                                            \
+  {                                                                                             \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
+    {                                                                                           \
+                                                                                                \
+      void CAT(constructFuncPointer_,NAME)()                                                    \
+      {                                                                                         \
+        Core().registerBackendFunctor(Functown::NAME);                                          \
+      }                                                                                         \
+                                                                                                \
+      namespace ini                                                                             \
+      {                                                                                         \
+        ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_,NAME));                             \
+      }                                                                                         \
+                                                                                                \
+    }                                                                                           \
+  }                                                                                             \
+}                                                                                               \
 
 #endif // __BACKEND_MACROS_HPP__

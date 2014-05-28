@@ -605,26 +605,6 @@ namespace Gambit
         }
       }
 
-      // Special treatment of dependence on point-level initialization
-      // functions, which can only be resolved from within a given module.
-      if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
-      {
-        std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin();
-        while (it != vertexCandidates.end())
-        {
-          if ( masterGraph[toVertex]->origin() != masterGraph[*it]->origin() )
-          {
-            // Delete all vertex candidates that do not belong to the correct
-            // module
-            it = vertexCandidates.erase(it);
-          }
-          else
-          {
-            ++it;
-          }
-        }
-      }
-
       // Die if there is no way to fulfill this dependency.
       if ( vertexCandidates.size() == 0 ) 
       {

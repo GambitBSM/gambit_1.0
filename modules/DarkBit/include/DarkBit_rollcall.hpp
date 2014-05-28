@@ -41,7 +41,7 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION DarkBit_PointInit_MSSM
-      START_FUNCTION(void)
+      START_FUNCTION(void, INIT_FUNCTION)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo)
       // Initialize DarkSUSY with SLHA file
@@ -56,7 +56,7 @@ START_MODULE
     #undef FUNCTION
 
     #define FUNCTION DarkBit_PointInit_CMSSM
-      START_FUNCTION(void)
+      START_FUNCTION(void, INIT_FUNCTION)
       //ALLOW_MODELS(CMSSM_demo)
       // Initialize DarkSUSY with isasugra
       BACKEND_REQ(dsinit, (), void, ())
@@ -66,7 +66,7 @@ START_MODULE
     #undef FUNCTION
 
     #define FUNCTION DarkBit_PointInit_MSSM7
-      START_FUNCTION(void)
+      START_FUNCTION(void, INIT_FUNCTION)
       //ALLOW_MODELS(CMSSM_demo)
       // Initialize DarkSUSY with dssusy
       BACKEND_REQ(dsinit, (), void, ())
@@ -76,7 +76,7 @@ START_MODULE
     #undef FUNCTION
 
     #define FUNCTION DarkBit_PointInit_Default
-      START_FUNCTION(void)
+      START_FUNCTION(void, INIT_FUNCTION)
     #undef FUNCTION
 
   #undef CAPABILITY  // PointInit

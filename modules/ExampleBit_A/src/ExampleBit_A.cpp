@@ -78,14 +78,6 @@ namespace Gambit
 
     //************************************************************
 
-    /// Initialisation function, called anew for each new model point before all other module functions are called.
-    void PointInit_Default()
-    {
-      logger().send("Initialising ExampleBit_A for current point.",info);
-    }
-
-    //************************************************************
-
     /// \name Module functions
     /// @{
     void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}

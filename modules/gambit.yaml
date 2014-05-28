@@ -284,6 +284,10 @@ twalk_beta:
   backends:
   - {capability: "", function: "", backend: "", version: ""}
 
+- capability:   "LibFirst_1_1_init"
+  dependencies:
+  - {capability: "nevents", module: "ExampleBit_A"}  
+
 #- capability:   "analysisAccumulator"
 #  type: "double"
 #  dependencies:

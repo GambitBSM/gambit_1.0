@@ -89,8 +89,6 @@ namespace Gambit
     /// Reset-then-recalculate method
     void functor::reset_and_calculate() { this->reset(); this->calculate(); } 
 
-    /// Setter for version
-    void functor::setVersion(str ver) { if (this == NULL) failBigTime("setVersion"); myVersion = ver; }
     /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
     void functor::setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
     /// Setter for purpose (relevant only for next-to-output functors)
@@ -108,6 +106,8 @@ namespace Gambit
     str functor::origin()      const { if (this == NULL) failBigTime("origin"); return myOrigin; }
     /// Getter for the version of the wrapped function's origin (module or backend)
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
+    /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
+    str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
     /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
@@ -914,16 +914,16 @@ namespace Gambit
     void module_functor_common::resolveDependency (functor* dep_functor)
     {
       sspair key (dep_functor->quantity());
-      if (dependency_map.find(key) == dependency_map.end())                            
+      if (std::find(myDependencies.begin(), myDependencies.end(), key) == myDependencies.end())                            
       {                                                                      
         str errmsg = "Cannot resolve dependency:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not depend on"
-                   "\ncapability " + key.first + " with type " = key.second + ".";
+                   "\ncapability " + key.first + " with type = " + key.second + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
       }
       else
       {
-        (*dependency_map[key])(dep_functor,this);
+        if (dependency_map.find(key) != dependency_map.end()) (*dependency_map[key])(dep_functor,this);
         // propagate purpose from next to next-to-output nodes
         dep_functor->setPurpose(this->myPurpose);
         // save the identity of this functor's loop manager (if it has one)
@@ -969,6 +969,13 @@ namespace Gambit
             myDependencies.push_back(*it);        
           }
    
+          // Add a dependency on the initialisation function of the backend that this backend function hails from (if not done already).          
+          sspair be_ini_quantity(be_functor->origin() + "_" + be_functor->safe_version() + "_init", "void");
+          if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end()) 
+          {
+            myDependencies.push_back(be_ini_quantity);
+          }
+
           //Check if this backend requirement is part of a group.
           str group = backendreq_groups[key];
           if (group != "none" and group !="") //FIXME second condition is deprecated!!           

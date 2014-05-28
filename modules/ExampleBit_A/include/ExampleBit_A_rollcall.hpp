@@ -36,16 +36,6 @@
 #define MODULE ExampleBit_A
 START_MODULE
 
-  #define CAPABILITY PointInit
-  START_CAPABILITY
-
-    #define FUNCTION PointInit_Default
-    START_INI_FUNCTION                      // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
-    ALLOW_MODELS(CMSSM_demo,NormalDist)        // ALLOW_MODELS is permitted for initialisation functions, as are BACKEND_REQs. 
-    #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
-
-  #undef CAPABILITY
-
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY
 
