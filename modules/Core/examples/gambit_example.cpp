@@ -468,9 +468,9 @@ int main( int, const char*[] )
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_0::Functown::awesomenessByAnders);
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_0::Functown::byRefExample);
-  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_0::Functown::byRefExample2);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_1::Functown::awesomenessByAnders);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_1::Functown::byRefExample);
+  ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_1::Functown::byRefExample2);
   
 
   // for the fastsim backend
