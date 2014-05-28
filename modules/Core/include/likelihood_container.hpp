@@ -28,7 +28,7 @@
 #define __likelihood_container_hpp__
 
 #include "container_factory.hpp"
-
+#include "baseprinter.hpp"
 
 namespace Gambit
 {
@@ -40,6 +40,7 @@ namespace Gambit
       std::vector<DRes::VertexID> target_vertices;
       std::vector<DRes::VertexID> aux_vertices;
       DRes::DependencyResolver &dependencyResolver;
+      Printers::BasePrinter &printer;
       std::vector<double> realParameters;
       Priors::CompositePrior &prior;
       std::map<str, double> parameterMap;

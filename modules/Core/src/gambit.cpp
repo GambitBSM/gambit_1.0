@@ -79,7 +79,8 @@ int main(int argc, char* argv[])
     //Printers::asciiPrinter printer(outfile,infofile);
 
     // Set up the printer (redirection of scan output)
-    Gambit::Printers::PrinterManager printerManager(iniFile.getPrinterNode());
+    Printers::PrinterManager printerManager(iniFile.getPrinterNode());
+    Printers::BasePrinter& printer (*printerManager.printerptr);   
 
     // Set up dependency resolver
     DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, *printerManager.printerptr);
@@ -102,7 +103,7 @@ int main(int argc, char* argv[])
   
     //Define the likelihood container object for the scanner
     Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
-  
+ 
     //Define the iniFile interface for the scanner
     Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
 
