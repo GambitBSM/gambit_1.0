@@ -88,7 +88,7 @@ namespace Gambit
       /// Reset-then-recalculate method
       virtual void reset_and_calculate();
 
-      /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
+      /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
       void setStatus(int);
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str);
@@ -107,7 +107,7 @@ namespace Gambit
       str version() const;
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
-      /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
+      /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
       int status() const;
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() const;
@@ -209,7 +209,7 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
-      /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
+      /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;

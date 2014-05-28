@@ -34,18 +34,18 @@
 // Begin
 LOAD_LIBRARY
 
-// Define models that this backend is allowed to be used with.
-//BE_ALLOW_MODELS(test_parent_I, NormalDist, CMSSM_I)
+// Set models that this backend can be used with.  If absent, all models are allowed.
+BE_ALLOW_MODELS(test_parent_I)
 
 // Functions
 BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
-BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction")
+BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction", (CMSSM_I, UED))
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv","LibFirst_returnResult_capability")
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
 
 // Variables
-BE_VARIABLE(GENERAL_VAR(int,SomeInt), "someInt", "SomeInt")
+BE_VARIABLE(GENERAL_VAR(int,SomeInt), "someInt", "SomeInt", (UED))
 BE_VARIABLE(GENERAL_VAR(double,SomeDouble), "someDouble", "SomeDouble")
 BE_VARIABLE(GENERAL_VAR(dblarr,SomeArray), "someArray", "SomeArray")
 BE_VARIABLE(GENERAL_VAR(std::vector<double>,SomeVector), "someVector", "test_vector")
@@ -55,7 +55,7 @@ BE_INI_DEPENDENCY(nevents, int)
 BE_INI_CONDITIONAL_DEPENDENCY(bar, double, CMSSM_I)
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness")
+BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM_I, UED))
 
 // Initialisation function (definition)
 BE_INI_FUNCTION

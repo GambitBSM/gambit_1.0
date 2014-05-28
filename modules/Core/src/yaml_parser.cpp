@@ -119,7 +119,7 @@ namespace Gambit
       }
 
       
-      // Set safe mode for the backend safety buckets
+      // Set safe mode for the backend safety buckets  //FIXME safe mode is deprecated!!
       if (hasKey("safe_mode"))
       {       
          // Retrieve the entry and set the safe_mode flag accordingly.

@@ -27,9 +27,9 @@ BE_FUNCTION(fptrRoutine, void, (   ARG_FARRAY(double,1), int&,                  
                                         ARG_FARRAY_FPTR(double,(ARG_FARRAY(double,1)))  \
                                     ), "fptrroutine_", "libFarrayTest_fptrRoutine")
 
-BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", 1)
+BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", (), 1)
 
-BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", 1)
+BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", (), 1)
 
 BE_FUNCTION(doubleFunc, double, (double&), "doublefunc_", "libFarrayTest_doubleFunc")
 

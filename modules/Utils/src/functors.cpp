@@ -67,7 +67,7 @@ namespace Gambit
      myCapability    (func_capability),
      myType          (strip_whitespace_except_after_const(result_type)),
      myOrigin        (origin_name),
-     myStatus        (1),
+     myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
      needs_recalculating (true)
@@ -89,7 +89,7 @@ namespace Gambit
     /// Reset-then-recalculate method
     void functor::reset_and_calculate() { this->reset(); this->calculate(); } 
 
-    /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
+    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     void functor::setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
     /// Setter for purpose (relevant only for next-to-output functors)
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
@@ -108,7 +108,7 @@ namespace Gambit
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
-    /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
+    /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }

@@ -219,7 +219,7 @@ twalk_beta:
   capability:   ptrmeth_arr_tester
 
 # Test loop manager
-#- purpose:      Likelihood
+- purpose:      Likelihood
   capability:   nevents_like
   type:         double
 
@@ -326,6 +326,7 @@ redirection:
   [Dependency Resolver] : "dependency_resolver.log"
   [ExampleBit_A] : "ExampleBit_A.log"
   [ExampleBit_B] : "ExampleBit_B.log"
+  [BackendIniBit]: "BackendIniBit.log"
   [LibFirst] : "libfirst.log"
 
 ###############################

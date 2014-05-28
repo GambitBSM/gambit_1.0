@@ -53,6 +53,7 @@
 
 #include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/logical/bitand.hpp>
+#include <boost/preprocessor/logical/bitor.hpp>
 #include <boost/preprocessor/list/size.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
@@ -74,29 +75,54 @@
   CORE_START_CONDITIONAL_DEPENDENCY(BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), DEP, TYPE) \
   ACTIVATE_DEP_MODEL(BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), DEP, #__VA_ARGS__)
 
+/// Macro for assigning allowed models to an entire backend.
+#define BE_ALLOW_MODELS(...) BOOST_PP_SEQ_FOR_EACH(BE_ALLOW_MODEL_INTERMEDIATE, , BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
+
+/// Intermediate macro for expanding BE_ALLOW_MODELS.
+#define BE_ALLOW_MODEL_INTERMEDIATE(r,data,MODEL) BE_ALLOW_MODEL(MODEL)
+
 /// Boilerplate code for point-level backend initialisation function definitions
 #define BE_INI_FUNCTION                                                     \
-  namespace Gambit                                                          \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace BackendIniBit                                                   \
   {                                                                         \
-    namespace BackendIniBit                                                 \
+    void CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)()                         \
     {                                                                       \
-      void CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)()                       \
-      {                                                                     \
-        using namespace Pipes::CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init);    \
-        using namespace Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION);        \
-        
+      using namespace Pipes::CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init);      \
+      using namespace Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION);          \
+      logger().entering_backend(Logging::str2tag(STRINGIFY(BACKENDNAME)));  \
+  
 /// Boilerplate code for convenience function definitions
 #define BE_NAMESPACE                                                        \
-  namespace Gambit                                                          \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace Backends                                                        \
   {                                                                         \
-    namespace Backends                                                      \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
-      namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                           \
-      {                                                                     \
-        namespace                                                           \       
+      namespace                                                             \       
 
 /// Closer for convenience and initialisation function definitional boilerplate.
 #define DONE }}}    
+
+/// Macro for assigning a single allowed model to an entire backend.
+#define BE_ALLOW_MODEL(MODEL)                                               \
+BE_NAMESPACE                                                                \
+{                                                                           \
+  void CAT_3(register_allowed_model,_,MODEL)()                              \
+  {                                                                         \
+    allowed_models.push_back(STRINGIFY(MODEL));                             \
+  }                                                                         \
+                                                                            \
+  namespace ini                                                             \
+  {                                                                         \
+    ini_code CAT_3(ini_allowed_model,_,MODEL)                               \
+             (&CAT_3(register_allowed_model,_,MODEL));                      \
+  }                                                                         \
+                                                                            \
+}                                                                           \
+DONE                                                                        \
 
 
 /// Macro for adding a tag to the logging system for each backend
@@ -125,6 +151,41 @@ namespace Gambit                                                            \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
 
+
+/// Indicate to a backend functor that it can be used with a given model.
+#define SET_SINGLE_ALLOWED_MODEL(r,NAME,MODEL)                              \
+  Functown::NAME.setAllowedModel(STRINGIFY(MODEL));
+        
+/// Set all the allowed models for a given backend functor.
+#define SET_ALLOWED_MODELS(NAME, MODELS)                                    \
+      void CAT(setAllowedModels_,NAME)()                                    \
+      {                                                                     \
+        /* Set all the models that have been designated as allowed at the */\
+        /* backend level as also allowed for this backend functor. */       \
+        if (not allowed_models.empty())                                     \
+        {                                                                   \
+          for (std::vector<str>::const_iterator it = allowed_models.begin();\
+               it != allowed_models.end(); ++it)                            \
+          {                                                                 \
+            Functown::NAME.setAllowedModel(*it);                            \
+          }                                                                 \
+        }                                                                   \
+        /* Set all the models that have been specifically allowed for this*/\
+        /* backend functor as allowed.                                    */\
+        BOOST_PP_IIF(ISEMPTY(MODELS), ,                                     \
+         BOOST_PP_SEQ_FOR_EACH(SET_SINGLE_ALLOWED_MODEL, NAME,              \
+         BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS))) )  )                 \
+      }                                                                     \
+                                                                            \
+      /* The code within the void function 'NAME_models'                    \
+         is executed when we create the following instance of               \
+         the 'ini_code' struct. */                                          \
+      namespace ini                                                         \
+      {                                                                     \
+        ini_code CAT_3(NAME,_,models)(&CAT(setAllowedModels_,NAME));        \
+      }                                                                     \
+
+
 namespace Gambit
 {
   namespace Backends
@@ -152,6 +213,7 @@ namespace Gambit                                                            \
       void * pHandle;                                                       \
       void_voidFptr pSym;                                                   \
       bool present;                                                         \
+      std::vector<str> allowed_models;                                      \
       void loadLibrary()                                                    \
       {                                                                     \
         pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
@@ -161,7 +223,7 @@ namespace Gambit                                                            \
           err << "Failed loading library from " << LIBPATH                  \
               << " due to error: " << dlerror() << std::endl                \
               << "All functors generated from this library will get "       \
-                 "status=0.";                                               \
+                 "status=-1.";                                              \
           backend_warning().raise(LOCAL_INFO,err.str());                    \
           present = false;                                                  \
         }                                                                   \
@@ -194,16 +256,26 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  void,2)                                                                    \
 
 
+/// \name Variadic redirection macro for BE_VARIABLE(TYPEMACRO, SYMBOLNAME, CAPABILITY, [(ALLOWED_MODELS)])
+#define BE_VARIABLE_4(_1, _2, _3, _4)          BE_VARIABLE_FULL(_1, _2, _3, _4)  
+#define BE_VARIABLE_3(_1, _2, _3)              BE_VARIABLE_FULL(_1, _2, _3, ()) 
+#define BE_VARIABLE(...)                       VARARG(BE_VARIABLE, __VA_ARGS__)
+
+/// \name Variadic redirection macro for BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY, [(ALLOWED_MODELS)])
+#define BE_CONV_FUNCTION_5(_1, _2, _3, _4, _5) BE_CONV_FUNCTION_FULL(_1, _2, _3, _4, _5)  
+#define BE_CONV_FUNCTION_4(_1, _2, _3, _4)     BE_CONV_FUNCTION_FULL(_1, _2, _3, _4, ()) 
+#define BE_CONV_FUNCTION(...)                  VARARG(BE_CONV_FUNCTION, __VA_ARGS__)
+
 /// Macro for constructing pointers to library variables,
 /// defining simple 'get/set' functions and
 /// wrapping these functions in backend functors.
 /// Fully compatible with Fortran arrays and common blocks
-#define BE_VARIABLE(TYPEMACRO, SYMBOLNAME, CAPABILITY)                      \
+#define BE_VARIABLE_FULL(TYPEMACRO, SYMBOLNAME, CAPABILITY, MODELS)         \
     BE_VARIABLE_I(BOOST_PP_TUPLE_ELEM(1,STRIP_PARENS(TYPEMACRO)),           \
     BE_VAR_GETTYPE(STRIP_PARENS(TYPEMACRO)),                                \
     BOOST_PP_TUPLE_ELEM(0,STRIP_PARENS(TYPEMACRO)),                         \
     BOOST_PP_TUPLE_ELEM(2,STRIP_PARENS(TYPEMACRO)),                         \
-    SYMBOLNAME, CAPABILITY,                                                 \
+    SYMBOLNAME, CAPABILITY, MODELS,                                         \
     BE_VAR_GETPRECONSTR(STRIP_PARENS(TYPEMACRO)),                           \
     BE_VAR_GETCONSTRARG1(STRIP_PARENS(TYPEMACRO)),                          \
     BE_VAR_GETCONSTRARG2(STRIP_PARENS(TYPEMACRO)))
@@ -268,18 +340,18 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
 
 // Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag 
 #ifdef STANDALONE
-  #define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)                                    \
-          BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)
+  #define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, MODELS, PRECONSTR, CONSTRARG1, CONSTRARG2)      \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, MODELS, PRECONSTR, CONSTRARG1, CONSTRARG2)
 #else
-  #define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)                                    \
-          BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)                               \
+  #define BE_VARIABLE_I(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, MODELS, PRECONSTR, CONSTRARG1, CONSTRARG2)      \
+          BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME, CAPABILITY, MODELS, PRECONSTR, CONSTRARG1, CONSTRARG2) \
           BE_VARIABLE_I_SUPP(NAME)
 #endif
 
 
 /// Main actual backend variable macro
 #define BE_VARIABLE_I_MAIN(NAME, TYPE, BASETYPE, TYPEOPT, SYMBOLNAME,       \
-                           CAPABILITY, PRECONSTR, CONSTRARG1, CONSTRARG2)   \
+                   CAPABILITY, MODELS, PRECONSTR, CONSTRARG1, CONSTRARG2)   \
 namespace Gambit                                                            \
 {                                                                           \
   namespace Backends                                                        \
@@ -308,6 +380,9 @@ namespace Gambit                                                            \
                                                                             \
       } /* end namespace Functown */                                        \
                                                                             \
+      /* Set the allowed model properties of the functor. */                \
+      SET_ALLOWED_MODELS(NAME, MODELS)                                      \
+                                                                            \
       void CAT(constructVarPointer_,NAME)()                                 \
       {                                                                     \
         /* Obtain a void pointer (pSym) to the library symbol. */           \
@@ -322,18 +397,17 @@ namespace Gambit                                                            \
               or the symbol not found. */                                   \
         if(!present)                                                        \
         {                                                                   \
-          Functown::NAME.setStatus(0);                                      \
+          Functown::NAME.setStatus(-1);                                     \
         }                                                                   \
         else if(dlerror() != NULL)                                          \
         {                                                                   \
           std::ostringstream err;                                           \
           err << "Library symbol " << SYMBOLNAME << " not found."           \
               << std::endl << "The functor generated for this symbol "      \
-              << "will get status=0" << std::endl;                          \
+              << "will get status=-2" << std::endl;                         \
           backend_warning().raise(LOCAL_INFO,err.str());                    \
-          Functown::NAME.setStatus(0);                                      \
+          Functown::NAME.setStatus(-2);                                     \
         }                                                                   \
-                                                                            \
       }                                                                     \
                                                                             \
       /* The code within the void function 'constructVarPointer_NAME'       \
@@ -347,7 +421,6 @@ namespace Gambit                                                            \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
-
 
 /// Supplementary backend variable macro
 #define BE_VARIABLE_I_SUPP(NAME)                                            \
@@ -379,14 +452,17 @@ namespace Gambit                                                            \
 
 /// \name Wrapping macros for backend-defined functions
 ///
-/// BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, HAS_FARRAYS_AND_CAN_BE_FPTR) is the
+/// BE_FUNCTION(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, [(MODELS)], [HAS_FARRAYS_AND_CAN_BE_FPTR]) is the
 /// macro used for constructing pointers to library functions and 
 /// wrapping function pointers in backend functors.
 ///
 /// For Fortran arrays and function pointers, TYPE should be specified using the ARG_FARRAY and ARG_FARRAY_FPTR macros.
 ///
-/// The sixth argument (HAS_FARRAYS_AND_CAN_BE_FPTR) is optional, and should be set to 1 if the backend function
+/// The sixth argument (MODELS) is optional, and contains a list of models that you want this function to be able
+/// to be used with.  
+/// The seventh argument HAS_FARRAYS_AND_CAN_BE_FPTR is also optional, and should be set to 1 if the backend function
 /// comes from a Fortran backend, and you want to pass a pointer to this function as an argument to another function.
+/// If HAS_FARRAYS_AND_CAN_BE_FPTR is present, (MODELS) must be also, and must precede it.
 /// @{
   
 /// Map between frontend function(pointer)s and their backend equivalents, stored as void pointers  
@@ -414,18 +490,21 @@ namespace Gambit
 #define ARG_FARRAY_FPTR(TYPE,ARGLIST) (1,TYPE,ARGLIST,BEF_FPTR_CALLARGS_FE(ARGLIST),BEF_FPTR_CALLARGS_BE(ARGLIST))  
   
 #define BE_FUNCTION_5(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY)                                     \
-  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, 0 )
+  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, (), 0)
 
-#define BE_FUNCTION_6(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, HAS_FARRAYS_AND_CAN_BE_FPTR)        \
-  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, HAS_FARRAYS_AND_CAN_BE_FPTR)      
+#define BE_FUNCTION_6(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS)                             \
+  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS, 0)                             
+
+#define BE_FUNCTION_7(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS, HAS_FARRAYS_AND_CAN_BE_FPTR)\
+  BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS, HAS_FARRAYS_AND_CAN_BE_FPTR)      
 
 #define BE_FUNCTION(...) VARARG(BE_FUNCTION, __VA_ARGS__)
 
-#define BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, HAS_FARRAYS_AND_CAN_BE_FPTR)     \
+#define BE_FUNCTION_IMPL(NAME, TYPE, ARGSLIST, SYMBOLNAME, CAPABILITY, MODELS, HAS_FARRAYS_AND_ETC)     \
   BE_FUNCTION_IMPL2(                                                                                    \
   NAME, TYPE, BE_FUNC_GET_ARGS_FE(ARGSLIST), BE_FUNC_GET_ARGS_BE(ARGSLIST),                             \
   BE_FUNC_GET_CALLARGS_FE(ARGSLIST), BE_FUNC_GET_CALLARGS_BE(ARGSLIST), SYMBOLNAME,                     \
-  CAPABILITY, BE_FUNC_NEEDTRANS(ARGSLIST), HAS_FARRAYS_AND_CAN_BE_FPTR)
+  CAPABILITY, BE_FUNC_NEEDTRANS(ARGSLIST), MODELS, HAS_FARRAYS_AND_ETC)
 
 /// Loop through argument list, and check for bracket enclosed arguments (produced by the ARG_FARRAY and ARG_FARRAY_FPTR macros). 
 /// Return 1 if any exist, otherwise return 0. If any exist, a wrapper function is necessary.
@@ -513,22 +592,22 @@ namespace Gambit
 /// @}
 
 /// Adds function to frontBackFuncMap
-#define BE_FUNC_ADD_TO_FPTR_MAP(NAME) frontBackFuncMap.insert(std::make_pair( reinterpret_cast<voidFptr>(NAME), reinterpret_cast<voidFptr>(NAME##_unwrapped)));
+#define BE_FUNC_ADD_TO_FPTR_MAP(NAME) frontBackFuncMap.insert(std::make_pair( reinterpret_cast<voidFptr>(NAME) BOOST_PP_COMMA() reinterpret_cast<voidFptr>(NAME##_unwrapped)));
 
 
 // Determine whether to make registration calls to the Core or not in BE_FUNCTION_IMPL2, depending on STANDALONE flag 
 #ifdef STANDALONE
-  #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)      \
-          BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)
+  #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, MODELS, HAS_FARRAYS_AND_ETC)      \
+          BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, MODELS, HAS_FARRAYS_AND_ETC)
 #else
-  #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)      \
-          BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR) \
+  #define BE_FUNCTION_IMPL2(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, MODELS, HAS_FARRAYS_AND_ETC)      \
+          BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE, SYMBOLNAME, CAPABILITY, TRANS, MODELS, HAS_FARRAYS_AND_ETC) \
           BE_FUNCTION_IMPL2_SUPP(NAME)
 #endif
 
 /// Main actual backend function macro
 #define BE_FUNCTION_IMPL2_MAIN(NAME, TYPE, FE_ARGS, BE_ARGS, CALLARGS_FE, CALLARGS_BE,          \
-                               SYMBOLNAME, CAPABILITY, TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR)      \
+                               SYMBOLNAME, CAPABILITY, TRANS, MODELS, HAS_FARRAYS_AND_ETC)      \
 namespace Gambit                                                                                \
 {                                                                                               \
   namespace Backends                                                                            \
@@ -547,12 +626,12 @@ namespace Gambit                                                                
       namespace Functown                                                                        \
       {                                                                                         \
         backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> NAME(                                    \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
-         STRINGIFY(NAME),                                                                       \
-         CAPABILITY,                                                                            \
-         STRINGIFY(TYPE) STRINGIFY(FE_ARGS),                                                    \
-         STRINGIFY(BACKENDNAME),                                                                \
-         STRINGIFY(VERSION),                                                                    \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
+         STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
+         CAPABILITY BOOST_PP_COMMA()                                                            \
+         STRINGIFY(TYPE) STRINGIFY(FE_ARGS) BOOST_PP_COMMA()                                    \
+         STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
+         STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
          STRINGIFY(SAFE_VERSION) );                                                             \
       } /* end namespace Functown */                                                            \
                                                                                                 \
@@ -560,12 +639,12 @@ namespace Gambit                                                                
       namespace Functown                                                                        \
       {                                                                                         \
         backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> CAT(NAME,_deprecated)(                   \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
-         STRINGIFY(NAME),                                                                       \
-         CAPABILITY,                                                                            \
-         STRINGIFY(TYPE),                                                                       \
-         STRINGIFY(BACKENDNAME),                                                                \
-         STRINGIFY(VERSION),                                                                    \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
+         STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
+         CAPABILITY BOOST_PP_COMMA()                                                            \
+         STRINGIFY(TYPE) BOOST_PP_COMMA()                                                       \
+         STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
+         STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
          STRINGIFY(SAFE_VERSION) );                                                             \
       } /* end namespace Functown */                                                            \
                                                                                                 \
@@ -573,33 +652,36 @@ namespace Gambit                                                                
          them to call the backend function with appropriate translated args */                  \
       BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS)                    \
                                                                                                 \
+      /* Set the allowed model properties of the functor. */                                    \
+      SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
+                                                                                                \
       void CAT(constructFuncPointer_,NAME)()                                                    \
       {                                                                                         \
         /* Obtain a void pointer (pSym) to the library symbol. */                               \
         /* -- First clear error code by calling dlerror() */                                    \
         dlerror();                                                                              \
         /* -- Obtain pointer from symbol */                                                     \
-        pSym.ptr = dlsym(pHandle, SYMBOLNAME);                                                  \
+        pSym.ptr = dlsym(pHandle BOOST_PP_COMMA() SYMBOLNAME);                                  \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
         /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
-        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_CAN_BE_FPTR),                       \
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),                               \
                                      BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
         Functown::NAME.updatePointer(NAME);                                                     \
         Functown::CAT(NAME,_deprecated).updatePointer(NAME);                                    \
         /* -- Disable the functor if the library is not present or the symbol not found. */     \
         if(!present)                                                                            \
         {                                                                                       \
-          Functown::NAME.setStatus(0);                                                          \
-          Functown::CAT(NAME,_deprecated).setStatus(0);                                         \
+          Functown::NAME.setStatus(-1);                                                         \
+          Functown::CAT(NAME,_deprecated).setStatus(-1);                                        \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
           std::ostringstream err;                                                               \
           err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
-              << "The functor generated for this symbol will get status=0" << std::endl;        \
-          backend_warning().raise(LOCAL_INFO,err.str());                                        \
-          Functown::NAME.setStatus(0);                                                          \
-          Functown::CAT(NAME,_deprecated).setStatus(0);                                         \
+              << "The functor generated for this symbol will get status=-2" << std::endl;       \
+          backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
+          Functown::NAME.setStatus(-2);                                                         \
+          Functown::CAT(NAME,_deprecated).setStatus(-2);                                        \
         }                                                                                       \
                                                                                                 \
       }                                                                                         \
@@ -648,19 +730,19 @@ namespace Gambit                                                                
 
 // Determine whether to make registration calls to the Core or not in BE_CONV_FUNCTION, depending on STANDALONE flag 
 #ifdef STANDALONE
-  #define BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY)                                    \
-          BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)
+  #define BE_CONV_FUNCTION_FULL(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)                       \
+          BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)
 #else
-  #define BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY)                                    \
-          BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)                               \
+  #define BE_CONV_FUNCTION_FULL(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)                       \
+          BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)                       \
           BE_CONV_FUNCTION_SUPP(NAME)
 #endif
 
 
 /// \name Main wrapping macro for convenience functions
-/// BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY) is the macro used 
+/// BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY, [(MODELS)]) is the macro used 
 /// for wrapping convenience functions in backend functors.
-#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY)                                 \
+#define BE_CONV_FUNCTION_MAIN(NAME, TYPE, ARGSLIST, CAPABILITY, MODELS)                         \
 namespace Gambit                                                                                \
 {                                                                                               \
   namespace Backends                                                                            \
@@ -681,6 +763,8 @@ namespace Gambit                                                                
          STRINGIFY(VERSION),                                                                    \
          STRINGIFY(SAFE_VERSION) );                                                             \
       } /* end namespace Functown */                                                            \
+      /* Set the allowed model properties of the functor. */                                    \
+      SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
     }                                                                                           \
   }                                                                                             \
 }                                                                                               \
