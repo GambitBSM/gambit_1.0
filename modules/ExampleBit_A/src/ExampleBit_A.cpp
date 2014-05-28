@@ -331,7 +331,7 @@ namespace Gambit
       
       // Will not compile without the byVal convertor.
       cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that fails without byVal or dereferencing of the function pointer..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,*function_pointer);      
+      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,byVal(function_pointer));      
  
       result = 1.0;     
  
