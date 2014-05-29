@@ -67,6 +67,12 @@ public:
    virtual double get_Pole_Mass(std::string, int, int) const;
    virtual double get_Mixing_angle(std::string) const;
    virtual double get_Mixing_element(std::string, int, int) const;
+   virtual double get_mass4_parameter(std::string) const;
+   virtual double get_mass4_parameter(std::string, int) const;
+   virtual double get_mass4_parameter(std::string, int, int) const;
+   virtual double get_mass3_parameter(std::string) const;
+   virtual double get_mass3_parameter(std::string, int) const;
+   virtual double get_mass3_parameter(std::string, int, int) const;
    virtual double get_mass2_parameter(std::string) const;
    virtual double get_mass2_parameter(std::string, int) const;
    virtual double get_mass2_parameter(std::string, int, int) const;
