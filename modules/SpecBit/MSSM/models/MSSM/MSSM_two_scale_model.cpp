@@ -179,7 +179,6 @@ double CLASSNAME::get_lsp_mass(int & particle_type, int & row, int & col) const
    
    return mlsp;
 }
-
 //The MSSM has just one LSP - often the lightest neutralino
 int CLASSNAME::get_numbers_stable_particles() const {
    return 1;
@@ -589,6 +588,34 @@ double MSSM<Two_scale>::get_mass2_par(std::string masssq) const {
    
 }
 
+
+double CLASSNAME::get_mass4_parameter(std::string mass) const {
+ std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;   
+}
+double CLASSNAME::get_mass4_parameter(std::string, int i) const {
+   std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+}
+double CLASSNAME::get_mass4_parameter(std::string mass, int i, int j) const {
+std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+
+}
+
+double CLASSNAME::get_mass3_parameter(std::string mass) const {
+ std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;   
+}
+double CLASSNAME::get_mass3_parameter(std::string, int i) const {
+   std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+}
+double CLASSNAME::get_mass3_parameter(std::string mass, int i, int j) const {
+std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
+   return -1.0;
+
+}
 double CLASSNAME::get_mass2_parameter(std::string mass) const {
    if(mass == "BMu"){
       return get_BMu();
@@ -1727,7 +1754,6 @@ void CLASSNAME::calculate_MChi()
 {
    const auto mass_matrix_Chi(get_mass_matrix_Chi());
    fs_diagonalize_symmetric(mass_matrix_Chi, MChi, ZN);
-   std::cout << "ZN = " << ZN << std::endl;
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Cha() const
@@ -17351,7 +17377,6 @@ void CLASSNAME::calculate_MChi_pole()
       Eigen::Array<double,4,1> eigen_values;
       decltype(ZN) mix_ZN;
       fs_diagonalize_symmetric(M_1loop, eigen_values, mix_ZN);
-      std::cout << "mix_ZN = " << mix_ZN << std::endl;
       if (es == 0)
          PHYSICAL(ZN) = mix_ZN;
       PHYSICAL(MChi(es)) = Abs(eigen_values(es));
