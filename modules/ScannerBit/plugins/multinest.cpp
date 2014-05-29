@@ -99,6 +99,9 @@ namespace Gambit {
                    //get transformed parameters.
                    //physicalpars = boundLogLike->getParameters();
 
+                   // Just testing out the print function
+                   boundLogLike.print(lnew, "test_LogLike",-1);
+
                    // Write the physical parameters back into Cube for multinest to write to output file (no other purpose)
                    // (at this point any extra observables that have been computed could also be added to Cube for transfer to the multinest-controlled output files. Must be sufficiently many slots reserved in Cube for this.
                    // Not writing output, so don't bother doing this.
@@ -144,9 +147,10 @@ namespace Gambit {
                 // Gah, can't do that, that is the full posterior, which multinest recomputes constantly!
                 // I just wanted the prior weights, but they don't seem to be here. I guess we will have to recompute them ourselves, it is easy enough I guess.
 
-                boundLogLike.print(maxLogLike, "maxLogLike");
-                boundLogLike.print(logZ, "logZ");
-                boundLogLike.print(logZerr, "logZerr");
+                // Bah! dumper only runs every updint*10 iterations! No good for printing info about points, need some different system if we want this stuff.
+                //boundLogLike.print(maxLogLike, "maxLogLike",-1);
+                //boundLogLike.print(logZ, "logZ",-2);
+                //boundLogLike.print(logZerr, "logZerr",-3);
 
                 // ------Old default stuff below---------
 

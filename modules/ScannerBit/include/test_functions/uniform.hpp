@@ -84,7 +84,7 @@ namespace Gambit
                                 return 0.0;
                         }
 
-                        void print(double in, const std::string & type) const {}
+                        void print(double in, const std::string & type, const int ID) const {}
                         
                         //~Test_Uniform() noexcept
                         ~Test_Uniform()
