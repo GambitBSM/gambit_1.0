@@ -88,11 +88,6 @@
 #define OLD_CAPABILITY 0
 /// @}
 
-/// \name String definitions for IS_EQUAL macro.
-/// @{
-#define PointInit_PointInit       1)(1
-/// @}
-
 
 /// \name Variadic redirectors for \link QUICK_FUNCTION() QUICK_FUNCTION\endlink function.
 /// @{
@@ -211,7 +206,8 @@
 /// presence of another module function that can supply capability 
 /// \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink, with return type
 /// \em TYPE.
-#define START_CONDITIONAL_DEPENDENCY(TYPE)                CORE_START_CONDITIONAL_DEPENDENCY(TYPE)
+#define START_CONDITIONAL_DEPENDENCY(TYPE)                CORE_START_CONDITIONAL_DEPENDENCY(MODULE, CAPABILITY, \
+                                                           FUNCTION, CONDITIONAL_DEPENDENCY, TYPE)
 
 /// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
 /// should be activated if the backend requirement \em BACKEND_REQ of the current 
@@ -221,15 +217,7 @@
 
 /// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
 /// should be activated if the model being scanned matches one of the models passed as an argument.
-#define ACTIVATE_FOR_MODELS(...)                         ACTIVATE_DEP_MODEL(#__VA_ARGS__)
-/// @}
-
-/// \name Initialisation dependency switches.
-/// Macros for defining the action to be taken if a dependency on the module's 
-/// point-level initialisation function is required.
-/// @{
-#define INITDEPYES(MODULE,FUNCTION)                      CORE_DEPENDENCY(PointInit, void, MODULE, FUNCTION, NOT_MODEL)
-#define INITDEPNO(MODULE,FUNCTION) 
+#define ACTIVATE_FOR_MODELS(...)                         ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
 /// @}
 
 
@@ -578,33 +566,18 @@
     BOOST_PP_IIF(BOOST_PP_BITAND(IS_TYPE(void,TYPE), BOOST_PP_EQUAL(FLAG, 0)), \
       FAIL("Module functions cannot have void results, unless they manage "    \
        "loops or are initialisation functions.  Loop managers are declared "   \
-       "by adding CAN_MANAGE_LOOPS as the second argument of START_FUNCTION"   \
-       ", and initialisation functions are declared by #defining CAPABILITY "  \
-       "PointInit.  Please check the rollcall header for " STRINGIFY(MODULE)   \
-       ".")                                                                    \
+       "by adding CAN_MANAGE_LOOPS as the second argument of START_FUNCTION."  \
+       "Initialisation functions are declared from frontend headers by using " \
+       "the BE_INI_FUNCTION macro.  Please check the header file for module "  \
+       STRINGIFY(MODULE) ", function " STRINGIFY(FUNCTION) ".")                \
     ,)                                                                         \
                                                                                \
-    BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 2),                                      \
-      IF_NOT_EQUAL(CAPABILITY,PointInit,                                       \
-        /* Fail if an initialisation function's CAPABILITY is not PointInit. */\
-        FAIL("Only initialisation functions can be declared using the flag "   \
-         "INIT_FUNCTION. This requires CAPABILITY to be #defined as PointInit."\
-         " Please check the rollcall header for " STRINGIFY(MODULE) ".")       \
-      )                                                                        \
-      BOOST_PP_IIF(IS_TYPE(void,TYPE), ,                                       \
-        /* Fail if an initialisation function has a non-void return type */    \
-        FAIL("Initialisation functions must have void results. This is "       \
-         "indicated by calling START_FUNCTION with first argument void, "      \
-         "or giving no arguments.  Please check the rollcall header for "      \
-         STRINGIFY(MODULE) ".")                                                \
-      )                                                                        \
-    ,                                                                          \
-      IF_EQUAL(CAPABILITY,PointInit,                                           \
-        /* Fail if a  non-initialisation function has CAPABILITY PointInit. */ \
-        FAIL("Initialisation functions cannot manage loops. Please check the " \
-         "rollcall header for " STRINGIFY(MODULE) ".")                         \
-      )                                                                        \
-    )                                                                          \
+    BOOST_PP_IIF(BOOST_PP_BITAND(BOOST_PP_NOT(IS_TYPE(void,TYPE)),             \
+                                 BOOST_PP_EQUAL(FLAG, 2) ),                    \
+      /* Fail if an initialisation function has a non-void return type */      \
+      FAIL("Initialisation functions must have void results. This is "         \
+       "indicated by using the BE_INI_FUNCTION macro in a frontend header.")   \
+    ,)                                                                         \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
@@ -623,15 +596,6 @@
     }                                                                          \
                                                                                \
   }                                                                            \
-                                                                               \
-  /* Every module function (except the point-level init functions themselves)  \
-     depends on a module-specific point-level initialization function. */      \
-  BOOST_PP_IIF(BOOST_PP_BITAND(BOOST_PP_NOT_EQUAL(FLAG, 2),                    \
-   BOOST_PP_NOT(IS_EQUAL(CAPABILITY,PointInit))), INITDEPYES, INITDEPNO)       \
-   (MODULE,FUNCTION)                                                           \
-                                                                               \
-  /* If scan-level init functions are ever needed, the point-level init        \
-  functions should be made to depend on them here. */                          \
 
 
 // Determine whether to make registration calls to the Core in the MAKE_FUNCTOR
@@ -739,15 +703,8 @@
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
     namespace MODULE                                                           \
     {                                                                          \
-                                                                               \
-      IF_EQUAL(CAPABILITY, PointInit,                                          \
-        FAIL("Initialization functions cannot require loop managers. "         \
-         "Please check the rollcall header for " STRINGIFY(MODULE) ".")        \
-      )                                                                        \
-                                                                               \
       namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
@@ -776,9 +733,7 @@
         ini_code CAT(FUNCTION,_nesting)                                        \
          (&rt_register_function_nesting<Tags::FUNCTION>);                      \
       }                                                                        \
-                                                                               \
     }                                                                          \
-                                                                               \
   }                                                                            \
 
 
@@ -871,11 +826,6 @@
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within the core.
 #define CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, IS_MODEL_DEP)             \
-                                                                               \
-/*  IF_EQUAL(CAPABILITY, PointInit,                                              \
-    FAIL("Initialization functions cannot have dependencies. "                 \
-    "Please check the rollcall header for " STRINGIFY(MODULE) ".")             \
-  )*/                                                                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -1451,7 +1401,8 @@
 
 /// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
 /// the core.
-#define CORE_START_CONDITIONAL_DEPENDENCY(TYPE)                                \
+#define CORE_START_CONDITIONAL_DEPENDENCY(MODULE, CAPABILITY, FUNCTION,        \
+ CONDITIONAL_DEPENDENCY, TYPE)                                                 \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "START_CONDITIONAL_DEPENDENCY."))                                           \
@@ -1685,7 +1636,8 @@
 
 /// Redirection of ACTIVATE_FOR_MODELS(MODELSTRING) when invoked from within 
 /// the core, inside a CONDITIONAL_DEPENDENCY definition.
-#define ACTIVATE_DEP_MODEL(MODELSTRING)                                        \
+#define ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION,                       \
+ CONDITIONAL_DEPENDENCY,MODELSTRING)                                           \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "ACTIVATE_FOR_MODEL(S)."))                                                  \

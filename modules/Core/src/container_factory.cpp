@@ -87,5 +87,4 @@ namespace Gambit
   {
     delete (Scanner::Function_Base *)a;
   }
-
 }

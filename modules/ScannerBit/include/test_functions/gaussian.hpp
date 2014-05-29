@@ -44,6 +44,8 @@ namespace Gambit
                                 return -chol.Square(values, mean);
                         }
                         
+                        void print(double in, const std::string & type) const {}
+                        
                         ~Test_Gaussian(){}
                 };
                 

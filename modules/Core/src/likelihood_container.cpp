@@ -94,12 +94,16 @@ namespace Gambit
   const std::vector<double>& Likelihood_Container_Base::getParameters() const  {return realParameters;} 
   const std::vector<std::string>& Likelihood_Container_Base::getKeys() const {return prior.getShownParameters();}
 
+  void Likelihood_Container_Base::print(double in, const std::string &type) const
+  {
+    //stuff here;
+  }
 		
   Likelihood_Container::Likelihood_Container (const std::map<std::string, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose)
   : Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose)
   {}
-
+  
   double Likelihood_Container::operator() (std::vector<double> &in)
   {
     double ret = 0;

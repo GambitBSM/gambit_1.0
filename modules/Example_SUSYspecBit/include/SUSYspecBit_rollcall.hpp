@@ -33,7 +33,7 @@ START_MODULE
   #define CAPABILITY PointInit
   START_CAPABILITY
     #define FUNCTION PointInit_Default
-    START_INI_FUNCTION                      // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
+    START_FUNCTION(void,INIT_FUNCTION)      
     #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
   #undef CAPABILITY
  

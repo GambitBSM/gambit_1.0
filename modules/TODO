@@ -11,7 +11,6 @@ Rollcall:
 * Implement point-level initialisation functions for backends. (**Pat & Chistoph**)
   - This involves making a new module BackendInitBit, specifically for backend initialisation, containing only functions that initialise backends.  These functions will be have capabilities X_init, where X is the backend name.  They will be able to have regular dependencies, conditional dependencies and allowed_models.  They will be allowed to have backend requirements, but it will be assumed that those requirements can only be filled by the corresponding backend-version pair that the specific initialisation function is for.  They will have result type void.  They will act as point-level initialisation functions, but scan-level will be easy to emulate using a static bool first = false that is set true at the end of the first call of the function.  Every module function (from any other module) that resolves a backend requirement using a given backend X will then be endowed with a dependency on X_init, which will be provided only by functions in BackendInitBit.  
   - This will remove the need for PointInit functions, as those will no longer be needed for initialising backends.  Initialising module things will also not be required, as any global module variables should be essentially outlawed.  Generally, global module variables should be made local static variables in a given module function instead.  In cases where multiple module functions depend on the result of the same calculation, module functions should be split into smaller pieces anyway, and the later calculations each made to depend on the common earlier calculation.    
-* Allow grouping of backend requirements into blocks, maybe declaration of parameters  (**Pat; discussion with whole collab needed at G3**)
 * Tracking of config files -> lists in module/backend rollcall headers (**Pat; after G3**)
   - Add module-level and backend-level HAS_CONFIG_FILE(filename, flag:OVERIDABLE) and DEFINE_CONFIG_FILE_KEY(key, filename) rollcall macros, to allow settings for modules and backends to be stored/specified in configuration files that exist separately to the .ini file
 * Make a rollcall header harvester to create module_rollcall.hpp automagically (**Pat, by extending the existing type harvester; after G3**)
@@ -27,7 +26,7 @@ Dependency Resolver:
 * Make dependency resolver errors more informative (**Christoph; major time pressure**)
 * Make it possible to resolve dependencies that match a functor's own capability-type pair (**Christoph**)
 * Write new entry to auxiliary section of the YAML file if dependency resolution fails, according to user input. (**Christoph**)
-* Make copying of functors possible, and therefore also the use of the same module function multiple times in the depedency tree (**Pat & Christoph, during first major code revision following release.**)
+* Make copying of functors possible, and therefore also the use of the same module function multiple times in the depedency tree (**decided not to do this, as the same thing can be achieved by returning vectors or likelihoods**)
 
 Backends:
 * Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; before G3**)
@@ -81,6 +80,7 @@ Done:
 * Make name of current model (and related lineage tests) accessible from within module functions
 * Sort out specification of what can be given to the Scanner as Likelihoods / what can be given as target observables in iniFile
 * Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions.
+* Allow grouping of backend requirements into blocks
 
 
 Models

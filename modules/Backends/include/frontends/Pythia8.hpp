@@ -40,6 +40,9 @@ namespace Gambit
   } /* end namespace Backends */                                                
 } /* end namespace Gambit */                                                   
 
+BE_INI_FUNCTION{}
+DONE
+
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME

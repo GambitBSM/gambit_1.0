@@ -36,11 +36,7 @@ namespace Gambit
     void gambit_core::registerBackendFunctor(functor &f) { backendFunctorList.push_back(&f); }
 
     /// Add a new primary model functor to primaryModelFunctorList
-    void gambit_core::registerPrimaryModelFunctor(primary_model_functor &f) 
-    {
-      registerModuleFunctor(f);
-      primaryModelFunctorList.push_back(&f); 
-    }
+    void gambit_core::registerPrimaryModelFunctor(primary_model_functor &f) { primaryModelFunctorList.push_back(&f); }
 
     /// Add entries to the map of activated primary model functors
     void gambit_core::registerActiveModelFunctors(const gambit_core::pmfVec& fvec) 

@@ -33,6 +33,7 @@
 #include "frontends/libFarrayTest.hpp"
 #include "frontends/micromegas.hpp"
 #include "frontends/FastSim.hpp"
+#include "frontends/nulike.hpp"
 //#include "frontend_Pythia8.hpp"
 
 // Get a bit fancy and include duplicate backends 

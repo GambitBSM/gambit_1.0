@@ -38,7 +38,15 @@ namespace Gambit
   /// Stream overload for map: string-to-int (should really be templated eventually)
   std::ostream& operator<<(std::ostream&, const std::map<std::string,int>&);
 
-  /// Stream overload for set: any type that has << already defined.
+  /// Stream overload for pairs of any type that already has << defined.
+  template <class Type1, class Type2>
+  inline std::ostream& operator << (std::ostream& os, const std::pair<Type1, Type2>& p) 
+  {
+    os << "( " << p.first << ", " << p.second << ")";
+    return os;
+  }
+
+  /// Stream overload for sets of any type that already has << defined.
   template <class Type>
   inline std::ostream& operator<<(std::ostream& os, const std::set<Type>& set)
   {
@@ -59,7 +67,7 @@ namespace Gambit
     return os;
   }
 
-  /// Stream overload for vector: any type that has << already defined.
+  /// Stream overload for vectors of any type that already has << defined.
   template <class Type>
   inline std::ostream& operator << (std::ostream& os, const std::vector<Type>& v) 
   {
