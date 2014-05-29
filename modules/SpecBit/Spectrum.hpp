@@ -5,8 +5,6 @@
 
 class Spectrum {
 public:
-   Spectrum(){};
-   
    // returns the lightest stable particle (lsp) mass 
    //  gives 3 integers to specify the state 
    // for most general case of a particle type with mass matrix 
@@ -58,8 +56,6 @@ public:
    virtual double get_dimensionless_parameter(std::string) const = 0;
    virtual double get_dimensionless_parameter(std::string, int) const = 0;
    virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
-
-
    
    //alternative getter using map
    virtual double get_mass2_par(std::string) const = 0;
