@@ -89,13 +89,20 @@ namespace Gambit
     /// Reset-then-recalculate method
     void functor::reset_and_calculate() { this->reset(); this->calculate(); } 
 
-    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
-    void functor::setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
     /// Setter for purpose (relevant only for next-to-output functors)
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
+
     /// Setter for vertex ID (used in printer system)
     void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
     
+    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    void functor::setStatus(int stat)
+    {
+      if (this == NULL) failBigTime("setStatus");
+      myStatus = stat;
+      setInUse(myStatus == 2);       
+    }
+
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
     /// Getter for the wrapped function's reported capability
@@ -961,6 +968,9 @@ namespace Gambit
 
           //One of the conditions was met, so do the resolution.
           (*backendreq_map[key])(be_functor);
+
+          //Set this backend functor's status to active.
+          be_functor->setStatus(2);
        
           //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
           std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);

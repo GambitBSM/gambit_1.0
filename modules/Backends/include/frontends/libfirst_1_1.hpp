@@ -60,7 +60,21 @@ BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM_I, UE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-  logger().send("Initialising backend LibFirst, v1.1.");
+  // Scan-level initialisation
+  static bool scan_level = true;
+  if (scan_level)
+  {
+    logger() << "Initialising backend LibFirst, v1.1.  ";
+    logger() << (*InUse::awesomenessByAnders ? "Ready to bust out some awesomeness." : "No awesomeness shall be forthcoming.") << EOM;
+  }
+  scan_level = false;
+
+  // Point-level initialisation
+  if (*InUse::SomeDouble)
+  {
+    *SomeDouble = 2.1;
+    logger() << "Initialised someDouble to " << *SomeDouble << EOM;
+  }
   awesomenessByAnders(*Dep::nevents); 
 }
 DONE

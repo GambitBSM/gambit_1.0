@@ -62,6 +62,21 @@
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
 
+namespace Gambit
+{
+  namespace Backends
+  {
+    typedef void(*voidFptr)();
+    /// Hack to suppress warnings about casting between void pointers and function pointers.
+    /// "Necessary" as long as dlsym has no separate functionality for retrieving function pointers.
+    union void_voidFptr
+    {
+      void *ptr;      // Use this for objects
+      voidFptr fptr;  // Use this for functions
+    };
+  }
+}
+
 /// Declare the backend initialisation module BackendIniBit.
 #define MODULE BackendIniBit
   START_MODULE
@@ -185,21 +200,36 @@ namespace Gambit                                                            \
         ini_code CAT_3(NAME,_,models)(&CAT(setAllowedModels_,NAME));        \
       }                                                                     \
 
-
-namespace Gambit
-{
-  namespace Backends
-  {
-    typedef void(*voidFptr)();
-    // Hack to suppress warnings about casting between void pointers and function pointers.
-    // "Necessary" as long as dlsym has no separate functionality for retrieving function pointers.
-    union void_voidFptr
-    {
-      void *ptr;      // Use this for objects
-      voidFptr fptr;  // Use this for functions
-    };
-  }
-}
+/// Make the inUse pipe for a given backend functor.                        
+#define MAKE_INUSE_POINTER(NAME)                                            \
+  namespace BackendIniBit                                                   \
+  {                                                                         \
+    namespace Pipes                                                         \
+    {                                                                       \
+      namespace CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)                    \
+      {                                                                     \
+        namespace InUse                                                     \
+        {                                                                   \
+          safe_ptr<bool> NAME;                                              \
+        }                                                                   \
+      }                                                                     \
+    }                                                                       \
+                                                                            \
+    /* Make the function that points the safe pointer to the inUse flag. */ \
+    void CAT_7(BACKENDNAME,_,SAFE_VERSION,_,NAME,_,setInUsePtr)()           \
+    {                                                                       \
+      Pipes::CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)::InUse::NAME =        \
+       Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::Functown::              \
+       NAME.inUsePtr();                                                     \
+    }                                                                       \
+                                                                            \
+    /* Make the ini object that points the safe pointer to the inUse flag.*/\
+    namespace ini                                                           \
+    {                                                                       \
+      ini_code CAT_7(BACKENDNAME,_,SAFE_VERSION,_,NAME,_,iniInUsePtr)       \
+       (&CAT_7(BACKENDNAME,_,SAFE_VERSION,_,NAME,_,setInUsePtr));           \
+    }                                                                       \
+  }                                                                         \
 
 /// Macro containing initialization code
 #define LOAD_LIBRARY                                                        \
@@ -420,6 +450,10 @@ namespace Gambit                                                            \
                                                                             \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
+                                                                            \
+  /* Create the safe pointer to the 'in use' flag of the functor. */        \
+  MAKE_INUSE_POINTER(NAME)                                                  \
+                                                                            \
 } /* end namespace Gambit */                                                \
 
 /// Supplementary backend variable macro
@@ -696,6 +730,10 @@ namespace Gambit                                                                
                                                                                                 \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
   } /* end namespace Backends */                                                                \
+                                                                                                \
+  /* Create the safe pointer to the 'in use' flag of the functor. */                            \
+  MAKE_INUSE_POINTER(NAME)                                                                      \
+                                                                                                \
 } /* end namespace Gambit */                                                                    \
 
 /// Supplemenentary backend function macro
@@ -767,6 +805,8 @@ namespace Gambit                                                                
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
     }                                                                                           \
   }                                                                                             \
+  /* Create the safe pointer to the 'in use' flag of the functor. */                            \
+  MAKE_INUSE_POINTER(NAME)                                                                      \
 }                                                                                               \
 
 /// \name Supplementary wrapping macro for convenience functions
