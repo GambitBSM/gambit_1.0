@@ -40,7 +40,7 @@ namespace Gambit
                 class IniFileInterface : public IniFileInterface_Base
                 {
                 private:
-                        Options scanner_options;
+                        Options options;
                         std::string file;
                         std::string name;
                         
@@ -53,9 +53,9 @@ namespace Gambit
                         
                         const std::string getValue(const std::string &in) const
                         {
-                                if (scanner_options.hasKey(name.c_str(), in.c_str()))
+                                if (options.hasKey(name.c_str(), in.c_str()))
                                 {
-                                        return scanner_options.getValue<std::string>(name.c_str(), in.c_str());
+                                        return options.getValue<std::string>(name.c_str(), in.c_str());
                                 }
                                 else
                                 {

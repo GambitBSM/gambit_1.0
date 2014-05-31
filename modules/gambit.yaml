@@ -138,9 +138,8 @@ options:
 --- # Scanner setup
 ##############################
 
-scanner:
-  plugin:  crapsample
-  file_path:  ScannerBit/lib/libsample.so
+plugin:  crapsample
+file_path:  ScannerBit/lib/libsample.so
 
 #scanner:
 #  module:  multinest
