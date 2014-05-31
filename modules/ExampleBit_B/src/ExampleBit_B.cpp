@@ -43,14 +43,6 @@ namespace Gambit
   
     //************************************************************
 
-    /// Initialisation function, called anew for each new model point before all other module functions are called.
-    void PointInit_Default()
-    {
-      logger() <<"  Initialising ExampleBit_B for current point."<<info<<EOM;
-    }
-
-    //************************************************************
-
     /// \name Module functions
     /// @{
     void exampleCharge    (int    &result) { result = 1; }
@@ -77,6 +69,17 @@ namespace Gambit
       }
       loopnumber+=1;
     }
+
+    // Function that tests array and -> operators on deps and BE vars.
+    void ptrMethArrTester        (int &result)
+    {
+      using namespace Pipes::ptrMethArrTester;
+      logger() << "\n  The size of the vector retrieved from test_vector dependency by vecTester is " << Dep::test_vector->size() << "."; 
+      logger() << "\n  The size of the vector retrieved from test_vector backend requirement by vecTester is " << BEreq::test_vector->size() << ".";
+      logger() << "\n  The second element of the array retrieved from SomeArray is " << (*BEreq::SomeArray)[1] << "." << EOM;
+      result = 1;
+    }
+ 
 
     void xsection         (double &result) 
     { 

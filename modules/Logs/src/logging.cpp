@@ -14,7 +14,7 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2014 Mar
+///  \date 2014 Mar, May
 ///
 ///  *********************************************
 
@@ -556,7 +556,7 @@ namespace Gambit
     }
 
     void LogMaster::entering_module(int i) { current_module = i; }
-    void LogMaster::leaving_module() { current_module = -1; }
+    void LogMaster::leaving_module() { current_module = -1; leaving_backend(); }
     void LogMaster::entering_backend(int i) 
     {
        current_backend = i; 
@@ -566,6 +566,7 @@ namespace Gambit
     }
     void LogMaster::leaving_backend()
     { 
+       if (current_backend == -1) return;       
        current_backend = -1;
        *this<<"restoring current_backend="<<current_backend;
        *this<<logs<<debug<<EOM;

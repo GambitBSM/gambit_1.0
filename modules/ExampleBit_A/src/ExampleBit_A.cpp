@@ -78,14 +78,6 @@ namespace Gambit
 
     //************************************************************
 
-    /// Initialisation function, called anew for each new model point before all other module functions are called.
-    void PointInit_Default()
-    {
-      logger().send("Initialising ExampleBit_A for current point.",info);
-    }
-
-    //************************************************************
-
     /// \name Module functions
     /// @{
     void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
@@ -318,34 +310,59 @@ namespace Gambit
       cout << "Returned value: " << tmp2 << endl;     
 
       cout << endl << "Retrieving pointer to doubleFuncArray1..." << endl;      
-      fptrType1 function_pointer = BEreq::libFarrayTest_doubleFuncArray1.pointer<Farray<double,1>&>();
+      double(*function_pointer)(Farray<double,1>&) = BEreq::libFarrayTest_doubleFuncArray1.pointer();
       cout << "Calling doubleFuncArray1 with commonblock element a as argument..." << endl;            
       tmp = function_pointer(commonBlock.a);
       cout << "Returned value: " << tmp << endl;          
       
       cout << endl << "Retrieving pointer to fptrRoutine..." << endl;      
-      fptrType2 function_pointer2 = BEreq::libFarrayTest_fptrRoutine.pointer<Gambit::Farray <double,1>& ,int& , fptrType1>();
+      fptrType2 function_pointer2 = BEreq::libFarrayTest_fptrRoutine.pointer();
             
       cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
       function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);             
 
       cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray2 as arguments..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer<Farray<double,1>&>());    
+      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer());    
  
       // Uncomment to pass an illegal function pointer (a function pointer with no fortran equivalent registered in frontBackFuncMap)
       //double (*function_pointer3)(Farray<double,1>&) = testFunc;
       //cout << endl << "Calling fptrRoutine commonblock elements a and c and an illegal function as arguments..." << endl;
       //function_pointer2(commonBlock.a,*commonBlock.c,function_pointer3);    
       
-      // Uncomment to provoke a mysterious bug
-      //cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that mysteriously fails..." << endl;
-      //BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,function_pointer);      
+      // Will not compile without the byVal convertor.
+      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that fails without byVal..." << endl;
+      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,byVal(function_pointer));      
  
       result = 1.0;     
  
     }
 
-    /// @} @}
+    /// @}
+
+
+    /// Test inline marginalisation of a Poisson likelihood over a log-normally or Gaussianly-distributed nuisance parameter.
+    void marg_poisson_test(double &result)
+    {
+        using namespace Pipes::marg_poisson_test;
+        int n_obs = 5;                      // Actual observed number of events
+        double n_predicted_exact = 1.5;     // A contribution to the predicted number of events that is know exactly (e.g. from data-driven background estimate)
+        double n_predicted_uncertain = 3.1; // A contribution to the predicted number of events that is not know exactly
+        double uncertainty = 0.2;           // A fractional uncertainty on n_predicted_uncertain (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+
+        if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") 
+        {
+          // Use a log-normal distribution for the nuisance parameter (more correct)
+          result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+        }
+        else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error")
+        {
+          // Use a Gaussian distribution for the nuisance parameter (marginally faster)
+          result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);          
+        }
+        else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from lnlike_marg_poisson BEgroup.");
+
+        logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
+    }
 
 
     /// \name SLHA Examples

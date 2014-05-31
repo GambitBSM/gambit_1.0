@@ -68,13 +68,6 @@
 #define MODULE ExampleBit_B
 START_MODULE
 
-  #define CAPABILITY PointInit
-  START_CAPABILITY
-    #define FUNCTION PointInit_Default
-      START_FUNCTION(void)
-    #undef FUNCTION
-  #undef CAPABILITY
- 
   #define CAPABILITY xsection               // Observable: cross-section for some hypothetical process
   START_CAPABILITY
 
@@ -115,7 +108,7 @@ START_MODULE
     BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())
 
     ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM_demo, UED), (model_dependent_reqs) )
-    BACKEND_OPTION( (LibFirst, 1.0), (libfirst1_only, lib123) )
+    BACKEND_OPTION( (LibFirst, 1.1), (libfirst1_only, lib123) )
     BACKEND_OPTION( (LibSecond), (lib123) )
     BACKEND_OPTION( (LibThird, 1.2, 1.3 , 1.5), (lib123) )
     FORCE_SAME_BACKEND(common_be)
@@ -177,6 +170,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY ptrmeth_arr_tester
+  START_CAPABILITY
+    #define FUNCTION ptrMethArrTester
+    START_FUNCTION(int)
+    DEPENDENCY(test_vector, std::vector<double>)
+    BACKEND_REQ(test_vector, (), std::vector<double>)
+    BACKEND_REQ(SomeArray, (), dblarr)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Some likelihood of type double that depends on postcuts
   #define CAPABILITY lnL_ExampleBitB

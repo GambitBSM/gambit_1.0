@@ -36,16 +36,6 @@
 #define MODULE ExampleBit_A
 START_MODULE
 
-  #define CAPABILITY PointInit
-  START_CAPABILITY
-
-    #define FUNCTION PointInit_Default
-    START_INI_FUNCTION                      // Same as both START_FUNCTION(void) and START_FUNCTION(void, INIT_FUNCTION)
-    ALLOW_MODELS(CMSSM_demo,NormalDist)        // ALLOW_MODELS is permitted for initialisation functions, as are BACKEND_REQs. 
-    #undef FUNCTION                         // Dependencies are not permitted, nor are loop manager requirements.
-
-  #undef CAPABILITY
-
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY
 
@@ -210,34 +200,26 @@ START_MODULE
   START_CAPABILITY   
     #define FUNCTION do_Farray_stuff
     START_FUNCTION(double)
-      #define BACKEND_REQ_deprecated libFarrayTestCommonBlock
-        START_BACKEND_REQ_deprecated(libFarrayTest_CB_type, VAR)
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated
-      #define BACKEND_REQ_deprecated libFarrayTest_printStuff
-        START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated      
-      #define BACKEND_REQ_deprecated libFarrayTest_set_d
-        START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated      
-      #define BACKEND_REQ_deprecated libFarrayTest_fptrRoutine
-        START_BACKEND_REQ_deprecated(void)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated     
-      #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray1
-        START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated    
-      #define BACKEND_REQ_deprecated libFarrayTest_doubleFuncArray2
-        START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated             
-      #define BACKEND_REQ_deprecated libFarrayTest_doubleFunc
-        START_BACKEND_REQ_deprecated(double)      
-        BACKEND_OPTION_deprecated(LibFarrayTest)
-      #undef BACKEND_REQ_deprecated                           
+    BACKEND_REQ(libFarrayTestCommonBlock, (match), libFarrayTest_CB_type)
+    BACKEND_REQ(libFarrayTest_printStuff, (match), void, ())      
+    BACKEND_REQ(libFarrayTest_set_d, (match), void, ()) //FIXME the leading Gambit:: qualification will need to get removed automatically by these macros and the backend macros.
+    BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Gambit::Farray<double,1>&, int&, double(*)(Gambit::Farray<double,1>&)) )
+    BACKEND_REQ(libFarrayTest_doubleFuncArray1, (match), double, (Gambit::Farray<double,1>&))
+    BACKEND_REQ(libFarrayTest_doubleFuncArray2, (match), double, (Gambit::Farray<double,1>&))
+    BACKEND_REQ(libFarrayTest_doubleFunc, (match), double, (double&))      
+    BACKEND_OPTION((LibFarrayTest), (match))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  // Tester for marginalised Poisson likelihood.
+  #define CAPABILITY marg_lnlike_test
+  START_CAPABILITY
+    #define FUNCTION marg_poisson_test
+      START_FUNCTION(double)
+      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+      BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
 

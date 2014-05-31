@@ -88,10 +88,10 @@ namespace Gambit
       /// Reset-then-recalculate method
       virtual void reset_and_calculate();
 
-      /// Setter for version
-      void setVersion(str);
-      /// Setter for status (0 = disabled, 1 = available (default), 2 = active)
+      /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
       void setStatus(int);
+      /// Set the inUse flag (must be overridden in derived class to have any effect).
+      virtual void setInUse(bool){}; 
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
@@ -107,7 +107,9 @@ namespace Gambit
       str origin() const;
       /// Getter for the version of the wrapped function's origin (module or backend)
       str version() const;
-      /// Getter for the wrapped function current status (0 = disabled, 1 = available (default), 2 = active)
+      /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
+      virtual str safe_version() const;
+      /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
       int status() const;
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() const;
@@ -209,7 +211,7 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
-      /// Status: 0 disabled, 1 available (default), 2 active (required for dependency resolution)
+      /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
@@ -569,6 +571,9 @@ namespace Gambit
 
     protected:
 
+      /// Set the inUse flag.
+      virtual void setInUse(bool); 
+
       /// Type of the function pointer being encapsulated
       typedef TYPE (*funcPtrType)(ARGS...);
 
@@ -578,16 +583,28 @@ namespace Gambit
       /// Integer LogTag, for tagging log messages
       int myLogTag; 
 
+      /// Internal storage of the 'safe' version of the version (for use in namespaces, variable names, etc).
+      str mySafeVersion;    
+
+      /// Flag indicating if this backend functor is actually in use in a given scan
+      bool inUse;
+
     public:
 
       /// Constructor 
-      backend_functor_common (funcPtrType, str, str, str, str, str);
+      backend_functor_common (funcPtrType, str, str, str, str, str, str);
 
       /// Update the internal function pointer wrapped by the functor
       void updatePointer(funcPtrType inputFunction);
 
       /// Hand out the internal function pointer wrapped by the functor
       funcPtrType handoutFunctionPointer();
+
+      /// Hand out a safe pointer to this backend functor's inUse flag.
+      safe_ptr<bool> inUsePtr(); 
+
+      /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
+      virtual str safe_version() const;
 
   };
 
@@ -600,7 +617,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str);
+      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str);
 
       /// Operation (execute function and return value) 
       TYPE operator()(ARGS... args);
@@ -620,7 +637,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor (void (*)(ARGS...), str, str, str, str, str);
+      backend_functor (void (*)(ARGS...), str, str, str, str, str, str);
     
       /// Operation (execute function and return value) 
       void operator()(ARGS... args);
@@ -683,12 +700,15 @@ namespace Gambit
                                                                    str func_capability, 
                                                                    str result_type,
                                                                    str origin_name,
-                                                                   str origin_version) 
+                                                                   str origin_version,
+                                                                   str origin_safe_version) 
     : functor (func_name, func_capability, result_type, origin_name),
       myFunction (inputFunction),
-      myLogTag(-1) 
+      myLogTag(-1),
+      inUse(false)
     {
       myVersion = origin_version; 
+      mySafeVersion = origin_safe_version;
       // Determine LogTag number
       myLogTag = Logging::str2tag(myOrigin);
       // Or in the case where we prefer to include the version number in the LogTag too
@@ -719,6 +739,23 @@ namespace Gambit
       return myFunction;
     }
 
+    /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
+    template <typename TYPE, typename... ARGS>
+    str backend_functor_common<TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
+
+    /// Set the inUse flag.
+    template <typename TYPE, typename... ARGS>
+    void backend_functor_common<TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; } 
+
+    /// Hand out a safe pointer to this backend functor's inUse flag.
+    template <typename TYPE, typename... ARGS>
+    safe_ptr<bool> backend_functor_common<TYPE, ARGS...>::inUsePtr()
+    { 
+      if (this == NULL) functor::failBigTime("inUsePtr");
+      return safe_ptr<bool>(&inUse);
+    }       
+
+
     // Actual backend functor class method definitions for TYPE != void
 
     /// Constructor 
@@ -728,9 +765,10 @@ namespace Gambit
                                                      str func_capability, 
                                                      str result_type,
                                                      str origin_name,
-                                                     str origin_version)
+                                                     str origin_version,
+                                                     str safe_version)
     : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version) {}
+      func_capability, result_type, origin_name, origin_version, safe_version) {}
 
     /// Operation (execute function and return value) 
     template <typename TYPE, typename... ARGS>
@@ -762,9 +800,10 @@ namespace Gambit
                                                      str func_capability, 
                                                      str result_type,
                                                      str origin_name,
-                                                     str origin_version)
+                                                     str origin_version,
+                                                     str safe_version)
     : backend_functor_common<void, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version) {}
+      func_capability, result_type, origin_name, origin_version, safe_version) {}
     
     /// Operation (execute function and return value) 
     template <typename... ARGS>

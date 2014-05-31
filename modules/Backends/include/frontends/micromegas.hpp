@@ -23,6 +23,9 @@ BE_FUNCTION(darkOmega, double, (double*, int, double), "darkOmega", "oh2")
 BE_FUNCTION(suspectSUGRA, int, (double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double), "suspectSUGRA", "suspectSUGRA")
 BE_FUNCTION(lesHinput, int, (char*), "lesHinput", "lesHinput")
 
+BE_INI_FUNCTION{}
+DONE
+
 #undef LIBPATH
 #undef BACKENDNAME
 #undef VERSION

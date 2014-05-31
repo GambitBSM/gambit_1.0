@@ -213,10 +213,18 @@ twalk_beta:
 - purpose:      Likelihood
   capability:   fast_sim
 
+# Uncomment to test array and -> operators in safety buckets.
+- purpose:      Observable
+  capability:   ptrmeth_arr_tester
+
 # Test loop manager
-#- purpose:      Likelihood
-#  capability:   nevents_like
-#  type:         double
+- purpose:      Likelihood
+  capability:   nevents_like
+  type:         double
+
+# Test marginalised Poisson likelihood
+- purpose:	Likelihood
+  capability:	marg_lnlike_test
 
 # Uncomment to test FlavBit
 #- purpose:      Likelihood
@@ -248,6 +256,12 @@ twalk_beta:
 --- # Auxiliary entries
 #########################
 
+#Choose either a log-normal or a Gaussian distribution to marginalise over
+#for the marginalised Poisson likelihood example.
+- capability:	marg_lnlike_test
+  backends:
+  - {capability: lnlike_marg_poisson_lognormal_error}
+
 - capability:   RD_oh2
   function:     RD_oh2_micromegas
   options:
@@ -268,6 +282,10 @@ twalk_beta:
   - {capability: "Weff", type: "", function: "Weff", module: ""}
   backends:
   - {capability: "", function: "", backend: "", version: ""}
+
+- capability:   "LibFirst_1_1_init"
+  dependencies:
+  - {capability: "nevents", module: "ExampleBit_A"}  
 
 #- capability:   "analysisAccumulator"
 #  type: "double"
@@ -307,6 +325,7 @@ redirection:
   [Dependency Resolver] : "dependency_resolver.log"
   [ExampleBit_A] : "ExampleBit_A.log"
   [ExampleBit_B] : "ExampleBit_B.log"
+  [BackendIniBit]: "BackendIniBit.log"
   [LibFirst] : "libfirst.log"
 
 ###############################

@@ -64,8 +64,8 @@ namespace Gambit
         el = std::find(selectedmodels.begin(), selectedmodels.end(), (*it)->origin());
         if(el != selectedmodels.end())
         {
-          // If yes, activate this functor
-          (*it)->setStatus(1);               // 1 means "available". Possibly switch this to 2 ("active").
+          // If yes, activate this functor.  Default is inactivated.
+          (*it)->setStatus(1);               // 1 means "available".
           (*it)->setPrintRequirement(true);  // Tell printer to output this functor
           // Initialise ModelParameters object it contains
           (*it)->calculate();
@@ -76,11 +76,6 @@ namespace Gambit
           // Remove it from the input 'selectedmodels' list
           selectedmodels.erase(el);
         } 
-        else
-        {
-            // If no, deactivate this functor
-            (*it)->setStatus(0);
-        }
       }
 
       // Check that all requested models have been activated

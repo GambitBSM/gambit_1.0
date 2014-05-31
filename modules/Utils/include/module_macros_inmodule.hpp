@@ -67,14 +67,6 @@
 #define BE_OPTION_deprecated(BACKEND,VERSTRING)           DUMMYARG(BACKEND,VERSTRING)
 /// @}
 
-/// \name Initialisation dependency switches.
-/// Macros for defining the action to be taken if a dependency on the module's 
-/// point-level initialisation function is required.
-/// @{
-#define INITDEPYES() DEPENDENCY(PointInit, void)
-#define INITDEPNO() 
-/// @}
-
 
 //  *******************************************************************************
 /// \name In-module rollcall macros
@@ -155,14 +147,7 @@
     }                                                                          \
                                                                                \
   }                                                                            \
-                                                                               \
-  /* Every module function (except the point-level init functions themselves)  \
-     depends on a module-specific point-level initialization function. */      \
-  BOOST_PP_IIF(BOOST_PP_BITAND(BOOST_PP_NOT_EQUAL(FLAG, 2),                    \
-   BOOST_PP_NOT(IS_EQUAL(CAPABILITY,PointInit))), INITDEPYES, INITDEPNO)()     \
-                                                                               \
-  /* If scan-level init functions are ever needed, the point-level init        \
-  functions should be made to depend on them here. */                          \
+
 
 /// Redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
 /// within a module.

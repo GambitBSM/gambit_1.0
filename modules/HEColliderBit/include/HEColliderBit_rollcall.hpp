@@ -27,11 +27,11 @@
 #define MODULE HEColliderBit
 START_MODULE
 
-  /// Initialization capabilities
+  /// Initialization capabilities (deprecated -- init happens in backend init functions now)
   #define CAPABILITY PointInit
   START_CAPABILITY
     #define FUNCTION PointInit_Default
-      START_FUNCTION(void)
+      START_FUNCTION(void, INIT_FUNCTION)
       /* \todo set up pythia as a backend
       #define BACKEND_REQ_deprecated pyinit
         START_BACKEND_REQ_deprecated(void)

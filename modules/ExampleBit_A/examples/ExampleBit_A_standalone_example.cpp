@@ -141,8 +141,8 @@ int main()
       CMSSM_primary_parameters->setValue("tanb",i*10.);
       CMSSM_primary_parameters->setValue("sgnmu",1.);
 
-      // Call the appropriate point-level module initialisation function.
-      PointInit_Default.reset_and_calculate();
+      // Call the appropriate point-level backend initialisation functions.
+      //PointInit_Default.reset_and_calculate();
 
       // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
       // i.e. calculate quantities that other quantities depend on first.

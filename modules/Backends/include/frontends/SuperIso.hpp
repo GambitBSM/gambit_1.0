@@ -61,6 +61,9 @@ BE_FUNCTION(bsgamma_calculator, double, (char*), "bsgamma_calculator", "bsgamma_
 BE_FUNCTION(Btaunu_calculator, double, (char*), "Btaunu_calculator", "Btaunu_calculator")
 BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
 
+BE_INI_FUNCTION{}
+DONE
+
 // Undefine macros to avoid conflict with other backends
 #undef LIBPATH 
 #undef BACKENDNAME

@@ -31,6 +31,7 @@
 #include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"
+#include "stream_printers.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -229,8 +230,7 @@ namespace Gambit
       }
       logger() << EOM;
 
-      // Select functors compatible with model we scan over (and deactivate the
-      // rest)
+      // Activate functors compatible with model we scan over (and deactivate the rest)
       makeFunctorsModelCompatible();
 
       // Generate dependency tree (the core of the dependency resolution)
@@ -270,6 +270,9 @@ namespace Gambit
     // List of masterGraph content
     void DependencyResolver::printFunctorList() 
     {
+      // Activate functors compatible with model we scan over (and deactivate the rest)
+      makeFunctorsModelCompatible();
+
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       const str formatString = "%-20s %-32s %-32s %-32s %-15s %-7i %-5i %-5i\n";
       logger() << LogTags::dependency_resolver << endl << "Vertices registered in masterGraph" << endl;
@@ -472,36 +475,44 @@ namespace Gambit
     // Add module functors in bound core to class-internal masterGraph object
     void DependencyResolver::addFunctors()
     {
-      // - module functors go into masterGraph
+      // Add primary model functors to masterGraph
+      for (std::vector<primary_model_functor *>::const_iterator 
+          it  = boundCore->getPrimaryModelFunctors().begin();
+          it != boundCore->getPrimaryModelFunctors().end();
+          ++it)
+      {
+        // Ignore functors with status set to 0 or less in order to ignore primary_model_functors 
+        // that are not to be used for the scan.
+        if ( (*it)->status() > 0 ) 
+        {
+          boost::add_vertex(*it, this->masterGraph);
+        }
+      }
+      // Add module functors to masterGraph
       for (std::vector<functor *>::const_iterator 
           it  = boundCore->getModuleFunctors().begin();
           it != boundCore->getModuleFunctors().end();
           ++it)
       {
-        // Ignore functors with status set to 0 in order to ignore primary_model_functors 
-        // that are not to be used for the scan.
-        if ( (*it)->status() != 0 ) 
-        {
           boost::add_vertex(*it, this->masterGraph);
-        }
       }
     }
 
-    /// Deactivate functors that are not allowed to be used with any of the models being scanned. 
-    /// Also activate the model-conditional dependencies and backend requirements of those
-    /// functors that are allowed to be used with the model(s) being scanned.
+    /// Activate functors that are allowed to be used with one or more of the models being scanned. 
+    /// Also activate the model-conditional dependencies and backend requirements of those functors.
     void DependencyResolver::makeFunctorsModelCompatible()
     {
+      static bool already_run = false;
+      if (already_run) return;
+
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
+      std::vector<functor *>::const_iterator fi, fi_end = boundCore->getBackendFunctors().end();
       std::vector<str> modelList = modelClaw().get_activemodels();
-      // First make sure to deactivate all the vertices
-      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
-      {
-        masterGraph[*vi]->setStatus(0);
-      }
-      // Then reactivate those that match one of the models being scanned.
+
+      // Activate those functors that match one of the models being scanned.
       for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
       {
+        // Module functors
         for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
         {
           if (masterGraph[*vi]->modelAllowed(*it))
@@ -510,7 +521,17 @@ namespace Gambit
             masterGraph[*vi]->setStatus(1);
           }
         }
+        // Backend functors
+        for (fi = boundCore->getBackendFunctors().begin(); fi != fi_end; ++fi)
+        {
+          // Activate if the backend vertex permits the model and has not been (severely) disabled by the backend system
+          if ( (*fi)->status() >= 0 and (*fi)->modelAllowed(*it) )
+          {
+            (*fi)->setStatus(1);
+          }
+        }
       }
+      already_run = true;
     }
 
     /// Set up printer object
@@ -587,7 +608,7 @@ namespace Gambit
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
         // Don't allow resolution by deactivated functors
-        if (masterGraph[*vi]->status() != 0)
+        if (masterGraph[*vi]->status() > 0)
         {
           // Without inifile entry, just match capabilities and types (no type
           // comparison when no types are given; this should only happen for
@@ -598,28 +619,8 @@ namespace Gambit
           // module name.
             and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
           {
-          // Add to vertex candidate list
+            // Add to vertex candidate list
             vertexCandidates.push_back(*vi);
-          }
-        }
-      }
-
-      // Special treatment of dependence on point-level initialization
-      // functions, which can only be resolved from within a given module.
-      if ( quantity.first == "PointInit" /* List can be extended, if needed */ )
-      {
-        std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin();
-        while (it != vertexCandidates.end())
-        {
-          if ( masterGraph[toVertex]->origin() != masterGraph[*it]->origin() )
-          {
-            // Delete all vertex candidates that do not belong to the correct
-            // module
-            it = vertexCandidates.erase(it);
-          }
-          else
-          {
-            ++it;
           }
         }
       }
@@ -1069,7 +1070,7 @@ namespace Gambit
         {
 
           // Has the backend vertex already been disabled by the backend system?
-          bool disabled = ( (*itf)->status() == 0 );
+          bool disabled = ( (*itf)->status() <= 0 );
 
           // Is it permitted to be used to fill this backend requirement?
           // First we create the backend-version pair for the backend vertex and its semi-generic form (where any version is OK).
@@ -1187,17 +1188,18 @@ namespace Gambit
       // No candidates? Death.
       if (vertexCandidates.size() == 0)
       {
-        str errmsg = "Found no candidates for backend requirement.";
+        std::ostringstream errmsg;
+        errmsg << "Found no candidates for backend requirements:\n" << reqs << "\nfrom group: " << group;
         if (disabledVertexCandidates.size() != 0)
         {
-          errmsg += "\nNote that viable candidates exist but have been disabled:"
-                 +     printGenericFunctorList(disabledVertexCandidates)
-                 +  "\nPlease check that all shared objects exist for the"
-                 +  "\necessary backends, and that they contain all the"
-                 +  "\nnecessary functions required for this scan. Also "
-                 +  "\ncheck your backend rules and YAML file.";
+          errmsg << "\nNote that viable candidates exist but have been disabled:\n"
+                 <<     printGenericFunctorList(disabledVertexCandidates)
+                 << "\nPlease check that all shared objects exist for the"
+                 << "\necessary backends, and that they contain all the"
+                 << "\nnecessary functions required for this scan. Also "
+                 << "\ncheck your backend rules and YAML file.";
         }
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
       // Still more than one candidate...

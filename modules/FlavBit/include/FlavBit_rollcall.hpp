@@ -60,11 +60,11 @@
 #define MODULE FlavBit
 START_MODULE
  
-  /// Initialization capabilities
+  /// Initialization capabilities (deprecated -- initialisation is done in BackendIniBit now, with functions declared in frontend headers)
   #define CAPABILITY PointInit
   START_CAPABILITY
     #define FUNCTION PointInit_Default
-      START_FUNCTION(void)
+      START_FUNCTION(void, INIT_FUNCTION)
      #undef FUNCTION
   #undef CAPABILITY
  
