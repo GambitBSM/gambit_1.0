@@ -31,6 +31,9 @@
 namespace Gambit
 {
 
+  // Forward declaration of functor class.
+  class functor;
+
   /// GAMBIT exception base class.
   class exception : virtual public std::exception
   {
@@ -70,13 +73,13 @@ namespace Gambit
       /// Raise the exception.
       /// Log the exception and, if it is considered fatal, actually throw it. 
       /// This is the canonical way to trigger a GAMBIT error or warning. 
-      void raise(std::string, std::string);
+      void raise(const std::string&, const std::string&);
 
       /// Force a throw of the exception.
       /// These should only be used inside a try block, i.e. if you plan to catch the exception.
       /// @{
       /// Log the exception and throw it regardless of whether is is fatal or not.
-      void forced_throw(std::string, std::string);
+      void forced_throw(const std::string&, const std::string&);
       /// As per forced_throw but without logging.
       void silent_forced_throw();
       /// @}
@@ -92,7 +95,7 @@ namespace Gambit
     private:
 
       /// Log the details of the exception
-      void log_exception(std::string, std::string);
+      void log_exception(const std::string&, const std::string&);
 
       /// The kind of exception (error, warning, etc; for logging).
       const char* myKind;
@@ -165,6 +168,64 @@ namespace Gambit
       /// @}
 
   };
+
+
+  /// GAMBIT special exception class.  Not logged, meant for always catching.
+  class special_exception : virtual public std::exception
+  {
+    public:
+
+      /// Constructor
+      special_exception(const char*);
+
+      /// Destructor
+      virtual ~special_exception() throw() {}
+
+      /// Retrieve the identity of the exception.
+      virtual const char* what() const throw();
+
+      /// Retrieve the message that this exception was raised with.
+      std::string message();
+
+      /// Raise the exception, i.e. throw it.
+      virtual void raise(const std::string&);
+    
+    private:
+
+      /// What this exception is (for returning with what method).
+      const char* myWhat;
+
+    protected:
+
+      /// The message passed when this exception is raised.
+      std::string myMessage;
+
+  };
+
+  /// Gambit invalid point exception class.
+  class invalid_point_exception : public special_exception
+  {
+    public:
+
+      /// Constructor
+      invalid_point_exception();
+
+      /// Set the pointer to the functor that threw the invalid point exception.
+      void set_thrower(functor*);
+
+      /// Retrieve pointer to the functor that threw the invalid point exception.
+      functor* thrower();
+
+      /// Raise the exception, i.e. throw it.
+      virtual void raise(const std::string&);
+    
+    private:
+
+      /// The functor responsible for throwing this exception.
+      functor* myThrower;
+
+  };
+
 
 }
 

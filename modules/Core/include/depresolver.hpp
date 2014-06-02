@@ -106,7 +106,7 @@ namespace Gambit
 
         const IniParser::ObservableType * getIniEntry(VertexID);
 
-        void notifyOfInvalidation(VertexID);
+        void invalidatePointAt(VertexID);
 
         void resetAll();
 

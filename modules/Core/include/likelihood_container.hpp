@@ -14,12 +14,13 @@
 //
 ///  \author Gregory Martinez
 ///    (gregory.david.martinez@gmail.com)
-///  \date 2013 July 2013 Feb 2014
+///  \date 2013 July
+///  \date 2014 Feb
 ///
 ///  \author Pat Scott
 ///    (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
-///  \date 2014 May
+///  \date 2014 May, June
 ///
 ///  *********************************************
 
@@ -35,44 +36,47 @@ namespace Gambit
   class Likelihood_Container_Base : public Scanner::Function_Base
   {
     protected:
-      std::vector<DRes::VertexID> vertices;
-      std::vector<DRes::VertexID> vertices_phantom;
+      std::vector<DRes::VertexID> target_vertices;
+      std::vector<DRes::VertexID> aux_vertices;
       DRes::DependencyResolver &dependencyResolver;
       std::vector<double> realParameters;
       Priors::CompositePrior &prior;
-      std::map<std::string, double> parameterMap;
-      std::map<std::string, primary_model_functor *> functorMap;
+      std::map<str, double> parameterMap;
+      std::map<str, primary_model_functor *> functorMap;
 			
     public:
-      Likelihood_Container_Base(const std::map<std::string, primary_model_functor *> &functorMap, 
-       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose); 
+      Likelihood_Container_Base(const std::map<str, primary_model_functor *> &functorMap, 
+       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const str &purpose); 
       inline void calcObsLike(DRes::VertexID &it);
       inline double getObsLike(DRes::VertexID &it);
       void setParameters (std::vector<double> &vec); 
       void resetAll();
       const std::vector<double> & getParameters() const;
-      const std::vector<std::string> & getKeys() const;
-      void print(double, const std::string &) const;
+      const std::vector<str> & getKeys() const;
+      void print(double, const str &) const;
   };
 		
+  /// Class for collecting pointers to all the likelihood components, then running and combining them.
   class Likelihood_Container : public Likelihood_Container_Base
   {
     public:
-      Likelihood_Container (const std::map<std::string, primary_model_functor *> &functorMap, 
-       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose);
+
+      /// Constructor
+      Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
+       DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
+       Priors::CompositePrior &prior, const str &purpose);
+
+      /// Evaluate total likelihood function
       double operator() (std::vector<double> &in);
+
+    private:
+
+      /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
+      double min_valid_lnlike;
   };
   
-  class Likelihood_Container_Minimal : public Likelihood_Container_Base
-  {
-    public:
-      Likelihood_Container_Minimal (const std::map<std::string, primary_model_functor *> &functorMap, 
-       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose);
-      double operator () (std::vector<double> &in);
-  };
-  
+  // Register the Likelihood Container as an available target function for ScannerBit.
   LOAD_SCANNER_FUNCTION(Scanner_Function, Likelihood_Container)
-  LOAD_SCANNER_FUNCTION(Scanner_Function_Minimal, Likelihood_Container_Minimal)
 
 }
 

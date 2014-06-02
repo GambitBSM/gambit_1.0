@@ -31,6 +31,8 @@
 ///
 ///  *********************************************
 
+#include <random>
+
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_B_rollcall.hpp"
 
@@ -51,7 +53,7 @@ namespace Gambit
     void lnL_ExampleBitB  (double &result) { result = 0; }   // Some dummy double likelihood function for the scanner
      
     // Function that returns a vector of doubles, for testing printer
-    void exampleVec       (std::vector<double> &result) 
+    void exampleVec (std::vector<double> &result) 
     { 
       result.clear();
       result.push_back(101);
@@ -71,7 +73,7 @@ namespace Gambit
     }
 
     // Function that tests array and -> operators on deps and BE vars.
-    void ptrMethArrTester        (int &result)
+    void ptrMethArrTester (int &result)
     {
       using namespace Pipes::ptrMethArrTester;
       logger() << "\n  The size of the vector retrieved from test_vector dependency by vecTester is " << Dep::test_vector->size() << "."; 
@@ -81,7 +83,7 @@ namespace Gambit
     }
  
 
-    void xsection         (double &result) 
+    void xsection (double &result) 
     { 
       using namespace Pipes::xsection;
       logger() << endl;
@@ -95,11 +97,6 @@ namespace Gambit
       logger() << "  A0: "  << *Param["A0"] << endl;
       logger() <<info<<EOM;
       result = 5.e10; 
-
-      //Example of how to raise an error from a module function.
-      str errormsg = "Damn, this xsection is bad.";
-      ExampleBit_B_error().raise(LOCAL_INFO,errormsg);
-
     }
 
     void nevents_postcuts (int &result)          

@@ -81,9 +81,22 @@ namespace Gambit
     /// \name Module functions
     /// @{
     void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
-    void nevents_int  (int    &result)    { result = (int) (*Pipes::nevents_int::Dep::nevents); }
     void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
+
+    void nevents_int(int &result)    
+    { 
+      result = (int) (*Pipes::nevents_int::Dep::nevents); 
+      // Randomly raise some ficticious alarms about this point in 40% of cases.
+      if (random_0to5(twistor) < 2.0)
+      {
+        //Example of how to raise an error from a module function.
+        ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
+        //Example of how to declare a point invalid.
+        invalid_point().raise("I don't like this point.");   
+      }  
+    }
+
     void function_pointer_retriever( double(*&result)(int&) )
     {
       using namespace Pipes::function_pointer_retriever;

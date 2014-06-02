@@ -82,7 +82,7 @@ namespace Gambit
     double functor::getRuntimeAverage() { return 0; }
     double functor::getInvalidationRate() { return 0; }
     void functor::setFadeRate() {}
-    void functor::notifyOfInvalidation() {}
+    void functor::notifyOfInvalidation(const str&) {}
     void functor::reset() {}
     /// @}
 
@@ -408,10 +408,18 @@ namespace Gambit
       runtime = .0;
     }
 
-    /// Tell functor that it invalidated the current point in model space
-    void module_functor_common::notifyOfInvalidation()
+    /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
+    void module_functor_common::notifyOfInvalidation(const str& msg)
+    {
+      acknowledgeInvalidation(invalid_point());
+      invalid_point().raise(msg);
+    }
+
+    /// Acknowledge that this functor invalidated the current point in model space.
+    void module_functor_common::acknowledgeInvalidation(invalid_point_exception& e)
     {
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
+      e.set_thrower(this);
     }
 
     /// Getter for invalidation rate
@@ -1150,7 +1158,16 @@ namespace Gambit
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);                       //Begin timing function evaluation
-        this->myFunction(myValue[omp_get_thread_num()]);   //Run and place result in the appropriate slot in myValue
+        try 
+        {
+          cout << "got to here already";
+          this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
+        }
+        catch (invalid_point_exception& e)
+        {
+          acknowledgeInvalidation(e);
+          throw(e);
+        }
         this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         logger().leaving_module();
       }
@@ -1213,7 +1230,15 @@ namespace Gambit
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);
-        this->myFunction();
+        try
+        {
+          this->myFunction();
+        }
+        catch (invalid_point_exception& e)
+        {
+          acknowledgeInvalidation(e);
+          throw(e);
+        }
         this->finishTiming(nsec,sec);
         logger().leaving_module();
       }
