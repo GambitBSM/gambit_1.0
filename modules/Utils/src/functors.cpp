@@ -1160,7 +1160,6 @@ namespace Gambit
         this->startTiming(nsec,sec);                       //Begin timing function evaluation
         try 
         {
-          cout << "got to here already";
           this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
         }
         catch (invalid_point_exception& e)
