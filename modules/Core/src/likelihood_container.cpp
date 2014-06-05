@@ -110,15 +110,10 @@ namespace Gambit
    min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
    Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose)
   {}
-<<<<<<< HEAD
-  
-  double Likelihood_Container::operator() (const std::vector<double> &in)
-=======
-    
+   
   /// Evaluate total likelihood function
   // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points (ie ones with valid like calculations).				
-  double Likelihood_Container::operator() (std::vector<double> &in)
->>>>>>> 792a7e7f2bacafa62624d748cc004f07421880e8
+  double Likelihood_Container::operator() (const std::vector<double> &in)
   {
     double lnlike = 0;
     bool compute_aux = true;     
@@ -147,23 +142,8 @@ namespace Gambit
       }
     }
 
-<<<<<<< HEAD
-  double Likelihood_Container_Minimal::operator() (const std::vector<double> &in)
-  {
-    double ret = 0;
-      
-    Scanner::outputHandler::out.defout();
-      
-    setParameters(in);
-      
-    //std::vector<DRes::VertexID> OL = dependencyResolver.getObsLikeOrder();
-    std::cout << "Number of vertices to calculate: " << vertices.size() << std::endl;
-      
-    for (auto it = vertices.begin(), end = vertices.end(); it != end; ++it)
-=======
     // If none of the likelihood calculations have invalidated the point, calculate the additional auxiliary observables.
     if (compute_aux)
->>>>>>> 792a7e7f2bacafa62624d748cc004f07421880e8
     {
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {

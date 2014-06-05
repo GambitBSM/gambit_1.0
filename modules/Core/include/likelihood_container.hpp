@@ -60,38 +60,20 @@ namespace Gambit
   class Likelihood_Container : public Likelihood_Container_Base
   {
     public:
-<<<<<<< HEAD
-      Likelihood_Container (const std::map<std::string, primary_model_functor *> &functorMap, 
-       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose);
-      double operator() (const std::vector<double> &in);
-  };
-  
-  class Likelihood_Container_Minimal : public Likelihood_Container_Base
-  {
-    public:
-      Likelihood_Container_Minimal (const std::map<std::string, primary_model_functor *> &functorMap, 
-       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose);
-      double operator () (const std::vector<double> &in);
-  };
-  
-=======
-
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
        Priors::CompositePrior &prior, const str &purpose);
 
       /// Evaluate total likelihood function
-      double operator() (std::vector<double> &in);
+      double operator() (const std::vector<double> &in);
 
     private:
-
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
   };
   
   // Register the Likelihood Container as an available target function for ScannerBit.
->>>>>>> 792a7e7f2bacafa62624d748cc004f07421880e8
   LOAD_SCANNER_FUNCTION(Scanner_Function, Likelihood_Container)
 
 }
