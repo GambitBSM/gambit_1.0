@@ -45,7 +45,7 @@ namespace Gambit
                         std::string name;
                         
                 public:
-                        IniFileInterface(const YAML::Node &node);
+                        IniFileInterface(const std::string &, const Options &);
                         
                         const std::string pluginName() const {return name;}
                         
@@ -65,6 +65,10 @@ namespace Gambit
                         
                         ~IniFileInterface(){}
                 };
+                
+                IniFileInterface scanner_inifile_input(const Options &);
+                
+                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &);
         }
 }
 

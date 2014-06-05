@@ -28,8 +28,8 @@ namespace Gambit
 {
         namespace Scanner
         {
-                IniFileInterface::IniFileInterface(const YAML::Node &node) : options(node)
-                {       
+                IniFileInterface scanner_inifile_input(const Options &options)
+                {
                         bool redirect = false;
                         if (options.hasKey("enable_redirect"))
                         {
@@ -51,23 +51,48 @@ namespace Gambit
                                 }
                         }
                         
+                        std::string name;
+                        
+                        if (options.hasKey("plugin")) 
+                        {
+                                name = options.getValue<std::string>("plugin");
+                        }
+                        else
+                        {
+                                name = "";
+                        }
+                        
+                        return IniFileInterface(name, options);
+                }
+                
+                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &options)
+                {       
+                        std::vector<std::pair<std::string, std::string>> names;
+                        
+                        if (options.hasKey("plugins")) 
+                        {
+                                names = options.getValue<std::vector<std::pair<std::string, std::string>>>("plugins");
+                        }
+                        
+                        std::map<std::string, std::vector<IniFileInterface>> ret;
+                        
+                        for (auto it = names.begin(), end = names.end(); it != end; it++)
+                        {
+                                ret[it->second].emplace_back(it->first, options);
+                        }
+                        
+                        return ret;
+                }
+                
+                IniFileInterface::IniFileInterface(const std::string &name, const Options &options) : name(name), options(options)
+                {       
                         if (options.hasKey("file_path"))
                         {
                                 file = options.getValue<std::string>("file_path");
-
-                                if (options.hasKey("plugin")) 
-                                {
-                                        name = options.getValue<std::string>("plugin");
-                                }
-                                else
-                                {
-                                        name = "";
-                                }
                         }
                         else
                         {
                                 file = "";
-                                name = "";
                         }
                 }
         }

@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef SCANNER_PLUGIN_HPP
-#define SCANNER_PLUGIN_HPP
+#ifndef FUNCTION_PLUGIN_HPP
+#define FUNCTION_PLUGIN_HPP
 
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
@@ -45,52 +45,33 @@ namespace Gambit
                         virtual ~IniFileInterface() = 0;
                 };
                 
-                /*Generic Functor*/
-                class Function_Base
+                /*Prior class*/
+                class Prior_Base
                 {
                 public:
-                        virtual double operator () (const std::vector<double> &) = 0;
-                        virtual void print(double, const std::string &) const = 0;
-                        virtual ~Function_Base() = 0;
-                };
-                
-                /*Factory imported by ScannerBit*/
-                class Function_Factory_Base
-                {
-                public:
-                        virtual const std::vector<std::string> & getKeys() const = 0;
-                        virtual unsigned int getDim() const = 0;
-                        virtual void * operator() (const std::string &, const std::string &) const = 0;
-                        virtual void remove(void *) const = 0;
-                        virtual ~Function_Factory_Base() = 0;
+                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
                 };
         }
 }
 
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
-#define init_dimension(exp)             INIT_DIMENSION(exp) enum{}
 #define init_keys(exp)                  INIT_KEYS(exp) enum{}
-#define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__) enum{}
-#define get_dimension()                 GET_DIMENSION()
 #define get_keys()                      GET_KEYS()
-#define get_functor(...)                GET_FUNCTOR( __VA_ARGS__ )
-#define scanner_plugin(...)             SCANNER_PLUGIN( __VA_ARGS__ )
+#define function_plugin(...)            FUNCTION_PLUGIN( __VA_ARGS__ )
+
+#define prior_transform(...)            PRIOR_TRANSFORM(__VA_ARGS__)
 
 #define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
-#define INIT_DIMENSION(exp)             INITIALIZE(exp, GET_DIMENSION())
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
-#define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
 
-#define GET_DIMENSION()                 get_input_value<unsigned int>(0)
-#define GET_KEYS()                      get_input_value<std::vector<std::string>>(1)
-#define GET_FUNCTOR(...)                (Function_Base *)(get_input_value<Function_Factory_Base>(2))(__VA_ARGS__)
+#define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
 
-#define SCANNER_SETUP                                                                                                   \
+#define FUNCTION_SETUP(mod_name)                                                                                        \
 using namespace Gambit::Scanner;                                                                                        \
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in)                                                                                     \
 {                                                                                                                       \
-        std::string temp = (get_input_value<IniFileInterface>(3)).getValue(in);                                         \
+        std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
         if (temp != "")                                                                                                 \
         {                                                                                                               \
                 YAML::Node conv = YAML::Load(temp);                                                                     \
@@ -108,7 +89,7 @@ T get_inifile_value(std::string in)                                             
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in, T defaults)                                                                         \
 {                                                                                                                       \
-        std::string temp = (get_input_value<IniFileInterface>(3)).getValue(in);                                         \
+        std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
         if (temp != "")                                                                                                 \
         {                                                                                                               \
                 YAML::Node conv = YAML::Load(temp);                                                                     \
@@ -120,10 +101,22 @@ T get_inifile_value(std::string in, T defaults)                                 
         }                                                                                                               \
 }                                                                                                                       \
                                                                                                                         \
-std::vector<double> &prior_transform(const std::vector<double> &in)                                                     \
+inline const std::vector<std::string> add_gambit_prefix(const std::vector<std::string> &key)                            \
 {                                                                                                                       \
-        const static std::string &key = get_input_value<std::vector<std::string>>(1);                                   \
-        const static PriorTransform &prior = get_input_value<PriorTransform>(3);                                        \
+        std::vector<std::string> vec;                                                                                   \
+                                                                                                                        \
+        for (auto it = key.begin(), end = key.end(); it != end; it++)                                                   \
+        {                                                                                                               \
+                vec.push_back(std::string( #mod_name ) + "::" + *it);                                                   \
+        }                                                                                                               \
+                                                                                                                        \
+        return vec;                                                                                                     \
+}                                                                                                                       \
+                                                                                                                        \
+inline std::vector<double> &prior_transform(const std::vector<double> &in)                                              \
+{                                                                                                                       \
+        const static std::vector<std::string> key = add_gambit_prefix(get_input_value<std::vector<std::string>>(0));    \
+        const static PriorTransform &prior = get_input_value<PriorTransform>(2);                                        \
         static std::map<std::string, double> key_map;                                                                   \
         static std::vector<double> ret;                                                                                 \
                                                                                                                         \
@@ -138,10 +131,10 @@ std::vector<double> &prior_transform(const std::vector<double> &in)             
         return ret;                                                                                                     \
 }                                                                                                                       \
 
-#define SCANNER_PLUGIN(mod_name)                                                                                        \
+#define FUNCTION_PLUGIN(mod_name)                                                                                       \
 GAMBIT_PLUGIN(mod_name)                                                                                                 \
 {                                                                                                                       \
-        SCANNER_SETUP                                                                                                   \
+        FUNCTION_SETUP(mod_name)                                                                                        \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## mod_name ##  _namespace__                                                                 \
 

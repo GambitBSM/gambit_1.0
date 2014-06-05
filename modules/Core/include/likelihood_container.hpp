@@ -48,7 +48,7 @@ namespace Gambit
        DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose); 
       inline void calcObsLike(DRes::VertexID &it);
       inline double getObsLike(DRes::VertexID &it);
-      void setParameters (std::vector<double> &vec); 
+      void setParameters (const std::vector<double> &vec); 
       void resetAll();
       const std::vector<double> & getParameters() const;
       const std::vector<std::string> & getKeys() const;
@@ -60,7 +60,7 @@ namespace Gambit
     public:
       Likelihood_Container (const std::map<std::string, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose);
-      double operator() (std::vector<double> &in);
+      double operator() (const std::vector<double> &in);
   };
   
   class Likelihood_Container_Minimal : public Likelihood_Container_Base
@@ -68,7 +68,7 @@ namespace Gambit
     public:
       Likelihood_Container_Minimal (const std::map<std::string, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const std::string &purpose);
-      double operator () (std::vector<double> &in);
+      double operator () (const std::vector<double> &in);
   };
   
   LOAD_SCANNER_FUNCTION(Scanner_Function, Likelihood_Container)

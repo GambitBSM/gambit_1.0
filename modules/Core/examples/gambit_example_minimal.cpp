@@ -126,10 +126,10 @@ int main( int argc, const char* argv[] )
     }();
   
     //Define the iniFile interface for the scanner
-    Gambit::Scanner::IniFileInterface interface(iniFile.getScannerNode());
+    Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
 
     //Run the scanner!
-    Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
+    Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
     //cout << "keys = " << scanner->getKeys() << endl;
     //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
     logger() << core << "Starting scan." << EOM;

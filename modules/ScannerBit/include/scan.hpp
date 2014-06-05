@@ -26,6 +26,7 @@
 #define __scan_hpp__
 
 #include "yaml_parser.hpp"
+#include "priors.hpp"
 
 namespace Gambit
 {
@@ -44,8 +45,7 @@ namespace Gambit
                 class Function_Base
                 {
                 public:
-                        virtual const std::vector<double> & getParameters() const = 0;
-                        virtual double operator () (std::vector<double> &) = 0;
+                        virtual double operator () (const std::vector<double> &) = 0;
                         virtual void print(double, const std::string &) const = 0;
                         virtual ~Function_Base(){} 
                 };
@@ -64,9 +64,10 @@ namespace Gambit
                 private:
                         const Factory_Base &factory;
                         const IniFileInterface_Base &interface;
+                        const Priors::BasePrior &prior;
 
                 public:
-                        Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface) : factory(factory), interface(interface)
+                        Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface, const Priors::BasePrior &prior) : factory(factory), interface(interface), prior(prior)
                         {       
                         }
 

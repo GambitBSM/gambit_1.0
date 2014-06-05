@@ -65,7 +65,7 @@ namespace Gambit
                         const std::vector<std::string> &getKeys() const {return keys;}
                         const std::vector<double> &getParameters() const {return params;}
                         
-                        double operator() (std::vector<double> &unit)
+                        double operator() (const std::vector<double> &unit)
                         {
                                 if (prior == nullptr)
                                 {

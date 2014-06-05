@@ -65,7 +65,7 @@ namespace Gambit
     return dependencyResolver.getObsLike(it);
   }
     
-  void Likelihood_Container_Base::setParameters (std::vector<double> &vec) 
+  void Likelihood_Container_Base::setParameters (const std::vector<double> &vec) 
   {
     prior.transform(vec, parameterMap);
     
@@ -104,7 +104,7 @@ namespace Gambit
   : Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose)
   {}
   
-  double Likelihood_Container::operator() (std::vector<double> &in)
+  double Likelihood_Container::operator() (const std::vector<double> &in)
   {
     double ret = 0;
       
@@ -145,7 +145,7 @@ namespace Gambit
   : Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose)
   {}
 
-  double Likelihood_Container_Minimal::operator() (std::vector<double> &in)
+  double Likelihood_Container_Minimal::operator() (const std::vector<double> &in)
   {
     double ret = 0;
       
