@@ -122,7 +122,7 @@ T get_inifile_value(std::string in, T defaults)                                 
                                                                                                                         \
 std::vector<double> &prior_transform(const std::vector<double> &in)                                                     \
 {                                                                                                                       \
-        const static std::string &key = get_input_value<std::vector<std::string>>(1);                                   \
+        const static std::vector<std::string> &key = get_input_value<std::vector<std::string>>(1);                      \
         const static PriorTransform &prior = get_input_value<PriorTransform>(3);                                        \
         static std::map<std::string, double> key_map;                                                                   \
         static std::vector<double> ret;                                                                                 \
