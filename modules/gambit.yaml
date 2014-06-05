@@ -348,6 +348,9 @@ another_key:
 dependency_resolution:
   prefer_model_specific_functions: true
 
+likelihood:
+  model_invalid_for_lnlike_below: -1e6
+
 #Whether to run GAMBIT in safe mode or not
 safe_mode: true
 
@@ -357,7 +360,7 @@ exceptions:
   dependency_resolver_warning: non-fatal
   core_warning: fatal
   scan_error: non-fatal #make this fatal to see an example error
-  ExampleBit_B_error: non-fatal
+  ExampleBit_A_error: non-fatal
 
 enable_testing: false
 test_function: uniform

@@ -19,6 +19,7 @@
 
 #include "util_macros.hpp"
 #include "exceptions.hpp"
+#include "standalone_error_handlers.hpp"
 #include "log.hpp"
 
 namespace Gambit
@@ -162,14 +163,14 @@ namespace Gambit
     /// Raise the exception.
     /// Log the exception and, if it is considered fatal, actually throw it. 
     /// This is the regular way to trigger a GAMBIT error or warning. 
-    void exception::raise(std::string origin, std::string specific_message)
+    void exception::raise(const std::string& origin, const std::string& specific_message)
     {
       log_exception(origin, specific_message);
       if (isFatal) throw(*this);
     }
 
     /// Log the exception and throw it regardless of whether is is fatal or not.
-    void exception::forced_throw(std::string origin, std::string specific_message)
+    void exception::forced_throw(const std::string& origin, const std::string& specific_message)
     {
       log_exception(origin, specific_message);
       throw(*this);
@@ -181,12 +182,12 @@ namespace Gambit
   // Private members of GAMBIT exception base class.
 
     /// Log the details of the exception
-    void exception::log_exception(std::string origin, std::string specific_message)
+    void exception::log_exception(const std::string& origin, const std::string& specific_message)
     {
       if (isFatal) logger() << fatal; else logger() << nonfatal;
       for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
       logger() << myKind << ": " << myMessage << "\nRaised at " << origin << ".\n" << specific_message << EOM;
-     }
+    }
 
   /// GAMBIT error class constructors
 
@@ -249,6 +250,48 @@ namespace Gambit
     {
       myLogTags = tags;
       myLogTags.insert(warn);
+    }
+
+
+  /// GAMBIT special exception class methods.
+
+    /// Constructor
+    special_exception::special_exception(const char* what) : myWhat(what), myMessage("") {}
+
+    /// Retrieve the identity of the exception.
+    const char* special_exception::what() const throw() { return myWhat; }
+
+    /// Retrieve the message that this exception was raised with.
+    std::string special_exception::message() { return myMessage; }
+
+    /// Raise the exception, i.e. throw it with a message.
+    void special_exception::raise(const std::string& msg)
+    {
+      myMessage = msg;
+      throw(*this);
+    }
+    
+
+  /// Gambit invalid point exception class methods.
+
+    /// Constructor
+    invalid_point_exception::invalid_point_exception() : myThrower(NULL), special_exception("GAMBIT invalid point.") {}    
+
+    /// Set the pointer to the functor that threw the invalid point exception.
+    void invalid_point_exception::set_thrower(functor* thrown_from) { myThrower = thrown_from; }
+
+    /// Retrieve pointer to the functor that threw the invalid point exception.
+    functor* invalid_point_exception::thrower()
+    {
+      if (myThrower == NULL) utils_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
+      return myThrower;
+    }
+
+    /// Raise the exception, i.e. throw it with a message.
+    void invalid_point_exception::raise(const std::string& msg)
+    {
+      myMessage = msg;
+      throw(*this);
     }
 
 }

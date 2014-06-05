@@ -81,7 +81,7 @@ namespace Gambit
       virtual double getRuntimeAverage();
       virtual double getInvalidationRate();
       virtual void setFadeRate();
-      virtual void notifyOfInvalidation();
+      virtual void notifyOfInvalidation(const str&);
       virtual void reset();
       /// @}
 
@@ -256,8 +256,8 @@ namespace Gambit
       /// Reset functor
       void reset();
 
-      /// Tell functor that it invalidated the current point in model space
-      void notifyOfInvalidation();
+      /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
+      void notifyOfInvalidation(const str&);
 
       /// Getter for invalidation rate
       double getInvalidationRate();
@@ -383,6 +383,9 @@ namespace Gambit
 
 
     protected:
+
+      /// Acknowledge that this functor invalidated the current point in model space.
+      void acknowledgeInvalidation(invalid_point_exception&);
 
       /// Do pre-calculate timing things
       virtual void startTiming(double & nsec, double & sec);
