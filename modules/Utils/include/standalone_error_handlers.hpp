@@ -44,6 +44,9 @@ namespace Gambit
   /// Model warnings
   warning& model_warning();
 
+  /// Invalid point exceptions
+  invalid_point_exception& invalid_point();
+
   namespace Printers
   {
     /// Printer errors

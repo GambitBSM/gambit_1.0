@@ -81,7 +81,7 @@ namespace Gambit
       virtual double getRuntimeAverage();
       virtual double getInvalidationRate();
       virtual void setFadeRate();
-      virtual void notifyOfInvalidation();
+      virtual void notifyOfInvalidation(const str&);
       virtual void reset();
       /// @}
 
@@ -90,6 +90,8 @@ namespace Gambit
 
       /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
       void setStatus(int);
+      /// Set the inUse flag (must be overridden in derived class to have any effect).
+      virtual void setInUse(bool){}; 
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
@@ -254,8 +256,8 @@ namespace Gambit
       /// Reset functor
       void reset();
 
-      /// Tell functor that it invalidated the current point in model space
-      void notifyOfInvalidation();
+      /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
+      void notifyOfInvalidation(const str&);
 
       /// Getter for invalidation rate
       double getInvalidationRate();
@@ -381,6 +383,9 @@ namespace Gambit
 
 
     protected:
+
+      /// Acknowledge that this functor invalidated the current point in model space.
+      void acknowledgeInvalidation(invalid_point_exception&);
 
       /// Do pre-calculate timing things
       virtual void startTiming(double & nsec, double & sec);
@@ -569,6 +574,9 @@ namespace Gambit
 
     protected:
 
+      /// Set the inUse flag.
+      virtual void setInUse(bool); 
+
       /// Type of the function pointer being encapsulated
       typedef TYPE (*funcPtrType)(ARGS...);
 
@@ -581,6 +589,9 @@ namespace Gambit
       /// Internal storage of the 'safe' version of the version (for use in namespaces, variable names, etc).
       str mySafeVersion;    
 
+      /// Flag indicating if this backend functor is actually in use in a given scan
+      bool inUse;
+
     public:
 
       /// Constructor 
@@ -591,6 +602,9 @@ namespace Gambit
 
       /// Hand out the internal function pointer wrapped by the functor
       funcPtrType handoutFunctionPointer();
+
+      /// Hand out a safe pointer to this backend functor's inUse flag.
+      safe_ptr<bool> inUsePtr(); 
 
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
@@ -693,7 +707,8 @@ namespace Gambit
                                                                    str origin_safe_version) 
     : functor (func_name, func_capability, result_type, origin_name),
       myFunction (inputFunction),
-      myLogTag(-1) 
+      myLogTag(-1),
+      inUse(false)
     {
       myVersion = origin_version; 
       mySafeVersion = origin_safe_version;
@@ -730,6 +745,18 @@ namespace Gambit
     /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
     template <typename TYPE, typename... ARGS>
     str backend_functor_common<TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
+
+    /// Set the inUse flag.
+    template <typename TYPE, typename... ARGS>
+    void backend_functor_common<TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; } 
+
+    /// Hand out a safe pointer to this backend functor's inUse flag.
+    template <typename TYPE, typename... ARGS>
+    safe_ptr<bool> backend_functor_common<TYPE, ARGS...>::inUsePtr()
+    { 
+      if (this == NULL) functor::failBigTime("inUsePtr");
+      return safe_ptr<bool>(&inUse);
+    }       
 
 
     // Actual backend functor class method definitions for TYPE != void

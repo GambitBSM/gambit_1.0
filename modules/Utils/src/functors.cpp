@@ -82,20 +82,27 @@ namespace Gambit
     double functor::getRuntimeAverage() { return 0; }
     double functor::getInvalidationRate() { return 0; }
     void functor::setFadeRate() {}
-    void functor::notifyOfInvalidation() {}
+    void functor::notifyOfInvalidation(const str&) {}
     void functor::reset() {}
     /// @}
 
     /// Reset-then-recalculate method
     void functor::reset_and_calculate() { this->reset(); this->calculate(); } 
 
-    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
-    void functor::setStatus(int stat) { if (this == NULL) failBigTime("setStatus"); myStatus = stat; }
     /// Setter for purpose (relevant only for next-to-output functors)
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
+
     /// Setter for vertex ID (used in printer system)
     void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
     
+    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    void functor::setStatus(int stat)
+    {
+      if (this == NULL) failBigTime("setStatus");
+      myStatus = stat;
+      setInUse(myStatus == 2);       
+    }
+
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
     /// Getter for the wrapped function's reported capability
@@ -401,10 +408,18 @@ namespace Gambit
       runtime = .0;
     }
 
-    /// Tell functor that it invalidated the current point in model space
-    void module_functor_common::notifyOfInvalidation()
+    /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
+    void module_functor_common::notifyOfInvalidation(const str& msg)
+    {
+      acknowledgeInvalidation(invalid_point());
+      invalid_point().raise(msg);
+    }
+
+    /// Acknowledge that this functor invalidated the current point in model space.
+    void module_functor_common::acknowledgeInvalidation(invalid_point_exception& e)
     {
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
+      e.set_thrower(this);
     }
 
     /// Getter for invalidation rate
@@ -961,6 +976,9 @@ namespace Gambit
 
           //One of the conditions was met, so do the resolution.
           (*backendreq_map[key])(be_functor);
+
+          //Set this backend functor's status to active.
+          be_functor->setStatus(2);
        
           //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
           std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
@@ -1140,7 +1158,15 @@ namespace Gambit
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);                       //Begin timing function evaluation
-        this->myFunction(myValue[omp_get_thread_num()]);   //Run and place result in the appropriate slot in myValue
+        try 
+        {
+          this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
+        }
+        catch (invalid_point_exception& e)
+        {
+          acknowledgeInvalidation(e);
+          throw(e);
+        }
         this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         logger().leaving_module();
       }
@@ -1203,7 +1229,15 @@ namespace Gambit
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);
-        this->myFunction();
+        try
+        {
+          this->myFunction();
+        }
+        catch (invalid_point_exception& e)
+        {
+          acknowledgeInvalidation(e);
+          throw(e);
+        }
         this->finishTiming(nsec,sec);
         logger().leaving_module();
       }

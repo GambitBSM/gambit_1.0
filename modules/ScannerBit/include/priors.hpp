@@ -58,12 +58,10 @@ namespace Gambit
                         
                         virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
 
-                        /// Function to check the parameter ranges supplied in the input
                         inline unsigned int size() const {return param_size;}
                         
                         inline void setSize(const unsigned int size){param_size = size;}
 
-                        //virtual ~BasePrior () = default;
                         virtual ~BasePrior () {}
                 };
    

@@ -79,6 +79,13 @@ namespace Gambit
     return local;
   }
 
+  /// Invalid point exceptions
+  invalid_point_exception& invalid_point()
+  {
+    static invalid_point_exception local;
+    return local;
+  }
+
   namespace Printers
   {
 

@@ -28,46 +28,71 @@ namespace Gambit
 {
         namespace Scanner
         {
-                IniFileInterface::IniFileInterface(const YAML::Node &node) : scanner_options(node)
-                {       
+                IniFileInterface scanner_inifile_input(const Options &options)
+                {
                         bool redirect = false;
-                        if (scanner_options.hasKey("enable_redirect"))
+                        if (options.hasKey("enable_redirect"))
                         {
-                                redirect = scanner_options.getValue<bool>("enable_redirect");
+                                redirect = options.getValue<bool>("enable_redirect");
                         }
 
                         if (redirect)
                         {
-                                if (scanner_options.hasKey("redirect_output", "scanner"))
+                                if (options.hasKey("redirect_output", "scanner"))
                                 {
-                                        std::string file = scanner_options.getValue<std::string>("redirect_output", "scanner");
+                                        std::string file = options.getValue<std::string>("redirect_output", "scanner");
                                         
                                         outputHandler::out.set("scanner", file);
                                 }
-                                if (scanner_options.hasKey("redirect_output", "error"))
+                                if (options.hasKey("redirect_output", "error"))
                                 {
-                                        std::string file = scanner_options.getValue<std::string>("redirect_output", "error");
+                                        std::string file = options.getValue<std::string>("redirect_output", "error");
                                         scanLog::err << scanLog::set_output(file);
                                 }
                         }
                         
-                        if (scanner_options.hasKey("scanner", "file_path"))
+                        std::string name;
+                        
+                        if (options.hasKey("plugin")) 
                         {
-                                file = scanner_options.getValue<std::string>("scanner", "file_path");
-
-                                if (scanner_options.hasKey("scanner", "plugin")) 
-                                {
-                                        name = scanner_options.getValue<std::string>("scanner", "plugin");
-                                }
-                                else
-                                {
-                                        name = "";
-                                }
+                                name = options.getValue<std::string>("plugin");
+                        }
+                        else
+                        {
+                                name = "";
+                        }
+                        
+                        return IniFileInterface(name, options);
+                }
+                
+                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &options)
+                {       
+                        std::vector<std::pair<std::string, std::string>> names;
+                        
+                        if (options.hasKey("plugins")) 
+                        {
+                                names = options.getValue<std::vector<std::pair<std::string, std::string>>>("plugins");
+                        }
+                        
+                        std::map<std::string, std::vector<IniFileInterface>> ret;
+                        
+                        for (auto it = names.begin(), end = names.end(); it != end; it++)
+                        {
+                                ret[it->second].emplace_back(it->first, options);
+                        }
+                        
+                        return ret;
+                }
+                
+                IniFileInterface::IniFileInterface(const std::string &name, const Options &options) : name(name), options(options)
+                {       
+                        if (options.hasKey("file_path"))
+                        {
+                                file = options.getValue<std::string>("file_path");
                         }
                         else
                         {
                                 file = "";
-                                name = "";
                         }
                 }
         }

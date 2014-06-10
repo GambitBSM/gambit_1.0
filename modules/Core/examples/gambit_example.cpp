@@ -123,14 +123,14 @@ void beispiel()
   cout << iniFile.hasKey("model") << endl;
   cout << iniFile.hasKey("model123", "model321") << endl;
 
-  // Run 100 times
+  // Run 100 times, ignoring invalid points
   for (int i = 0; i<100; i++)
   {
     std::vector<DRes::VertexID> OL = dependencyResolver.getObsLikeOrder();
     for (std::vector<DRes::VertexID>::iterator it = OL.begin(); it != OL.end(); ++it)
     {
-      dependencyResolver.calcObsLike(*it);
-      dependencyResolver.notifyOfInvalidation(*it);
+      try { dependencyResolver.calcObsLike(*it); }
+      catch(invalid_point_exception& e ) {}
     }
     dependencyResolver.resetAll();
     cout << endl;
@@ -513,12 +513,6 @@ int main( int, const char*[] )
     ExampleBit_A::Functown::nevents_dbl.calculate();
     cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::nevents_dbl(0) << endl ;
   }
-  cout << "  " << ExampleBit_A::Accessors::name() << " also says: ";
-  if (ExampleBit_A::Accessors::provides("nevents"))
-  {
-    ExampleBit_A::Functown::nevents_int.calculate();
-    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::nevents_int(0) << endl ;
-  }  
   cout << "Core says: report on the particle ID!" << endl;
   cout << "  " << ExampleBit_A::Accessors::name() << " says: ";
   if (ExampleBit_A::Accessors::provides("id"))

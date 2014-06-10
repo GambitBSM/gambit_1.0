@@ -45,7 +45,7 @@ namespace Gambit
                         outputHandler::out.redir("scanner");
                         try
                         {
-                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), dim, keys, factory, interface);
+                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), dim, keys, factory, interface, prior);
                                 plugin_interface();
                         }
                         catch (std::exception &exception)

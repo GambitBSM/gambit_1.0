@@ -40,12 +40,12 @@ namespace Gambit
                 class IniFileInterface : public IniFileInterface_Base
                 {
                 private:
-                        Options scanner_options;
+                        Options options;
                         std::string file;
                         std::string name;
                         
                 public:
-                        IniFileInterface(const YAML::Node &node);
+                        IniFileInterface(const std::string &, const Options &);
                         
                         const std::string pluginName() const {return name;}
                         
@@ -53,9 +53,9 @@ namespace Gambit
                         
                         const std::string getValue(const std::string &in) const
                         {
-                                if (scanner_options.hasKey(name.c_str(), in.c_str()))
+                                if (options.hasKey(name.c_str(), in.c_str()))
                                 {
-                                        return scanner_options.getValue<std::string>(name.c_str(), in.c_str());
+                                        return options.getValue<std::string>(name.c_str(), in.c_str());
                                 }
                                 else
                                 {
@@ -65,6 +65,10 @@ namespace Gambit
                         
                         ~IniFileInterface(){}
                 };
+                
+                IniFileInterface scanner_inifile_input(const Options &);
+                
+                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &);
         }
 }
 
