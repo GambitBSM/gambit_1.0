@@ -1,0 +1,70 @@
+g++ -std=c++11 -O2 -I. -I/home/peter/FlexibleSUSY/FlexibleSUSY/config -I/home/peter/FlexibleSUSY/FlexibleSUSY/src -I/home/peter/FlexibleSUSY/FlexibleSUSY/legacy -I/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM -I/usr/include -I/usr/include/eigen3   -c -o standalone.o standalone.cpp
+In file included from /usr/include/eigen3/Eigen/Core:277:0,
+                 from /usr/include/eigen3/Eigen/Dense:1,
+                 from /home/peter/FlexibleSUSY/FlexibleSUSY/src/rk.hpp:13,
+                 from /home/peter/FlexibleSUSY/FlexibleSUSY/src/betafunction.hpp:22,
+                 from /home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:24,
+                 from standalone.cpp:2:
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<float, 4, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<float, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<float, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<float, 4, 1>’
+/usr/include/eigen3/Eigen/src/Geometry/Quaternion.h:287:16:   required from ‘class Eigen::Quaternion<float>’
+/usr/include/eigen3/Eigen/src/Geometry/arch/Geometry_SSE.h:35:3:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<4, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<float, 4, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<double, 4, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<double, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<double, 4, 1>’
+/usr/include/eigen3/Eigen/src/Geometry/Quaternion.h:287:16:   required from ‘class Eigen::Quaternion<double>’
+/usr/include/eigen3/Eigen/src/Geometry/arch/Geometry_SSE.h:76:3:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<4, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 4, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<double, 3, 3> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<double, 3, 3> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<double, 3, 3>’
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:93:30:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 3>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 3, 3> >::<anonymous enum>’ [-Wenum-compare]
+In file included from standalone.cpp:2:0:
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:54:25: error: invalid abstract return type for member function ‘flexiblesusy::MSSM_susy_parameters flexiblesusy::MSSM_susy_parameters::calc_beta() const’
+In file included from standalone.cpp:2:0:
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:39:7: note:   because the following virtual functions are pure within ‘flexiblesusy::MSSM_susy_parameters’:
+In file included from /home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:24:0,
+                 from standalone.cpp:2:
+/home/peter/FlexibleSUSY/FlexibleSUSY/src/betafunction.hpp:41:33: note: 	virtual const ArrayXd flexiblesusy::Beta_function::get() const
+In file included from standalone.cpp:3:0:
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_soft_parameters.hpp:52:25: error: invalid abstract return type for member function ‘flexiblesusy::MSSM_soft_parameters flexiblesusy::MSSM_soft_parameters::calc_beta() const’
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_soft_parameters.hpp:36:7: note:   because the following virtual functions are pure within ‘flexiblesusy::MSSM_soft_parameters’:
+In file included from /home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:24:0,
+                 from standalone.cpp:2:
+/home/peter/FlexibleSUSY/FlexibleSUSY/src/betafunction.hpp:41:33: note: 	virtual const ArrayXd flexiblesusy::Beta_function::get() const
+standalone.cpp: In function ‘void rge_example()’:
+standalone.cpp:12:25: error: cannot declare variable ‘susy’ to be of abstract type ‘flexiblesusy::MSSM_susy_parameters’
+In file included from standalone.cpp:2:0:
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:39:7: note:   since type ‘flexiblesusy::MSSM_susy_parameters’ has pure virtual functions
+In file included from /usr/include/eigen3/Eigen/Core:277:0,
+                 from /usr/include/eigen3/Eigen/Dense:1,
+                 from /home/peter/FlexibleSUSY/FlexibleSUSY/src/rk.hpp:13,
+                 from /home/peter/FlexibleSUSY/FlexibleSUSY/src/betafunction.hpp:22,
+                 from /home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_susy_parameters.hpp:24,
+                 from standalone.cpp:2:
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, Eigen::Matrix<double, 3, 3> > >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, Eigen::Matrix<double, 3, 3> > >’
+/usr/include/eigen3/Eigen/src/Core/CwiseNullaryOp.h:62:7:   required from ‘class Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, Eigen::Matrix<double, 3, 3> >’
+standalone.cpp:26:34:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 3>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 3, 3> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> > >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> > >’
+/usr/include/eigen3/Eigen/src/Core/CwiseNullaryOp.h:62:7:   required from ‘class Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> >’
+standalone.cpp:29:34:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 3>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 3, 3> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> > > >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> > > >’
+/usr/include/eigen3/Eigen/src/Core/CwiseUnaryOp.h:105:7:   required from ‘class Eigen::CwiseUnaryOpImpl<Eigen::internal::scalar_multiple_op<double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> >, Eigen::Dense>’
+/usr/include/eigen3/Eigen/src/Core/CwiseUnaryOp.h:72:7:   required from ‘class Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<double>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_identity_op<double>, Eigen::Matrix<double, 3, 3> > >’
+standalone.cpp:29:50:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 3>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 3, 3> >::<anonymous enum>’ [-Wenum-compare]
+standalone.cpp:35:25: error: cannot declare variable ‘soft’ to be of abstract type ‘flexiblesusy::MSSM_soft_parameters’
+In file included from standalone.cpp:3:0:
+/home/peter/FlexibleSUSY/FlexibleSUSY/models/MSSM/MSSM_two_scale_soft_parameters.hpp:36:7: note:   since type ‘flexiblesusy::MSSM_soft_parameters’ has pure virtual functions
+make: *** [standalone.o] Error 1
