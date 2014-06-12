@@ -20,7 +20,7 @@
 
 namespace flexiblesusy {
 
-Eigen::MatrixXd ToEigen(const DoubleMatrix& m)
+Eigen::MatrixXd ToEigen(const softsusy::DoubleMatrix& m)
 {
    const int cols = m.displayCols(), rows = m.displayRows();
    Eigen::MatrixXd eig(rows,cols);
@@ -30,26 +30,26 @@ Eigen::MatrixXd ToEigen(const DoubleMatrix& m)
    return eig;
 }
 
-DoubleMatrix ToSoftsusy(const Eigen::MatrixXd& m)
+softsusy::DoubleMatrix ToSoftsusy(const Eigen::MatrixXd& m)
 {
    const int cols = m.cols(), rows = m.rows();
-   DoubleMatrix soft(rows,cols);
+   softsusy::DoubleMatrix soft(rows,cols);
    for (int i = 1; i <= rows; ++i)
       for (int j = 1; j <= rows; ++j)
          soft(i,j) = m(i-1,j-1);
    return soft;
 }
 
-DoubleVector ToSoftsusy(const Eigen::VectorXd& m)
+softsusy::DoubleVector ToSoftsusy(const Eigen::VectorXd& m)
 {
    const int cols = m.rows();
-   DoubleVector soft(cols);
+   softsusy::DoubleVector soft(cols);
    for (int j = 1; j <= cols; ++j)
       soft(j) = m(j-1);
    return soft;
 }
 
-Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
+Eigen::ArrayXd ToEigenArray(const softsusy::DoubleVector& v)
 {
    Eigen::ArrayXd a(v.size());
    for (int i = v.displayStart(); i <= v.displayEnd(); i++)
@@ -64,7 +64,7 @@ Eigen::ArrayXd ToEigenArray(double v)
    return a;
 }
 
-std::valarray<double> ToValarray(const DoubleVector& v)
+std::valarray<double> ToValarray(const softsusy::DoubleVector& v)
 {
    std::valarray<double> a(v.size());
    for (int i = v.displayStart(); i <= v.displayEnd(); i++)
@@ -79,15 +79,15 @@ std::valarray<double> ToValarray(double v)
    return a;
 }
 
-DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
+softsusy::DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
 {
-   DoubleVector v(a.rows());
+   softsusy::DoubleVector v(a.rows());
    for (int i = 0; i < a.rows(); i++)
       v(i + 1) = a(i);
    return v;
 }
 
-Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix& m)
+Eigen::MatrixXd ToEigenMatrix(const softsusy::DoubleMatrix& m)
 {
    const int r = m.displayRows();
    const int c = m.displayCols();
@@ -100,11 +100,11 @@ Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix& m)
    return result;
 }
 
-DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd& m)
+softsusy::DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd& m)
 {
    const int r = m.rows();
    const int c = m.cols();
-   DoubleMatrix result(r,c);
+   softsusy::DoubleMatrix result(r,c);
 
    for (int i = 0; i < r; i++)
       for (int k = 0; k < c; k++)

@@ -19,10 +19,13 @@
 #ifndef TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
 #define TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
 
+#include "composite_convergence_tester.hpp"
 #include "two_scale_convergence_tester.hpp"
 #include <vector>
 
 namespace flexiblesusy {
+
+class Two_scale;
 
 /**
  * @class Composite_convergence_tester
@@ -32,12 +35,14 @@ namespace flexiblesusy {
  * Composite_convergence_tester::accuracy_goal_reached() is called.
  */
 
-class Composite_convergence_tester : public Convergence_tester<Two_scale> {
+template<>
+class Composite_convergence_tester<Two_scale> : public Convergence_tester<Two_scale> {
 public:
    Composite_convergence_tester();
    virtual ~Composite_convergence_tester();
 
    virtual bool accuracy_goal_reached();
+   virtual unsigned int max_iterations() const;
    void add_convergence_tester(Convergence_tester<Two_scale>*);
 
 private:

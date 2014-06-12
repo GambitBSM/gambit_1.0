@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:47
+// File generated at Wed 11 Jun 2014 15:26:47
 
 #include "MSSM_slha_io.hpp"
 #include "MSSM_input_parameters.hpp"
@@ -73,7 +73,7 @@ void MSSM_slha_io::set_spinfo(const Problems<MSSM_info::NUMBER_OF_PARTICLES>& pr
 {
    std::ostringstream spinfo;
    spinfo << "# FlexibleSUSY " FLEXIBLESUSY_VERSION " SLHA compliant output\n"
-             "# P. Athron, J. Park, D. Stöckinger, A. Voigt\n"
+             "# P. Athron, Jae-hyeon Park, D. Stöckinger, A. Voigt\n"
              "Block SPINFO\n"
           << FORMAT_SPINFO(1, PKGNAME)
           << FORMAT_SPINFO(2, FLEXIBLESUSY_VERSION);

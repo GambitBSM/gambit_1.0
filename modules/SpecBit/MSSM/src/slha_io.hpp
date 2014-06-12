@@ -31,10 +31,9 @@
 
 namespace softsusy {
    class QedQcd;
+   class DoubleMatrix;
+   class ComplexMatrix;
 }
-
-class DoubleMatrix;
-class ComplexMatrix;
 
 namespace flexiblesusy {
 
@@ -154,8 +153,8 @@ public:
    void set_block(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, N>&, const std::string&, double scale = 0.);
    template <class Derived>
    void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
-   void set_block(const std::string&, const DoubleMatrix&, const std::string&, double scale = 0.);
-   void set_block(const std::string&, const ComplexMatrix&, const std::string&, double scale = 0.);
+   void set_block(const std::string&, const softsusy::DoubleMatrix&, const std::string&, double scale = 0.);
+   void set_block(const std::string&, const softsusy::ComplexMatrix&, const std::string&, double scale = 0.);
    void set_sminputs(const softsusy::QedQcd&);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);

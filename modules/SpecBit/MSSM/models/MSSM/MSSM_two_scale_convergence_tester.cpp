@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:46
+// File generated at Wed 11 Jun 2014 15:26:43
 
 #include "MSSM_two_scale_convergence_tester.hpp"
 #include <cmath>
@@ -32,7 +32,7 @@ namespace flexiblesusy {
 #define NEW(p,i) ne->get_##p()(i)
 
 MSSM_convergence_tester<Two_scale>::MSSM_convergence_tester(MSSM<Two_scale>* model, double accuracy_goal)
-   : Convergence_tester_skeleton<MSSM<Two_scale> >(model, accuracy_goal)
+   : Convergence_tester_DRbar<MSSM<Two_scale> >(model, accuracy_goal)
 {
 }
 

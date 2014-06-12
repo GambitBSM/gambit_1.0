@@ -18,16 +18,17 @@
 
 #include "two_scale_composite_convergence_tester.hpp"
 #include <cassert>
+#include <algorithm>
 
 namespace flexiblesusy {
 
-Composite_convergence_tester::Composite_convergence_tester()
+Composite_convergence_tester<Two_scale>::Composite_convergence_tester()
    : Convergence_tester<Two_scale>()
    , testers()
 {
 }
 
-Composite_convergence_tester::~Composite_convergence_tester()
+Composite_convergence_tester<Two_scale>::~Composite_convergence_tester()
 {
 }
 
@@ -49,7 +50,7 @@ Composite_convergence_tester::~Composite_convergence_tester()
  * calls of all convergence testers return true.  Otherewise false is
  * returned.
  */
-bool Composite_convergence_tester::accuracy_goal_reached()
+bool Composite_convergence_tester<Two_scale>::accuracy_goal_reached()
 {
    bool precision_reached = true;
 
@@ -63,9 +64,25 @@ bool Composite_convergence_tester::accuracy_goal_reached()
    return precision_reached;
 }
 
-void Composite_convergence_tester::add_convergence_tester(Convergence_tester<Two_scale>* t)
+namespace {
+
+bool compare_max_iterations(const Convergence_tester<Two_scale>* a,
+			    const Convergence_tester<Two_scale>* b)
 {
-   assert(t && "<Composite_convergence_tester::add_convergence_tester> "
+   return a->max_iterations() < b->max_iterations();
+}
+
+}
+
+unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
+{
+   return (*std::max_element(testers.begin(), testers.end(),
+			     compare_max_iterations))->max_iterations();
+}
+
+void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester<Two_scale>* t)
+{
+   assert(t && "<Composite_convergence_tester<Two_scale>::add_convergence_tester> "
           "convergence tester must not be zero");
    testers.push_back(t);
 }

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:49
+// File generated at Wed 11 Jun 2014 15:26:50
 
 #include "MSSM_two_scale_susy_scale_constraint.hpp"
 #include "MSSM_two_scale_model.hpp"
@@ -44,15 +44,11 @@ namespace flexiblesusy {
 
 MSSM_susy_scale_constraint<Two_scale>::MSSM_susy_scale_constraint()
    : Constraint<Two_scale>()
+   , scale(0.)
+   , initial_scale_guess(0.)
    , model(0)
    , inputPars()
 {
-   const auto m0 = INPUTPARAMETER(m0);
-   const auto m12 = INPUTPARAMETER(m12);
-
-   initial_scale_guess = Sqrt(Sqr(m0) + 4*Sqr(m12));
-
-   scale = initial_scale_guess;
 }
 
 MSSM_susy_scale_constraint<Two_scale>::MSSM_susy_scale_constraint(const MSSM_input_parameters& inputPars_)
@@ -60,12 +56,7 @@ MSSM_susy_scale_constraint<Two_scale>::MSSM_susy_scale_constraint(const MSSM_inp
    , model(0)
    , inputPars(inputPars_)
 {
-   const auto m0 = INPUTPARAMETER(m0);
-   const auto m12 = INPUTPARAMETER(m12);
-
-   initial_scale_guess = Sqrt(Sqr(m0) + 4*Sqr(m12));
-
-   scale = initial_scale_guess;
+   initialize();
 }
 
 MSSM_susy_scale_constraint<Two_scale>::~MSSM_susy_scale_constraint()
@@ -109,10 +100,21 @@ void MSSM_susy_scale_constraint<Two_scale>::set_input_parameters(const MSSM_inpu
    inputPars = inputPars_;
 }
 
-void MSSM_susy_scale_constraint<Two_scale>::reset()
+void MSSM_susy_scale_constraint<Two_scale>::clear()
 {
-   scale = initial_scale_guess;
+   scale = 0.;
+   initial_scale_guess = 0.;
    model = NULL;
+}
+
+void MSSM_susy_scale_constraint<Two_scale>::initialize()
+{
+   const auto m0 = INPUTPARAMETER(m0);
+   const auto m12 = INPUTPARAMETER(m12);
+
+   initial_scale_guess = Sqrt(Sqr(m0) + 4*Sqr(m12));
+
+   scale = initial_scale_guess;
 }
 
 void MSSM_susy_scale_constraint<Two_scale>::update_scale()

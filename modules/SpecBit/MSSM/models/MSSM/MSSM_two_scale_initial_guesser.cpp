@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:49
+// File generated at Wed 11 Jun 2014 15:26:52
 
 #include "MSSM_two_scale_initial_guesser.hpp"
 #include "MSSM_two_scale_model.hpp"
@@ -56,6 +56,7 @@ MSSM_initial_guesser<Two_scale>::MSSM_initial_guesser(
    , me_guess(0.)
    , mm_guess(0.)
    , mtau_guess(0.)
+   , running_precision(1.0e-3)
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
@@ -99,7 +100,6 @@ void MSSM_initial_guesser<Two_scale>::guess_susy_parameters()
    model->set_g2(sqrt(4.0 * M_PI * alpha_sm(2)));
    model->set_g3(sqrt(4.0 * M_PI * alpha_sm(3)));
    model->set_scale(mtpole);
-   model->set_loops(2);
 
    // apply user-defined initial guess at the low scale
    const auto TanBeta = INPUTPARAMETER(TanBeta);
@@ -160,7 +160,7 @@ void MSSM_initial_guesser<Two_scale>::guess_soft_parameters()
    const double low_scale_guess = low_constraint.get_initial_scale_guess();
    const double high_scale_guess = high_constraint.get_initial_scale_guess();
 
-   model->run_to(high_scale_guess);
+   model->run_to(high_scale_guess, running_precision);
 
    // apply high-scale constraint
    high_constraint.set_model(model);
@@ -171,15 +171,13 @@ void MSSM_initial_guesser<Two_scale>::guess_soft_parameters()
    MODEL->set_BMu(0.);
 
 
-   model->run_to(low_scale_guess);
+   model->run_to(low_scale_guess, running_precision);
 
    // apply EWSB constraint
    model->solve_ewsb_tree_level();
 
    // calculate tree-level spectrum
    model->calculate_DRbar_parameters();
-   model->set_thresholds(3);
-   model->set_loops(2);
 }
 
 } // namespace flexiblesusy

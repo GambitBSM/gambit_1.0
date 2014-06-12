@@ -32,13 +32,15 @@ class Spectrum_generator_settings {
 public:
    /// Spectrum generator settings
    enum Settings : unsigned {
-      precision,            ///< overall precision goal
-      max_iterations,       ///< maximum number of iterations (0 = automatic)
-      algorithm,            ///< RG solver algorithm (0 = two-scale)
-      calculate_sm_masses,  ///< calculate Standard Model pole masses
-      pole_mass_loop_order, ///< loop-order for calculation of pole masses
-      ewsb_loop_order,      ///< loop-order for solving the EWSB eqs.
-      NUMBER_OF_OPTIONS     ///< number of possible options
+      precision,             ///< overall precision goal
+      max_iterations,        ///< maximum number of iterations (0 = automatic)
+      algorithm,             ///< RG solver algorithm (0 = two-scale)
+      calculate_sm_masses,   ///< calculate Standard Model pole masses
+      pole_mass_loop_order,  ///< loop-order for calculation of pole masses
+      ewsb_loop_order,       ///< loop-order for solving the EWSB eqs.
+      beta_loop_order,       ///< loop-order of beta-functions
+      threshold_corrections, ///< disable/enable threshold corrections
+      NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
    Spectrum_generator_settings();

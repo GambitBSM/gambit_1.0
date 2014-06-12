@@ -41,6 +41,9 @@
 /* Enable verbose mode */
 @DEFINE_ENABLE_VERBOSE@
 
+/* Enable fflite */
+@DEFINE_ENABLE_FFLITE@
+
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 
