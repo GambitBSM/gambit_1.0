@@ -1,12 +1,7 @@
 # Package information
 PKGNAME         := FlexibleSUSY
-VERSION         := 1.0.1
-ABSBASEDIR      := /home/peter/FlexibleSUSY/FlexibleSUSY
-
-# Switches
-ENABLE_FFLITE    := no
-ENABLE_LOOPTOOLS := no
-ENABLE_THREADS   := yes
+VERSION         := 0.5.3
+ABSBASEDIR      := /home/peter/FlexibleSUSY/temp/FlexibleSUSY
 
 LIBEXT          := .a
 
@@ -16,17 +11,14 @@ MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
 CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 LEGACYDIR       := $(ABSBASEDIR)/legacy
-FFLITEDIR       := $(ABSBASEDIR)/fflite
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
 INCLEGACY       := -I$(LEGACYDIR)
-INCFFLITE       := -I$(FFLITEDIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(LIBEXT)
 LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
-LIBFFLITE       := $(FFLITEDIR)/libfflite$(LIBEXT)
 
 # Variables for compilation
 CXX             := g++
@@ -50,14 +42,9 @@ LOOPTOOLSFLAGS  :=
 LOOPTOOLSLIBS   := 
 THREADLIBS      := -lpthread
 
-ifeq ($(ENABLE_LOOPTOOLS),yes)
-LOOPFUNCFLAGS	   := $(LOOPTOOLSFLAGS)
-LOOPFUNCLIBS	   := $(LOOPTOOLSLIBS)
-endif
-ifeq ($(ENABLE_FFLITE),yes)
-LOOPFUNCFLAGS	   :=
-LOOPFUNCLIBS	    = $(LIBFFLITE)
-endif
+# Switches
+ENABLE_LOOPTOOLS := no
+ENABLE_THREADS   := yes
 
 STANDALONE_SRC := \
 		standalone.cpp
@@ -95,12 +82,12 @@ distclean: clean
 
 $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 
-ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
-$(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+$(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(LOOPTOOLSFLAGS)
 endif
 
-$(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
+$(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -156,10 +143,9 @@ showbuild:
 	@echo "GSLLIBS            = $(GSLLIBS)"
 	@echo "GSLFLAGS           = $(GSLFLAGS)"
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
-	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
-	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "LOOPTOOLSFLAGS     = $(LOOPTOOLSFLAGS)"
+	@echo "LOOPTOOLSLIBS      = $(LOOPTOOLSLIBS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
-	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
