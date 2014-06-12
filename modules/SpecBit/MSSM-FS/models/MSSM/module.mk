@@ -31,6 +31,7 @@ LIBMSSM_SRC += \
 		$(DIR)/MSSM_two_scale_initial_guesser.cpp \
 		$(DIR)/MSSM_two_scale_low_scale_constraint.cpp \
 		$(DIR)/MSSM_two_scale_model.cpp \
+		$(DIR)/MSSMSpec.cpp \
 		$(DIR)/MSSM_two_scale_susy_parameters.cpp \
 		$(DIR)/MSSM_two_scale_soft_parameters.cpp \
 		$(DIR)/MSSM_two_scale_susy_scale_constraint.cpp
@@ -55,6 +56,7 @@ LIBMSSM_HDR += \
 		$(DIR)/MSSM_two_scale_initial_guesser.hpp \
 		$(DIR)/MSSM_two_scale_low_scale_constraint.hpp \
 		$(DIR)/MSSM_two_scale_model.hpp \
+		$(DIR)/MSSMSpec.hpp \
 		$(DIR)/MSSM_two_scale_soft_parameters.hpp \
 		$(DIR)/MSSM_two_scale_susy_parameters.hpp \
 		$(DIR)/MSSM_two_scale_susy_scale_constraint.hpp
