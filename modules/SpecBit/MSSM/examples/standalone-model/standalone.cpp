@@ -4,6 +4,7 @@
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "../../../Spectrum.hpp"
+#include "MSSMSpec.hpp"
 
 using namespace flexiblesusy;
 
@@ -248,25 +249,25 @@ void spec_manipulate(Spectrum * spec) {
    double lowscale = spec->GetScale();
    double highscale = 1e+15;
    std::cout << "lowscale = " << lowscale << std::endl;
-   std::cout << "map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
-   std::cout << "map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
-   std::cout << "map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
+   // std::cout << "map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
+   // std::cout << "map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
+   // std::cout << "map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
   
    spec->RunToScale(highscale);
    std::cout << "after run scale says" << spec->GetScale() << std::endl;
-   std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
-   std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
-   std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
+   // std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
+   // std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
+   // std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
   
    spec->RunToScale(lowscale);
    std::cout << "after run scale says" << spec->GetScale() << std::endl;
-   std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
-   std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
-   std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
+   // std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
+   // std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
+   // std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
 
 }
 
-void mssm_manipulate(MSSM<Two_scale> & mssm) {
+void mssm_manipulate(MSSMSpec & mssm) {
    std::cout << "inside mssm_manipulate" <<std::endl;
    double mgluino_drbar =  mssm.get_DRbar_MassEigenstate("MGluino");
    std::cout << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
@@ -275,37 +276,41 @@ void mssm_manipulate(MSSM<Two_scale> & mssm) {
    double lowscale = mssm.GetScale();
    double highscale = 1e+15;
    std::cout << "lowscale = " << lowscale << std::endl;
-   std::cout << "map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   std::cout << "map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   std::cout << "map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+   // std::cout << "map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   // std::cout << "map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   // std::cout << "map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
   
    mssm.RunToScale(highscale);
    std::cout << "after run scale says" << mssm.GetScale() << std::endl;
-   std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+   // std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   // std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   // std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
   
    mssm.RunToScale(lowscale);
    std::cout << "after run scale says" << mssm.GetScale() << std::endl;
-   std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+   // std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   // std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   // std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
 
 }
+
+
 
 void spectrum_example() {
    MSSM<Two_scale> mssm1; //start with empty object
    setup(mssm1); //fill with some parameters
    mssm1.calculate_DRbar_parameters(); //calculated DRbar masses 
    mssm1.calculate_pole_masses();//now calculate pole masses
+   MSSMSpec mssm(mssm1);
+ 
    //So now we have a mssm1 model object filled, as it will be
    //stored in Gambit after the spectrum generator has run
 
-   mssm1.mass2_par_mapping(); //call mapping - this needs to be changed.
+   // mssm.mass2_par_mapping(); //call mapping - this needs to be changed.
 
 
-   mssm_manipulate(mssm1);  //function can manipulate knowing the model
-   spec_manipulate(&mssm1); //function can manipulate without knowing model.
+   mssm_manipulate(mssm);  //function can manipulate knowing the model
+   spec_manipulate(&mssm); //function can manipulate without knowing model.
 }
 
 
