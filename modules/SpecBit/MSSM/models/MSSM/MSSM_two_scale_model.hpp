@@ -29,7 +29,7 @@
 #include "problems.hpp"
 #include "config.h"
 //Just do relative path for now - tidy later
-#include "../../../Spectrum.hpp"
+//#include "../../../Spectrum.hpp"
 
 #include <iosfwd>
 #include <string>
@@ -49,55 +49,55 @@ class Two_scale;
   
 
 template<>
-class MSSM<Two_scale> : public Two_scale_model, public MSSM_soft_parameters, public Spectrum {
+class MSSM<Two_scale> : public Two_scale_model, public MSSM_soft_parameters {
 public:
    explicit MSSM(const MSSM_input_parameters& input_ = MSSM_input_parameters());
    virtual ~MSSM();
    //methods from Spectrum to be defined.
-   virtual double get_lsp_mass(int & particle_type, int & row, int & col) const;
-   virtual int get_numbers_stable_particles() const; 
-   virtual void RunToScale(double scale);
-   virtual double GetScale() const;
-   virtual void SetScale(double scale);
-   virtual double get_DRbar_MassEigenstate(std::string) const;
-   virtual double get_DRbar_MassEigenstate(std::string, int) const;
-   virtual double get_DRbar_MassEigenstate(std::string, int, int) const;
-   virtual double get_Pole_Mass(std::string) const;
-   virtual double get_Pole_Mass(std::string, int) const;
-   virtual double get_Pole_Mass(std::string, int, int) const;
-   virtual double get_Mixing_angle(std::string) const;
-   virtual double get_Mixing_element(std::string, int, int) const;
-   virtual double get_mass4_parameter(std::string) const;
-   virtual double get_mass4_parameter(std::string, int) const;
-   virtual double get_mass4_parameter(std::string, int, int) const;
-   virtual double get_mass3_parameter(std::string) const;
-   virtual double get_mass3_parameter(std::string, int) const;
-   virtual double get_mass3_parameter(std::string, int, int) const;
-   virtual double get_mass2_parameter(std::string) const;
-   virtual double get_mass2_parameter(std::string, int) const;
-   virtual double get_mass2_parameter(std::string, int, int) const;
-   virtual double get_mass_parameter(std::string) const;
-   virtual double get_mass_parameter(std::string, int) const;
-   virtual double get_mass_parameter(std::string, int, int) const;
-   virtual double get_dimensionless_parameter(std::string) const;
-   virtual double get_dimensionless_parameter(std::string, int) const;
-   virtual double get_dimensionless_parameter(std::string, int, int) const;
-   virtual std::string AccessError(std::string state) const;
-   virtual double get_mass2_par(std::string) const;
+   // virtual double get_lsp_mass(int & particle_type, int & row, int & col) const;
+   // virtual int get_numbers_stable_particles() const; 
+   // virtual void RunToScale(double scale);
+   // virtual double GetScale() const;
+   // virtual void SetScale(double scale);
+   // virtual double get_DRbar_MassEigenstate(std::string) const;
+   // virtual double get_DRbar_MassEigenstate(std::string, int) const;
+   // virtual double get_DRbar_MassEigenstate(std::string, int, int) const;
+   // virtual double get_Pole_Mass(std::string) const;
+   // virtual double get_Pole_Mass(std::string, int) const;
+   // virtual double get_Pole_Mass(std::string, int, int) const;
+   // virtual double get_Mixing_angle(std::string) const;
+   // virtual double get_Mixing_element(std::string, int, int) const;
+   // virtual double get_mass4_parameter(std::string) const;
+   // virtual double get_mass4_parameter(std::string, int) const;
+   // virtual double get_mass4_parameter(std::string, int, int) const;
+   // virtual double get_mass3_parameter(std::string) const;
+   // virtual double get_mass3_parameter(std::string, int) const;
+   // virtual double get_mass3_parameter(std::string, int, int) const;
+   // virtual double get_mass2_parameter(std::string) const;
+   // virtual double get_mass2_parameter(std::string, int) const;
+   // virtual double get_mass2_parameter(std::string, int, int) const;
+   // virtual double get_mass_parameter(std::string) const;
+   // virtual double get_mass_parameter(std::string, int) const;
+   // virtual double get_mass_parameter(std::string, int, int) const;
+   // virtual double get_dimensionless_parameter(std::string) const;
+   // virtual double get_dimensionless_parameter(std::string, int) const;
+   // virtual double get_dimensionless_parameter(std::string, int, int) const;
+   // virtual std::string AccessError(std::string state) const;
+   // virtual double get_mass2_par(std::string) const;
 
-   //define type for method of this class
-   typedef double(MSSM<Two_scale>::*getmethod)() const;
-   //define map type
-   typedef std::map<std::string,getmethod>  par_Map;
-   // typedef std::map<std::string,double>  par_Map;
+   // //define type for method of this class
+   // typedef double(MSSM<Two_scale>::*getmethod)() const;
+   // //define map type
+   // typedef std::map<std::string,getmethod>  par_Map;
+   // // typedef std::map<std::string,double>  par_Map;
    
    
-   //data store as intanstiation of map type
-   par_Map mass2_par_map;
-   //the actual mapping
-   // const mass2_par_mapping;
-   //constructor only in this class
-   void  mass2_par_mapping();
+   // //data store as intanstiation of map type
+   // par_Map mass2_par_map;
+   // //the actual mapping
+   // // const mass2_par_mapping;
+   // //constructor only in this class
+   // void  mass2_par_mapping();
  
 
 
