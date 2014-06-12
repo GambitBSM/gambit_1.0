@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:36
+// File generated at Wed 11 Jun 2014 15:26:09
 
 #include "MSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -62,7 +62,7 @@ MSSM_soft_parameters::MSSM_soft_parameters(
 
 Eigen::ArrayXd MSSM_soft_parameters::beta() const
 {
-   return calc_beta().display();
+   return calc_beta().get();
 }
 
 MSSM_soft_parameters MSSM_soft_parameters::calc_beta() const
@@ -130,9 +130,9 @@ void MSSM_soft_parameters::clear()
 
 }
 
-const Eigen::ArrayXd MSSM_soft_parameters::display() const
+const Eigen::ArrayXd MSSM_soft_parameters::get() const
 {
-   Eigen::ArrayXd pars(MSSM_susy_parameters::display());
+   Eigen::ArrayXd pars(MSSM_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);
 
    pars(33) = TYd(0,0);

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:58:18
+// File generated at Wed 11 Jun 2014 15:30:27
 
 #ifndef MSSM_SPECTRUM_GENERATOR_H
 #define MSSM_SPECTRUM_GENERATOR_H
@@ -45,11 +45,15 @@ public:
       , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
-      , high_scale(0.), susy_scale(0.), low_scale(0.)
+      , high_scale(0.)
+      , susy_scale(0.)
+      , low_scale(0.)
       , input_scale(0.)
       , parameter_output_scale(0.)
       , precision_goal(1.0e-4)
       , max_iterations(0)
+      , beta_loop_order(2)
+      , threshold_corrections(1)
       , calculate_sm_masses(false) {}
    ~MSSM_spectrum_generator() {}
 
@@ -66,8 +70,10 @@ public:
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
    void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
    void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
+   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
+   void set_threshold_corrections(unsigned t) { threshold_corrections = t; }
 
    void run(const QedQcd& oneset, const MSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "MSSM_rge_running.dat") const;
@@ -84,6 +90,8 @@ private:
    double parameter_output_scale; ///< output scale for running parameters
    double precision_goal; ///< precision goal
    unsigned max_iterations; ///< maximum number of iterations
+   unsigned beta_loop_order; ///< beta-function loop order
+   unsigned threshold_corrections; ///< disable/enable threshold corrections
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 
@@ -102,28 +110,35 @@ template <class T>
 void MSSM_spectrum_generator<T>::run(const QedQcd& oneset,
                                 const MSSM_input_parameters& input)
 {
-   high_scale_constraint.reset();
-   susy_scale_constraint.reset();
-   low_scale_constraint .reset();
+   high_scale_constraint.clear();
+   susy_scale_constraint.clear();
+   low_scale_constraint .clear();
    high_scale_constraint.set_input_parameters(input);
    susy_scale_constraint.set_input_parameters(input);
    low_scale_constraint .set_input_parameters(input);
+   high_scale_constraint.initialize();
+   susy_scale_constraint.initialize();
+   low_scale_constraint .initialize();
 
    if (!is_zero(input_scale))
       high_scale_constraint.set_scale(input_scale);
 
-   std::vector<Constraint<T>*> upward_constraints;
-   upward_constraints.push_back(&low_scale_constraint);
-   upward_constraints.push_back(&high_scale_constraint);
+   std::vector<Constraint<T>*> upward_constraints {
+      &low_scale_constraint,
+      &high_scale_constraint
+   };
 
-   std::vector<Constraint<T>*> downward_constraints;
-   downward_constraints.push_back(&high_scale_constraint);
-   downward_constraints.push_back(&susy_scale_constraint);
-   downward_constraints.push_back(&low_scale_constraint);
+   std::vector<Constraint<T>*> downward_constraints {
+      &high_scale_constraint,
+      &susy_scale_constraint,
+      &low_scale_constraint
+   };
 
    model.clear();
-   model.set_input(input);
+   model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model.set_loops(beta_loop_order);
+   model.set_thresholds(threshold_corrections);
 
    MSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
@@ -133,6 +148,7 @@ void MSSM_spectrum_generator<T>::run(const QedQcd& oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
+
    Two_scale_increasing_precision precision(10.0, precision_goal);
 
    solver.reset();
@@ -150,6 +166,7 @@ void MSSM_spectrum_generator<T>::run(const QedQcd& oneset,
       low_scale  = low_scale_constraint.get_scale();
 
       model.run_to(susy_scale);
+      model.solve_ewsb();
       model.calculate_spectrum();
 
       // run to output scale (if scale > 0)

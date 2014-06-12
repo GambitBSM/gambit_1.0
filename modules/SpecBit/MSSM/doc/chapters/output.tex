@@ -65,7 +65,7 @@ Calculating the particle spectrum:
       -- loops : unsigned\\
       -- numPars : unsigned
     }{
-      + \umlvirt{display() : const Eigen::ArrayXd} \\
+      + \umlvirt{get() : const Eigen::ArrayXd} \\
       + \umlvirt{set(v : const Eigen::ArrayXd\&) : void}\\
       + \umlvirt{beta() : Eigen::ArrayXd}\\
       + run\_to(scale : double, eps : double) : void\\
@@ -77,12 +77,12 @@ Calculating the particle spectrum:
       + \umlvirt{set\_precision(precision : double) : void}
     }
     \umlclass[x=0, y=-4]{MSSM\_susy\_parameters}{}{
-      + display() : const Eigen::ArrayXd \\
+      + get() : const Eigen::ArrayXd \\
       + set(v : const Eigen::ArrayXd\&) : void\\
       + beta() : Eigen::ArrayXd
     }
     \umlclass[x=0, y=-8]{MSSM\_soft\_parameters}{}{
-      + display() : const Eigen::ArrayXd \\
+      + get() : const Eigen::ArrayXd \\
       + set(v : const Eigen::ArrayXd\&) : void\\
       + beta() : Eigen::ArrayXd
     }
