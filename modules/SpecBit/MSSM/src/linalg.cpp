@@ -19,7 +19,7 @@ using std::ostringstream;
 using std::istream;
 using std::ostream;
 
-using namespace softsusy;
+namespace softsusy {
 
 /************************************
  * 
@@ -1556,3 +1556,5 @@ ComplexMatrix ComplexMatrix::operator+(const DoubleMatrix& other)
   ComplexMatrix temp(*this);
   return temp += other;
 }
+
+} // namespace softsusy

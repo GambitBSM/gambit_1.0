@@ -16,21 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:46
+// File generated at Wed 11 Jun 2014 15:26:43
 
 #ifndef MSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 #define MSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
 #include "MSSM_convergence_tester.hpp"
 #include "MSSM_two_scale_model.hpp"
-#include "two_scale_convergence_tester_skeleton.hpp"
+#include "two_scale_convergence_tester_drbar.hpp"
 
 namespace flexiblesusy {
 
 class Two_scale;
 
 template<>
-class MSSM_convergence_tester<Two_scale> : public Convergence_tester_skeleton<MSSM<Two_scale> > {
+class MSSM_convergence_tester<Two_scale> : public Convergence_tester_DRbar<MSSM<Two_scale> > {
 public:
    MSSM_convergence_tester(MSSM<Two_scale>*, double);
    virtual ~MSSM_convergence_tester();

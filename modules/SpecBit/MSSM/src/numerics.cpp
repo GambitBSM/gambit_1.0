@@ -15,6 +15,7 @@
 #include "clooptools.h"
 #endif
 
+using namespace softsusy;
 using namespace Eigen;
 
 double lnLPoisson(unsigned k, double lambda) {

@@ -37,8 +37,9 @@ MANUAL_SRC      := \
 		$(MANUAL_SRC_CHAP) \
 		$(DOC_VERSION_TEX)
 
-PAPER_PDF       := $(PDF_OUTPUT_DIR)/paper.pdf
-PAPER_SRC       := $(DIR)/paper.tex
+PAPER_PDF       := $(PDF_OUTPUT_DIR)/flexiblesusy-paper.pdf
+PAPER_SRC       := $(DIR)/flexiblesusy-paper.tex
+PAPER_STY       := $(DIR)/tikz-uml.sty
 
 LATEX_TMP       := \
 		$(patsubst %.pdf, %.aux, $(MANUAL_PDF) $(PAPER_PDF)) \
@@ -48,7 +49,7 @@ LATEX_TMP       := \
 		$(patsubst %.pdf, %.spl, $(MANUAL_PDF) $(PAPER_PDF))
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PADE) doc doc-html doc-pdf
+		$(INDEX_PADE) doc doc-html doc-pdf release-paper
 
 doc: all-$(MODNAME)
 
@@ -99,6 +100,10 @@ $(MANUAL_PDF): $(MANUAL_SRC)
 		bibtex $(shell echo $< | rev | cut -d. -f2 | rev)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 
-$(PAPER_PDF): $(PAPER_SRC)
+$(PAPER_PDF): $(PAPER_SRC) $(PAPER_STY)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
+
+release-paper: $(PAPER_SRC) $(PAPER_STY)
+		git archive --worktree-attributes --prefix=$(PKGNAME)-paper/ \
+			--output=$(PKGNAME)-paper.tar.gz HEAD:doc $(notdir $^)

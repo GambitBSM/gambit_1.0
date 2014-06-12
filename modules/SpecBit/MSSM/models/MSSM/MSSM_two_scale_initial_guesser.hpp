@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:49
+// File generated at Wed 11 Jun 2014 15:26:52
 
 #ifndef MSSM_TWO_SCALE_INITIAL_GUESSER_H
 #define MSSM_TWO_SCALE_INITIAL_GUESSER_H
@@ -49,6 +49,8 @@ public:
    virtual ~MSSM_initial_guesser();
    virtual void guess();
 
+   void set_running_precision(double p) { running_precision = p; }
+
 private:
    MSSM<Two_scale>* model;
    MSSM_input_parameters input_pars;
@@ -62,6 +64,7 @@ private:
    double me_guess;
    double mm_guess;
    double mtau_guess;
+   double running_precision;
    MSSM_low_scale_constraint<Two_scale> low_constraint;
    MSSM_susy_scale_constraint<Two_scale> susy_constraint;
    MSSM_high_scale_constraint<Two_scale> high_constraint;
