@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:57:47
+// File generated at Wed 11 Jun 2014 15:26:47
 
 #ifndef MSSM_SLHA_IO_H
 #define MSSM_SLHA_IO_H
@@ -152,10 +152,8 @@ void MSSM_slha_io::fill(MSSM<T>& model) const
 template <class T>
 void MSSM_slha_io::set_mass(const MSSM<T>& model)
 {
-   const auto MVG = PHYSICAL(MVG);
    const auto MGlu = PHYSICAL(MGlu);
    const auto MFv = PHYSICAL(MFv);
-   const auto MVP = PHYSICAL(MVP);
    const auto MVZ = PHYSICAL(MVZ);
    const auto MSd = PHYSICAL(MSd);
    const auto MSv = PHYSICAL(MSv);
@@ -169,6 +167,8 @@ void MSSM_slha_io::set_mass(const MSSM<T>& model)
    const auto MFe = PHYSICAL(MFe);
    const auto MFd = PHYSICAL(MFd);
    const auto MFu = PHYSICAL(MFu);
+   const auto MVG = PHYSICAL(MVG);
+   const auto MVP = PHYSICAL(MVP);
    const auto MVWm = PHYSICAL(MVWm);
 
    std::ostringstream mass;
@@ -210,11 +210,9 @@ void MSSM_slha_io::set_mass(const MSSM<T>& model)
 
    if (model.do_calculate_sm_pole_masses()) {
       mass
-         << FORMAT_MASS(21, MVG, "VG")
          << FORMAT_MASS(12, MFv(0), "Fv_1")
          << FORMAT_MASS(14, MFv(1), "Fv_2")
          << FORMAT_MASS(16, MFv(2), "Fv_3")
-         << FORMAT_MASS(22, MVP, "VP")
          << FORMAT_MASS(23, MVZ, "VZ")
          << FORMAT_MASS(11, MFe(0), "Fe_1")
          << FORMAT_MASS(13, MFe(1), "Fe_2")
@@ -225,6 +223,8 @@ void MSSM_slha_io::set_mass(const MSSM<T>& model)
          << FORMAT_MASS(2, MFu(0), "Fu_1")
          << FORMAT_MASS(4, MFu(1), "Fu_2")
          << FORMAT_MASS(6, MFu(2), "Fu_3")
+         << FORMAT_MASS(21, MVG, "VG")
+         << FORMAT_MASS(22, MVP, "VP")
          << FORMAT_MASS(24, MVWm, "VWm")
       ;
    }

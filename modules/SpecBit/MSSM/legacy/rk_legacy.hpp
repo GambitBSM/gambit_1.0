@@ -14,27 +14,27 @@
 
 #include "linalg.h"
 
-/// A single step of Runge Kutta (5th order), input: 
+/// A single step of Runge Kutta (5th order), input:
 /// y and dydx (derivative of y), x is independent variable. yout is value
 /// after step. derivs is a user-supplied function
-void rungeKuttaStep(const DoubleVector & y, const DoubleVector & dydx, 
-	     double x, double h, DoubleVector & yout, DoubleVector & yerr, 
-	     DoubleVector (*derivs)(double, const DoubleVector &));
+void rungeKuttaStep(const softsusy::DoubleVector & y, const softsusy::DoubleVector & dydx, 
+	     double x, double h, softsusy::DoubleVector & yout, softsusy::DoubleVector & yerr, 
+	     softsusy::DoubleVector (*derivs)(double, const softsusy::DoubleVector &));
 
 /// organises the variable step-size for Runge-Kutta evolution
-int odeStepper(DoubleVector & y, const DoubleVector & dydx, double *x, double
-		htry, double eps, DoubleVector & yscal, double *hdid, 
-		double *hnext,		
-		DoubleVector (*derivs)(double, const DoubleVector &));
+int odeStepper(softsusy::DoubleVector & y, const softsusy::DoubleVector & dydx, double *x, double
+		htry, double eps, softsusy::DoubleVector & yscal, double *hdid, 
+		double *hnext,
+		softsusy::DoubleVector (*derivs)(double, const softsusy::DoubleVector &));
 
 /// Organises integration of 1st order system of ODEs
-int integrateOdes(DoubleVector & ystart, double x1, double x2, double eps,
-		  double h1, double hmin, 
-		  DoubleVector (*derivs)(double, const DoubleVector &),
+int integrateOdes(softsusy::DoubleVector & ystart, double x1, double x2, double eps,
+		  double h1, double hmin,
+		  softsusy::DoubleVector (*derivs)(double, const softsusy::DoubleVector &),
 		  int (*rkqs)
-		  (DoubleVector & y, const DoubleVector & dydx, double *x,
-		   double htry, double eps, DoubleVector & yscal, double
-		   *hdid, double *hnext, 
-		   DoubleVector (*derivs)(double, const DoubleVector &)));
+		  (softsusy::DoubleVector & y, const softsusy::DoubleVector & dydx, double *x,
+		   double htry, double eps, softsusy::DoubleVector & yscal, double
+		   *hdid, double *hnext,
+		   softsusy::DoubleVector (*derivs)(double, const softsusy::DoubleVector &)));
 
 #endif // RK_LEGACY_H

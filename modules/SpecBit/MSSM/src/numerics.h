@@ -20,7 +20,6 @@
 #include <iostream>
 #include "def.h"
 #include "linalg.h"
-using namespace softsusy;
 
 /// calculates root(1+x), where x<<1 accurately
 double accurateSqrt1Plusx(double x);
@@ -128,17 +127,17 @@ int bin(double data, double start, double end, int numBins);
 double logOfSum(double a, double b);
 
 /// returns a random direction: total number of dimensions=n
-DoubleVector getRandomDirection(int n, int & numChanged, long & idum); 
+softsusy::DoubleVector getRandomDirection(int n, int & numChanged, long & idum);
 
 /// Calculates the vertical level of confidence level required to contain 
 /// a fraction cl of area of the histogrammed binned likelihood l.
 /// If err is true, a satisfactory answer could not be found for some reason.
-double calcCL(double cl, const DoubleVector & l);
+double calcCL(double cl, const softsusy::DoubleVector & l);
 
 /// given a normalised binned likelihood vector l, calculates the fraction of
 /// bins with likelihood less than or equal to y as a % of maximum:
 /// approximates area OUTSIDE confidence level y
-double calc1dFraction(double y, const DoubleVector & l);
+double calc1dFraction(double y, const softsusy::DoubleVector & l);
 
 /// These three functions are for the calculation of 2-loop log pieces of g-2
 /// of the muon
@@ -167,7 +166,7 @@ double sumOfExp(double a, double b);
 
 /// Returns a value of the polynomial (y) and an error estimate (dy), given 
 /// a bunch of points (xa) and their y values (ya).
-void polint(const DoubleVector&  xa, const DoubleVector & ya, double x, 
+void polint(const softsusy::DoubleVector&  xa, const softsusy::DoubleVector & ya, double x, 
 	    double & y, double & dy);
 
 /// Returns a 3 by 3 real mixing matrix. Input angles are standard CKM
@@ -182,14 +181,14 @@ void getAngles(const DoubleMatrix & v, double & t12, double & t13,
 	       double & t23, double & d);
 /// Evolves the dependent variables xi by one reversible mid-point step of
 /// length tStep. Returns true if there is an error.
-bool midPtStep(DoubleVector & xi, 
-	      DoubleVector (*derivs)(double t, const DoubleVector & v), 
+bool midPtStep(softsusy::DoubleVector & xi, 
+	      softsusy::DoubleVector (*derivs)(double t, const softsusy::DoubleVector & v), 
 	      double tInitial, double tStep);
 /// Reversible integrate with numSteps steps between tInitial and tFinal. 
 /// Returns true if there's an error
-bool integrateReversibly(DoubleVector & xi, 
-			 DoubleVector (*derivs)(double t, 
-						const DoubleVector & v), 
+bool integrateReversibly(softsusy::DoubleVector & xi, 
+			 softsusy::DoubleVector (*derivs)(double t, 
+						const softsusy::DoubleVector & v), 
 			 double tInitial, double tFinal, int numSteps);
 
 /// useful for 2-loop mb/mt corrections
@@ -205,49 +204,49 @@ double zriddr(double (*func)(double), double x1, double x2, double xacc);
 /// Forward difference approximation to Jacobian matrix. On input, x is the
 /// point to be evaluated, fvec is the vector of function values at the point,
 /// and  vecfunc(n, x, f) is the Jacobian array
-void fdjac(int n, DoubleVector x, const DoubleVector & fvec, DoubleMatrix & df,
-	   void (*vecfunc)(const DoubleVector &, DoubleVector &));
+void fdjac(int n, softsusy::DoubleVector x, const softsusy::DoubleVector & fvec, DoubleMatrix & df,
+	   void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &));
 /// These are experimental things for trying the shooting method - returns
 /// F.F/2 evaluated at x. Boolean value on return is error flag
-bool lnsrch(const DoubleVector & xold, double fold, const DoubleVector & g, 
-	    DoubleVector & p, 
-	    DoubleVector & x, double & f, double stpmax, 
-	    void (*vecfunc)(const DoubleVector &, DoubleVector &), 
-	    DoubleVector & fvec);
+bool lnsrch(const softsusy::DoubleVector & xold, double fold, const softsusy::DoubleVector & g, 
+	    softsusy::DoubleVector & p, 
+	    softsusy::DoubleVector & x, double & f, double stpmax, 
+	    void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &), 
+	    softsusy::DoubleVector & fvec);
 /* allocate an int vector with subscript range v[nl..nh] */
 int *ivector(long nl, long nh);
 /* free an int vector allocated with ivector() */
 void free_ivector(int *v, long nl, long nh);
-void lubksb(const DoubleMatrix & a, int n, int *indx, DoubleVector & b);
+void lubksb(const DoubleMatrix & a, int n, int *indx, softsusy::DoubleVector & b);
 /// Multi-dimensional globally convergent multi-dimensional root solver for n
 /// variables. adjusts x so that f(x)=0, where f is the last function provided
 /// by vecfunc, given vector input x. If false on output, there is no
 /// error. If returns 1, a local minimum or saddle-point has been found
 /// (df/dx=0). The length of x should be equal to the number of parameters to
 /// vary AND the number of constraints ie the length of the vector in vecfunc.
-bool newt(DoubleVector & x, 
-	  void (*vecfunc)(const DoubleVector &, DoubleVector &));
+bool newt(softsusy::DoubleVector & x, 
+	  void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &));
 /// calculates the n-vector y, given freely specifiable values v(1..n2) at x1
-void load(float x, const DoubleVector & v, DoubleVector & y);
+void load(float x, const softsusy::DoubleVector & v, softsusy::DoubleVector & y);
 /// Gives a discrepancy vector f[1..n2] from ending boundary conditions at
 /// endpoint x2 given values for y there
-void score(float x, const DoubleVector & y, DoubleVector & f);
+void score(float x, const softsusy::DoubleVector & y, softsusy::DoubleVector & f);
 /// QR decomposition of the matrix a. A = Q.R. Upper triangular matrix R is
 /// returned in upper triangle of a, except for diagonal elements which are
 /// returned in d. Orthog matrix Q is given as a product of n-1 Houselholder
 /// matrices $Q_1 \ldots Q_{n-1}$ where $Q_j=1-u_j \otimes u_j/c_j$. 
 /// sing returns true (1) if singularity is encountered (but decomposition is
 /// still completed) otherwise false (0).
-void qrdcmp(DoubleMatrix & a, int n, DoubleVector & c, DoubleVector & d, 
+void qrdcmp(DoubleMatrix & a, int n, softsusy::DoubleVector & c, softsusy::DoubleVector & d, 
 	    int & sing);
 void qrupdt(DoubleMatrix & r, DoubleMatrix & qt, int n, 
-	    DoubleVector & u, DoubleVector & v);
+	    softsusy::DoubleVector & u, softsusy::DoubleVector & v);
 /// Given r and qt, carry out a Jacobi rotation on rows i and i+1 of each
 /// matrix. a and b are parameters of the rotation: $\cos
 /// \theta=a/\sqrt{a^2+b^2}, \sin \theta = b / \sqrt{a^2 + b^2}$.
 void rotate(DoubleMatrix & r, DoubleMatrix & qt, int n, int i, float a, 
 	    float b);
-void rsolv(const DoubleMatrix & a, int n, const DoubleVector & d, 
-	   DoubleVector & b);
+void rsolv(const DoubleMatrix & a, int n, const softsusy::DoubleVector & d, 
+	   softsusy::DoubleVector & b);
 #endif
 

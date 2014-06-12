@@ -77,7 +77,7 @@ double diagonalize_sfermions_2x2(const Mass_data& pars,
 
 #ifdef ENABLE_VERBOSE
    if (msf.minCoeff() < 0.)
-      WARNING("stop tachyon");
+      WARNING("diagonalize_sfermions_2x2: sfermion tachyon");
 #endif
 
    msf = AbsSqrt(msf);

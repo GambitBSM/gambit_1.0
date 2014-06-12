@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:58:17
+// File generated at Wed 11 Jun 2014 15:30:26
 
 #include "MSSM_two_scale_model.hpp"
 #include "wrappers.hpp"
@@ -26,10 +26,7 @@
 #include "root_finder.hpp"
 #include "gsl_utils.hpp"
 #include "config.h"
-
-#ifdef ENABLE_LOOPTOOLS
-#include <clooptools.h>
-#endif
+#include "pv.hpp"
 
 #include "sfermions.hpp"
 #include "mssm_twoloophiggs.h"
@@ -64,8 +61,6 @@ std::mutex CLASSNAME::mtx_fortran;
 #define UNLOCK_MUTEX()
 #endif
 
-  
-
 CLASSNAME::MSSM(const MSSM_input_parameters& input_)
    : Two_scale_model()
    , MSSM_soft_parameters(input_)
@@ -79,14 +74,14 @@ CLASSNAME::MSSM(const MSSM_input_parameters& input_)
    , physical()
    , problems(MSSM_info::particle_names)
    , thread_exception()
-   , MVG(0), MGlu(0), MFv(Eigen::Array<double,3,1>::Zero()), MVP(0), MVZ(0),
-      MSd(Eigen::Array<double,6,1>::Zero()), MSv(Eigen::Array<double,3,1>::Zero())
-      , MSu(Eigen::Array<double,6,1>::Zero()), MSe(Eigen::Array<double,6,1>::Zero(
-      )), Mhh(Eigen::Array<double,2,1>::Zero()), MAh(Eigen::Array<double,2,1>
-      ::Zero()), MHpm(Eigen::Array<double,2,1>::Zero()), MChi(Eigen::Array<double,
-      4,1>::Zero()), MCha(Eigen::Array<double,2,1>::Zero()), MFe(Eigen::Array<
-      double,3,1>::Zero()), MFd(Eigen::Array<double,3,1>::Zero()), MFu(
-      Eigen::Array<double,3,1>::Zero()), MVWm(0)
+   , MGlu(0), MFv(Eigen::Array<double,3,1>::Zero()), MVZ(0), MSd(Eigen::Array<
+      double,6,1>::Zero()), MSv(Eigen::Array<double,3,1>::Zero()), MSu(
+      Eigen::Array<double,6,1>::Zero()), MSe(Eigen::Array<double,6,1>::Zero()),
+      Mhh(Eigen::Array<double,2,1>::Zero()), MAh(Eigen::Array<double,2,1>::Zero())
+      , MHpm(Eigen::Array<double,2,1>::Zero()), MChi(Eigen::Array<double,4,1>
+      ::Zero()), MCha(Eigen::Array<double,2,1>::Zero()), MFe(Eigen::Array<double,3
+      ,1>::Zero()), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<double
+      ,3,1>::Zero()), MVG(0), MVP(0), MVWm(0)
 
    , ZD(Eigen::Matrix<double,6,6>::Zero()), ZV(Eigen::Matrix<double,3,3>::Zero(
       )), ZU(Eigen::Matrix<double,6,6>::Zero()), ZE(Eigen::Matrix<double,6,6>
@@ -108,649 +103,6 @@ CLASSNAME::MSSM(const MSSM_input_parameters& input_)
 CLASSNAME::~MSSM()
 {
 }
-//inspired by softsusy's lsp method.  
-//This MSSM version assumes all states mass ordered. 
-//returns lsp mass and gives 3 integers to specify the state 
-// for most general case of a particle type with mass matrix 
-// row and col set to -1 when not needed 
-//(row only is used for vector) 
-//particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
-//3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
-// double CLASSNAME::get_lsp_mass(int & particle_type, int & row, int & col) const
-// {
-//    row = -1; col = -1;  particle_type =-1;//set default
-//    double mlsp = fabs(MChi(0)); //most common lsp
-//    particle_type = 0;
-//    row = 0;
-  
-//    /// sneutrinos 1
-//    double temp = MSv(0);
-//    if (temp < mlsp) { 
-//       mlsp = temp; 
-//       particle_type = 1; 
-//       row=0;
-//    }
-   
-//    /// up squarks 2
-//    temp = MSu(0);
-//    if (temp < mlsp) { 
-//       mlsp = temp; 
-//       particle_type = 2;
-//       row=0;
-//    }
-   
-//    /// down squarks 3
-//    temp = MSd(0);
-//    if (temp < mlsp) { 
-//       mlsp = temp; 
-//       particle_type = 3;
-//       row=0;      
-//    }
-   
-//    /// sleptons 4
-//    temp = MSe(0);
-//    if (temp < mlsp) { 
-//       mlsp = temp; 
-//       particle_type = 4; 
-//       row=0;    
-//    }
-   
-//   /// charginos 5
-//    temp = fabs(MCha(0));
-//    if (temp < mlsp) { 
-//       mlsp = temp; 
-//       particle_type = 5; 
-//       row=0;    
-//    }
-   
-//    /// gluino 6
-//    temp = fabs(MGlu);
-//    if (temp < mlsp) {
-//       mlsp = temp; 
-//       particle_type = 6; 
-//       row=0;    
-//    }
-   
-//    //We have no gravitino mass right now.   this should be added.
-//    // /// gravitino -1 
-//    // temp = displayGravitino();
-//    // if (temp < mlsp) {
-//    //   mlsp = temp; posi = 0; posj = 0; particle_type = -1; }  
-   
-//    return mlsp;
-// }
-// //The MSSM has just one LSP - often the lightest neutralino
-// int CLASSNAME::get_numbers_stable_particles() const {
-//    return 1;
-// }
-
-// //these are just wrappers.  Need to test this carefully though
-// //inheritance is complicated
-// void CLASSNAME::RunToScale(double scale){
-//    run_to(scale);
-// }
-// double CLASSNAME::GetScale() const {
-//    std::cout << "In mssm implementation of GetSacle" << std::endl;
-//    return get_scale();
-// }
-// void CLASSNAME::SetScale(double scale){
-//    set_scale(scale);
-// }
-
-// std::string CLASSNAME::AccessError(std::string state) const {
-//    std::string errormsg;
-//    errormsg = "Error accessing "+ state + " element is out of bounds";
-//    return errormsg;
-// }
-
-
-// //Takes a string and an index. 
-// double CLASSNAME::get_DRbar_MassEigenstate(std::string polemass) const {
-//    if(polemass == "MZ") 
-//       {
-//          return get_MVZ();
-//       }
-//    else if(polemass == "MW") 
-//       {
-//          return get_MVWm();
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//    else if(polemass == "MA0") 
-//       {
-//          return get_MAh()(1);
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//     else if(polemass == "MHpm") 
-//       {
-//          return get_MHpm()(1);
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//    else if(polemass == "MGoldstone0") 
-//       {
-//          return get_MAh()(0);
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//     else if(polemass == "MGoldstonePM") 
-//       {
-//          return get_MHpm()(0);
-//       }
-//     else if (polemass == "MGluino")
-//        {
-//           return get_MGlu();
-//        }
-//     else if(polemass == "MGluon")
-//       {
-//          return get_MVG();
-//       }
-//    else if(polemass == "MPhoton")
-//       {
-//          return get_MVP();
-//       }
-//    else if(polemass == "Mtop")
-//       {
-//          return get_MFu()(2);
-//       }
-//     else if(polemass == "Mcharm")
-//       {
-//          return get_MFu()(1);
-//       }
-//     else if(polemass == "Mup")
-//       {
-//          return get_MFu()(0);
-//       }
-//     else if(polemass == "Mbottom")
-//       {
-//          return get_MFd()(2);
-//       }
-//     else if(polemass == "Mstrange")
-//       {
-//          return get_MFd()(1);
-//       }
-//     else if(polemass == "Mdown")
-//       {
-//          return get_MFd()(0);
-//       }
-//     else if(polemass == "Mtau")
-//       {
-//          return get_MFe()(2);
-//       }
-//     else if(polemass == "Mmuon")
-//       {
-//          return get_MFe()(1);
-//       }
-//     else if(polemass == "Melectron")
-//       {
-//          return get_MFe()(0);
-//       }
-//    else{ 
-//    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-
-// //Takes a string and an index. 
-// double CLASSNAME::get_DRbar_MassEigenstate(std::string polemass, int i) const {
-//    if(polemass == "MSd") 
-//       {
-//          return get_MSd()(i);
-//       }
-//    else if(polemass == "MSv") 
-//       {
-//          return get_MSv()(i);
-//       }
-//    else if(polemass == "MSu")
-//       {
-//          return get_MSu()(i);
-//       }
-//    else if(polemass == "MSe")
-//       {
-//          return get_MSe()(i);
-//       } 
-//    else if(polemass == "Mh0") 
-//       {
-//          return get_Mhh()(i);
-//       }
-//    //Here we may access the goldstone boson
-//    //this is probably too dangerous to keep!
-//    else if(polemass == "MA0") 
-//       {
-//          return get_MAh()(i);
-//       }
-//    //Here we may access the goldstone boson
-//    //this is probably too dangerous to keep!
-//     else if(polemass == "MHpm") 
-//       {
-//          return get_MHpm()(i);
-//       }
-//    else if(polemass == "MCha") 
-//       {
-//          return get_MCha()(i);
-//       }
-//    else if(polemass == "MChi") 
-//       {
-//          return get_MChi()(i);
-//       }
-//    else{ 
-//    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-
-
-// //Takes a string and an index. 
-// double CLASSNAME::get_DRbar_MassEigenstate(std::string polemass, int i, int j) const {
-//    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-
-// }
-
-
-// //Takes a string and an index. 
-// double CLASSNAME::get_Pole_Mass(std::string polemass) const {
-//    if(polemass == "MZ") 
-//       {
-//          return get_physical().MVZ;
-//       }
-//    else if(polemass == "MW") 
-//       {
-//          return get_physical().MVWm;
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//    else if(polemass == "MA0") 
-//       {
-//          return get_physical().MAh(1);
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//     else if(polemass == "MHpm") 
-//       {
-//          return get_physical().MHpm(1);
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//    else if(polemass == "MGoldstone0") 
-//       {
-//          return get_physical().MAh(0);
-//       }
-//    //I really need to know goldstone index here!
-//    //Dangerous otherwise
-//     else if(polemass == "MGoldstonePM") 
-//       {
-//          return get_physical().MHpm(0);
-//       }
-//     else if (polemass == "MGluino")
-//        {
-//           return get_physical().MGlu;
-//        }
-//     else if(polemass == "MGluon")
-//       {
-//          return get_physical().MVG;
-//       }
-//    else if(polemass == "MPhoton")
-//       {
-//          return get_physical().MVP;
-//       }
-//    else if(polemass == "Mtop")
-//       {
-//          return get_physical().MFu(2);
-//       }
-//     else if(polemass == "Mcharm")
-//       {
-//          return get_physical().MFu(1);
-//       }
-//     else if(polemass == "Mup")
-//       {
-//          return get_physical().MFu(0);
-//       }
-//     else if(polemass == "Mbottom")
-//       {
-//          return get_physical().MFd(2);
-//       }
-//     else if(polemass == "Mstrange")
-//       {
-//          return get_physical().MFd(1);
-//       }
-//     else if(polemass == "Mdown")
-//       {
-//          return get_physical().MFd(0);
-//       }
-//     else if(polemass == "Mtau")
-//       {
-//          return get_physical().MFe(2);
-//       }
-//     else if(polemass == "Mmuon")
-//       {
-//          return get_physical().MFe(1);
-//       }
-//     else if(polemass == "Melectron")
-//       {
-//          return get_physical().MFe(0);
-//       }
-//    else{ 
-//    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-
-// //Takes a string and an index. 
-// double CLASSNAME::get_Pole_Mass(std::string polemass, int i) const {
-//    if(polemass == "MSd") 
-//       {
-//          return get_physical().MSd(i);
-//       }
-//    else if(polemass == "MSv") 
-//       {
-//          return get_physical().MSv(i);
-//       }
-//    else if(polemass == "MSu")
-//       {
-//          return get_physical().MSu(i);
-//       }
-//    else if(polemass == "MSe")
-//       {
-//          return get_physical().MSe(i);
-//       } 
-//    else if(polemass == "Mh0") 
-//       {
-//          return get_physical().Mhh(i);
-//       }
-//    //Here we may access the goldstone boson
-//    //this is probably too dangerous to keep!
-//    else if(polemass == "MA0") 
-//       {
-//          return get_physical().MAh(i);
-//       }
-//    //Here we may access the goldstone boson
-//    //this is probably too dangerous to keep!
-//     else if(polemass == "MHpm") 
-//       {
-//          return get_physical().MHpm(i);
-//       }
-//    else if(polemass == "MCha") 
-//       {
-//          return get_physical().MCha(i);
-//       }
-//    else if(polemass == "MChi") 
-//       {
-//          return get_physical().MChi(i);
-//       }
-//    else{ 
-//    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-
-
-// //Takes a string and an index. 
-// double CLASSNAME::get_Pole_Mass(std::string polemass, int i, int j) const {
-//    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-
-// }
-
-
-
-// double CLASSNAME::get_Mixing_angle(std::string) const {
-//    std::cout << "Error: Sorry I know nothing" << std::endl;
-//    return 6666666666666.6666666666666;
-// }
-
-// double CLASSNAME::get_Mixing_element(std::string MixMat, int i, int j) const {
-//    //Down squark mixing matrix
-//    if(MixMat == "ZD") {
-//       return get_physical().ZD(i,j);
-//    }
-//    //Up squark mixing matrix
-//    else if(MixMat == "ZU") {
-//       return get_physical().ZU(i,j);
-//    }
-//    //Charged slepton mixing matrix
-//    else if(MixMat == "ZE") {
-//       return get_physical().ZE(i,j);
-//    }
-//    //Charged sneutrino mixing matrix
-//    else if(MixMat == "ZV") {
-//       return get_physical().ZV(i,j);
-//    }
-//    //CP even Higgs mixing matrix
-//    else if(MixMat == "ZH") {
-//       return get_physical().ZH(i,j);
-//    }
-//     //CP odd Higgs mixing matrix
-//    else if(MixMat == "ZA") {
-//       return get_physical().ZA(i,j);
-//    }
-//    //Charged Higgs mixing matrix
-//    else if(MixMat == "ZPM") {
-//       return get_physical().ZP(i,j);
-//    }
-//    // //Neutralino mass matrix
-//    // else if(MixMat == "ZN") {
-//    //    return get_physical().ZN(i,j);
-//    // }
-//    //  //Chargino mass matrices
-//    // else if(MixMat == "UM") {
-//    //    return get_physical().UM(i,j);
-//    // }
-//    // //Chargino mass matrices
-//    // else if(MixMat == "UP") {
-//    //    return get_physical().UP(i,j);
-//    // }  
-    
-//    // //Down quark left mixing matrix
-//    // if(MixMat == "ZDL") {
-//    //    return get_physical().ZDL(i,j);
-//    // }
-//    // //Down quark right mixing matrix
-//    // if(MixMat == "ZDR") {
-//    //    return get_physical().ZDL(i,j);
-//    // }
-//    // //Up quark left mixing matrix
-//    // else if(MixMat == "ZUL") {
-//    //    return get_physical().ZUL(i,j);
-//    // }
-//    //  //Up quark right mixing matrix
-//    // else if(MixMat == "ZUR") {
-//    //    return get_physical().ZUR(i,j);
-//    // }
-//    // //Charged lepton left mixing matrix
-//    // else if(MixMat == "ZEL") {
-//    //    return get_physical().ZEL(i,j);
-//    // }
-//    // //Charged lepton left mixing matrix
-//    // else if(MixMat == "ZER") {
-//    //    return get_physical().ZER(i,j);
-//    // }
- 
-//    std::cout << "Error: Sorry I know nothing" << std::endl;
-//    return 6666666666666.6666666666666;
-// }
-
-// void MSSM<Two_scale>::mass2_par_mapping() {
-//       mass2_par_map["mHd2"] = &MSSM<Two_scale>::get_mHd2;
-//       mass2_par_map["mHu2"] = &MSSM<Two_scale>::get_mHu2;
-//       mass2_par_map["BMu"] = &MSSM<Two_scale>::get_BMu;
-
-//    }
-
-// double MSSM<Two_scale>::get_mass2_par(std::string masssq) const {
-//    std::map<std::string,getmethod>::const_iterator found= mass2_par_map.find(masssq);
-//    if(found!=mass2_par_map.end()){
-//       getmethod func = found->second;
-//       double result = (this->*func)();
-//       return result;
-//    }
-   
-// }
-
-
-// double CLASSNAME::get_mass4_parameter(std::string mass) const {
-//  std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;   
-// }
-// double CLASSNAME::get_mass4_parameter(std::string, int i) const {
-//    std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-// }
-// double CLASSNAME::get_mass4_parameter(std::string mass, int i, int j) const {
-// std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-
-// }
-
-// double CLASSNAME::get_mass3_parameter(std::string mass) const {
-//  std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;   
-// }
-// double CLASSNAME::get_mass3_parameter(std::string, int i) const {
-//    std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-// }
-// double CLASSNAME::get_mass3_parameter(std::string mass, int i, int j) const {
-// std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-
-// }
-// double CLASSNAME::get_mass2_parameter(std::string mass) const {
-//    if(mass == "BMu"){
-//       return get_BMu();
-//    }
-//    else if (mass == "mHd2"){
-//       return get_mHd2();
-//    }
-//     else if (mass == "mHu2"){
-//       return get_mHu2();
-//    }
-//    else{
-//  std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-// double CLASSNAME::get_mass2_parameter(std::string, int i) const {
-//    std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-// }
-// double CLASSNAME::get_mass2_parameter(std::string mass, int i, int j) const {
-//    if(mass == "mq2"){
-//       return get_mq2(i,j);
-//    }
-//    else if (mass == "ml2"){
-//       return get_ml2(i,j);
-//    }
-//     else if (mass == "md2"){
-//       return get_md2(i,j);
-//    }
-//     else if (mass == "mu2"){
-//       return get_mu2(i,j);
-//    }
-//     else if (mass == "me2"){
-//       return get_me2(i,j);
-//    }
-//  else{
-//   std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-
-// double CLASSNAME::get_mass_parameter(std::string mass) const {
-//    if(mass == "Mu"){
-//       return get_Mu();
-//    }
-//    else if (mass == "vu") {
-//       return get_vu();
-//    }
-//    else if (mass == "vd") {
-//       return get_vd();
-//    }
-//    else if (mass == "vev") {
-//       return sqrt(get_vu()*get_vu() + get_vd()*get_vd());
-//    }
-//    else if (mass == "M1") {
-//       //This name may change at some point.
-//       return get_MassB();
-//    } 
-//     else if (mass == "M2") {
-//       //This name may change at some point.
-//       return get_MassWB();
-//    } 
-//     else if (mass == "M3") {
-//       //This name may change at some point.
-//       return get_MassG();
-//    } 
-//    else{
-//   std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-
-// double CLASSNAME::get_mass_parameter(std::string, int) const {
-
-//   std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-// }
-// double CLASSNAME::get_mass_parameter(std::string mass, int i, int j) const {
-//    if (mass == "TYd" || mass == "ad"){
-//       return get_TYd(i,j);
-//    }
-//    else if (mass == "TYe" || mass == "ae"){
-//       return get_TYe(i,j);
-//    } 
-//    else if (mass == "TYu" || mass == "au"){
-//       return get_TYu(i,j);
-//    } 
-//    else{
-//   std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//    }
-// }
-   
-//    double CLASSNAME::get_dimensionless_parameter(std::string coupling) const {
-//       if(coupling == "g1"){
-//          return get_g1();
-//       }
-//       else if (coupling == "g2"){
-//          return get_g2();
-//       }
-//       else if (coupling == "g3"){
-//          return get_g3();
-//       }
-//       else if (coupling == "tanbeta"){
-//          return get_vu() / get_vd();
-//       }
-//       else{
-//   std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//       }
-// }
-
-//    double CLASSNAME::get_dimensionless_parameter(std::string coupling, int i) const {   
-//   std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-// }
-
-
-
-//    double CLASSNAME::get_dimensionless_parameter(std::string coupling, int i, int j) const {
-//       if(coupling == "Yu"){
-//          return get_Yu(i,j);
-//       }
-//       else if(coupling == "Yd"){
-//          return get_Yd(i,j);
-//       }
-//       else if(coupling == "Ye"){
-//          return get_Ye(i,j);
-//       }
-//       else{
-//   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-//    return -1.0;
-//       }
-// }
-
 
 void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 {
@@ -861,8 +213,11 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
 
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   const gsl_multiroot_fsolver_type* solvers[] =
-      {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids};
+   const gsl_multiroot_fsolver_type* solvers[] = {
+      gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids,
+         gsl_multiroot_fsolver_broyden
+
+   };
 
    double x_init[number_of_ewsb_equations];
    ewsb_initial_guess(x_init);
@@ -1010,10 +365,8 @@ void CLASSNAME::print(std::ostream& ostr) const
    ostr << "----------------------------------------\n"
            "tree-level DRbar masses:\n"
            "----------------------------------------\n";
-   ostr << "MVG = " << MVG << '\n';
    ostr << "MGlu = " << MGlu << '\n';
    ostr << "MFv = " << MFv.transpose() << '\n';
-   ostr << "MVP = " << MVP << '\n';
    ostr << "MVZ = " << MVZ << '\n';
    ostr << "MSd = " << MSd.transpose() << '\n';
    ostr << "MSv = " << MSv.transpose() << '\n';
@@ -1027,6 +380,8 @@ void CLASSNAME::print(std::ostream& ostr) const
    ostr << "MFe = " << MFe.transpose() << '\n';
    ostr << "MFd = " << MFd.transpose() << '\n';
    ostr << "MFu = " << MFu.transpose() << '\n';
+   ostr << "MVG = " << MVG << '\n';
+   ostr << "MVP = " << MVP << '\n';
    ostr << "MVWm = " << MVWm << '\n';
 
    ostr << "----------------------------------------\n"
@@ -1054,58 +409,42 @@ void CLASSNAME::print(std::ostream& ostr) const
 
 double CLASSNAME::A0(double m) const
 {
-   return a0(m, get_scale());
+   return passarino_veltman::ReA0(m*m, Sqr(get_scale()));
 }
 
 double CLASSNAME::B0(double p, double m1, double m2) const
 {
-#ifdef ENABLE_LOOPTOOLS
-   setmudim(Sqr(get_scale()));
-   return Re(::B0(p*p, m1*m1, m2*m2));
-#else
-   return b0(p, m1, m2, get_scale());
-#endif
+   return passarino_veltman::ReB0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B1(double p, double m1, double m2) const
 {
-#ifdef ENABLE_LOOPTOOLS
-   setmudim(Sqr(get_scale()));
-   return Re(::B1(p*p, m1*m1, m2*m2));
-#else
-   return -b1(p, m1, m2, get_scale());
-#endif
+   return passarino_veltman::ReB1(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B00(double p, double m1, double m2) const
 {
-#ifdef ENABLE_LOOPTOOLS
-   setmudim(Sqr(get_scale()));
-   return Re(::B00(p*p, m1*m1, m2*m2));
-#else
-   return b22(p, m1, m2, get_scale());
-#endif
+   return passarino_veltman::ReB00(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B22(double p, double m1, double m2) const
 {
-   return B00(p, m1, m2) - 0.25 * A0(m1) - 0.25 * A0(m2);
+   return passarino_veltman::ReB22(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::H0(double p, double m1, double m2) const
 {
-   return 4.0 * B00(p, m1, m2) + G0(p, m1, m2);
+   return passarino_veltman::ReH0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::F0(double p, double m1, double m2) const
 {
-   return A0(m1) - 2.0 * A0(m2) - (2.0 * Sqr(p) + 2.0 * Sqr(m1) - Sqr(m2)) *
-      B0(p, m1, m2);
+   return passarino_veltman::ReF0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::G0(double p, double m1, double m2) const
 {
-   return (Sqr(p) - Sqr(m1) - Sqr(m2)) * B0(p, m1, m2) - A0(m1) - A0(m2);
+   return passarino_veltman::ReG0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 void CLASSNAME::calculate_DRbar_parameters()
@@ -1115,9 +454,9 @@ void CLASSNAME::calculate_DRbar_parameters()
 
    solve_ewsb_tree_level_via_soft_higgs_masses();
 
+   calculate_MVZ();
    calculate_MVG();
    calculate_MVP();
-   calculate_MVZ();
    calculate_MVWm();
    calculate_MGlu();
    calculate_MFv();
@@ -1142,7 +481,7 @@ void CLASSNAME::calculate_DRbar_parameters()
 void CLASSNAME::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   thread_exception = nullptr;
+   thread_exception = 0;
 
    std::thread thread_MGlu(Thread(this, &CLASSNAME::calculate_MGlu_pole));
    std::thread thread_MSd(Thread(this, &CLASSNAME::calculate_MSd_pole));
@@ -1185,9 +524,9 @@ void CLASSNAME::calculate_pole_masses()
    thread_MChi.join();
    thread_MCha.join();
 
-   if (thread_exception != nullptr)
-      std::rethrow_exception(thread_exception);
 
+   if (thread_exception != 0)
+      std::rethrow_exception(thread_exception);
 #else
    calculate_MGlu_pole();
    calculate_MSd_pole();
@@ -1216,10 +555,8 @@ void CLASSNAME::calculate_pole_masses()
 
 void CLASSNAME::copy_DRbar_masses_to_pole_masses()
 {
-   PHYSICAL(MVG) = MVG;
    PHYSICAL(MGlu) = MGlu;
    PHYSICAL(MFv) = MFv;
-   PHYSICAL(MVP) = MVP;
    PHYSICAL(MVZ) = MVZ;
    PHYSICAL(MSd) = MSd;
    PHYSICAL(ZD) = ZD;
@@ -1249,7 +586,23 @@ void CLASSNAME::copy_DRbar_masses_to_pole_masses()
    PHYSICAL(MFu) = MFu;
    PHYSICAL(ZUL) = ZUL;
    PHYSICAL(ZUR) = ZUR;
+   PHYSICAL(MVG) = MVG;
+   PHYSICAL(MVP) = MVP;
    PHYSICAL(MVWm) = MVWm;
+
+}
+
+void CLASSNAME::reorder_DRbar_masses()
+{
+   move_goldstone_to(0, MVZ, MAh, ZA);
+   move_goldstone_to(0, MVWm, MHpm, ZP);
+
+}
+
+void CLASSNAME::reorder_pole_masses()
+{
+   move_goldstone_to(0, PHYSICAL(MVZ), PHYSICAL(MAh), PHYSICAL(ZA));
+   move_goldstone_to(0, PHYSICAL(MVWm), PHYSICAL(MHpm), PHYSICAL(ZP));
 
 }
 
@@ -1261,6 +614,11 @@ void CLASSNAME::calculate_spectrum()
    else
       copy_DRbar_masses_to_pole_masses();
 
+   // move goldstone bosons to the front
+   reorder_DRbar_masses();
+   if (pole_mass_loop_order > 0)
+      reorder_pole_masses();
+
    if (problems.have_serious_problem()) {
       clear_DRbar_parameters();
       physical.clear();
@@ -1269,10 +627,8 @@ void CLASSNAME::calculate_spectrum()
 
 void CLASSNAME::clear_DRbar_parameters()
 {
-   MVG = 0.0;
    MGlu = 0.0;
    MFv = Eigen::Array<double,3,1>::Zero();
-   MVP = 0.0;
    MVZ = 0.0;
    MSd = Eigen::Array<double,6,1>::Zero();
    ZD = Eigen::Matrix<double,6,6>::Zero();
@@ -1302,7 +658,11 @@ void CLASSNAME::clear_DRbar_parameters()
    MFu = Eigen::Array<double,3,1>::Zero();
    ZUL = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    ZUR = Eigen::Matrix<std::complex<double>,3,3>::Zero();
+   MVG = 0.0;
+   MVP = 0.0;
    MVWm = 0.0;
+
+   PhaseGlu = std::complex<double>(1.,0.);
 
 }
 
@@ -1326,10 +686,57 @@ void CLASSNAME::run_to(double scale, double eps)
    MSSM_soft_parameters::run_to(scale, eps);
 }
 
-void CLASSNAME::calculate_MVG()
+double CLASSNAME::get_lsp(MSSM_info::Particles& particle_type) const
 {
-   MVG = 0;
+   double lsp_mass = std::numeric_limits<double>::max();
+   double tmp_mass;
+   particle_type = MSSM_info::NUMBER_OF_PARTICLES;
+
+   tmp_mass = Abs(PHYSICAL(MChi(0)));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Chi;
+   }
+
+   tmp_mass = Abs(PHYSICAL(MSv(0)));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Sv;
+   }
+
+   tmp_mass = Abs(PHYSICAL(MSu(0)));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Su;
+   }
+
+   tmp_mass = Abs(PHYSICAL(MSd(0)));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Sd;
+   }
+
+   tmp_mass = Abs(PHYSICAL(MSe(0)));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Se;
+   }
+
+   tmp_mass = Abs(PHYSICAL(MCha(0)));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Cha;
+   }
+
+   tmp_mass = Abs(PHYSICAL(MGlu));
+   if (tmp_mass < lsp_mass) {
+      lsp_mass = tmp_mass;
+      particle_type = MSSM_info::Glu;
+   }
+
+   return lsp_mass;
 }
+
 
 void CLASSNAME::calculate_MGlu()
 {
@@ -1344,11 +751,6 @@ void CLASSNAME::calculate_MGlu()
 void CLASSNAME::calculate_MFv()
 {
    MFv.setConstant(0);
-}
-
-void CLASSNAME::calculate_MVP()
-{
-   MVP = 0;
 }
 
 void CLASSNAME::calculate_MVZ()
@@ -1837,6 +1239,16 @@ void CLASSNAME::calculate_MFu()
 {
    const auto mass_matrix_Fu(get_mass_matrix_Fu());
    fs_svd(mass_matrix_Fu, MFu, ZUL, ZUR);
+}
+
+void CLASSNAME::calculate_MVG()
+{
+   MVG = 0;
+}
+
+void CLASSNAME::calculate_MVP()
+{
+   MVP = 0;
 }
 
 void CLASSNAME::calculate_MVWm()
@@ -17026,12 +16438,6 @@ void CLASSNAME::tadpole_hh_2loop(double result[2]) const
 }
 
 
-void CLASSNAME::calculate_MVG_pole()
-{
-   // diagonalization with medium precision
-   PHYSICAL(MVG) = 0.;
-}
-
 void CLASSNAME::calculate_MGlu_pole()
 {
    // diagonalization with medium precision
@@ -17049,12 +16455,6 @@ void CLASSNAME::calculate_MFv_pole()
    PHYSICAL(MFv).setConstant(0.);
 }
 
-void CLASSNAME::calculate_MVP_pole()
-{
-   // diagonalization with medium precision
-   PHYSICAL(MVP) = 0.;
-}
-
 void CLASSNAME::calculate_MVZ_pole()
 {
    if (problems.is_tachyon(VZ))
@@ -17067,7 +16467,7 @@ void CLASSNAME::calculate_MVZ_pole()
    if (mass_sqr < 0.)
       problems.flag_tachyon(VZ);
 
-   PHYSICAL(MVZ) = ZeroSqrt(mass_sqr);
+   PHYSICAL(MVZ) = AbsSqrt(mass_sqr);
 }
 
 void CLASSNAME::calculate_MSd_pole()
@@ -17095,7 +16495,7 @@ void CLASSNAME::calculate_MSd_pole()
       if (eigen_values(es) < 0.)
          problems.flag_tachyon(Sd);
 
-      PHYSICAL(MSd(es)) = ZeroSqrt(eigen_values(es));
+      PHYSICAL(MSd(es)) = AbsSqrt(eigen_values(es));
       if (es == 0)
          PHYSICAL(ZD) = mix_ZD;
    }
@@ -17126,7 +16526,7 @@ void CLASSNAME::calculate_MSv_pole()
       if (eigen_values(es) < 0.)
          problems.flag_tachyon(Sv);
 
-      PHYSICAL(MSv(es)) = ZeroSqrt(eigen_values(es));
+      PHYSICAL(MSv(es)) = AbsSqrt(eigen_values(es));
       if (es == 0)
          PHYSICAL(ZV) = mix_ZV;
    }
@@ -17157,7 +16557,7 @@ void CLASSNAME::calculate_MSu_pole()
       if (eigen_values(es) < 0.)
          problems.flag_tachyon(Su);
 
-      PHYSICAL(MSu(es)) = ZeroSqrt(eigen_values(es));
+      PHYSICAL(MSu(es)) = AbsSqrt(eigen_values(es));
       if (es == 0)
          PHYSICAL(ZU) = mix_ZU;
    }
@@ -17188,7 +16588,7 @@ void CLASSNAME::calculate_MSe_pole()
       if (eigen_values(es) < 0.)
          problems.flag_tachyon(Se);
 
-      PHYSICAL(MSe(es)) = ZeroSqrt(eigen_values(es));
+      PHYSICAL(MSe(es)) = AbsSqrt(eigen_values(es));
       if (es == 0)
          PHYSICAL(ZE) = mix_ZE;
    }
@@ -17237,7 +16637,7 @@ void CLASSNAME::calculate_Mhh_pole()
          if (eigen_values(es) < 0.)
             problems.flag_tachyon(hh);
 
-         PHYSICAL(Mhh(es)) = ZeroSqrt(eigen_values(es));
+         PHYSICAL(Mhh(es)) = AbsSqrt(eigen_values(es));
          if (es == 0)
             PHYSICAL(ZH) = mix_ZH;
       }
@@ -17293,7 +16693,7 @@ void CLASSNAME::calculate_MAh_pole()
          if (eigen_values(es) < 0.)
             problems.flag_tachyon(Ah);
 
-         PHYSICAL(MAh(es)) = ZeroSqrt(eigen_values(es));
+         PHYSICAL(MAh(es)) = AbsSqrt(eigen_values(es));
          if (es == 0)
             PHYSICAL(ZA) = mix_ZA;
       }
@@ -17338,7 +16738,7 @@ void CLASSNAME::calculate_MHpm_pole()
          if (eigen_values(es) < 0.)
             problems.flag_tachyon(Hpm);
 
-         PHYSICAL(MHpm(es)) = ZeroSqrt(eigen_values(es));
+         PHYSICAL(MHpm(es)) = AbsSqrt(eigen_values(es));
          if (es == 0)
             PHYSICAL(ZP) = mix_ZP;
       }
@@ -17519,6 +16919,18 @@ void CLASSNAME::calculate_MFu_pole()
    }
 }
 
+void CLASSNAME::calculate_MVG_pole()
+{
+   // diagonalization with medium precision
+   PHYSICAL(MVG) = 0.;
+}
+
+void CLASSNAME::calculate_MVP_pole()
+{
+   // diagonalization with medium precision
+   PHYSICAL(MVP) = 0.;
+}
+
 void CLASSNAME::calculate_MVWm_pole()
 {
    if (problems.is_tachyon(VWm))
@@ -17531,7 +16943,7 @@ void CLASSNAME::calculate_MVWm_pole()
    if (mass_sqr < 0.)
       problems.flag_tachyon(VWm);
 
-   PHYSICAL(MVWm) = ZeroSqrt(mass_sqr);
+   PHYSICAL(MVWm) = AbsSqrt(mass_sqr);
 }
 
 
@@ -17602,27 +17014,37 @@ double CLASSNAME::calculate_MFv_DRbar(double, int) const
    return 0.0;
 }
 
-double CLASSNAME::calculate_MVP_DRbar(double) const
+double CLASSNAME::calculate_MVP_DRbar(double)
 {
    return 0.0;
 }
 
-double CLASSNAME::calculate_MVZ_DRbar(double m_pole) const
+double CLASSNAME::calculate_MVZ_DRbar(double m_pole)
 {
    const double p = m_pole;
    const double self_energy = Re(self_energy_VZ(p));
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
-   return ZeroSqrt(mass_sqr);
+   if (mass_sqr < 0.) {
+      problems.flag_tachyon(VZ);
+      return m_pole;
+   }
+
+   return AbsSqrt(mass_sqr);
 }
 
-double CLASSNAME::calculate_MVWm_DRbar(double m_pole) const
+double CLASSNAME::calculate_MVWm_DRbar(double m_pole)
 {
    const double p = m_pole;
    const double self_energy = Re(self_energy_VWm(p));
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
-   return ZeroSqrt(mass_sqr);
+   if (mass_sqr < 0.) {
+      problems.flag_tachyon(VWm);
+      return m_pole;
+   }
+
+   return AbsSqrt(mass_sqr);
 }
 
 

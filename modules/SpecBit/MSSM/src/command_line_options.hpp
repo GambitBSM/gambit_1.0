@@ -58,14 +58,18 @@ public:
    const std::string& get_slha_input_file() const { return slha_input_file; }
    const std::string& get_slha_output_file() const { return slha_output_file; }
    const std::string& get_program_name() const { return program; }
+   const std::string& get_rgflow_file() const { return rgflow_file; }
+   const std::string& get_spectrum_file() const { return spectrum_file; }
 
 private:
    bool do_exit;
    bool do_print_model_info;
    int exit_status;
    std::string program;
+   std::string rgflow_file;
    std::string slha_input_file;
    std::string slha_output_file;
+   std::string spectrum_file;
 
    static bool starts_with(const std::string&, const std::string&);
 };

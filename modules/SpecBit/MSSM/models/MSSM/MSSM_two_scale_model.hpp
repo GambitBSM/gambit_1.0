@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 2 May 2014 14:58:17
+// File generated at Wed 11 Jun 2014 15:30:26
 
 #ifndef MSSM_TWO_SCALE_H
 #define MSSM_TWO_SCALE_H
@@ -28,12 +28,9 @@
 #include "two_scale_model.hpp"
 #include "problems.hpp"
 #include "config.h"
-//Just do relative path for now - tidy later
-//#include "../../../Spectrum.hpp"
 
 #include <iosfwd>
 #include <string>
-#include <map>
 
 #ifdef ENABLE_THREADS
 #include <mutex>
@@ -46,60 +43,12 @@
 namespace flexiblesusy {
 
 class Two_scale;
-  
 
 template<>
 class MSSM<Two_scale> : public Two_scale_model, public MSSM_soft_parameters {
 public:
    explicit MSSM(const MSSM_input_parameters& input_ = MSSM_input_parameters());
    virtual ~MSSM();
-   //methods from Spectrum to be defined.
-   // virtual double get_lsp_mass(int & particle_type, int & row, int & col) const;
-   // virtual int get_numbers_stable_particles() const; 
-   // virtual void RunToScale(double scale);
-   // virtual double GetScale() const;
-   // virtual void SetScale(double scale);
-   // virtual double get_DRbar_MassEigenstate(std::string) const;
-   // virtual double get_DRbar_MassEigenstate(std::string, int) const;
-   // virtual double get_DRbar_MassEigenstate(std::string, int, int) const;
-   // virtual double get_Pole_Mass(std::string) const;
-   // virtual double get_Pole_Mass(std::string, int) const;
-   // virtual double get_Pole_Mass(std::string, int, int) const;
-   // virtual double get_Mixing_angle(std::string) const;
-   // virtual double get_Mixing_element(std::string, int, int) const;
-   // virtual double get_mass4_parameter(std::string) const;
-   // virtual double get_mass4_parameter(std::string, int) const;
-   // virtual double get_mass4_parameter(std::string, int, int) const;
-   // virtual double get_mass3_parameter(std::string) const;
-   // virtual double get_mass3_parameter(std::string, int) const;
-   // virtual double get_mass3_parameter(std::string, int, int) const;
-   // virtual double get_mass2_parameter(std::string) const;
-   // virtual double get_mass2_parameter(std::string, int) const;
-   // virtual double get_mass2_parameter(std::string, int, int) const;
-   // virtual double get_mass_parameter(std::string) const;
-   // virtual double get_mass_parameter(std::string, int) const;
-   // virtual double get_mass_parameter(std::string, int, int) const;
-   // virtual double get_dimensionless_parameter(std::string) const;
-   // virtual double get_dimensionless_parameter(std::string, int) const;
-   // virtual double get_dimensionless_parameter(std::string, int, int) const;
-   // virtual std::string AccessError(std::string state) const;
-   // virtual double get_mass2_par(std::string) const;
-
-   // //define type for method of this class
-   // typedef double(MSSM<Two_scale>::*getmethod)() const;
-   // //define map type
-   // typedef std::map<std::string,getmethod>  par_Map;
-   // // typedef std::map<std::string,double>  par_Map;
-   
-   
-   // //data store as intanstiation of map type
-   // par_Map mass2_par_map;
-   // //the actual mapping
-   // // const mass2_par_mapping;
-   // //constructor only in this class
-   // void  mass2_par_mapping();
- 
-
 
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
@@ -107,6 +56,8 @@ public:
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
+   void reorder_DRbar_masses();
+   void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(unsigned);
    void set_number_of_ewsb_iterations(std::size_t);
@@ -128,10 +79,10 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set_precision(double);
 
-   double get_MVG() const { return MVG; }
+   double get_lsp(MSSM_info::Particles&) const;
+
    double get_MGlu() const { return MGlu; }
    const Eigen::Array<double,3,1>& get_MFv() const { return MFv; }
-   double get_MVP() const { return MVP; }
    double get_MVZ() const { return MVZ; }
    const Eigen::Array<double,6,1>& get_MSd() const { return MSd; }
    const Eigen::Array<double,3,1>& get_MSv() const { return MSv; }
@@ -145,6 +96,8 @@ public:
    const Eigen::Array<double,3,1>& get_MFe() const { return MFe; }
    const Eigen::Array<double,3,1>& get_MFd() const { return MFd; }
    const Eigen::Array<double,3,1>& get_MFu() const { return MFu; }
+   double get_MVG() const { return MVG; }
+   double get_MVP() const { return MVP; }
    double get_MVWm() const { return MVWm; }
 
    const Eigen::Matrix<double,6,6>& get_ZD() const { return ZD; }
@@ -167,10 +120,8 @@ public:
    void set_PhaseGlu(const std::complex<double>& PhaseGlu_) { PhaseGlu = PhaseGlu_; }
    const std::complex<double>& get_PhaseGlu() const { return PhaseGlu; }
 
-   void calculate_MVG();
    void calculate_MGlu();
    void calculate_MFv();
-   void calculate_MVP();
    void calculate_MVZ();
    Eigen::Matrix<double,6,6> get_mass_matrix_Sd() const;
    void calculate_MSd();
@@ -196,6 +147,8 @@ public:
    void calculate_MFd();
    Eigen::Matrix<double,3,3> get_mass_matrix_Fu() const;
    void calculate_MFu();
+   void calculate_MVG();
+   void calculate_MVP();
    void calculate_MVWm();
 
    double get_ewsb_eq_hh_1() const;
@@ -637,10 +590,8 @@ public:
 
    void tadpole_hh_2loop(double result[2]) const;
 
-   void calculate_MVG_pole();
    void calculate_MGlu_pole();
    void calculate_MFv_pole();
-   void calculate_MVP_pole();
    void calculate_MVZ_pole();
    void calculate_MSd_pole();
    void calculate_MSv_pole();
@@ -654,15 +605,17 @@ public:
    void calculate_MFe_pole();
    void calculate_MFd_pole();
    void calculate_MFu_pole();
+   void calculate_MVG_pole();
+   void calculate_MVP_pole();
    void calculate_MVWm_pole();
 
    double calculate_MFu_DRbar(double, int) const;
    double calculate_MFd_DRbar(double, int) const;
    double calculate_MFe_DRbar(double, int) const;
    double calculate_MFv_DRbar(double, int) const;
-   double calculate_MVP_DRbar(double) const;
-   double calculate_MVZ_DRbar(double) const;
-   double calculate_MVWm_DRbar(double) const;
+   double calculate_MVP_DRbar(double);
+   double calculate_MVZ_DRbar(double);
+   double calculate_MVWm_DRbar(double);
 
    double ThetaW() const;
    double v() const;
@@ -722,10 +675,8 @@ private:
    double F0(double, double, double) const;
    double G0(double, double, double) const;
 
-   double MVG;
    double MGlu;
    Eigen::Array<double,3,1> MFv;
-   double MVP;
    double MVZ;
    Eigen::Array<double,6,1> MSd;
    Eigen::Array<double,3,1> MSv;
@@ -739,6 +690,8 @@ private:
    Eigen::Array<double,3,1> MFe;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
+   double MVG;
+   double MVP;
    double MVWm;
 
    Eigen::Matrix<double,6,6> ZD;
@@ -759,11 +712,8 @@ private:
    Eigen::Matrix<std::complex<double>,3,3> ZUR;
 
    std::complex<double> PhaseGlu;
-  
+
 };
-
-
-
 
 std::ostream& operator<<(std::ostream&, const MSSM<Two_scale>&);
 
