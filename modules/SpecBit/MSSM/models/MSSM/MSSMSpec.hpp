@@ -39,10 +39,11 @@ public:
    virtual void RunToScale(double scale);
    virtual double GetScale() const;
    virtual void SetScale(double scale);
-   virtual double get_DRbar_MassEigenstate(std::string) const;
-   virtual double get_DRbar_MassEigenstate(std::string, int) const;
-   virtual double get_DRbar_MassEigenstate(std::string, int, int) const;
-   
+   virtual double get_tree_MassEigenstate(std::string) const;
+   virtual double get_tree_MassEigenstate(std::string, int) const;
+   virtual double get_tree_MassEigenstate(std::string, int, int) const;
+   virtual double get_tree_Mixing_angle(std::string) const;
+   virtual double get_tree_Mixing_element(std::string, int, int) const;
    virtual double get_mass4_parameter(std::string) const;
    virtual double get_mass4_parameter(std::string, int) const;
    virtual double get_mass4_parameter(std::string, int, int) const;
