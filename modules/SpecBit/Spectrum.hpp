@@ -36,11 +36,15 @@ public:
    virtual double get_Pole_Mass(std::string) const = 0;
    virtual double get_Pole_Mass(std::string, int) const = 0;
    virtual double get_Pole_Mass(std::string, int, int) const = 0;
-   virtual double get_DRbar_MassEigenstate(std::string) const = 0;
-   virtual double get_DRbar_MassEigenstate(std::string, int) const = 0;
-   virtual double get_DRbar_MassEigenstate(std::string, int, int) const = 0;
    virtual double get_Mixing_angle(std::string) const = 0;
    virtual double get_Mixing_element(std::string, int, int) const = 0;
+
+   virtual double get_tree_MassEigenstate(std::string) const = 0;
+   virtual double get_tree_MassEigenstate(std::string, int) const = 0;
+   virtual double get_tree_MassEigenstate(std::string, int, int) const = 0;
+   virtual double get_tree_Mixing_angle(std::string) const = 0;
+   virtual double get_tree_Mixing_element(std::string, int, int) const = 0;
+
    virtual double get_mass4_parameter(std::string) const = 0;
    virtual double get_mass4_parameter(std::string, int) const = 0;
    virtual double get_mass4_parameter(std::string, int, int) const = 0;

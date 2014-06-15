@@ -107,84 +107,84 @@ std::string MSSMSpec::AccessError(std::string state) const {
 
 
 //Takes a string and an index. 
-double MSSMSpec::get_DRbar_MassEigenstate(std::string polemass) const {
-   if(polemass == "MZ") 
+double MSSMSpec::get_tree_MassEigenstate(std::string mass) const {
+   if(mass == "MZ") 
       {
          return  model.get_MVZ();
       }
-   else if(polemass == "MW") 
+   else if(mass == "MW") 
       {
          return  model.get_MVWm();
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
-   else if(polemass == "MA0") 
+   else if(mass == "MA0") 
       {
          return  model.get_MAh()(1);
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
-    else if(polemass == "MHpm") 
+    else if(mass == "MHpm") 
       {
          return  model.get_MHpm()(1);
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
-   else if(polemass == "MGoldstone0") 
+   else if(mass == "MGoldstone0") 
       {
          return  model.get_MAh()(0);
       }
    //I really need to know goldstone index here!
    //Dangerous otherwise
-    else if(polemass == "MGoldstonePM") 
+    else if(mass == "MGoldstonePM") 
       {
          return  model.get_MHpm()(0);
       }
-    else if (polemass == "MGluino")
+    else if (mass == "MGluino")
        {
           return  model.get_MGlu();
        }
-    else if(polemass == "MGluon")
+    else if(mass == "MGluon")
       {
          return  model.get_MVG();
       }
-   else if(polemass == "MPhoton")
+   else if(mass == "MPhoton")
       {
          return  model.get_MVP();
       }
-   else if(polemass == "Mtop")
+   else if(mass == "Mtop")
       {
          return  model.get_MFu()(2);
       }
-    else if(polemass == "Mcharm")
+    else if(mass == "Mcharm")
       {
          return  model.get_MFu()(1);
       }
-    else if(polemass == "Mup")
+    else if(mass == "Mup")
       {
          return  model.get_MFu()(0);
       }
-    else if(polemass == "Mbottom")
+    else if(mass == "Mbottom")
       {
          return  model.get_MFd()(2);
       }
-    else if(polemass == "Mstrange")
+    else if(mass == "Mstrange")
       {
          return  model.get_MFd()(1);
       }
-    else if(polemass == "Mdown")
+    else if(mass == "Mdown")
       {
          return  model.get_MFd()(0);
       }
-    else if(polemass == "Mtau")
+    else if(mass == "Mtau")
       {
          return  model.get_MFe()(2);
       }
-    else if(polemass == "Mmuon")
+    else if(mass == "Mmuon")
       {
          return  model.get_MFe()(1);
       }
-    else if(polemass == "Melectron")
+    else if(mass == "Melectron")
       {
          return  model.get_MFe()(0);
       }
@@ -195,44 +195,44 @@ double MSSMSpec::get_DRbar_MassEigenstate(std::string polemass) const {
 }
 
 //Takes a string and an index. 
-double MSSMSpec::get_DRbar_MassEigenstate(std::string polemass, int i) const {
-   if(polemass == "MSd") 
+double MSSMSpec::get_tree_MassEigenstate(std::string mass, int i) const {
+   if(mass == "MSd") 
       {
          return model.get_MSd()(i);
       }
-   else if(polemass == "MSv") 
+   else if(mass == "MSv") 
       {
          return model.get_MSv()(i);
       }
-   else if(polemass == "MSu")
+   else if(mass == "MSu")
       {
          return model.get_MSu()(i);
       }
-   else if(polemass == "MSe")
+   else if(mass == "MSe")
       {
          return model.get_MSe()(i);
       } 
-   else if(polemass == "Mh0") 
+   else if(mass == "Mh0") 
       {
          return model.get_Mhh()(i);
       }
    //Here we may access the goldstone boson
    //this is probably too dangerous to keep!
-   else if(polemass == "MA0") 
+   else if(mass == "MA0") 
       {
          return model.get_MAh()(i);
       }
    //Here we may access the goldstone boson
    //this is probably too dangerous to keep!
-    else if(polemass == "MHpm") 
+    else if(mass == "MHpm") 
       {
          return model.get_MHpm()(i);
       }
-   else if(polemass == "MCha") 
+   else if(mass == "MCha") 
       {
          return model.get_MCha()(i);
       }
-   else if(polemass == "MChi") 
+   else if(mass == "MChi") 
       {
          return model.get_MChi()(i);
       }
@@ -244,7 +244,7 @@ double MSSMSpec::get_DRbar_MassEigenstate(std::string polemass, int i) const {
 
 
 //Takes a string and an index. 
-double MSSMSpec::get_DRbar_MassEigenstate(std::string polemass, int i, int j) const {
+double MSSMSpec::get_tree_MassEigenstate(std::string mass, int i, int j) const {
    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 
@@ -387,6 +387,85 @@ double MSSMSpec::get_Pole_Mass(std::string polemass, int i) const {
    }
 }
 
+
+double MSSMSpec::get_tree_Mixing_angle(std::string MixMat) const {
+ 
+   std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+
+}
+double MSSMSpec::get_tree_Mixing_element(std::string MixMat, int i, int j) const {
+
+ //Down squark mixing matrix
+   if(MixMat == "ZD") {
+      return model.get_ZD()(i,j);
+   }
+   //Up squark mixing matrix
+   else if(MixMat == "ZU") {
+      return model.get_ZU()(i,j);
+   }
+   //Charged slepton mixing matrix
+   else if(MixMat == "ZE") {
+      return model.get_ZE()(i,j);
+   }
+   //Charged sneutrino mixing matrix
+   else if(MixMat == "ZV") {
+      return model.get_ZV()(i,j);
+   }
+   //CP even Higgs mixing matrix
+   else if(MixMat == "ZH") {
+      return model.get_ZH()(i,j);
+   }
+    //CP odd Higgs mixing matrix
+   else if(MixMat == "ZA") {
+      return model.get_ZA()(i,j);
+   }
+   //Charged Higgs mixing matrix
+   else if(MixMat == "ZPM") {
+      return model.get_ZP()(i,j);
+   }
+   // //Neutralino mass matrix
+   // else if(MixMat == "ZN") {
+   //    return model.get_get_physical().ZN()(i,j);
+   // }
+   //  //Chargino mass matrices
+   // else if(MixMat == "UM") {
+   //    return model.get_physical().UM()(i,j);
+   // }
+   // //Chargino mass matrices
+   // else if(MixMat == "UP") {
+   //    return model.get_physical().UP()(i,j);
+   // }  
+    
+   // //Down quark left mixing matrix
+   // if(MixMat == "ZDL") {
+   //    return model.get_physical().ZDL()(i,j);
+   // }
+   // //Down quark right mixing matrix
+   // if(MixMat == "ZDR") {
+   //    return model.get_physical().ZDL()(i,j);
+   // }
+   // //Up quark left mixing matrix
+   // else if(MixMat == "ZUL") {
+   //    return model.get_physical().ZUL()(i,j);
+   // }
+   //  //Up quark right mixing matrix
+   // else if(MixMat == "ZUR") {
+   //    return model.get_physical().ZUR()(i,j);
+   // }
+   // //Charged lepton left mixing matrix
+   // else if(MixMat == "ZEL") {
+   //    return model.get_physical().ZEL()(i,j);
+   // }
+   // //Charged lepton left mixing matrix
+   // else if(MixMat == "ZER") {
+   //    return model.get_physical().ZER()(i,j);
+   // }
+
+std::cout << "Error: Sorry I know nothing" << std::endl;
+   return 6666666666666.6666666666666;
+
+}
 
 //Takes a string and an index. 
 double MSSMSpec::get_Pole_Mass(std::string polemass, int i, int j) const {
