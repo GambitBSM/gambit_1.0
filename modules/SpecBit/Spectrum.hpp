@@ -3,7 +3,10 @@
 #ifndef SPECTRUM_H
 #define SPECTRUM_H
 
-class Spectrum {
+#include "Phys.hpp"
+
+
+class Spectrum : public ScaleDep::RunningPars, public Phys {
 public:
    // returns the lightest stable particle (lsp) mass 
    //  gives 3 integers to specify the state 
@@ -18,51 +21,10 @@ public:
    // this method will tell you how many.
    //If more than zero you probbaly *need* to know what model
    // you are working on, so we don't give all stable particles
-   virtual int get_numbers_stable_particles() const = 0;
-   //run object to a particular scale
-   virtual void RunToScale(double scale) = 0;
-   //returns the renormalisation scale of parameters
-   virtual double GetScale() const = 0;
-   //Sets the renormalisation scale of parameters 
-   //somewhat dangerous to allow this but may be needed
-   virtual void SetScale(double scale) = 0;
-
-   //return data member matching string
-   //I'm splitting this up into types for just now
-   //may reduce errors from typing when parameters and
-   //pole masses have similar names etc
+   virtual int get_numbers_stable_particles() const = 0;  
    
-   //this get uses dumbest possible approach of if-else statements
-   virtual double get_Pole_Mass(std::string) const = 0;
-   virtual double get_Pole_Mass(std::string, int) const = 0;
-   virtual double get_Pole_Mass(std::string, int, int) const = 0;
-   virtual double get_Mixing_angle(std::string) const = 0;
-   virtual double get_Mixing_element(std::string, int, int) const = 0;
-
-   virtual double get_tree_MassEigenstate(std::string) const = 0;
-   virtual double get_tree_MassEigenstate(std::string, int) const = 0;
-   virtual double get_tree_MassEigenstate(std::string, int, int) const = 0;
-   virtual double get_tree_Mixing_angle(std::string) const = 0;
-   virtual double get_tree_Mixing_element(std::string, int, int) const = 0;
-
-   virtual double get_mass4_parameter(std::string) const = 0;
-   virtual double get_mass4_parameter(std::string, int) const = 0;
-   virtual double get_mass4_parameter(std::string, int, int) const = 0;
-   virtual double get_mass3_parameter(std::string) const = 0;
-   virtual double get_mass3_parameter(std::string, int) const = 0;
-   virtual double get_mass3_parameter(std::string, int, int) const = 0;
-   virtual double get_mass2_parameter(std::string) const = 0;
-   virtual double get_mass2_parameter(std::string, int) const = 0;
-   virtual double get_mass2_parameter(std::string, int, int) const = 0;
-   virtual double get_mass_parameter(std::string) const = 0;
-   virtual double get_mass_parameter(std::string, int) const = 0;
-   virtual double get_mass_parameter(std::string, int, int) const = 0;
-   virtual double get_dimensionless_parameter(std::string) const = 0;
-   virtual double get_dimensionless_parameter(std::string, int) const = 0;
-   virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
-   
-   //alternative getter using map
-   virtual double get_mass2_par(std::string) const = 0;
 };
-#endif
 
+
+
+#endif
