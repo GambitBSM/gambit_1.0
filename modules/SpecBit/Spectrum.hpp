@@ -6,7 +6,7 @@
 #include "Phys.hpp"
 
 
-class Spectrum : public ScaleDep::RunningPars, public Phys {
+class Spectrum : public scaledep::RunningPars, public Phys {
 public:
    // returns the lightest stable particle (lsp) mass 
    //  gives 3 integers to specify the state 
