@@ -2,7 +2,7 @@
 #ifndef PHYS_H
 #define PHYS_H
 
-namespace ScaleDep {
+namespace scaledep {
    //abstract class for accessing running parameters calculated by spectrum
    // generator
    class RunningPars {
