@@ -242,7 +242,7 @@ void setup2(MSSM<Two_scale> *& mssm)
 
 void spec_manipulate(Spectrum * spec) {
    std::cout << "inside spectrum_manipulate" <<std::endl;
-   double mgluino_drbar =  spec->get_DRbar_MassEigenstate("MGluino");
+   double mgluino_drbar =  spec->get_tree_MassEigenstate("MGluino");
    std::cout << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
    double mgluino = spec->get_Pole_Mass("MGluino");
    std::cout << "mgluino = " << mgluino<< std::endl;
@@ -269,7 +269,7 @@ void spec_manipulate(Spectrum * spec) {
 
 void mssm_manipulate(MSSMSpec & mssm) {
    std::cout << "inside mssm_manipulate" <<std::endl;
-   double mgluino_drbar =  mssm.get_DRbar_MassEigenstate("MGluino");
+   double mgluino_drbar =  mssm.get_tree_MassEigenstate("MGluino");
    std::cout << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
    double mgluino = mssm.get_Pole_Mass("MGluino");
    std::cout << "mgluino = " << mgluino<< std::endl;
