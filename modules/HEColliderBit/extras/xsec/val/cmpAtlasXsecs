@@ -47,7 +47,7 @@ for m0, m12 in atlasxsecs.keys():
         return sum(atlasxsecs[m0,m12].get(fs, 0.0) for fs in fss)
 
     ## m0, m12 params
-    XSECMIN = 1e-4
+    XSECMIN = 1e-6
     out = "%.4g %.4g" % (m0, m12)
     ## g~q~
     xsec_gq = xsecs[3]
@@ -71,12 +71,15 @@ for m0, m12 in atlasxsecs.keys():
 
 
 # def mean(xs):
-#     return sum(x for x in xs)/float(len(xs))
+#     filtxs = list(x for x in xs if x != -1)
+#     return sum(x for x in filtxs if x != -1)/float(len(filtxs))
 # def rms(xs):
 #     from math import sqrt
-#     return sqrt(sum(x**2 for x in xs)/float(len(xs)))
+#     filtxs = list(x for x in xs if x != -1)
+#     return sqrt(sum(x**2 for x in filtxs)/float(len(filtxs)))
 # def absmean(xs):
-#     return sum(abs(x) for x in xs)/float(len(xs))
+#     filtxs = list(x for x in xs if x != -1)
+#     return sum(abs(x) for x in filtxs)/float(len(filtxs))
 
 # print
 # print devs_gq
