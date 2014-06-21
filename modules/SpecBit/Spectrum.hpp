@@ -4,7 +4,7 @@
 #define SPECTRUM_H
 
 #include "Phys.hpp"
-
+#include <map>
 
 class Spectrum : public scaledep::RunningPars, public Phys {
 public:
@@ -25,6 +25,58 @@ public:
    
 };
 
+// If we were allowed to use later C++11 compilers we could use template aliases to save some effort, but as
+// it is we'll just have to redo these typedefs in the derived classes. Can do this with a macro.
+#define REDO_TYPEDEFS(SpecType) \
+   typedef double(SpecType::*FSptr)(void); /* Function pointer signature for FlexiSUSY class member functions */ \
+   typedef std::map<std::string, FSptr> fmap; /* Typedef for map of strings to function pointers              */
+
+// Need the templating so that the calls to the FlexiSUSY functions know which FlexiSUSY class to use
+template <class SpecType>
+class Spec : public Spectrum
+{
+   REDO_TYPEDEFS(SpecType)
+  
+   private:
+      // Need to implement these two functions in each derived class, but they are trivial. Maybe there is some way to
+      // avoid having to do this step, but I can't think of it just now.
+      virtual fmap& get_mass2_map() const = 0;  
+      virtual SpecType& get_bound_spec() const = 0; 
+
+   public:
+      virtual double get_mass2_par(std::string) const;
+};
+
+
+// Have to re-write these two functions for each derived class, so that reference to the correct member variables is retrieved.
+// Need these functions though so that the original definition of get_mass2_par can be re-used.
+// Maybe do this with another macro...
+#define REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(ClassName,SpecType) \
+  ClassName::fmap& ClassName::get_mass2_map() const {return mass2_map;} \
+  SpecType&        ClassName::get_bound_spec() const {return model;} \
+  ClassName::fmap  ClassName::mass2_map(ClassName::fill_mass2_map());
+
+// Should now never have to override this I think
+template <class SpecType>
+double Spec<SpecType>::get_mass2_par(std::string mass) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap& mass2map(get_mass2_map()); // Get correct map for whatever class this is
+   
+   typename fmap::iterator it = mass2map.find(mass); // Find desired FlexiSUSY function
+
+   if( it==mass2map.end() )
+   {
+      std::cout << "No mass2 with string reference '"<<mass<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr f = it->second;
+       return (spec.*f)();
+   }
+}
 
 
 #endif
