@@ -28,7 +28,7 @@ public:
 // If we were allowed to use later C++11 compilers we could use template aliases to save some effort, but as
 // it is we'll just have to redo these typedefs in the derived classes. Can do this with a macro.
 #define REDO_TYPEDEFS(SpecType) \
-   typedef double(SpecType::*FSptr)(void); /* Function pointer signature for FlexiSUSY class member functions */ \
+   typedef double(SpecType::*FSptr)(void) const; /* Function pointer signature for FlexiSUSY class member functions */ \
    typedef std::map<std::string, FSptr> fmap; /* Typedef for map of strings to function pointers              */
 
 // Need the templating so that the calls to the FlexiSUSY functions know which FlexiSUSY class to use
