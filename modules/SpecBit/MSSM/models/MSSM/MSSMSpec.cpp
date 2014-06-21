@@ -1,9 +1,10 @@
 # include "MSSMSpec.hpp"
 
+
 using namespace flexiblesusy;
 
-MSSMSpec::MSSMSpec(MSSM<Two_scale> m) {
-   model = m;
+MSSMSpec::MSSMSpec(MSSM<Two_scale> m) : model(m) 
+{
 }
 
 MSSMSpec::~MSSMSpec()
@@ -570,9 +571,9 @@ double MSSMSpec::get_Mixing_element(std::string MixMat, int i, int j) const {
 // }
 
 
-double MSSMSpec::get_mass2_par(std::string masssq) const {
-   std::cout<< "this has no implementation yet." << std::endl;   
-}
+// double MSSMSpec::get_mass2_par(std::string masssq) const {
+//    std::cout<< "this has no implementation yet." << std::endl;   
+// }
 
 
 double MSSMSpec::get_mass4_parameter(std::string mass) const {
@@ -737,7 +738,17 @@ double MSSMSpec::get_mass_parameter(std::string mass, int i, int j) const {
       }
 }
 
+// Function to initialise mass2_map
+MSSMSpec::fmap MSSMSpec::fill_mass2_map() 
+{
+   fmap tmp_map;
+  
+   tmp_map["BMu"] = &MssmFS::get_BMu;
+   tmp_map["mHd2"] = &MssmFS::get_mHd2;
+   tmp_map["mHu2"] = &MssmFS::get_mHu2;
 
+   return tmp_map;
+}
 
 
 MSSM<Two_scale> MSSMSpec:: get_modelobject() {
