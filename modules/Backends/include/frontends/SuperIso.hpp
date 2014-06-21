@@ -2,7 +2,7 @@
  * Frontend for SuperIso backend
  * 
  * Last modified:
- * Nazila Mahmoudi 2013-12-31
+ * Nazila Mahmoudi 2014-06-15
  */
 
 /* Specify the path to the shared library along with a backend name. */
@@ -13,8 +13,8 @@
 #else
   #define BACKENDNAME SuperIso
 #endif
-#define VERSION 0.1
-#define SAFE_VERSION 0_1
+#define VERSION 3.3
+#define SAFE_VERSION 3_3
 
 /* The following macro loads the library (using dlmopen) in LIBPATH 
  * when this header file is included somewhere. */
@@ -38,11 +38,8 @@ LOAD_LIBRARY
  * If left out (as done below) it will default to "[backend name]_[function name]_capability"
  * (e.g. "LibFirst_initialize_capability")  */
 
-BE_FUNCTION(Les_Houches_Reader, int, (char*, struct parameters*), "Les_Houches_Reader", "Les_Houches_Reader")
 BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
 BE_FUNCTION(slha_adjust, void, (struct parameters*), "slha_adjust", "slha_adjust")
-BE_FUNCTION(test_file, int, (char*), "test_file", "test_file")
-BE_FUNCTION(test_slha, int, (char*), "test_slha", "test_slha")
 
 BE_FUNCTION(CW_calculator, void, (double*, double*, double*, double, struct parameters*), "CW_calculator", "CW_calculator")
 BE_FUNCTION(C_calculator_base1, void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*), "C_calculator_base1", "C_calculator_base1")
@@ -55,11 +52,6 @@ BE_FUNCTION(Bsmumu, double, (double*, double*, std::complex<double>*, std::compl
 BE_FUNCTION(Bsmumu_untag, double, (double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "Bsmumu_untag", "Bsmumu_untag")
 BE_FUNCTION(Bdmumu, double, (double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double), "Bdmumu", "Bdmumu")
 BE_FUNCTION(Btaunu, double, (struct parameters*), "Btaunu", "Btaunu")
-
-// TEST-FUNCTIONS TO BE REMOVED
-BE_FUNCTION(bsgamma_calculator, double, (char*), "bsgamma_calculator", "bsgamma_calculator")
-BE_FUNCTION(Btaunu_calculator, double, (char*), "Btaunu_calculator", "Btaunu_calculator")
-BE_FUNCTION(Li2, double, (double), "Li2", "Li2")
 
 BE_INI_FUNCTION{}
 DONE

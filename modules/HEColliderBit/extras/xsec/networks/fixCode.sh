@@ -1,16 +1,7 @@
-#!/bin/sh
-for file in `ls *cxx`
-do
-    newfilename=`echo $file |  sed 's/NNfunction-/NNfunction_/g'`
-    echo $newfilename
-    cat $file | sed 's/NNfunction-/NNfunction_/g' > $newfilename
-    rm $file
-done
+#! /usr/bin/env bash
 
-for file in `ls *h`
-do
-    newfilename=`echo $file |  sed 's/NNfunction-/NNfunction_/g'`
-    echo $newfilename
-    cat $file | sed 's/NNfunction-/NNfunction_/g' > $newfilename
-    rm $file
+for file in NNfunction-*.{cxx,h}; do
+    newfile=${file/NNfunction-/NNfunction_}
+    echo "$file -> $newfile"
+    cat $file | sed -e 's/NNfunction-/NNfunction_/g' > $newfile
 done

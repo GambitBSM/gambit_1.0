@@ -228,7 +228,17 @@ twalk_beta:
 
 # Uncomment to test FlavBit
 #- purpose:      Likelihood
+#  capability:   SI_fill
+#- purpose:      Likelihood
 #  capability:   SI_bsgamma
+#- purpose:      Likelihood
+#  capability:   SI_Bsmumu
+#- purpose:      Likelihood
+#  capability:   SI_Bsmumu_untag
+#- purpose:      Likelihood
+#  capability:   SI_Bdmumu
+#- purpose:      Likelihood
+#  capability:   SI_Btaunu
 
 # Uncomment to test HEColliderBit
 #- purpose:      Observable
