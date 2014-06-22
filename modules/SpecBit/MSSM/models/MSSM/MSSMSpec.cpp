@@ -90,7 +90,8 @@ int MSSMSpec::get_numbers_stable_particles() const {
 //these are just wrappers.  Need to test this carefully though
 //inheritance is complicated
 void MSSMSpec::RunToScale(double scale){
-   model.run_to(scale);
+   std::cout << "In mssm implementation of RunToSacle" << std::endl;
+   model.MSSM<Two_scale>::run_to(scale);
 }
 double MSSMSpec::GetScale() const {
    std::cout << "In mssm implementation of GetSacle" << std::endl;
