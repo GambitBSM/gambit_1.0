@@ -743,7 +743,6 @@ double MSSMSpec::get_mass_parameter(std::string mass, int i, int j) const {
 MSSMSpec::fmap MSSMSpec::fill_mass2_map() 
 {
    fmap tmp_map;
-  
    tmp_map["BMu"] = &MssmFS::get_BMu;
    tmp_map["mHd2"] = &MssmFS::get_mHd2;
    tmp_map["mHu2"] = &MssmFS::get_mHu2;
@@ -751,6 +750,30 @@ MSSMSpec::fmap MSSMSpec::fill_mass2_map()
    return tmp_map;
 }
 
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass2_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass2_map2() 
+{
+   fmap2 tmp_map;
+   tmp_map["mq2"]= &MssmFS::get_mq2;
+   tmp_map["ml2"] =&MssmFS::get_ml2;
+   tmp_map["md2"]= &MssmFS::get_md2;
+   tmp_map["mu2"] =&MssmFS::get_mu2;
+   tmp_map["me2"]= &MssmFS::get_me2;
+  
+   return tmp_map;
+}
 
 MSSM<Two_scale> MSSMSpec:: get_modelobject() {
    return model;
