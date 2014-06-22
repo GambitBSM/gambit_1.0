@@ -39,6 +39,8 @@ namespace scaledep {
    
    //alternative getter using map
       virtual double get_mass2_parameter(std::string) const = 0;
+      virtual double get_mass2_parameter(std::string, int i) const = 0;
+      virtual double get_mass2_parameter(std::string, int i, int j) const = 0;
       
    };
       

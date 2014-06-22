@@ -17,8 +17,14 @@ typedef MSSM<Two_scale> MssmFS;
 private:
    flexiblesusy::MSSM<Two_scale> model;
       static fmap mass2_map;
+      static fmap1 mass2_map1;
+      static fmap2 mass2_map2;
       static fmap fill_mass2_map(); 
+      static fmap1 fill_mass2_map1();
+      static fmap2 fill_mass2_map2(); 
       fmap& get_mass2_map() const; 
+      fmap1& get_mass2_map1() const;
+      fmap2& get_mass2_map2() const; 
       MssmFS get_bound_spec() const; 
 public:
    //constructors
