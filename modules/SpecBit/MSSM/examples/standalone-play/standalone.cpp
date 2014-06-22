@@ -249,21 +249,21 @@ void spec_manipulate(Spectrum * spec) {
    double lowscale = spec->GetScale();
    double highscale = 1e+15;
    std::cout << "lowscale = " << lowscale << std::endl;
-   // std::cout << "map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
-   // std::cout << "map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
-   // std::cout << "map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
+   std::cout << "map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
+   std::cout << "map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
+   std::cout << "map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
   
    spec->RunToScale(highscale);
    std::cout << "after run scale says" << spec->GetScale() << std::endl;
-   // std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
-   // std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
-   // std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
+   std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
+   std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
+   std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
   
    spec->RunToScale(lowscale);
    std::cout << "after run scale says" << spec->GetScale() << std::endl;
-   // std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
-   // std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
-   // std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
+   std::cout << " map says mHd2 "  << spec->get_mass2_par("mHd2") <<std::endl;
+   std::cout << " map says mHu2 "  << spec->get_mass2_par("mHu2") <<std::endl;
+   std::cout << " map says BMu "  << spec->get_mass2_par("BMu") <<std::endl;
 
 }
 
@@ -274,23 +274,25 @@ void mssm_manipulate(MSSMSpec & mssm) {
    double mgluino = mssm.get_Pole_Mass("MGluino");
    std::cout << "mgluino = " << mgluino<< std::endl;
    double lowscale = mssm.GetScale();
+   //setting to same scale to test
+   mssm.SetScale(lowscale);
    double highscale = 1e+15;
    std::cout << "lowscale = " << lowscale << std::endl;
-   // std::cout << "map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   // std::cout << "map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   // std::cout << "map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+   std::cout << "map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   std::cout << "map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   std::cout << "map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
   
    mssm.RunToScale(highscale);
    std::cout << "after run scale says" << mssm.GetScale() << std::endl;
-   // std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   // std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   // std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+   std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
   
    mssm.RunToScale(lowscale);
    std::cout << "after run scale says" << mssm.GetScale() << std::endl;
-   // std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   // std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   // std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+   std::cout << " map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   std::cout << " map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   std::cout << " map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
 
 }
 
