@@ -15,11 +15,11 @@ typedef MSSM<Two_scale> MssmFS;
    class MSSMSpec : public Spec<MssmFS> {
       REDO_TYPEDEFS(MssmFS)
 private:
-   flexiblesusy::MSSM<Two_scale>& model;
+   flexiblesusy::MSSM<Two_scale> model;
       static fmap mass2_map;
       static fmap fill_mass2_map(); 
       fmap& get_mass2_map() const; 
-      MssmFS& get_bound_spec() const; 
+      MssmFS get_bound_spec() const; 
 public:
    //constructors
    MSSMSpec(MSSM<Two_scale>);
