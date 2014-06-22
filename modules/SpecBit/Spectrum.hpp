@@ -72,7 +72,6 @@ double Spec<SpecType>::get_mass2_parameter(std::string mass) const
    }
    else
    {
-      std::cout << "string reference '"<<mass<<"' exists!" <<std::endl;
        // Get function out of map and call it on the bound flexiSUSY object
        FSptr f = it->second;
        return (spec.*f)();
