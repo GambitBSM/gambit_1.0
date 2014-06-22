@@ -604,7 +604,7 @@ std::cout << "Error: The dimension 3 parameter you requested does not exist in t
    return -1.0;
 
 }
-double MSSMSpec::get_mass2_parameter(std::string mass) const {
+double MSSMSpec::get_mass2_par(std::string mass) const {
    if(mass == "BMu"){
       return model.get_BMu();
    }
@@ -619,11 +619,11 @@ double MSSMSpec::get_mass2_parameter(std::string mass) const {
    return -1.0;
    }
 }
-double MSSMSpec::get_mass2_parameter(std::string, int i) const {
+double MSSMSpec::get_mass2_par(std::string, int i) const {
    std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 }
-double MSSMSpec::get_mass2_parameter(std::string mass, int i, int j) const {
+double MSSMSpec::get_mass2_par(std::string mass, int i, int j) const {
    if(mass == "mq2"){
       return model.get_mq2(i,j);
    }

@@ -54,9 +54,9 @@ public:
    virtual double get_mass3_parameter(std::string) const;
    virtual double get_mass3_parameter(std::string, int) const;
    virtual double get_mass3_parameter(std::string, int, int) const;
-   virtual double get_mass2_parameter(std::string) const;
-   virtual double get_mass2_parameter(std::string, int) const;
-   virtual double get_mass2_parameter(std::string, int, int) const;
+   virtual double get_mass2_par(std::string) const;
+   virtual double get_mass2_par(std::string, int) const;
+   virtual double get_mass2_par(std::string, int, int) const;
    virtual double get_mass_parameter(std::string) const;
    virtual double get_mass_parameter(std::string, int) const;
    virtual double get_mass_parameter(std::string, int, int) const;
