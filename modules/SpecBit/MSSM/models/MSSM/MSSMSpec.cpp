@@ -754,3 +754,10 @@ MSSMSpec::fmap MSSMSpec::fill_mass2_map()
 MSSM<Two_scale> MSSMSpec:: get_modelobject() {
    return model;
 }
+
+// MSSMSpec::fmap& MSSMSpec::get_mass2_map() const {return mass2_map;} \
+//   MssmFS MSSMSpec::get_bound_spec() const {return model;} \
+//   MSSMSpec::fmap  MSSMSpec::mass2_map(MSSMSpec::fill_mass2_map());
+
+// Use our time-saving macro for the rest...
+REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS)
