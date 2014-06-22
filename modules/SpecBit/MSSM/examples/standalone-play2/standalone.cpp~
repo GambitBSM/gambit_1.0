@@ -278,12 +278,13 @@ void mssm_manipulate(MSSMSpec & mssm) {
    mssm.SetScale(lowscale);
    double highscale = 1e+15;
    std::cout << "lowscale = " << lowscale << std::endl;
-   std::cout << "map says mHd2 "  << mssm.get_mass2_parameter("mHd2") <<std::endl;
-   std::cout << "map says mHu2 "  << mssm.get_mass2_parameter("mHu2") <<std::endl;
-   std::cout << "map says BMu "  << mssm.get_mass2_parameter("BMu") <<std::endl;
-   std::cout << "map says mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
-   std::cout << "map says mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
-   std::cout << "map says BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
+    std::cout << "mssm.GetScale() =" << mssm.GetScale() << std::endl;
+   std::cout << "map mHd2 "  << mssm.get_mass2_parameter("mHd2") <<std::endl;
+   std::cout << "map mHu2 "  << mssm.get_mass2_parameter("mHu2") <<std::endl;
+   std::cout << "map BMu "  << mssm.get_mass2_parameter("BMu") <<std::endl;
+   std::cout << "map mHd2 "  << mssm.get_mass2_par("mHd2") <<std::endl;
+   std::cout << "map mHu2 "  << mssm.get_mass2_par("mHu2") <<std::endl;
+   std::cout << "map BMu "  << mssm.get_mass2_par("BMu") <<std::endl;
   
    std::cout << "diff mHd2 "  << mssm.get_mass2_parameter("mHd2") 
              -  mssm.get_mass2_par("mHd2") <<std::endl;
@@ -291,6 +292,9 @@ void mssm_manipulate(MSSMSpec & mssm) {
              - mssm.get_mass2_par("mHu2") <<std::endl;
    std::cout << "diff BMu "  << mssm.get_mass2_parameter("BMu") 
              -  mssm.get_mass2_par("BMu") <<std::endl;
+
+   std::cout << "mq2(1,1) =  " <<  mssm.get_mass2_parameter("mq2",1,1) << std::endl;
+   std::cout << "fake mq2(1) =  " <<  mssm.get_mass2_parameter("mq2",1) << std::endl;
 
    mssm.RunToScale(highscale);
    std::cout << "after run scale says" << mssm.GetScale() << std::endl;
@@ -317,9 +321,7 @@ void spectrum_example() {
  
    //So now we have a mssm1 model object filled, as it will be
    //stored in Gambit after the spectrum generator has run
-
    // mssm.mass2_par_mapping(); //call mapping - this needs to be changed.
-
 
    mssm_manipulate(mssm);  //function can manipulate knowing the model
    spec_manipulate(&mssm); //function can manipulate without knowing model.
