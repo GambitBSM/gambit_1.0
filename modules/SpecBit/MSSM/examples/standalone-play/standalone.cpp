@@ -5,8 +5,80 @@
 #include "wrappers.hpp"
 #include "../../../Spectrum.hpp"
 #include "MSSMSpec.hpp"
-
+#include "numerics.hpp"
 using namespace flexiblesusy;
+
+bool TestMssmMass2_0(MSSMSpec & mssm){
+   //we test both 
+   bool pass = is_equal(mssm.get_mass2_parameter("BMu"),mssm.get_modelobject().get_BMu());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass2_parameter("mHd2"),mssm.get_modelobject().get_mHd2());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass2_parameter("mHu2"),mssm.get_modelobject().get_mHu2());
+   if(pass == false) return pass;
+   
+   pass =  is_equal(mssm.get_mass2_par("BMu"),mssm.get_modelobject().get_BMu());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass2_par("mHd2"),mssm.get_modelobject().get_mHd2());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass2_par("mHu2"),mssm.get_modelobject().get_mHu2());
+ 
+   return pass;
+}
+
+bool TestMssmMass2_2(MSSMSpec & mssm){
+   bool pass = false;
+   for(int i = 0; i<=2; i++){
+      for(int j = 0; j<=2; j++){
+         pass = is_equal(mssm.get_mass2_parameter("mq2",i,j),
+                         mssm.get_modelobject().get_mq2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_parameter("ml2",i,j),
+                         mssm.get_modelobject().get_ml2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_parameter("md2",i,j),
+                         mssm.get_modelobject().get_md2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_parameter("mu2",i,j),
+                         mssm.get_modelobject().get_mu2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_parameter("me2",i,j),
+                         mssm.get_modelobject().get_me2(i,j)); 
+         if(pass == false) return pass;
+
+         
+         //repeat for older type of getters
+         pass = is_equal(mssm.get_mass2_par("mq2",i,j),
+                         mssm.get_modelobject().get_mq2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_par("ml2",i,j),
+                         mssm.get_modelobject().get_ml2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_par("md2",i,j),
+                         mssm.get_modelobject().get_md2(i,j)); 
+         if(pass == false) return pass;
+          pass = is_equal(mssm.get_mass2_par("mu2",i,j),
+                         mssm.get_modelobject().get_mu2(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass2_par("me2",i,j),
+                         mssm.get_modelobject().get_me2(i,j)); 
+         if(pass == false) return pass;
+      }
+   }
+   return pass;
+}
+
+bool TestMssmGets(MSSMSpec & mssm){
+   bool pass = false; 
+   pass = TestMssmMass2_0(mssm);
+   if(pass == false) return pass;
+   pass = TestMssmMass2_2(mssm);
+   if(pass == false) return pass;
+   
+   
+   return pass;
+
+}
 
 void setup(MSSM<Two_scale>& mssm)
 {
@@ -335,7 +407,10 @@ void spectrum_example() {
    mssm1.calculate_DRbar_parameters(); //calculated DRbar masses 
    mssm1.calculate_pole_masses();//now calculate pole masses
    MSSMSpec mssm(mssm1);
- 
+   if(TestMssmGets(mssm)==false){
+      std::cerr << "TestMssmGets fail." << std::endl;
+      return;
+   }
    //So now we have a mssm1 model object filled, as it will be
    //stored in Gambit after the spectrum generator has run
    // mssm.mass2_par_mapping(); //call mapping - this needs to be changed.
@@ -353,6 +428,6 @@ int main()
    INFO("=============================");
    
    spectrum_example();
- 
+   
    return 0;
 }
