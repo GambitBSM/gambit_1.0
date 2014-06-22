@@ -27,9 +27,9 @@ namespace scaledep {
       virtual double get_mass3_parameter(std::string) const = 0;
       virtual double get_mass3_parameter(std::string, int) const = 0;
       virtual double get_mass3_parameter(std::string, int, int) const = 0;
-      virtual double get_mass2_parameter(std::string) const = 0;
-      virtual double get_mass2_parameter(std::string, int) const = 0;
-      virtual double get_mass2_parameter(std::string, int, int) const = 0;
+      virtual double get_mass2_par(std::string) const = 0;
+      virtual double get_mass2_par(std::string, int) const = 0;
+      virtual double get_mass2_par(std::string, int, int) const = 0;
       virtual double get_mass_parameter(std::string) const = 0;
       virtual double get_mass_parameter(std::string, int) const = 0;
       virtual double get_mass_parameter(std::string, int, int) const = 0;
@@ -38,7 +38,7 @@ namespace scaledep {
       virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
    
    //alternative getter using map
-      virtual double get_mass2_par(std::string) const = 0;
+      virtual double get_mass2_parameter(std::string) const = 0;
       
    };
       

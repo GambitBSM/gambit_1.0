@@ -44,7 +44,7 @@ class Spec : public Spectrum
       virtual SpecType get_bound_spec() const = 0; 
 
    public:
-      virtual double get_mass2_par(std::string) const;
+      virtual double get_mass2_parameter(std::string) const;
 };
 
 
@@ -58,7 +58,7 @@ class Spec : public Spectrum
 
 // Should now never have to override this I think
 template <class SpecType>
-double Spec<SpecType>::get_mass2_par(std::string mass) const
+double Spec<SpecType>::get_mass2_parameter(std::string mass) const
 {
    SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
    fmap& mass2map(get_mass2_map()); // Get correct map for whatever class this is
@@ -72,6 +72,7 @@ double Spec<SpecType>::get_mass2_par(std::string mass) const
    }
    else
    {
+      std::cout << "string reference '"<<mass<<"' exists!" <<std::endl;
        // Get function out of map and call it on the bound flexiSUSY object
        FSptr f = it->second;
        return (spec.*f)();
