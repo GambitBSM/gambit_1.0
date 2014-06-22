@@ -53,7 +53,7 @@ class Spec : public Spectrum
 // Maybe do this with another macro...
 #define REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(ClassName,SpecType) \
   ClassName::fmap& ClassName::get_mass2_map() const {return mass2_map;} \
-  SpecType&        ClassName::get_bound_spec() const {return model;} \
+  SpecType&       ClassName::get_bound_spec() const {return model;} \
   ClassName::fmap  ClassName::mass2_map(ClassName::fill_mass2_map());
 
 // Should now never have to override this I think
