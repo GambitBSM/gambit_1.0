@@ -15,7 +15,7 @@ typedef MSSM<Two_scale> MssmFS;
    class MSSMSpec : public Spec<MssmFS> {
       REDO_TYPEDEFS(MssmFS)
 private:
-   flexiblesusy::MSSM<Two_scale> model;
+   flexiblesusy::MSSM<Two_scale>& model;
       static fmap mass2_map;
       static fmap fill_mass2_map(); 
       fmap& get_mass2_map() const; 
@@ -65,13 +65,15 @@ public:
    virtual double get_dimensionless_parameter(std::string, int, int) const;
   
    //map test
-   virtual double get_mass2_par(std::string) const;
+      //  virtual double get_mass2_par(std::string) const;
    
 
    //Need a method to return model since it is private
    MSSM<Two_scale> get_modelobject();
 
 };
+
+
 
 }
 
