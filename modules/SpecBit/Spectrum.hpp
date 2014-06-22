@@ -41,7 +41,7 @@ class Spec : public Spectrum
       // Need to implement these two functions in each derived class, but they are trivial. Maybe there is some way to
       // avoid having to do this step, but I can't think of it just now.
       virtual fmap& get_mass2_map() const = 0;  
-      virtual SpecType& get_bound_spec() const = 0; 
+      virtual SpecType get_bound_spec() const = 0; 
 
    public:
       virtual double get_mass2_par(std::string) const;
@@ -53,7 +53,7 @@ class Spec : public Spectrum
 // Maybe do this with another macro...
 #define REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(ClassName,SpecType) \
   ClassName::fmap& ClassName::get_mass2_map() const {return mass2_map;} \
-  SpecType&       ClassName::get_bound_spec() const {return model;} \
+  SpecType       ClassName::get_bound_spec() const {return model;} \
   ClassName::fmap  ClassName::mass2_map(ClassName::fill_mass2_map());
 
 // Should now never have to override this I think
