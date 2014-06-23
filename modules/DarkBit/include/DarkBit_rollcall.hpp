@@ -211,8 +211,243 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // Neutrino telescope likelihoods
+
+  #define CAPABILITY IC22_data
+  START_CAPABILITY
+    #define FUNCTION IC22_full
+      START_FUNCTION(nudata)
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(annrate, double)
+      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nubounds, (), void, (const char*, const double&, const double&, double(*const)(double&, int&), double&, 
+                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC22_signal 
+  START_CAPABILITY
+    #define FUNCTION IC22_signal
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC22_bg 
+  START_CAPABILITY
+    #define FUNCTION IC22_bg
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC22_loglike 
+  START_CAPABILITY
+    #define FUNCTION IC22_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC22_pvalue 
+  START_CAPABILITY
+    #define FUNCTION IC22_pvalue
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC22_nobs 
+  START_CAPABILITY
+    #define FUNCTION IC22_nobs
+    START_FUNCTION(int)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WH_data
+  START_CAPABILITY
+    #define FUNCTION IC79WH_full
+      START_FUNCTION(nudata)
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(annrate, double)
+      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nubounds, (), void, (const char*, const double&, const double&, double(*const)(double&, int&), double&, 
+                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WH_signal 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_signal
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WH_bg 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_bg
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WH_loglike 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WH_pvalue 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_pvalue
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WH_nobs 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_nobs
+    START_FUNCTION(int)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_data
+  START_CAPABILITY
+    #define FUNCTION IC79WL_full
+      START_FUNCTION(nudata)
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(annrate, double)
+      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nubounds, (), void, (const char*, const double&, const double&, double(*const)(double&, int&), double&, 
+                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_signal 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_signal
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_bg 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_bg
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_loglike 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_pvalue 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_pvalue
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_nobs 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_nobs
+    START_FUNCTION(int)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79SL_data
+  START_CAPABILITY
+    #define FUNCTION IC79SL_full
+      START_FUNCTION(nudata)
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(annrate, double)
+      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nubounds, (), void, (const char*, const double&, const double&, double(*const)(double&, int&), double&, 
+                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79SL_signal 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_signal
+    START_FUNCTION(double)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79SL_bg 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_bg
+    START_FUNCTION(double)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79SL_loglike 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79SL_pvalue 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_pvalue
+    START_FUNCTION(double)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79SL_nobs 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_nobs
+    START_FUNCTION(int)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IceCube_likelihood
+  START_CAPABILITY
+    #define FUNCTION IC_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_loglike, double)
+    DEPENDENCY(IC79WH_loglike, double)
+    DEPENDENCY(IC79WL_loglike, double)
+    DEPENDENCY(IC79SL_loglike, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  //The following are just toy functions to allow the neutrino likelihoods to be tested.  
+  //They should be deleted when real functions are added to provide the WIMP mass, solar
+  //annihilation rate and neutrino yield.
+  QUICK_FUNCTION(DarkBit, nuyield, NEW_CAPABILITY, nuyield_toy, nuyield_functype)
+  QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
+  QUICK_FUNCTION(DarkBit, annrate, NEW_CAPABILITY, annrate_toy, double          )
+
+#undef MODULE
+
+    
+
 // Tests for Torsten
 /*
+
+#define MODULE DarkBit
+
   #define CAPABILITY provideN
   START_CAPABILITY
     #define FUNCTION provideN_func
@@ -241,9 +476,11 @@ START_MODULE
       #undef BACKEND_REQ_deprecated
     #undef FUNCTION
   #undef CAPABILITY
-*/
 
 #undef MODULE
+*/
+
+
 
 #endif /* defined(__DarkBit_rollcall_hpp__) */
 

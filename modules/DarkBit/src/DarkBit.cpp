@@ -943,6 +943,126 @@ namespace Gambit {
         result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
     }
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+//            Neutrino telescope likelihoods and observables
+//
+//////////////////////////////////////////////////////////////////////////
+
+    // The following information applies for all *_full IceCube functions. 
+    // Units:   mwimp          GeV
+    //          annrate        s^-1
+    //          nuyield(Enu,p) m^-2 GeV^-1 annihilation^-1
+    //            --> Enu       neutrino energy (GeV)
+    //            --> p         p=1 for neutrino yield, p=2 for nubar yield 
+
+    // 22-string IceCube sample: predicted signal and background counts, observed counts and likelihoods.
+    void IC22_full(nudata &result)
+    {
+      using namespace Pipes::IC22_full;
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-22";
+      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;
+      result.pvalue = pval;
+    }
+    // 22-string extractor module functions
+    void IC22_signal (double &result) { result = Pipes::IC22_signal ::Dep::IC22_data->signal;  }
+    void IC22_bg     (double &result) { result = Pipes::IC22_bg     ::Dep::IC22_data->bg;      }
+    void IC22_nobs   (int    &result) { result = Pipes::IC22_nobs   ::Dep::IC22_data->nobs;    }
+    void IC22_loglike(double &result) { result = Pipes::IC22_loglike::Dep::IC22_data->loglike; }
+    void IC22_pvalue (double &result) { result = Pipes::IC22_pvalue ::Dep::IC22_data->pvalue;  }
+
+    // 79-string IceCube WH sample: predicted signal and background counts, observed counts and likelihoods.
+    void IC79WH_full(nudata &result)
+    {
+      using namespace Pipes::IC79WH_full;
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-79 WH";
+      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;
+      result.pvalue = pval;
+    }
+    // 79-string WH extractor module functions
+    void IC79WH_signal (double &result) { result = Pipes::IC79WH_signal ::Dep::IC79WH_data->signal;  }
+    void IC79WH_bg     (double &result) { result = Pipes::IC79WH_bg     ::Dep::IC79WH_data->bg;      }
+    void IC79WH_nobs   (int    &result) { result = Pipes::IC79WH_nobs   ::Dep::IC79WH_data->nobs;    }
+    void IC79WH_loglike(double &result) { result = Pipes::IC79WH_loglike::Dep::IC79WH_data->loglike; }
+    void IC79WH_pvalue (double &result) { result = Pipes::IC79WH_pvalue ::Dep::IC79WH_data->pvalue;  }
+
+    // 79-string IceCube WL sample: predicted signal and background counts, observed counts and likelihoods.
+    void IC79WL_full(nudata &result)
+    {
+      using namespace Pipes::IC79WL_full;
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-79 WL";
+      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;
+      result.pvalue = pval;
+    }
+    // 79-string WL extractor module functions
+    void IC79WL_signal (double &result) { result = Pipes::IC79WL_signal ::Dep::IC79WL_data->signal;  }
+    void IC79WL_bg     (double &result) { result = Pipes::IC79WL_bg     ::Dep::IC79WL_data->bg;      }
+    void IC79WL_nobs   (int    &result) { result = Pipes::IC79WL_nobs   ::Dep::IC79WL_data->nobs;    }
+    void IC79WL_loglike(double &result) { result = Pipes::IC79WL_loglike::Dep::IC79WL_data->loglike; }
+    void IC79WL_pvalue (double &result) { result = Pipes::IC79WL_pvalue ::Dep::IC79WL_data->pvalue;  }
+
+    // 79-string IceCube SL sample: predicted signal and background counts, observed counts and likelihoods.
+    void IC79SL_full(nudata &result)
+    {
+      using namespace Pipes::IC79SL_full;
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-79 SL";
+      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;
+      result.pvalue = pval;
+    }
+    // 79-string SL extractor module functions
+    void IC79SL_signal (double &result) { result = Pipes::IC79SL_signal ::Dep::IC79SL_data->signal;  }
+    void IC79SL_bg     (double &result) { result = Pipes::IC79SL_bg     ::Dep::IC79SL_data->bg;      }
+    void IC79SL_nobs   (int    &result) { result = Pipes::IC79SL_nobs   ::Dep::IC79SL_data->nobs;    }
+    void IC79SL_loglike(double &result) { result = Pipes::IC79SL_loglike::Dep::IC79SL_data->loglike; }
+    void IC79SL_pvalue (double &result) { result = Pipes::IC79SL_pvalue ::Dep::IC79SL_data->pvalue;  }
+
+    // Composite IceCube likelihood function.
+    void IC_loglike(double &result)
+    {
+      using namespace Pipes::IC_loglike;
+      result = *Dep::IC22_loglike + *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
+      cout << "IceCube likelihood: " << result << endl;
+    }
+
+
+    //The following are just toy functions to allow the neutrino likelihoods to be tested.  
+    //They should be deleted when real functions are added to provide the WIMP mass, solar
+    //annihilation rate and neutrino yield.
+    double DarkBit_toyield(double&, int&)                   { return 1.e-10;             }
+    void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
+    void mwimp_toy        (double &result)                  { result = 250.0;            }
+    void annrate_toy      (double &result)                  { result = 1.e20;            }
+
+
 /*
 // Tests for Torsten
 
