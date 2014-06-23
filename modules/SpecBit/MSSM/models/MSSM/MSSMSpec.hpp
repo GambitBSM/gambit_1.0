@@ -16,6 +16,13 @@ typedef MSSM<Two_scale> MssmFS;
       REDO_TYPEDEFS(MssmFS)
 private:
    flexiblesusy::MSSM<Two_scale> model;
+      static fmap mass3_map;
+      static fmap1 mass3_map1;
+      static fmap2 mass3_map2;
+      static fmap fill_mass3_map(); 
+      static fmap1 fill_mass3_map1();
+      static fmap2 fill_mass3_map2(); 
+
       static fmap mass2_map;
       static fmap1 mass2_map1;
       static fmap2 mass2_map2;
@@ -30,6 +37,10 @@ private:
       static fmap1 fill_mass_map1();
       static fmap2 fill_mass_map2(); 
       
+      fmap& get_mass3_map() const; 
+      fmap1& get_mass3_map1() const;
+      fmap2& get_mass3_map2() const;
+
       fmap& get_mass2_map() const; 
       fmap1& get_mass2_map1() const;
       fmap2& get_mass2_map2() const;
@@ -71,9 +82,9 @@ public:
    virtual double get_mass4_parameter(std::string) const;
    virtual double get_mass4_parameter(std::string, int) const;
    virtual double get_mass4_parameter(std::string, int, int) const;
-   virtual double get_mass3_parameter(std::string) const;
-   virtual double get_mass3_parameter(std::string, int) const;
-   virtual double get_mass3_parameter(std::string, int, int) const;
+   virtual double get_mass3_par(std::string) const;
+   virtual double get_mass3_par(std::string, int) const;
+   virtual double get_mass3_par(std::string, int, int) const;
    virtual double get_mass2_par(std::string) const;
    virtual double get_mass2_par(std::string, int) const;
    virtual double get_mass2_par(std::string, int, int) const;
