@@ -645,7 +645,7 @@ double MSSMSpec::get_mass2_par(std::string mass, int i, int j) const {
    }
 }
 
-double MSSMSpec::get_mass_parameter(std::string mass) const {
+double MSSMSpec::get_mass_par(std::string mass) const {
    if(mass == "Mu"){
       return model.get_Mu();
    }
@@ -676,12 +676,12 @@ double MSSMSpec::get_mass_parameter(std::string mass) const {
    }
 }
 
-double MSSMSpec::get_mass_parameter(std::string, int) const {
+double MSSMSpec::get_mass_par(std::string, int) const {
 
   std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 }
-double MSSMSpec::get_mass_parameter(std::string mass, int i, int j) const {
+double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
    if (mass == "TYd" || mass == "ad"){
       return model.get_TYd(i,j);
    }
@@ -737,7 +737,13 @@ double MSSMSpec::get_mass_parameter(std::string mass, int i, int j) const {
   std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
    return -1.0;
       }
-}
+
+
+   }
+
+// Use our time-saving macro to define member functions
+REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS)
+
 
 // Function to initialise mass2_map
 MSSMSpec::fmap MSSMSpec::fill_mass2_map() 
@@ -775,6 +781,52 @@ MSSMSpec::fmap2 MSSMSpec::fill_mass2_map2()
    return tmp_map;
 }
 
+
+
+// Function to initialise mass_map
+MSSMSpec::fmap MSSMSpec::fill_mass_map() 
+{
+   fmap tmp_map;
+   tmp_map["M1"]= &MssmFS::get_MassB;
+   tmp_map["M2"]= &MssmFS::get_MassWB;
+   tmp_map["M3"]= &MssmFS::get_MassG;
+   tmp_map["Mu"]= &MssmFS::get_Mu;
+   tmp_map["vu"]= &MssmFS::get_vu;
+   tmp_map["vd"]= &MssmFS::get_vd;
+   //  can't do SM vev or tan beta this way
+   // can create MSSMSpec getter which first calls 
+   // inherited one then adds vev and tan beta
+  
+   
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass_map2() 
+{
+   fmap2 tmp_map;
+   tmp_map["TYd"]= &MssmFS::get_TYd;
+   tmp_map["TYe"]= &MssmFS::get_TYe;
+   tmp_map["TYu"]= &MssmFS::get_TYu;
+   tmp_map["ad"]= &MssmFS::get_TYd;
+   tmp_map["ae"]= &MssmFS::get_TYe;
+   tmp_map["au"]= &MssmFS::get_TYu;
+
+   return tmp_map;
+}
+
 MSSM<Two_scale> MSSMSpec:: get_modelobject() {
    return model;
 }
@@ -783,5 +835,3 @@ MSSM<Two_scale> MSSMSpec:: get_modelobject() {
 //   MssmFS MSSMSpec::get_bound_spec() const {return model;} \
 //   MSSMSpec::fmap  MSSMSpec::mass2_map(MSSMSpec::fill_mass2_map());
 
-// Use our time-saving macro for the rest...
-REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS)
