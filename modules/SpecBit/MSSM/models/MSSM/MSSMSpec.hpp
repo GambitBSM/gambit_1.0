@@ -22,9 +22,23 @@ private:
       static fmap fill_mass2_map(); 
       static fmap1 fill_mass2_map1();
       static fmap2 fill_mass2_map2(); 
+      
+      static fmap mass_map;
+      static fmap1 mass_map1;
+      static fmap2 mass_map2;
+      static fmap fill_mass_map(); 
+      static fmap1 fill_mass_map1();
+      static fmap2 fill_mass_map2(); 
+      
       fmap& get_mass2_map() const; 
       fmap1& get_mass2_map1() const;
-      fmap2& get_mass2_map2() const; 
+      fmap2& get_mass2_map2() const;
+
+      fmap& get_mass_map() const; 
+      fmap1& get_mass_map1() const;
+      fmap2& get_mass_map2() const;
+      
+ 
       MssmFS get_bound_spec() const; 
 public:
    //constructors
@@ -63,9 +77,9 @@ public:
    virtual double get_mass2_par(std::string) const;
    virtual double get_mass2_par(std::string, int) const;
    virtual double get_mass2_par(std::string, int, int) const;
-   virtual double get_mass_parameter(std::string) const;
-   virtual double get_mass_parameter(std::string, int) const;
-   virtual double get_mass_parameter(std::string, int, int) const;
+   virtual double get_mass_par(std::string) const;
+   virtual double get_mass_par(std::string, int) const;
+   virtual double get_mass_par(std::string, int, int) const;
    virtual double get_dimensionless_parameter(std::string) const;
    virtual double get_dimensionless_parameter(std::string, int) const;
    virtual double get_dimensionless_parameter(std::string, int, int) const;
