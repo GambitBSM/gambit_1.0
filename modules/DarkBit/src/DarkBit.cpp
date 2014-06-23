@@ -964,7 +964,7 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-22";
-      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -986,7 +986,7 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WH";
-      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -1008,7 +1008,7 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
-      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -1030,7 +1030,7 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 SL";
-      BEreq::nubounds(experiment, *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -1050,14 +1050,13 @@ namespace Gambit {
     {
       using namespace Pipes::IC_loglike;
       result = *Dep::IC22_loglike + *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
-      cout << "IceCube likelihood: " << result << endl;
     }
 
 
     //The following are just toy functions to allow the neutrino likelihoods to be tested.  
     //They should be deleted when real functions are added to provide the WIMP mass, solar
     //annihilation rate and neutrino yield.
-    double DarkBit_toyield(double&, int&)                   { return 1.e-10;             }
+    double DarkBit_toyield(double&, int&)                   { return 1.e-26;             }
     void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
     void mwimp_toy        (double &result)                  { result = 250.0;            }
     void annrate_toy      (double &result)                  { result = 1.e20;            }
