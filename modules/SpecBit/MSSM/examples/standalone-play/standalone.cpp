@@ -6,6 +6,7 @@
 #include "../../../Spectrum.hpp"
 #include "MSSMSpec.hpp"
 #include "numerics.hpp"
+
 using namespace flexiblesusy;
 
 bool TestMssmMass2_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
@@ -16,7 +17,8 @@ bool TestMssmMass2_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    if(pass == false) return pass;
    pass = is_equal(mssm.get_mass2_parameter("mHu2"),FSmssm.get_mHu2());
    if(pass == false) return pass;
-   
+
+   //repeat for older type of getters
    pass =  is_equal(mssm.get_mass2_par("BMu"),FSmssm.get_BMu());
    if(pass == false) return pass;
    pass = is_equal(mssm.get_mass2_par("mHd2"),FSmssm.get_mHd2());
@@ -68,14 +70,77 @@ bool TestMssmMass2_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    return pass;
 }
 
+
+bool TestMssmMass1_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   //we test both 
+   bool pass = is_equal(mssm.get_mass_parameter("M1"),FSmssm.get_MassB());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_parameter("M2"),FSmssm.get_MassWB());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_parameter("M3"),FSmssm.get_MassG());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_parameter("Mu"),FSmssm.get_Mu());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_parameter("vu"),FSmssm.get_vu());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_parameter("vd"),FSmssm.get_vd());
+   if(pass == false) return pass;
+   // Now versions using old getters
+   pass =  is_equal(mssm.get_mass_par("M1"),FSmssm.get_MassB());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_par("M2"),FSmssm.get_MassWB());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_par("M3"),FSmssm.get_MassG());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_par("Mu"),FSmssm.get_Mu());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_par("vu"),FSmssm.get_vu());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_mass_par("vd"),FSmssm.get_vd());
+   if(pass == false) return pass;
+   return pass;
+}
+
+bool TestMssmMass1_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   bool pass = false;
+   for(int i = 0; i<=2; i++){
+      for(int j = 0; j<=2; j++){
+         pass = is_equal(mssm.get_mass_parameter("TYd",i,j),
+                         FSmssm.get_TYd(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass_parameter("TYe",i,j),
+                         FSmssm.get_TYe(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass_parameter("TYu",i,j),
+                         FSmssm.get_TYu(i,j)); 
+         if(pass == false) return pass;
+        
+         
+         //repeat for older type of getters
+         pass = is_equal(mssm.get_mass_par("TYd",i,j),
+                         FSmssm.get_TYd(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass_par("TYe",i,j),
+                         FSmssm.get_TYe(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_mass_par("TYu",i,j),
+                         FSmssm.get_TYu(i,j)); 
+         if(pass == false) return pass;
+      }
+   }
+   return pass;
+}
+
 bool TestMssmGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    bool pass = false; 
    pass = TestMssmMass2_0(mssm,FSmssm);
    if(pass == false) return pass;
    pass = TestMssmMass2_2(mssm,FSmssm);
    if(pass == false) return pass;
-   
-   
+   pass = TestMssmMass1_0(mssm,FSmssm);
+   if(pass == false) return pass;
+   pass = TestMssmMass1_2(mssm,FSmssm);
+   if(pass == false) return pass;
    return pass;
 
 }
