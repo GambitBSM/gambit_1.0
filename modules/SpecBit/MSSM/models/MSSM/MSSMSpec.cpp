@@ -591,15 +591,15 @@ std::cout << "Error: The dimension 4 parameter you requested does not exist in t
 
 }
 
-double MSSMSpec::get_mass3_parameter(std::string mass) const {
+double MSSMSpec::get_mass3_par(std::string mass) const {
  std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;   
 }
-double MSSMSpec::get_mass3_parameter(std::string, int i) const {
+double MSSMSpec::get_mass3_par(std::string, int i) const {
    std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 }
-double MSSMSpec::get_mass3_parameter(std::string mass, int i, int j) const {
+double MSSMSpec::get_mass3_par(std::string mass, int i, int j) const {
 std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 
@@ -743,6 +743,40 @@ double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
 
 // Use our time-saving macro to define member functions
 REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS)
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap MSSMSpec::fill_mass3_map() 
+{
+   fmap tmp_map;
+ 
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass3_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass3_map2() 
+{
+   fmap2 tmp_map;
+   
+   //there are no mappings for this case.
+  
+   return tmp_map;
+}
+
 
 
 // Function to initialise mass2_map
