@@ -9,7 +9,7 @@
 
 using namespace flexiblesusy;
 
-bool TestMssmMass2_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+bool TestMssmParMass2_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    //we test both 
    bool pass = is_equal(mssm.get_mass2_parameter("BMu"),FSmssm.get_BMu());
    if(pass == false) return pass;
@@ -28,7 +28,7 @@ bool TestMssmMass2_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    return pass;
 }
 
-bool TestMssmMass2_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+bool TestMssmParMass2_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    bool pass = false;
    for(int i = 0; i<=2; i++){
       for(int j = 0; j<=2; j++){
@@ -71,7 +71,7 @@ bool TestMssmMass2_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
 }
 
 
-bool TestMssmMass1_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+bool TestMssmParMass1_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    //we test both 
    bool pass = is_equal(mssm.get_mass_parameter("M1"),FSmssm.get_MassB());
    if(pass == false) return pass;
@@ -101,7 +101,7 @@ bool TestMssmMass1_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    return pass;
 }
 
-bool TestMssmMass1_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+bool TestMssmParMass1_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    bool pass = false;
    for(int i = 0; i<=2; i++){
       for(int j = 0; j<=2; j++){
@@ -131,15 +131,65 @@ bool TestMssmMass1_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    return pass;
 }
 
-bool TestMssmGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+
+bool TestMssmParMass0_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   //we test both 
+   bool pass = is_equal(mssm.get_dimensionless_parameter("g1"),FSmssm.get_g1());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_dimensionless_parameter("g2"),FSmssm.get_g2());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_dimensionless_parameter("g3"),FSmssm.get_g3());
+   if(pass == false) return pass;
+   
+   // Now versions using old getters
+   pass = is_equal(mssm.get_dimensionless_par("g1"),FSmssm.get_g1());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_dimensionless_par("g2"),FSmssm.get_g2());
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_dimensionless_par("g3"),FSmssm.get_g3());
+   if(pass == false) return pass;
+   
+}
+
+bool TestMssmParMass0_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   bool pass = false;
+   for(int i = 0; i<=2; i++){
+      for(int j = 0; j<=2; j++){
+         pass = is_equal(mssm.get_dimensionless_parameter("Yd",i,j),
+                         FSmssm.get_Yd(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_dimensionless_parameter("Ye",i,j),
+                         FSmssm.get_Ye(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_dimensionless_parameter("Yu",i,j),
+                         FSmssm.get_Yu(i,j)); 
+         if(pass == false) return pass;
+        
+         
+         //repeat for older type of getters
+         pass = is_equal(mssm.get_dimensionless_par("Yd",i,j),
+                         FSmssm.get_Yd(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_dimensionless_par("Ye",i,j),
+                         FSmssm.get_Ye(i,j)); 
+         if(pass == false) return pass;
+         pass = is_equal(mssm.get_dimensionless_par("Yu",i,j),
+                         FSmssm.get_Yu(i,j)); 
+         if(pass == false) return pass;
+      }
+   }
+   return pass;
+}
+
+bool TestMssmParGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    bool pass = false; 
-   pass = TestMssmMass2_0(mssm,FSmssm);
+   pass = TestMssmParMass2_0(mssm,FSmssm);
    if(pass == false) return pass;
-   pass = TestMssmMass2_2(mssm,FSmssm);
+   pass = TestMssmParMass2_2(mssm,FSmssm);
    if(pass == false) return pass;
-   pass = TestMssmMass1_0(mssm,FSmssm);
+   pass = TestMssmParMass1_0(mssm,FSmssm);
    if(pass == false) return pass;
-   pass = TestMssmMass1_2(mssm,FSmssm);
+   pass = TestMssmParMass1_2(mssm,FSmssm);
    if(pass == false) return pass;
    return pass;
 
@@ -357,8 +407,8 @@ void spectrum_example() {
    mssm1.calculate_DRbar_parameters(); //calculated DRbar masses 
    mssm1.calculate_pole_masses();//now calculate pole masses
    MSSMSpec mssm(mssm1);
-   if(TestMssmGets(mssm, mssm1)==false){
-      std::cerr << "TestMssmGets fail." << std::endl;
+   if(TestMssmParGets(mssm, mssm1)==false){
+      std::cerr << "TestMssmParGets fail." << std::endl;
       return;
    }
    //So now we have a mssm1 model object filled, as it will be
