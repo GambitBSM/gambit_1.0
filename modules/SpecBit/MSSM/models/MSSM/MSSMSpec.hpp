@@ -16,6 +16,14 @@ typedef MSSM<Two_scale> MssmFS;
       REDO_TYPEDEFS(MssmFS)
 private:
    flexiblesusy::MSSM<Two_scale> model;
+      static fmap mass4_map;
+      static fmap1 mass4_map1;
+      static fmap2 mass4_map2;
+      static fmap fill_mass4_map(); 
+      static fmap1 fill_mass4_map1();
+      static fmap2 fill_mass4_map2(); 
+
+
       static fmap mass3_map;
       static fmap1 mass3_map1;
       static fmap2 mass3_map2;
@@ -36,7 +44,18 @@ private:
       static fmap fill_mass_map(); 
       static fmap1 fill_mass_map1();
       static fmap2 fill_mass_map2(); 
-      
+
+      static fmap mass0_map;
+      static fmap1 mass0_map1;
+      static fmap2 mass0_map2;
+      static fmap fill_mass0_map(); 
+      static fmap1 fill_mass0_map1();
+      static fmap2 fill_mass0_map2(); 
+
+      fmap& get_mass4_map() const; 
+      fmap1& get_mass4_map1() const;
+      fmap2& get_mass4_map2() const;
+
       fmap& get_mass3_map() const; 
       fmap1& get_mass3_map1() const;
       fmap2& get_mass3_map2() const;
@@ -49,7 +68,10 @@ private:
       fmap1& get_mass_map1() const;
       fmap2& get_mass_map2() const;
       
- 
+      fmap& get_mass0_map() const; 
+      fmap1& get_mass0_map1() const;
+      fmap2& get_mass0_map2() const;
+
       MssmFS get_bound_spec() const; 
 public:
    //constructors
@@ -79,9 +101,9 @@ public:
    virtual double get_tree_MassEigenstate(std::string, int, int) const;
    virtual double get_tree_Mixing_angle(std::string) const;
    virtual double get_tree_Mixing_element(std::string, int, int) const;
-   virtual double get_mass4_parameter(std::string) const;
-   virtual double get_mass4_parameter(std::string, int) const;
-   virtual double get_mass4_parameter(std::string, int, int) const;
+   virtual double get_mass4_par(std::string) const;
+   virtual double get_mass4_par(std::string, int) const;
+   virtual double get_mass4_par(std::string, int, int) const;
    virtual double get_mass3_par(std::string) const;
    virtual double get_mass3_par(std::string, int) const;
    virtual double get_mass3_par(std::string, int, int) const;
@@ -91,9 +113,9 @@ public:
    virtual double get_mass_par(std::string) const;
    virtual double get_mass_par(std::string, int) const;
    virtual double get_mass_par(std::string, int, int) const;
-   virtual double get_dimensionless_parameter(std::string) const;
-   virtual double get_dimensionless_parameter(std::string, int) const;
-   virtual double get_dimensionless_parameter(std::string, int, int) const;
+   virtual double get_dimensionless_par(std::string) const;
+   virtual double get_dimensionless_par(std::string, int) const;
+   virtual double get_dimensionless_par(std::string, int, int) const;
   
    //map test
       //  virtual double get_mass2_par(std::string) const;
