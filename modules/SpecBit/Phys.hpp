@@ -21,9 +21,9 @@ namespace scaledep {
       virtual double get_tree_Mixing_angle(std::string) const = 0;
       virtual double get_tree_Mixing_element(std::string, int, int) const = 0;
 
-      virtual double get_mass4_parameter(std::string) const = 0;
-      virtual double get_mass4_parameter(std::string, int) const = 0;
-      virtual double get_mass4_parameter(std::string, int, int) const = 0;
+      virtual double get_mass4_par(std::string) const = 0;
+      virtual double get_mass4_par(std::string, int) const = 0;
+      virtual double get_mass4_par(std::string, int, int) const = 0;
       virtual double get_mass3_par(std::string) const = 0;
       virtual double get_mass3_par(std::string, int) const = 0;
       virtual double get_mass3_par(std::string, int, int) const = 0;
@@ -33,11 +33,14 @@ namespace scaledep {
       virtual double get_mass_par(std::string) const = 0;
       virtual double get_mass_par(std::string, int) const = 0;
       virtual double get_mass_par(std::string, int, int) const = 0;
-      virtual double get_dimensionless_parameter(std::string) const = 0;
-      virtual double get_dimensionless_parameter(std::string, int) const = 0;
-      virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
+      virtual double get_dimensionless_par(std::string) const = 0;
+      virtual double get_dimensionless_par(std::string, int) const = 0;
+      virtual double get_dimensionless_par(std::string, int, int) const = 0;
    
    //alternative getter using map
+      virtual double get_mass4_parameter(std::string) const = 0;
+      virtual double get_mass4_parameter(std::string, int) const = 0;
+      virtual double get_mass4_parameter(std::string, int, int) const = 0;
       virtual double get_mass3_parameter(std::string) const = 0;
       virtual double get_mass3_parameter(std::string, int) const = 0;
       virtual double get_mass3_parameter(std::string, int, int) const = 0;
@@ -47,7 +50,10 @@ namespace scaledep {
       virtual double get_mass_parameter(std::string) const = 0;
       virtual double get_mass_parameter(std::string, int) const = 0;
       virtual double get_mass_parameter(std::string, int, int) const = 0;
-   };
+      virtual double get_dimensionless_parameter(std::string) const = 0;
+      virtual double get_dimensionless_parameter(std::string, int) const = 0;
+      virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
+ };
       
 }//namespace ScaleDep
 

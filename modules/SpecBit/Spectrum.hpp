@@ -42,8 +42,12 @@ class Spec : public Spectrum
    REDO_TYPEDEFS(SpecType)
    
    private:
-   // Need to implement these two functions in each derived class, but they are trivial. Maybe there is some way to
+   // Need to implement these two functions in each derived class, 
+   //but they are trivial. Maybe there is some way to
    // avoid having to do this step, but I can't think of it just now.
+   virtual fmap& get_mass4_map() const = 0;  
+   virtual fmap1& get_mass4_map1() const = 0;
+   virtual fmap2& get_mass4_map2() const = 0;  
    virtual fmap& get_mass3_map() const = 0;  
    virtual fmap1& get_mass3_map1() const = 0;
    virtual fmap2& get_mass3_map2() const = 0;  
@@ -53,9 +57,15 @@ class Spec : public Spectrum
    virtual fmap& get_mass_map() const = 0;  
    virtual fmap1& get_mass_map1() const = 0;
    virtual fmap2& get_mass_map2() const = 0;  
+    virtual fmap& get_mass0_map() const = 0;  
+   virtual fmap1& get_mass0_map1() const = 0;
+   virtual fmap2& get_mass0_map2() const = 0;  
    virtual SpecType get_bound_spec() const = 0; 
    
 public:
+   virtual double get_mass4_parameter(std::string) const;
+   virtual double get_mass4_parameter(std::string, int i) const;
+   virtual double get_mass4_parameter(std::string, int i, int j) const;
    virtual double get_mass3_parameter(std::string) const;
    virtual double get_mass3_parameter(std::string, int i) const;
    virtual double get_mass3_parameter(std::string, int i, int j) const;
@@ -65,6 +75,9 @@ public:
    virtual double get_mass_parameter(std::string) const;
    virtual double get_mass_parameter(std::string, int i) const;
    virtual double get_mass_parameter(std::string, int i, int j) const;
+   virtual double get_dimensionless_parameter(std::string) const;
+   virtual double get_dimensionless_parameter(std::string, int i) const;
+   virtual double get_dimensionless_parameter(std::string, int i, int j) const;
 };
 
 
@@ -73,6 +86,12 @@ public:
 // Maybe do this with another macro...
 #define REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(ClassName,SpecType) \
   SpecType       ClassName::get_bound_spec() const {return model;} \
+  ClassName::fmap& ClassName::get_mass4_map() const {return mass4_map;} \
+  ClassName::fmap  ClassName::mass4_map(ClassName::fill_mass4_map()); \
+  ClassName::fmap1& ClassName::get_mass4_map1() const {return mass4_map1;} \
+  ClassName::fmap2& ClassName::get_mass4_map2() const {return mass4_map2;} \
+  ClassName::fmap1  ClassName::mass4_map1(ClassName::fill_mass4_map1()); \
+  ClassName::fmap2  ClassName::mass4_map2(ClassName::fill_mass4_map2()); \
   ClassName::fmap& ClassName::get_mass3_map() const {return mass3_map;} \
   ClassName::fmap  ClassName::mass3_map(ClassName::fill_mass3_map()); \
   ClassName::fmap1& ClassName::get_mass3_map1() const {return mass3_map1;} \
@@ -91,8 +110,75 @@ public:
   ClassName::fmap2& ClassName::get_mass_map2() const {return mass_map2;} \
   ClassName::fmap1  ClassName::mass_map1(ClassName::fill_mass_map1()); \
   ClassName::fmap2  ClassName::mass_map2(ClassName::fill_mass_map2()); \
+  ClassName::fmap& ClassName::get_mass0_map() const {return mass0_map;} \
+  ClassName::fmap  ClassName::mass0_map(ClassName::fill_mass0_map()); \
+  ClassName::fmap1& ClassName::get_mass0_map1() const {return mass0_map1;} \
+  ClassName::fmap2& ClassName::get_mass0_map2() const {return mass0_map2;} \
+  ClassName::fmap1  ClassName::mass0_map1(ClassName::fill_mass0_map1()); \
+  ClassName::fmap2  ClassName::mass0_map2(ClassName::fill_mass0_map2()); \
 // Should now never have to override this I think
 // Should now never have to override this I think
+
+template <class SpecType>
+double Spec<SpecType>::get_mass4_parameter(std::string mass) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap& mass4map(get_mass4_map()); // Get correct map for whatever class this is
+   typename fmap::iterator it = mass4map.find(mass); // Find desired FlexiSUSY function
+
+   if( it==mass4map.end() )
+   {
+      std::cout << "No mass4 with string reference '"<<mass<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr f = it->second;
+       return (spec.*f)();
+   }
+}
+
+template <class SpecType>
+double Spec<SpecType>::get_mass4_parameter(std::string mass, int i) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap1& mass4map(get_mass4_map1()); // Get correct map for whatever class this is
+   typename fmap1::iterator it = mass4map.find(mass); // Find desired FlexiSUSY function
+   if( it==mass4map.end() )
+   {
+      std::cout << "No mass4 with string reference '"<<mass<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr1 f = it->second;
+       return (spec.*f)(i);
+   }
+}
+
+template <class SpecType>
+double Spec<SpecType>::get_mass4_parameter(std::string mass, int i, int j) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap2& mass4map(get_mass4_map2()); // Get correct map for whatever class this is
+   typename fmap2::iterator it = mass4map.find(mass); // Find desired FlexiSUSY function
+   if( it==mass4map.end() )
+   {
+      std::cout << "No mass with string reference '"<<mass<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr2 f = it->second;
+       return (spec.*f)(i,j);
+   }
+}
+
+
+
 template <class SpecType>
 double Spec<SpecType>::get_mass3_parameter(std::string mass) const
 {
@@ -258,6 +344,65 @@ double Spec<SpecType>::get_mass_parameter(std::string mass, int i, int j) const
    if( it==massmap.end() )
    {
       std::cout << "No mass with string reference '"<<mass<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr2 f = it->second;
+       return (spec.*f)(i,j);
+   }
+}
+
+//mass0
+template <class SpecType>
+double Spec<SpecType>::get_dimensionless_parameter(std::string par) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap& mass0map(get_mass0_map()); // Get correct map for whatever class this is
+   typename fmap::iterator it = mass0map.find(par); // Find desired FlexiSUSY function
+
+   if( it==mass0map.end() )
+   {
+      std::cout << "No mass with string reference '"<<par<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr f = it->second;
+       return (spec.*f)();
+   }
+}
+
+template <class SpecType>
+double Spec<SpecType>::get_dimensionless_parameter(std::string par, int i) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap1& mass0map(get_mass0_map1()); // Get correct map for whatever class this is
+   typename fmap1::iterator it = mass0map.find(par); // Find desired FlexiSUSY function
+   if( it==mass0map.end() )
+   {
+      std::cout << "No mass with string reference '"<<par<<"' exists!" <<std::endl;
+      return -1;
+   }
+   else
+   {
+       // Get function out of map and call it on the bound flexiSUSY object
+       FSptr1 f = it->second;
+       return (spec.*f)(i);
+   }
+}
+
+template <class SpecType>
+double Spec<SpecType>::get_dimensionless_parameter(std::string par, int i, int j) const
+{
+   SpecType spec(get_bound_spec()); // Get correct bound spectrum for whatever class this is
+   fmap2& mass0map(get_mass0_map2()); // Get correct map for whatever class this is
+   typename fmap2::iterator it = mass0map.find(par); // Find desired FlexiSUSY function
+   if( it==mass0map.end() )
+   {
+      std::cout << "No mass with string reference '"<<par<<"' exists!" <<std::endl;
       return -1;
    }
    else

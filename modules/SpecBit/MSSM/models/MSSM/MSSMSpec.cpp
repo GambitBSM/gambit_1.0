@@ -577,15 +577,15 @@ double MSSMSpec::get_Mixing_element(std::string MixMat, int i, int j) const {
 // }
 
 
-double MSSMSpec::get_mass4_parameter(std::string mass) const {
+double MSSMSpec::get_mass4_par(std::string mass) const {
  std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;   
 }
-double MSSMSpec::get_mass4_parameter(std::string, int i) const {
+double MSSMSpec::get_mass4_par(std::string, int i) const {
    std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 }
-double MSSMSpec::get_mass4_parameter(std::string mass, int i, int j) const {
+double MSSMSpec::get_mass4_par(std::string mass, int i, int j) const {
 std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 
@@ -697,7 +697,7 @@ double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
    }
 }
    
-   double MSSMSpec::get_dimensionless_parameter(std::string coupling) const {
+   double MSSMSpec::get_dimensionless_par(std::string coupling) const {
       if(coupling == "g1"){
          return model.get_g1();
       }
@@ -716,14 +716,14 @@ double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
       }
 }
 
-   double MSSMSpec::get_dimensionless_parameter(std::string coupling, int i) const {   
+   double MSSMSpec::get_dimensionless_par(std::string coupling, int i) const {   
   std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 }
 
 
 
-   double MSSMSpec::get_dimensionless_parameter(std::string coupling, int i, int j) const {
+   double MSSMSpec::get_dimensionless_par(std::string coupling, int i, int j) const {
       if(coupling == "Yu"){
          return model.get_Yu(i,j);
       }
@@ -743,6 +743,40 @@ double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
 
 // Use our time-saving macro to define member functions
 REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS)
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap MSSMSpec::fill_mass4_map() 
+{
+   fmap tmp_map;
+ 
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass4_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass4_map2() 
+{
+   fmap2 tmp_map;
+   
+   //there are no mappings for this case.
+  
+   return tmp_map;
+}
+
 
 
 // Function to initialise mass2_map
@@ -858,6 +892,45 @@ MSSMSpec::fmap2 MSSMSpec::fill_mass_map2()
    tmp_map["ae"]= &MssmFS::get_TYe;
    tmp_map["au"]= &MssmFS::get_TYu;
 
+   return tmp_map;
+}
+
+// Function to initialise mass_map
+MSSMSpec::fmap MSSMSpec::fill_mass0_map() 
+{
+   fmap tmp_map;
+   tmp_map["g1"]= &MssmFS::get_g1;
+   tmp_map["g2"]= &MssmFS::get_g2;
+   tmp_map["g3"]= &MssmFS::get_g3;
+   
+   //  can't do SM vev or tan beta this way
+   // can create MSSMSpec getter which first calls 
+   // inherited one then adds vev and tan beta
+  
+   
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass0_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass0_map2() 
+{
+   fmap2 tmp_map;
+   tmp_map["Yd"]= &MssmFS::get_Yd;
+   tmp_map["Ye"]= &MssmFS::get_Ye;
+   tmp_map["Yu"]= &MssmFS::get_Yu;
+  
    return tmp_map;
 }
 
