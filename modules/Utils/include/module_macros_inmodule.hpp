@@ -48,8 +48,11 @@
 /// @{
 // Redirect the rollcall macros to their in-module variants
 #define START_MODULE                                      MODULE_START_MODULE
-#define START_CAPABILITY                                  MODULE_START_CAPABILITY
-#define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(TYPE, FLAG)
+#define START_CAPABILITY                                  MODULE_START_CAPABILITY(MODULE)
+#define LONG_START_CAPABILITY(MODULE, C)                  MODULE_START_CAPABILITY(MODULE)
+#define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
+#define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, FLAG) \
+                                                          MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
@@ -93,13 +96,13 @@
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when 
 /// invoked from within a module.
-#define MODULE_START_CAPABILITY                                                \
+#define MODULE_START_CAPABILITY(MODULE)                                        \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
    "START_CAPABILITY."))                                                       \
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within a module.
-#define MODULE_DECLARE_FUNCTION(TYPE, FLAG)                                    \
+#define MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)                  \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \

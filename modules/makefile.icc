@@ -10,4 +10,5 @@ include makefile.common
 CC = icc 
 FC = ifort
 CCEXTRA = -pipe -pg 
+FMODULE = module
 FEXTRA = -extend-source
