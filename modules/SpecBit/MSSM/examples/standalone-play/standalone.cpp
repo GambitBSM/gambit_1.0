@@ -191,6 +191,12 @@ bool TestMssmParGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    if(pass == false) return pass;
    pass = TestMssmParMass1_2(mssm,FSmssm);
    if(pass == false) return pass;
+   pass = TestMssmParMass0_0(mssm,FSmssm);
+   if(pass == false) return pass;
+   pass = TestMssmParMass0_2(mssm,FSmssm);
+   if(pass == false) return pass;
+
+
    return pass;
 
 }
