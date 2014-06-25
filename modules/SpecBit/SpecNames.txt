@@ -20,7 +20,7 @@ One may prefer the get_<parametername>() method to the string accessor method fo
    
 We follow the conventions of SLHA: http://arxiv.org/pdf/hep-ph/0311123v4.pdf for exact meaning (e.g, sign convention on the mu parameter etc.) 
 
-Names fpr string accessors
+Names for string accessors
 
 ********************** DRbar dimensionless couplings*****************
 Yukawas: Yu, Yd, Ye for up quark, down quark and lepton Yukawas, where
@@ -60,11 +60,13 @@ carry an index with elements ordered lightest to heaviest  .
 
 Sfermions: MSu, MSd, MSe, MSv, with mass ordered index.
 
-Fermions: MFu, MFd, MFe with index over generation
+Fermions:(normally not provided by SLHA)
+ MFu, MFd, MFe with index over generation 
+or Mtop, Mcharm, Mup, Mbottom, Mstrange, Mdown, Mtau, Mmuon, Melectorn
 
 Gauge bosons:  MZ, MW
 
-Goldstone bosons: Goldstone0, GoldstonePM (These are unlikely to be needed but are computed as a by product by FlexibleSUSY, not all spectrum generators calculate them, so they may not get filled.   Masses in R-Xi, Xi=1 gauge at one loop -- note: only the tree level DRbar mass is equal to the gauge bosons. )
+Goldstone bosons: MGoldstone0, MGoldstonePM (These are unlikely to be needed but are computed as a by product by FlexibleSUSY, not all spectrum generators calculate them, so they may not get filled.   Masses in R-Xi, Xi=1 gauge at one loop -- note: only the tree level DRbar mass is equal to the gauge bosons. )
 
 ********************* Mixings ******************************
 

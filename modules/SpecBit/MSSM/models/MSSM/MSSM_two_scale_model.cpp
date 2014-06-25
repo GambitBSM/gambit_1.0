@@ -104,6 +104,124 @@ CLASSNAME::~MSSM()
 {
 }
 
+// extra wrapper routines for cases where the state is a
+// vector but we want to call elements with a different string
+//use get_physical for pole masses
+double CLASSNAME::get_Pole_neut_goldstone() const {
+   return get_physical().MAh(0);
+}
+double CLASSNAME::get_DRbar_neut_goldstone() const {
+   return get_MAh()(0);
+}
+double CLASSNAME::get_Pole_neut_CPodd_higgs() const {
+   return get_physical().MAh(1);
+}
+double CLASSNAME::get_DRbar_neut_CPodd_higgs() const {
+   return get_MAh()(1);
+}
+double CLASSNAME::get_Pole_ch_goldstone() const {
+   return get_physical().MHpm(0);
+}
+double CLASSNAME::get_DRbar_ch_goldstone() const {
+   return get_MHpm()(0);
+}
+
+double CLASSNAME::get_Pole_ch_higgs() const {
+   return get_physical().MHpm(1);
+}
+double CLASSNAME::get_DRbar_ch_higgs() const {
+   return get_MHpm()(1);
+}
+
+double CLASSNAME::get_Pole_mtop() const {
+   return get_physical().MFu(2);
+}
+double CLASSNAME::get_DRbar_mtop() const {
+   return get_MFu()(2);
+}
+double CLASSNAME::get_Pole_mcharm() const {
+   return get_physical().MFu(1);
+}
+double CLASSNAME::get_DRbar_mcharm() const {
+   return get_MFu()(1);
+}
+double CLASSNAME::get_Pole_mup() const {
+   return get_physical().MFu(0);
+}
+
+ double CLASSNAME::get_Pole_MFu(int i) const {
+    return get_physical().MFu(i);
+}
+
+double CLASSNAME::get_Pole_MFd(int i) const {
+   return get_physical().MFd(i);
+}
+
+double CLASSNAME::get_Pole_MFe(int i) const {
+   return get_physical().MFe(i);
+}
+
+
+double CLASSNAME::get_DRbar_mup() const {
+   return get_MFu()(0);
+}
+double CLASSNAME::get_Pole_mbottom() const {
+   return get_physical().MFd(2);
+}
+double CLASSNAME::get_DRbar_mbottom() const {
+   return get_MFd()(2);
+}
+double CLASSNAME::get_Pole_mstrange() const {
+   return get_physical().MFd(1);      
+}
+double CLASSNAME::get_DRbar_mstrange() const {
+   return get_MFd()(1);      
+}
+double CLASSNAME::get_Pole_mdown() const {
+   return get_physical().MFd(0);
+}
+double CLASSNAME::get_DRbar_mdown() const {
+   return get_MFd()(0);
+}
+double CLASSNAME::get_Pole_mtau() const {
+   return get_physical().MFe(2);
+}
+double CLASSNAME::get_DRbar_mtau() const {
+   return get_MFe()(2);
+}
+double CLASSNAME::get_Pole_mmuon() const {
+   return get_physical().MFe(1);      
+}
+double CLASSNAME::get_DRbar_mmuon() const {
+   return get_MFe()(1);      
+}
+double CLASSNAME::get_Pole_melectron() const {
+   return get_physical().MFe(0);
+}
+double CLASSNAME::get_DRbar_melectron() const {
+   return get_MFe()(0);
+}
+
+double CLASSNAME::get_Pole_MZ() const {
+   return get_physical().MVZ;      
+}
+
+double CLASSNAME::get_Pole_MW() const {
+   return get_physical().MVWm;
+}
+
+double CLASSNAME::get_Pole_MGlu() const {
+   return get_physical().MGlu;      
+}
+
+double CLASSNAME::get_Pole_MGluon() const {
+   return get_physical().MVG;
+}
+
+double CLASSNAME::get_Pole_MPhoton() const {
+   return get_physical().MVP;
+}
+
 void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 {
    calculate_sm_pole_masses = flag;
