@@ -61,11 +61,17 @@ namespace scaledep {
 class Phys {
 public:
    //this get uses dumbest possible approach of if-else statements
-   virtual double get_Pole_Mass(std::string) const = 0;
-   virtual double get_Pole_Mass(std::string, int) const = 0;
-   virtual double get_Pole_Mass(std::string, int, int) const = 0;
+   virtual double get_MPole(std::string) const = 0;
+   virtual double get_MPole(std::string, int) const = 0;
+   virtual double get_MPole(std::string, int, int) const = 0;
    virtual double get_Mixing_angle(std::string) const = 0;
    virtual double get_Mixing_element(std::string, int, int) const = 0;
+   
+   //map based getters
+   virtual double get_Pole_Mass(std::string) const = 0;
+   virtual double get_Pole_Mass(std::string, int) const = 0;
+   
+
 };
    
 

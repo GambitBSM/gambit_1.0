@@ -11,6 +11,9 @@ MSSMSpec::~MSSMSpec()
 {
 }
 
+
+
+
 //inspired by softsusy's lsp method.  
 //This MSSM version assumes all states mass ordered. 
 //returns lsp mass and gives 3 integers to specify the state 
@@ -254,7 +257,7 @@ double MSSMSpec::get_tree_MassEigenstate(std::string mass, int i, int j) const {
 
 
 //Takes a string and an index. 
-double MSSMSpec::get_Pole_Mass(std::string polemass) const {
+double MSSMSpec::get_MPole(std::string polemass) const {
    if(polemass == "MZ") 
       {
          return model.get_physical().MVZ;
@@ -342,7 +345,7 @@ double MSSMSpec::get_Pole_Mass(std::string polemass) const {
 }
 
 //Takes a string and an index. 
-double MSSMSpec::get_Pole_Mass(std::string polemass, int i) const {
+double MSSMSpec::get_MPole(std::string polemass, int i) const {
    if(polemass == "MSd") 
       {
          return model.get_physical().MSd(i);
@@ -470,7 +473,7 @@ std::cout << "Error: Sorry I know nothing" << std::endl;
 }
 
 //Takes a string and an index. 
-double MSSMSpec::get_Pole_Mass(std::string polemass, int i, int j) const {
+double MSSMSpec::get_MPole(std::string polemass, int i, int j) const {
    std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
    return -1.0;
 
@@ -742,7 +745,10 @@ double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
    }
 
 // Use our time-saving macro to define member functions
-REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS)
+REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS,MSSM_physical)
+
+
+
 
 
 // Function to initialise mass2_map
@@ -927,6 +933,7 @@ MSSMSpec::fmap1 MSSMSpec::fill_mass0_map1()
 MSSMSpec::fmap2 MSSMSpec::fill_mass0_map2() 
 {
    fmap2 tmp_map;
+  
    tmp_map["Yd"]= &MssmFS::get_Yd;
    tmp_map["Ye"]= &MssmFS::get_Ye;
    tmp_map["Yu"]= &MssmFS::get_Yu;
@@ -934,9 +941,113 @@ MSSMSpec::fmap2 MSSMSpec::fill_mass0_map2()
    return tmp_map;
 }
 
-MSSM<Two_scale> MSSMSpec:: get_modelobject() {
+MSSMSpec::fmap MSSMSpec::fill_TreeMass_map()
+{
+fmap tmp_map;
+ tmp_map["MZ"] = &MssmFS::get_MVZ;
+ tmp_map["MW"] = &MssmFS::get_MVWm;
+ tmp_map["MGluino"] = &MssmFS::get_MGlu; 
+ tmp_map["MGluon"] = &MssmFS::get_MVG; 
+ tmp_map["MPhoton"] = &MssmFS::get_MVP;
+
+tmp_map["MGoldstone0"] = &MssmFS::get_DRbar_neut_goldstone;
+ tmp_map["MA0"] = &MssmFS::get_DRbar_neut_CPodd_higgs;
+ tmp_map["MGoldstonePM"] = &MssmFS::get_DRbar_ch_goldstone; 
+ tmp_map["MHpm"] = &MssmFS::get_DRbar_ch_higgs; 
+ 
+ tmp_map["Mtop"] = &MssmFS::get_DRbar_mtop;
+ tmp_map["Mcharm"] = &MssmFS::get_DRbar_mcharm;
+ tmp_map["Mup"] = &MssmFS::get_DRbar_mup;
+ tmp_map["Mbottom"] = &MssmFS::get_DRbar_mbottom;
+ tmp_map["Mstrange"] = &MssmFS::get_DRbar_mstrange;
+ tmp_map["Mdown"] = &MssmFS::get_DRbar_mdown;
+ tmp_map["Mtau"] = &MssmFS::get_DRbar_mtau; 
+ tmp_map["Mmuon"] = &MssmFS::get_DRbar_mmuon; 
+ tmp_map["Melectron"] = &MssmFS::get_DRbar_melectron; 
+ return tmp_map;
+}
+//map for string access with an index supplied
+MSSMSpec::fmap1 MSSMSpec::fill_TreeMass_map1()
+{
+fmap1 tmp_map;
+ tmp_map["MSd"] = &MssmFS::get_MSd;
+ tmp_map["MSv"] = &MssmFS::get_MSv;
+ tmp_map["MSu"] = &MssmFS::get_MSu;
+ tmp_map["MSe"] = &MssmFS::get_MSe;
+ tmp_map["Mh0"] = &MssmFS::get_Mhh;
+ //Here we may access the goldstone boson
+ // and higgs. maybe too dangerous to keep?
+ tmp_map["MA0"] = &MssmFS::get_MAh;      
+ //Here we may access the goldstone boson
+ //and higgs. maybe too dangerous to keep?
+ tmp_map["MHpm"] = &MssmFS::get_MHpm;   
+ tmp_map["MCha"] = &MssmFS::get_MCha;
+ tmp_map["MChi"] = &MssmFS::get_MChi;
+ 
+ tmp_map["MFd"] = &MssmFS::get_MFd;
+ tmp_map["MFu"] = &MssmFS::get_MFu;
+ tmp_map["MFe"] = &MssmFS::get_MFe;
+ return tmp_map;
+}
+
+
+MSSMSpec::fmap MSSMSpec::fill_PoleMass_map(){
+   fmap tmp_map;
+  
+   tmp_map["MZ"] = &MssmFS::get_Pole_MZ;
+   tmp_map["MW"] = &MssmFS::get_Pole_MW;
+   tmp_map["MGluino"] = &MssmFS::get_Pole_MGlu; 
+   tmp_map["MGluon"] = &MssmFS::get_Pole_MGluon; 
+   tmp_map["MPhoton"] = &MssmFS::get_Pole_MPhoton;
+
+   tmp_map["MGoldstone0"] = &MssmFS::get_Pole_neut_goldstone;
+   tmp_map["MA0"] = &MssmFS::get_Pole_neut_CPodd_higgs;
+   tmp_map["MGoldstonePM"] = &MssmFS::get_Pole_ch_goldstone; 
+   tmp_map["MHpm"] = &MssmFS::get_Pole_ch_higgs;    
+   tmp_map["Mtop"] = &MssmFS::get_Pole_mtop;
+   tmp_map["Mcharm"] = &MssmFS::get_Pole_mcharm;
+   tmp_map["Mup"] = &MssmFS::get_Pole_mup;
+   tmp_map["Mbottom"] = &MssmFS::get_Pole_mbottom;
+   tmp_map["Mstrange"] = &MssmFS::get_Pole_mstrange;
+   tmp_map["Mdown"] = &MssmFS::get_Pole_mdown;
+   tmp_map["Mtau"] = &MssmFS::get_Pole_mtau; 
+   tmp_map["Mmuon"] = &MssmFS::get_Pole_mmuon; 
+   tmp_map["Melectron"] = &MssmFS::get_Pole_melectron; 
+
+   return tmp_map;
+}
+
+MSSMSpec::fmap1 MSSMSpec::fill_PoleMass_map1(){
+   fmap1 tmp_map;
+ 
+   tmp_map["MSd"] = &MssmFS::get_Pole_MSd;
+   tmp_map["MSv"] = &MssmFS::get_Pole_MSv;
+   tmp_map["MSu"] = &MssmFS::get_Pole_MSu;
+   tmp_map["MSe"] = &MssmFS::get_Pole_MSe;
+   tmp_map["Mhh"] = &MssmFS::get_Pole_Mhh;
+   tmp_map["MChi"] = &MssmFS::get_Pole_MChi;
+   tmp_map["MCha"] = &MssmFS::get_Pole_MCha;
+
+   tmp_map["MFd"] = &MssmFS::get_Pole_MFd;
+   tmp_map["MFu"] = &MssmFS::get_Pole_MFu;
+   tmp_map["MFe"] = &MssmFS::get_Pole_MFe;
+   return tmp_map;
+}
+
+
+
+
+//Would be safer to pass a pair like below:  
+// MSSMSpec::pmap1 MSSMSpec::fill_PoleMass_map1(){
+//    pmap1 tmp_map;
+//    tmp_map[std::make_pair("MSd",0)] = &MSSM_physical::MSd;
+   
+// }
+MSSM<Two_scale> MSSMSpec::get_modelobject() {
    return model;
 }
+
+
 
 // MSSMSpec::fmap& MSSMSpec::get_mass2_map() const {return mass2_map;} \
 //   MssmFS MSSMSpec::get_bound_spec() const {return model;} \
