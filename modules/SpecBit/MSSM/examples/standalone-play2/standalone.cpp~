@@ -148,7 +148,7 @@ bool TestMssmParMass0_0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    if(pass == false) return pass;
    pass = is_equal(mssm.get_dimensionless_par("g3"),FSmssm.get_g3());
    if(pass == false) return pass;
-   
+   return pass;
 }
 
 bool TestMssmParMass0_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
@@ -157,8 +157,10 @@ bool TestMssmParMass0_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
       for(int j = 0; j<=2; j++){
          pass = is_equal(mssm.get_dimensionless_parameter("Yd",i,j),
                          FSmssm.get_Yd(i,j)); 
-         if(pass == false) return pass;
-         pass = is_equal(mssm.get_dimensionless_parameter("Ye",i,j),
+         if(pass == false) {
+            return pass;
+         }
+            pass = is_equal(mssm.get_dimensionless_parameter("Ye",i,j),
                          FSmssm.get_Ye(i,j)); 
          if(pass == false) return pass;
          pass = is_equal(mssm.get_dimensionless_parameter("Yu",i,j),
