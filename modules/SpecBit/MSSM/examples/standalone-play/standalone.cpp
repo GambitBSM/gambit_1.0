@@ -183,6 +183,111 @@ bool TestMssmParMass0_2(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    return pass;
 }
 
+bool TestMssmPoleGets0(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   bool pass = false;
+   pass = is_equal(mssm.get_Pole_Mass("MZ"),FSmssm.get_physical().MVZ);
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MW"),FSmssm.get_physical().MVWm);
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MGoldstone0"),FSmssm.get_physical().MAh(0));
+   if(pass == false) return pass;
+    pass = is_equal(mssm.get_Pole_Mass("MA0"),FSmssm.get_physical().MAh(1));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MGoldstonePM"),FSmssm.get_physical().MHpm(0));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MHpm"),FSmssm.get_physical().MHpm(1));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MGluino"),FSmssm.get_physical().MGlu);
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MGluon"),FSmssm.get_physical().MVG);
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("MPhoton"),FSmssm.get_physical().MVP);
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mtop"),FSmssm.get_physical().MFu(2));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mcharm"),FSmssm.get_physical().MFu(1));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mup"),FSmssm.get_physical().MFu(0));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mbottom"),FSmssm.get_physical().MFd(2));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mstrange"),FSmssm.get_physical().MFd(1));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mdown"),FSmssm.get_physical().MFd(0));
+   if(pass == false) return pass;
+    pass = is_equal(mssm.get_Pole_Mass("Mtau"),FSmssm.get_physical().MFe(2));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Mmuon"),FSmssm.get_physical().MFe(1));
+   if(pass == false) return pass;
+   pass = is_equal(mssm.get_Pole_Mass("Melectron"),FSmssm.get_physical().MFe(0));
+   if(pass == false) return pass;
+      
+   std::cout << "pass = " << pass << std::endl;
+   return pass;
+}
+
+
+bool TestMssmPoleGets1(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   bool pass = false;
+   std::cout << "inside TestMssmPoleGets1 " << std::endl; 
+   for(int i=0; i<=5; i++){
+      std::cout << "pass = "  << pass << std::endl;
+      pass = is_equal(mssm.get_Pole_Mass("MSd",i),
+                      FSmssm.get_physical().MSd(i)); 
+      std::cout << "pass = "  << pass << std::endl;
+      if(pass == false) return pass;
+      pass = is_equal(mssm.get_Pole_Mass("MSu",i),
+                      FSmssm.get_physical().MSu(i));
+      if(pass == false) return pass;
+      pass = is_equal(mssm.get_Pole_Mass("MSe",i),
+                      FSmssm.get_physical().MSe(i));
+      if(pass == false) return pass;
+      std::cout << "pass = "  << pass << std::endl;
+   }
+   for(int i=0; i<=2; i++){
+    pass = is_equal(mssm.get_Pole_Mass("MSv",i),
+                      FSmssm.get_physical().MSv(i));
+      if(pass == false) return pass;
+   }
+   for(int i = 0; i<=1; i++){
+      pass = is_equal(mssm.get_Pole_Mass("Mhh",i),
+                      FSmssm.get_physical().Mhh(i)); 
+      if(pass == false) return pass;
+   }
+   for(int i = 0; i<=3; i++){
+      pass = is_equal(mssm.get_Pole_Mass("MChi",i),
+                      FSmssm.get_physical().MChi(i)); 
+      if(pass == false) return pass;
+   }
+    for(int i = 0; i<=1; i++){
+      pass = is_equal(mssm.get_Pole_Mass("MCha",i),
+                      FSmssm.get_physical().MCha(i)); 
+      if(pass == false) return pass;  
+   }
+    for(int i = 0; i<=2; i++){
+      pass = is_equal(mssm.get_Pole_Mass("MFu",i),
+                      FSmssm.get_physical().MFu(i)); 
+      if(pass == false) return pass;
+       pass = is_equal(mssm.get_Pole_Mass("MFe",i),
+                      FSmssm.get_physical().MFe(i)); 
+      if(pass == false) return pass;
+       pass = is_equal(mssm.get_Pole_Mass("MFd",i),
+                      FSmssm.get_physical().MFd(i)); 
+      if(pass == false) return pass;   
+    }
+   
+   return pass;
+}
+
+bool TestMssmPoleGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
+   bool pass = false;
+   pass = TestMssmPoleGets0(mssm,FSmssm);
+   if(pass == false) return pass;
+    pass = TestMssmPoleGets1(mssm,FSmssm);
+   if(pass == false) return pass;
+   return pass;
+}
+
 bool TestMssmParGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    bool pass = false; 
    pass = TestMssmParMass2_0(mssm,FSmssm);
@@ -197,7 +302,6 @@ bool TestMssmParGets(MSSMSpec mssm, MSSM<Two_scale> FSmssm){
    if(pass == false) return pass;
    pass = TestMssmParMass0_2(mssm,FSmssm);
    if(pass == false) return pass;
-
 
    return pass;
 
@@ -417,6 +521,10 @@ void spectrum_example() {
    MSSMSpec mssm(mssm1);
    if(TestMssmParGets(mssm, mssm1)==false){
       std::cerr << "TestMssmParGets fail." << std::endl;
+      return;
+   }
+   if(TestMssmPoleGets(mssm, mssm1)==false){
+      std::cerr << "TestMssmPoleGets fail." << std::endl;
       return;
    }
    //So now we have a mssm1 model object filled, as it will be
