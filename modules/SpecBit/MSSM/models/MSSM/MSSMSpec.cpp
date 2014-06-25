@@ -111,6 +111,310 @@ std::string MSSMSpec::AccessError(std::string state) const {
 }
 
 
+
+// Use our time-saving macro to define member functions
+REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS,MSSM_physical)
+
+
+
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap MSSMSpec::fill_mass4_map() 
+{
+   fmap tmp_map;
+ 
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass4_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass4_map2() 
+{
+   fmap2 tmp_map;
+   
+   //there are no mappings for this case.
+  
+   return tmp_map;
+}
+
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap MSSMSpec::fill_mass3_map() 
+{
+   fmap tmp_map;
+ 
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass3_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass3_map2() 
+{
+   fmap2 tmp_map;
+   
+   //there are no mappings for this case.
+  
+   return tmp_map;
+}
+
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap MSSMSpec::fill_mass2_map() 
+{
+   fmap tmp_map;
+   tmp_map["BMu"] = &MssmFS::get_BMu;
+   tmp_map["mHd2"] = &MssmFS::get_mHd2;
+   tmp_map["mHu2"] = &MssmFS::get_mHu2;
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass2_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass2_map2() 
+{
+   fmap2 tmp_map;
+   tmp_map["mq2"]= &MssmFS::get_mq2;
+   tmp_map["ml2"] =&MssmFS::get_ml2;
+   tmp_map["md2"]= &MssmFS::get_md2;
+   tmp_map["mu2"] =&MssmFS::get_mu2;
+   tmp_map["me2"]= &MssmFS::get_me2;
+  
+   return tmp_map;
+}
+
+
+
+// Function to initialise mass_map
+MSSMSpec::fmap MSSMSpec::fill_mass_map() 
+{
+   fmap tmp_map;
+   tmp_map["M1"]= &MssmFS::get_MassB;
+   tmp_map["M2"]= &MssmFS::get_MassWB;
+   tmp_map["M3"]= &MssmFS::get_MassG;
+   tmp_map["Mu"]= &MssmFS::get_Mu;
+   tmp_map["vu"]= &MssmFS::get_vu;
+   tmp_map["vd"]= &MssmFS::get_vd;
+   //  can't do SM vev or tan beta this way
+   // can create MSSMSpec getter which first calls 
+   // inherited one then adds vev and tan beta
+  
+   
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass_map2() 
+{
+   fmap2 tmp_map;
+   tmp_map["TYd"]= &MssmFS::get_TYd;
+   tmp_map["TYe"]= &MssmFS::get_TYe;
+   tmp_map["TYu"]= &MssmFS::get_TYu;
+   tmp_map["ad"]= &MssmFS::get_TYd;
+   tmp_map["ae"]= &MssmFS::get_TYe;
+   tmp_map["au"]= &MssmFS::get_TYu;
+
+   return tmp_map;
+}
+
+// Function to initialise mass_map
+MSSMSpec::fmap MSSMSpec::fill_mass0_map() 
+{
+   fmap tmp_map;
+   tmp_map["g1"]= &MssmFS::get_g1;
+   tmp_map["g2"]= &MssmFS::get_g2;
+   tmp_map["g3"]= &MssmFS::get_g3;
+   
+   //  can't do SM vev or tan beta this way
+   // can create MSSMSpec getter which first calls 
+   // inherited one then adds vev and tan beta
+  
+   
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap1 MSSMSpec::fill_mass0_map1() 
+{
+   fmap1 tmp_map;
+
+   //there are no mappings for this case.
+
+   return tmp_map;
+}
+
+
+// Function to initialise mass2_map
+MSSMSpec::fmap2 MSSMSpec::fill_mass0_map2() 
+{
+   fmap2 tmp_map;
+  
+   tmp_map["Yd"]= &MssmFS::get_Yd;
+   tmp_map["Ye"]= &MssmFS::get_Ye;
+   tmp_map["Yu"]= &MssmFS::get_Yu;
+  
+   return tmp_map;
+}
+
+MSSMSpec::fmap MSSMSpec::fill_TreeMass_map()
+{
+fmap tmp_map;
+ tmp_map["MZ"] = &MssmFS::get_MVZ;
+ tmp_map["MW"] = &MssmFS::get_MVWm;
+ tmp_map["MGluino"] = &MssmFS::get_MGlu; 
+ tmp_map["MGluon"] = &MssmFS::get_MVG; 
+ tmp_map["MPhoton"] = &MssmFS::get_MVP;
+
+tmp_map["MGoldstone0"] = &MssmFS::get_DRbar_neut_goldstone;
+ tmp_map["MA0"] = &MssmFS::get_DRbar_neut_CPodd_higgs;
+ tmp_map["MGoldstonePM"] = &MssmFS::get_DRbar_ch_goldstone; 
+ tmp_map["MHpm"] = &MssmFS::get_DRbar_ch_higgs; 
+ 
+ tmp_map["Mtop"] = &MssmFS::get_DRbar_mtop;
+ tmp_map["Mcharm"] = &MssmFS::get_DRbar_mcharm;
+ tmp_map["Mup"] = &MssmFS::get_DRbar_mup;
+ tmp_map["Mbottom"] = &MssmFS::get_DRbar_mbottom;
+ tmp_map["Mstrange"] = &MssmFS::get_DRbar_mstrange;
+ tmp_map["Mdown"] = &MssmFS::get_DRbar_mdown;
+ tmp_map["Mtau"] = &MssmFS::get_DRbar_mtau; 
+ tmp_map["Mmuon"] = &MssmFS::get_DRbar_mmuon; 
+ tmp_map["Melectron"] = &MssmFS::get_DRbar_melectron; 
+ return tmp_map;
+}
+//map for string access with an index supplied
+MSSMSpec::fmap1 MSSMSpec::fill_TreeMass_map1()
+{
+fmap1 tmp_map;
+ tmp_map["MSd"] = &MssmFS::get_MSd;
+ tmp_map["MSv"] = &MssmFS::get_MSv;
+ tmp_map["MSu"] = &MssmFS::get_MSu;
+ tmp_map["MSe"] = &MssmFS::get_MSe;
+ tmp_map["Mh0"] = &MssmFS::get_Mhh;
+ //Here we may access the goldstone boson
+ // and higgs. maybe too dangerous to keep?
+ tmp_map["MA0"] = &MssmFS::get_MAh;      
+ //Here we may access the goldstone boson
+ //and higgs. maybe too dangerous to keep?
+ tmp_map["MHpm"] = &MssmFS::get_MHpm;   
+ tmp_map["MCha"] = &MssmFS::get_MCha;
+ tmp_map["MChi"] = &MssmFS::get_MChi;
+ 
+ tmp_map["MFd"] = &MssmFS::get_MFd;
+ tmp_map["MFu"] = &MssmFS::get_MFu;
+ tmp_map["MFe"] = &MssmFS::get_MFe;
+ return tmp_map;
+}
+
+
+MSSMSpec::fmap MSSMSpec::fill_PoleMass_map(){
+   fmap tmp_map;
+  
+   tmp_map["MZ"] = &MssmFS::get_Pole_MZ;
+   tmp_map["MW"] = &MssmFS::get_Pole_MW;
+   tmp_map["MGluino"] = &MssmFS::get_Pole_MGlu; 
+   tmp_map["MGluon"] = &MssmFS::get_Pole_MGluon; 
+   tmp_map["MPhoton"] = &MssmFS::get_Pole_MPhoton;
+
+   tmp_map["MGoldstone0"] = &MssmFS::get_Pole_neut_goldstone;
+   tmp_map["MA0"] = &MssmFS::get_Pole_neut_CPodd_higgs;
+   tmp_map["MGoldstonePM"] = &MssmFS::get_Pole_ch_goldstone; 
+   tmp_map["MHpm"] = &MssmFS::get_Pole_ch_higgs;    
+   tmp_map["Mtop"] = &MssmFS::get_Pole_mtop;
+   tmp_map["Mcharm"] = &MssmFS::get_Pole_mcharm;
+   tmp_map["Mup"] = &MssmFS::get_Pole_mup;
+   tmp_map["Mbottom"] = &MssmFS::get_Pole_mbottom;
+   tmp_map["Mstrange"] = &MssmFS::get_Pole_mstrange;
+   tmp_map["Mdown"] = &MssmFS::get_Pole_mdown;
+   tmp_map["Mtau"] = &MssmFS::get_Pole_mtau; 
+   tmp_map["Mmuon"] = &MssmFS::get_Pole_mmuon; 
+   tmp_map["Melectron"] = &MssmFS::get_Pole_melectron; 
+
+   return tmp_map;
+}
+
+MSSMSpec::fmap1 MSSMSpec::fill_PoleMass_map1(){
+   fmap1 tmp_map;
+ 
+   tmp_map["MSd"] = &MssmFS::get_Pole_MSd;
+   tmp_map["MSv"] = &MssmFS::get_Pole_MSv;
+   tmp_map["MSu"] = &MssmFS::get_Pole_MSu;
+   tmp_map["MSe"] = &MssmFS::get_Pole_MSe;
+   tmp_map["Mhh"] = &MssmFS::get_Pole_Mhh;
+   tmp_map["MChi"] = &MssmFS::get_Pole_MChi;
+   tmp_map["MCha"] = &MssmFS::get_Pole_MCha;
+
+   tmp_map["MFd"] = &MssmFS::get_Pole_MFd;
+   tmp_map["MFu"] = &MssmFS::get_Pole_MFu;
+   tmp_map["MFe"] = &MssmFS::get_Pole_MFe;
+   return tmp_map;
+}
+
+
+
+
+
+
+//Would be safer to pass a pair like below:  
+// MSSMSpec::pmap1 MSSMSpec::fill_PoleMass_map1(){
+//    pmap1 tmp_map;
+//    tmp_map[std::make_pair("MSd",0)] = &MSSM_physical::MSd;
+   
+// }
+
+
 //Takes a string and an index. 
 double MSSMSpec::get_tree_MassEigenstate(std::string mass) const {
    if(mass == "MZ") 
@@ -744,305 +1048,8 @@ double MSSMSpec::get_mass_par(std::string mass, int i, int j) const {
 
    }
 
-// Use our time-saving macro to define member functions
-REDEFINE_TRIVIAL_MEMBER_FUNCTIONS(MSSMSpec,MssmFS,MSSM_physical)
 
 
-
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap MSSMSpec::fill_mass4_map() 
-{
-   fmap tmp_map;
- 
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap1 MSSMSpec::fill_mass4_map1() 
-{
-   fmap1 tmp_map;
-
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap2 MSSMSpec::fill_mass4_map2() 
-{
-   fmap2 tmp_map;
-   
-   //there are no mappings for this case.
-  
-   return tmp_map;
-}
-
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap MSSMSpec::fill_mass3_map() 
-{
-   fmap tmp_map;
- 
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap1 MSSMSpec::fill_mass3_map1() 
-{
-   fmap1 tmp_map;
-
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap2 MSSMSpec::fill_mass3_map2() 
-{
-   fmap2 tmp_map;
-   
-   //there are no mappings for this case.
-  
-   return tmp_map;
-}
-
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap MSSMSpec::fill_mass2_map() 
-{
-   fmap tmp_map;
-   tmp_map["BMu"] = &MssmFS::get_BMu;
-   tmp_map["mHd2"] = &MssmFS::get_mHd2;
-   tmp_map["mHu2"] = &MssmFS::get_mHu2;
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap1 MSSMSpec::fill_mass2_map1() 
-{
-   fmap1 tmp_map;
-
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap2 MSSMSpec::fill_mass2_map2() 
-{
-   fmap2 tmp_map;
-   tmp_map["mq2"]= &MssmFS::get_mq2;
-   tmp_map["ml2"] =&MssmFS::get_ml2;
-   tmp_map["md2"]= &MssmFS::get_md2;
-   tmp_map["mu2"] =&MssmFS::get_mu2;
-   tmp_map["me2"]= &MssmFS::get_me2;
-  
-   return tmp_map;
-}
-
-
-
-// Function to initialise mass_map
-MSSMSpec::fmap MSSMSpec::fill_mass_map() 
-{
-   fmap tmp_map;
-   tmp_map["M1"]= &MssmFS::get_MassB;
-   tmp_map["M2"]= &MssmFS::get_MassWB;
-   tmp_map["M3"]= &MssmFS::get_MassG;
-   tmp_map["Mu"]= &MssmFS::get_Mu;
-   tmp_map["vu"]= &MssmFS::get_vu;
-   tmp_map["vd"]= &MssmFS::get_vd;
-   //  can't do SM vev or tan beta this way
-   // can create MSSMSpec getter which first calls 
-   // inherited one then adds vev and tan beta
-  
-   
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap1 MSSMSpec::fill_mass_map1() 
-{
-   fmap1 tmp_map;
-
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap2 MSSMSpec::fill_mass_map2() 
-{
-   fmap2 tmp_map;
-   tmp_map["TYd"]= &MssmFS::get_TYd;
-   tmp_map["TYe"]= &MssmFS::get_TYe;
-   tmp_map["TYu"]= &MssmFS::get_TYu;
-   tmp_map["ad"]= &MssmFS::get_TYd;
-   tmp_map["ae"]= &MssmFS::get_TYe;
-   tmp_map["au"]= &MssmFS::get_TYu;
-
-   return tmp_map;
-}
-
-// Function to initialise mass_map
-MSSMSpec::fmap MSSMSpec::fill_mass0_map() 
-{
-   fmap tmp_map;
-   tmp_map["g1"]= &MssmFS::get_g1;
-   tmp_map["g2"]= &MssmFS::get_g2;
-   tmp_map["g3"]= &MssmFS::get_g3;
-   
-   //  can't do SM vev or tan beta this way
-   // can create MSSMSpec getter which first calls 
-   // inherited one then adds vev and tan beta
-  
-   
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap1 MSSMSpec::fill_mass0_map1() 
-{
-   fmap1 tmp_map;
-
-   //there are no mappings for this case.
-
-   return tmp_map;
-}
-
-
-// Function to initialise mass2_map
-MSSMSpec::fmap2 MSSMSpec::fill_mass0_map2() 
-{
-   fmap2 tmp_map;
-  
-   tmp_map["Yd"]= &MssmFS::get_Yd;
-   tmp_map["Ye"]= &MssmFS::get_Ye;
-   tmp_map["Yu"]= &MssmFS::get_Yu;
-  
-   return tmp_map;
-}
-
-MSSMSpec::fmap MSSMSpec::fill_TreeMass_map()
-{
-fmap tmp_map;
- tmp_map["MZ"] = &MssmFS::get_MVZ;
- tmp_map["MW"] = &MssmFS::get_MVWm;
- tmp_map["MGluino"] = &MssmFS::get_MGlu; 
- tmp_map["MGluon"] = &MssmFS::get_MVG; 
- tmp_map["MPhoton"] = &MssmFS::get_MVP;
-
-tmp_map["MGoldstone0"] = &MssmFS::get_DRbar_neut_goldstone;
- tmp_map["MA0"] = &MssmFS::get_DRbar_neut_CPodd_higgs;
- tmp_map["MGoldstonePM"] = &MssmFS::get_DRbar_ch_goldstone; 
- tmp_map["MHpm"] = &MssmFS::get_DRbar_ch_higgs; 
- 
- tmp_map["Mtop"] = &MssmFS::get_DRbar_mtop;
- tmp_map["Mcharm"] = &MssmFS::get_DRbar_mcharm;
- tmp_map["Mup"] = &MssmFS::get_DRbar_mup;
- tmp_map["Mbottom"] = &MssmFS::get_DRbar_mbottom;
- tmp_map["Mstrange"] = &MssmFS::get_DRbar_mstrange;
- tmp_map["Mdown"] = &MssmFS::get_DRbar_mdown;
- tmp_map["Mtau"] = &MssmFS::get_DRbar_mtau; 
- tmp_map["Mmuon"] = &MssmFS::get_DRbar_mmuon; 
- tmp_map["Melectron"] = &MssmFS::get_DRbar_melectron; 
- return tmp_map;
-}
-//map for string access with an index supplied
-MSSMSpec::fmap1 MSSMSpec::fill_TreeMass_map1()
-{
-fmap1 tmp_map;
- tmp_map["MSd"] = &MssmFS::get_MSd;
- tmp_map["MSv"] = &MssmFS::get_MSv;
- tmp_map["MSu"] = &MssmFS::get_MSu;
- tmp_map["MSe"] = &MssmFS::get_MSe;
- tmp_map["Mh0"] = &MssmFS::get_Mhh;
- //Here we may access the goldstone boson
- // and higgs. maybe too dangerous to keep?
- tmp_map["MA0"] = &MssmFS::get_MAh;      
- //Here we may access the goldstone boson
- //and higgs. maybe too dangerous to keep?
- tmp_map["MHpm"] = &MssmFS::get_MHpm;   
- tmp_map["MCha"] = &MssmFS::get_MCha;
- tmp_map["MChi"] = &MssmFS::get_MChi;
- 
- tmp_map["MFd"] = &MssmFS::get_MFd;
- tmp_map["MFu"] = &MssmFS::get_MFu;
- tmp_map["MFe"] = &MssmFS::get_MFe;
- return tmp_map;
-}
-
-
-MSSMSpec::fmap MSSMSpec::fill_PoleMass_map(){
-   fmap tmp_map;
-  
-   tmp_map["MZ"] = &MssmFS::get_Pole_MZ;
-   tmp_map["MW"] = &MssmFS::get_Pole_MW;
-   tmp_map["MGluino"] = &MssmFS::get_Pole_MGlu; 
-   tmp_map["MGluon"] = &MssmFS::get_Pole_MGluon; 
-   tmp_map["MPhoton"] = &MssmFS::get_Pole_MPhoton;
-
-   tmp_map["MGoldstone0"] = &MssmFS::get_Pole_neut_goldstone;
-   tmp_map["MA0"] = &MssmFS::get_Pole_neut_CPodd_higgs;
-   tmp_map["MGoldstonePM"] = &MssmFS::get_Pole_ch_goldstone; 
-   tmp_map["MHpm"] = &MssmFS::get_Pole_ch_higgs;    
-   tmp_map["Mtop"] = &MssmFS::get_Pole_mtop;
-   tmp_map["Mcharm"] = &MssmFS::get_Pole_mcharm;
-   tmp_map["Mup"] = &MssmFS::get_Pole_mup;
-   tmp_map["Mbottom"] = &MssmFS::get_Pole_mbottom;
-   tmp_map["Mstrange"] = &MssmFS::get_Pole_mstrange;
-   tmp_map["Mdown"] = &MssmFS::get_Pole_mdown;
-   tmp_map["Mtau"] = &MssmFS::get_Pole_mtau; 
-   tmp_map["Mmuon"] = &MssmFS::get_Pole_mmuon; 
-   tmp_map["Melectron"] = &MssmFS::get_Pole_melectron; 
-
-   return tmp_map;
-}
-
-MSSMSpec::fmap1 MSSMSpec::fill_PoleMass_map1(){
-   fmap1 tmp_map;
- 
-   tmp_map["MSd"] = &MssmFS::get_Pole_MSd;
-   tmp_map["MSv"] = &MssmFS::get_Pole_MSv;
-   tmp_map["MSu"] = &MssmFS::get_Pole_MSu;
-   tmp_map["MSe"] = &MssmFS::get_Pole_MSe;
-   tmp_map["Mhh"] = &MssmFS::get_Pole_Mhh;
-   tmp_map["MChi"] = &MssmFS::get_Pole_MChi;
-   tmp_map["MCha"] = &MssmFS::get_Pole_MCha;
-
-   tmp_map["MFd"] = &MssmFS::get_Pole_MFd;
-   tmp_map["MFu"] = &MssmFS::get_Pole_MFu;
-   tmp_map["MFe"] = &MssmFS::get_Pole_MFe;
-   return tmp_map;
-}
-
-
-
-
-//Would be safer to pass a pair like below:  
-// MSSMSpec::pmap1 MSSMSpec::fill_PoleMass_map1(){
-//    pmap1 tmp_map;
-//    tmp_map[std::make_pair("MSd",0)] = &MSSM_physical::MSd;
-   
-// }
 MSSM<Two_scale> MSSMSpec::get_modelobject() {
    return model;
 }
