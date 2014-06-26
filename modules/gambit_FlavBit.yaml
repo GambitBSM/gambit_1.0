@@ -69,6 +69,8 @@ adhoc:
 
 # Uncomment to test FlavBit
 - purpose:      Likelihood
+  capability:   SI_fill
+- purpose:      Likelihood
   capability:   SI_bsgamma
 - purpose:      Likelihood
   capability:   SI_Bsmumu

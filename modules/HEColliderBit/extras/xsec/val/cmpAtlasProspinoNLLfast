@@ -1,0 +1,67 @@
+#! /usr/bin/env python
+# -*- python -*-
+
+## Run like ./cmpAtlasXsecs atlasxsecs.root
+
+import sys, ROOT
+ROOT.gROOT.SetBatch(True)
+
+
+## Need two args
+if len(sys.argv) != 3:
+    print "Usage: %s <atlasrootfile> <cmptextfile>" % sys.argv[0]
+    sys.exit(1)
+
+## 1st arg is the ROOT file from ATLAS
+ROOTFILE = sys.argv[1]
+
+## 2nd arg is the text file of alternative xsecs at the same points
+TEXTFILE = sys.argv[2]
+
+
+from math import sqrt
+def dev(sig, sigref):
+    return (sig-sigref) / sigref
+def dev(sig, sigref, reg=0):
+    #return (sig-sigref) / (abs(sigref) + abs(reg))
+    return (sig-sigref) / sqrt(abs(sigref*reg))
+def dev(sig, sigref, reg=0):
+    if sig < reg or sigref < reg:
+        sys.stderr.write("Vetoing: {:7.2g} (sig) vs {:7.2g} (ref)  [reg = {:5.2g}]\n".format(sig, sigref, reg))
+        return -1.0
+    return (sig-sigref) / (abs(sigref) + abs(reg))
+    #return (sig-sigref) / sqrt(abs(sigref*reg))
+
+
+## Extract ATLAS xsecs for each m0-m12 point and process group
+f = ROOT.TFile(ROOTFILE)
+tree = f.Get("SignalUncertainties")
+atlasxsecs = {}
+for e in tree:
+    #print e.finalState
+    atlasxsecs.setdefault((e.m0, e.m12), {})[e.finalState] = e.crossSection
+
+## Read file and compare
+with open(TEXTFILE) as f:
+    for line in f:
+        vals = [float(x) for x in line.split()]
+        m0, m12, a0, mu, tanB = vals[:5]
+        xsec = sum(vals[5:])
+        atlas_xsecs_m0m12 = atlasxsecs.get((m0, m12))
+        if not atlas_xsecs_m0m12:
+            print "(m0, m12) = %s missing from ATLAS file... how???" % str( (m0,m12) )
+        dev_sg = dev(xsec, atlas_xsecs_m0m12[1])
+        dev_gg = dev(xsec, atlas_xsecs_m0m12[2])
+        print m0, m12, dev_sg, dev_gg
+
+
+# def mean(xs):
+#     filtxs = list(x for x in xs if x != -1)
+#     return sum(x for x in filtxs if x != -1)/float(len(filtxs))
+# def rms(xs):
+#     from math import sqrt
+#     filtxs = list(x for x in xs if x != -1)
+#     return sqrt(sum(x**2 for x in filtxs)/float(len(filtxs)))
+# def absmean(xs):
+#     filtxs = list(x for x in xs if x != -1)
+#     return sum(abs(x) for x in filtxs)/float(len(filtxs))
