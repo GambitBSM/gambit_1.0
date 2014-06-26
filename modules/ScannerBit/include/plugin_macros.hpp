@@ -23,6 +23,8 @@
 #define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__) enum{}
 #define plugin_main(...)                PLUGIN_MAIN( __VA_ARGS__ )
 #define gambit_plugin(...)              GAMBIT_PLUGIN( __VA_ARGS__ )
+#define plugin_constructor              PLUGIN_CONSTRUCTOR
+#define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
 
 #define VERSION(...)                                                                                                    \
 namespace __gambit_plugin_namespace__                                                                                   \
@@ -114,6 +116,15 @@ namespace __gambit_plugin_namespace__                                           
                 interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
         }                                                                                                               \
 }                                                                                                                       \
+
+//constructor
+#define PLUGIN_CONSTRUCTOR                                                                                              \
+RUN_FUNCTION(__gambit_plugin_constructor__)                                                                             \
+void __gambit_plugin_constructor__()                                                                                    \
+
+#define PLUGIN_DECONSTRUCTOR                                                                                            \
+EXPORT_OBJECT(__gambit_plugin_deconstructor__, __gambit_plugin_deconstructor__);                                        \
+void __gambit_plugin_deconstructor__()                                                                                  \
 
 //initalizes global variable
 #define RUN_FUNCTION(name, ...)                                                                                         \
