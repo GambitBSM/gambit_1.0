@@ -202,6 +202,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY dump_GammaSpectrum
+  START_CAPABILITY
+    #define FUNCTION dump_GammaSpectrum
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY lnL_oh2
   START_CAPABILITY
     #define FUNCTION lnL_oh2_Simple
