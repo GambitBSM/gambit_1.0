@@ -2,7999 +2,7999 @@
 #include <cmath>
 
 double NNfunction_sb_uRsR::Value(int index,double in0,double in1,double in2,double in3,double in4,double in5,double in6,double in7,double in8,double in9,double in10,double in11,double in12,double in13,double in14,double in15,double in16,double in17,double in18,double in19,double in20,double in21,double in22,double in23) {
-   input0 = (in0 - 23.4253)/15.3046;
-   input1 = (in1 - -2.96032)/1152.14;
-   input2 = (in2 - 655.703)/624.756;
-   input3 = (in3 - -53.2477)/802.356;
-   input4 = (in4 - 1065.71)/958.207;
-   input5 = (in5 - 893.266)/947.211;
-   input6 = (in6 - 913.015)/956.329;
-   input7 = (in7 - 917.883)/931.371;
-   input8 = (in8 - 907.908)/961.412;
-   input9 = (in9 - 890.426)/945.847;
-   input10 = (in10 - 976.488)/942.919;
-   input11 = (in11 - 703.075)/844.712;
-   input12 = (in12 - 712.266)/856.413;
-   input13 = (in13 - 500.894)/511.393;
-   input14 = (in14 - 432.616)/436.21;
-   input15 = (in15 - 723.348)/821.351;
-   input16 = (in16 - 539.97)/568.898;
-   input17 = (in17 - 744.247)/876.741;
-   input18 = (in18 - 404.236)/424.067;
-   input19 = (in19 - 792.369)/868.459;
-   input20 = (in20 - -8.72684)/483.956;
-   input21 = (in21 - 4.88815)/1161.88;
-   input22 = (in22 - 2.4617)/1198;
-   input23 = (in23 - -197.618)/602.657;
+   input0 = (in0 - 22.9301)/15.024;
+   input1 = (in1 - 50.0644)/748.054;
+   input2 = (in2 - 371.002)/474.567;
+   input3 = (in3 - 261.562)/604.553;
+   input4 = (in4 - 747.409)/698.436;
+   input5 = (in5 - 652.829)/670.979;
+   input6 = (in6 - 661.071)/679.391;
+   input7 = (in7 - 650.682)/666.875;
+   input8 = (in8 - 646.039)/687.527;
+   input9 = (in9 - 638.625)/675.637;
+   input10 = (in10 - 646.471)/694.502;
+   input11 = (in11 - 679.201)/570.574;
+   input12 = (in12 - 683.049)/578.019;
+   input13 = (in13 - 528.992)/356.955;
+   input14 = (in14 - 559.576)/342.211;
+   input15 = (in15 - 681.498)/556.64;
+   input16 = (in16 - 478.345)/388.779;
+   input17 = (in17 - 689.545)/591.751;
+   input18 = (in18 - 546.943)/340.253;
+   input19 = (in19 - 689.631)/588.816;
+   input20 = (in20 - -205.941)/400.994;
+   input21 = (in21 - -261.944)/883.412;
+   input22 = (in22 - 1.15237)/882.411;
+   input23 = (in23 - -15.1482)/498.343;
    switch(index) {
      case 0:
-         return neuron0x24b64a0();
+         return neuron0x346ee10();
      default:
          return 0.;
    }
 }
 
 double NNfunction_sb_uRsR::Value(int index, double* input) {
-   input0 = (input[0] - 23.4253)/15.3046;
-   input1 = (input[1] - -2.96032)/1152.14;
-   input2 = (input[2] - 655.703)/624.756;
-   input3 = (input[3] - -53.2477)/802.356;
-   input4 = (input[4] - 1065.71)/958.207;
-   input5 = (input[5] - 893.266)/947.211;
-   input6 = (input[6] - 913.015)/956.329;
-   input7 = (input[7] - 917.883)/931.371;
-   input8 = (input[8] - 907.908)/961.412;
-   input9 = (input[9] - 890.426)/945.847;
-   input10 = (input[10] - 976.488)/942.919;
-   input11 = (input[11] - 703.075)/844.712;
-   input12 = (input[12] - 712.266)/856.413;
-   input13 = (input[13] - 500.894)/511.393;
-   input14 = (input[14] - 432.616)/436.21;
-   input15 = (input[15] - 723.348)/821.351;
-   input16 = (input[16] - 539.97)/568.898;
-   input17 = (input[17] - 744.247)/876.741;
-   input18 = (input[18] - 404.236)/424.067;
-   input19 = (input[19] - 792.369)/868.459;
-   input20 = (input[20] - -8.72684)/483.956;
-   input21 = (input[21] - 4.88815)/1161.88;
-   input22 = (input[22] - 2.4617)/1198;
-   input23 = (input[23] - -197.618)/602.657;
+   input0 = (input[0] - 22.9301)/15.024;
+   input1 = (input[1] - 50.0644)/748.054;
+   input2 = (input[2] - 371.002)/474.567;
+   input3 = (input[3] - 261.562)/604.553;
+   input4 = (input[4] - 747.409)/698.436;
+   input5 = (input[5] - 652.829)/670.979;
+   input6 = (input[6] - 661.071)/679.391;
+   input7 = (input[7] - 650.682)/666.875;
+   input8 = (input[8] - 646.039)/687.527;
+   input9 = (input[9] - 638.625)/675.637;
+   input10 = (input[10] - 646.471)/694.502;
+   input11 = (input[11] - 679.201)/570.574;
+   input12 = (input[12] - 683.049)/578.019;
+   input13 = (input[13] - 528.992)/356.955;
+   input14 = (input[14] - 559.576)/342.211;
+   input15 = (input[15] - 681.498)/556.64;
+   input16 = (input[16] - 478.345)/388.779;
+   input17 = (input[17] - 689.545)/591.751;
+   input18 = (input[18] - 546.943)/340.253;
+   input19 = (input[19] - 689.631)/588.816;
+   input20 = (input[20] - -205.941)/400.994;
+   input21 = (input[21] - -261.944)/883.412;
+   input22 = (input[22] - 1.15237)/882.411;
+   input23 = (input[23] - -15.1482)/498.343;
    switch(index) {
      case 0:
-         return neuron0x24b64a0();
+         return neuron0x346ee10();
      default:
          return 0.;
    }
 }
 
-double NNfunction_sb_uRsR::neuron0x2482560() {
+double NNfunction_sb_uRsR::neuron0x3439e80() {
    return input0;
 }
 
-double NNfunction_sb_uRsR::neuron0x24828a0() {
+double NNfunction_sb_uRsR::neuron0x343a130() {
    return input1;
 }
 
-double NNfunction_sb_uRsR::neuron0x2482be0() {
+double NNfunction_sb_uRsR::neuron0x343a470() {
    return input2;
 }
 
-double NNfunction_sb_uRsR::neuron0x2482f20() {
+double NNfunction_sb_uRsR::neuron0x343a7b0() {
    return input3;
 }
 
-double NNfunction_sb_uRsR::neuron0x2483260() {
+double NNfunction_sb_uRsR::neuron0x343aaf0() {
    return input4;
 }
 
-double NNfunction_sb_uRsR::neuron0x24835a0() {
+double NNfunction_sb_uRsR::neuron0x343ae30() {
    return input5;
 }
 
-double NNfunction_sb_uRsR::neuron0x24838e0() {
+double NNfunction_sb_uRsR::neuron0x343b170() {
    return input6;
 }
 
-double NNfunction_sb_uRsR::neuron0x2483c20() {
+double NNfunction_sb_uRsR::neuron0x343b4b0() {
    return input7;
 }
 
-double NNfunction_sb_uRsR::neuron0x2483f60() {
+double NNfunction_sb_uRsR::neuron0x343b7f0() {
    return input8;
 }
 
-double NNfunction_sb_uRsR::neuron0x24842a0() {
+double NNfunction_sb_uRsR::neuron0x343bb30() {
    return input9;
 }
 
-double NNfunction_sb_uRsR::neuron0x24845e0() {
+double NNfunction_sb_uRsR::neuron0x343be70() {
    return input10;
 }
 
-double NNfunction_sb_uRsR::neuron0x2484920() {
+double NNfunction_sb_uRsR::neuron0x343c1b0() {
    return input11;
 }
 
-double NNfunction_sb_uRsR::neuron0x2484c60() {
+double NNfunction_sb_uRsR::neuron0x343c4f0() {
    return input12;
 }
 
-double NNfunction_sb_uRsR::neuron0x2484fa0() {
+double NNfunction_sb_uRsR::neuron0x343c830() {
    return input13;
 }
 
-double NNfunction_sb_uRsR::neuron0x24852e0() {
+double NNfunction_sb_uRsR::neuron0x343cb70() {
    return input14;
 }
 
-double NNfunction_sb_uRsR::neuron0x2485620() {
+double NNfunction_sb_uRsR::neuron0x343ceb0() {
    return input15;
 }
 
-double NNfunction_sb_uRsR::neuron0x2485960() {
+double NNfunction_sb_uRsR::neuron0x343d1f0() {
    return input16;
 }
 
-double NNfunction_sb_uRsR::neuron0x2485ec0() {
+double NNfunction_sb_uRsR::neuron0x343d750() {
    return input17;
 }
 
-double NNfunction_sb_uRsR::neuron0x24860e0() {
+double NNfunction_sb_uRsR::neuron0x343da90() {
    return input18;
 }
 
-double NNfunction_sb_uRsR::neuron0x2486420() {
+double NNfunction_sb_uRsR::neuron0x343ddd0() {
    return input19;
 }
 
-double NNfunction_sb_uRsR::neuron0x2486760() {
+double NNfunction_sb_uRsR::neuron0x343e110() {
    return input20;
 }
 
-double NNfunction_sb_uRsR::neuron0x2486aa0() {
+double NNfunction_sb_uRsR::neuron0x343e450() {
    return input21;
 }
 
-double NNfunction_sb_uRsR::neuron0x2486de0() {
+double NNfunction_sb_uRsR::neuron0x343e790() {
    return input22;
 }
 
-double NNfunction_sb_uRsR::neuron0x2487120() {
+double NNfunction_sb_uRsR::neuron0x343ead0() {
    return input23;
 }
 
-double NNfunction_sb_uRsR::input0x24875c0() {
-   double input = -0.0878425;
-   input += synapse0x22423d0();
-   input += synapse0x2482420();
-   input += synapse0x2482460();
-   input += synapse0x2487870();
-   input += synapse0x24878b0();
-   input += synapse0x24878f0();
-   input += synapse0x2487930();
-   input += synapse0x2487970();
-   input += synapse0x24879b0();
-   input += synapse0x24879f0();
-   input += synapse0x2487a30();
-   input += synapse0x2487a70();
-   input += synapse0x2487ab0();
-   input += synapse0x2487af0();
-   input += synapse0x2487b30();
-   input += synapse0x2487b70();
-   input += synapse0x2482390();
-   input += synapse0x24823d0();
-   input += synapse0x2233c70();
-   input += synapse0x2233cb0();
-   input += synapse0x2487dd0();
-   input += synapse0x2487e10();
-   input += synapse0x2487e50();
-   input += synapse0x2487e90();
+double NNfunction_sb_uRsR::input0x343ef40() {
+   double input = -0.207815;
+   input += synapse0x343f280();
+   input += synapse0x343f2c0();
+   input += synapse0x343f300();
+   input += synapse0x343f340();
+   input += synapse0x343f380();
+   input += synapse0x343f3c0();
+   input += synapse0x343f400();
+   input += synapse0x343f440();
+   input += synapse0x343f480();
+   input += synapse0x343f4c0();
+   input += synapse0x343f500();
+   input += synapse0x343f540();
+   input += synapse0x343f580();
+   input += synapse0x343f5c0();
+   input += synapse0x343f600();
+   input += synapse0x343f640();
+   input += synapse0x343f0d0();
+   input += synapse0x343f110();
+   input += synapse0x31f6050();
+   input += synapse0x31f6090();
+   input += synapse0x343f680();
+   input += synapse0x343f6c0();
+   input += synapse0x343f700();
+   input += synapse0x343f740();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24875c0() {
-   double input = input0x24875c0();
+double NNfunction_sb_uRsR::neuron0x343ef40() {
+   double input = input0x343ef40();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2487ed0() {
-   double input = 0.93562;
-   input += synapse0x2488210();
-   input += synapse0x2488250();
-   input += synapse0x2488290();
-   input += synapse0x24882d0();
-   input += synapse0x2488310();
-   input += synapse0x2488350();
-   input += synapse0x2488390();
-   input += synapse0x24883d0();
-   input += synapse0x2488410();
-   input += synapse0x2487cc0();
-   input += synapse0x2487d00();
-   input += synapse0x2487d40();
-   input += synapse0x2487d80();
-   input += synapse0x2488660();
-   input += synapse0x24886a0();
-   input += synapse0x24886e0();
-   input += synapse0x2488060();
-   input += synapse0x24880a0();
-   input += synapse0x2488830();
-   input += synapse0x2488870();
-   input += synapse0x24888b0();
-   input += synapse0x24888f0();
-   input += synapse0x2488930();
-   input += synapse0x2488970();
+double NNfunction_sb_uRsR::input0x343f780() {
+   double input = 0.290242;
+   input += synapse0x343fac0();
+   input += synapse0x343fb00();
+   input += synapse0x343fb40();
+   input += synapse0x343fb80();
+   input += synapse0x343fbc0();
+   input += synapse0x343fc00();
+   input += synapse0x343fc40();
+   input += synapse0x343fc80();
+   input += synapse0x343fcc0();
+   input += synapse0x31f5ea0();
+   input += synapse0x31f5ee0();
+   input += synapse0x31f5f20();
+   input += synapse0x31f5f60();
+   input += synapse0x343ff10();
+   input += synapse0x343ff50();
+   input += synapse0x343ff90();
+   input += synapse0x343f910();
+   input += synapse0x343f950();
+   input += synapse0x34400e0();
+   input += synapse0x3440120();
+   input += synapse0x3440160();
+   input += synapse0x34401a0();
+   input += synapse0x34401e0();
+   input += synapse0x3440220();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2487ed0() {
-   double input = input0x2487ed0();
+double NNfunction_sb_uRsR::neuron0x343f780() {
+   double input = input0x343f780();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24889b0() {
-   double input = 1.39138;
-   input += synapse0x2488cf0();
-   input += synapse0x2488d30();
-   input += synapse0x2488d70();
-   input += synapse0x2488db0();
-   input += synapse0x2488df0();
-   input += synapse0x2488e30();
-   input += synapse0x2488e70();
-   input += synapse0x2488eb0();
-   input += synapse0x2488ef0();
-   input += synapse0x2488f30();
-   input += synapse0x2488f70();
-   input += synapse0x2488fb0();
-   input += synapse0x2488ff0();
-   input += synapse0x2489030();
-   input += synapse0x2489070();
-   input += synapse0x24890b0();
-   input += synapse0x2488b40();
-   input += synapse0x2488b80();
-   input += synapse0x2241ac0();
-   input += synapse0x2241b00();
-   input += synapse0x24715f0();
-   input += synapse0x2471630();
-   input += synapse0x2471670();
-   input += synapse0x24824a0();
+double NNfunction_sb_uRsR::input0x3440260() {
+   double input = 0.895174;
+   input += synapse0x34405a0();
+   input += synapse0x34405e0();
+   input += synapse0x3440620();
+   input += synapse0x3440660();
+   input += synapse0x34406a0();
+   input += synapse0x34406e0();
+   input += synapse0x3440720();
+   input += synapse0x3440760();
+   input += synapse0x34407a0();
+   input += synapse0x34407e0();
+   input += synapse0x3440820();
+   input += synapse0x3440860();
+   input += synapse0x34408a0();
+   input += synapse0x34408e0();
+   input += synapse0x3440920();
+   input += synapse0x3440960();
+   input += synapse0x34403f0();
+   input += synapse0x3440430();
+   input += synapse0x31f66f0();
+   input += synapse0x3203fc0();
+   input += synapse0x3204000();
+   input += synapse0x3442890();
+   input += synapse0x34428d0();
+   input += synapse0x3439bc0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24889b0() {
-   double input = input0x24889b0();
+double NNfunction_sb_uRsR::neuron0x3440260() {
+   double input = input0x3440260();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2242240() {
-   double input = -2.2111;
-   input += synapse0x2488600();
-   input += synapse0x24824e0();
-   input += synapse0x2482520();
-   input += synapse0x2489200();
-   input += synapse0x2489240();
-   input += synapse0x2489280();
-   input += synapse0x24892c0();
-   input += synapse0x2489300();
-   input += synapse0x2489340();
-   input += synapse0x2489380();
-   input += synapse0x24893c0();
-   input += synapse0x2489400();
-   input += synapse0x2489440();
-   input += synapse0x2489480();
-   input += synapse0x24894c0();
-   input += synapse0x2489500();
-   input += synapse0x2488450();
-   input += synapse0x2488490();
-   input += synapse0x2489650();
-   input += synapse0x2489690();
-   input += synapse0x24896d0();
-   input += synapse0x2489710();
-   input += synapse0x2489750();
-   input += synapse0x2489790();
+double NNfunction_sb_uRsR::input0x343fd00() {
+   double input = 0.0128113;
+   input += synapse0x3439c90();
+   input += synapse0x3204840();
+   input += synapse0x343fe90();
+   input += synapse0x343fed0();
+   input += synapse0x3440ab0();
+   input += synapse0x3440af0();
+   input += synapse0x3440b30();
+   input += synapse0x3440b70();
+   input += synapse0x3440bb0();
+   input += synapse0x3440bf0();
+   input += synapse0x3440c30();
+   input += synapse0x3440c70();
+   input += synapse0x3440cb0();
+   input += synapse0x3440cf0();
+   input += synapse0x3440d30();
+   input += synapse0x3440d70();
+   input += synapse0x3439c00();
+   input += synapse0x3439c40();
+   input += synapse0x3440ec0();
+   input += synapse0x3440f00();
+   input += synapse0x3440f40();
+   input += synapse0x3440f80();
+   input += synapse0x3440fc0();
+   input += synapse0x3441000();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2242240() {
-   double input = input0x2242240();
+double NNfunction_sb_uRsR::neuron0x343fd00() {
+   double input = input0x343fd00();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24897d0() {
-   double input = 0.397638;
-   input += synapse0x2489b10();
-   input += synapse0x2489b50();
-   input += synapse0x2489b90();
-   input += synapse0x2489bd0();
-   input += synapse0x2489c10();
-   input += synapse0x2489c50();
-   input += synapse0x2489c90();
-   input += synapse0x2489cd0();
-   input += synapse0x2489d10();
-   input += synapse0x2489d50();
-   input += synapse0x2489d90();
-   input += synapse0x2489dd0();
-   input += synapse0x2489e10();
-   input += synapse0x2489e50();
-   input += synapse0x2489e90();
-   input += synapse0x2489ed0();
-   input += synapse0x2489960();
-   input += synapse0x24899a0();
-   input += synapse0x248a020();
-   input += synapse0x248a060();
-   input += synapse0x248a0a0();
-   input += synapse0x248a0e0();
-   input += synapse0x248a120();
-   input += synapse0x248a160();
+double NNfunction_sb_uRsR::input0x3441040() {
+   double input = -5.2536;
+   input += synapse0x3441380();
+   input += synapse0x34413c0();
+   input += synapse0x3441400();
+   input += synapse0x3441440();
+   input += synapse0x3441480();
+   input += synapse0x34414c0();
+   input += synapse0x3441500();
+   input += synapse0x3441540();
+   input += synapse0x3441580();
+   input += synapse0x34415c0();
+   input += synapse0x3441600();
+   input += synapse0x3441640();
+   input += synapse0x3441680();
+   input += synapse0x34416c0();
+   input += synapse0x3441700();
+   input += synapse0x3441740();
+   input += synapse0x3441890();
+   input += synapse0x34411d0();
+   input += synapse0x3441210();
+   input += synapse0x34429d0();
+   input += synapse0x3442a10();
+   input += synapse0x3442a50();
+   input += synapse0x3442a90();
+   input += synapse0x3442ad0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24897d0() {
-   double input = input0x24897d0();
+double NNfunction_sb_uRsR::neuron0x3441040() {
+   double input = input0x3441040();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248a1a0() {
-   double input = 0.549945;
-   input += synapse0x248a4e0();
-   input += synapse0x248a520();
-   input += synapse0x248a560();
-   input += synapse0x248a5a0();
-   input += synapse0x248a5e0();
-   input += synapse0x248a620();
-   input += synapse0x248a660();
-   input += synapse0x248a6a0();
-   input += synapse0x248a6e0();
-   input += synapse0x2241e30();
-   input += synapse0x2241e70();
-   input += synapse0x2241eb0();
-   input += synapse0x2241ef0();
-   input += synapse0x2241f30();
-   input += synapse0x2241f70();
-   input += synapse0x2241fb0();
-   input += synapse0x248a330();
-   input += synapse0x248a370();
-   input += synapse0x2242100();
-   input += synapse0x2242140();
-   input += synapse0x2242180();
-   input += synapse0x22421c0();
-   input += synapse0x2242200();
-   input += synapse0x248af30();
+double NNfunction_sb_uRsR::input0x3442b10() {
+   double input = 1.10427;
+   input += synapse0x3442e50();
+   input += synapse0x3442e90();
+   input += synapse0x3442ed0();
+   input += synapse0x3442f10();
+   input += synapse0x3442f50();
+   input += synapse0x3442f90();
+   input += synapse0x3442fd0();
+   input += synapse0x3443010();
+   input += synapse0x3443050();
+   input += synapse0x3204310();
+   input += synapse0x3204350();
+   input += synapse0x3204390();
+   input += synapse0x32043d0();
+   input += synapse0x3204410();
+   input += synapse0x3204450();
+   input += synapse0x3204490();
+   input += synapse0x3442ca0();
+   input += synapse0x3442ce0();
+   input += synapse0x32045e0();
+   input += synapse0x3204620();
+   input += synapse0x3204660();
+   input += synapse0x32046a0();
+   input += synapse0x32046e0();
+   input += synapse0x34438a0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248a1a0() {
-   double input = input0x248a1a0();
+double NNfunction_sb_uRsR::neuron0x3442b10() {
+   double input = input0x3442b10();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248af70() {
-   double input = -0.13234;
-   input += synapse0x248b2b0();
-   input += synapse0x248b2f0();
-   input += synapse0x248b330();
-   input += synapse0x248b370();
-   input += synapse0x248b3b0();
-   input += synapse0x248b3f0();
-   input += synapse0x248b430();
-   input += synapse0x248b470();
-   input += synapse0x248b4b0();
-   input += synapse0x248b4f0();
-   input += synapse0x248b530();
-   input += synapse0x248b570();
-   input += synapse0x248b5b0();
-   input += synapse0x248b5f0();
-   input += synapse0x248b630();
-   input += synapse0x248b670();
-   input += synapse0x248b100();
-   input += synapse0x248b140();
-   input += synapse0x248b7c0();
-   input += synapse0x248b800();
-   input += synapse0x248b840();
-   input += synapse0x248b880();
-   input += synapse0x248b8c0();
-   input += synapse0x248b900();
+double NNfunction_sb_uRsR::input0x34438e0() {
+   double input = -0.112231;
+   input += synapse0x3443c20();
+   input += synapse0x3443c60();
+   input += synapse0x3443ca0();
+   input += synapse0x3443ce0();
+   input += synapse0x3443d20();
+   input += synapse0x3443d60();
+   input += synapse0x3443da0();
+   input += synapse0x3443de0();
+   input += synapse0x3443e20();
+   input += synapse0x3443e60();
+   input += synapse0x3443ea0();
+   input += synapse0x3443ee0();
+   input += synapse0x3443f20();
+   input += synapse0x3443f60();
+   input += synapse0x3443fa0();
+   input += synapse0x3443fe0();
+   input += synapse0x3443a70();
+   input += synapse0x3443ab0();
+   input += synapse0x3444130();
+   input += synapse0x3444170();
+   input += synapse0x34441b0();
+   input += synapse0x34441f0();
+   input += synapse0x3444230();
+   input += synapse0x3444270();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248af70() {
-   double input = input0x248af70();
+double NNfunction_sb_uRsR::neuron0x34438e0() {
+   double input = input0x34438e0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248b940() {
-   double input = -1.73458;
-   input += synapse0x248bc80();
-   input += synapse0x248bcc0();
-   input += synapse0x248bd00();
-   input += synapse0x248bd40();
-   input += synapse0x248bd80();
-   input += synapse0x248bdc0();
-   input += synapse0x248be00();
-   input += synapse0x248be40();
-   input += synapse0x248be80();
-   input += synapse0x248bec0();
-   input += synapse0x248bf00();
-   input += synapse0x248bf40();
-   input += synapse0x248bf80();
-   input += synapse0x248bfc0();
-   input += synapse0x248c000();
-   input += synapse0x248c040();
-   input += synapse0x248bad0();
-   input += synapse0x248bb10();
-   input += synapse0x248c190();
-   input += synapse0x248c1d0();
-   input += synapse0x248c210();
-   input += synapse0x248c250();
-   input += synapse0x248c290();
-   input += synapse0x248c2d0();
+double NNfunction_sb_uRsR::input0x34442b0() {
+   double input = -0.315377;
+   input += synapse0x34445f0();
+   input += synapse0x3444630();
+   input += synapse0x3444670();
+   input += synapse0x34446b0();
+   input += synapse0x34446f0();
+   input += synapse0x3444730();
+   input += synapse0x3444770();
+   input += synapse0x34447b0();
+   input += synapse0x34447f0();
+   input += synapse0x3444830();
+   input += synapse0x3444870();
+   input += synapse0x34448b0();
+   input += synapse0x34448f0();
+   input += synapse0x3444930();
+   input += synapse0x3444970();
+   input += synapse0x34449b0();
+   input += synapse0x3444440();
+   input += synapse0x3444480();
+   input += synapse0x3444b00();
+   input += synapse0x3444b40();
+   input += synapse0x3444b80();
+   input += synapse0x3444bc0();
+   input += synapse0x3444c00();
+   input += synapse0x3444c40();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248b940() {
-   double input = input0x248b940();
+double NNfunction_sb_uRsR::neuron0x34442b0() {
+   double input = input0x34442b0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248c310() {
-   double input = -1.20716;
-   input += synapse0x2485db0();
-   input += synapse0x2485df0();
-   input += synapse0x2485e30();
-   input += synapse0x2485e70();
-   input += synapse0x248c860();
-   input += synapse0x248c8a0();
-   input += synapse0x248c8e0();
-   input += synapse0x248c920();
-   input += synapse0x248c960();
-   input += synapse0x248c9a0();
-   input += synapse0x248c9e0();
-   input += synapse0x248ca20();
-   input += synapse0x248ca60();
-   input += synapse0x248caa0();
-   input += synapse0x248cae0();
-   input += synapse0x248cb20();
-   input += synapse0x248c4a0();
-   input += synapse0x248c4e0();
-   input += synapse0x248cc70();
-   input += synapse0x248ccb0();
-   input += synapse0x248ccf0();
-   input += synapse0x248cd30();
-   input += synapse0x248cd70();
-   input += synapse0x248cdb0();
+double NNfunction_sb_uRsR::input0x3444c80() {
+   double input = -0.758734;
+   input += synapse0x343d640();
+   input += synapse0x343d680();
+   input += synapse0x343d6c0();
+   input += synapse0x343d700();
+   input += synapse0x34451d0();
+   input += synapse0x3445210();
+   input += synapse0x3445250();
+   input += synapse0x3445290();
+   input += synapse0x34452d0();
+   input += synapse0x3445310();
+   input += synapse0x3445350();
+   input += synapse0x3445390();
+   input += synapse0x34453d0();
+   input += synapse0x3445410();
+   input += synapse0x3445450();
+   input += synapse0x3445490();
+   input += synapse0x3444e10();
+   input += synapse0x3444e50();
+   input += synapse0x34455e0();
+   input += synapse0x3445620();
+   input += synapse0x3445660();
+   input += synapse0x34456a0();
+   input += synapse0x34456e0();
+   input += synapse0x3445720();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248c310() {
-   double input = input0x248c310();
+double NNfunction_sb_uRsR::neuron0x3444c80() {
+   double input = input0x3444c80();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248cdf0() {
-   double input = -2.47605;
-   input += synapse0x248d130();
-   input += synapse0x248d170();
-   input += synapse0x248d1b0();
-   input += synapse0x248d1f0();
-   input += synapse0x248d230();
-   input += synapse0x248d270();
-   input += synapse0x248d2b0();
-   input += synapse0x248d2f0();
-   input += synapse0x248d330();
-   input += synapse0x248d370();
-   input += synapse0x248d3b0();
-   input += synapse0x248d3f0();
-   input += synapse0x248d430();
-   input += synapse0x248d470();
-   input += synapse0x248d4b0();
-   input += synapse0x248d4f0();
-   input += synapse0x248cf80();
-   input += synapse0x248cfc0();
-   input += synapse0x248d640();
-   input += synapse0x248d680();
-   input += synapse0x248d6c0();
-   input += synapse0x248d700();
-   input += synapse0x248d740();
-   input += synapse0x248d780();
+double NNfunction_sb_uRsR::input0x3445760() {
+   double input = 1.16693;
+   input += synapse0x3445aa0();
+   input += synapse0x3445ae0();
+   input += synapse0x3445b20();
+   input += synapse0x3445b60();
+   input += synapse0x3445ba0();
+   input += synapse0x3445be0();
+   input += synapse0x3445c20();
+   input += synapse0x3445c60();
+   input += synapse0x3445ca0();
+   input += synapse0x3445ce0();
+   input += synapse0x3445d20();
+   input += synapse0x3445d60();
+   input += synapse0x3445da0();
+   input += synapse0x3445de0();
+   input += synapse0x3445e20();
+   input += synapse0x3445e60();
+   input += synapse0x34458f0();
+   input += synapse0x3445930();
+   input += synapse0x3445fb0();
+   input += synapse0x3445ff0();
+   input += synapse0x3446030();
+   input += synapse0x3446070();
+   input += synapse0x34460b0();
+   input += synapse0x34460f0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248cdf0() {
-   double input = input0x248cdf0();
+double NNfunction_sb_uRsR::neuron0x3445760() {
+   double input = input0x3445760();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248d7c0() {
-   double input = 1.33352;
-   input += synapse0x248db00();
-   input += synapse0x248db40();
-   input += synapse0x248db80();
-   input += synapse0x248dbc0();
-   input += synapse0x248dc00();
-   input += synapse0x248dc40();
-   input += synapse0x248dc80();
-   input += synapse0x248dcc0();
-   input += synapse0x248dd00();
-   input += synapse0x248dd40();
-   input += synapse0x248dd80();
-   input += synapse0x248ddc0();
-   input += synapse0x248de00();
-   input += synapse0x248de40();
-   input += synapse0x248de80();
-   input += synapse0x248dec0();
-   input += synapse0x248d950();
-   input += synapse0x248d990();
-   input += synapse0x248a720();
-   input += synapse0x248a760();
-   input += synapse0x248a7a0();
-   input += synapse0x248a7e0();
-   input += synapse0x248a820();
-   input += synapse0x248a860();
+double NNfunction_sb_uRsR::input0x3446130() {
+   double input = 0.141927;
+   input += synapse0x3446470();
+   input += synapse0x34464b0();
+   input += synapse0x34464f0();
+   input += synapse0x3446530();
+   input += synapse0x3446570();
+   input += synapse0x34465b0();
+   input += synapse0x34465f0();
+   input += synapse0x3446630();
+   input += synapse0x3446670();
+   input += synapse0x34466b0();
+   input += synapse0x34466f0();
+   input += synapse0x3446730();
+   input += synapse0x3446770();
+   input += synapse0x34467b0();
+   input += synapse0x34467f0();
+   input += synapse0x3446830();
+   input += synapse0x34462c0();
+   input += synapse0x3446300();
+   input += synapse0x3443090();
+   input += synapse0x34430d0();
+   input += synapse0x3443110();
+   input += synapse0x3443150();
+   input += synapse0x3443190();
+   input += synapse0x34431d0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248d7c0() {
-   double input = input0x248d7c0();
+double NNfunction_sb_uRsR::neuron0x3446130() {
+   double input = input0x3446130();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248a8a0() {
-   double input = -0.335778;
-   input += synapse0x248abe0();
-   input += synapse0x248ac20();
-   input += synapse0x248ac60();
-   input += synapse0x248aca0();
-   input += synapse0x248ace0();
-   input += synapse0x248ad20();
-   input += synapse0x248ad60();
-   input += synapse0x248ada0();
-   input += synapse0x248ade0();
-   input += synapse0x248ae20();
-   input += synapse0x248ae60();
-   input += synapse0x248aea0();
-   input += synapse0x248aee0();
-   input += synapse0x248f020();
-   input += synapse0x248f060();
-   input += synapse0x248f0a0();
-   input += synapse0x248aa30();
-   input += synapse0x248aa70();
-   input += synapse0x248f1f0();
-   input += synapse0x248f230();
-   input += synapse0x248f270();
-   input += synapse0x248f2b0();
-   input += synapse0x248f2f0();
-   input += synapse0x248f330();
+double NNfunction_sb_uRsR::input0x3443210() {
+   double input = 1.01485;
+   input += synapse0x3443550();
+   input += synapse0x3443590();
+   input += synapse0x34435d0();
+   input += synapse0x3443610();
+   input += synapse0x3443650();
+   input += synapse0x3443690();
+   input += synapse0x34436d0();
+   input += synapse0x3443710();
+   input += synapse0x3443750();
+   input += synapse0x3443790();
+   input += synapse0x34437d0();
+   input += synapse0x3443810();
+   input += synapse0x3443850();
+   input += synapse0x3447990();
+   input += synapse0x34479d0();
+   input += synapse0x3447a10();
+   input += synapse0x34433a0();
+   input += synapse0x34433e0();
+   input += synapse0x3447b60();
+   input += synapse0x3447ba0();
+   input += synapse0x3447be0();
+   input += synapse0x3447c20();
+   input += synapse0x3447c60();
+   input += synapse0x3447ca0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248a8a0() {
-   double input = input0x248a8a0();
+double NNfunction_sb_uRsR::neuron0x3443210() {
+   double input = input0x3443210();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248f370() {
-   double input = 0.686746;
-   input += synapse0x248f6b0();
-   input += synapse0x248f6f0();
-   input += synapse0x248f730();
-   input += synapse0x248f770();
-   input += synapse0x248f7b0();
-   input += synapse0x248f7f0();
-   input += synapse0x248f830();
-   input += synapse0x248f870();
-   input += synapse0x248f8b0();
-   input += synapse0x248f8f0();
-   input += synapse0x248f930();
-   input += synapse0x248f970();
-   input += synapse0x248f9b0();
-   input += synapse0x248f9f0();
-   input += synapse0x248fa30();
-   input += synapse0x248fa70();
-   input += synapse0x248f500();
-   input += synapse0x248f540();
-   input += synapse0x248fbc0();
-   input += synapse0x248fc00();
-   input += synapse0x248fc40();
-   input += synapse0x248fc80();
-   input += synapse0x248fcc0();
-   input += synapse0x248fd00();
+double NNfunction_sb_uRsR::input0x3447ce0() {
+   double input = -0.64463;
+   input += synapse0x3448020();
+   input += synapse0x3448060();
+   input += synapse0x34480a0();
+   input += synapse0x34480e0();
+   input += synapse0x3448120();
+   input += synapse0x3448160();
+   input += synapse0x34481a0();
+   input += synapse0x34481e0();
+   input += synapse0x3448220();
+   input += synapse0x3448260();
+   input += synapse0x34482a0();
+   input += synapse0x34482e0();
+   input += synapse0x3448320();
+   input += synapse0x3448360();
+   input += synapse0x34483a0();
+   input += synapse0x34483e0();
+   input += synapse0x3447e70();
+   input += synapse0x3447eb0();
+   input += synapse0x3448530();
+   input += synapse0x3448570();
+   input += synapse0x34485b0();
+   input += synapse0x34485f0();
+   input += synapse0x3448630();
+   input += synapse0x3448670();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248f370() {
-   double input = input0x248f370();
+double NNfunction_sb_uRsR::neuron0x3447ce0() {
+   double input = input0x3447ce0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248fd40() {
-   double input = 0.841891;
-   input += synapse0x2490080();
-   input += synapse0x24900c0();
-   input += synapse0x2490100();
-   input += synapse0x2490140();
-   input += synapse0x2490180();
-   input += synapse0x24901c0();
-   input += synapse0x2490200();
-   input += synapse0x2490240();
-   input += synapse0x2490280();
-   input += synapse0x24902c0();
-   input += synapse0x2490300();
-   input += synapse0x2490340();
-   input += synapse0x2490380();
-   input += synapse0x24903c0();
-   input += synapse0x2490400();
-   input += synapse0x2490440();
-   input += synapse0x248fed0();
-   input += synapse0x248ff10();
-   input += synapse0x2490590();
-   input += synapse0x24905d0();
-   input += synapse0x2490610();
-   input += synapse0x2490650();
-   input += synapse0x2490690();
-   input += synapse0x24906d0();
+double NNfunction_sb_uRsR::input0x34486b0() {
+   double input = -0.341434;
+   input += synapse0x34489f0();
+   input += synapse0x3448a30();
+   input += synapse0x3448a70();
+   input += synapse0x3448ab0();
+   input += synapse0x3448af0();
+   input += synapse0x3448b30();
+   input += synapse0x3448b70();
+   input += synapse0x3448bb0();
+   input += synapse0x3448bf0();
+   input += synapse0x3448c30();
+   input += synapse0x3448c70();
+   input += synapse0x3448cb0();
+   input += synapse0x3448cf0();
+   input += synapse0x3448d30();
+   input += synapse0x3448d70();
+   input += synapse0x3448db0();
+   input += synapse0x3448840();
+   input += synapse0x3448880();
+   input += synapse0x3448f00();
+   input += synapse0x3448f40();
+   input += synapse0x3448f80();
+   input += synapse0x3448fc0();
+   input += synapse0x3449000();
+   input += synapse0x3449040();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248fd40() {
-   double input = input0x248fd40();
+double NNfunction_sb_uRsR::neuron0x34486b0() {
+   double input = input0x34486b0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2490710() {
-   double input = -1.03693;
-   input += synapse0x2490a50();
-   input += synapse0x2490a90();
-   input += synapse0x2490ad0();
-   input += synapse0x2490b10();
-   input += synapse0x2490b50();
-   input += synapse0x2490b90();
-   input += synapse0x2490bd0();
-   input += synapse0x2490c10();
-   input += synapse0x2490c50();
-   input += synapse0x2490c90();
-   input += synapse0x2490cd0();
-   input += synapse0x2490d10();
-   input += synapse0x2490d50();
-   input += synapse0x2490d90();
-   input += synapse0x2490dd0();
-   input += synapse0x2490e10();
-   input += synapse0x24908a0();
-   input += synapse0x24908e0();
-   input += synapse0x2490f60();
-   input += synapse0x2490fa0();
-   input += synapse0x2490fe0();
-   input += synapse0x2491020();
-   input += synapse0x2491060();
-   input += synapse0x24910a0();
+double NNfunction_sb_uRsR::input0x3449080() {
+   double input = -0.182057;
+   input += synapse0x34493c0();
+   input += synapse0x3449400();
+   input += synapse0x3449440();
+   input += synapse0x3449480();
+   input += synapse0x34494c0();
+   input += synapse0x3449500();
+   input += synapse0x3449540();
+   input += synapse0x3449580();
+   input += synapse0x34495c0();
+   input += synapse0x3449600();
+   input += synapse0x3449640();
+   input += synapse0x3449680();
+   input += synapse0x34496c0();
+   input += synapse0x3449700();
+   input += synapse0x3449740();
+   input += synapse0x3449780();
+   input += synapse0x3449210();
+   input += synapse0x3449250();
+   input += synapse0x34498d0();
+   input += synapse0x3449910();
+   input += synapse0x3449950();
+   input += synapse0x3449990();
+   input += synapse0x34499d0();
+   input += synapse0x3449a10();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2490710() {
-   double input = input0x2490710();
+double NNfunction_sb_uRsR::neuron0x3449080() {
+   double input = input0x3449080();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24910e0() {
-   double input = -0.289126;
-   input += synapse0x2491420();
-   input += synapse0x2482780();
-   input += synapse0x24827c0();
-   input += synapse0x2482ac0();
-   input += synapse0x2482b00();
-   input += synapse0x2482e00();
-   input += synapse0x2482e40();
-   input += synapse0x2483140();
-   input += synapse0x2483180();
-   input += synapse0x2483480();
-   input += synapse0x24834c0();
-   input += synapse0x24837c0();
-   input += synapse0x2483800();
-   input += synapse0x2483b00();
-   input += synapse0x2483b40();
-   input += synapse0x2483e40();
-   input += synapse0x2483e80();
-   input += synapse0x2484180();
-   input += synapse0x24841c0();
-   input += synapse0x24844c0();
-   input += synapse0x2484500();
-   input += synapse0x2484800();
-   input += synapse0x2484840();
-   input += synapse0x2484b40();
+double NNfunction_sb_uRsR::input0x3449a50() {
+   double input = 0.796881;
+   input += synapse0x3449d90();
+   input += synapse0x343a010();
+   input += synapse0x343a050();
+   input += synapse0x343a350();
+   input += synapse0x343a390();
+   input += synapse0x343a690();
+   input += synapse0x343a6d0();
+   input += synapse0x343a9d0();
+   input += synapse0x343aa10();
+   input += synapse0x343ad10();
+   input += synapse0x343ad50();
+   input += synapse0x343b050();
+   input += synapse0x343b090();
+   input += synapse0x343b390();
+   input += synapse0x343b3d0();
+   input += synapse0x343b6d0();
+   input += synapse0x343b710();
+   input += synapse0x343ba10();
+   input += synapse0x343ba50();
+   input += synapse0x343bd50();
+   input += synapse0x343bd90();
+   input += synapse0x343c090();
+   input += synapse0x343c0d0();
+   input += synapse0x343c3d0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24910e0() {
-   double input = input0x24910e0();
+double NNfunction_sb_uRsR::neuron0x3449a50() {
+   double input = input0x3449a50();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2492ef0() {
-   double input = 0.496782;
-   input += synapse0x2484b80();
-   input += synapse0x2485840();
-   input += synapse0x2485880();
-   input += synapse0x2491270();
-   input += synapse0x24912b0();
-   input += synapse0x2485b80();
-   input += synapse0x2485bc0();
-   input += synapse0x2233b50();
-   input += synapse0x2233b90();
-   input += synapse0x2486300();
-   input += synapse0x2486340();
-   input += synapse0x2486640();
-   input += synapse0x2486680();
-   input += synapse0x2486980();
-   input += synapse0x24869c0();
-   input += synapse0x2486cc0();
-   input += synapse0x2486d00();
-   input += synapse0x2487000();
-   input += synapse0x2487040();
-   input += synapse0x2487340();
-   input += synapse0x2487380();
-   input += synapse0x2484e80();
-   input += synapse0x2484ec0();
-   input += synapse0x2493190();
+double NNfunction_sb_uRsR::input0x344b860() {
+   double input = 1.45803;
+   input += synapse0x343c410();
+   input += synapse0x343d0d0();
+   input += synapse0x343d110();
+   input += synapse0x3449be0();
+   input += synapse0x3449c20();
+   input += synapse0x343d410();
+   input += synapse0x343d450();
+   input += synapse0x343d970();
+   input += synapse0x343d9b0();
+   input += synapse0x343dcb0();
+   input += synapse0x343dcf0();
+   input += synapse0x343dff0();
+   input += synapse0x343e030();
+   input += synapse0x343e330();
+   input += synapse0x343e370();
+   input += synapse0x343e670();
+   input += synapse0x343e6b0();
+   input += synapse0x343e9b0();
+   input += synapse0x343e9f0();
+   input += synapse0x343ecf0();
+   input += synapse0x343ed30();
+   input += synapse0x343c710();
+   input += synapse0x343c750();
+   input += synapse0x344bb00();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2492ef0() {
-   double input = input0x2492ef0();
+double NNfunction_sb_uRsR::neuron0x344b860() {
+   double input = input0x344b860();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24931d0() {
-   double input = -1.51608;
-   input += synapse0x2493510();
-   input += synapse0x2493550();
-   input += synapse0x2493590();
-   input += synapse0x24935d0();
-   input += synapse0x2493610();
-   input += synapse0x2493650();
-   input += synapse0x2493690();
-   input += synapse0x24936d0();
-   input += synapse0x2493710();
-   input += synapse0x2493750();
-   input += synapse0x2493790();
-   input += synapse0x24937d0();
-   input += synapse0x2493810();
-   input += synapse0x2493850();
-   input += synapse0x2493890();
-   input += synapse0x24938d0();
-   input += synapse0x2493360();
-   input += synapse0x24933a0();
-   input += synapse0x2493a20();
-   input += synapse0x2493a60();
-   input += synapse0x2493aa0();
-   input += synapse0x2493ae0();
-   input += synapse0x2493b20();
-   input += synapse0x2493b60();
+double NNfunction_sb_uRsR::input0x344bb40() {
+   double input = 0.271642;
+   input += synapse0x344be80();
+   input += synapse0x344bec0();
+   input += synapse0x344bf00();
+   input += synapse0x344bf40();
+   input += synapse0x344bf80();
+   input += synapse0x344bfc0();
+   input += synapse0x344c000();
+   input += synapse0x344c040();
+   input += synapse0x344c080();
+   input += synapse0x344c0c0();
+   input += synapse0x344c100();
+   input += synapse0x344c140();
+   input += synapse0x344c180();
+   input += synapse0x344c1c0();
+   input += synapse0x344c200();
+   input += synapse0x344c240();
+   input += synapse0x344bcd0();
+   input += synapse0x344bd10();
+   input += synapse0x344c390();
+   input += synapse0x344c3d0();
+   input += synapse0x344c410();
+   input += synapse0x344c450();
+   input += synapse0x344c490();
+   input += synapse0x344c4d0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24931d0() {
-   double input = input0x24931d0();
+double NNfunction_sb_uRsR::neuron0x344bb40() {
+   double input = input0x344bb40();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2493ba0() {
-   double input = -0.4363;
-   input += synapse0x2493ee0();
-   input += synapse0x2493f20();
-   input += synapse0x2493f60();
-   input += synapse0x2493fa0();
-   input += synapse0x2493fe0();
-   input += synapse0x2494020();
-   input += synapse0x2494060();
-   input += synapse0x24940a0();
-   input += synapse0x24940e0();
-   input += synapse0x2494120();
-   input += synapse0x2494160();
-   input += synapse0x24941a0();
-   input += synapse0x24941e0();
-   input += synapse0x2494220();
-   input += synapse0x2494260();
-   input += synapse0x24942a0();
-   input += synapse0x2493d30();
-   input += synapse0x2493d70();
-   input += synapse0x24943f0();
-   input += synapse0x2494430();
-   input += synapse0x2494470();
-   input += synapse0x24944b0();
-   input += synapse0x24944f0();
-   input += synapse0x2494530();
+double NNfunction_sb_uRsR::input0x344c510() {
+   double input = 0.0438889;
+   input += synapse0x344c850();
+   input += synapse0x344c890();
+   input += synapse0x344c8d0();
+   input += synapse0x344c910();
+   input += synapse0x344c950();
+   input += synapse0x344c990();
+   input += synapse0x344c9d0();
+   input += synapse0x344ca10();
+   input += synapse0x344ca50();
+   input += synapse0x344ca90();
+   input += synapse0x344cad0();
+   input += synapse0x344cb10();
+   input += synapse0x344cb50();
+   input += synapse0x344cb90();
+   input += synapse0x344cbd0();
+   input += synapse0x344cc10();
+   input += synapse0x344c6a0();
+   input += synapse0x344c6e0();
+   input += synapse0x344cd60();
+   input += synapse0x344cda0();
+   input += synapse0x344cde0();
+   input += synapse0x344ce20();
+   input += synapse0x344ce60();
+   input += synapse0x344cea0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2493ba0() {
-   double input = input0x2493ba0();
+double NNfunction_sb_uRsR::neuron0x344c510() {
+   double input = input0x344c510();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2494570() {
-   double input = 0.423208;
-   input += synapse0x24948b0();
-   input += synapse0x24948f0();
-   input += synapse0x2494930();
-   input += synapse0x2494970();
-   input += synapse0x24949b0();
-   input += synapse0x24949f0();
-   input += synapse0x2494a30();
-   input += synapse0x2494a70();
-   input += synapse0x2494ab0();
-   input += synapse0x2494af0();
-   input += synapse0x2494b30();
-   input += synapse0x2494b70();
-   input += synapse0x2494bb0();
-   input += synapse0x2494bf0();
-   input += synapse0x2494c30();
-   input += synapse0x2494c70();
-   input += synapse0x2494700();
-   input += synapse0x2494740();
-   input += synapse0x2494dc0();
-   input += synapse0x2494e00();
-   input += synapse0x2494e40();
-   input += synapse0x2494e80();
-   input += synapse0x2494ec0();
-   input += synapse0x2494f00();
+double NNfunction_sb_uRsR::input0x344cee0() {
+   double input = -0.977993;
+   input += synapse0x344d220();
+   input += synapse0x344d260();
+   input += synapse0x344d2a0();
+   input += synapse0x344d2e0();
+   input += synapse0x344d320();
+   input += synapse0x344d360();
+   input += synapse0x344d3a0();
+   input += synapse0x344d3e0();
+   input += synapse0x344d420();
+   input += synapse0x344d460();
+   input += synapse0x344d4a0();
+   input += synapse0x344d4e0();
+   input += synapse0x344d520();
+   input += synapse0x344d560();
+   input += synapse0x344d5a0();
+   input += synapse0x344d5e0();
+   input += synapse0x344d070();
+   input += synapse0x344d0b0();
+   input += synapse0x344d730();
+   input += synapse0x344d770();
+   input += synapse0x344d7b0();
+   input += synapse0x344d7f0();
+   input += synapse0x344d830();
+   input += synapse0x344d870();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2494570() {
-   double input = input0x2494570();
+double NNfunction_sb_uRsR::neuron0x344cee0() {
+   double input = input0x344cee0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2494f40() {
-   double input = 0.223867;
-   input += synapse0x2495280();
-   input += synapse0x24952c0();
-   input += synapse0x2495300();
-   input += synapse0x2495340();
-   input += synapse0x2495380();
-   input += synapse0x24953c0();
-   input += synapse0x2495400();
-   input += synapse0x2495440();
-   input += synapse0x2495480();
-   input += synapse0x24954c0();
-   input += synapse0x2495500();
-   input += synapse0x2495540();
-   input += synapse0x2495580();
-   input += synapse0x24955c0();
-   input += synapse0x2495600();
-   input += synapse0x2495640();
-   input += synapse0x24950d0();
-   input += synapse0x2495110();
-   input += synapse0x2495790();
-   input += synapse0x24957d0();
-   input += synapse0x2495810();
-   input += synapse0x2495850();
-   input += synapse0x2495890();
-   input += synapse0x24958d0();
+double NNfunction_sb_uRsR::input0x344d8b0() {
+   double input = 0.0163094;
+   input += synapse0x344dbf0();
+   input += synapse0x344dc30();
+   input += synapse0x344dc70();
+   input += synapse0x344dcb0();
+   input += synapse0x344dcf0();
+   input += synapse0x344dd30();
+   input += synapse0x344dd70();
+   input += synapse0x344ddb0();
+   input += synapse0x344ddf0();
+   input += synapse0x344de30();
+   input += synapse0x344de70();
+   input += synapse0x344deb0();
+   input += synapse0x344def0();
+   input += synapse0x344df30();
+   input += synapse0x344df70();
+   input += synapse0x344dfb0();
+   input += synapse0x344da40();
+   input += synapse0x344da80();
+   input += synapse0x344e100();
+   input += synapse0x344e140();
+   input += synapse0x344e180();
+   input += synapse0x344e1c0();
+   input += synapse0x344e200();
+   input += synapse0x344e240();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2494f40() {
-   double input = input0x2494f40();
+double NNfunction_sb_uRsR::neuron0x344d8b0() {
+   double input = input0x344d8b0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2495910() {
-   double input = -0.588011;
-   input += synapse0x2495c50();
-   input += synapse0x2495c90();
-   input += synapse0x2495cd0();
-   input += synapse0x2495d10();
-   input += synapse0x2495d50();
-   input += synapse0x2495d90();
-   input += synapse0x2495dd0();
-   input += synapse0x2495e10();
-   input += synapse0x2495e50();
-   input += synapse0x248e010();
-   input += synapse0x248e050();
-   input += synapse0x248e090();
-   input += synapse0x248e0d0();
-   input += synapse0x248e110();
-   input += synapse0x248e150();
-   input += synapse0x248e190();
-   input += synapse0x2495aa0();
-   input += synapse0x2495ae0();
-   input += synapse0x248e2e0();
-   input += synapse0x248e320();
-   input += synapse0x248e360();
-   input += synapse0x248e3a0();
-   input += synapse0x248e3e0();
-   input += synapse0x248e420();
+double NNfunction_sb_uRsR::input0x344e280() {
+   double input = 3.19151;
+   input += synapse0x344e5c0();
+   input += synapse0x344e600();
+   input += synapse0x344e640();
+   input += synapse0x344e680();
+   input += synapse0x344e6c0();
+   input += synapse0x344e700();
+   input += synapse0x344e740();
+   input += synapse0x344e780();
+   input += synapse0x344e7c0();
+   input += synapse0x3446980();
+   input += synapse0x34469c0();
+   input += synapse0x3446a00();
+   input += synapse0x3446a40();
+   input += synapse0x3446a80();
+   input += synapse0x3446ac0();
+   input += synapse0x3446b00();
+   input += synapse0x344e410();
+   input += synapse0x344e450();
+   input += synapse0x3446c50();
+   input += synapse0x3446c90();
+   input += synapse0x3446cd0();
+   input += synapse0x3446d10();
+   input += synapse0x3446d50();
+   input += synapse0x3446d90();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2495910() {
-   double input = input0x2495910();
+double NNfunction_sb_uRsR::neuron0x344e280() {
+   double input = input0x344e280();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248e460() {
-   double input = -0.396186;
-   input += synapse0x248e7a0();
-   input += synapse0x248e7e0();
-   input += synapse0x248e820();
-   input += synapse0x248e860();
-   input += synapse0x248e8a0();
-   input += synapse0x248e8e0();
-   input += synapse0x248e920();
-   input += synapse0x248e960();
-   input += synapse0x248e9a0();
-   input += synapse0x248e9e0();
-   input += synapse0x248ea20();
-   input += synapse0x248ea60();
-   input += synapse0x248eaa0();
-   input += synapse0x248eae0();
-   input += synapse0x248eb20();
-   input += synapse0x248eb60();
-   input += synapse0x248e5f0();
-   input += synapse0x248e630();
-   input += synapse0x248ecb0();
-   input += synapse0x248ecf0();
-   input += synapse0x248ed30();
-   input += synapse0x248ed70();
-   input += synapse0x248edb0();
-   input += synapse0x248edf0();
+double NNfunction_sb_uRsR::input0x3446dd0() {
+   double input = -1.03299;
+   input += synapse0x3447110();
+   input += synapse0x3447150();
+   input += synapse0x3447190();
+   input += synapse0x34471d0();
+   input += synapse0x3447210();
+   input += synapse0x3447250();
+   input += synapse0x3447290();
+   input += synapse0x34472d0();
+   input += synapse0x3447310();
+   input += synapse0x3447350();
+   input += synapse0x3447390();
+   input += synapse0x34473d0();
+   input += synapse0x3447410();
+   input += synapse0x3447450();
+   input += synapse0x3447490();
+   input += synapse0x34474d0();
+   input += synapse0x3446f60();
+   input += synapse0x3446fa0();
+   input += synapse0x3447620();
+   input += synapse0x3447660();
+   input += synapse0x34476a0();
+   input += synapse0x34476e0();
+   input += synapse0x3447720();
+   input += synapse0x3447760();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248e460() {
-   double input = input0x248e460();
+double NNfunction_sb_uRsR::neuron0x3446dd0() {
+   double input = input0x3446dd0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x248ee30() {
-   double input = 1.76339;
-   input += synapse0x248efc0();
-   input += synapse0x2498050();
-   input += synapse0x2498090();
-   input += synapse0x24980d0();
-   input += synapse0x2498110();
-   input += synapse0x2498150();
-   input += synapse0x2498190();
-   input += synapse0x24981d0();
-   input += synapse0x2498210();
-   input += synapse0x2498250();
-   input += synapse0x2498290();
-   input += synapse0x24982d0();
-   input += synapse0x2498310();
-   input += synapse0x2498350();
-   input += synapse0x2498390();
-   input += synapse0x24983d0();
-   input += synapse0x2497ea0();
-   input += synapse0x2497ee0();
-   input += synapse0x2498520();
-   input += synapse0x2498560();
-   input += synapse0x24985a0();
-   input += synapse0x24985e0();
-   input += synapse0x2498620();
-   input += synapse0x2498660();
+double NNfunction_sb_uRsR::input0x34477a0() {
+   double input = 0.697486;
+   input += synapse0x3447930();
+   input += synapse0x34509c0();
+   input += synapse0x3450a00();
+   input += synapse0x3450a40();
+   input += synapse0x3450a80();
+   input += synapse0x3450ac0();
+   input += synapse0x3450b00();
+   input += synapse0x3450b40();
+   input += synapse0x3450b80();
+   input += synapse0x3450bc0();
+   input += synapse0x3450c00();
+   input += synapse0x3450c40();
+   input += synapse0x3450c80();
+   input += synapse0x3450cc0();
+   input += synapse0x3450d00();
+   input += synapse0x3450d40();
+   input += synapse0x3450810();
+   input += synapse0x3450850();
+   input += synapse0x3450e90();
+   input += synapse0x3450ed0();
+   input += synapse0x3450f10();
+   input += synapse0x3450f50();
+   input += synapse0x3450f90();
+   input += synapse0x3450fd0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x248ee30() {
-   double input = input0x248ee30();
+double NNfunction_sb_uRsR::neuron0x34477a0() {
+   double input = input0x34477a0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24986a0() {
-   double input = 1.03468;
-   input += synapse0x24989e0();
-   input += synapse0x2498a20();
-   input += synapse0x2498a60();
-   input += synapse0x2498aa0();
-   input += synapse0x2498ae0();
-   input += synapse0x2498b20();
-   input += synapse0x2498b60();
-   input += synapse0x2498ba0();
-   input += synapse0x2498be0();
-   input += synapse0x2498c20();
-   input += synapse0x2498c60();
-   input += synapse0x2498ca0();
-   input += synapse0x2498ce0();
-   input += synapse0x2498d20();
-   input += synapse0x2498d60();
-   input += synapse0x2498da0();
-   input += synapse0x2498830();
-   input += synapse0x2498870();
-   input += synapse0x2498ef0();
-   input += synapse0x2498f30();
-   input += synapse0x2498f70();
-   input += synapse0x2498fb0();
-   input += synapse0x2498ff0();
-   input += synapse0x2499030();
+double NNfunction_sb_uRsR::input0x3451010() {
+   double input = 0.0709596;
+   input += synapse0x3451350();
+   input += synapse0x3451390();
+   input += synapse0x34513d0();
+   input += synapse0x3451410();
+   input += synapse0x3451450();
+   input += synapse0x3451490();
+   input += synapse0x34514d0();
+   input += synapse0x3451510();
+   input += synapse0x3451550();
+   input += synapse0x3451590();
+   input += synapse0x34515d0();
+   input += synapse0x3451610();
+   input += synapse0x3451650();
+   input += synapse0x3451690();
+   input += synapse0x34516d0();
+   input += synapse0x3451710();
+   input += synapse0x34511a0();
+   input += synapse0x34511e0();
+   input += synapse0x3451860();
+   input += synapse0x34518a0();
+   input += synapse0x34518e0();
+   input += synapse0x3451920();
+   input += synapse0x3451960();
+   input += synapse0x34519a0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24986a0() {
-   double input = input0x24986a0();
+double NNfunction_sb_uRsR::neuron0x3451010() {
+   double input = input0x3451010();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2499070() {
-   double input = 1.40951;
-   input += synapse0x24993b0();
-   input += synapse0x24993f0();
-   input += synapse0x2499430();
-   input += synapse0x2499470();
-   input += synapse0x24994b0();
-   input += synapse0x24994f0();
-   input += synapse0x2499530();
-   input += synapse0x2499570();
-   input += synapse0x24995b0();
-   input += synapse0x24995f0();
-   input += synapse0x2499630();
-   input += synapse0x2499670();
-   input += synapse0x24996b0();
-   input += synapse0x24996f0();
-   input += synapse0x2499730();
-   input += synapse0x2499770();
-   input += synapse0x2499200();
-   input += synapse0x2499240();
-   input += synapse0x24998c0();
-   input += synapse0x2499900();
-   input += synapse0x2499940();
-   input += synapse0x2499980();
-   input += synapse0x24999c0();
-   input += synapse0x2499a00();
+double NNfunction_sb_uRsR::input0x34519e0() {
+   double input = 1.97734;
+   input += synapse0x3451d20();
+   input += synapse0x3451d60();
+   input += synapse0x3451da0();
+   input += synapse0x3451de0();
+   input += synapse0x3451e20();
+   input += synapse0x3451e60();
+   input += synapse0x3451ea0();
+   input += synapse0x3451ee0();
+   input += synapse0x3451f20();
+   input += synapse0x3451f60();
+   input += synapse0x3451fa0();
+   input += synapse0x3451fe0();
+   input += synapse0x3452020();
+   input += synapse0x3452060();
+   input += synapse0x34520a0();
+   input += synapse0x34520e0();
+   input += synapse0x3451b70();
+   input += synapse0x3451bb0();
+   input += synapse0x3452230();
+   input += synapse0x3452270();
+   input += synapse0x34522b0();
+   input += synapse0x34522f0();
+   input += synapse0x3452330();
+   input += synapse0x3452370();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2499070() {
-   double input = input0x2499070();
+double NNfunction_sb_uRsR::neuron0x34519e0() {
+   double input = input0x34519e0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2499a40() {
-   double input = 2.44707;
-   input += synapse0x2499d80();
-   input += synapse0x2499dc0();
-   input += synapse0x2499e00();
-   input += synapse0x2499e40();
-   input += synapse0x2499e80();
-   input += synapse0x2499ec0();
-   input += synapse0x2499f00();
-   input += synapse0x2499f40();
-   input += synapse0x2499f80();
-   input += synapse0x2499fc0();
-   input += synapse0x249a000();
-   input += synapse0x249a040();
-   input += synapse0x249a080();
-   input += synapse0x249a0c0();
-   input += synapse0x249a100();
-   input += synapse0x249a140();
-   input += synapse0x2499bd0();
-   input += synapse0x2499c10();
-   input += synapse0x249a290();
-   input += synapse0x249a2d0();
-   input += synapse0x249a310();
-   input += synapse0x249a350();
-   input += synapse0x249a390();
-   input += synapse0x249a3d0();
+double NNfunction_sb_uRsR::input0x34523b0() {
+   double input = 0.903367;
+   input += synapse0x34526f0();
+   input += synapse0x3452730();
+   input += synapse0x3452770();
+   input += synapse0x34527b0();
+   input += synapse0x34527f0();
+   input += synapse0x3452830();
+   input += synapse0x3452870();
+   input += synapse0x34528b0();
+   input += synapse0x34528f0();
+   input += synapse0x3452930();
+   input += synapse0x3452970();
+   input += synapse0x34529b0();
+   input += synapse0x34529f0();
+   input += synapse0x3452a30();
+   input += synapse0x3452a70();
+   input += synapse0x3452ab0();
+   input += synapse0x3452540();
+   input += synapse0x3452580();
+   input += synapse0x3452c00();
+   input += synapse0x3452c40();
+   input += synapse0x3452c80();
+   input += synapse0x3452cc0();
+   input += synapse0x3452d00();
+   input += synapse0x3452d40();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2499a40() {
-   double input = input0x2499a40();
+double NNfunction_sb_uRsR::neuron0x34523b0() {
+   double input = input0x34523b0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x249a410() {
-   double input = -0.525996;
-   input += synapse0x249a750();
-   input += synapse0x249a790();
-   input += synapse0x249a7d0();
-   input += synapse0x249a810();
-   input += synapse0x249a850();
-   input += synapse0x249a890();
-   input += synapse0x249a8d0();
-   input += synapse0x249a910();
-   input += synapse0x249a950();
-   input += synapse0x249a990();
-   input += synapse0x249a9d0();
-   input += synapse0x249aa10();
-   input += synapse0x249aa50();
-   input += synapse0x249aa90();
-   input += synapse0x249aad0();
-   input += synapse0x249ab10();
-   input += synapse0x249a5a0();
-   input += synapse0x249a5e0();
-   input += synapse0x249ac60();
-   input += synapse0x249aca0();
-   input += synapse0x249ace0();
-   input += synapse0x249ad20();
-   input += synapse0x249ad60();
-   input += synapse0x249ada0();
+double NNfunction_sb_uRsR::input0x3452d80() {
+   double input = -0.622276;
+   input += synapse0x34530c0();
+   input += synapse0x3453100();
+   input += synapse0x3453140();
+   input += synapse0x3453180();
+   input += synapse0x34531c0();
+   input += synapse0x3453200();
+   input += synapse0x3453240();
+   input += synapse0x3453280();
+   input += synapse0x34532c0();
+   input += synapse0x3453300();
+   input += synapse0x3453340();
+   input += synapse0x3453380();
+   input += synapse0x34533c0();
+   input += synapse0x3453400();
+   input += synapse0x3453440();
+   input += synapse0x3453480();
+   input += synapse0x3452f10();
+   input += synapse0x3452f50();
+   input += synapse0x34535d0();
+   input += synapse0x3453610();
+   input += synapse0x3453650();
+   input += synapse0x3453690();
+   input += synapse0x34536d0();
+   input += synapse0x3453710();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x249a410() {
-   double input = input0x249a410();
+double NNfunction_sb_uRsR::neuron0x3452d80() {
+   double input = input0x3452d80();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x249ade0() {
-   double input = 0.83009;
-   input += synapse0x249b120();
-   input += synapse0x249b160();
-   input += synapse0x249b1a0();
-   input += synapse0x249b1e0();
-   input += synapse0x249b220();
-   input += synapse0x249b260();
-   input += synapse0x249b2a0();
-   input += synapse0x249b2e0();
-   input += synapse0x249b320();
-   input += synapse0x249b360();
-   input += synapse0x249b3a0();
-   input += synapse0x249b3e0();
-   input += synapse0x249b420();
-   input += synapse0x249b460();
-   input += synapse0x249b4a0();
-   input += synapse0x249b4e0();
-   input += synapse0x249af70();
-   input += synapse0x249afb0();
-   input += synapse0x249b630();
-   input += synapse0x249b670();
-   input += synapse0x249b6b0();
-   input += synapse0x249b6f0();
-   input += synapse0x249b730();
-   input += synapse0x249b770();
+double NNfunction_sb_uRsR::input0x3453750() {
+   double input = -2.34282;
+   input += synapse0x3453a90();
+   input += synapse0x3453ad0();
+   input += synapse0x3453b10();
+   input += synapse0x3453b50();
+   input += synapse0x3453b90();
+   input += synapse0x3453bd0();
+   input += synapse0x3453c10();
+   input += synapse0x3453c50();
+   input += synapse0x3453c90();
+   input += synapse0x3453cd0();
+   input += synapse0x3453d10();
+   input += synapse0x3453d50();
+   input += synapse0x3453d90();
+   input += synapse0x3453dd0();
+   input += synapse0x3453e10();
+   input += synapse0x3453e50();
+   input += synapse0x34538e0();
+   input += synapse0x3453920();
+   input += synapse0x3453fa0();
+   input += synapse0x3453fe0();
+   input += synapse0x3454020();
+   input += synapse0x3454060();
+   input += synapse0x34540a0();
+   input += synapse0x34540e0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x249ade0() {
-   double input = input0x249ade0();
+double NNfunction_sb_uRsR::neuron0x3453750() {
+   double input = input0x3453750();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x249b7b0() {
-   double input = 0.290744;
-   input += synapse0x249baf0();
-   input += synapse0x249bb30();
-   input += synapse0x249bb70();
-   input += synapse0x249bbb0();
-   input += synapse0x249bbf0();
-   input += synapse0x249bc30();
-   input += synapse0x249bc70();
-   input += synapse0x249bcb0();
-   input += synapse0x249bcf0();
-   input += synapse0x249bd30();
-   input += synapse0x249bd70();
-   input += synapse0x249bdb0();
-   input += synapse0x249bdf0();
-   input += synapse0x249be30();
-   input += synapse0x249be70();
-   input += synapse0x249beb0();
-   input += synapse0x249b940();
-   input += synapse0x249b980();
-   input += synapse0x249c000();
-   input += synapse0x249c040();
-   input += synapse0x249c080();
-   input += synapse0x249c0c0();
-   input += synapse0x249c100();
-   input += synapse0x249c140();
+double NNfunction_sb_uRsR::input0x3454120() {
+   double input = -2.06116;
+   input += synapse0x3454460();
+   input += synapse0x34544a0();
+   input += synapse0x34544e0();
+   input += synapse0x3454520();
+   input += synapse0x3454560();
+   input += synapse0x34545a0();
+   input += synapse0x34545e0();
+   input += synapse0x3454620();
+   input += synapse0x3454660();
+   input += synapse0x34546a0();
+   input += synapse0x34546e0();
+   input += synapse0x3454720();
+   input += synapse0x3454760();
+   input += synapse0x34547a0();
+   input += synapse0x34547e0();
+   input += synapse0x3454820();
+   input += synapse0x34542b0();
+   input += synapse0x34542f0();
+   input += synapse0x3454970();
+   input += synapse0x34549b0();
+   input += synapse0x34549f0();
+   input += synapse0x3454a30();
+   input += synapse0x3454a70();
+   input += synapse0x3454ab0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x249b7b0() {
-   double input = input0x249b7b0();
+double NNfunction_sb_uRsR::neuron0x3454120() {
+   double input = input0x3454120();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x249c180() {
-   double input = -0.96525;
-   input += synapse0x249c4c0();
-   input += synapse0x249c500();
-   input += synapse0x249c540();
-   input += synapse0x249c580();
-   input += synapse0x249c5c0();
-   input += synapse0x249c600();
-   input += synapse0x249c640();
-   input += synapse0x249c680();
-   input += synapse0x249c6c0();
-   input += synapse0x249c700();
-   input += synapse0x249c740();
-   input += synapse0x249c780();
-   input += synapse0x249c7c0();
-   input += synapse0x249c800();
-   input += synapse0x249c840();
-   input += synapse0x249c880();
-   input += synapse0x249c310();
-   input += synapse0x249c350();
-   input += synapse0x249c9d0();
-   input += synapse0x249ca10();
-   input += synapse0x249ca50();
-   input += synapse0x249ca90();
-   input += synapse0x249cad0();
-   input += synapse0x249cb10();
+double NNfunction_sb_uRsR::input0x3454af0() {
+   double input = 1.25311;
+   input += synapse0x3454e30();
+   input += synapse0x3454e70();
+   input += synapse0x3454eb0();
+   input += synapse0x3454ef0();
+   input += synapse0x3454f30();
+   input += synapse0x3454f70();
+   input += synapse0x3454fb0();
+   input += synapse0x3454ff0();
+   input += synapse0x3455030();
+   input += synapse0x3455070();
+   input += synapse0x34550b0();
+   input += synapse0x34550f0();
+   input += synapse0x3455130();
+   input += synapse0x3455170();
+   input += synapse0x34551b0();
+   input += synapse0x34551f0();
+   input += synapse0x3454c80();
+   input += synapse0x3454cc0();
+   input += synapse0x3455340();
+   input += synapse0x3455380();
+   input += synapse0x34553c0();
+   input += synapse0x3455400();
+   input += synapse0x3455440();
+   input += synapse0x3455480();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x249c180() {
-   double input = input0x249c180();
+double NNfunction_sb_uRsR::neuron0x3454af0() {
+   double input = input0x3454af0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x249cb50() {
-   double input = 2.72202;
-   input += synapse0x249ce90();
-   input += synapse0x2491460();
-   input += synapse0x24914a0();
-   input += synapse0x24914e0();
-   input += synapse0x2491730();
-   input += synapse0x2491770();
-   input += synapse0x24917b0();
-   input += synapse0x2491a00();
-   input += synapse0x2491a40();
-   input += synapse0x2491c90();
-   input += synapse0x2491cd0();
-   input += synapse0x2491d10();
-   input += synapse0x2491f60();
-   input += synapse0x2491fa0();
-   input += synapse0x24921f0();
-   input += synapse0x2492230();
-   input += synapse0x249cce0();
-   input += synapse0x249cd20();
-   input += synapse0x2492380();
-   input += synapse0x2492890();
-   input += synapse0x24928d0();
-   input += synapse0x2492910();
-   input += synapse0x2492b60();
-   input += synapse0x2492ba0();
+double NNfunction_sb_uRsR::input0x34554c0() {
+   double input = -0.255148;
+   input += synapse0x3455800();
+   input += synapse0x3449dd0();
+   input += synapse0x3449e10();
+   input += synapse0x3449e50();
+   input += synapse0x344a0a0();
+   input += synapse0x344a0e0();
+   input += synapse0x344a120();
+   input += synapse0x344a370();
+   input += synapse0x344a3b0();
+   input += synapse0x344a600();
+   input += synapse0x344a640();
+   input += synapse0x344a680();
+   input += synapse0x344a8d0();
+   input += synapse0x344a910();
+   input += synapse0x344ab60();
+   input += synapse0x344aba0();
+   input += synapse0x3455650();
+   input += synapse0x3455690();
+   input += synapse0x344acf0();
+   input += synapse0x344b200();
+   input += synapse0x344b240();
+   input += synapse0x344b280();
+   input += synapse0x344b4d0();
+   input += synapse0x344b510();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x249cb50() {
-   double input = input0x249cb50();
+double NNfunction_sb_uRsR::neuron0x34554c0() {
+   double input = input0x34554c0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2492be0() {
-   double input = 2.31654;
-   input += synapse0x2492450();
-   input += synapse0x2492490();
-   input += synapse0x24924d0();
-   input += synapse0x2492510();
-   input += synapse0x2492e90();
-   input += synapse0x249f1e0();
-   input += synapse0x249f220();
-   input += synapse0x249f260();
-   input += synapse0x249f2a0();
-   input += synapse0x249f2e0();
-   input += synapse0x249f320();
-   input += synapse0x249f360();
-   input += synapse0x249f3a0();
-   input += synapse0x249f3e0();
-   input += synapse0x249f420();
-   input += synapse0x249f460();
-   input += synapse0x2492d70();
-   input += synapse0x2492db0();
-   input += synapse0x249f5b0();
-   input += synapse0x249f5f0();
-   input += synapse0x249f630();
-   input += synapse0x249f670();
-   input += synapse0x249f6b0();
-   input += synapse0x249f6f0();
+double NNfunction_sb_uRsR::input0x344b550() {
+   double input = -0.167989;
+   input += synapse0x344adc0();
+   input += synapse0x344ae00();
+   input += synapse0x344ae40();
+   input += synapse0x344ae80();
+   input += synapse0x344b800();
+   input += synapse0x3457b50();
+   input += synapse0x3457b90();
+   input += synapse0x3457bd0();
+   input += synapse0x3457c10();
+   input += synapse0x3457c50();
+   input += synapse0x3457c90();
+   input += synapse0x3457cd0();
+   input += synapse0x3457d10();
+   input += synapse0x3457d50();
+   input += synapse0x3457d90();
+   input += synapse0x3457dd0();
+   input += synapse0x344b6e0();
+   input += synapse0x344b720();
+   input += synapse0x3457f20();
+   input += synapse0x3457f60();
+   input += synapse0x3457fa0();
+   input += synapse0x3457fe0();
+   input += synapse0x3458020();
+   input += synapse0x3458060();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2492be0() {
-   double input = input0x2492be0();
+double NNfunction_sb_uRsR::neuron0x344b550() {
+   double input = input0x344b550();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x249f730() {
-   double input = 1.11278;
-   input += synapse0x249fa70();
-   input += synapse0x249fab0();
-   input += synapse0x249faf0();
-   input += synapse0x249fb30();
-   input += synapse0x249fb70();
-   input += synapse0x249fbb0();
-   input += synapse0x249fbf0();
-   input += synapse0x249fc30();
-   input += synapse0x249fc70();
-   input += synapse0x249fcb0();
-   input += synapse0x249fcf0();
-   input += synapse0x249fd30();
-   input += synapse0x249fd70();
-   input += synapse0x249fdb0();
-   input += synapse0x249fdf0();
-   input += synapse0x249fe30();
-   input += synapse0x249f8c0();
-   input += synapse0x249f900();
-   input += synapse0x249ff80();
-   input += synapse0x249ffc0();
-   input += synapse0x24a0000();
-   input += synapse0x24a0040();
-   input += synapse0x24a0080();
-   input += synapse0x24a00c0();
+double NNfunction_sb_uRsR::input0x34580a0() {
+   double input = -0.988502;
+   input += synapse0x34583e0();
+   input += synapse0x3458420();
+   input += synapse0x3458460();
+   input += synapse0x34584a0();
+   input += synapse0x34584e0();
+   input += synapse0x3458520();
+   input += synapse0x3458560();
+   input += synapse0x34585a0();
+   input += synapse0x34585e0();
+   input += synapse0x3458620();
+   input += synapse0x3458660();
+   input += synapse0x34586a0();
+   input += synapse0x34586e0();
+   input += synapse0x3458720();
+   input += synapse0x3458760();
+   input += synapse0x34587a0();
+   input += synapse0x3458230();
+   input += synapse0x3458270();
+   input += synapse0x34588f0();
+   input += synapse0x3458930();
+   input += synapse0x3458970();
+   input += synapse0x34589b0();
+   input += synapse0x34589f0();
+   input += synapse0x3458a30();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x249f730() {
-   double input = input0x249f730();
+double NNfunction_sb_uRsR::neuron0x34580a0() {
+   double input = input0x34580a0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a0100() {
-   double input = -0.127601;
-   input += synapse0x24a0440();
-   input += synapse0x24a0480();
-   input += synapse0x24a04c0();
-   input += synapse0x24a0500();
-   input += synapse0x24a0540();
-   input += synapse0x24a0580();
-   input += synapse0x24a05c0();
-   input += synapse0x24a0600();
-   input += synapse0x24a0640();
-   input += synapse0x24a0680();
-   input += synapse0x24a06c0();
-   input += synapse0x24a0700();
-   input += synapse0x24a0740();
-   input += synapse0x24a0780();
-   input += synapse0x24a07c0();
-   input += synapse0x24a0800();
-   input += synapse0x24a0290();
-   input += synapse0x24a02d0();
-   input += synapse0x24a0950();
-   input += synapse0x24a0990();
-   input += synapse0x24a09d0();
-   input += synapse0x24a0a10();
-   input += synapse0x24a0a50();
-   input += synapse0x24a0a90();
+double NNfunction_sb_uRsR::input0x3458a70() {
+   double input = 0.0391323;
+   input += synapse0x3458db0();
+   input += synapse0x3458df0();
+   input += synapse0x3458e30();
+   input += synapse0x3458e70();
+   input += synapse0x3458eb0();
+   input += synapse0x3458ef0();
+   input += synapse0x3458f30();
+   input += synapse0x3458f70();
+   input += synapse0x3458fb0();
+   input += synapse0x3458ff0();
+   input += synapse0x3459030();
+   input += synapse0x3459070();
+   input += synapse0x34590b0();
+   input += synapse0x34590f0();
+   input += synapse0x3459130();
+   input += synapse0x3459170();
+   input += synapse0x3458c00();
+   input += synapse0x3458c40();
+   input += synapse0x34592c0();
+   input += synapse0x3459300();
+   input += synapse0x3459340();
+   input += synapse0x3459380();
+   input += synapse0x34593c0();
+   input += synapse0x3459400();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a0100() {
-   double input = input0x24a0100();
+double NNfunction_sb_uRsR::neuron0x3458a70() {
+   double input = input0x3458a70();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a0ad0() {
-   double input = 3.91288;
-   input += synapse0x24a0e10();
-   input += synapse0x24a0e50();
-   input += synapse0x24a0e90();
-   input += synapse0x24a0ed0();
-   input += synapse0x24a0f10();
-   input += synapse0x24a0f50();
-   input += synapse0x24a0f90();
-   input += synapse0x24a0fd0();
-   input += synapse0x24a1010();
-   input += synapse0x24a1050();
-   input += synapse0x24a1090();
-   input += synapse0x24a10d0();
-   input += synapse0x24a1110();
-   input += synapse0x24a1150();
-   input += synapse0x24a1190();
-   input += synapse0x24a11d0();
-   input += synapse0x24a0c60();
-   input += synapse0x24a0ca0();
-   input += synapse0x24a1320();
-   input += synapse0x24a1360();
-   input += synapse0x24a13a0();
-   input += synapse0x24a13e0();
-   input += synapse0x24a1420();
-   input += synapse0x24a1460();
+double NNfunction_sb_uRsR::input0x3459440() {
+   double input = 1.86121;
+   input += synapse0x3459780();
+   input += synapse0x34597c0();
+   input += synapse0x3459800();
+   input += synapse0x3459840();
+   input += synapse0x3459880();
+   input += synapse0x34598c0();
+   input += synapse0x3459900();
+   input += synapse0x3459940();
+   input += synapse0x3459980();
+   input += synapse0x34599c0();
+   input += synapse0x3459a00();
+   input += synapse0x3459a40();
+   input += synapse0x3459a80();
+   input += synapse0x3459ac0();
+   input += synapse0x3459b00();
+   input += synapse0x3459b40();
+   input += synapse0x34595d0();
+   input += synapse0x3459610();
+   input += synapse0x3459c90();
+   input += synapse0x3459cd0();
+   input += synapse0x3459d10();
+   input += synapse0x3459d50();
+   input += synapse0x3459d90();
+   input += synapse0x3459dd0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a0ad0() {
-   double input = input0x24a0ad0();
+double NNfunction_sb_uRsR::neuron0x3459440() {
+   double input = input0x3459440();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a14a0() {
-   double input = 2.66767;
-   input += synapse0x24a17e0();
-   input += synapse0x24a1820();
-   input += synapse0x24a1860();
-   input += synapse0x24a18a0();
-   input += synapse0x24a18e0();
-   input += synapse0x24a1920();
-   input += synapse0x24a1960();
-   input += synapse0x24a19a0();
-   input += synapse0x24a19e0();
-   input += synapse0x24a1a20();
-   input += synapse0x24a1a60();
-   input += synapse0x24a1aa0();
-   input += synapse0x24a1ae0();
-   input += synapse0x24a1b20();
-   input += synapse0x24a1b60();
-   input += synapse0x24a1ba0();
-   input += synapse0x24a1630();
-   input += synapse0x24a1670();
-   input += synapse0x24a1cf0();
-   input += synapse0x24a1d30();
-   input += synapse0x24a1d70();
-   input += synapse0x24a1db0();
-   input += synapse0x24a1df0();
-   input += synapse0x24a1e30();
+double NNfunction_sb_uRsR::input0x3459e10() {
+   double input = 0.340856;
+   input += synapse0x345a150();
+   input += synapse0x345a190();
+   input += synapse0x345a1d0();
+   input += synapse0x345a210();
+   input += synapse0x345a250();
+   input += synapse0x345a290();
+   input += synapse0x345a2d0();
+   input += synapse0x345a310();
+   input += synapse0x345a350();
+   input += synapse0x345a390();
+   input += synapse0x345a3d0();
+   input += synapse0x345a410();
+   input += synapse0x345a450();
+   input += synapse0x345a490();
+   input += synapse0x345a4d0();
+   input += synapse0x345a510();
+   input += synapse0x3459fa0();
+   input += synapse0x3459fe0();
+   input += synapse0x345a660();
+   input += synapse0x345a6a0();
+   input += synapse0x345a6e0();
+   input += synapse0x345a720();
+   input += synapse0x345a760();
+   input += synapse0x345a7a0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a14a0() {
-   double input = input0x24a14a0();
+double NNfunction_sb_uRsR::neuron0x3459e10() {
+   double input = input0x3459e10();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a1e70() {
-   double input = 1.7559;
-   input += synapse0x24a21b0();
-   input += synapse0x24a21f0();
-   input += synapse0x24a2230();
-   input += synapse0x24a2270();
-   input += synapse0x24a22b0();
-   input += synapse0x24a22f0();
-   input += synapse0x24a2330();
-   input += synapse0x24a2370();
-   input += synapse0x24a23b0();
-   input += synapse0x24a23f0();
-   input += synapse0x24a2430();
-   input += synapse0x24a2470();
-   input += synapse0x24a24b0();
-   input += synapse0x24a24f0();
-   input += synapse0x24a2530();
-   input += synapse0x24a2570();
-   input += synapse0x24a2000();
-   input += synapse0x24a2040();
-   input += synapse0x24a26c0();
-   input += synapse0x24a2700();
-   input += synapse0x24a2740();
-   input += synapse0x24a2780();
-   input += synapse0x24a27c0();
-   input += synapse0x24a2800();
+double NNfunction_sb_uRsR::input0x345a7e0() {
+   double input = -0.229176;
+   input += synapse0x345ab20();
+   input += synapse0x345ab60();
+   input += synapse0x345aba0();
+   input += synapse0x345abe0();
+   input += synapse0x345ac20();
+   input += synapse0x345ac60();
+   input += synapse0x345aca0();
+   input += synapse0x345ace0();
+   input += synapse0x345ad20();
+   input += synapse0x345ad60();
+   input += synapse0x345ada0();
+   input += synapse0x345ade0();
+   input += synapse0x345ae20();
+   input += synapse0x345ae60();
+   input += synapse0x345aea0();
+   input += synapse0x345aee0();
+   input += synapse0x345a970();
+   input += synapse0x345a9b0();
+   input += synapse0x345b030();
+   input += synapse0x345b070();
+   input += synapse0x345b0b0();
+   input += synapse0x345b0f0();
+   input += synapse0x345b130();
+   input += synapse0x345b170();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a1e70() {
-   double input = input0x24a1e70();
+double NNfunction_sb_uRsR::neuron0x345a7e0() {
+   double input = input0x345a7e0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a2840() {
-   double input = 0.818976;
-   input += synapse0x24a2b80();
-   input += synapse0x24a2bc0();
-   input += synapse0x24a2c00();
-   input += synapse0x24a2c40();
-   input += synapse0x24a2c80();
-   input += synapse0x24a2cc0();
-   input += synapse0x24a2d00();
-   input += synapse0x24a2d40();
-   input += synapse0x24a2d80();
-   input += synapse0x24a2dc0();
-   input += synapse0x24a2e00();
-   input += synapse0x24a2e40();
-   input += synapse0x24a2e80();
-   input += synapse0x24a2ec0();
-   input += synapse0x24a2f00();
-   input += synapse0x24a2f40();
-   input += synapse0x24a29d0();
-   input += synapse0x24a2a10();
-   input += synapse0x24a3090();
-   input += synapse0x24a30d0();
-   input += synapse0x24a3110();
-   input += synapse0x24a3150();
-   input += synapse0x24a3190();
-   input += synapse0x24a31d0();
+double NNfunction_sb_uRsR::input0x345b1b0() {
+   double input = 1.40585;
+   input += synapse0x345b4f0();
+   input += synapse0x345b530();
+   input += synapse0x345b570();
+   input += synapse0x345b5b0();
+   input += synapse0x345b5f0();
+   input += synapse0x345b630();
+   input += synapse0x345b670();
+   input += synapse0x345b6b0();
+   input += synapse0x345b6f0();
+   input += synapse0x345b730();
+   input += synapse0x345b770();
+   input += synapse0x345b7b0();
+   input += synapse0x345b7f0();
+   input += synapse0x345b830();
+   input += synapse0x345b870();
+   input += synapse0x345b8b0();
+   input += synapse0x345b340();
+   input += synapse0x345b380();
+   input += synapse0x345ba00();
+   input += synapse0x345ba40();
+   input += synapse0x345ba80();
+   input += synapse0x345bac0();
+   input += synapse0x345bb00();
+   input += synapse0x345bb40();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a2840() {
-   double input = input0x24a2840();
+double NNfunction_sb_uRsR::neuron0x345b1b0() {
+   double input = input0x345b1b0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a3210() {
-   double input = 2.05531;
-   input += synapse0x24a3550();
-   input += synapse0x24a3590();
-   input += synapse0x24a35d0();
-   input += synapse0x24a3610();
-   input += synapse0x24a3650();
-   input += synapse0x24a3690();
-   input += synapse0x24a36d0();
-   input += synapse0x24a3710();
-   input += synapse0x24a3750();
-   input += synapse0x24a3790();
-   input += synapse0x24a37d0();
-   input += synapse0x24a3810();
-   input += synapse0x24a3850();
-   input += synapse0x24a3890();
-   input += synapse0x24a38d0();
-   input += synapse0x24a3910();
-   input += synapse0x24a33a0();
-   input += synapse0x24a33e0();
-   input += synapse0x24a3a60();
-   input += synapse0x24a3aa0();
-   input += synapse0x24a3ae0();
-   input += synapse0x24a3b20();
-   input += synapse0x24a3b60();
-   input += synapse0x24a3ba0();
+double NNfunction_sb_uRsR::input0x345bb80() {
+   double input = 1.7485;
+   input += synapse0x345bec0();
+   input += synapse0x345bf00();
+   input += synapse0x345bf40();
+   input += synapse0x345bf80();
+   input += synapse0x345bfc0();
+   input += synapse0x345c000();
+   input += synapse0x345c040();
+   input += synapse0x345c080();
+   input += synapse0x345c0c0();
+   input += synapse0x345c100();
+   input += synapse0x345c140();
+   input += synapse0x345c180();
+   input += synapse0x345c1c0();
+   input += synapse0x345c200();
+   input += synapse0x345c240();
+   input += synapse0x345c280();
+   input += synapse0x345bd10();
+   input += synapse0x345bd50();
+   input += synapse0x345c3d0();
+   input += synapse0x345c410();
+   input += synapse0x345c450();
+   input += synapse0x345c490();
+   input += synapse0x345c4d0();
+   input += synapse0x345c510();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a3210() {
-   double input = input0x24a3210();
+double NNfunction_sb_uRsR::neuron0x345bb80() {
+   double input = input0x345bb80();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a3be0() {
-   double input = -0.146868;
-   input += synapse0x248c650();
-   input += synapse0x248c690();
-   input += synapse0x248c6d0();
-   input += synapse0x248c710();
-   input += synapse0x248c750();
-   input += synapse0x248c790();
-   input += synapse0x248c7d0();
-   input += synapse0x248c810();
-   input += synapse0x24a4330();
-   input += synapse0x24a4370();
-   input += synapse0x24a43b0();
-   input += synapse0x24a43f0();
-   input += synapse0x24a4430();
-   input += synapse0x24a4470();
-   input += synapse0x24a44b0();
-   input += synapse0x24a44f0();
-   input += synapse0x24a3d70();
-   input += synapse0x24a3db0();
-   input += synapse0x24a4640();
-   input += synapse0x24a4680();
-   input += synapse0x24a46c0();
-   input += synapse0x24a4700();
-   input += synapse0x24a4740();
-   input += synapse0x24a4780();
+double NNfunction_sb_uRsR::input0x345c550() {
+   double input = -0.463458;
+   input += synapse0x3444fc0();
+   input += synapse0x3445000();
+   input += synapse0x3445040();
+   input += synapse0x3445080();
+   input += synapse0x34450c0();
+   input += synapse0x3445100();
+   input += synapse0x3445140();
+   input += synapse0x3445180();
+   input += synapse0x345cca0();
+   input += synapse0x345cce0();
+   input += synapse0x345cd20();
+   input += synapse0x345cd60();
+   input += synapse0x345cda0();
+   input += synapse0x345cde0();
+   input += synapse0x345ce20();
+   input += synapse0x345ce60();
+   input += synapse0x345c6e0();
+   input += synapse0x345c720();
+   input += synapse0x345cfb0();
+   input += synapse0x345cff0();
+   input += synapse0x345d030();
+   input += synapse0x345d070();
+   input += synapse0x345d0b0();
+   input += synapse0x345d0f0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a3be0() {
-   double input = input0x24a3be0();
+double NNfunction_sb_uRsR::neuron0x345c550() {
+   double input = input0x345c550();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a47c0() {
-   double input = 0.920934;
-   input += synapse0x24a4b00();
-   input += synapse0x24a4b40();
-   input += synapse0x24a4b80();
-   input += synapse0x24a4bc0();
-   input += synapse0x24a4c00();
-   input += synapse0x24a4c40();
-   input += synapse0x24a4c80();
-   input += synapse0x24a4cc0();
-   input += synapse0x24a4d00();
-   input += synapse0x24a4d40();
-   input += synapse0x24a4d80();
-   input += synapse0x24a4dc0();
-   input += synapse0x24a4e00();
-   input += synapse0x24a4e40();
-   input += synapse0x24a4e80();
-   input += synapse0x24a4ec0();
-   input += synapse0x24a4950();
-   input += synapse0x24a4990();
-   input += synapse0x24a5010();
-   input += synapse0x24a5050();
-   input += synapse0x24a5090();
-   input += synapse0x24a50d0();
-   input += synapse0x24a5110();
-   input += synapse0x24a5150();
+double NNfunction_sb_uRsR::input0x345d130() {
+   double input = 0.0923886;
+   input += synapse0x345d470();
+   input += synapse0x345d4b0();
+   input += synapse0x345d4f0();
+   input += synapse0x345d530();
+   input += synapse0x345d570();
+   input += synapse0x345d5b0();
+   input += synapse0x345d5f0();
+   input += synapse0x345d630();
+   input += synapse0x345d670();
+   input += synapse0x345d6b0();
+   input += synapse0x345d6f0();
+   input += synapse0x345d730();
+   input += synapse0x345d770();
+   input += synapse0x345d7b0();
+   input += synapse0x345d7f0();
+   input += synapse0x345d830();
+   input += synapse0x345d2c0();
+   input += synapse0x345d300();
+   input += synapse0x345d980();
+   input += synapse0x345d9c0();
+   input += synapse0x345da00();
+   input += synapse0x345da40();
+   input += synapse0x345da80();
+   input += synapse0x345dac0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a47c0() {
-   double input = input0x24a47c0();
+double NNfunction_sb_uRsR::neuron0x345d130() {
+   double input = input0x345d130();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a5190() {
-   double input = -0.0240599;
-   input += synapse0x24a54d0();
-   input += synapse0x24a5510();
-   input += synapse0x24a5550();
-   input += synapse0x24a5590();
-   input += synapse0x24a55d0();
-   input += synapse0x24a5610();
-   input += synapse0x24a5650();
-   input += synapse0x24a5690();
-   input += synapse0x24a56d0();
-   input += synapse0x24a5710();
-   input += synapse0x24a5750();
-   input += synapse0x24a5790();
-   input += synapse0x24a57d0();
-   input += synapse0x24a5810();
-   input += synapse0x24a5850();
-   input += synapse0x24a5890();
-   input += synapse0x24a5320();
-   input += synapse0x24a5360();
-   input += synapse0x2495e90();
-   input += synapse0x2495ed0();
-   input += synapse0x2495f10();
-   input += synapse0x2495f50();
-   input += synapse0x2495f90();
-   input += synapse0x2495fd0();
+double NNfunction_sb_uRsR::input0x345db00() {
+   double input = 2.0923;
+   input += synapse0x345de40();
+   input += synapse0x345de80();
+   input += synapse0x345dec0();
+   input += synapse0x345df00();
+   input += synapse0x345df40();
+   input += synapse0x345df80();
+   input += synapse0x345dfc0();
+   input += synapse0x345e000();
+   input += synapse0x345e040();
+   input += synapse0x345e080();
+   input += synapse0x345e0c0();
+   input += synapse0x345e100();
+   input += synapse0x345e140();
+   input += synapse0x345e180();
+   input += synapse0x345e1c0();
+   input += synapse0x345e200();
+   input += synapse0x345dc90();
+   input += synapse0x345dcd0();
+   input += synapse0x344e800();
+   input += synapse0x344e840();
+   input += synapse0x344e880();
+   input += synapse0x344e8c0();
+   input += synapse0x344e900();
+   input += synapse0x344e940();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a5190() {
-   double input = input0x24a5190();
+double NNfunction_sb_uRsR::neuron0x345db00() {
+   double input = input0x345db00();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x2496010() {
-   double input = 1.27543;
-   input += synapse0x2496350();
-   input += synapse0x2496390();
-   input += synapse0x24963d0();
-   input += synapse0x2496410();
-   input += synapse0x2496450();
-   input += synapse0x2496490();
-   input += synapse0x24964d0();
-   input += synapse0x2496510();
-   input += synapse0x2496550();
-   input += synapse0x2496590();
-   input += synapse0x24965d0();
-   input += synapse0x2496610();
-   input += synapse0x2496650();
-   input += synapse0x2496690();
-   input += synapse0x24966d0();
-   input += synapse0x2496710();
-   input += synapse0x24961a0();
-   input += synapse0x24961e0();
-   input += synapse0x2496860();
-   input += synapse0x24968a0();
-   input += synapse0x24968e0();
-   input += synapse0x2496920();
-   input += synapse0x2496960();
-   input += synapse0x24969a0();
+double NNfunction_sb_uRsR::input0x344e980() {
+   double input = 0.250367;
+   input += synapse0x344ecc0();
+   input += synapse0x344ed00();
+   input += synapse0x344ed40();
+   input += synapse0x344ed80();
+   input += synapse0x344edc0();
+   input += synapse0x344ee00();
+   input += synapse0x344ee40();
+   input += synapse0x344ee80();
+   input += synapse0x344eec0();
+   input += synapse0x344ef00();
+   input += synapse0x344ef40();
+   input += synapse0x344ef80();
+   input += synapse0x344efc0();
+   input += synapse0x344f000();
+   input += synapse0x344f040();
+   input += synapse0x344f080();
+   input += synapse0x344eb10();
+   input += synapse0x344eb50();
+   input += synapse0x344f1d0();
+   input += synapse0x344f210();
+   input += synapse0x344f250();
+   input += synapse0x344f290();
+   input += synapse0x344f2d0();
+   input += synapse0x344f310();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x2496010() {
-   double input = input0x2496010();
+double NNfunction_sb_uRsR::neuron0x344e980() {
+   double input = input0x344e980();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24969e0() {
-   double input = 0.0629561;
-   input += synapse0x2496d20();
-   input += synapse0x2496d60();
-   input += synapse0x2496da0();
-   input += synapse0x2496de0();
-   input += synapse0x2496e20();
-   input += synapse0x2496e60();
-   input += synapse0x2496ea0();
-   input += synapse0x2496ee0();
-   input += synapse0x2496f20();
-   input += synapse0x2496f60();
-   input += synapse0x2496fa0();
-   input += synapse0x2496fe0();
-   input += synapse0x2497020();
-   input += synapse0x2497060();
-   input += synapse0x24970a0();
-   input += synapse0x24970e0();
-   input += synapse0x2496b70();
-   input += synapse0x2496bb0();
-   input += synapse0x2497230();
-   input += synapse0x2497270();
-   input += synapse0x24972b0();
-   input += synapse0x24972f0();
-   input += synapse0x2497330();
-   input += synapse0x2497370();
+double NNfunction_sb_uRsR::input0x344f350() {
+   double input = 0.221028;
+   input += synapse0x344f690();
+   input += synapse0x344f6d0();
+   input += synapse0x344f710();
+   input += synapse0x344f750();
+   input += synapse0x344f790();
+   input += synapse0x344f7d0();
+   input += synapse0x344f810();
+   input += synapse0x344f850();
+   input += synapse0x344f890();
+   input += synapse0x344f8d0();
+   input += synapse0x344f910();
+   input += synapse0x344f950();
+   input += synapse0x344f990();
+   input += synapse0x344f9d0();
+   input += synapse0x344fa10();
+   input += synapse0x344fa50();
+   input += synapse0x344f4e0();
+   input += synapse0x344f520();
+   input += synapse0x344fba0();
+   input += synapse0x344fbe0();
+   input += synapse0x344fc20();
+   input += synapse0x344fc60();
+   input += synapse0x344fca0();
+   input += synapse0x344fce0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24969e0() {
-   double input = input0x24969e0();
+double NNfunction_sb_uRsR::neuron0x344f350() {
+   double input = input0x344f350();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24973b0() {
-   double input = 0.53023;
-   input += synapse0x24976f0();
-   input += synapse0x2497730();
-   input += synapse0x2497770();
-   input += synapse0x24977b0();
-   input += synapse0x24977f0();
-   input += synapse0x2497830();
-   input += synapse0x2497870();
-   input += synapse0x24978b0();
-   input += synapse0x24978f0();
-   input += synapse0x2497930();
-   input += synapse0x2497970();
-   input += synapse0x24979b0();
-   input += synapse0x24979f0();
-   input += synapse0x2497a30();
-   input += synapse0x2497a70();
-   input += synapse0x2497ab0();
-   input += synapse0x2497540();
-   input += synapse0x2497580();
-   input += synapse0x2497c00();
-   input += synapse0x2497c40();
-   input += synapse0x2497c80();
-   input += synapse0x2497cc0();
-   input += synapse0x2497d00();
-   input += synapse0x2497d40();
+double NNfunction_sb_uRsR::input0x344fd20() {
+   double input = 1.42321;
+   input += synapse0x3450060();
+   input += synapse0x34500a0();
+   input += synapse0x34500e0();
+   input += synapse0x3450120();
+   input += synapse0x3450160();
+   input += synapse0x34501a0();
+   input += synapse0x34501e0();
+   input += synapse0x3450220();
+   input += synapse0x3450260();
+   input += synapse0x34502a0();
+   input += synapse0x34502e0();
+   input += synapse0x3450320();
+   input += synapse0x3450360();
+   input += synapse0x34503a0();
+   input += synapse0x34503e0();
+   input += synapse0x3450420();
+   input += synapse0x344feb0();
+   input += synapse0x344fef0();
+   input += synapse0x3450570();
+   input += synapse0x34505b0();
+   input += synapse0x34505f0();
+   input += synapse0x3450630();
+   input += synapse0x3450670();
+   input += synapse0x34506b0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24973b0() {
-   double input = input0x24973b0();
+double NNfunction_sb_uRsR::neuron0x344fd20() {
+   double input = input0x344fd20();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24a99f0() {
-   double input = 0.615072;
-   input += synapse0x24a9c10();
-   input += synapse0x24a9c50();
-   input += synapse0x24a9c90();
-   input += synapse0x24a9cd0();
-   input += synapse0x24a9d10();
-   input += synapse0x24a9d50();
-   input += synapse0x24a9d90();
-   input += synapse0x24a9dd0();
-   input += synapse0x24a9e10();
-   input += synapse0x24a9e50();
-   input += synapse0x24a9e90();
-   input += synapse0x24a9ed0();
-   input += synapse0x24a9f10();
-   input += synapse0x24a9f50();
-   input += synapse0x24a9f90();
-   input += synapse0x24a9fd0();
-   input += synapse0x2497d80();
-   input += synapse0x2497dc0();
-   input += synapse0x24aa120();
-   input += synapse0x24aa160();
-   input += synapse0x24aa1a0();
-   input += synapse0x24aa1e0();
-   input += synapse0x24aa220();
-   input += synapse0x24aa260();
+double NNfunction_sb_uRsR::input0x3462360() {
+   double input = 1.56156;
+   input += synapse0x3462580();
+   input += synapse0x34625c0();
+   input += synapse0x3462600();
+   input += synapse0x3462640();
+   input += synapse0x3462680();
+   input += synapse0x34626c0();
+   input += synapse0x3462700();
+   input += synapse0x3462740();
+   input += synapse0x3462780();
+   input += synapse0x34627c0();
+   input += synapse0x3462800();
+   input += synapse0x3462840();
+   input += synapse0x3462880();
+   input += synapse0x34628c0();
+   input += synapse0x3462900();
+   input += synapse0x3462940();
+   input += synapse0x34506f0();
+   input += synapse0x3450730();
+   input += synapse0x3462a90();
+   input += synapse0x3462ad0();
+   input += synapse0x3462b10();
+   input += synapse0x3462b50();
+   input += synapse0x3462b90();
+   input += synapse0x3462bd0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24a99f0() {
-   double input = input0x24a99f0();
+double NNfunction_sb_uRsR::neuron0x3462360() {
+   double input = input0x3462360();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24aa2a0() {
-   double input = 3.62545;
-   input += synapse0x24aa5e0();
-   input += synapse0x24aa620();
-   input += synapse0x24aa660();
-   input += synapse0x24aa6a0();
-   input += synapse0x24aa6e0();
-   input += synapse0x24aa720();
-   input += synapse0x24aa760();
-   input += synapse0x24aa7a0();
-   input += synapse0x24aa7e0();
-   input += synapse0x24aa820();
-   input += synapse0x24aa860();
-   input += synapse0x24aa8a0();
-   input += synapse0x24aa8e0();
-   input += synapse0x24aa920();
-   input += synapse0x24aa960();
-   input += synapse0x24aa9a0();
-   input += synapse0x24aa430();
-   input += synapse0x24aa470();
-   input += synapse0x24aaaf0();
-   input += synapse0x24aab30();
-   input += synapse0x24aab70();
-   input += synapse0x24aabb0();
-   input += synapse0x24aabf0();
-   input += synapse0x24aac30();
+double NNfunction_sb_uRsR::input0x3462c10() {
+   double input = -0.417233;
+   input += synapse0x3462f50();
+   input += synapse0x3462f90();
+   input += synapse0x3462fd0();
+   input += synapse0x3463010();
+   input += synapse0x3463050();
+   input += synapse0x3463090();
+   input += synapse0x34630d0();
+   input += synapse0x3463110();
+   input += synapse0x3463150();
+   input += synapse0x3463190();
+   input += synapse0x34631d0();
+   input += synapse0x3463210();
+   input += synapse0x3463250();
+   input += synapse0x3463290();
+   input += synapse0x34632d0();
+   input += synapse0x3463310();
+   input += synapse0x3462da0();
+   input += synapse0x3462de0();
+   input += synapse0x3463460();
+   input += synapse0x34634a0();
+   input += synapse0x34634e0();
+   input += synapse0x3463520();
+   input += synapse0x3463560();
+   input += synapse0x34635a0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24aa2a0() {
-   double input = input0x24aa2a0();
+double NNfunction_sb_uRsR::neuron0x3462c10() {
+   double input = input0x3462c10();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24aac70() {
-   double input = -0.0229513;
-   input += synapse0x24aafb0();
-   input += synapse0x24aaff0();
-   input += synapse0x24ab030();
-   input += synapse0x24ab070();
-   input += synapse0x24ab0b0();
-   input += synapse0x24ab0f0();
-   input += synapse0x24ab130();
-   input += synapse0x24ab170();
-   input += synapse0x24ab1b0();
-   input += synapse0x24ab1f0();
-   input += synapse0x24ab230();
-   input += synapse0x24ab270();
-   input += synapse0x24ab2b0();
-   input += synapse0x24ab2f0();
-   input += synapse0x24ab330();
-   input += synapse0x24ab370();
-   input += synapse0x24aae00();
-   input += synapse0x24aae40();
-   input += synapse0x24ab4c0();
-   input += synapse0x24ab500();
-   input += synapse0x24ab540();
-   input += synapse0x24ab580();
-   input += synapse0x24ab5c0();
-   input += synapse0x24ab600();
+double NNfunction_sb_uRsR::input0x34635e0() {
+   double input = 0.180659;
+   input += synapse0x3463920();
+   input += synapse0x3463960();
+   input += synapse0x34639a0();
+   input += synapse0x34639e0();
+   input += synapse0x3463a20();
+   input += synapse0x3463a60();
+   input += synapse0x3463aa0();
+   input += synapse0x3463ae0();
+   input += synapse0x3463b20();
+   input += synapse0x3463b60();
+   input += synapse0x3463ba0();
+   input += synapse0x3463be0();
+   input += synapse0x3463c20();
+   input += synapse0x3463c60();
+   input += synapse0x3463ca0();
+   input += synapse0x3463ce0();
+   input += synapse0x3463770();
+   input += synapse0x34637b0();
+   input += synapse0x3463e30();
+   input += synapse0x3463e70();
+   input += synapse0x3463eb0();
+   input += synapse0x3463ef0();
+   input += synapse0x3463f30();
+   input += synapse0x3463f70();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24aac70() {
-   double input = input0x24aac70();
+double NNfunction_sb_uRsR::neuron0x34635e0() {
+   double input = input0x34635e0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24ab640() {
-   double input = 0.284212;
-   input += synapse0x24ab980();
-   input += synapse0x24ab9c0();
-   input += synapse0x24aba00();
-   input += synapse0x24aba40();
-   input += synapse0x24aba80();
-   input += synapse0x24abac0();
-   input += synapse0x24abb00();
-   input += synapse0x24abb40();
-   input += synapse0x24abb80();
-   input += synapse0x24abbc0();
-   input += synapse0x24abc00();
-   input += synapse0x24abc40();
-   input += synapse0x24abc80();
-   input += synapse0x24abcc0();
-   input += synapse0x24abd00();
-   input += synapse0x24abd40();
-   input += synapse0x24ab7d0();
-   input += synapse0x24ab810();
-   input += synapse0x24abe90();
-   input += synapse0x24abed0();
-   input += synapse0x24abf10();
-   input += synapse0x24abf50();
-   input += synapse0x24abf90();
-   input += synapse0x24abfd0();
+double NNfunction_sb_uRsR::input0x3463fb0() {
+   double input = 0.0131493;
+   input += synapse0x34642f0();
+   input += synapse0x3464330();
+   input += synapse0x3464370();
+   input += synapse0x34643b0();
+   input += synapse0x34643f0();
+   input += synapse0x3464430();
+   input += synapse0x3464470();
+   input += synapse0x34644b0();
+   input += synapse0x34644f0();
+   input += synapse0x3464530();
+   input += synapse0x3464570();
+   input += synapse0x34645b0();
+   input += synapse0x34645f0();
+   input += synapse0x3464630();
+   input += synapse0x3464670();
+   input += synapse0x34646b0();
+   input += synapse0x3464140();
+   input += synapse0x3464180();
+   input += synapse0x3464800();
+   input += synapse0x3464840();
+   input += synapse0x3464880();
+   input += synapse0x34648c0();
+   input += synapse0x3464900();
+   input += synapse0x3464940();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24ab640() {
-   double input = input0x24ab640();
+double NNfunction_sb_uRsR::neuron0x3463fb0() {
+   double input = input0x3463fb0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24b2840() {
-   double input = 0.279175;
-   input += synapse0x2488570();
-   input += synapse0x24885b0();
-   input += synapse0x2489a80();
-   input += synapse0x2489ac0();
-   input += synapse0x248a450();
-   input += synapse0x248a490();
-   input += synapse0x248b220();
-   input += synapse0x248b260();
-   input += synapse0x248bbf0();
-   input += synapse0x248bc30();
-   input += synapse0x248c5c0();
-   input += synapse0x248c600();
-   input += synapse0x248d0a0();
-   input += synapse0x248d0e0();
-   input += synapse0x248da70();
-   input += synapse0x248dab0();
-   input += synapse0x248ab50();
-   input += synapse0x248ab90();
-   input += synapse0x248f620();
-   input += synapse0x248f660();
-   input += synapse0x248fff0();
-   input += synapse0x2490030();
-   input += synapse0x24909c0();
-   input += synapse0x2490a00();
-   input += synapse0x2491390();
-   input += synapse0x24913d0();
-   input += synapse0x2485500();
-   input += synapse0x2485540();
-   input += synapse0x2493480();
-   input += synapse0x24934c0();
-   input += synapse0x2493e50();
-   input += synapse0x2493e90();
-   input += synapse0x2494820();
-   input += synapse0x2494860();
-   input += synapse0x24951f0();
-   input += synapse0x2495230();
-   input += synapse0x2495bc0();
-   input += synapse0x2495c00();
-   input += synapse0x248e710();
-   input += synapse0x248e750();
-   input += synapse0x2497fc0();
-   input += synapse0x2498000();
-   input += synapse0x2498950();
-   input += synapse0x2498990();
-   input += synapse0x2499320();
-   input += synapse0x2499360();
-   input += synapse0x2499cf0();
-   input += synapse0x2499d30();
-   input += synapse0x249a6c0();
-   input += synapse0x249a700();
+double NNfunction_sb_uRsR::input0x346b1b0() {
+   double input = -0.684561;
+   input += synapse0x32047b0();
+   input += synapse0x32047f0();
+   input += synapse0x34412f0();
+   input += synapse0x3441330();
+   input += synapse0x3442dc0();
+   input += synapse0x3442e00();
+   input += synapse0x3443b90();
+   input += synapse0x3443bd0();
+   input += synapse0x3444560();
+   input += synapse0x34445a0();
+   input += synapse0x3444f30();
+   input += synapse0x3444f70();
+   input += synapse0x3445a10();
+   input += synapse0x3445a50();
+   input += synapse0x34463e0();
+   input += synapse0x3446420();
+   input += synapse0x34434c0();
+   input += synapse0x3443500();
+   input += synapse0x3447f90();
+   input += synapse0x3447fd0();
+   input += synapse0x3448960();
+   input += synapse0x34489a0();
+   input += synapse0x3449330();
+   input += synapse0x3449370();
+   input += synapse0x3449d00();
+   input += synapse0x3449d40();
+   input += synapse0x343cd90();
+   input += synapse0x343cdd0();
+   input += synapse0x344bdf0();
+   input += synapse0x344be30();
+   input += synapse0x344c7c0();
+   input += synapse0x344c800();
+   input += synapse0x344d190();
+   input += synapse0x344d1d0();
+   input += synapse0x344db60();
+   input += synapse0x344dba0();
+   input += synapse0x344e530();
+   input += synapse0x344e570();
+   input += synapse0x3447080();
+   input += synapse0x34470c0();
+   input += synapse0x3450930();
+   input += synapse0x3450970();
+   input += synapse0x34512c0();
+   input += synapse0x3451300();
+   input += synapse0x3451c90();
+   input += synapse0x3451cd0();
+   input += synapse0x3452660();
+   input += synapse0x34526a0();
+   input += synapse0x3453030();
+   input += synapse0x3453070();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24b2840() {
-   double input = input0x24b2840();
+double NNfunction_sb_uRsR::neuron0x346b1b0() {
+   double input = input0x346b1b0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24b2be0() {
-   double input = -0.148549;
-   input += synapse0x249ce00();
-   input += synapse0x249ce40();
-   input += synapse0x24923c0();
-   input += synapse0x2492400();
-   input += synapse0x249f9e0();
-   input += synapse0x249fa20();
-   input += synapse0x24a03b0();
-   input += synapse0x24a03f0();
-   input += synapse0x24a0d80();
-   input += synapse0x24a0dc0();
-   input += synapse0x24a1750();
-   input += synapse0x24a1790();
-   input += synapse0x24a2120();
-   input += synapse0x24a2160();
-   input += synapse0x24a2af0();
-   input += synapse0x24a2b30();
-   input += synapse0x24a34c0();
-   input += synapse0x24a3500();
-   input += synapse0x24a3e90();
-   input += synapse0x24a3ed0();
-   input += synapse0x24a4a70();
-   input += synapse0x24a4ab0();
-   input += synapse0x24a5440();
-   input += synapse0x24a5480();
-   input += synapse0x24962c0();
-   input += synapse0x2496300();
-   input += synapse0x2496c90();
-   input += synapse0x2496cd0();
-   input += synapse0x2497660();
-   input += synapse0x24976a0();
-   input += synapse0x24a9b80();
-   input += synapse0x24a9bc0();
-   input += synapse0x24aa550();
-   input += synapse0x24aa590();
-   input += synapse0x24aaf20();
-   input += synapse0x24aaf60();
-   input += synapse0x24ab8f0();
-   input += synapse0x24ab930();
-   input += synapse0x24877e0();
-   input += synapse0x2487820();
-   input += synapse0x249b090();
-   input += synapse0x249b0d0();
-   input += synapse0x24ac010();
-   input += synapse0x24ac050();
-   input += synapse0x24ac090();
-   input += synapse0x24ac0d0();
-   input += synapse0x24b2f80();
-   input += synapse0x24b2fc0();
-   input += synapse0x24b3000();
-   input += synapse0x24b3040();
+double NNfunction_sb_uRsR::input0x346b550() {
+   double input = -0.437363;
+   input += synapse0x3455770();
+   input += synapse0x34557b0();
+   input += synapse0x344ad30();
+   input += synapse0x344ad70();
+   input += synapse0x3458350();
+   input += synapse0x3458390();
+   input += synapse0x3458d20();
+   input += synapse0x3458d60();
+   input += synapse0x34596f0();
+   input += synapse0x3459730();
+   input += synapse0x345a0c0();
+   input += synapse0x345a100();
+   input += synapse0x345aa90();
+   input += synapse0x345aad0();
+   input += synapse0x345b460();
+   input += synapse0x345b4a0();
+   input += synapse0x345be30();
+   input += synapse0x345be70();
+   input += synapse0x345c800();
+   input += synapse0x345c840();
+   input += synapse0x345d3e0();
+   input += synapse0x345d420();
+   input += synapse0x345ddb0();
+   input += synapse0x345ddf0();
+   input += synapse0x344ec30();
+   input += synapse0x344ec70();
+   input += synapse0x344f600();
+   input += synapse0x344f640();
+   input += synapse0x344ffd0();
+   input += synapse0x3450010();
+   input += synapse0x34624f0();
+   input += synapse0x3462530();
+   input += synapse0x3462ec0();
+   input += synapse0x3462f00();
+   input += synapse0x3463890();
+   input += synapse0x34638d0();
+   input += synapse0x3464260();
+   input += synapse0x34642a0();
+   input += synapse0x343f1f0();
+   input += synapse0x343f230();
+   input += synapse0x3453a00();
+   input += synapse0x3453a40();
+   input += synapse0x3464980();
+   input += synapse0x34649c0();
+   input += synapse0x3464a00();
+   input += synapse0x3464a40();
+   input += synapse0x346b8f0();
+   input += synapse0x346b930();
+   input += synapse0x346b970();
+   input += synapse0x346b9b0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24b2be0() {
-   double input = input0x24b2be0();
+double NNfunction_sb_uRsR::neuron0x346b550() {
+   double input = input0x346b550();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24b3080() {
-   double input = -0.232242;
-   input += synapse0x24b33c0();
-   input += synapse0x24b3400();
-   input += synapse0x24b3440();
-   input += synapse0x24b3480();
-   input += synapse0x24b34c0();
-   input += synapse0x24b3500();
-   input += synapse0x24b3540();
-   input += synapse0x24b3580();
-   input += synapse0x24b35c0();
-   input += synapse0x24b3600();
-   input += synapse0x24b3640();
-   input += synapse0x24b3680();
-   input += synapse0x24b36c0();
-   input += synapse0x24b3700();
-   input += synapse0x24b3740();
-   input += synapse0x24b3780();
-   input += synapse0x24b3210();
-   input += synapse0x24b3250();
-   input += synapse0x24b38d0();
-   input += synapse0x24b3910();
-   input += synapse0x24b3950();
-   input += synapse0x24b3990();
-   input += synapse0x24b39d0();
-   input += synapse0x24b3a10();
-   input += synapse0x24b3a50();
-   input += synapse0x24b3a90();
-   input += synapse0x24b3ad0();
-   input += synapse0x24b3b10();
-   input += synapse0x24b3b50();
-   input += synapse0x24b3b90();
-   input += synapse0x24b3bd0();
-   input += synapse0x24b3c10();
-   input += synapse0x24b37c0();
-   input += synapse0x24b3800();
-   input += synapse0x24b3840();
-   input += synapse0x24b3880();
-   input += synapse0x24b3e60();
-   input += synapse0x24b3ea0();
-   input += synapse0x24b3ee0();
-   input += synapse0x24b3f20();
-   input += synapse0x24b3f60();
-   input += synapse0x24b3fa0();
-   input += synapse0x24b3fe0();
-   input += synapse0x24b4020();
-   input += synapse0x24b4060();
-   input += synapse0x24b40a0();
-   input += synapse0x24b40e0();
-   input += synapse0x24b4120();
-   input += synapse0x24b4160();
-   input += synapse0x24b41a0();
+double NNfunction_sb_uRsR::input0x346b9f0() {
+   double input = 0.448246;
+   input += synapse0x346bd30();
+   input += synapse0x346bd70();
+   input += synapse0x346bdb0();
+   input += synapse0x346bdf0();
+   input += synapse0x346be30();
+   input += synapse0x346be70();
+   input += synapse0x346beb0();
+   input += synapse0x346bef0();
+   input += synapse0x346bf30();
+   input += synapse0x346bf70();
+   input += synapse0x346bfb0();
+   input += synapse0x346bff0();
+   input += synapse0x346c030();
+   input += synapse0x346c070();
+   input += synapse0x346c0b0();
+   input += synapse0x346c0f0();
+   input += synapse0x346bb80();
+   input += synapse0x346bbc0();
+   input += synapse0x346c240();
+   input += synapse0x346c280();
+   input += synapse0x346c2c0();
+   input += synapse0x346c300();
+   input += synapse0x346c340();
+   input += synapse0x346c380();
+   input += synapse0x346c3c0();
+   input += synapse0x346c400();
+   input += synapse0x346c440();
+   input += synapse0x346c480();
+   input += synapse0x346c4c0();
+   input += synapse0x346c500();
+   input += synapse0x346c540();
+   input += synapse0x346c580();
+   input += synapse0x346c130();
+   input += synapse0x346c170();
+   input += synapse0x346c1b0();
+   input += synapse0x346c1f0();
+   input += synapse0x346c7d0();
+   input += synapse0x346c810();
+   input += synapse0x346c850();
+   input += synapse0x346c890();
+   input += synapse0x346c8d0();
+   input += synapse0x346c910();
+   input += synapse0x346c950();
+   input += synapse0x346c990();
+   input += synapse0x346c9d0();
+   input += synapse0x346ca10();
+   input += synapse0x346ca50();
+   input += synapse0x346ca90();
+   input += synapse0x346cad0();
+   input += synapse0x346cb10();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24b3080() {
-   double input = input0x24b3080();
+double NNfunction_sb_uRsR::neuron0x346b9f0() {
+   double input = input0x346b9f0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24b41e0() {
-   double input = 0.617836;
-   input += synapse0x24b4520();
-   input += synapse0x24b4560();
-   input += synapse0x24b45a0();
-   input += synapse0x24b45e0();
-   input += synapse0x24b4620();
-   input += synapse0x24b4660();
-   input += synapse0x24b46a0();
-   input += synapse0x24b46e0();
-   input += synapse0x24b4720();
-   input += synapse0x24b4760();
-   input += synapse0x24b47a0();
-   input += synapse0x24b47e0();
-   input += synapse0x24b4820();
-   input += synapse0x24b4860();
-   input += synapse0x24b48a0();
-   input += synapse0x24b48e0();
-   input += synapse0x24b4370();
-   input += synapse0x24b43b0();
-   input += synapse0x24b4a30();
-   input += synapse0x24b4a70();
-   input += synapse0x24b4ab0();
-   input += synapse0x24b4af0();
-   input += synapse0x24b4b30();
-   input += synapse0x24b4b70();
-   input += synapse0x24b4bb0();
-   input += synapse0x24b4bf0();
-   input += synapse0x24b4c30();
-   input += synapse0x24b4c70();
-   input += synapse0x24b4cb0();
-   input += synapse0x24b4cf0();
-   input += synapse0x24b4d30();
-   input += synapse0x24b4d70();
-   input += synapse0x24b4920();
-   input += synapse0x24b4960();
-   input += synapse0x24b49a0();
-   input += synapse0x24b49e0();
-   input += synapse0x24b4fc0();
-   input += synapse0x24b5000();
-   input += synapse0x24b5040();
-   input += synapse0x24b5080();
-   input += synapse0x24b50c0();
-   input += synapse0x24b5100();
-   input += synapse0x24b5140();
-   input += synapse0x24b5180();
-   input += synapse0x24b51c0();
-   input += synapse0x24b5200();
-   input += synapse0x24b5240();
-   input += synapse0x24b5280();
-   input += synapse0x24b52c0();
-   input += synapse0x24b5300();
+double NNfunction_sb_uRsR::input0x346cb50() {
+   double input = 1.39077;
+   input += synapse0x346ce90();
+   input += synapse0x346ced0();
+   input += synapse0x346cf10();
+   input += synapse0x346cf50();
+   input += synapse0x346cf90();
+   input += synapse0x346cfd0();
+   input += synapse0x346d010();
+   input += synapse0x346d050();
+   input += synapse0x346d090();
+   input += synapse0x346d0d0();
+   input += synapse0x346d110();
+   input += synapse0x346d150();
+   input += synapse0x346d190();
+   input += synapse0x346d1d0();
+   input += synapse0x346d210();
+   input += synapse0x346d250();
+   input += synapse0x346cce0();
+   input += synapse0x346cd20();
+   input += synapse0x346d3a0();
+   input += synapse0x346d3e0();
+   input += synapse0x346d420();
+   input += synapse0x346d460();
+   input += synapse0x346d4a0();
+   input += synapse0x346d4e0();
+   input += synapse0x346d520();
+   input += synapse0x346d560();
+   input += synapse0x346d5a0();
+   input += synapse0x346d5e0();
+   input += synapse0x346d620();
+   input += synapse0x346d660();
+   input += synapse0x346d6a0();
+   input += synapse0x346d6e0();
+   input += synapse0x346d290();
+   input += synapse0x346d2d0();
+   input += synapse0x346d310();
+   input += synapse0x346d350();
+   input += synapse0x346d930();
+   input += synapse0x346d970();
+   input += synapse0x346d9b0();
+   input += synapse0x346d9f0();
+   input += synapse0x346da30();
+   input += synapse0x346da70();
+   input += synapse0x346dab0();
+   input += synapse0x346daf0();
+   input += synapse0x346db30();
+   input += synapse0x346db70();
+   input += synapse0x346dbb0();
+   input += synapse0x346dbf0();
+   input += synapse0x346dc30();
+   input += synapse0x346dc70();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24b41e0() {
-   double input = input0x24b41e0();
+double NNfunction_sb_uRsR::neuron0x346cb50() {
+   double input = input0x346cb50();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24b5340() {
-   double input = 0.927752;
-   input += synapse0x24b5680();
-   input += synapse0x24b56c0();
-   input += synapse0x24b5700();
-   input += synapse0x24b5740();
-   input += synapse0x24b5780();
-   input += synapse0x24b57c0();
-   input += synapse0x24b5800();
-   input += synapse0x24b5840();
-   input += synapse0x24b5880();
-   input += synapse0x24b58c0();
-   input += synapse0x24b5900();
-   input += synapse0x24b5940();
-   input += synapse0x24b5980();
-   input += synapse0x24b59c0();
-   input += synapse0x24b5a00();
-   input += synapse0x24b5a40();
-   input += synapse0x24b54d0();
-   input += synapse0x24b5510();
-   input += synapse0x24b5b90();
-   input += synapse0x24b5bd0();
-   input += synapse0x24b5c10();
-   input += synapse0x24b5c50();
-   input += synapse0x24b5c90();
-   input += synapse0x24b5cd0();
-   input += synapse0x24b5d10();
-   input += synapse0x24b5d50();
-   input += synapse0x24b5d90();
-   input += synapse0x24b5dd0();
-   input += synapse0x24b5e10();
-   input += synapse0x24b5e50();
-   input += synapse0x24b5e90();
-   input += synapse0x24b5ed0();
-   input += synapse0x24b5a80();
-   input += synapse0x24b5ac0();
-   input += synapse0x24b5b00();
-   input += synapse0x24b5b40();
-   input += synapse0x24b6120();
-   input += synapse0x24b6160();
-   input += synapse0x24b61a0();
-   input += synapse0x24b61e0();
-   input += synapse0x24b6220();
-   input += synapse0x24b6260();
-   input += synapse0x24b62a0();
-   input += synapse0x24b62e0();
-   input += synapse0x24b6320();
-   input += synapse0x24b6360();
-   input += synapse0x24b63a0();
-   input += synapse0x24b63e0();
-   input += synapse0x24b6420();
-   input += synapse0x24b6460();
+double NNfunction_sb_uRsR::input0x346dcb0() {
+   double input = -0.381457;
+   input += synapse0x346dff0();
+   input += synapse0x346e030();
+   input += synapse0x346e070();
+   input += synapse0x346e0b0();
+   input += synapse0x346e0f0();
+   input += synapse0x346e130();
+   input += synapse0x346e170();
+   input += synapse0x346e1b0();
+   input += synapse0x346e1f0();
+   input += synapse0x346e230();
+   input += synapse0x346e270();
+   input += synapse0x346e2b0();
+   input += synapse0x346e2f0();
+   input += synapse0x346e330();
+   input += synapse0x346e370();
+   input += synapse0x346e3b0();
+   input += synapse0x346de40();
+   input += synapse0x346de80();
+   input += synapse0x346e500();
+   input += synapse0x346e540();
+   input += synapse0x346e580();
+   input += synapse0x346e5c0();
+   input += synapse0x346e600();
+   input += synapse0x346e640();
+   input += synapse0x346e680();
+   input += synapse0x346e6c0();
+   input += synapse0x346e700();
+   input += synapse0x346e740();
+   input += synapse0x346e780();
+   input += synapse0x346e7c0();
+   input += synapse0x346e800();
+   input += synapse0x346e840();
+   input += synapse0x346e3f0();
+   input += synapse0x346e430();
+   input += synapse0x346e470();
+   input += synapse0x346e4b0();
+   input += synapse0x346ea90();
+   input += synapse0x346ead0();
+   input += synapse0x346eb10();
+   input += synapse0x346eb50();
+   input += synapse0x346eb90();
+   input += synapse0x346ebd0();
+   input += synapse0x346ec10();
+   input += synapse0x346ec50();
+   input += synapse0x346ec90();
+   input += synapse0x346ecd0();
+   input += synapse0x346ed10();
+   input += synapse0x346ed50();
+   input += synapse0x346ed90();
+   input += synapse0x346edd0();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24b5340() {
-   double input = input0x24b5340();
+double NNfunction_sb_uRsR::neuron0x346dcb0() {
+   double input = input0x346dcb0();
    return ((input < -709. ? 0. : (1/(1+exp(-input)))) * 1)+0;
 }
 
-double NNfunction_sb_uRsR::input0x24b64a0() {
-   double input = 7.89768;
-   input += synapse0x2487580();
-   input += synapse0x24b66c0();
-   input += synapse0x24b6700();
-   input += synapse0x24b6740();
-   input += synapse0x24b6780();
+double NNfunction_sb_uRsR::input0x346ee10() {
+   double input = 9.31429;
+   input += synapse0x346f030();
+   input += synapse0x346f070();
+   input += synapse0x346f0b0();
+   input += synapse0x346f0f0();
+   input += synapse0x346f130();
    return input;
 }
 
-double NNfunction_sb_uRsR::neuron0x24b64a0() {
-   double input = input0x24b64a0();
+double NNfunction_sb_uRsR::neuron0x346ee10() {
+   double input = input0x346ee10();
    return (input * 1)+0;
 }
 
-double NNfunction_sb_uRsR::synapse0x22423d0() {
-   return (neuron0x2482560()*-0.875545);
+double NNfunction_sb_uRsR::synapse0x343f280() {
+   return (neuron0x3439e80()*-0.144999);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482420() {
-   return (neuron0x24828a0()*0.246089);
+double NNfunction_sb_uRsR::synapse0x343f2c0() {
+   return (neuron0x343a130()*-0.496857);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482460() {
-   return (neuron0x2482be0()*0.54211);
+double NNfunction_sb_uRsR::synapse0x343f300() {
+   return (neuron0x343a470()*0.224427);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487870() {
-   return (neuron0x2482f20()*-0.345937);
+double NNfunction_sb_uRsR::synapse0x343f340() {
+   return (neuron0x343a7b0()*-0.106998);
 }
 
-double NNfunction_sb_uRsR::synapse0x24878b0() {
-   return (neuron0x2483260()*-0.313547);
+double NNfunction_sb_uRsR::synapse0x343f380() {
+   return (neuron0x343aaf0()*-0.0106042);
 }
 
-double NNfunction_sb_uRsR::synapse0x24878f0() {
-   return (neuron0x24835a0()*0.750179);
+double NNfunction_sb_uRsR::synapse0x343f3c0() {
+   return (neuron0x343ae30()*-0.243559);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487930() {
-   return (neuron0x24838e0()*0.660298);
+double NNfunction_sb_uRsR::synapse0x343f400() {
+   return (neuron0x343b170()*0.240354);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487970() {
-   return (neuron0x2483c20()*-0.225882);
+double NNfunction_sb_uRsR::synapse0x343f440() {
+   return (neuron0x343b4b0()*0.788455);
 }
 
-double NNfunction_sb_uRsR::synapse0x24879b0() {
-   return (neuron0x2483f60()*0.613951);
+double NNfunction_sb_uRsR::synapse0x343f480() {
+   return (neuron0x343b7f0()*-0.249264);
 }
 
-double NNfunction_sb_uRsR::synapse0x24879f0() {
-   return (neuron0x24842a0()*-1.06454);
+double NNfunction_sb_uRsR::synapse0x343f4c0() {
+   return (neuron0x343bb30()*0.225879);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487a30() {
-   return (neuron0x24845e0()*-0.124008);
+double NNfunction_sb_uRsR::synapse0x343f500() {
+   return (neuron0x343be70()*0.947533);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487a70() {
-   return (neuron0x2484920()*-0.398521);
+double NNfunction_sb_uRsR::synapse0x343f540() {
+   return (neuron0x343c1b0()*0.515069);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487ab0() {
-   return (neuron0x2484c60()*0.689818);
+double NNfunction_sb_uRsR::synapse0x343f580() {
+   return (neuron0x343c4f0()*1.0095);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487af0() {
-   return (neuron0x2484fa0()*0.362139);
+double NNfunction_sb_uRsR::synapse0x343f5c0() {
+   return (neuron0x343c830()*-0.618834);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487b30() {
-   return (neuron0x24852e0()*1.24925);
+double NNfunction_sb_uRsR::synapse0x343f600() {
+   return (neuron0x343cb70()*0.586157);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487b70() {
-   return (neuron0x2485620()*1.07023);
+double NNfunction_sb_uRsR::synapse0x343f640() {
+   return (neuron0x343ceb0()*-0.0840776);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482390() {
-   return (neuron0x2485960()*0.194829);
+double NNfunction_sb_uRsR::synapse0x343f0d0() {
+   return (neuron0x343d1f0()*0.908989);
 }
 
-double NNfunction_sb_uRsR::synapse0x24823d0() {
-   return (neuron0x2485ec0()*-0.336748);
+double NNfunction_sb_uRsR::synapse0x343f110() {
+   return (neuron0x343d750()*-0.2246);
 }
 
-double NNfunction_sb_uRsR::synapse0x2233c70() {
-   return (neuron0x24860e0()*1.31425);
+double NNfunction_sb_uRsR::synapse0x31f6050() {
+   return (neuron0x343da90()*0.649965);
 }
 
-double NNfunction_sb_uRsR::synapse0x2233cb0() {
-   return (neuron0x2486420()*0.0885705);
+double NNfunction_sb_uRsR::synapse0x31f6090() {
+   return (neuron0x343ddd0()*-0.884417);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487dd0() {
-   return (neuron0x2486760()*-0.180737);
+double NNfunction_sb_uRsR::synapse0x343f680() {
+   return (neuron0x343e110()*0.437763);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487e10() {
-   return (neuron0x2486aa0()*-0.257266);
+double NNfunction_sb_uRsR::synapse0x343f6c0() {
+   return (neuron0x343e450()*0.235501);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487e50() {
-   return (neuron0x2486de0()*0.053027);
+double NNfunction_sb_uRsR::synapse0x343f700() {
+   return (neuron0x343e790()*-0.631339);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487e90() {
-   return (neuron0x2487120()*-0.130753);
+double NNfunction_sb_uRsR::synapse0x343f740() {
+   return (neuron0x343ead0()*0.619305);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488210() {
-   return (neuron0x2482560()*-0.236074);
+double NNfunction_sb_uRsR::synapse0x343fac0() {
+   return (neuron0x3439e80()*0.160856);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488250() {
-   return (neuron0x24828a0()*-0.358582);
+double NNfunction_sb_uRsR::synapse0x343fb00() {
+   return (neuron0x343a130()*-0.15789);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488290() {
-   return (neuron0x2482be0()*-0.0985125);
+double NNfunction_sb_uRsR::synapse0x343fb40() {
+   return (neuron0x343a470()*0.0790489);
 }
 
-double NNfunction_sb_uRsR::synapse0x24882d0() {
-   return (neuron0x2482f20()*-3.0833);
+double NNfunction_sb_uRsR::synapse0x343fb80() {
+   return (neuron0x343a7b0()*-0.0134072);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488310() {
-   return (neuron0x2483260()*-0.229352);
+double NNfunction_sb_uRsR::synapse0x343fbc0() {
+   return (neuron0x343aaf0()*0.106724);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488350() {
-   return (neuron0x24835a0()*0.397529);
+double NNfunction_sb_uRsR::synapse0x343fc00() {
+   return (neuron0x343ae30()*0.0273956);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488390() {
-   return (neuron0x24838e0()*0.0602707);
+double NNfunction_sb_uRsR::synapse0x343fc40() {
+   return (neuron0x343b170()*0.26664);
 }
 
-double NNfunction_sb_uRsR::synapse0x24883d0() {
-   return (neuron0x2483c20()*-0.0372062);
+double NNfunction_sb_uRsR::synapse0x343fc80() {
+   return (neuron0x343b4b0()*0.491301);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488410() {
-   return (neuron0x2483f60()*-0.0951733);
+double NNfunction_sb_uRsR::synapse0x343fcc0() {
+   return (neuron0x343b7f0()*0.0697645);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487cc0() {
-   return (neuron0x24842a0()*-0.145011);
+double NNfunction_sb_uRsR::synapse0x31f5ea0() {
+   return (neuron0x343bb30()*-0.158411);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487d00() {
-   return (neuron0x24845e0()*-0.00288736);
+double NNfunction_sb_uRsR::synapse0x31f5ee0() {
+   return (neuron0x343be70()*0.341143);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487d40() {
-   return (neuron0x2484920()*-0.248325);
+double NNfunction_sb_uRsR::synapse0x31f5f20() {
+   return (neuron0x343c1b0()*-0.0509153);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487d80() {
-   return (neuron0x2484c60()*-0.275834);
+double NNfunction_sb_uRsR::synapse0x31f5f60() {
+   return (neuron0x343c4f0()*0.0815514);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488660() {
-   return (neuron0x2484fa0()*-0.364976);
+double NNfunction_sb_uRsR::synapse0x343ff10() {
+   return (neuron0x343c830()*-0.112901);
 }
 
-double NNfunction_sb_uRsR::synapse0x24886a0() {
-   return (neuron0x24852e0()*-0.28153);
+double NNfunction_sb_uRsR::synapse0x343ff50() {
+   return (neuron0x343cb70()*0.641142);
 }
 
-double NNfunction_sb_uRsR::synapse0x24886e0() {
-   return (neuron0x2485620()*0.273844);
+double NNfunction_sb_uRsR::synapse0x343ff90() {
+   return (neuron0x343ceb0()*0.301148);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488060() {
-   return (neuron0x2485960()*-0.475136);
+double NNfunction_sb_uRsR::synapse0x343f910() {
+   return (neuron0x343d1f0()*-0.103994);
 }
 
-double NNfunction_sb_uRsR::synapse0x24880a0() {
-   return (neuron0x2485ec0()*0.261545);
+double NNfunction_sb_uRsR::synapse0x343f950() {
+   return (neuron0x343d750()*-0.370034);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488830() {
-   return (neuron0x24860e0()*0.188873);
+double NNfunction_sb_uRsR::synapse0x34400e0() {
+   return (neuron0x343da90()*0.370615);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488870() {
-   return (neuron0x2486420()*0.507212);
+double NNfunction_sb_uRsR::synapse0x3440120() {
+   return (neuron0x343ddd0()*-0.034706);
 }
 
-double NNfunction_sb_uRsR::synapse0x24888b0() {
-   return (neuron0x2486760()*0.113311);
+double NNfunction_sb_uRsR::synapse0x3440160() {
+   return (neuron0x343e110()*-0.0979158);
 }
 
-double NNfunction_sb_uRsR::synapse0x24888f0() {
-   return (neuron0x2486aa0()*-0.216769);
+double NNfunction_sb_uRsR::synapse0x34401a0() {
+   return (neuron0x343e450()*1.42031e-05);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488930() {
-   return (neuron0x2486de0()*-0.436009);
+double NNfunction_sb_uRsR::synapse0x34401e0() {
+   return (neuron0x343e790()*0.184508);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488970() {
-   return (neuron0x2487120()*-0.0486281);
+double NNfunction_sb_uRsR::synapse0x3440220() {
+   return (neuron0x343ead0()*-0.253355);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488cf0() {
-   return (neuron0x2482560()*-0.00771698);
+double NNfunction_sb_uRsR::synapse0x34405a0() {
+   return (neuron0x3439e80()*0.182798);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488d30() {
-   return (neuron0x24828a0()*-0.0561612);
+double NNfunction_sb_uRsR::synapse0x34405e0() {
+   return (neuron0x343a130()*-0.296097);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488d70() {
-   return (neuron0x2482be0()*-0.00972632);
+double NNfunction_sb_uRsR::synapse0x3440620() {
+   return (neuron0x343a470()*0.331488);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488db0() {
-   return (neuron0x2482f20()*0.0627308);
+double NNfunction_sb_uRsR::synapse0x3440660() {
+   return (neuron0x343a7b0()*0.00308807);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488df0() {
-   return (neuron0x2483260()*0.00585277);
+double NNfunction_sb_uRsR::synapse0x34406a0() {
+   return (neuron0x343aaf0()*0.623621);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488e30() {
-   return (neuron0x24835a0()*-0.00258121);
+double NNfunction_sb_uRsR::synapse0x34406e0() {
+   return (neuron0x343ae30()*-1.38152);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488e70() {
-   return (neuron0x24838e0()*-0.0156965);
+double NNfunction_sb_uRsR::synapse0x3440720() {
+   return (neuron0x343b170()*0.162218);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488eb0() {
-   return (neuron0x2483c20()*0.00364651);
+double NNfunction_sb_uRsR::synapse0x3440760() {
+   return (neuron0x343b4b0()*0.217925);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488ef0() {
-   return (neuron0x2483f60()*-0.00285287);
+double NNfunction_sb_uRsR::synapse0x34407a0() {
+   return (neuron0x343b7f0()*-0.124714);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488f30() {
-   return (neuron0x24842a0()*0.0025532);
+double NNfunction_sb_uRsR::synapse0x34407e0() {
+   return (neuron0x343bb30()*0.128888);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488f70() {
-   return (neuron0x24845e0()*0.0249158);
+double NNfunction_sb_uRsR::synapse0x3440820() {
+   return (neuron0x343be70()*0.267132);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488fb0() {
-   return (neuron0x2484920()*0.381545);
+double NNfunction_sb_uRsR::synapse0x3440860() {
+   return (neuron0x343c1b0()*-0.323366);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488ff0() {
-   return (neuron0x2484c60()*0.343416);
+double NNfunction_sb_uRsR::synapse0x34408a0() {
+   return (neuron0x343c4f0()*0.261522);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489030() {
-   return (neuron0x2484fa0()*-0.034229);
+double NNfunction_sb_uRsR::synapse0x34408e0() {
+   return (neuron0x343c830()*-0.225689);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489070() {
-   return (neuron0x24852e0()*-0.000602263);
+double NNfunction_sb_uRsR::synapse0x3440920() {
+   return (neuron0x343cb70()*-0.288973);
 }
 
-double NNfunction_sb_uRsR::synapse0x24890b0() {
-   return (neuron0x2485620()*0.14767);
+double NNfunction_sb_uRsR::synapse0x3440960() {
+   return (neuron0x343ceb0()*-0.0299998);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488b40() {
-   return (neuron0x2485960()*-0.0451978);
+double NNfunction_sb_uRsR::synapse0x34403f0() {
+   return (neuron0x343d1f0()*0.144458);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488b80() {
-   return (neuron0x2485ec0()*0.172766);
+double NNfunction_sb_uRsR::synapse0x3440430() {
+   return (neuron0x343d750()*0.130588);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241ac0() {
-   return (neuron0x24860e0()*0.0616001);
+double NNfunction_sb_uRsR::synapse0x31f66f0() {
+   return (neuron0x343da90()*-0.0309148);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241b00() {
-   return (neuron0x2486420()*0.0227763);
+double NNfunction_sb_uRsR::synapse0x3203fc0() {
+   return (neuron0x343ddd0()*-0.411617);
 }
 
-double NNfunction_sb_uRsR::synapse0x24715f0() {
-   return (neuron0x2486760()*-0.00252344);
+double NNfunction_sb_uRsR::synapse0x3204000() {
+   return (neuron0x343e110()*0.101994);
 }
 
-double NNfunction_sb_uRsR::synapse0x2471630() {
-   return (neuron0x2486aa0()*0.00359298);
+double NNfunction_sb_uRsR::synapse0x3442890() {
+   return (neuron0x343e450()*0.134947);
 }
 
-double NNfunction_sb_uRsR::synapse0x2471670() {
-   return (neuron0x2486de0()*-0.00234862);
+double NNfunction_sb_uRsR::synapse0x34428d0() {
+   return (neuron0x343e790()*0.0936456);
 }
 
-double NNfunction_sb_uRsR::synapse0x24824a0() {
-   return (neuron0x2487120()*0.0228122);
+double NNfunction_sb_uRsR::synapse0x3439bc0() {
+   return (neuron0x343ead0()*0.136195);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488600() {
-   return (neuron0x2482560()*0.0176981);
+double NNfunction_sb_uRsR::synapse0x3439c90() {
+   return (neuron0x3439e80()*-0.0172221);
 }
 
-double NNfunction_sb_uRsR::synapse0x24824e0() {
-   return (neuron0x24828a0()*0.793654);
+double NNfunction_sb_uRsR::synapse0x3204840() {
+   return (neuron0x343a130()*0.407206);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482520() {
-   return (neuron0x2482be0()*0.186186);
+double NNfunction_sb_uRsR::synapse0x343fe90() {
+   return (neuron0x343a470()*-0.564176);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489200() {
-   return (neuron0x2482f20()*-0.971134);
+double NNfunction_sb_uRsR::synapse0x343fed0() {
+   return (neuron0x343a7b0()*0.419611);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489240() {
-   return (neuron0x2483260()*0.263814);
+double NNfunction_sb_uRsR::synapse0x3440ab0() {
+   return (neuron0x343aaf0()*-0.129113);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489280() {
-   return (neuron0x24835a0()*0.0926364);
+double NNfunction_sb_uRsR::synapse0x3440af0() {
+   return (neuron0x343ae30()*0.0526085);
 }
 
-double NNfunction_sb_uRsR::synapse0x24892c0() {
-   return (neuron0x24838e0()*0.00777602);
+double NNfunction_sb_uRsR::synapse0x3440b30() {
+   return (neuron0x343b170()*0.62704);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489300() {
-   return (neuron0x2483c20()*0.647675);
+double NNfunction_sb_uRsR::synapse0x3440b70() {
+   return (neuron0x343b4b0()*0.352108);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489340() {
-   return (neuron0x2483f60()*0.183239);
+double NNfunction_sb_uRsR::synapse0x3440bb0() {
+   return (neuron0x343b7f0()*0.17646);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489380() {
-   return (neuron0x24842a0()*0.694592);
+double NNfunction_sb_uRsR::synapse0x3440bf0() {
+   return (neuron0x343bb30()*0.501977);
 }
 
-double NNfunction_sb_uRsR::synapse0x24893c0() {
-   return (neuron0x24845e0()*0.0353495);
+double NNfunction_sb_uRsR::synapse0x3440c30() {
+   return (neuron0x343be70()*-0.461888);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489400() {
-   return (neuron0x2484920()*0.943851);
+double NNfunction_sb_uRsR::synapse0x3440c70() {
+   return (neuron0x343c1b0()*-0.804407);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489440() {
-   return (neuron0x2484c60()*0.757532);
+double NNfunction_sb_uRsR::synapse0x3440cb0() {
+   return (neuron0x343c4f0()*0.108927);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489480() {
-   return (neuron0x2484fa0()*-0.48072);
+double NNfunction_sb_uRsR::synapse0x3440cf0() {
+   return (neuron0x343c830()*-0.469119);
 }
 
-double NNfunction_sb_uRsR::synapse0x24894c0() {
-   return (neuron0x24852e0()*0.653188);
+double NNfunction_sb_uRsR::synapse0x3440d30() {
+   return (neuron0x343cb70()*-0.38946);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489500() {
-   return (neuron0x2485620()*-0.604803);
+double NNfunction_sb_uRsR::synapse0x3440d70() {
+   return (neuron0x343ceb0()*-0.0444291);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488450() {
-   return (neuron0x2485960()*-0.225877);
+double NNfunction_sb_uRsR::synapse0x3439c00() {
+   return (neuron0x343d1f0()*-0.130399);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488490() {
-   return (neuron0x2485ec0()*-1.34024);
+double NNfunction_sb_uRsR::synapse0x3439c40() {
+   return (neuron0x343d750()*-0.184098);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489650() {
-   return (neuron0x24860e0()*0.53468);
+double NNfunction_sb_uRsR::synapse0x3440ec0() {
+   return (neuron0x343da90()*-0.657248);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489690() {
-   return (neuron0x2486420()*-0.385288);
+double NNfunction_sb_uRsR::synapse0x3440f00() {
+   return (neuron0x343ddd0()*0.32357);
 }
 
-double NNfunction_sb_uRsR::synapse0x24896d0() {
-   return (neuron0x2486760()*1.11852);
+double NNfunction_sb_uRsR::synapse0x3440f40() {
+   return (neuron0x343e110()*0.229818);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489710() {
-   return (neuron0x2486aa0()*0.0737219);
+double NNfunction_sb_uRsR::synapse0x3440f80() {
+   return (neuron0x343e450()*0.397451);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489750() {
-   return (neuron0x2486de0()*0.354347);
+double NNfunction_sb_uRsR::synapse0x3440fc0() {
+   return (neuron0x343e790()*-0.315495);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489790() {
-   return (neuron0x2487120()*0.279859);
+double NNfunction_sb_uRsR::synapse0x3441000() {
+   return (neuron0x343ead0()*-0.405741);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489b10() {
-   return (neuron0x2482560()*0.0472864);
+double NNfunction_sb_uRsR::synapse0x3441380() {
+   return (neuron0x3439e80()*0.0087926);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489b50() {
-   return (neuron0x24828a0()*0.322078);
+double NNfunction_sb_uRsR::synapse0x34413c0() {
+   return (neuron0x343a130()*0.0208408);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489b90() {
-   return (neuron0x2482be0()*-0.0394089);
+double NNfunction_sb_uRsR::synapse0x3441400() {
+   return (neuron0x343a470()*0.0132907);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489bd0() {
-   return (neuron0x2482f20()*0.0231391);
+double NNfunction_sb_uRsR::synapse0x3441440() {
+   return (neuron0x343a7b0()*-1.72347);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489c10() {
-   return (neuron0x2483260()*-0.661801);
+double NNfunction_sb_uRsR::synapse0x3441480() {
+   return (neuron0x343aaf0()*0.0122587);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489c50() {
-   return (neuron0x24835a0()*0.380158);
+double NNfunction_sb_uRsR::synapse0x34414c0() {
+   return (neuron0x343ae30()*0.0182013);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489c90() {
-   return (neuron0x24838e0()*-0.024734);
+double NNfunction_sb_uRsR::synapse0x3441500() {
+   return (neuron0x343b170()*0.0213222);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489cd0() {
-   return (neuron0x2483c20()*-0.496744);
+double NNfunction_sb_uRsR::synapse0x3441540() {
+   return (neuron0x343b4b0()*-0.0115626);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489d10() {
-   return (neuron0x2483f60()*-0.154796);
+double NNfunction_sb_uRsR::synapse0x3441580() {
+   return (neuron0x343b7f0()*-0.000252454);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489d50() {
-   return (neuron0x24842a0()*-0.126626);
+double NNfunction_sb_uRsR::synapse0x34415c0() {
+   return (neuron0x343bb30()*-0.00362069);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489d90() {
-   return (neuron0x24845e0()*0.280834);
+double NNfunction_sb_uRsR::synapse0x3441600() {
+   return (neuron0x343be70()*-0.0161293);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489dd0() {
-   return (neuron0x2484920()*0.266821);
+double NNfunction_sb_uRsR::synapse0x3441640() {
+   return (neuron0x343c1b0()*-0.0160045);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489e10() {
-   return (neuron0x2484c60()*-0.164993);
+double NNfunction_sb_uRsR::synapse0x3441680() {
+   return (neuron0x343c4f0()*-0.000615455);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489e50() {
-   return (neuron0x2484fa0()*-0.16458);
+double NNfunction_sb_uRsR::synapse0x34416c0() {
+   return (neuron0x343c830()*-0.0151361);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489e90() {
-   return (neuron0x24852e0()*-1.62478);
+double NNfunction_sb_uRsR::synapse0x3441700() {
+   return (neuron0x343cb70()*0.0584534);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489ed0() {
-   return (neuron0x2485620()*-1.03655);
+double NNfunction_sb_uRsR::synapse0x3441740() {
+   return (neuron0x343ceb0()*0.0173294);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489960() {
-   return (neuron0x2485960()*-0.108791);
+double NNfunction_sb_uRsR::synapse0x3441890() {
+   return (neuron0x343d1f0()*-0.00452274);
 }
 
-double NNfunction_sb_uRsR::synapse0x24899a0() {
-   return (neuron0x2485ec0()*-0.109148);
+double NNfunction_sb_uRsR::synapse0x34411d0() {
+   return (neuron0x343d750()*-0.00521819);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a020() {
-   return (neuron0x24860e0()*-0.122744);
+double NNfunction_sb_uRsR::synapse0x3441210() {
+   return (neuron0x343da90()*0.000190794);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a060() {
-   return (neuron0x2486420()*0.439674);
+double NNfunction_sb_uRsR::synapse0x34429d0() {
+   return (neuron0x343ddd0()*-0.0147348);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a0a0() {
-   return (neuron0x2486760()*0.401784);
+double NNfunction_sb_uRsR::synapse0x3442a10() {
+   return (neuron0x343e110()*0.0158373);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a0e0() {
-   return (neuron0x2486aa0()*0.176687);
+double NNfunction_sb_uRsR::synapse0x3442a50() {
+   return (neuron0x343e450()*-0.00708708);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a120() {
-   return (neuron0x2486de0()*0.0998896);
+double NNfunction_sb_uRsR::synapse0x3442a90() {
+   return (neuron0x343e790()*-0.0143414);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a160() {
-   return (neuron0x2487120()*-0.634569);
+double NNfunction_sb_uRsR::synapse0x3442ad0() {
+   return (neuron0x343ead0()*-0.011481);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a4e0() {
-   return (neuron0x2482560()*0.892692);
+double NNfunction_sb_uRsR::synapse0x3442e50() {
+   return (neuron0x3439e80()*-0.0695836);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a520() {
-   return (neuron0x24828a0()*0.510757);
+double NNfunction_sb_uRsR::synapse0x3442e90() {
+   return (neuron0x343a130()*0.00786514);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a560() {
-   return (neuron0x2482be0()*-0.377795);
+double NNfunction_sb_uRsR::synapse0x3442ed0() {
+   return (neuron0x343a470()*0.301947);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a5a0() {
-   return (neuron0x2482f20()*-0.137424);
+double NNfunction_sb_uRsR::synapse0x3442f10() {
+   return (neuron0x343a7b0()*-0.203932);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a5e0() {
-   return (neuron0x2483260()*1.12266);
+double NNfunction_sb_uRsR::synapse0x3442f50() {
+   return (neuron0x343aaf0()*-0.293147);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a620() {
-   return (neuron0x24835a0()*-0.581545);
+double NNfunction_sb_uRsR::synapse0x3442f90() {
+   return (neuron0x343ae30()*0.149494);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a660() {
-   return (neuron0x24838e0()*-1.11466);
+double NNfunction_sb_uRsR::synapse0x3442fd0() {
+   return (neuron0x343b170()*0.0385694);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a6a0() {
-   return (neuron0x2483c20()*-1.19055);
+double NNfunction_sb_uRsR::synapse0x3443010() {
+   return (neuron0x343b4b0()*0.20478);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a6e0() {
-   return (neuron0x2483f60()*0.650268);
+double NNfunction_sb_uRsR::synapse0x3443050() {
+   return (neuron0x343b7f0()*0.437009);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241e30() {
-   return (neuron0x24842a0()*-0.0823283);
+double NNfunction_sb_uRsR::synapse0x3204310() {
+   return (neuron0x343bb30()*0.148653);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241e70() {
-   return (neuron0x24845e0()*0.920115);
+double NNfunction_sb_uRsR::synapse0x3204350() {
+   return (neuron0x343be70()*-0.0617725);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241eb0() {
-   return (neuron0x2484920()*0.940665);
+double NNfunction_sb_uRsR::synapse0x3204390() {
+   return (neuron0x343c1b0()*-0.143857);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241ef0() {
-   return (neuron0x2484c60()*0.51138);
+double NNfunction_sb_uRsR::synapse0x32043d0() {
+   return (neuron0x343c4f0()*-0.583725);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241f30() {
-   return (neuron0x2484fa0()*-0.322837);
+double NNfunction_sb_uRsR::synapse0x3204410() {
+   return (neuron0x343c830()*0.0162973);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241f70() {
-   return (neuron0x24852e0()*2.02731);
+double NNfunction_sb_uRsR::synapse0x3204450() {
+   return (neuron0x343cb70()*-0.659366);
 }
 
-double NNfunction_sb_uRsR::synapse0x2241fb0() {
-   return (neuron0x2485620()*0.547515);
+double NNfunction_sb_uRsR::synapse0x3204490() {
+   return (neuron0x343ceb0()*0.0229219);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a330() {
-   return (neuron0x2485960()*-0.757839);
+double NNfunction_sb_uRsR::synapse0x3442ca0() {
+   return (neuron0x343d1f0()*-0.00714279);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a370() {
-   return (neuron0x2485ec0()*0.731272);
+double NNfunction_sb_uRsR::synapse0x3442ce0() {
+   return (neuron0x343d750()*-0.464347);
 }
 
-double NNfunction_sb_uRsR::synapse0x2242100() {
-   return (neuron0x24860e0()*-0.633461);
+double NNfunction_sb_uRsR::synapse0x32045e0() {
+   return (neuron0x343da90()*-0.203402);
 }
 
-double NNfunction_sb_uRsR::synapse0x2242140() {
-   return (neuron0x2486420()*1.26933);
+double NNfunction_sb_uRsR::synapse0x3204620() {
+   return (neuron0x343ddd0()*-0.405005);
 }
 
-double NNfunction_sb_uRsR::synapse0x2242180() {
-   return (neuron0x2486760()*0.395946);
+double NNfunction_sb_uRsR::synapse0x3204660() {
+   return (neuron0x343e110()*-0.0928004);
 }
 
-double NNfunction_sb_uRsR::synapse0x22421c0() {
-   return (neuron0x2486aa0()*0.444241);
+double NNfunction_sb_uRsR::synapse0x32046a0() {
+   return (neuron0x343e450()*-0.00310319);
 }
 
-double NNfunction_sb_uRsR::synapse0x2242200() {
-   return (neuron0x2486de0()*0.0411795);
+double NNfunction_sb_uRsR::synapse0x32046e0() {
+   return (neuron0x343e790()*-0.539674);
 }
 
-double NNfunction_sb_uRsR::synapse0x248af30() {
-   return (neuron0x2487120()*-0.360806);
+double NNfunction_sb_uRsR::synapse0x34438a0() {
+   return (neuron0x343ead0()*0.125777);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b2b0() {
-   return (neuron0x2482560()*1.0521);
+double NNfunction_sb_uRsR::synapse0x3443c20() {
+   return (neuron0x3439e80()*0.00529429);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b2f0() {
-   return (neuron0x24828a0()*-0.0380539);
+double NNfunction_sb_uRsR::synapse0x3443c60() {
+   return (neuron0x343a130()*-0.261574);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b330() {
-   return (neuron0x2482be0()*0.1083);
+double NNfunction_sb_uRsR::synapse0x3443ca0() {
+   return (neuron0x343a470()*-0.115295);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b370() {
-   return (neuron0x2482f20()*-0.256531);
+double NNfunction_sb_uRsR::synapse0x3443ce0() {
+   return (neuron0x343a7b0()*0.110397);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b3b0() {
-   return (neuron0x2483260()*1.34477);
+double NNfunction_sb_uRsR::synapse0x3443d20() {
+   return (neuron0x343aaf0()*0.0627152);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b3f0() {
-   return (neuron0x24835a0()*0.563441);
+double NNfunction_sb_uRsR::synapse0x3443d60() {
+   return (neuron0x343ae30()*-0.36619);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b430() {
-   return (neuron0x24838e0()*0.650934);
+double NNfunction_sb_uRsR::synapse0x3443da0() {
+   return (neuron0x343b170()*0.0391477);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b470() {
-   return (neuron0x2483c20()*0.563881);
+double NNfunction_sb_uRsR::synapse0x3443de0() {
+   return (neuron0x343b4b0()*-0.342154);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b4b0() {
-   return (neuron0x2483f60()*-0.0575265);
+double NNfunction_sb_uRsR::synapse0x3443e20() {
+   return (neuron0x343b7f0()*0.119435);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b4f0() {
-   return (neuron0x24842a0()*-0.285205);
+double NNfunction_sb_uRsR::synapse0x3443e60() {
+   return (neuron0x343bb30()*0.112529);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b530() {
-   return (neuron0x24845e0()*-0.41038);
+double NNfunction_sb_uRsR::synapse0x3443ea0() {
+   return (neuron0x343be70()*-0.0311543);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b570() {
-   return (neuron0x2484920()*0.311733);
+double NNfunction_sb_uRsR::synapse0x3443ee0() {
+   return (neuron0x343c1b0()*0.0176595);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b5b0() {
-   return (neuron0x2484c60()*0.615925);
+double NNfunction_sb_uRsR::synapse0x3443f20() {
+   return (neuron0x343c4f0()*-0.125715);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b5f0() {
-   return (neuron0x2484fa0()*-0.00490692);
+double NNfunction_sb_uRsR::synapse0x3443f60() {
+   return (neuron0x343c830()*-0.383121);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b630() {
-   return (neuron0x24852e0()*-0.716261);
+double NNfunction_sb_uRsR::synapse0x3443fa0() {
+   return (neuron0x343cb70()*-0.432699);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b670() {
-   return (neuron0x2485620()*-0.126487);
+double NNfunction_sb_uRsR::synapse0x3443fe0() {
+   return (neuron0x343ceb0()*-0.420415);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b100() {
-   return (neuron0x2485960()*1.05789);
+double NNfunction_sb_uRsR::synapse0x3443a70() {
+   return (neuron0x343d1f0()*-0.0122177);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b140() {
-   return (neuron0x2485ec0()*0.375282);
+double NNfunction_sb_uRsR::synapse0x3443ab0() {
+   return (neuron0x343d750()*-0.375622);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b7c0() {
-   return (neuron0x24860e0()*1.14539);
+double NNfunction_sb_uRsR::synapse0x3444130() {
+   return (neuron0x343da90()*-1.67643);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b800() {
-   return (neuron0x2486420()*0.652183);
+double NNfunction_sb_uRsR::synapse0x3444170() {
+   return (neuron0x343ddd0()*0.0634468);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b840() {
-   return (neuron0x2486760()*-0.37756);
+double NNfunction_sb_uRsR::synapse0x34441b0() {
+   return (neuron0x343e110()*0.376737);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b880() {
-   return (neuron0x2486aa0()*-0.254244);
+double NNfunction_sb_uRsR::synapse0x34441f0() {
+   return (neuron0x343e450()*-0.140796);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b8c0() {
-   return (neuron0x2486de0()*-0.239827);
+double NNfunction_sb_uRsR::synapse0x3444230() {
+   return (neuron0x343e790()*0.426849);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b900() {
-   return (neuron0x2487120()*0.0225502);
+double NNfunction_sb_uRsR::synapse0x3444270() {
+   return (neuron0x343ead0()*0.193274);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bc80() {
-   return (neuron0x2482560()*0.0885353);
+double NNfunction_sb_uRsR::synapse0x34445f0() {
+   return (neuron0x3439e80()*-0.651833);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bcc0() {
-   return (neuron0x24828a0()*-0.154269);
+double NNfunction_sb_uRsR::synapse0x3444630() {
+   return (neuron0x343a130()*-0.40012);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bd00() {
-   return (neuron0x2482be0()*-0.303812);
+double NNfunction_sb_uRsR::synapse0x3444670() {
+   return (neuron0x343a470()*0.163121);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bd40() {
-   return (neuron0x2482f20()*-1.36046);
+double NNfunction_sb_uRsR::synapse0x34446b0() {
+   return (neuron0x343a7b0()*0.268632);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bd80() {
-   return (neuron0x2483260()*0.809084);
+double NNfunction_sb_uRsR::synapse0x34446f0() {
+   return (neuron0x343aaf0()*0.3475);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bdc0() {
-   return (neuron0x24835a0()*0.0820641);
+double NNfunction_sb_uRsR::synapse0x3444730() {
+   return (neuron0x343ae30()*0.31117);
 }
 
-double NNfunction_sb_uRsR::synapse0x248be00() {
-   return (neuron0x24838e0()*0.137888);
+double NNfunction_sb_uRsR::synapse0x3444770() {
+   return (neuron0x343b170()*-0.196646);
 }
 
-double NNfunction_sb_uRsR::synapse0x248be40() {
-   return (neuron0x2483c20()*-0.580379);
+double NNfunction_sb_uRsR::synapse0x34447b0() {
+   return (neuron0x343b4b0()*-0.130816);
 }
 
-double NNfunction_sb_uRsR::synapse0x248be80() {
-   return (neuron0x2483f60()*-0.291562);
+double NNfunction_sb_uRsR::synapse0x34447f0() {
+   return (neuron0x343b7f0()*-0.203566);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bec0() {
-   return (neuron0x24842a0()*-0.312323);
+double NNfunction_sb_uRsR::synapse0x3444830() {
+   return (neuron0x343bb30()*-0.256277);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bf00() {
-   return (neuron0x24845e0()*-0.0985961);
+double NNfunction_sb_uRsR::synapse0x3444870() {
+   return (neuron0x343be70()*0.281436);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bf40() {
-   return (neuron0x2484920()*-0.335249);
+double NNfunction_sb_uRsR::synapse0x34448b0() {
+   return (neuron0x343c1b0()*-0.170662);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bf80() {
-   return (neuron0x2484c60()*-0.209591);
+double NNfunction_sb_uRsR::synapse0x34448f0() {
+   return (neuron0x343c4f0()*0.602259);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bfc0() {
-   return (neuron0x2484fa0()*0.211279);
+double NNfunction_sb_uRsR::synapse0x3444930() {
+   return (neuron0x343c830()*-0.182978);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c000() {
-   return (neuron0x24852e0()*0.661504);
+double NNfunction_sb_uRsR::synapse0x3444970() {
+   return (neuron0x343cb70()*1.34757);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c040() {
-   return (neuron0x2485620()*0.623646);
+double NNfunction_sb_uRsR::synapse0x34449b0() {
+   return (neuron0x343ceb0()*-0.0919542);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bad0() {
-   return (neuron0x2485960()*0.191236);
+double NNfunction_sb_uRsR::synapse0x3444440() {
+   return (neuron0x343d1f0()*-0.138404);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bb10() {
-   return (neuron0x2485ec0()*-0.0084229);
+double NNfunction_sb_uRsR::synapse0x3444480() {
+   return (neuron0x343d750()*0.420472);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c190() {
-   return (neuron0x24860e0()*0.556538);
+double NNfunction_sb_uRsR::synapse0x3444b00() {
+   return (neuron0x343da90()*-0.0110032);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c1d0() {
-   return (neuron0x2486420()*-0.411293);
+double NNfunction_sb_uRsR::synapse0x3444b40() {
+   return (neuron0x343ddd0()*0.246042);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c210() {
-   return (neuron0x2486760()*0.268909);
+double NNfunction_sb_uRsR::synapse0x3444b80() {
+   return (neuron0x343e110()*0.764348);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c250() {
-   return (neuron0x2486aa0()*0.295538);
+double NNfunction_sb_uRsR::synapse0x3444bc0() {
+   return (neuron0x343e450()*0.024695);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c290() {
-   return (neuron0x2486de0()*-0.485671);
+double NNfunction_sb_uRsR::synapse0x3444c00() {
+   return (neuron0x343e790()*-0.464409);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c2d0() {
-   return (neuron0x2487120()*0.25293);
+double NNfunction_sb_uRsR::synapse0x3444c40() {
+   return (neuron0x343ead0()*-0.471023);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485db0() {
-   return (neuron0x2482560()*0.58302);
+double NNfunction_sb_uRsR::synapse0x343d640() {
+   return (neuron0x3439e80()*-0.572361);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485df0() {
-   return (neuron0x24828a0()*-0.793567);
+double NNfunction_sb_uRsR::synapse0x343d680() {
+   return (neuron0x343a130()*0.722871);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485e30() {
-   return (neuron0x2482be0()*-0.162938);
+double NNfunction_sb_uRsR::synapse0x343d6c0() {
+   return (neuron0x343a470()*-0.0957928);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485e70() {
-   return (neuron0x2482f20()*-0.899451);
+double NNfunction_sb_uRsR::synapse0x343d700() {
+   return (neuron0x343a7b0()*-0.521473);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c860() {
-   return (neuron0x2483260()*0.874544);
+double NNfunction_sb_uRsR::synapse0x34451d0() {
+   return (neuron0x343aaf0()*-0.149593);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c8a0() {
-   return (neuron0x24835a0()*-0.183865);
+double NNfunction_sb_uRsR::synapse0x3445210() {
+   return (neuron0x343ae30()*-0.822755);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c8e0() {
-   return (neuron0x24838e0()*-0.0525139);
+double NNfunction_sb_uRsR::synapse0x3445250() {
+   return (neuron0x343b170()*-0.050505);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c920() {
-   return (neuron0x2483c20()*-0.713416);
+double NNfunction_sb_uRsR::synapse0x3445290() {
+   return (neuron0x343b4b0()*-0.0746703);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c960() {
-   return (neuron0x2483f60()*0.43229);
+double NNfunction_sb_uRsR::synapse0x34452d0() {
+   return (neuron0x343b7f0()*0.43952);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c9a0() {
-   return (neuron0x24842a0()*-0.350846);
+double NNfunction_sb_uRsR::synapse0x3445310() {
+   return (neuron0x343bb30()*-0.435145);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c9e0() {
-   return (neuron0x24845e0()*0.306142);
+double NNfunction_sb_uRsR::synapse0x3445350() {
+   return (neuron0x343be70()*-0.407429);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ca20() {
-   return (neuron0x2484920()*0.0850452);
+double NNfunction_sb_uRsR::synapse0x3445390() {
+   return (neuron0x343c1b0()*-0.833586);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ca60() {
-   return (neuron0x2484c60()*-1.06549);
+double NNfunction_sb_uRsR::synapse0x34453d0() {
+   return (neuron0x343c4f0()*0.364828);
 }
 
-double NNfunction_sb_uRsR::synapse0x248caa0() {
-   return (neuron0x2484fa0()*0.423922);
+double NNfunction_sb_uRsR::synapse0x3445410() {
+   return (neuron0x343c830()*0.861869);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cae0() {
-   return (neuron0x24852e0()*-0.0830746);
+double NNfunction_sb_uRsR::synapse0x3445450() {
+   return (neuron0x343cb70()*-0.737936);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cb20() {
-   return (neuron0x2485620()*-0.205901);
+double NNfunction_sb_uRsR::synapse0x3445490() {
+   return (neuron0x343ceb0()*-0.429716);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c4a0() {
-   return (neuron0x2485960()*-0.848852);
+double NNfunction_sb_uRsR::synapse0x3444e10() {
+   return (neuron0x343d1f0()*-0.60258);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c4e0() {
-   return (neuron0x2485ec0()*0.313593);
+double NNfunction_sb_uRsR::synapse0x3444e50() {
+   return (neuron0x343d750()*-0.172007);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cc70() {
-   return (neuron0x24860e0()*-0.861654);
+double NNfunction_sb_uRsR::synapse0x34455e0() {
+   return (neuron0x343da90()*0.583532);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ccb0() {
-   return (neuron0x2486420()*0.0538156);
+double NNfunction_sb_uRsR::synapse0x3445620() {
+   return (neuron0x343ddd0()*0.0781249);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ccf0() {
-   return (neuron0x2486760()*-0.47525);
+double NNfunction_sb_uRsR::synapse0x3445660() {
+   return (neuron0x343e110()*0.199199);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cd30() {
-   return (neuron0x2486aa0()*-0.26949);
+double NNfunction_sb_uRsR::synapse0x34456a0() {
+   return (neuron0x343e450()*0.134168);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cd70() {
-   return (neuron0x2486de0()*0.235635);
+double NNfunction_sb_uRsR::synapse0x34456e0() {
+   return (neuron0x343e790()*-0.223658);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cdb0() {
-   return (neuron0x2487120()*-0.182137);
+double NNfunction_sb_uRsR::synapse0x3445720() {
+   return (neuron0x343ead0()*0.397205);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d130() {
-   return (neuron0x2482560()*-0.168125);
+double NNfunction_sb_uRsR::synapse0x3445aa0() {
+   return (neuron0x3439e80()*-0.013689);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d170() {
-   return (neuron0x24828a0()*-1.01373);
+double NNfunction_sb_uRsR::synapse0x3445ae0() {
+   return (neuron0x343a130()*-0.0491737);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d1b0() {
-   return (neuron0x2482be0()*0.0910392);
+double NNfunction_sb_uRsR::synapse0x3445b20() {
+   return (neuron0x343a470()*-0.00332517);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d1f0() {
-   return (neuron0x2482f20()*-1.29705);
+double NNfunction_sb_uRsR::synapse0x3445b60() {
+   return (neuron0x343a7b0()*-0.339225);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d230() {
-   return (neuron0x2483260()*-0.0929375);
+double NNfunction_sb_uRsR::synapse0x3445ba0() {
+   return (neuron0x343aaf0()*0.00277687);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d270() {
-   return (neuron0x24835a0()*-0.00884051);
+double NNfunction_sb_uRsR::synapse0x3445be0() {
+   return (neuron0x343ae30()*-0.00329986);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d2b0() {
-   return (neuron0x24838e0()*-0.108911);
+double NNfunction_sb_uRsR::synapse0x3445c20() {
+   return (neuron0x343b170()*0.0236589);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d2f0() {
-   return (neuron0x2483c20()*-0.00608369);
+double NNfunction_sb_uRsR::synapse0x3445c60() {
+   return (neuron0x343b4b0()*-0.000405834);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d330() {
-   return (neuron0x2483f60()*-0.0795635);
+double NNfunction_sb_uRsR::synapse0x3445ca0() {
+   return (neuron0x343b7f0()*-0.0107433);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d370() {
-   return (neuron0x24842a0()*0.192293);
+double NNfunction_sb_uRsR::synapse0x3445ce0() {
+   return (neuron0x343bb30()*-2.31512e-07);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d3b0() {
-   return (neuron0x24845e0()*0.218163);
+double NNfunction_sb_uRsR::synapse0x3445d20() {
+   return (neuron0x343be70()*0.0181163);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d3f0() {
-   return (neuron0x2484920()*-0.384786);
+double NNfunction_sb_uRsR::synapse0x3445d60() {
+   return (neuron0x343c1b0()*0.325907);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d430() {
-   return (neuron0x2484c60()*-0.542566);
+double NNfunction_sb_uRsR::synapse0x3445da0() {
+   return (neuron0x343c4f0()*0.314699);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d470() {
-   return (neuron0x2484fa0()*0.0200896);
+double NNfunction_sb_uRsR::synapse0x3445de0() {
+   return (neuron0x343c830()*-0.0328159);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d4b0() {
-   return (neuron0x24852e0()*0.245466);
+double NNfunction_sb_uRsR::synapse0x3445e20() {
+   return (neuron0x343cb70()*-0.0908251);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d4f0() {
-   return (neuron0x2485620()*-0.294747);
+double NNfunction_sb_uRsR::synapse0x3445e60() {
+   return (neuron0x343ceb0()*0.154991);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cf80() {
-   return (neuron0x2485960()*0.0756408);
+double NNfunction_sb_uRsR::synapse0x34458f0() {
+   return (neuron0x343d1f0()*-0.016133);
 }
 
-double NNfunction_sb_uRsR::synapse0x248cfc0() {
-   return (neuron0x2485ec0()*-0.553399);
+double NNfunction_sb_uRsR::synapse0x3445930() {
+   return (neuron0x343d750()*0.183759);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d640() {
-   return (neuron0x24860e0()*0.000826927);
+double NNfunction_sb_uRsR::synapse0x3445fb0() {
+   return (neuron0x343da90()*-0.0656477);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d680() {
-   return (neuron0x2486420()*0.18231);
+double NNfunction_sb_uRsR::synapse0x3445ff0() {
+   return (neuron0x343ddd0()*0.00753338);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d6c0() {
-   return (neuron0x2486760()*0.00560259);
+double NNfunction_sb_uRsR::synapse0x3446030() {
+   return (neuron0x343e110()*0.00291961);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d700() {
-   return (neuron0x2486aa0()*0.0571647);
+double NNfunction_sb_uRsR::synapse0x3446070() {
+   return (neuron0x343e450()*-0.00162646);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d740() {
-   return (neuron0x2486de0()*0.17605);
+double NNfunction_sb_uRsR::synapse0x34460b0() {
+   return (neuron0x343e790()*-0.0387618);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d780() {
-   return (neuron0x2487120()*0.294341);
+double NNfunction_sb_uRsR::synapse0x34460f0() {
+   return (neuron0x343ead0()*0.0121325);
 }
 
-double NNfunction_sb_uRsR::synapse0x248db00() {
-   return (neuron0x2482560()*0.613167);
+double NNfunction_sb_uRsR::synapse0x3446470() {
+   return (neuron0x3439e80()*-0.0361696);
 }
 
-double NNfunction_sb_uRsR::synapse0x248db40() {
-   return (neuron0x24828a0()*-0.491825);
+double NNfunction_sb_uRsR::synapse0x34464b0() {
+   return (neuron0x343a130()*-1.1283);
 }
 
-double NNfunction_sb_uRsR::synapse0x248db80() {
-   return (neuron0x2482be0()*-0.0580218);
+double NNfunction_sb_uRsR::synapse0x34464f0() {
+   return (neuron0x343a470()*0.153057);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dbc0() {
-   return (neuron0x2482f20()*1.35993);
+double NNfunction_sb_uRsR::synapse0x3446530() {
+   return (neuron0x343a7b0()*-0.463297);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dc00() {
-   return (neuron0x2483260()*-0.688164);
+double NNfunction_sb_uRsR::synapse0x3446570() {
+   return (neuron0x343aaf0()*-0.0741536);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dc40() {
-   return (neuron0x24835a0()*-0.15875);
+double NNfunction_sb_uRsR::synapse0x34465b0() {
+   return (neuron0x343ae30()*0.360078);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dc80() {
-   return (neuron0x24838e0()*-0.0570023);
+double NNfunction_sb_uRsR::synapse0x34465f0() {
+   return (neuron0x343b170()*0.680098);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dcc0() {
-   return (neuron0x2483c20()*-1.13246);
+double NNfunction_sb_uRsR::synapse0x3446630() {
+   return (neuron0x343b4b0()*0.541125);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dd00() {
-   return (neuron0x2483f60()*-0.488815);
+double NNfunction_sb_uRsR::synapse0x3446670() {
+   return (neuron0x343b7f0()*0.364162);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dd40() {
-   return (neuron0x24842a0()*1.26081);
+double NNfunction_sb_uRsR::synapse0x34466b0() {
+   return (neuron0x343bb30()*-0.253065);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dd80() {
-   return (neuron0x24845e0()*-0.792777);
+double NNfunction_sb_uRsR::synapse0x34466f0() {
+   return (neuron0x343be70()*-0.063463);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ddc0() {
-   return (neuron0x2484920()*0.475778);
+double NNfunction_sb_uRsR::synapse0x3446730() {
+   return (neuron0x343c1b0()*-0.109495);
 }
 
-double NNfunction_sb_uRsR::synapse0x248de00() {
-   return (neuron0x2484c60()*-0.825704);
+double NNfunction_sb_uRsR::synapse0x3446770() {
+   return (neuron0x343c4f0()*0.0162109);
 }
 
-double NNfunction_sb_uRsR::synapse0x248de40() {
-   return (neuron0x2484fa0()*-0.834339);
+double NNfunction_sb_uRsR::synapse0x34467b0() {
+   return (neuron0x343c830()*0.0407509);
 }
 
-double NNfunction_sb_uRsR::synapse0x248de80() {
-   return (neuron0x24852e0()*-0.569712);
+double NNfunction_sb_uRsR::synapse0x34467f0() {
+   return (neuron0x343cb70()*0.64314);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dec0() {
-   return (neuron0x2485620()*-0.491425);
+double NNfunction_sb_uRsR::synapse0x3446830() {
+   return (neuron0x343ceb0()*-0.109061);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d950() {
-   return (neuron0x2485960()*-0.579001);
+double NNfunction_sb_uRsR::synapse0x34462c0() {
+   return (neuron0x343d1f0()*-0.386168);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d990() {
-   return (neuron0x2485ec0()*-0.533567);
+double NNfunction_sb_uRsR::synapse0x3446300() {
+   return (neuron0x343d750()*0.711966);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a720() {
-   return (neuron0x24860e0()*-0.510412);
+double NNfunction_sb_uRsR::synapse0x3443090() {
+   return (neuron0x343da90()*-0.140259);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a760() {
-   return (neuron0x2486420()*-0.074619);
+double NNfunction_sb_uRsR::synapse0x34430d0() {
+   return (neuron0x343ddd0()*1.11754);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a7a0() {
-   return (neuron0x2486760()*0.157954);
+double NNfunction_sb_uRsR::synapse0x3443110() {
+   return (neuron0x343e110()*-0.770335);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a7e0() {
-   return (neuron0x2486aa0()*-0.0532045);
+double NNfunction_sb_uRsR::synapse0x3443150() {
+   return (neuron0x343e450()*-0.146202);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a820() {
-   return (neuron0x2486de0()*0.719173);
+double NNfunction_sb_uRsR::synapse0x3443190() {
+   return (neuron0x343e790()*0.657127);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a860() {
-   return (neuron0x2487120()*0.910633);
+double NNfunction_sb_uRsR::synapse0x34431d0() {
+   return (neuron0x343ead0()*0.681259);
 }
 
-double NNfunction_sb_uRsR::synapse0x248abe0() {
-   return (neuron0x2482560()*0.174088);
+double NNfunction_sb_uRsR::synapse0x3443550() {
+   return (neuron0x3439e80()*0.382942);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ac20() {
-   return (neuron0x24828a0()*0.296345);
+double NNfunction_sb_uRsR::synapse0x3443590() {
+   return (neuron0x343a130()*0.519288);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ac60() {
-   return (neuron0x2482be0()*0.798246);
+double NNfunction_sb_uRsR::synapse0x34435d0() {
+   return (neuron0x343a470()*-0.0306013);
 }
 
-double NNfunction_sb_uRsR::synapse0x248aca0() {
-   return (neuron0x2482f20()*-0.143949);
+double NNfunction_sb_uRsR::synapse0x3443610() {
+   return (neuron0x343a7b0()*-0.217159);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ace0() {
-   return (neuron0x2483260()*-0.976627);
+double NNfunction_sb_uRsR::synapse0x3443650() {
+   return (neuron0x343aaf0()*-0.153257);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ad20() {
-   return (neuron0x24835a0()*-0.873216);
+double NNfunction_sb_uRsR::synapse0x3443690() {
+   return (neuron0x343ae30()*-0.759076);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ad60() {
-   return (neuron0x24838e0()*1.35962);
+double NNfunction_sb_uRsR::synapse0x34436d0() {
+   return (neuron0x343b170()*0.281307);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ada0() {
-   return (neuron0x2483c20()*0.211642);
+double NNfunction_sb_uRsR::synapse0x3443710() {
+   return (neuron0x343b4b0()*0.623327);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ade0() {
-   return (neuron0x2483f60()*-0.0130289);
+double NNfunction_sb_uRsR::synapse0x3443750() {
+   return (neuron0x343b7f0()*-0.408106);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ae20() {
-   return (neuron0x24842a0()*0.228277);
+double NNfunction_sb_uRsR::synapse0x3443790() {
+   return (neuron0x343bb30()*0.156935);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ae60() {
-   return (neuron0x24845e0()*-0.534197);
+double NNfunction_sb_uRsR::synapse0x34437d0() {
+   return (neuron0x343be70()*-0.236216);
 }
 
-double NNfunction_sb_uRsR::synapse0x248aea0() {
-   return (neuron0x2484920()*-0.320495);
+double NNfunction_sb_uRsR::synapse0x3443810() {
+   return (neuron0x343c1b0()*-0.101652);
 }
 
-double NNfunction_sb_uRsR::synapse0x248aee0() {
-   return (neuron0x2484c60()*-0.368347);
+double NNfunction_sb_uRsR::synapse0x3443850() {
+   return (neuron0x343c4f0()*0.528248);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f020() {
-   return (neuron0x2484fa0()*1.00083);
+double NNfunction_sb_uRsR::synapse0x3447990() {
+   return (neuron0x343c830()*0.412714);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f060() {
-   return (neuron0x24852e0()*0.712651);
+double NNfunction_sb_uRsR::synapse0x34479d0() {
+   return (neuron0x343cb70()*-0.498351);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f0a0() {
-   return (neuron0x2485620()*-1.21016);
+double NNfunction_sb_uRsR::synapse0x3447a10() {
+   return (neuron0x343ceb0()*-0.15363);
 }
 
-double NNfunction_sb_uRsR::synapse0x248aa30() {
-   return (neuron0x2485960()*-1.32629);
+double NNfunction_sb_uRsR::synapse0x34433a0() {
+   return (neuron0x343d1f0()*0.275987);
 }
 
-double NNfunction_sb_uRsR::synapse0x248aa70() {
-   return (neuron0x2485ec0()*-0.142221);
+double NNfunction_sb_uRsR::synapse0x34433e0() {
+   return (neuron0x343d750()*-0.299741);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f1f0() {
-   return (neuron0x24860e0()*-1.21854);
+double NNfunction_sb_uRsR::synapse0x3447b60() {
+   return (neuron0x343da90()*0.12583);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f230() {
-   return (neuron0x2486420()*-0.371732);
+double NNfunction_sb_uRsR::synapse0x3447ba0() {
+   return (neuron0x343ddd0()*0.676222);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f270() {
-   return (neuron0x2486760()*-0.211794);
+double NNfunction_sb_uRsR::synapse0x3447be0() {
+   return (neuron0x343e110()*0.680032);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f2b0() {
-   return (neuron0x2486aa0()*1.19055);
+double NNfunction_sb_uRsR::synapse0x3447c20() {
+   return (neuron0x343e450()*-0.153969);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f2f0() {
-   return (neuron0x2486de0()*0.342846);
+double NNfunction_sb_uRsR::synapse0x3447c60() {
+   return (neuron0x343e790()*0.39171);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f330() {
-   return (neuron0x2487120()*0.0550312);
+double NNfunction_sb_uRsR::synapse0x3447ca0() {
+   return (neuron0x343ead0()*-0.570237);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f6b0() {
-   return (neuron0x2482560()*-0.555692);
+double NNfunction_sb_uRsR::synapse0x3448020() {
+   return (neuron0x3439e80()*0.12587);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f6f0() {
-   return (neuron0x24828a0()*0.665789);
+double NNfunction_sb_uRsR::synapse0x3448060() {
+   return (neuron0x343a130()*0.385794);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f730() {
-   return (neuron0x2482be0()*-0.711218);
+double NNfunction_sb_uRsR::synapse0x34480a0() {
+   return (neuron0x343a470()*-0.344836);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f770() {
-   return (neuron0x2482f20()*-1.28015);
+double NNfunction_sb_uRsR::synapse0x34480e0() {
+   return (neuron0x343a7b0()*0.820641);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f7b0() {
-   return (neuron0x2483260()*-0.967737);
+double NNfunction_sb_uRsR::synapse0x3448120() {
+   return (neuron0x343aaf0()*-0.416359);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f7f0() {
-   return (neuron0x24835a0()*-0.907664);
+double NNfunction_sb_uRsR::synapse0x3448160() {
+   return (neuron0x343ae30()*1.27157);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f830() {
-   return (neuron0x24838e0()*0.798628);
+double NNfunction_sb_uRsR::synapse0x34481a0() {
+   return (neuron0x343b170()*-0.376585);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f870() {
-   return (neuron0x2483c20()*-0.502164);
+double NNfunction_sb_uRsR::synapse0x34481e0() {
+   return (neuron0x343b4b0()*-0.272779);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f8b0() {
-   return (neuron0x2483f60()*-0.315706);
+double NNfunction_sb_uRsR::synapse0x3448220() {
+   return (neuron0x343b7f0()*-0.154635);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f8f0() {
-   return (neuron0x24842a0()*-0.639764);
+double NNfunction_sb_uRsR::synapse0x3448260() {
+   return (neuron0x343bb30()*0.125058);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f930() {
-   return (neuron0x24845e0()*0.412256);
+double NNfunction_sb_uRsR::synapse0x34482a0() {
+   return (neuron0x343be70()*0.14385);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f970() {
-   return (neuron0x2484920()*-0.78185);
+double NNfunction_sb_uRsR::synapse0x34482e0() {
+   return (neuron0x343c1b0()*0.757526);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f9b0() {
-   return (neuron0x2484c60()*-1.31761);
+double NNfunction_sb_uRsR::synapse0x3448320() {
+   return (neuron0x343c4f0()*-0.148877);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f9f0() {
-   return (neuron0x2484fa0()*-0.626494);
+double NNfunction_sb_uRsR::synapse0x3448360() {
+   return (neuron0x343c830()*-0.118684);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fa30() {
-   return (neuron0x24852e0()*-0.917854);
+double NNfunction_sb_uRsR::synapse0x34483a0() {
+   return (neuron0x343cb70()*0.315628);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fa70() {
-   return (neuron0x2485620()*0.163872);
+double NNfunction_sb_uRsR::synapse0x34483e0() {
+   return (neuron0x343ceb0()*-0.442567);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f500() {
-   return (neuron0x2485960()*-0.972407);
+double NNfunction_sb_uRsR::synapse0x3447e70() {
+   return (neuron0x343d1f0()*-0.703812);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f540() {
-   return (neuron0x2485ec0()*-0.82251);
+double NNfunction_sb_uRsR::synapse0x3447eb0() {
+   return (neuron0x343d750()*-0.335085);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fbc0() {
-   return (neuron0x24860e0()*-0.0500605);
+double NNfunction_sb_uRsR::synapse0x3448530() {
+   return (neuron0x343da90()*0.0835349);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fc00() {
-   return (neuron0x2486420()*-0.458974);
+double NNfunction_sb_uRsR::synapse0x3448570() {
+   return (neuron0x343ddd0()*0.66609);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fc40() {
-   return (neuron0x2486760()*-0.248841);
+double NNfunction_sb_uRsR::synapse0x34485b0() {
+   return (neuron0x343e110()*-0.444263);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fc80() {
-   return (neuron0x2486aa0()*-0.00180387);
+double NNfunction_sb_uRsR::synapse0x34485f0() {
+   return (neuron0x343e450()*0.143589);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fcc0() {
-   return (neuron0x2486de0()*0.054685);
+double NNfunction_sb_uRsR::synapse0x3448630() {
+   return (neuron0x343e790()*-0.315366);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fd00() {
-   return (neuron0x2487120()*0.625764);
+double NNfunction_sb_uRsR::synapse0x3448670() {
+   return (neuron0x343ead0()*-0.616782);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490080() {
-   return (neuron0x2482560()*-0.31669);
+double NNfunction_sb_uRsR::synapse0x34489f0() {
+   return (neuron0x3439e80()*0.334894);
 }
 
-double NNfunction_sb_uRsR::synapse0x24900c0() {
-   return (neuron0x24828a0()*-0.839863);
+double NNfunction_sb_uRsR::synapse0x3448a30() {
+   return (neuron0x343a130()*0.0739674);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490100() {
-   return (neuron0x2482be0()*0.444174);
+double NNfunction_sb_uRsR::synapse0x3448a70() {
+   return (neuron0x343a470()*0.135202);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490140() {
-   return (neuron0x2482f20()*-1.20505);
+double NNfunction_sb_uRsR::synapse0x3448ab0() {
+   return (neuron0x343a7b0()*0.349024);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490180() {
-   return (neuron0x2483260()*-0.468286);
+double NNfunction_sb_uRsR::synapse0x3448af0() {
+   return (neuron0x343aaf0()*-0.61161);
 }
 
-double NNfunction_sb_uRsR::synapse0x24901c0() {
-   return (neuron0x24835a0()*-0.367853);
+double NNfunction_sb_uRsR::synapse0x3448b30() {
+   return (neuron0x343ae30()*-0.272772);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490200() {
-   return (neuron0x24838e0()*0.0337196);
+double NNfunction_sb_uRsR::synapse0x3448b70() {
+   return (neuron0x343b170()*-0.414612);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490240() {
-   return (neuron0x2483c20()*0.0696484);
+double NNfunction_sb_uRsR::synapse0x3448bb0() {
+   return (neuron0x343b4b0()*-0.0642078);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490280() {
-   return (neuron0x2483f60()*0.211678);
+double NNfunction_sb_uRsR::synapse0x3448bf0() {
+   return (neuron0x343b7f0()*0.294678);
 }
 
-double NNfunction_sb_uRsR::synapse0x24902c0() {
-   return (neuron0x24842a0()*0.188703);
+double NNfunction_sb_uRsR::synapse0x3448c30() {
+   return (neuron0x343bb30()*-0.0745937);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490300() {
-   return (neuron0x24845e0()*0.196005);
+double NNfunction_sb_uRsR::synapse0x3448c70() {
+   return (neuron0x343be70()*-0.398762);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490340() {
-   return (neuron0x2484920()*-0.0666169);
+double NNfunction_sb_uRsR::synapse0x3448cb0() {
+   return (neuron0x343c1b0()*-0.383378);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490380() {
-   return (neuron0x2484c60()*-1.2248);
+double NNfunction_sb_uRsR::synapse0x3448cf0() {
+   return (neuron0x343c4f0()*0.65471);
 }
 
-double NNfunction_sb_uRsR::synapse0x24903c0() {
-   return (neuron0x2484fa0()*0.730591);
+double NNfunction_sb_uRsR::synapse0x3448d30() {
+   return (neuron0x343c830()*-0.125753);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490400() {
-   return (neuron0x24852e0()*-0.125203);
+double NNfunction_sb_uRsR::synapse0x3448d70() {
+   return (neuron0x343cb70()*-0.769716);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490440() {
-   return (neuron0x2485620()*-0.305391);
+double NNfunction_sb_uRsR::synapse0x3448db0() {
+   return (neuron0x343ceb0()*-0.066839);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fed0() {
-   return (neuron0x2485960()*0.656394);
+double NNfunction_sb_uRsR::synapse0x3448840() {
+   return (neuron0x343d1f0()*-0.144978);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ff10() {
-   return (neuron0x2485ec0()*0.605766);
+double NNfunction_sb_uRsR::synapse0x3448880() {
+   return (neuron0x343d750()*0.597287);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490590() {
-   return (neuron0x24860e0()*0.438698);
+double NNfunction_sb_uRsR::synapse0x3448f00() {
+   return (neuron0x343da90()*-0.225287);
 }
 
-double NNfunction_sb_uRsR::synapse0x24905d0() {
-   return (neuron0x2486420()*0.178141);
+double NNfunction_sb_uRsR::synapse0x3448f40() {
+   return (neuron0x343ddd0()*0.221401);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490610() {
-   return (neuron0x2486760()*1.73828);
+double NNfunction_sb_uRsR::synapse0x3448f80() {
+   return (neuron0x343e110()*-0.058828);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490650() {
-   return (neuron0x2486aa0()*0.451256);
+double NNfunction_sb_uRsR::synapse0x3448fc0() {
+   return (neuron0x343e450()*-0.312903);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490690() {
-   return (neuron0x2486de0()*0.558503);
+double NNfunction_sb_uRsR::synapse0x3449000() {
+   return (neuron0x343e790()*-0.132168);
 }
 
-double NNfunction_sb_uRsR::synapse0x24906d0() {
-   return (neuron0x2487120()*-1.23237);
+double NNfunction_sb_uRsR::synapse0x3449040() {
+   return (neuron0x343ead0()*-0.157026);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490a50() {
-   return (neuron0x2482560()*-0.104367);
+double NNfunction_sb_uRsR::synapse0x34493c0() {
+   return (neuron0x3439e80()*0.751239);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490a90() {
-   return (neuron0x24828a0()*-0.197263);
+double NNfunction_sb_uRsR::synapse0x3449400() {
+   return (neuron0x343a130()*-0.184023);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490ad0() {
-   return (neuron0x2482be0()*-0.685287);
+double NNfunction_sb_uRsR::synapse0x3449440() {
+   return (neuron0x343a470()*-0.112078);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490b10() {
-   return (neuron0x2482f20()*0.397588);
+double NNfunction_sb_uRsR::synapse0x3449480() {
+   return (neuron0x343a7b0()*0.0655481);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490b50() {
-   return (neuron0x2483260()*0.459871);
+double NNfunction_sb_uRsR::synapse0x34494c0() {
+   return (neuron0x343aaf0()*0.0208519);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490b90() {
-   return (neuron0x24835a0()*0.447271);
+double NNfunction_sb_uRsR::synapse0x3449500() {
+   return (neuron0x343ae30()*0.26131);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490bd0() {
-   return (neuron0x24838e0()*0.0245721);
+double NNfunction_sb_uRsR::synapse0x3449540() {
+   return (neuron0x343b170()*0.0701141);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490c10() {
-   return (neuron0x2483c20()*-0.114019);
+double NNfunction_sb_uRsR::synapse0x3449580() {
+   return (neuron0x343b4b0()*0.443596);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490c50() {
-   return (neuron0x2483f60()*0.186606);
+double NNfunction_sb_uRsR::synapse0x34495c0() {
+   return (neuron0x343b7f0()*-0.734692);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490c90() {
-   return (neuron0x24842a0()*0.196556);
+double NNfunction_sb_uRsR::synapse0x3449600() {
+   return (neuron0x343bb30()*-0.925043);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490cd0() {
-   return (neuron0x24845e0()*-0.633975);
+double NNfunction_sb_uRsR::synapse0x3449640() {
+   return (neuron0x343be70()*0.394918);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490d10() {
-   return (neuron0x2484920()*-0.202006);
+double NNfunction_sb_uRsR::synapse0x3449680() {
+   return (neuron0x343c1b0()*-0.0772883);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490d50() {
-   return (neuron0x2484c60()*0.195463);
+double NNfunction_sb_uRsR::synapse0x34496c0() {
+   return (neuron0x343c4f0()*-0.762499);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490d90() {
-   return (neuron0x2484fa0()*0.272972);
+double NNfunction_sb_uRsR::synapse0x3449700() {
+   return (neuron0x343c830()*-0.128983);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490dd0() {
-   return (neuron0x24852e0()*-0.0305514);
+double NNfunction_sb_uRsR::synapse0x3449740() {
+   return (neuron0x343cb70()*-0.0298493);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490e10() {
-   return (neuron0x2485620()*0.409945);
+double NNfunction_sb_uRsR::synapse0x3449780() {
+   return (neuron0x343ceb0()*0.227947);
 }
 
-double NNfunction_sb_uRsR::synapse0x24908a0() {
-   return (neuron0x2485960()*-0.0855481);
+double NNfunction_sb_uRsR::synapse0x3449210() {
+   return (neuron0x343d1f0()*-0.276385);
 }
 
-double NNfunction_sb_uRsR::synapse0x24908e0() {
-   return (neuron0x2485ec0()*0.32048);
+double NNfunction_sb_uRsR::synapse0x3449250() {
+   return (neuron0x343d750()*0.293698);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490f60() {
-   return (neuron0x24860e0()*-0.245051);
+double NNfunction_sb_uRsR::synapse0x34498d0() {
+   return (neuron0x343da90()*-0.75022);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490fa0() {
-   return (neuron0x2486420()*-0.578928);
+double NNfunction_sb_uRsR::synapse0x3449910() {
+   return (neuron0x343ddd0()*0.505079);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490fe0() {
-   return (neuron0x2486760()*-0.606896);
+double NNfunction_sb_uRsR::synapse0x3449950() {
+   return (neuron0x343e110()*0.335922);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491020() {
-   return (neuron0x2486aa0()*-0.346496);
+double NNfunction_sb_uRsR::synapse0x3449990() {
+   return (neuron0x343e450()*-0.109299);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491060() {
-   return (neuron0x2486de0()*-0.176023);
+double NNfunction_sb_uRsR::synapse0x34499d0() {
+   return (neuron0x343e790()*-0.0667548);
 }
 
-double NNfunction_sb_uRsR::synapse0x24910a0() {
-   return (neuron0x2487120()*0.39061);
+double NNfunction_sb_uRsR::synapse0x3449a10() {
+   return (neuron0x343ead0()*0.172693);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491420() {
-   return (neuron0x2482560()*0.00701899);
+double NNfunction_sb_uRsR::synapse0x3449d90() {
+   return (neuron0x3439e80()*-0.522999);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482780() {
-   return (neuron0x24828a0()*0.00965784);
+double NNfunction_sb_uRsR::synapse0x343a010() {
+   return (neuron0x343a130()*0.840964);
 }
 
-double NNfunction_sb_uRsR::synapse0x24827c0() {
-   return (neuron0x2482be0()*-0.0173586);
+double NNfunction_sb_uRsR::synapse0x343a050() {
+   return (neuron0x343a470()*0.533917);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482ac0() {
-   return (neuron0x2482f20()*-9.13639);
+double NNfunction_sb_uRsR::synapse0x343a350() {
+   return (neuron0x343a7b0()*-0.940713);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482b00() {
-   return (neuron0x2483260()*0.0184006);
+double NNfunction_sb_uRsR::synapse0x343a390() {
+   return (neuron0x343aaf0()*-0.551069);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482e00() {
-   return (neuron0x24835a0()*0.00215348);
+double NNfunction_sb_uRsR::synapse0x343a690() {
+   return (neuron0x343ae30()*-0.0151858);
 }
 
-double NNfunction_sb_uRsR::synapse0x2482e40() {
-   return (neuron0x24838e0()*0.0283009);
+double NNfunction_sb_uRsR::synapse0x343a6d0() {
+   return (neuron0x343b170()*0.24392);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483140() {
-   return (neuron0x2483c20()*-0.0219327);
+double NNfunction_sb_uRsR::synapse0x343a9d0() {
+   return (neuron0x343b4b0()*0.782252);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483180() {
-   return (neuron0x2483f60()*-0.00623864);
+double NNfunction_sb_uRsR::synapse0x343aa10() {
+   return (neuron0x343b7f0()*-0.117118);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483480() {
-   return (neuron0x24842a0()*0.00757053);
+double NNfunction_sb_uRsR::synapse0x343ad10() {
+   return (neuron0x343bb30()*-0.131589);
 }
 
-double NNfunction_sb_uRsR::synapse0x24834c0() {
-   return (neuron0x24845e0()*-0.000594678);
+double NNfunction_sb_uRsR::synapse0x343ad50() {
+   return (neuron0x343be70()*0.57954);
 }
 
-double NNfunction_sb_uRsR::synapse0x24837c0() {
-   return (neuron0x2484920()*0.0068276);
+double NNfunction_sb_uRsR::synapse0x343b050() {
+   return (neuron0x343c1b0()*-0.519053);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483800() {
-   return (neuron0x2484c60()*-0.0114987);
+double NNfunction_sb_uRsR::synapse0x343b090() {
+   return (neuron0x343c4f0()*-0.640469);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483b00() {
-   return (neuron0x2484fa0()*-0.0228145);
+double NNfunction_sb_uRsR::synapse0x343b390() {
+   return (neuron0x343c830()*0.43865);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483b40() {
-   return (neuron0x24852e0()*0.224936);
+double NNfunction_sb_uRsR::synapse0x343b3d0() {
+   return (neuron0x343cb70()*-0.874977);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483e40() {
-   return (neuron0x2485620()*0.00214208);
+double NNfunction_sb_uRsR::synapse0x343b6d0() {
+   return (neuron0x343ceb0()*-0.0671517);
 }
 
-double NNfunction_sb_uRsR::synapse0x2483e80() {
-   return (neuron0x2485960()*0.00987593);
+double NNfunction_sb_uRsR::synapse0x343b710() {
+   return (neuron0x343d1f0()*0.396945);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484180() {
-   return (neuron0x2485ec0()*-0.00322146);
+double NNfunction_sb_uRsR::synapse0x343ba10() {
+   return (neuron0x343d750()*-0.749545);
 }
 
-double NNfunction_sb_uRsR::synapse0x24841c0() {
-   return (neuron0x24860e0()*0.196382);
+double NNfunction_sb_uRsR::synapse0x343ba50() {
+   return (neuron0x343da90()*-0.149854);
 }
 
-double NNfunction_sb_uRsR::synapse0x24844c0() {
-   return (neuron0x2486420()*-0.00410651);
+double NNfunction_sb_uRsR::synapse0x343bd50() {
+   return (neuron0x343ddd0()*0.497809);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484500() {
-   return (neuron0x2486760()*0.0254776);
+double NNfunction_sb_uRsR::synapse0x343bd90() {
+   return (neuron0x343e110()*-0.0900508);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484800() {
-   return (neuron0x2486aa0()*0.0118595);
+double NNfunction_sb_uRsR::synapse0x343c090() {
+   return (neuron0x343e450()*-0.29188);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484840() {
-   return (neuron0x2486de0()*0.0168399);
+double NNfunction_sb_uRsR::synapse0x343c0d0() {
+   return (neuron0x343e790()*-0.654728);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484b40() {
-   return (neuron0x2487120()*0.00725237);
+double NNfunction_sb_uRsR::synapse0x343c3d0() {
+   return (neuron0x343ead0()*0.124305);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484b80() {
-   return (neuron0x2482560()*-0.0986498);
+double NNfunction_sb_uRsR::synapse0x343c410() {
+   return (neuron0x3439e80()*0.0243281);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485840() {
-   return (neuron0x24828a0()*-0.126837);
+double NNfunction_sb_uRsR::synapse0x343d0d0() {
+   return (neuron0x343a130()*0.0180629);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485880() {
-   return (neuron0x2482be0()*-0.195393);
+double NNfunction_sb_uRsR::synapse0x343d110() {
+   return (neuron0x343a470()*0.00910298);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491270() {
-   return (neuron0x2482f20()*0.294255);
+double NNfunction_sb_uRsR::synapse0x3449be0() {
+   return (neuron0x343a7b0()*6.22136);
 }
 
-double NNfunction_sb_uRsR::synapse0x24912b0() {
-   return (neuron0x2483260()*0.574691);
+double NNfunction_sb_uRsR::synapse0x3449c20() {
+   return (neuron0x343aaf0()*-0.0271488);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485b80() {
-   return (neuron0x24835a0()*0.569606);
+double NNfunction_sb_uRsR::synapse0x343d410() {
+   return (neuron0x343ae30()*-0.00567254);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485bc0() {
-   return (neuron0x24838e0()*0.46989);
+double NNfunction_sb_uRsR::synapse0x343d450() {
+   return (neuron0x343b170()*-0.00285077);
 }
 
-double NNfunction_sb_uRsR::synapse0x2233b50() {
-   return (neuron0x2483c20()*0.38903);
+double NNfunction_sb_uRsR::synapse0x343d970() {
+   return (neuron0x343b4b0()*0.0126589);
 }
 
-double NNfunction_sb_uRsR::synapse0x2233b90() {
-   return (neuron0x2483f60()*-0.110943);
+double NNfunction_sb_uRsR::synapse0x343d9b0() {
+   return (neuron0x343b7f0()*0.00335764);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486300() {
-   return (neuron0x24842a0()*0.555742);
+double NNfunction_sb_uRsR::synapse0x343dcb0() {
+   return (neuron0x343bb30()*0.0157259);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486340() {
-   return (neuron0x24845e0()*-0.0549345);
+double NNfunction_sb_uRsR::synapse0x343dcf0() {
+   return (neuron0x343be70()*-0.013807);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486640() {
-   return (neuron0x2484920()*0.217225);
+double NNfunction_sb_uRsR::synapse0x343dff0() {
+   return (neuron0x343c1b0()*-0.0196546);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486680() {
-   return (neuron0x2484c60()*0.442428);
+double NNfunction_sb_uRsR::synapse0x343e030() {
+   return (neuron0x343c4f0()*-0.0316062);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486980() {
-   return (neuron0x2484fa0()*0.438751);
+double NNfunction_sb_uRsR::synapse0x343e330() {
+   return (neuron0x343c830()*-0.0102531);
 }
 
-double NNfunction_sb_uRsR::synapse0x24869c0() {
-   return (neuron0x24852e0()*0.0235296);
+double NNfunction_sb_uRsR::synapse0x343e370() {
+   return (neuron0x343cb70()*0.17522);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486cc0() {
-   return (neuron0x2485620()*-0.618498);
+double NNfunction_sb_uRsR::synapse0x343e670() {
+   return (neuron0x343ceb0()*-0.0103176);
 }
 
-double NNfunction_sb_uRsR::synapse0x2486d00() {
-   return (neuron0x2485960()*0.0888145);
+double NNfunction_sb_uRsR::synapse0x343e6b0() {
+   return (neuron0x343d1f0()*-0.0216808);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487000() {
-   return (neuron0x2485ec0()*0.121575);
+double NNfunction_sb_uRsR::synapse0x343e9b0() {
+   return (neuron0x343d750()*-0.019634);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487040() {
-   return (neuron0x24860e0()*-0.45494);
+double NNfunction_sb_uRsR::synapse0x343e9f0() {
+   return (neuron0x343da90()*0.215596);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487340() {
-   return (neuron0x2486420()*-0.846226);
+double NNfunction_sb_uRsR::synapse0x343ecf0() {
+   return (neuron0x343ddd0()*0.0180682);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487380() {
-   return (neuron0x2486760()*0.410321);
+double NNfunction_sb_uRsR::synapse0x343ed30() {
+   return (neuron0x343e110()*0.00271577);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484e80() {
-   return (neuron0x2486aa0()*-0.406772);
+double NNfunction_sb_uRsR::synapse0x343c710() {
+   return (neuron0x343e450()*-0.00975248);
 }
 
-double NNfunction_sb_uRsR::synapse0x2484ec0() {
-   return (neuron0x2486de0()*-0.0402036);
+double NNfunction_sb_uRsR::synapse0x343c750() {
+   return (neuron0x343e790()*0.0037469);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493190() {
-   return (neuron0x2487120()*0.31767);
+double NNfunction_sb_uRsR::synapse0x344bb00() {
+   return (neuron0x343ead0()*0.0347654);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493510() {
-   return (neuron0x2482560()*0.126548);
+double NNfunction_sb_uRsR::synapse0x344be80() {
+   return (neuron0x3439e80()*0.944282);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493550() {
-   return (neuron0x24828a0()*0.594078);
+double NNfunction_sb_uRsR::synapse0x344bec0() {
+   return (neuron0x343a130()*-0.349621);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493590() {
-   return (neuron0x2482be0()*-0.449797);
+double NNfunction_sb_uRsR::synapse0x344bf00() {
+   return (neuron0x343a470()*-0.415986);
 }
 
-double NNfunction_sb_uRsR::synapse0x24935d0() {
-   return (neuron0x2482f20()*0.413767);
+double NNfunction_sb_uRsR::synapse0x344bf40() {
+   return (neuron0x343a7b0()*-0.213898);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493610() {
-   return (neuron0x2483260()*-0.115738);
+double NNfunction_sb_uRsR::synapse0x344bf80() {
+   return (neuron0x343aaf0()*0.320932);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493650() {
-   return (neuron0x24835a0()*0.10361);
+double NNfunction_sb_uRsR::synapse0x344bfc0() {
+   return (neuron0x343ae30()*0.167665);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493690() {
-   return (neuron0x24838e0()*-0.32282);
+double NNfunction_sb_uRsR::synapse0x344c000() {
+   return (neuron0x343b170()*0.341338);
 }
 
-double NNfunction_sb_uRsR::synapse0x24936d0() {
-   return (neuron0x2483c20()*0.0858399);
+double NNfunction_sb_uRsR::synapse0x344c040() {
+   return (neuron0x343b4b0()*-0.148228);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493710() {
-   return (neuron0x2483f60()*0.278784);
+double NNfunction_sb_uRsR::synapse0x344c080() {
+   return (neuron0x343b7f0()*0.326697);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493750() {
-   return (neuron0x24842a0()*-0.346879);
+double NNfunction_sb_uRsR::synapse0x344c0c0() {
+   return (neuron0x343bb30()*-0.316643);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493790() {
-   return (neuron0x24845e0()*0.448364);
+double NNfunction_sb_uRsR::synapse0x344c100() {
+   return (neuron0x343be70()*-0.225451);
 }
 
-double NNfunction_sb_uRsR::synapse0x24937d0() {
-   return (neuron0x2484920()*-0.103689);
+double NNfunction_sb_uRsR::synapse0x344c140() {
+   return (neuron0x343c1b0()*0.228134);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493810() {
-   return (neuron0x2484c60()*-0.791321);
+double NNfunction_sb_uRsR::synapse0x344c180() {
+   return (neuron0x343c4f0()*0.0610009);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493850() {
-   return (neuron0x2484fa0()*-0.217113);
+double NNfunction_sb_uRsR::synapse0x344c1c0() {
+   return (neuron0x343c830()*0.121806);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493890() {
-   return (neuron0x24852e0()*0.308488);
+double NNfunction_sb_uRsR::synapse0x344c200() {
+   return (neuron0x343cb70()*0.501232);
 }
 
-double NNfunction_sb_uRsR::synapse0x24938d0() {
-   return (neuron0x2485620()*-0.364481);
+double NNfunction_sb_uRsR::synapse0x344c240() {
+   return (neuron0x343ceb0()*-0.116155);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493360() {
-   return (neuron0x2485960()*-0.307021);
+double NNfunction_sb_uRsR::synapse0x344bcd0() {
+   return (neuron0x343d1f0()*0.611631);
 }
 
-double NNfunction_sb_uRsR::synapse0x24933a0() {
-   return (neuron0x2485ec0()*-0.0564672);
+double NNfunction_sb_uRsR::synapse0x344bd10() {
+   return (neuron0x343d750()*0.104261);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493a20() {
-   return (neuron0x24860e0()*-0.56011);
+double NNfunction_sb_uRsR::synapse0x344c390() {
+   return (neuron0x343da90()*-0.985543);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493a60() {
-   return (neuron0x2486420()*0.287586);
+double NNfunction_sb_uRsR::synapse0x344c3d0() {
+   return (neuron0x343ddd0()*0.345233);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493aa0() {
-   return (neuron0x2486760()*0.0761776);
+double NNfunction_sb_uRsR::synapse0x344c410() {
+   return (neuron0x343e110()*0.44815);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493ae0() {
-   return (neuron0x2486aa0()*0.0793427);
+double NNfunction_sb_uRsR::synapse0x344c450() {
+   return (neuron0x343e450()*-0.152614);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493b20() {
-   return (neuron0x2486de0()*-0.0865223);
+double NNfunction_sb_uRsR::synapse0x344c490() {
+   return (neuron0x343e790()*0.190098);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493b60() {
-   return (neuron0x2487120()*0.202615);
+double NNfunction_sb_uRsR::synapse0x344c4d0() {
+   return (neuron0x343ead0()*0.371281);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493ee0() {
-   return (neuron0x2482560()*0.0583785);
+double NNfunction_sb_uRsR::synapse0x344c850() {
+   return (neuron0x3439e80()*-0.574032);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493f20() {
-   return (neuron0x24828a0()*0.961978);
+double NNfunction_sb_uRsR::synapse0x344c890() {
+   return (neuron0x343a130()*0.131899);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493f60() {
-   return (neuron0x2482be0()*0.540156);
+double NNfunction_sb_uRsR::synapse0x344c8d0() {
+   return (neuron0x343a470()*1.00175);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493fa0() {
-   return (neuron0x2482f20()*-0.76744);
+double NNfunction_sb_uRsR::synapse0x344c910() {
+   return (neuron0x343a7b0()*-0.195639);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493fe0() {
-   return (neuron0x2483260()*1.16725);
+double NNfunction_sb_uRsR::synapse0x344c950() {
+   return (neuron0x343aaf0()*-0.0651814);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494020() {
-   return (neuron0x24835a0()*0.150115);
+double NNfunction_sb_uRsR::synapse0x344c990() {
+   return (neuron0x343ae30()*-0.337413);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494060() {
-   return (neuron0x24838e0()*0.0390341);
+double NNfunction_sb_uRsR::synapse0x344c9d0() {
+   return (neuron0x343b170()*-0.0299015);
 }
 
-double NNfunction_sb_uRsR::synapse0x24940a0() {
-   return (neuron0x2483c20()*0.309147);
+double NNfunction_sb_uRsR::synapse0x344ca10() {
+   return (neuron0x343b4b0()*-0.0120692);
 }
 
-double NNfunction_sb_uRsR::synapse0x24940e0() {
-   return (neuron0x2483f60()*0.573438);
+double NNfunction_sb_uRsR::synapse0x344ca50() {
+   return (neuron0x343b7f0()*-0.263399);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494120() {
-   return (neuron0x24842a0()*-1.18072);
+double NNfunction_sb_uRsR::synapse0x344ca90() {
+   return (neuron0x343bb30()*0.293902);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494160() {
-   return (neuron0x24845e0()*-0.47784);
+double NNfunction_sb_uRsR::synapse0x344cad0() {
+   return (neuron0x343be70()*0.0783325);
 }
 
-double NNfunction_sb_uRsR::synapse0x24941a0() {
-   return (neuron0x2484920()*-0.782944);
+double NNfunction_sb_uRsR::synapse0x344cb10() {
+   return (neuron0x343c1b0()*-0.289616);
 }
 
-double NNfunction_sb_uRsR::synapse0x24941e0() {
-   return (neuron0x2484c60()*-0.555342);
+double NNfunction_sb_uRsR::synapse0x344cb50() {
+   return (neuron0x343c4f0()*-0.0203858);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494220() {
-   return (neuron0x2484fa0()*0.849078);
+double NNfunction_sb_uRsR::synapse0x344cb90() {
+   return (neuron0x343c830()*0.345035);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494260() {
-   return (neuron0x24852e0()*-0.397166);
+double NNfunction_sb_uRsR::synapse0x344cbd0() {
+   return (neuron0x343cb70()*0.526208);
 }
 
-double NNfunction_sb_uRsR::synapse0x24942a0() {
-   return (neuron0x2485620()*0.0468548);
+double NNfunction_sb_uRsR::synapse0x344cc10() {
+   return (neuron0x343ceb0()*-0.0267083);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493d30() {
-   return (neuron0x2485960()*1.09217);
+double NNfunction_sb_uRsR::synapse0x344c6a0() {
+   return (neuron0x343d1f0()*-0.457513);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493d70() {
-   return (neuron0x2485ec0()*-0.774179);
+double NNfunction_sb_uRsR::synapse0x344c6e0() {
+   return (neuron0x343d750()*0.263166);
 }
 
-double NNfunction_sb_uRsR::synapse0x24943f0() {
-   return (neuron0x24860e0()*0.966922);
+double NNfunction_sb_uRsR::synapse0x344cd60() {
+   return (neuron0x343da90()*-0.258352);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494430() {
-   return (neuron0x2486420()*0.268339);
+double NNfunction_sb_uRsR::synapse0x344cda0() {
+   return (neuron0x343ddd0()*0.447363);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494470() {
-   return (neuron0x2486760()*-0.441956);
+double NNfunction_sb_uRsR::synapse0x344cde0() {
+   return (neuron0x343e110()*-0.215698);
 }
 
-double NNfunction_sb_uRsR::synapse0x24944b0() {
-   return (neuron0x2486aa0()*0.308458);
+double NNfunction_sb_uRsR::synapse0x344ce20() {
+   return (neuron0x343e450()*0.249361);
 }
 
-double NNfunction_sb_uRsR::synapse0x24944f0() {
-   return (neuron0x2486de0()*0.290704);
+double NNfunction_sb_uRsR::synapse0x344ce60() {
+   return (neuron0x343e790()*0.299343);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494530() {
-   return (neuron0x2487120()*-0.00217429);
+double NNfunction_sb_uRsR::synapse0x344cea0() {
+   return (neuron0x343ead0()*0.5536);
 }
 
-double NNfunction_sb_uRsR::synapse0x24948b0() {
-   return (neuron0x2482560()*0.0132438);
+double NNfunction_sb_uRsR::synapse0x344d220() {
+   return (neuron0x3439e80()*0.0849574);
 }
 
-double NNfunction_sb_uRsR::synapse0x24948f0() {
-   return (neuron0x24828a0()*0.0111225);
+double NNfunction_sb_uRsR::synapse0x344d260() {
+   return (neuron0x343a130()*-0.167387);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494930() {
-   return (neuron0x2482be0()*-0.02069);
+double NNfunction_sb_uRsR::synapse0x344d2a0() {
+   return (neuron0x343a470()*0.470872);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494970() {
-   return (neuron0x2482f20()*2.46868);
+double NNfunction_sb_uRsR::synapse0x344d2e0() {
+   return (neuron0x343a7b0()*0.58939);
 }
 
-double NNfunction_sb_uRsR::synapse0x24949b0() {
-   return (neuron0x2483260()*0.0247405);
+double NNfunction_sb_uRsR::synapse0x344d320() {
+   return (neuron0x343aaf0()*-0.0732164);
 }
 
-double NNfunction_sb_uRsR::synapse0x24949f0() {
-   return (neuron0x24835a0()*-0.00844128);
+double NNfunction_sb_uRsR::synapse0x344d360() {
+   return (neuron0x343ae30()*-0.0324625);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494a30() {
-   return (neuron0x24838e0()*-0.0244175);
+double NNfunction_sb_uRsR::synapse0x344d3a0() {
+   return (neuron0x343b170()*0.0368801);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494a70() {
-   return (neuron0x2483c20()*0.0119825);
+double NNfunction_sb_uRsR::synapse0x344d3e0() {
+   return (neuron0x343b4b0()*0.132954);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494ab0() {
-   return (neuron0x2483f60()*0.00723129);
+double NNfunction_sb_uRsR::synapse0x344d420() {
+   return (neuron0x343b7f0()*0.0491138);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494af0() {
-   return (neuron0x24842a0()*-0.00772757);
+double NNfunction_sb_uRsR::synapse0x344d460() {
+   return (neuron0x343bb30()*-0.020621);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494b30() {
-   return (neuron0x24845e0()*-0.0130703);
+double NNfunction_sb_uRsR::synapse0x344d4a0() {
+   return (neuron0x343be70()*-0.246283);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494b70() {
-   return (neuron0x2484920()*-0.0230804);
+double NNfunction_sb_uRsR::synapse0x344d4e0() {
+   return (neuron0x343c1b0()*-0.111125);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494bb0() {
-   return (neuron0x2484c60()*-0.0312848);
+double NNfunction_sb_uRsR::synapse0x344d520() {
+   return (neuron0x343c4f0()*0.212938);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494bf0() {
-   return (neuron0x2484fa0()*-0.0119124);
+double NNfunction_sb_uRsR::synapse0x344d560() {
+   return (neuron0x343c830()*-0.311693);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494c30() {
-   return (neuron0x24852e0()*0.685424);
+double NNfunction_sb_uRsR::synapse0x344d5a0() {
+   return (neuron0x343cb70()*0.469381);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494c70() {
-   return (neuron0x2485620()*-0.030486);
+double NNfunction_sb_uRsR::synapse0x344d5e0() {
+   return (neuron0x343ceb0()*-0.0625596);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494700() {
-   return (neuron0x2485960()*-0.0241247);
+double NNfunction_sb_uRsR::synapse0x344d070() {
+   return (neuron0x343d1f0()*-0.273922);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494740() {
-   return (neuron0x2485ec0()*-0.0096225);
+double NNfunction_sb_uRsR::synapse0x344d0b0() {
+   return (neuron0x343d750()*0.00707204);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494dc0() {
-   return (neuron0x24860e0()*0.645873);
+double NNfunction_sb_uRsR::synapse0x344d730() {
+   return (neuron0x343da90()*0.139285);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494e00() {
-   return (neuron0x2486420()*0.0244167);
+double NNfunction_sb_uRsR::synapse0x344d770() {
+   return (neuron0x343ddd0()*-0.0852554);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494e40() {
-   return (neuron0x2486760()*-0.0137679);
+double NNfunction_sb_uRsR::synapse0x344d7b0() {
+   return (neuron0x343e110()*0.139725);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494e80() {
-   return (neuron0x2486aa0()*-0.00669549);
+double NNfunction_sb_uRsR::synapse0x344d7f0() {
+   return (neuron0x343e450()*0.233089);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494ec0() {
-   return (neuron0x2486de0()*-0.0074321);
+double NNfunction_sb_uRsR::synapse0x344d830() {
+   return (neuron0x343e790()*0.0248134);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494f00() {
-   return (neuron0x2487120()*-0.0137289);
+double NNfunction_sb_uRsR::synapse0x344d870() {
+   return (neuron0x343ead0()*-0.0895217);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495280() {
-   return (neuron0x2482560()*-0.00194426);
+double NNfunction_sb_uRsR::synapse0x344dbf0() {
+   return (neuron0x3439e80()*-0.061571);
 }
 
-double NNfunction_sb_uRsR::synapse0x24952c0() {
-   return (neuron0x24828a0()*-0.0900421);
+double NNfunction_sb_uRsR::synapse0x344dc30() {
+   return (neuron0x343a130()*0.128332);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495300() {
-   return (neuron0x2482be0()*-0.203678);
+double NNfunction_sb_uRsR::synapse0x344dc70() {
+   return (neuron0x343a470()*-0.0112183);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495340() {
-   return (neuron0x2482f20()*0.57369);
+double NNfunction_sb_uRsR::synapse0x344dcb0() {
+   return (neuron0x343a7b0()*-0.160664);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495380() {
-   return (neuron0x2483260()*0.0754208);
+double NNfunction_sb_uRsR::synapse0x344dcf0() {
+   return (neuron0x343aaf0()*0.107876);
 }
 
-double NNfunction_sb_uRsR::synapse0x24953c0() {
-   return (neuron0x24835a0()*0.0761334);
+double NNfunction_sb_uRsR::synapse0x344dd30() {
+   return (neuron0x343ae30()*0.060761);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495400() {
-   return (neuron0x24838e0()*0.0731517);
+double NNfunction_sb_uRsR::synapse0x344dd70() {
+   return (neuron0x343b170()*-0.130689);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495440() {
-   return (neuron0x2483c20()*-0.166216);
+double NNfunction_sb_uRsR::synapse0x344ddb0() {
+   return (neuron0x343b4b0()*-0.0664898);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495480() {
-   return (neuron0x2483f60()*-0.0653872);
+double NNfunction_sb_uRsR::synapse0x344ddf0() {
+   return (neuron0x343b7f0()*0.19493);
 }
 
-double NNfunction_sb_uRsR::synapse0x24954c0() {
-   return (neuron0x24842a0()*-0.051503);
+double NNfunction_sb_uRsR::synapse0x344de30() {
+   return (neuron0x343bb30()*-0.0781412);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495500() {
-   return (neuron0x24845e0()*0.0485029);
+double NNfunction_sb_uRsR::synapse0x344de70() {
+   return (neuron0x343be70()*-0.0419383);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495540() {
-   return (neuron0x2484920()*0.0297474);
+double NNfunction_sb_uRsR::synapse0x344deb0() {
+   return (neuron0x343c1b0()*0.382239);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495580() {
-   return (neuron0x2484c60()*0.046164);
+double NNfunction_sb_uRsR::synapse0x344def0() {
+   return (neuron0x343c4f0()*0.284577);
 }
 
-double NNfunction_sb_uRsR::synapse0x24955c0() {
-   return (neuron0x2484fa0()*-0.0237054);
+double NNfunction_sb_uRsR::synapse0x344df30() {
+   return (neuron0x343c830()*0.111745);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495600() {
-   return (neuron0x24852e0()*3.09178);
+double NNfunction_sb_uRsR::synapse0x344df70() {
+   return (neuron0x343cb70()*-0.18506);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495640() {
-   return (neuron0x2485620()*0.102214);
+double NNfunction_sb_uRsR::synapse0x344dfb0() {
+   return (neuron0x343ceb0()*0.00168818);
 }
 
-double NNfunction_sb_uRsR::synapse0x24950d0() {
-   return (neuron0x2485960()*-0.0128135);
+double NNfunction_sb_uRsR::synapse0x344da40() {
+   return (neuron0x343d1f0()*-0.0271969);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495110() {
-   return (neuron0x2485ec0()*0.00286916);
+double NNfunction_sb_uRsR::synapse0x344da80() {
+   return (neuron0x343d750()*0.111252);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495790() {
-   return (neuron0x24860e0()*-0.593028);
+double NNfunction_sb_uRsR::synapse0x344e100() {
+   return (neuron0x343da90()*0.488334);
 }
 
-double NNfunction_sb_uRsR::synapse0x24957d0() {
-   return (neuron0x2486420()*-0.0808479);
+double NNfunction_sb_uRsR::synapse0x344e140() {
+   return (neuron0x343ddd0()*-0.107249);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495810() {
-   return (neuron0x2486760()*0.173714);
+double NNfunction_sb_uRsR::synapse0x344e180() {
+   return (neuron0x343e110()*0.0947836);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495850() {
-   return (neuron0x2486aa0()*-0.00809994);
+double NNfunction_sb_uRsR::synapse0x344e1c0() {
+   return (neuron0x343e450()*0.0235948);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495890() {
-   return (neuron0x2486de0()*-0.0356062);
+double NNfunction_sb_uRsR::synapse0x344e200() {
+   return (neuron0x343e790()*0.00829591);
 }
 
-double NNfunction_sb_uRsR::synapse0x24958d0() {
-   return (neuron0x2487120()*-0.135556);
+double NNfunction_sb_uRsR::synapse0x344e240() {
+   return (neuron0x343ead0()*-0.081978);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495c50() {
-   return (neuron0x2482560()*-0.0257615);
+double NNfunction_sb_uRsR::synapse0x344e5c0() {
+   return (neuron0x3439e80()*0.00487496);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495c90() {
-   return (neuron0x24828a0()*0.00952496);
+double NNfunction_sb_uRsR::synapse0x344e600() {
+   return (neuron0x343a130()*0.0019014);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495cd0() {
-   return (neuron0x2482be0()*0.0219684);
+double NNfunction_sb_uRsR::synapse0x344e640() {
+   return (neuron0x343a470()*0.0117453);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495d10() {
-   return (neuron0x2482f20()*-0.68427);
+double NNfunction_sb_uRsR::synapse0x344e680() {
+   return (neuron0x343a7b0()*1.39657);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495d50() {
-   return (neuron0x2483260()*-0.0354933);
+double NNfunction_sb_uRsR::synapse0x344e6c0() {
+   return (neuron0x343aaf0()*-0.00941331);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495d90() {
-   return (neuron0x24835a0()*0.0149773);
+double NNfunction_sb_uRsR::synapse0x344e700() {
+   return (neuron0x343ae30()*-0.0122537);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495dd0() {
-   return (neuron0x24838e0()*0.0607004);
+double NNfunction_sb_uRsR::synapse0x344e740() {
+   return (neuron0x343b170()*-0.00801517);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495e10() {
-   return (neuron0x2483c20()*0.0294524);
+double NNfunction_sb_uRsR::synapse0x344e780() {
+   return (neuron0x343b4b0()*-0.0115943);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495e50() {
-   return (neuron0x2483f60()*0.00180131);
+double NNfunction_sb_uRsR::synapse0x344e7c0() {
+   return (neuron0x343b7f0()*0.000815137);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e010() {
-   return (neuron0x24842a0()*0.00652246);
+double NNfunction_sb_uRsR::synapse0x3446980() {
+   return (neuron0x343bb30()*0.00115184);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e050() {
-   return (neuron0x24845e0()*-0.00180411);
+double NNfunction_sb_uRsR::synapse0x34469c0() {
+   return (neuron0x343be70()*-0.00271343);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e090() {
-   return (neuron0x2484920()*-0.0130288);
+double NNfunction_sb_uRsR::synapse0x3446a00() {
+   return (neuron0x343c1b0()*-0.000453427);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e0d0() {
-   return (neuron0x2484c60()*-0.0249975);
+double NNfunction_sb_uRsR::synapse0x3446a40() {
+   return (neuron0x343c4f0()*-0.00963941);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e110() {
-   return (neuron0x2484fa0()*0.0153334);
+double NNfunction_sb_uRsR::synapse0x3446a80() {
+   return (neuron0x343c830()*0.0013099);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e150() {
-   return (neuron0x24852e0()*0.145278);
+double NNfunction_sb_uRsR::synapse0x3446ac0() {
+   return (neuron0x343cb70()*-0.0208157);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e190() {
-   return (neuron0x2485620()*0.00483836);
+double NNfunction_sb_uRsR::synapse0x3446b00() {
+   return (neuron0x343ceb0()*-0.0158994);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495aa0() {
-   return (neuron0x2485960()*0.0152264);
+double NNfunction_sb_uRsR::synapse0x344e410() {
+   return (neuron0x343d1f0()*-0.00847248);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495ae0() {
-   return (neuron0x2485ec0()*-0.0359309);
+double NNfunction_sb_uRsR::synapse0x344e450() {
+   return (neuron0x343d750()*-0.00655026);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e2e0() {
-   return (neuron0x24860e0()*0.124174);
+double NNfunction_sb_uRsR::synapse0x3446c50() {
+   return (neuron0x343da90()*0.0126089);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e320() {
-   return (neuron0x2486420()*-0.0211788);
+double NNfunction_sb_uRsR::synapse0x3446c90() {
+   return (neuron0x343ddd0()*0.00128322);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e360() {
-   return (neuron0x2486760()*0.00370985);
+double NNfunction_sb_uRsR::synapse0x3446cd0() {
+   return (neuron0x343e110()*-0.00456263);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e3a0() {
-   return (neuron0x2486aa0()*0.0190483);
+double NNfunction_sb_uRsR::synapse0x3446d10() {
+   return (neuron0x343e450()*0.00641018);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e3e0() {
-   return (neuron0x2486de0()*0.0188768);
+double NNfunction_sb_uRsR::synapse0x3446d50() {
+   return (neuron0x343e790()*0.0199445);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e420() {
-   return (neuron0x2487120()*-0.0121598);
+double NNfunction_sb_uRsR::synapse0x3446d90() {
+   return (neuron0x343ead0()*-0.000457151);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e7a0() {
-   return (neuron0x2482560()*0.0948094);
+double NNfunction_sb_uRsR::synapse0x3447110() {
+   return (neuron0x3439e80()*0.365731);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e7e0() {
-   return (neuron0x24828a0()*0.156824);
+double NNfunction_sb_uRsR::synapse0x3447150() {
+   return (neuron0x343a130()*-0.0548731);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e820() {
-   return (neuron0x2482be0()*0.062325);
+double NNfunction_sb_uRsR::synapse0x3447190() {
+   return (neuron0x343a470()*0.126909);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e860() {
-   return (neuron0x2482f20()*-4.81479);
+double NNfunction_sb_uRsR::synapse0x34471d0() {
+   return (neuron0x343a7b0()*-0.00100456);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e8a0() {
-   return (neuron0x2483260()*0.0270897);
+double NNfunction_sb_uRsR::synapse0x3447210() {
+   return (neuron0x343aaf0()*-0.300473);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e8e0() {
-   return (neuron0x24835a0()*-0.0053379);
+double NNfunction_sb_uRsR::synapse0x3447250() {
+   return (neuron0x343ae30()*0.359655);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e920() {
-   return (neuron0x24838e0()*-0.0346782);
+double NNfunction_sb_uRsR::synapse0x3447290() {
+   return (neuron0x343b170()*0.399914);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e960() {
-   return (neuron0x2483c20()*0.20003);
+double NNfunction_sb_uRsR::synapse0x34472d0() {
+   return (neuron0x343b4b0()*0.168628);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e9a0() {
-   return (neuron0x2483f60()*-0.0264805);
+double NNfunction_sb_uRsR::synapse0x3447310() {
+   return (neuron0x343b7f0()*0.753519);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e9e0() {
-   return (neuron0x24842a0()*-0.191881);
+double NNfunction_sb_uRsR::synapse0x3447350() {
+   return (neuron0x343bb30()*0.57969);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ea20() {
-   return (neuron0x24845e0()*-0.0227377);
+double NNfunction_sb_uRsR::synapse0x3447390() {
+   return (neuron0x343be70()*-0.147136);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ea60() {
-   return (neuron0x2484920()*0.052843);
+double NNfunction_sb_uRsR::synapse0x34473d0() {
+   return (neuron0x343c1b0()*-0.31394);
 }
 
-double NNfunction_sb_uRsR::synapse0x248eaa0() {
-   return (neuron0x2484c60()*-0.11599);
+double NNfunction_sb_uRsR::synapse0x3447410() {
+   return (neuron0x343c4f0()*0.368062);
 }
 
-double NNfunction_sb_uRsR::synapse0x248eae0() {
-   return (neuron0x2484fa0()*-0.0428057);
+double NNfunction_sb_uRsR::synapse0x3447450() {
+   return (neuron0x343c830()*-0.661043);
 }
 
-double NNfunction_sb_uRsR::synapse0x248eb20() {
-   return (neuron0x24852e0()*1.33954);
+double NNfunction_sb_uRsR::synapse0x3447490() {
+   return (neuron0x343cb70()*-0.177011);
 }
 
-double NNfunction_sb_uRsR::synapse0x248eb60() {
-   return (neuron0x2485620()*-0.136373);
+double NNfunction_sb_uRsR::synapse0x34474d0() {
+   return (neuron0x343ceb0()*0.298048);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e5f0() {
-   return (neuron0x2485960()*-0.154857);
+double NNfunction_sb_uRsR::synapse0x3446f60() {
+   return (neuron0x343d1f0()*-0.00119748);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e630() {
-   return (neuron0x2485ec0()*-0.100636);
+double NNfunction_sb_uRsR::synapse0x3446fa0() {
+   return (neuron0x343d750()*-0.35581);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ecb0() {
-   return (neuron0x24860e0()*1.34064);
+double NNfunction_sb_uRsR::synapse0x3447620() {
+   return (neuron0x343da90()*0.0441686);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ecf0() {
-   return (neuron0x2486420()*-0.0509797);
+double NNfunction_sb_uRsR::synapse0x3447660() {
+   return (neuron0x343ddd0()*-0.354162);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ed30() {
-   return (neuron0x2486760()*-0.0180523);
+double NNfunction_sb_uRsR::synapse0x34476a0() {
+   return (neuron0x343e110()*0.143994);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ed70() {
-   return (neuron0x2486aa0()*0.0592016);
+double NNfunction_sb_uRsR::synapse0x34476e0() {
+   return (neuron0x343e450()*0.167925);
 }
 
-double NNfunction_sb_uRsR::synapse0x248edb0() {
-   return (neuron0x2486de0()*-0.0197799);
+double NNfunction_sb_uRsR::synapse0x3447720() {
+   return (neuron0x343e790()*-0.373339);
 }
 
-double NNfunction_sb_uRsR::synapse0x248edf0() {
-   return (neuron0x2487120()*-0.138887);
+double NNfunction_sb_uRsR::synapse0x3447760() {
+   return (neuron0x343ead0()*-0.404731);
 }
 
-double NNfunction_sb_uRsR::synapse0x248efc0() {
-   return (neuron0x2482560()*-0.00520866);
+double NNfunction_sb_uRsR::synapse0x3447930() {
+   return (neuron0x3439e80()*0.0196027);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498050() {
-   return (neuron0x24828a0()*-0.015959);
+double NNfunction_sb_uRsR::synapse0x34509c0() {
+   return (neuron0x343a130()*0.0131201);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498090() {
-   return (neuron0x2482be0()*-0.00311065);
+double NNfunction_sb_uRsR::synapse0x3450a00() {
+   return (neuron0x343a470()*0.0178503);
 }
 
-double NNfunction_sb_uRsR::synapse0x24980d0() {
-   return (neuron0x2482f20()*-3.511);
+double NNfunction_sb_uRsR::synapse0x3450a40() {
+   return (neuron0x343a7b0()*-0.0308274);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498110() {
-   return (neuron0x2483260()*-0.00895858);
+double NNfunction_sb_uRsR::synapse0x3450a80() {
+   return (neuron0x343aaf0()*-0.00426156);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498150() {
-   return (neuron0x24835a0()*0.00906964);
+double NNfunction_sb_uRsR::synapse0x3450ac0() {
+   return (neuron0x343ae30()*-0.00426679);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498190() {
-   return (neuron0x24838e0()*-0.00753177);
+double NNfunction_sb_uRsR::synapse0x3450b00() {
+   return (neuron0x343b170()*0.00352212);
 }
 
-double NNfunction_sb_uRsR::synapse0x24981d0() {
-   return (neuron0x2483c20()*0.00324735);
+double NNfunction_sb_uRsR::synapse0x3450b40() {
+   return (neuron0x343b4b0()*0.00473577);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498210() {
-   return (neuron0x2483f60()*0.00782884);
+double NNfunction_sb_uRsR::synapse0x3450b80() {
+   return (neuron0x343b7f0()*-0.00188038);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498250() {
-   return (neuron0x24842a0()*0.00394486);
+double NNfunction_sb_uRsR::synapse0x3450bc0() {
+   return (neuron0x343bb30()*0.0122531);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498290() {
-   return (neuron0x24845e0()*0.0147464);
+double NNfunction_sb_uRsR::synapse0x3450c00() {
+   return (neuron0x343be70()*-0.00462048);
 }
 
-double NNfunction_sb_uRsR::synapse0x24982d0() {
-   return (neuron0x2484920()*0.00977733);
+double NNfunction_sb_uRsR::synapse0x3450c40() {
+   return (neuron0x343c1b0()*-0.0411195);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498310() {
-   return (neuron0x2484c60()*0.00957697);
+double NNfunction_sb_uRsR::synapse0x3450c80() {
+   return (neuron0x343c4f0()*-0.0341294);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498350() {
-   return (neuron0x2484fa0()*-0.00542345);
+double NNfunction_sb_uRsR::synapse0x3450cc0() {
+   return (neuron0x343c830()*0.00759364);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498390() {
-   return (neuron0x24852e0()*-0.122946);
+double NNfunction_sb_uRsR::synapse0x3450d00() {
+   return (neuron0x343cb70()*-0.0979096);
 }
 
-double NNfunction_sb_uRsR::synapse0x24983d0() {
-   return (neuron0x2485620()*0.00307604);
+double NNfunction_sb_uRsR::synapse0x3450d40() {
+   return (neuron0x343ceb0()*-0.0210819);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497ea0() {
-   return (neuron0x2485960()*-0.0169305);
+double NNfunction_sb_uRsR::synapse0x3450810() {
+   return (neuron0x343d1f0()*-0.00861396);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497ee0() {
-   return (neuron0x2485ec0()*0.00414589);
+double NNfunction_sb_uRsR::synapse0x3450850() {
+   return (neuron0x343d750()*0.000270514);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498520() {
-   return (neuron0x24860e0()*-0.129326);
+double NNfunction_sb_uRsR::synapse0x3450e90() {
+   return (neuron0x343da90()*0.91488);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498560() {
-   return (neuron0x2486420()*0.0132342);
+double NNfunction_sb_uRsR::synapse0x3450ed0() {
+   return (neuron0x343ddd0()*-0.00639693);
 }
 
-double NNfunction_sb_uRsR::synapse0x24985a0() {
-   return (neuron0x2486760()*-0.00350713);
+double NNfunction_sb_uRsR::synapse0x3450f10() {
+   return (neuron0x343e110()*0.00152148);
 }
 
-double NNfunction_sb_uRsR::synapse0x24985e0() {
-   return (neuron0x2486aa0()*-0.00410544);
+double NNfunction_sb_uRsR::synapse0x3450f50() {
+   return (neuron0x343e450()*0.00682766);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498620() {
-   return (neuron0x2486de0()*-0.00918213);
+double NNfunction_sb_uRsR::synapse0x3450f90() {
+   return (neuron0x343e790()*-0.00269107);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498660() {
-   return (neuron0x2487120()*0.00369791);
+double NNfunction_sb_uRsR::synapse0x3450fd0() {
+   return (neuron0x343ead0()*-0.00268609);
 }
 
-double NNfunction_sb_uRsR::synapse0x24989e0() {
-   return (neuron0x2482560()*0.583587);
+double NNfunction_sb_uRsR::synapse0x3451350() {
+   return (neuron0x3439e80()*-0.519128);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498a20() {
-   return (neuron0x24828a0()*-0.939244);
+double NNfunction_sb_uRsR::synapse0x3451390() {
+   return (neuron0x343a130()*-0.036822);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498a60() {
-   return (neuron0x2482be0()*0.476547);
+double NNfunction_sb_uRsR::synapse0x34513d0() {
+   return (neuron0x343a470()*-0.867096);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498aa0() {
-   return (neuron0x2482f20()*0.0486035);
+double NNfunction_sb_uRsR::synapse0x3451410() {
+   return (neuron0x343a7b0()*-0.30387);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498ae0() {
-   return (neuron0x2483260()*0.315159);
+double NNfunction_sb_uRsR::synapse0x3451450() {
+   return (neuron0x343aaf0()*-0.0195742);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498b20() {
-   return (neuron0x24835a0()*0.0632135);
+double NNfunction_sb_uRsR::synapse0x3451490() {
+   return (neuron0x343ae30()*-0.0996087);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498b60() {
-   return (neuron0x24838e0()*0.584424);
+double NNfunction_sb_uRsR::synapse0x34514d0() {
+   return (neuron0x343b170()*-0.118543);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498ba0() {
-   return (neuron0x2483c20()*-0.221952);
+double NNfunction_sb_uRsR::synapse0x3451510() {
+   return (neuron0x343b4b0()*0.0768509);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498be0() {
-   return (neuron0x2483f60()*-0.679334);
+double NNfunction_sb_uRsR::synapse0x3451550() {
+   return (neuron0x343b7f0()*-0.0439591);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498c20() {
-   return (neuron0x24842a0()*0.0877745);
+double NNfunction_sb_uRsR::synapse0x3451590() {
+   return (neuron0x343bb30()*0.017296);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498c60() {
-   return (neuron0x24845e0()*0.657699);
+double NNfunction_sb_uRsR::synapse0x34515d0() {
+   return (neuron0x343be70()*0.57638);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498ca0() {
-   return (neuron0x2484920()*0.149316);
+double NNfunction_sb_uRsR::synapse0x3451610() {
+   return (neuron0x343c1b0()*0.332247);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498ce0() {
-   return (neuron0x2484c60()*0.630326);
+double NNfunction_sb_uRsR::synapse0x3451650() {
+   return (neuron0x343c4f0()*0.288643);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498d20() {
-   return (neuron0x2484fa0()*1.60991);
+double NNfunction_sb_uRsR::synapse0x3451690() {
+   return (neuron0x343c830()*-0.558248);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498d60() {
-   return (neuron0x24852e0()*1.09615);
+double NNfunction_sb_uRsR::synapse0x34516d0() {
+   return (neuron0x343cb70()*-0.215509);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498da0() {
-   return (neuron0x2485620()*0.141897);
+double NNfunction_sb_uRsR::synapse0x3451710() {
+   return (neuron0x343ceb0()*-0.0547349);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498830() {
-   return (neuron0x2485960()*1.15368);
+double NNfunction_sb_uRsR::synapse0x34511a0() {
+   return (neuron0x343d1f0()*0.146644);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498870() {
-   return (neuron0x2485ec0()*-0.0746688);
+double NNfunction_sb_uRsR::synapse0x34511e0() {
+   return (neuron0x343d750()*-0.41308);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498ef0() {
-   return (neuron0x24860e0()*-0.131342);
+double NNfunction_sb_uRsR::synapse0x3451860() {
+   return (neuron0x343da90()*-0.417321);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498f30() {
-   return (neuron0x2486420()*-0.161348);
+double NNfunction_sb_uRsR::synapse0x34518a0() {
+   return (neuron0x343ddd0()*0.326611);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498f70() {
-   return (neuron0x2486760()*0.289208);
+double NNfunction_sb_uRsR::synapse0x34518e0() {
+   return (neuron0x343e110()*-0.401969);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498fb0() {
-   return (neuron0x2486aa0()*-0.0130233);
+double NNfunction_sb_uRsR::synapse0x3451920() {
+   return (neuron0x343e450()*-0.266253);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498ff0() {
-   return (neuron0x2486de0()*-0.301658);
+double NNfunction_sb_uRsR::synapse0x3451960() {
+   return (neuron0x343e790()*-0.0558049);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499030() {
-   return (neuron0x2487120()*0.198576);
+double NNfunction_sb_uRsR::synapse0x34519a0() {
+   return (neuron0x343ead0()*0.702197);
 }
 
-double NNfunction_sb_uRsR::synapse0x24993b0() {
-   return (neuron0x2482560()*0.0295512);
+double NNfunction_sb_uRsR::synapse0x3451d20() {
+   return (neuron0x3439e80()*-0.241619);
 }
 
-double NNfunction_sb_uRsR::synapse0x24993f0() {
-   return (neuron0x24828a0()*0.00850829);
+double NNfunction_sb_uRsR::synapse0x3451d60() {
+   return (neuron0x343a130()*-0.0623204);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499430() {
-   return (neuron0x2482be0()*-0.0276908);
+double NNfunction_sb_uRsR::synapse0x3451da0() {
+   return (neuron0x343a470()*0.127353);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499470() {
-   return (neuron0x2482f20()*0.742481);
+double NNfunction_sb_uRsR::synapse0x3451de0() {
+   return (neuron0x343a7b0()*-1.88114);
 }
 
-double NNfunction_sb_uRsR::synapse0x24994b0() {
-   return (neuron0x2483260()*0.0239801);
+double NNfunction_sb_uRsR::synapse0x3451e20() {
+   return (neuron0x343aaf0()*0.268711);
 }
 
-double NNfunction_sb_uRsR::synapse0x24994f0() {
-   return (neuron0x24835a0()*-0.0140193);
+double NNfunction_sb_uRsR::synapse0x3451e60() {
+   return (neuron0x343ae30()*0.0293137);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499530() {
-   return (neuron0x24838e0()*-0.0726402);
+double NNfunction_sb_uRsR::synapse0x3451ea0() {
+   return (neuron0x343b170()*0.149893);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499570() {
-   return (neuron0x2483c20()*-0.026202);
+double NNfunction_sb_uRsR::synapse0x3451ee0() {
+   return (neuron0x343b4b0()*0.11852);
 }
 
-double NNfunction_sb_uRsR::synapse0x24995b0() {
-   return (neuron0x2483f60()*-0.00271923);
+double NNfunction_sb_uRsR::synapse0x3451f20() {
+   return (neuron0x343b7f0()*0.30578);
 }
 
-double NNfunction_sb_uRsR::synapse0x24995f0() {
-   return (neuron0x24842a0()*0.00122039);
+double NNfunction_sb_uRsR::synapse0x3451f60() {
+   return (neuron0x343bb30()*-0.186874);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499630() {
-   return (neuron0x24845e0()*0.000211921);
+double NNfunction_sb_uRsR::synapse0x3451fa0() {
+   return (neuron0x343be70()*-0.140439);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499670() {
-   return (neuron0x2484920()*-0.0591725);
+double NNfunction_sb_uRsR::synapse0x3451fe0() {
+   return (neuron0x343c1b0()*0.245775);
 }
 
-double NNfunction_sb_uRsR::synapse0x24996b0() {
-   return (neuron0x2484c60()*-0.0498914);
+double NNfunction_sb_uRsR::synapse0x3452020() {
+   return (neuron0x343c4f0()*-0.182217);
 }
 
-double NNfunction_sb_uRsR::synapse0x24996f0() {
-   return (neuron0x2484fa0()*-0.0121648);
+double NNfunction_sb_uRsR::synapse0x3452060() {
+   return (neuron0x343c830()*0.34667);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499730() {
-   return (neuron0x24852e0()*0.398431);
+double NNfunction_sb_uRsR::synapse0x34520a0() {
+   return (neuron0x343cb70()*-0.549292);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499770() {
-   return (neuron0x2485620()*-0.0558007);
+double NNfunction_sb_uRsR::synapse0x34520e0() {
+   return (neuron0x343ceb0()*-0.0778082);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499200() {
-   return (neuron0x2485960()*-0.0059953);
+double NNfunction_sb_uRsR::synapse0x3451b70() {
+   return (neuron0x343d1f0()*-0.0144556);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499240() {
-   return (neuron0x2485ec0()*-0.00046317);
+double NNfunction_sb_uRsR::synapse0x3451bb0() {
+   return (neuron0x343d750()*-0.535076);
 }
 
-double NNfunction_sb_uRsR::synapse0x24998c0() {
-   return (neuron0x24860e0()*0.504681);
+double NNfunction_sb_uRsR::synapse0x3452230() {
+   return (neuron0x343da90()*-0.289037);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499900() {
-   return (neuron0x2486420()*0.0292016);
+double NNfunction_sb_uRsR::synapse0x3452270() {
+   return (neuron0x343ddd0()*-0.540382);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499940() {
-   return (neuron0x2486760()*-0.0182141);
+double NNfunction_sb_uRsR::synapse0x34522b0() {
+   return (neuron0x343e110()*-0.0131412);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499980() {
-   return (neuron0x2486aa0()*-0.0246612);
+double NNfunction_sb_uRsR::synapse0x34522f0() {
+   return (neuron0x343e450()*-0.0616384);
 }
 
-double NNfunction_sb_uRsR::synapse0x24999c0() {
-   return (neuron0x2486de0()*-0.0153562);
+double NNfunction_sb_uRsR::synapse0x3452330() {
+   return (neuron0x343e790()*-0.0984556);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499a00() {
-   return (neuron0x2487120()*0.00901383);
+double NNfunction_sb_uRsR::synapse0x3452370() {
+   return (neuron0x343ead0()*-0.218265);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499d80() {
-   return (neuron0x2482560()*0.0675586);
+double NNfunction_sb_uRsR::synapse0x34526f0() {
+   return (neuron0x3439e80()*0.00414096);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499dc0() {
-   return (neuron0x24828a0()*-1.40276);
+double NNfunction_sb_uRsR::synapse0x3452730() {
+   return (neuron0x343a130()*0.702979);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499e00() {
-   return (neuron0x2482be0()*0.772929);
+double NNfunction_sb_uRsR::synapse0x3452770() {
+   return (neuron0x343a470()*0.563503);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499e40() {
-   return (neuron0x2482f20()*1.898);
+double NNfunction_sb_uRsR::synapse0x34527b0() {
+   return (neuron0x343a7b0()*-0.245411);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499e80() {
-   return (neuron0x2483260()*0.501358);
+double NNfunction_sb_uRsR::synapse0x34527f0() {
+   return (neuron0x343aaf0()*0.188259);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499ec0() {
-   return (neuron0x24835a0()*-0.206411);
+double NNfunction_sb_uRsR::synapse0x3452830() {
+   return (neuron0x343ae30()*-0.57769);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499f00() {
-   return (neuron0x24838e0()*-0.158137);
+double NNfunction_sb_uRsR::synapse0x3452870() {
+   return (neuron0x343b170()*-0.792779);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499f40() {
-   return (neuron0x2483c20()*0.197348);
+double NNfunction_sb_uRsR::synapse0x34528b0() {
+   return (neuron0x343b4b0()*0.133719);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499f80() {
-   return (neuron0x2483f60()*0.430738);
+double NNfunction_sb_uRsR::synapse0x34528f0() {
+   return (neuron0x343b7f0()*-0.574709);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499fc0() {
-   return (neuron0x24842a0()*0.0034392);
+double NNfunction_sb_uRsR::synapse0x3452930() {
+   return (neuron0x343bb30()*0.160123);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a000() {
-   return (neuron0x24845e0()*-0.134054);
+double NNfunction_sb_uRsR::synapse0x3452970() {
+   return (neuron0x343be70()*-0.0382635);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a040() {
-   return (neuron0x2484920()*-0.35708);
+double NNfunction_sb_uRsR::synapse0x34529b0() {
+   return (neuron0x343c1b0()*0.0207175);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a080() {
-   return (neuron0x2484c60()*0.148271);
+double NNfunction_sb_uRsR::synapse0x34529f0() {
+   return (neuron0x343c4f0()*-0.105613);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a0c0() {
-   return (neuron0x2484fa0()*0.147343);
+double NNfunction_sb_uRsR::synapse0x3452a30() {
+   return (neuron0x343c830()*0.124971);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a100() {
-   return (neuron0x24852e0()*-0.483317);
+double NNfunction_sb_uRsR::synapse0x3452a70() {
+   return (neuron0x343cb70()*-0.11293);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a140() {
-   return (neuron0x2485620()*-0.421622);
+double NNfunction_sb_uRsR::synapse0x3452ab0() {
+   return (neuron0x343ceb0()*-0.141622);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499bd0() {
-   return (neuron0x2485960()*0.0246621);
+double NNfunction_sb_uRsR::synapse0x3452540() {
+   return (neuron0x343d1f0()*-0.573401);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499c10() {
-   return (neuron0x2485ec0()*-0.335885);
+double NNfunction_sb_uRsR::synapse0x3452580() {
+   return (neuron0x343d750()*-0.140548);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a290() {
-   return (neuron0x24860e0()*-0.608553);
+double NNfunction_sb_uRsR::synapse0x3452c00() {
+   return (neuron0x343da90()*0.355114);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a2d0() {
-   return (neuron0x2486420()*0.056457);
+double NNfunction_sb_uRsR::synapse0x3452c40() {
+   return (neuron0x343ddd0()*-0.207221);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a310() {
-   return (neuron0x2486760()*0.5537);
+double NNfunction_sb_uRsR::synapse0x3452c80() {
+   return (neuron0x343e110()*-0.745251);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a350() {
-   return (neuron0x2486aa0()*-0.34957);
+double NNfunction_sb_uRsR::synapse0x3452cc0() {
+   return (neuron0x343e450()*0.0627492);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a390() {
-   return (neuron0x2486de0()*-0.433229);
+double NNfunction_sb_uRsR::synapse0x3452d00() {
+   return (neuron0x343e790()*0.376746);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a3d0() {
-   return (neuron0x2487120()*0.156145);
+double NNfunction_sb_uRsR::synapse0x3452d40() {
+   return (neuron0x343ead0()*0.119134);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a750() {
-   return (neuron0x2482560()*0.148699);
+double NNfunction_sb_uRsR::synapse0x34530c0() {
+   return (neuron0x3439e80()*-0.318717);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a790() {
-   return (neuron0x24828a0()*-0.421186);
+double NNfunction_sb_uRsR::synapse0x3453100() {
+   return (neuron0x343a130()*-0.822912);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a7d0() {
-   return (neuron0x2482be0()*-0.0799718);
+double NNfunction_sb_uRsR::synapse0x3453140() {
+   return (neuron0x343a470()*-0.344887);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a810() {
-   return (neuron0x2482f20()*-1.16236);
+double NNfunction_sb_uRsR::synapse0x3453180() {
+   return (neuron0x343a7b0()*-0.149849);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a850() {
-   return (neuron0x2483260()*0.706158);
+double NNfunction_sb_uRsR::synapse0x34531c0() {
+   return (neuron0x343aaf0()*-0.257844);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a890() {
-   return (neuron0x24835a0()*-0.0993845);
+double NNfunction_sb_uRsR::synapse0x3453200() {
+   return (neuron0x343ae30()*0.455882);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a8d0() {
-   return (neuron0x24838e0()*0.310559);
+double NNfunction_sb_uRsR::synapse0x3453240() {
+   return (neuron0x343b170()*1.37422);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a910() {
-   return (neuron0x2483c20()*-0.158817);
+double NNfunction_sb_uRsR::synapse0x3453280() {
+   return (neuron0x343b4b0()*-0.0857075);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a950() {
-   return (neuron0x2483f60()*0.10309);
+double NNfunction_sb_uRsR::synapse0x34532c0() {
+   return (neuron0x343b7f0()*0.493396);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a990() {
-   return (neuron0x24842a0()*0.262203);
+double NNfunction_sb_uRsR::synapse0x3453300() {
+   return (neuron0x343bb30()*-0.0996198);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a9d0() {
-   return (neuron0x24845e0()*-0.100494);
+double NNfunction_sb_uRsR::synapse0x3453340() {
+   return (neuron0x343be70()*0.208325);
 }
 
-double NNfunction_sb_uRsR::synapse0x249aa10() {
-   return (neuron0x2484920()*0.0961866);
+double NNfunction_sb_uRsR::synapse0x3453380() {
+   return (neuron0x343c1b0()*0.0594461);
 }
 
-double NNfunction_sb_uRsR::synapse0x249aa50() {
-   return (neuron0x2484c60()*-0.0262611);
+double NNfunction_sb_uRsR::synapse0x34533c0() {
+   return (neuron0x343c4f0()*0.474909);
 }
 
-double NNfunction_sb_uRsR::synapse0x249aa90() {
-   return (neuron0x2484fa0()*0.491455);
+double NNfunction_sb_uRsR::synapse0x3453400() {
+   return (neuron0x343c830()*0.11123);
 }
 
-double NNfunction_sb_uRsR::synapse0x249aad0() {
-   return (neuron0x24852e0()*1.05915);
+double NNfunction_sb_uRsR::synapse0x3453440() {
+   return (neuron0x343cb70()*0.0990564);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ab10() {
-   return (neuron0x2485620()*0.641455);
+double NNfunction_sb_uRsR::synapse0x3453480() {
+   return (neuron0x343ceb0()*0.162217);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a5a0() {
-   return (neuron0x2485960()*0.375345);
+double NNfunction_sb_uRsR::synapse0x3452f10() {
+   return (neuron0x343d1f0()*-0.166069);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a5e0() {
-   return (neuron0x2485ec0()*0.384416);
+double NNfunction_sb_uRsR::synapse0x3452f50() {
+   return (neuron0x343d750()*-0.0845877);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ac60() {
-   return (neuron0x24860e0()*-0.449603);
+double NNfunction_sb_uRsR::synapse0x34535d0() {
+   return (neuron0x343da90()*0.121533);
 }
 
-double NNfunction_sb_uRsR::synapse0x249aca0() {
-   return (neuron0x2486420()*-0.694402);
+double NNfunction_sb_uRsR::synapse0x3453610() {
+   return (neuron0x343ddd0()*0.233471);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ace0() {
-   return (neuron0x2486760()*-0.619342);
+double NNfunction_sb_uRsR::synapse0x3453650() {
+   return (neuron0x343e110()*-0.970603);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ad20() {
-   return (neuron0x2486aa0()*-0.153651);
+double NNfunction_sb_uRsR::synapse0x3453690() {
+   return (neuron0x343e450()*0.0550657);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ad60() {
-   return (neuron0x2486de0()*0.0415591);
+double NNfunction_sb_uRsR::synapse0x34536d0() {
+   return (neuron0x343e790()*0.118586);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ada0() {
-   return (neuron0x2487120()*0.48927);
+double NNfunction_sb_uRsR::synapse0x3453710() {
+   return (neuron0x343ead0()*-0.0572561);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b120() {
-   return (neuron0x2482560()*-1.29349);
+double NNfunction_sb_uRsR::synapse0x3453a90() {
+   return (neuron0x3439e80()*-0.0154374);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b160() {
-   return (neuron0x24828a0()*0.240997);
+double NNfunction_sb_uRsR::synapse0x3453ad0() {
+   return (neuron0x343a130()*0.000625863);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b1a0() {
-   return (neuron0x2482be0()*-0.0530077);
+double NNfunction_sb_uRsR::synapse0x3453b10() {
+   return (neuron0x343a470()*0.00512604);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b1e0() {
-   return (neuron0x2482f20()*-0.946765);
+double NNfunction_sb_uRsR::synapse0x3453b50() {
+   return (neuron0x343a7b0()*-4.35659);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b220() {
-   return (neuron0x2483260()*-1.18554);
+double NNfunction_sb_uRsR::synapse0x3453b90() {
+   return (neuron0x343aaf0()*0.00125991);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b260() {
-   return (neuron0x24835a0()*-0.543482);
+double NNfunction_sb_uRsR::synapse0x3453bd0() {
+   return (neuron0x343ae30()*-0.0031024);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b2a0() {
-   return (neuron0x24838e0()*-0.915675);
+double NNfunction_sb_uRsR::synapse0x3453c10() {
+   return (neuron0x343b170()*0.00119018);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b2e0() {
-   return (neuron0x2483c20()*-0.880682);
+double NNfunction_sb_uRsR::synapse0x3453c50() {
+   return (neuron0x343b4b0()*-0.0088473);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b320() {
-   return (neuron0x2483f60()*-0.182147);
+double NNfunction_sb_uRsR::synapse0x3453c90() {
+   return (neuron0x343b7f0()*0.00696814);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b360() {
-   return (neuron0x24842a0()*-0.418262);
+double NNfunction_sb_uRsR::synapse0x3453cd0() {
+   return (neuron0x343bb30()*-0.0121527);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b3a0() {
-   return (neuron0x24845e0()*0.457675);
+double NNfunction_sb_uRsR::synapse0x3453d10() {
+   return (neuron0x343be70()*0.000250062);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b3e0() {
-   return (neuron0x2484920()*-0.680978);
+double NNfunction_sb_uRsR::synapse0x3453d50() {
+   return (neuron0x343c1b0()*0.00391896);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b420() {
-   return (neuron0x2484c60()*-0.203964);
+double NNfunction_sb_uRsR::synapse0x3453d90() {
+   return (neuron0x343c4f0()*0.00194968);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b460() {
-   return (neuron0x2484fa0()*-0.149493);
+double NNfunction_sb_uRsR::synapse0x3453dd0() {
+   return (neuron0x343c830()*0.00245629);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b4a0() {
-   return (neuron0x24852e0()*0.123397);
+double NNfunction_sb_uRsR::synapse0x3453e10() {
+   return (neuron0x343cb70()*0.243642);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b4e0() {
-   return (neuron0x2485620()*-0.110289);
+double NNfunction_sb_uRsR::synapse0x3453e50() {
+   return (neuron0x343ceb0()*0.000543494);
 }
 
-double NNfunction_sb_uRsR::synapse0x249af70() {
-   return (neuron0x2485960()*-0.155321);
+double NNfunction_sb_uRsR::synapse0x34538e0() {
+   return (neuron0x343d1f0()*0.00225728);
 }
 
-double NNfunction_sb_uRsR::synapse0x249afb0() {
-   return (neuron0x2485ec0()*-0.508214);
+double NNfunction_sb_uRsR::synapse0x3453920() {
+   return (neuron0x343d750()*0.00349808);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b630() {
-   return (neuron0x24860e0()*-0.660458);
+double NNfunction_sb_uRsR::synapse0x3453fa0() {
+   return (neuron0x343da90()*0.20922);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b670() {
-   return (neuron0x2486420()*-0.708175);
+double NNfunction_sb_uRsR::synapse0x3453fe0() {
+   return (neuron0x343ddd0()*0.00566854);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b6b0() {
-   return (neuron0x2486760()*0.202084);
+double NNfunction_sb_uRsR::synapse0x3454020() {
+   return (neuron0x343e110()*0.0152637);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b6f0() {
-   return (neuron0x2486aa0()*0.432011);
+double NNfunction_sb_uRsR::synapse0x3454060() {
+   return (neuron0x343e450()*0.00959727);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b730() {
-   return (neuron0x2486de0()*0.182939);
+double NNfunction_sb_uRsR::synapse0x34540a0() {
+   return (neuron0x343e790()*0.00245316);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b770() {
-   return (neuron0x2487120()*-0.267144);
+double NNfunction_sb_uRsR::synapse0x34540e0() {
+   return (neuron0x343ead0()*-0.0031859);
 }
 
-double NNfunction_sb_uRsR::synapse0x249baf0() {
-   return (neuron0x2482560()*-0.822898);
+double NNfunction_sb_uRsR::synapse0x3454460() {
+   return (neuron0x3439e80()*0.0479308);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bb30() {
-   return (neuron0x24828a0()*0.0885121);
+double NNfunction_sb_uRsR::synapse0x34544a0() {
+   return (neuron0x343a130()*-0.022929);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bb70() {
-   return (neuron0x2482be0()*0.415838);
+double NNfunction_sb_uRsR::synapse0x34544e0() {
+   return (neuron0x343a470()*-0.0869432);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bbb0() {
-   return (neuron0x2482f20()*-0.294312);
+double NNfunction_sb_uRsR::synapse0x3454520() {
+   return (neuron0x343a7b0()*1.20286);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bbf0() {
-   return (neuron0x2483260()*1.02702);
+double NNfunction_sb_uRsR::synapse0x3454560() {
+   return (neuron0x343aaf0()*-0.149134);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bc30() {
-   return (neuron0x24835a0()*-0.931348);
+double NNfunction_sb_uRsR::synapse0x34545a0() {
+   return (neuron0x343ae30()*0.0427231);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bc70() {
-   return (neuron0x24838e0()*0.360208);
+double NNfunction_sb_uRsR::synapse0x34545e0() {
+   return (neuron0x343b170()*-0.102385);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bcb0() {
-   return (neuron0x2483c20()*-0.894066);
+double NNfunction_sb_uRsR::synapse0x3454620() {
+   return (neuron0x343b4b0()*0.104765);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bcf0() {
-   return (neuron0x2483f60()*0.381);
+double NNfunction_sb_uRsR::synapse0x3454660() {
+   return (neuron0x343b7f0()*-0.0248762);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bd30() {
-   return (neuron0x24842a0()*0.967503);
+double NNfunction_sb_uRsR::synapse0x34546a0() {
+   return (neuron0x343bb30()*0.0897974);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bd70() {
-   return (neuron0x24845e0()*-0.0146169);
+double NNfunction_sb_uRsR::synapse0x34546e0() {
+   return (neuron0x343be70()*0.0444639);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bdb0() {
-   return (neuron0x2484920()*-0.55968);
+double NNfunction_sb_uRsR::synapse0x3454720() {
+   return (neuron0x343c1b0()*-0.266264);
 }
 
-double NNfunction_sb_uRsR::synapse0x249bdf0() {
-   return (neuron0x2484c60()*-0.76689);
+double NNfunction_sb_uRsR::synapse0x3454760() {
+   return (neuron0x343c4f0()*-0.234445);
 }
 
-double NNfunction_sb_uRsR::synapse0x249be30() {
-   return (neuron0x2484fa0()*0.488177);
+double NNfunction_sb_uRsR::synapse0x34547a0() {
+   return (neuron0x343c830()*0.0759521);
 }
 
-double NNfunction_sb_uRsR::synapse0x249be70() {
-   return (neuron0x24852e0()*1.10834);
+double NNfunction_sb_uRsR::synapse0x34547e0() {
+   return (neuron0x343cb70()*-1.24578);
 }
 
-double NNfunction_sb_uRsR::synapse0x249beb0() {
-   return (neuron0x2485620()*-0.550257);
+double NNfunction_sb_uRsR::synapse0x3454820() {
+   return (neuron0x343ceb0()*-0.0465926);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b940() {
-   return (neuron0x2485960()*-0.439849);
+double NNfunction_sb_uRsR::synapse0x34542b0() {
+   return (neuron0x343d1f0()*0.0717853);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b980() {
-   return (neuron0x2485ec0()*0.382238);
+double NNfunction_sb_uRsR::synapse0x34542f0() {
+   return (neuron0x343d750()*-0.0466918);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c000() {
-   return (neuron0x24860e0()*1.63898);
+double NNfunction_sb_uRsR::synapse0x3454970() {
+   return (neuron0x343da90()*-0.684386);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c040() {
-   return (neuron0x2486420()*-0.696323);
+double NNfunction_sb_uRsR::synapse0x34549b0() {
+   return (neuron0x343ddd0()*-0.0446442);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c080() {
-   return (neuron0x2486760()*0.557738);
+double NNfunction_sb_uRsR::synapse0x34549f0() {
+   return (neuron0x343e110()*-0.0762814);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c0c0() {
-   return (neuron0x2486aa0()*-0.125648);
+double NNfunction_sb_uRsR::synapse0x3454a30() {
+   return (neuron0x343e450()*-0.0915553);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c100() {
-   return (neuron0x2486de0()*-0.759683);
+double NNfunction_sb_uRsR::synapse0x3454a70() {
+   return (neuron0x343e790()*-0.0595914);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c140() {
-   return (neuron0x2487120()*-0.62579);
+double NNfunction_sb_uRsR::synapse0x3454ab0() {
+   return (neuron0x343ead0()*0.0881853);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c4c0() {
-   return (neuron0x2482560()*-0.0715423);
+double NNfunction_sb_uRsR::synapse0x3454e30() {
+   return (neuron0x3439e80()*0.251515);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c500() {
-   return (neuron0x24828a0()*-0.164154);
+double NNfunction_sb_uRsR::synapse0x3454e70() {
+   return (neuron0x343a130()*0.069027);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c540() {
-   return (neuron0x2482be0()*-0.274778);
+double NNfunction_sb_uRsR::synapse0x3454eb0() {
+   return (neuron0x343a470()*-0.385375);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c580() {
-   return (neuron0x2482f20()*0.149549);
+double NNfunction_sb_uRsR::synapse0x3454ef0() {
+   return (neuron0x343a7b0()*-1.89817);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c5c0() {
-   return (neuron0x2483260()*0.389904);
+double NNfunction_sb_uRsR::synapse0x3454f30() {
+   return (neuron0x343aaf0()*-0.0950983);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c600() {
-   return (neuron0x24835a0()*0.644142);
+double NNfunction_sb_uRsR::synapse0x3454f70() {
+   return (neuron0x343ae30()*0.017466);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c640() {
-   return (neuron0x24838e0()*-0.107786);
+double NNfunction_sb_uRsR::synapse0x3454fb0() {
+   return (neuron0x343b170()*0.31477);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c680() {
-   return (neuron0x2483c20()*-0.312073);
+double NNfunction_sb_uRsR::synapse0x3454ff0() {
+   return (neuron0x343b4b0()*0.126472);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c6c0() {
-   return (neuron0x2483f60()*-0.444967);
+double NNfunction_sb_uRsR::synapse0x3455030() {
+   return (neuron0x343b7f0()*-0.163711);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c700() {
-   return (neuron0x24842a0()*-0.393818);
+double NNfunction_sb_uRsR::synapse0x3455070() {
+   return (neuron0x343bb30()*-0.431382);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c740() {
-   return (neuron0x24845e0()*0.00429046);
+double NNfunction_sb_uRsR::synapse0x34550b0() {
+   return (neuron0x343be70()*0.39626);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c780() {
-   return (neuron0x2484920()*0.0290699);
+double NNfunction_sb_uRsR::synapse0x34550f0() {
+   return (neuron0x343c1b0()*-0.0401781);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c7c0() {
-   return (neuron0x2484c60()*0.726779);
+double NNfunction_sb_uRsR::synapse0x3455130() {
+   return (neuron0x343c4f0()*0.372307);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c800() {
-   return (neuron0x2484fa0()*-0.126425);
+double NNfunction_sb_uRsR::synapse0x3455170() {
+   return (neuron0x343c830()*0.125049);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c840() {
-   return (neuron0x24852e0()*1.73541);
+double NNfunction_sb_uRsR::synapse0x34551b0() {
+   return (neuron0x343cb70()*-0.593318);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c880() {
-   return (neuron0x2485620()*-0.0574557);
+double NNfunction_sb_uRsR::synapse0x34551f0() {
+   return (neuron0x343ceb0()*-0.0647957);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c310() {
-   return (neuron0x2485960()*1.01821);
+double NNfunction_sb_uRsR::synapse0x3454c80() {
+   return (neuron0x343d1f0()*-0.0522445);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c350() {
-   return (neuron0x2485ec0()*0.185728);
+double NNfunction_sb_uRsR::synapse0x3454cc0() {
+   return (neuron0x343d750()*0.259424);
 }
 
-double NNfunction_sb_uRsR::synapse0x249c9d0() {
-   return (neuron0x24860e0()*2.69667);
+double NNfunction_sb_uRsR::synapse0x3455340() {
+   return (neuron0x343da90()*-0.85252);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ca10() {
-   return (neuron0x2486420()*-0.366153);
+double NNfunction_sb_uRsR::synapse0x3455380() {
+   return (neuron0x343ddd0()*0.879387);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ca50() {
-   return (neuron0x2486760()*-0.529637);
+double NNfunction_sb_uRsR::synapse0x34553c0() {
+   return (neuron0x343e110()*-0.00571782);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ca90() {
-   return (neuron0x2486aa0()*-0.108267);
+double NNfunction_sb_uRsR::synapse0x3455400() {
+   return (neuron0x343e450()*0.118817);
 }
 
-double NNfunction_sb_uRsR::synapse0x249cad0() {
-   return (neuron0x2486de0()*-0.43402);
+double NNfunction_sb_uRsR::synapse0x3455440() {
+   return (neuron0x343e790()*0.0688898);
 }
 
-double NNfunction_sb_uRsR::synapse0x249cb10() {
-   return (neuron0x2487120()*-0.116822);
+double NNfunction_sb_uRsR::synapse0x3455480() {
+   return (neuron0x343ead0()*-0.270125);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ce90() {
-   return (neuron0x2482560()*0.0288115);
+double NNfunction_sb_uRsR::synapse0x3455800() {
+   return (neuron0x3439e80()*-0.338028);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491460() {
-   return (neuron0x24828a0()*-0.0166227);
+double NNfunction_sb_uRsR::synapse0x3449dd0() {
+   return (neuron0x343a130()*-0.737134);
 }
 
-double NNfunction_sb_uRsR::synapse0x24914a0() {
-   return (neuron0x2482be0()*0.0222307);
+double NNfunction_sb_uRsR::synapse0x3449e10() {
+   return (neuron0x343a470()*0.304055);
 }
 
-double NNfunction_sb_uRsR::synapse0x24914e0() {
-   return (neuron0x2482f20()*-0.0987213);
+double NNfunction_sb_uRsR::synapse0x3449e50() {
+   return (neuron0x343a7b0()*0.108009);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491730() {
-   return (neuron0x2483260()*-0.0724676);
+double NNfunction_sb_uRsR::synapse0x344a0a0() {
+   return (neuron0x343aaf0()*0.695009);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491770() {
-   return (neuron0x24835a0()*-0.00391871);
+double NNfunction_sb_uRsR::synapse0x344a0e0() {
+   return (neuron0x343ae30()*-0.793962);
 }
 
-double NNfunction_sb_uRsR::synapse0x24917b0() {
-   return (neuron0x24838e0()*-0.00387806);
+double NNfunction_sb_uRsR::synapse0x344a120() {
+   return (neuron0x343b170()*0.159965);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491a00() {
-   return (neuron0x2483c20()*-0.0485589);
+double NNfunction_sb_uRsR::synapse0x344a370() {
+   return (neuron0x343b4b0()*0.103881);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491a40() {
-   return (neuron0x2483f60()*0.0394658);
+double NNfunction_sb_uRsR::synapse0x344a3b0() {
+   return (neuron0x343b7f0()*-0.267805);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491c90() {
-   return (neuron0x24842a0()*0.0596403);
+double NNfunction_sb_uRsR::synapse0x344a600() {
+   return (neuron0x343bb30()*-0.519189);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491cd0() {
-   return (neuron0x24845e0()*0.0607415);
+double NNfunction_sb_uRsR::synapse0x344a640() {
+   return (neuron0x343be70()*-0.425208);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491d10() {
-   return (neuron0x2484920()*0.0102726);
+double NNfunction_sb_uRsR::synapse0x344a680() {
+   return (neuron0x343c1b0()*0.0871877);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491f60() {
-   return (neuron0x2484c60()*0.0168132);
+double NNfunction_sb_uRsR::synapse0x344a8d0() {
+   return (neuron0x343c4f0()*-0.613087);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491fa0() {
-   return (neuron0x2484fa0()*0.0120718);
+double NNfunction_sb_uRsR::synapse0x344a910() {
+   return (neuron0x343c830()*0.551602);
 }
 
-double NNfunction_sb_uRsR::synapse0x24921f0() {
-   return (neuron0x24852e0()*2.7688);
+double NNfunction_sb_uRsR::synapse0x344ab60() {
+   return (neuron0x343cb70()*-0.539662);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492230() {
-   return (neuron0x2485620()*-0.0346422);
+double NNfunction_sb_uRsR::synapse0x344aba0() {
+   return (neuron0x343ceb0()*-0.13821);
 }
 
-double NNfunction_sb_uRsR::synapse0x249cce0() {
-   return (neuron0x2485960()*0.0445752);
+double NNfunction_sb_uRsR::synapse0x3455650() {
+   return (neuron0x343d1f0()*-0.355665);
 }
 
-double NNfunction_sb_uRsR::synapse0x249cd20() {
-   return (neuron0x2485ec0()*0.000722328);
+double NNfunction_sb_uRsR::synapse0x3455690() {
+   return (neuron0x343d750()*0.656203);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492380() {
-   return (neuron0x24860e0()*-0.335578);
+double NNfunction_sb_uRsR::synapse0x344acf0() {
+   return (neuron0x343da90()*0.278856);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492890() {
-   return (neuron0x2486420()*0.0392113);
+double NNfunction_sb_uRsR::synapse0x344b200() {
+   return (neuron0x343ddd0()*-0.227778);
 }
 
-double NNfunction_sb_uRsR::synapse0x24928d0() {
-   return (neuron0x2486760()*-0.0397289);
+double NNfunction_sb_uRsR::synapse0x344b240() {
+   return (neuron0x343e110()*0.22748);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492910() {
-   return (neuron0x2486aa0()*0.0184938);
+double NNfunction_sb_uRsR::synapse0x344b280() {
+   return (neuron0x343e450()*-0.0440196);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492b60() {
-   return (neuron0x2486de0()*-0.00850371);
+double NNfunction_sb_uRsR::synapse0x344b4d0() {
+   return (neuron0x343e790()*0.409299);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492ba0() {
-   return (neuron0x2487120()*-0.0189039);
+double NNfunction_sb_uRsR::synapse0x344b510() {
+   return (neuron0x343ead0()*-0.287286);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492450() {
-   return (neuron0x2482560()*-0.025286);
+double NNfunction_sb_uRsR::synapse0x344adc0() {
+   return (neuron0x3439e80()*-0.212485);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492490() {
-   return (neuron0x24828a0()*0.00236858);
+double NNfunction_sb_uRsR::synapse0x344ae00() {
+   return (neuron0x343a130()*-0.0937114);
 }
 
-double NNfunction_sb_uRsR::synapse0x24924d0() {
-   return (neuron0x2482be0()*0.0462294);
+double NNfunction_sb_uRsR::synapse0x344ae40() {
+   return (neuron0x343a470()*0.448415);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492510() {
-   return (neuron0x2482f20()*-1.001);
+double NNfunction_sb_uRsR::synapse0x344ae80() {
+   return (neuron0x343a7b0()*-0.453737);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492e90() {
-   return (neuron0x2483260()*-0.0325442);
+double NNfunction_sb_uRsR::synapse0x344b800() {
+   return (neuron0x343aaf0()*-0.346382);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f1e0() {
-   return (neuron0x24835a0()*0.0198778);
+double NNfunction_sb_uRsR::synapse0x3457b50() {
+   return (neuron0x343ae30()*-0.251033);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f220() {
-   return (neuron0x24838e0()*0.0951804);
+double NNfunction_sb_uRsR::synapse0x3457b90() {
+   return (neuron0x343b170()*0.0380327);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f260() {
-   return (neuron0x2483c20()*0.0305343);
+double NNfunction_sb_uRsR::synapse0x3457bd0() {
+   return (neuron0x343b4b0()*-0.28431);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f2a0() {
-   return (neuron0x2483f60()*0.00445993);
+double NNfunction_sb_uRsR::synapse0x3457c10() {
+   return (neuron0x343b7f0()*0.408535);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f2e0() {
-   return (neuron0x24842a0()*0.00545962);
+double NNfunction_sb_uRsR::synapse0x3457c50() {
+   return (neuron0x343bb30()*0.155037);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f320() {
-   return (neuron0x24845e0()*0.000557064);
+double NNfunction_sb_uRsR::synapse0x3457c90() {
+   return (neuron0x343be70()*-0.0164952);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f360() {
-   return (neuron0x2484920()*0.0614969);
+double NNfunction_sb_uRsR::synapse0x3457cd0() {
+   return (neuron0x343c1b0()*0.434227);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f3a0() {
-   return (neuron0x2484c60()*0.0463);
+double NNfunction_sb_uRsR::synapse0x3457d10() {
+   return (neuron0x343c4f0()*0.569311);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f3e0() {
-   return (neuron0x2484fa0()*0.00837005);
+double NNfunction_sb_uRsR::synapse0x3457d50() {
+   return (neuron0x343c830()*-0.317476);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f420() {
-   return (neuron0x24852e0()*-0.625352);
+double NNfunction_sb_uRsR::synapse0x3457d90() {
+   return (neuron0x343cb70()*0.473405);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f460() {
-   return (neuron0x2485620()*0.0521791);
+double NNfunction_sb_uRsR::synapse0x3457dd0() {
+   return (neuron0x343ceb0()*-0.496515);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492d70() {
-   return (neuron0x2485960()*0.012986);
+double NNfunction_sb_uRsR::synapse0x344b6e0() {
+   return (neuron0x343d1f0()*0.202946);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492db0() {
-   return (neuron0x2485ec0()*-0.0110188);
+double NNfunction_sb_uRsR::synapse0x344b720() {
+   return (neuron0x343d750()*-0.149607);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f5b0() {
-   return (neuron0x24860e0()*-0.62804);
+double NNfunction_sb_uRsR::synapse0x3457f20() {
+   return (neuron0x343da90()*0.556467);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f5f0() {
-   return (neuron0x2486420()*-0.0290178);
+double NNfunction_sb_uRsR::synapse0x3457f60() {
+   return (neuron0x343ddd0()*-0.191603);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f630() {
-   return (neuron0x2486760()*0.0153645);
+double NNfunction_sb_uRsR::synapse0x3457fa0() {
+   return (neuron0x343e110()*-0.534943);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f670() {
-   return (neuron0x2486aa0()*0.0342452);
+double NNfunction_sb_uRsR::synapse0x3457fe0() {
+   return (neuron0x343e450()*0.0833643);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f6b0() {
-   return (neuron0x2486de0()*0.00808948);
+double NNfunction_sb_uRsR::synapse0x3458020() {
+   return (neuron0x343e790()*0.00680345);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f6f0() {
-   return (neuron0x2487120()*-0.0101652);
+double NNfunction_sb_uRsR::synapse0x3458060() {
+   return (neuron0x343ead0()*-0.0128759);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fa70() {
-   return (neuron0x2482560()*-0.0321495);
+double NNfunction_sb_uRsR::synapse0x34583e0() {
+   return (neuron0x3439e80()*0.591222);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fab0() {
-   return (neuron0x24828a0()*0.0305011);
+double NNfunction_sb_uRsR::synapse0x3458420() {
+   return (neuron0x343a130()*0.122417);
 }
 
-double NNfunction_sb_uRsR::synapse0x249faf0() {
-   return (neuron0x2482be0()*0.0103046);
+double NNfunction_sb_uRsR::synapse0x3458460() {
+   return (neuron0x343a470()*-0.841302);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fb30() {
-   return (neuron0x2482f20()*-6.76789);
+double NNfunction_sb_uRsR::synapse0x34584a0() {
+   return (neuron0x343a7b0()*-0.615396);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fb70() {
-   return (neuron0x2483260()*-0.00582265);
+double NNfunction_sb_uRsR::synapse0x34584e0() {
+   return (neuron0x343aaf0()*0.206439);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fbb0() {
-   return (neuron0x24835a0()*-0.0298889);
+double NNfunction_sb_uRsR::synapse0x3458520() {
+   return (neuron0x343ae30()*-0.108611);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fbf0() {
-   return (neuron0x24838e0()*0.00193529);
+double NNfunction_sb_uRsR::synapse0x3458560() {
+   return (neuron0x343b170()*0.173155);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fc30() {
-   return (neuron0x2483c20()*-0.0195431);
+double NNfunction_sb_uRsR::synapse0x34585a0() {
+   return (neuron0x343b4b0()*0.00626121);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fc70() {
-   return (neuron0x2483f60()*0.0196506);
+double NNfunction_sb_uRsR::synapse0x34585e0() {
+   return (neuron0x343b7f0()*-0.171951);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fcb0() {
-   return (neuron0x24842a0()*0.0094257);
+double NNfunction_sb_uRsR::synapse0x3458620() {
+   return (neuron0x343bb30()*0.302009);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fcf0() {
-   return (neuron0x24845e0()*-0.0180822);
+double NNfunction_sb_uRsR::synapse0x3458660() {
+   return (neuron0x343be70()*-0.330135);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fd30() {
-   return (neuron0x2484920()*0.0288338);
+double NNfunction_sb_uRsR::synapse0x34586a0() {
+   return (neuron0x343c1b0()*0.486655);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fd70() {
-   return (neuron0x2484c60()*0.0352504);
+double NNfunction_sb_uRsR::synapse0x34586e0() {
+   return (neuron0x343c4f0()*0.849474);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fdb0() {
-   return (neuron0x2484fa0()*0.0126645);
+double NNfunction_sb_uRsR::synapse0x3458720() {
+   return (neuron0x343c830()*-0.221579);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fdf0() {
-   return (neuron0x24852e0()*-0.27694);
+double NNfunction_sb_uRsR::synapse0x3458760() {
+   return (neuron0x343cb70()*-0.0740181);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fe30() {
-   return (neuron0x2485620()*-0.0145105);
+double NNfunction_sb_uRsR::synapse0x34587a0() {
+   return (neuron0x343ceb0()*-0.518946);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f8c0() {
-   return (neuron0x2485960()*0.0549963);
+double NNfunction_sb_uRsR::synapse0x3458230() {
+   return (neuron0x343d1f0()*0.00260356);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f900() {
-   return (neuron0x2485ec0()*0.0237667);
+double NNfunction_sb_uRsR::synapse0x3458270() {
+   return (neuron0x343d750()*0.058136);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ff80() {
-   return (neuron0x24860e0()*-0.33904);
+double NNfunction_sb_uRsR::synapse0x34588f0() {
+   return (neuron0x343da90()*0.00978417);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ffc0() {
-   return (neuron0x2486420()*-0.0424912);
+double NNfunction_sb_uRsR::synapse0x3458930() {
+   return (neuron0x343ddd0()*0.224643);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0000() {
-   return (neuron0x2486760()*-0.0130346);
+double NNfunction_sb_uRsR::synapse0x3458970() {
+   return (neuron0x343e110()*0.494276);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0040() {
-   return (neuron0x2486aa0()*-0.0132108);
+double NNfunction_sb_uRsR::synapse0x34589b0() {
+   return (neuron0x343e450()*-0.00583731);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0080() {
-   return (neuron0x2486de0()*0.057099);
+double NNfunction_sb_uRsR::synapse0x34589f0() {
+   return (neuron0x343e790()*-0.261069);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a00c0() {
-   return (neuron0x2487120()*-0.00106208);
+double NNfunction_sb_uRsR::synapse0x3458a30() {
+   return (neuron0x343ead0()*0.0109604);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0440() {
-   return (neuron0x2482560()*0.420616);
+double NNfunction_sb_uRsR::synapse0x3458db0() {
+   return (neuron0x3439e80()*0.732976);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0480() {
-   return (neuron0x24828a0()*0.00300417);
+double NNfunction_sb_uRsR::synapse0x3458df0() {
+   return (neuron0x343a130()*-0.176486);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a04c0() {
-   return (neuron0x2482be0()*-0.120441);
+double NNfunction_sb_uRsR::synapse0x3458e30() {
+   return (neuron0x343a470()*-1.30445);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0500() {
-   return (neuron0x2482f20()*-0.371937);
+double NNfunction_sb_uRsR::synapse0x3458e70() {
+   return (neuron0x343a7b0()*0.517815);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0540() {
-   return (neuron0x2483260()*-0.0277384);
+double NNfunction_sb_uRsR::synapse0x3458eb0() {
+   return (neuron0x343aaf0()*0.0530447);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0580() {
-   return (neuron0x24835a0()*-0.486692);
+double NNfunction_sb_uRsR::synapse0x3458ef0() {
+   return (neuron0x343ae30()*0.374186);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a05c0() {
-   return (neuron0x24838e0()*0.245645);
+double NNfunction_sb_uRsR::synapse0x3458f30() {
+   return (neuron0x343b170()*0.563288);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0600() {
-   return (neuron0x2483c20()*0.54761);
+double NNfunction_sb_uRsR::synapse0x3458f70() {
+   return (neuron0x343b4b0()*1.33153);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0640() {
-   return (neuron0x2483f60()*-0.248338);
+double NNfunction_sb_uRsR::synapse0x3458fb0() {
+   return (neuron0x343b7f0()*0.0411921);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0680() {
-   return (neuron0x24842a0()*0.433354);
+double NNfunction_sb_uRsR::synapse0x3458ff0() {
+   return (neuron0x343bb30()*0.508552);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a06c0() {
-   return (neuron0x24845e0()*0.165525);
+double NNfunction_sb_uRsR::synapse0x3459030() {
+   return (neuron0x343be70()*0.350613);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0700() {
-   return (neuron0x2484920()*0.38406);
+double NNfunction_sb_uRsR::synapse0x3459070() {
+   return (neuron0x343c1b0()*0.665588);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0740() {
-   return (neuron0x2484c60()*0.220414);
+double NNfunction_sb_uRsR::synapse0x34590b0() {
+   return (neuron0x343c4f0()*0.374755);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0780() {
-   return (neuron0x2484fa0()*-0.212796);
+double NNfunction_sb_uRsR::synapse0x34590f0() {
+   return (neuron0x343c830()*0.268355);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a07c0() {
-   return (neuron0x24852e0()*-1.11454);
+double NNfunction_sb_uRsR::synapse0x3459130() {
+   return (neuron0x343cb70()*0.250976);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0800() {
-   return (neuron0x2485620()*0.237992);
+double NNfunction_sb_uRsR::synapse0x3459170() {
+   return (neuron0x343ceb0()*-0.463388);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0290() {
-   return (neuron0x2485960()*0.00481838);
+double NNfunction_sb_uRsR::synapse0x3458c00() {
+   return (neuron0x343d1f0()*0.743209);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a02d0() {
-   return (neuron0x2485ec0()*-0.286418);
+double NNfunction_sb_uRsR::synapse0x3458c40() {
+   return (neuron0x343d750()*-0.0422968);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0950() {
-   return (neuron0x24860e0()*-1.72272);
+double NNfunction_sb_uRsR::synapse0x34592c0() {
+   return (neuron0x343da90()*-0.0120861);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0990() {
-   return (neuron0x2486420()*0.117946);
+double NNfunction_sb_uRsR::synapse0x3459300() {
+   return (neuron0x343ddd0()*-0.117361);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a09d0() {
-   return (neuron0x2486760()*0.169363);
+double NNfunction_sb_uRsR::synapse0x3459340() {
+   return (neuron0x343e110()*0.558081);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0a10() {
-   return (neuron0x2486aa0()*0.277914);
+double NNfunction_sb_uRsR::synapse0x3459380() {
+   return (neuron0x343e450()*-0.228653);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0a50() {
-   return (neuron0x2486de0()*0.0583771);
+double NNfunction_sb_uRsR::synapse0x34593c0() {
+   return (neuron0x343e790()*-0.396388);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0a90() {
-   return (neuron0x2487120()*-0.716431);
+double NNfunction_sb_uRsR::synapse0x3459400() {
+   return (neuron0x343ead0()*-0.126);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0e10() {
-   return (neuron0x2482560()*0.0186686);
+double NNfunction_sb_uRsR::synapse0x3459780() {
+   return (neuron0x3439e80()*0.00800716);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0e50() {
-   return (neuron0x24828a0()*0.243691);
+double NNfunction_sb_uRsR::synapse0x34597c0() {
+   return (neuron0x343a130()*0.00483334);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0e90() {
-   return (neuron0x2482be0()*-0.0226617);
+double NNfunction_sb_uRsR::synapse0x3459800() {
+   return (neuron0x343a470()*0.00464618);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0ed0() {
-   return (neuron0x2482f20()*-2.21546);
+double NNfunction_sb_uRsR::synapse0x3459840() {
+   return (neuron0x343a7b0()*-0.151153);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0f10() {
-   return (neuron0x2483260()*0.0920496);
+double NNfunction_sb_uRsR::synapse0x3459880() {
+   return (neuron0x343aaf0()*0.00457451);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0f50() {
-   return (neuron0x24835a0()*-0.0182328);
+double NNfunction_sb_uRsR::synapse0x34598c0() {
+   return (neuron0x343ae30()*-0.00588966);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0f90() {
-   return (neuron0x24838e0()*-0.00750643);
+double NNfunction_sb_uRsR::synapse0x3459900() {
+   return (neuron0x343b170()*0.00871041);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0fd0() {
-   return (neuron0x2483c20()*-0.00564978);
+double NNfunction_sb_uRsR::synapse0x3459940() {
+   return (neuron0x343b4b0()*0.00254281);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1010() {
-   return (neuron0x2483f60()*0.0708771);
+double NNfunction_sb_uRsR::synapse0x3459980() {
+   return (neuron0x343b7f0()*-0.00381129);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1050() {
-   return (neuron0x24842a0()*0.0192468);
+double NNfunction_sb_uRsR::synapse0x34599c0() {
+   return (neuron0x343bb30()*-0.00177779);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1090() {
-   return (neuron0x24845e0()*-0.0602148);
+double NNfunction_sb_uRsR::synapse0x3459a00() {
+   return (neuron0x343be70()*-0.00477194);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a10d0() {
-   return (neuron0x2484920()*-0.144609);
+double NNfunction_sb_uRsR::synapse0x3459a40() {
+   return (neuron0x343c1b0()*0.00939345);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1110() {
-   return (neuron0x2484c60()*-0.295341);
+double NNfunction_sb_uRsR::synapse0x3459a80() {
+   return (neuron0x343c4f0()*0.013028);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1150() {
-   return (neuron0x2484fa0()*-0.0239282);
+double NNfunction_sb_uRsR::synapse0x3459ac0() {
+   return (neuron0x343c830()*0.00909502);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1190() {
-   return (neuron0x24852e0()*-0.12782);
+double NNfunction_sb_uRsR::synapse0x3459b00() {
+   return (neuron0x343cb70()*-0.581236);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a11d0() {
-   return (neuron0x2485620()*-0.0905774);
+double NNfunction_sb_uRsR::synapse0x3459b40() {
+   return (neuron0x343ceb0()*0.00832609);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0c60() {
-   return (neuron0x2485960()*-0.0652094);
+double NNfunction_sb_uRsR::synapse0x34595d0() {
+   return (neuron0x343d1f0()*-0.0043782);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0ca0() {
-   return (neuron0x2485ec0()*-0.136178);
+double NNfunction_sb_uRsR::synapse0x3459610() {
+   return (neuron0x343d750()*0.0278953);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1320() {
-   return (neuron0x24860e0()*-0.326811);
+double NNfunction_sb_uRsR::synapse0x3459c90() {
+   return (neuron0x343da90()*0.746644);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1360() {
-   return (neuron0x2486420()*-0.0322109);
+double NNfunction_sb_uRsR::synapse0x3459cd0() {
+   return (neuron0x343ddd0()*-0.010074);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a13a0() {
-   return (neuron0x2486760()*-0.0570598);
+double NNfunction_sb_uRsR::synapse0x3459d10() {
+   return (neuron0x343e110()*0.01448);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a13e0() {
-   return (neuron0x2486aa0()*0.138389);
+double NNfunction_sb_uRsR::synapse0x3459d50() {
+   return (neuron0x343e450()*0.0047406);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1420() {
-   return (neuron0x2486de0()*-0.0627774);
+double NNfunction_sb_uRsR::synapse0x3459d90() {
+   return (neuron0x343e790()*-0.0170178);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1460() {
-   return (neuron0x2487120()*0.0997896);
+double NNfunction_sb_uRsR::synapse0x3459dd0() {
+   return (neuron0x343ead0()*-0.00954271);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a17e0() {
-   return (neuron0x2482560()*0.00707148);
+double NNfunction_sb_uRsR::synapse0x345a150() {
+   return (neuron0x3439e80()*0.116693);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1820() {
-   return (neuron0x24828a0()*-0.0146222);
+double NNfunction_sb_uRsR::synapse0x345a190() {
+   return (neuron0x343a130()*0.426313);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1860() {
-   return (neuron0x2482be0()*-0.0445813);
+double NNfunction_sb_uRsR::synapse0x345a1d0() {
+   return (neuron0x343a470()*-0.556317);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a18a0() {
-   return (neuron0x2482f20()*-1.36917);
+double NNfunction_sb_uRsR::synapse0x345a210() {
+   return (neuron0x343a7b0()*0.427814);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a18e0() {
-   return (neuron0x2483260()*0.0346167);
+double NNfunction_sb_uRsR::synapse0x345a250() {
+   return (neuron0x343aaf0()*0.120115);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1920() {
-   return (neuron0x24835a0()*-0.0362157);
+double NNfunction_sb_uRsR::synapse0x345a290() {
+   return (neuron0x343ae30()*-1.19279);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1960() {
-   return (neuron0x24838e0()*-0.0695177);
+double NNfunction_sb_uRsR::synapse0x345a2d0() {
+   return (neuron0x343b170()*0.154702);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a19a0() {
-   return (neuron0x2483c20()*-0.0146683);
+double NNfunction_sb_uRsR::synapse0x345a310() {
+   return (neuron0x343b4b0()*-0.108437);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a19e0() {
-   return (neuron0x2483f60()*-0.0299921);
+double NNfunction_sb_uRsR::synapse0x345a350() {
+   return (neuron0x343b7f0()*0.347843);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1a20() {
-   return (neuron0x24842a0()*0.00233395);
+double NNfunction_sb_uRsR::synapse0x345a390() {
+   return (neuron0x343bb30()*-0.33004);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1a60() {
-   return (neuron0x24845e0()*-0.0151477);
+double NNfunction_sb_uRsR::synapse0x345a3d0() {
+   return (neuron0x343be70()*-1.04276);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1aa0() {
-   return (neuron0x2484920()*0.021551);
+double NNfunction_sb_uRsR::synapse0x345a410() {
+   return (neuron0x343c1b0()*-0.139376);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1ae0() {
-   return (neuron0x2484c60()*0.00205101);
+double NNfunction_sb_uRsR::synapse0x345a450() {
+   return (neuron0x343c4f0()*-0.360949);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1b20() {
-   return (neuron0x2484fa0()*-0.0276363);
+double NNfunction_sb_uRsR::synapse0x345a490() {
+   return (neuron0x343c830()*-0.0649803);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1b60() {
-   return (neuron0x24852e0()*0.0875209);
+double NNfunction_sb_uRsR::synapse0x345a4d0() {
+   return (neuron0x343cb70()*0.441724);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1ba0() {
-   return (neuron0x2485620()*-0.0107293);
+double NNfunction_sb_uRsR::synapse0x345a510() {
+   return (neuron0x343ceb0()*0.147216);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1630() {
-   return (neuron0x2485960()*-0.036111);
+double NNfunction_sb_uRsR::synapse0x3459fa0() {
+   return (neuron0x343d1f0()*-0.353256);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1670() {
-   return (neuron0x2485ec0()*0.0311029);
+double NNfunction_sb_uRsR::synapse0x3459fe0() {
+   return (neuron0x343d750()*-0.283576);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1cf0() {
-   return (neuron0x24860e0()*0.137308);
+double NNfunction_sb_uRsR::synapse0x345a660() {
+   return (neuron0x343da90()*-0.650367);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1d30() {
-   return (neuron0x2486420()*0.0371254);
+double NNfunction_sb_uRsR::synapse0x345a6a0() {
+   return (neuron0x343ddd0()*-0.59379);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1d70() {
-   return (neuron0x2486760()*-0.00874215);
+double NNfunction_sb_uRsR::synapse0x345a6e0() {
+   return (neuron0x343e110()*0.507592);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1db0() {
-   return (neuron0x2486aa0()*-0.0159703);
+double NNfunction_sb_uRsR::synapse0x345a720() {
+   return (neuron0x343e450()*0.00160122);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1df0() {
-   return (neuron0x2486de0()*0.0098168);
+double NNfunction_sb_uRsR::synapse0x345a760() {
+   return (neuron0x343e790()*-0.0363851);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1e30() {
-   return (neuron0x2487120()*0.0207718);
+double NNfunction_sb_uRsR::synapse0x345a7a0() {
+   return (neuron0x343ead0()*-1.12229);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a21b0() {
-   return (neuron0x2482560()*0.0989409);
+double NNfunction_sb_uRsR::synapse0x345ab20() {
+   return (neuron0x3439e80()*0.0727073);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a21f0() {
-   return (neuron0x24828a0()*-0.00694427);
+double NNfunction_sb_uRsR::synapse0x345ab60() {
+   return (neuron0x343a130()*0.224828);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2230() {
-   return (neuron0x2482be0()*-0.127571);
+double NNfunction_sb_uRsR::synapse0x345aba0() {
+   return (neuron0x343a470()*0.102477);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2270() {
-   return (neuron0x2482f20()*-1.31215);
+double NNfunction_sb_uRsR::synapse0x345abe0() {
+   return (neuron0x343a7b0()*-1.01739);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a22b0() {
-   return (neuron0x2483260()*-0.0865112);
+double NNfunction_sb_uRsR::synapse0x345ac20() {
+   return (neuron0x343aaf0()*-0.180832);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a22f0() {
-   return (neuron0x24835a0()*0.00132139);
+double NNfunction_sb_uRsR::synapse0x345ac60() {
+   return (neuron0x343ae30()*0.163895);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2330() {
-   return (neuron0x24838e0()*0.127253);
+double NNfunction_sb_uRsR::synapse0x345aca0() {
+   return (neuron0x343b170()*-0.0784683);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2370() {
-   return (neuron0x2483c20()*0.235187);
+double NNfunction_sb_uRsR::synapse0x345ace0() {
+   return (neuron0x343b4b0()*0.122183);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a23b0() {
-   return (neuron0x2483f60()*-0.349312);
+double NNfunction_sb_uRsR::synapse0x345ad20() {
+   return (neuron0x343b7f0()*0.763624);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a23f0() {
-   return (neuron0x24842a0()*-0.149275);
+double NNfunction_sb_uRsR::synapse0x345ad60() {
+   return (neuron0x343bb30()*0.0586018);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2430() {
-   return (neuron0x24845e0()*0.0531722);
+double NNfunction_sb_uRsR::synapse0x345ada0() {
+   return (neuron0x343be70()*-0.367782);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2470() {
-   return (neuron0x2484920()*0.551203);
+double NNfunction_sb_uRsR::synapse0x345ade0() {
+   return (neuron0x343c1b0()*0.0260731);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a24b0() {
-   return (neuron0x2484c60()*0.00689522);
+double NNfunction_sb_uRsR::synapse0x345ae20() {
+   return (neuron0x343c4f0()*0.340857);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a24f0() {
-   return (neuron0x2484fa0()*0.0949632);
+double NNfunction_sb_uRsR::synapse0x345ae60() {
+   return (neuron0x343c830()*0.218028);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2530() {
-   return (neuron0x24852e0()*-0.905312);
+double NNfunction_sb_uRsR::synapse0x345aea0() {
+   return (neuron0x343cb70()*-0.117179);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2570() {
-   return (neuron0x2485620()*-0.0281728);
+double NNfunction_sb_uRsR::synapse0x345aee0() {
+   return (neuron0x343ceb0()*-1.08955);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2000() {
-   return (neuron0x2485960()*0.13841);
+double NNfunction_sb_uRsR::synapse0x345a970() {
+   return (neuron0x343d1f0()*0.233751);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2040() {
-   return (neuron0x2485ec0()*0.0777634);
+double NNfunction_sb_uRsR::synapse0x345a9b0() {
+   return (neuron0x343d750()*0.618525);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a26c0() {
-   return (neuron0x24860e0()*-0.240281);
+double NNfunction_sb_uRsR::synapse0x345b030() {
+   return (neuron0x343da90()*-0.0187861);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2700() {
-   return (neuron0x2486420()*-0.193921);
+double NNfunction_sb_uRsR::synapse0x345b070() {
+   return (neuron0x343ddd0()*0.455291);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2740() {
-   return (neuron0x2486760()*0.142403);
+double NNfunction_sb_uRsR::synapse0x345b0b0() {
+   return (neuron0x343e110()*-0.436113);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2780() {
-   return (neuron0x2486aa0()*-0.00274771);
+double NNfunction_sb_uRsR::synapse0x345b0f0() {
+   return (neuron0x343e450()*-0.250452);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a27c0() {
-   return (neuron0x2486de0()*0.330789);
+double NNfunction_sb_uRsR::synapse0x345b130() {
+   return (neuron0x343e790()*-0.290004);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2800() {
-   return (neuron0x2487120()*-0.489372);
+double NNfunction_sb_uRsR::synapse0x345b170() {
+   return (neuron0x343ead0()*1.12662);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2b80() {
-   return (neuron0x2482560()*0.356226);
+double NNfunction_sb_uRsR::synapse0x345b4f0() {
+   return (neuron0x3439e80()*0.0584753);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2bc0() {
-   return (neuron0x24828a0()*-0.504912);
+double NNfunction_sb_uRsR::synapse0x345b530() {
+   return (neuron0x343a130()*0.034953);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2c00() {
-   return (neuron0x2482be0()*-0.151301);
+double NNfunction_sb_uRsR::synapse0x345b570() {
+   return (neuron0x343a470()*-0.0618297);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2c40() {
-   return (neuron0x2482f20()*0.254893);
+double NNfunction_sb_uRsR::synapse0x345b5b0() {
+   return (neuron0x343a7b0()*-0.408309);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2c80() {
-   return (neuron0x2483260()*0.122601);
+double NNfunction_sb_uRsR::synapse0x345b5f0() {
+   return (neuron0x343aaf0()*-0.0470165);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2cc0() {
-   return (neuron0x24835a0()*-0.00492212);
+double NNfunction_sb_uRsR::synapse0x345b630() {
+   return (neuron0x343ae30()*-0.0381502);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2d00() {
-   return (neuron0x24838e0()*0.825665);
+double NNfunction_sb_uRsR::synapse0x345b670() {
+   return (neuron0x343b170()*0.002333);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2d40() {
-   return (neuron0x2483c20()*0.440201);
+double NNfunction_sb_uRsR::synapse0x345b6b0() {
+   return (neuron0x343b4b0()*-0.0363036);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2d80() {
-   return (neuron0x2483f60()*-0.628332);
+double NNfunction_sb_uRsR::synapse0x345b6f0() {
+   return (neuron0x343b7f0()*-0.00259587);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2dc0() {
-   return (neuron0x24842a0()*-1.5911);
+double NNfunction_sb_uRsR::synapse0x345b730() {
+   return (neuron0x343bb30()*0.0337758);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2e00() {
-   return (neuron0x24845e0()*0.492756);
+double NNfunction_sb_uRsR::synapse0x345b770() {
+   return (neuron0x343be70()*-0.0336356);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2e40() {
-   return (neuron0x2484920()*0.171553);
+double NNfunction_sb_uRsR::synapse0x345b7b0() {
+   return (neuron0x343c1b0()*-0.0381929);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2e80() {
-   return (neuron0x2484c60()*0.498276);
+double NNfunction_sb_uRsR::synapse0x345b7f0() {
+   return (neuron0x343c4f0()*-0.0252502);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2ec0() {
-   return (neuron0x2484fa0()*0.691525);
+double NNfunction_sb_uRsR::synapse0x345b830() {
+   return (neuron0x343c830()*0.0565157);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2f00() {
-   return (neuron0x24852e0()*1.87398);
+double NNfunction_sb_uRsR::synapse0x345b870() {
+   return (neuron0x343cb70()*1.07792);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2f40() {
-   return (neuron0x2485620()*0.156982);
+double NNfunction_sb_uRsR::synapse0x345b8b0() {
+   return (neuron0x343ceb0()*-0.0384376);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a29d0() {
-   return (neuron0x2485960()*0.0747625);
+double NNfunction_sb_uRsR::synapse0x345b340() {
+   return (neuron0x343d1f0()*0.0519854);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2a10() {
-   return (neuron0x2485ec0()*0.082702);
+double NNfunction_sb_uRsR::synapse0x345b380() {
+   return (neuron0x343d750()*0.0642022);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3090() {
-   return (neuron0x24860e0()*-0.106516);
+double NNfunction_sb_uRsR::synapse0x345ba00() {
+   return (neuron0x343da90()*-0.655797);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a30d0() {
-   return (neuron0x2486420()*-0.412126);
+double NNfunction_sb_uRsR::synapse0x345ba40() {
+   return (neuron0x343ddd0()*0.00519211);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3110() {
-   return (neuron0x2486760()*-0.0891872);
+double NNfunction_sb_uRsR::synapse0x345ba80() {
+   return (neuron0x343e110()*0.0297288);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3150() {
-   return (neuron0x2486aa0()*0.261733);
+double NNfunction_sb_uRsR::synapse0x345bac0() {
+   return (neuron0x343e450()*0.0136573);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3190() {
-   return (neuron0x2486de0()*-0.504976);
+double NNfunction_sb_uRsR::synapse0x345bb00() {
+   return (neuron0x343e790()*-0.0785601);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a31d0() {
-   return (neuron0x2487120()*0.501633);
+double NNfunction_sb_uRsR::synapse0x345bb40() {
+   return (neuron0x343ead0()*-0.100048);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3550() {
-   return (neuron0x2482560()*0.458761);
+double NNfunction_sb_uRsR::synapse0x345bec0() {
+   return (neuron0x3439e80()*0.00886746);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3590() {
-   return (neuron0x24828a0()*-0.126467);
+double NNfunction_sb_uRsR::synapse0x345bf00() {
+   return (neuron0x343a130()*-0.463929);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a35d0() {
-   return (neuron0x2482be0()*-0.356306);
+double NNfunction_sb_uRsR::synapse0x345bf40() {
+   return (neuron0x343a470()*-0.163821);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3610() {
-   return (neuron0x2482f20()*1.21798);
+double NNfunction_sb_uRsR::synapse0x345bf80() {
+   return (neuron0x343a7b0()*-1.03365);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3650() {
-   return (neuron0x2483260()*0.0858329);
+double NNfunction_sb_uRsR::synapse0x345bfc0() {
+   return (neuron0x343aaf0()*0.0299697);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3690() {
-   return (neuron0x24835a0()*-0.710869);
+double NNfunction_sb_uRsR::synapse0x345c000() {
+   return (neuron0x343ae30()*-0.137527);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a36d0() {
-   return (neuron0x24838e0()*0.753181);
+double NNfunction_sb_uRsR::synapse0x345c040() {
+   return (neuron0x343b170()*-0.110334);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3710() {
-   return (neuron0x2483c20()*-0.240292);
+double NNfunction_sb_uRsR::synapse0x345c080() {
+   return (neuron0x343b4b0()*-0.188651);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3750() {
-   return (neuron0x2483f60()*-0.0574305);
+double NNfunction_sb_uRsR::synapse0x345c0c0() {
+   return (neuron0x343b7f0()*-0.0139742);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3790() {
-   return (neuron0x24842a0()*0.00330226);
+double NNfunction_sb_uRsR::synapse0x345c100() {
+   return (neuron0x343bb30()*0.121002);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a37d0() {
-   return (neuron0x24845e0()*0.383108);
+double NNfunction_sb_uRsR::synapse0x345c140() {
+   return (neuron0x343be70()*-0.0852247);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3810() {
-   return (neuron0x2484920()*0.0506177);
+double NNfunction_sb_uRsR::synapse0x345c180() {
+   return (neuron0x343c1b0()*-0.418555);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3850() {
-   return (neuron0x2484c60()*-0.615454);
+double NNfunction_sb_uRsR::synapse0x345c1c0() {
+   return (neuron0x343c4f0()*-0.413788);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3890() {
-   return (neuron0x2484fa0()*-0.320715);
+double NNfunction_sb_uRsR::synapse0x345c200() {
+   return (neuron0x343c830()*-0.122744);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a38d0() {
-   return (neuron0x24852e0()*0.64521);
+double NNfunction_sb_uRsR::synapse0x345c240() {
+   return (neuron0x343cb70()*-0.17672);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3910() {
-   return (neuron0x2485620()*0.270087);
+double NNfunction_sb_uRsR::synapse0x345c280() {
+   return (neuron0x343ceb0()*-0.323136);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a33a0() {
-   return (neuron0x2485960()*-0.557535);
+double NNfunction_sb_uRsR::synapse0x345bd10() {
+   return (neuron0x343d1f0()*0.155092);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a33e0() {
-   return (neuron0x2485ec0()*-1.17728);
+double NNfunction_sb_uRsR::synapse0x345bd50() {
+   return (neuron0x343d750()*-0.225042);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3a60() {
-   return (neuron0x24860e0()*0.00366011);
+double NNfunction_sb_uRsR::synapse0x345c3d0() {
+   return (neuron0x343da90()*-0.662198);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3aa0() {
-   return (neuron0x2486420()*-0.34129);
+double NNfunction_sb_uRsR::synapse0x345c410() {
+   return (neuron0x343ddd0()*-0.0805352);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3ae0() {
-   return (neuron0x2486760()*-0.388123);
+double NNfunction_sb_uRsR::synapse0x345c450() {
+   return (neuron0x343e110()*0.169015);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3b20() {
-   return (neuron0x2486aa0()*1.11195);
+double NNfunction_sb_uRsR::synapse0x345c490() {
+   return (neuron0x343e450()*0.0808299);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3b60() {
-   return (neuron0x2486de0()*0.318992);
+double NNfunction_sb_uRsR::synapse0x345c4d0() {
+   return (neuron0x343e790()*-0.221571);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3ba0() {
-   return (neuron0x2487120()*0.503189);
+double NNfunction_sb_uRsR::synapse0x345c510() {
+   return (neuron0x343ead0()*0.0754645);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c650() {
-   return (neuron0x2482560()*-0.0156623);
+double NNfunction_sb_uRsR::synapse0x3444fc0() {
+   return (neuron0x3439e80()*-0.0203592);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c690() {
-   return (neuron0x24828a0()*-0.413134);
+double NNfunction_sb_uRsR::synapse0x3445000() {
+   return (neuron0x343a130()*0.000271734);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c6d0() {
-   return (neuron0x2482be0()*0.623763);
+double NNfunction_sb_uRsR::synapse0x3445040() {
+   return (neuron0x343a470()*0.00734984);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c710() {
-   return (neuron0x2482f20()*-0.0266448);
+double NNfunction_sb_uRsR::synapse0x3445080() {
+   return (neuron0x343a7b0()*-0.0298065);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c750() {
-   return (neuron0x2483260()*-0.604892);
+double NNfunction_sb_uRsR::synapse0x34450c0() {
+   return (neuron0x343aaf0()*0.0134791);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c790() {
-   return (neuron0x24835a0()*0.166505);
+double NNfunction_sb_uRsR::synapse0x3445100() {
+   return (neuron0x343ae30()*-0.00397742);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c7d0() {
-   return (neuron0x24838e0()*-0.142555);
+double NNfunction_sb_uRsR::synapse0x3445140() {
+   return (neuron0x343b170()*-0.00296414);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c810() {
-   return (neuron0x2483c20()*-0.292707);
+double NNfunction_sb_uRsR::synapse0x3445180() {
+   return (neuron0x343b4b0()*-0.000324954);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4330() {
-   return (neuron0x2483f60()*-0.0478985);
+double NNfunction_sb_uRsR::synapse0x345cca0() {
+   return (neuron0x343b7f0()*0.0026576);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4370() {
-   return (neuron0x24842a0()*-0.623604);
+double NNfunction_sb_uRsR::synapse0x345cce0() {
+   return (neuron0x343bb30()*0.00659261);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a43b0() {
-   return (neuron0x24845e0()*0.415141);
+double NNfunction_sb_uRsR::synapse0x345cd20() {
+   return (neuron0x343be70()*-0.0135595);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a43f0() {
-   return (neuron0x2484920()*0.726139);
+double NNfunction_sb_uRsR::synapse0x345cd60() {
+   return (neuron0x343c1b0()*-0.0135518);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4430() {
-   return (neuron0x2484c60()*-0.890867);
+double NNfunction_sb_uRsR::synapse0x345cda0() {
+   return (neuron0x343c4f0()*0.00203011);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4470() {
-   return (neuron0x2484fa0()*-0.540618);
+double NNfunction_sb_uRsR::synapse0x345cde0() {
+   return (neuron0x343c830()*-0.00174698);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a44b0() {
-   return (neuron0x24852e0()*1.23638);
+double NNfunction_sb_uRsR::synapse0x345ce20() {
+   return (neuron0x343cb70()*-1.05231);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a44f0() {
-   return (neuron0x2485620()*1.27783);
+double NNfunction_sb_uRsR::synapse0x345ce60() {
+   return (neuron0x343ceb0()*-0.0088365);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3d70() {
-   return (neuron0x2485960()*-0.136556);
+double NNfunction_sb_uRsR::synapse0x345c6e0() {
+   return (neuron0x343d1f0()*-0.022905);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3db0() {
-   return (neuron0x2485ec0()*0.270342);
+double NNfunction_sb_uRsR::synapse0x345c720() {
+   return (neuron0x343d750()*0.0164167);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4640() {
-   return (neuron0x24860e0()*0.315345);
+double NNfunction_sb_uRsR::synapse0x345cfb0() {
+   return (neuron0x343da90()*0.265246);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4680() {
-   return (neuron0x2486420()*-0.326865);
+double NNfunction_sb_uRsR::synapse0x345cff0() {
+   return (neuron0x343ddd0()*-0.00440074);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a46c0() {
-   return (neuron0x2486760()*-0.344763);
+double NNfunction_sb_uRsR::synapse0x345d030() {
+   return (neuron0x343e110()*-0.0114856);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4700() {
-   return (neuron0x2486aa0()*-0.164476);
+double NNfunction_sb_uRsR::synapse0x345d070() {
+   return (neuron0x343e450()*0.00504343);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4740() {
-   return (neuron0x2486de0()*-0.423161);
+double NNfunction_sb_uRsR::synapse0x345d0b0() {
+   return (neuron0x343e790()*0.000670408);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4780() {
-   return (neuron0x2487120()*-0.721549);
+double NNfunction_sb_uRsR::synapse0x345d0f0() {
+   return (neuron0x343ead0()*0.0177259);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4b00() {
-   return (neuron0x2482560()*0.0993626);
+double NNfunction_sb_uRsR::synapse0x345d470() {
+   return (neuron0x3439e80()*0.0319634);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4b40() {
-   return (neuron0x24828a0()*0.77871);
+double NNfunction_sb_uRsR::synapse0x345d4b0() {
+   return (neuron0x343a130()*-0.0963283);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4b80() {
-   return (neuron0x2482be0()*-0.913247);
+double NNfunction_sb_uRsR::synapse0x345d4f0() {
+   return (neuron0x343a470()*-0.0171196);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4bc0() {
-   return (neuron0x2482f20()*1.37613);
+double NNfunction_sb_uRsR::synapse0x345d530() {
+   return (neuron0x343a7b0()*-3.63124);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4c00() {
-   return (neuron0x2483260()*-0.548232);
+double NNfunction_sb_uRsR::synapse0x345d570() {
+   return (neuron0x343aaf0()*0.041032);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4c40() {
-   return (neuron0x24835a0()*0.216587);
+double NNfunction_sb_uRsR::synapse0x345d5b0() {
+   return (neuron0x343ae30()*-0.0224753);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4c80() {
-   return (neuron0x24838e0()*-0.762787);
+double NNfunction_sb_uRsR::synapse0x345d5f0() {
+   return (neuron0x343b170()*0.00756628);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4cc0() {
-   return (neuron0x2483c20()*-0.432835);
+double NNfunction_sb_uRsR::synapse0x345d630() {
+   return (neuron0x343b4b0()*0.0353969);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4d00() {
-   return (neuron0x2483f60()*-0.417441);
+double NNfunction_sb_uRsR::synapse0x345d670() {
+   return (neuron0x343b7f0()*-0.0432783);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4d40() {
-   return (neuron0x24842a0()*0.43327);
+double NNfunction_sb_uRsR::synapse0x345d6b0() {
+   return (neuron0x343bb30()*-0.0641901);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4d80() {
-   return (neuron0x24845e0()*0.330625);
+double NNfunction_sb_uRsR::synapse0x345d6f0() {
+   return (neuron0x343be70()*-0.057429);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4dc0() {
-   return (neuron0x2484920()*-0.838113);
+double NNfunction_sb_uRsR::synapse0x345d730() {
+   return (neuron0x343c1b0()*0.0769103);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4e00() {
-   return (neuron0x2484c60()*-0.871807);
+double NNfunction_sb_uRsR::synapse0x345d770() {
+   return (neuron0x343c4f0()*0.00144871);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4e40() {
-   return (neuron0x2484fa0()*-0.914459);
+double NNfunction_sb_uRsR::synapse0x345d7b0() {
+   return (neuron0x343c830()*-0.0575533);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4e80() {
-   return (neuron0x24852e0()*-0.78663);
+double NNfunction_sb_uRsR::synapse0x345d7f0() {
+   return (neuron0x343cb70()*1.08888);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4ec0() {
-   return (neuron0x2485620()*-0.598131);
+double NNfunction_sb_uRsR::synapse0x345d830() {
+   return (neuron0x343ceb0()*-0.0283381);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4950() {
-   return (neuron0x2485960()*0.0401284);
+double NNfunction_sb_uRsR::synapse0x345d2c0() {
+   return (neuron0x343d1f0()*-0.117785);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4990() {
-   return (neuron0x2485ec0()*0.197398);
+double NNfunction_sb_uRsR::synapse0x345d300() {
+   return (neuron0x343d750()*-0.0552655);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5010() {
-   return (neuron0x24860e0()*-1.79819);
+double NNfunction_sb_uRsR::synapse0x345d980() {
+   return (neuron0x343da90()*1.15842);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5050() {
-   return (neuron0x2486420()*-0.606038);
+double NNfunction_sb_uRsR::synapse0x345d9c0() {
+   return (neuron0x343ddd0()*-0.02634);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5090() {
-   return (neuron0x2486760()*-0.697143);
+double NNfunction_sb_uRsR::synapse0x345da00() {
+   return (neuron0x343e110()*-0.0247057);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a50d0() {
-   return (neuron0x2486aa0()*0.0720946);
+double NNfunction_sb_uRsR::synapse0x345da40() {
+   return (neuron0x343e450()*0.0640354);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5110() {
-   return (neuron0x2486de0()*-0.208112);
+double NNfunction_sb_uRsR::synapse0x345da80() {
+   return (neuron0x343e790()*0.0617684);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5150() {
-   return (neuron0x2487120()*-0.10257);
+double NNfunction_sb_uRsR::synapse0x345dac0() {
+   return (neuron0x343ead0()*0.005504);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a54d0() {
-   return (neuron0x2482560()*-0.651187);
+double NNfunction_sb_uRsR::synapse0x345de40() {
+   return (neuron0x3439e80()*0.117354);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5510() {
-   return (neuron0x24828a0()*-0.34503);
+double NNfunction_sb_uRsR::synapse0x345de80() {
+   return (neuron0x343a130()*-0.155855);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5550() {
-   return (neuron0x2482be0()*0.211352);
+double NNfunction_sb_uRsR::synapse0x345dec0() {
+   return (neuron0x343a470()*-0.0938962);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5590() {
-   return (neuron0x2482f20()*1.08119);
+double NNfunction_sb_uRsR::synapse0x345df00() {
+   return (neuron0x343a7b0()*1.14347);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a55d0() {
-   return (neuron0x2483260()*1.4058);
+double NNfunction_sb_uRsR::synapse0x345df40() {
+   return (neuron0x343aaf0()*0.117511);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5610() {
-   return (neuron0x24835a0()*0.522236);
+double NNfunction_sb_uRsR::synapse0x345df80() {
+   return (neuron0x343ae30()*0.0475446);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5650() {
-   return (neuron0x24838e0()*0.196631);
+double NNfunction_sb_uRsR::synapse0x345dfc0() {
+   return (neuron0x343b170()*-0.0211459);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5690() {
-   return (neuron0x2483c20()*-0.221304);
+double NNfunction_sb_uRsR::synapse0x345e000() {
+   return (neuron0x343b4b0()*0.397447);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a56d0() {
-   return (neuron0x2483f60()*-0.57039);
+double NNfunction_sb_uRsR::synapse0x345e040() {
+   return (neuron0x343b7f0()*0.106143);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5710() {
-   return (neuron0x24842a0()*0.289747);
+double NNfunction_sb_uRsR::synapse0x345e080() {
+   return (neuron0x343bb30()*0.0402092);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5750() {
-   return (neuron0x24845e0()*-0.350089);
+double NNfunction_sb_uRsR::synapse0x345e0c0() {
+   return (neuron0x343be70()*0.260014);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5790() {
-   return (neuron0x2484920()*-0.139297);
+double NNfunction_sb_uRsR::synapse0x345e100() {
+   return (neuron0x343c1b0()*-0.0164033);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a57d0() {
-   return (neuron0x2484c60()*-0.294962);
+double NNfunction_sb_uRsR::synapse0x345e140() {
+   return (neuron0x343c4f0()*-0.141778);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5810() {
-   return (neuron0x2484fa0()*0.827823);
+double NNfunction_sb_uRsR::synapse0x345e180() {
+   return (neuron0x343c830()*-0.0174848);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5850() {
-   return (neuron0x24852e0()*-0.718846);
+double NNfunction_sb_uRsR::synapse0x345e1c0() {
+   return (neuron0x343cb70()*0.75369);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5890() {
-   return (neuron0x2485620()*0.653824);
+double NNfunction_sb_uRsR::synapse0x345e200() {
+   return (neuron0x343ceb0()*-0.230814);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5320() {
-   return (neuron0x2485960()*0.352105);
+double NNfunction_sb_uRsR::synapse0x345dc90() {
+   return (neuron0x343d1f0()*-0.0224107);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5360() {
-   return (neuron0x2485ec0()*0.289432);
+double NNfunction_sb_uRsR::synapse0x345dcd0() {
+   return (neuron0x343d750()*-0.156536);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495e90() {
-   return (neuron0x24860e0()*0.209279);
+double NNfunction_sb_uRsR::synapse0x344e800() {
+   return (neuron0x343da90()*0.606693);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495ed0() {
-   return (neuron0x2486420()*-0.330245);
+double NNfunction_sb_uRsR::synapse0x344e840() {
+   return (neuron0x343ddd0()*0.0506484);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495f10() {
-   return (neuron0x2486760()*0.44468);
+double NNfunction_sb_uRsR::synapse0x344e880() {
+   return (neuron0x343e110()*0.0517851);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495f50() {
-   return (neuron0x2486aa0()*0.249296);
+double NNfunction_sb_uRsR::synapse0x344e8c0() {
+   return (neuron0x343e450()*-0.0710852);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495f90() {
-   return (neuron0x2486de0()*0.161959);
+double NNfunction_sb_uRsR::synapse0x344e900() {
+   return (neuron0x343e790()*-0.00183867);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495fd0() {
-   return (neuron0x2487120()*0.379577);
+double NNfunction_sb_uRsR::synapse0x344e940() {
+   return (neuron0x343ead0()*0.0464245);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496350() {
-   return (neuron0x2482560()*0.851435);
+double NNfunction_sb_uRsR::synapse0x344ecc0() {
+   return (neuron0x3439e80()*-0.0950014);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496390() {
-   return (neuron0x24828a0()*0.340347);
+double NNfunction_sb_uRsR::synapse0x344ed00() {
+   return (neuron0x343a130()*-0.671671);
 }
 
-double NNfunction_sb_uRsR::synapse0x24963d0() {
-   return (neuron0x2482be0()*-0.500971);
+double NNfunction_sb_uRsR::synapse0x344ed40() {
+   return (neuron0x343a470()*0.0461129);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496410() {
-   return (neuron0x2482f20()*-0.68024);
+double NNfunction_sb_uRsR::synapse0x344ed80() {
+   return (neuron0x343a7b0()*0.119448);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496450() {
-   return (neuron0x2483260()*0.318088);
+double NNfunction_sb_uRsR::synapse0x344edc0() {
+   return (neuron0x343aaf0()*0.240948);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496490() {
-   return (neuron0x24835a0()*-0.411913);
+double NNfunction_sb_uRsR::synapse0x344ee00() {
+   return (neuron0x343ae30()*-0.209075);
 }
 
-double NNfunction_sb_uRsR::synapse0x24964d0() {
-   return (neuron0x24838e0()*-0.12585);
+double NNfunction_sb_uRsR::synapse0x344ee40() {
+   return (neuron0x343b170()*0.180964);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496510() {
-   return (neuron0x2483c20()*-0.916306);
+double NNfunction_sb_uRsR::synapse0x344ee80() {
+   return (neuron0x343b4b0()*-0.61073);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496550() {
-   return (neuron0x2483f60()*0.449253);
+double NNfunction_sb_uRsR::synapse0x344eec0() {
+   return (neuron0x343b7f0()*-0.964823);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496590() {
-   return (neuron0x24842a0()*-0.377369);
+double NNfunction_sb_uRsR::synapse0x344ef00() {
+   return (neuron0x343bb30()*0.241976);
 }
 
-double NNfunction_sb_uRsR::synapse0x24965d0() {
-   return (neuron0x24845e0()*0.64536);
+double NNfunction_sb_uRsR::synapse0x344ef40() {
+   return (neuron0x343be70()*0.248863);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496610() {
-   return (neuron0x2484920()*0.0712043);
+double NNfunction_sb_uRsR::synapse0x344ef80() {
+   return (neuron0x343c1b0()*-0.129438);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496650() {
-   return (neuron0x2484c60()*0.25555);
+double NNfunction_sb_uRsR::synapse0x344efc0() {
+   return (neuron0x343c4f0()*0.090627);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496690() {
-   return (neuron0x2484fa0()*-0.695272);
+double NNfunction_sb_uRsR::synapse0x344f000() {
+   return (neuron0x343c830()*-0.364207);
 }
 
-double NNfunction_sb_uRsR::synapse0x24966d0() {
-   return (neuron0x24852e0()*0.381235);
+double NNfunction_sb_uRsR::synapse0x344f040() {
+   return (neuron0x343cb70()*-0.228592);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496710() {
-   return (neuron0x2485620()*1.07367);
+double NNfunction_sb_uRsR::synapse0x344f080() {
+   return (neuron0x343ceb0()*0.820233);
 }
 
-double NNfunction_sb_uRsR::synapse0x24961a0() {
-   return (neuron0x2485960()*-0.22877);
+double NNfunction_sb_uRsR::synapse0x344eb10() {
+   return (neuron0x343d1f0()*-0.253982);
 }
 
-double NNfunction_sb_uRsR::synapse0x24961e0() {
-   return (neuron0x2485ec0()*0.0562907);
+double NNfunction_sb_uRsR::synapse0x344eb50() {
+   return (neuron0x343d750()*0.0466698);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496860() {
-   return (neuron0x24860e0()*0.18603);
+double NNfunction_sb_uRsR::synapse0x344f1d0() {
+   return (neuron0x343da90()*0.643106);
 }
 
-double NNfunction_sb_uRsR::synapse0x24968a0() {
-   return (neuron0x2486420()*0.662962);
+double NNfunction_sb_uRsR::synapse0x344f210() {
+   return (neuron0x343ddd0()*-0.751336);
 }
 
-double NNfunction_sb_uRsR::synapse0x24968e0() {
-   return (neuron0x2486760()*0.277537);
+double NNfunction_sb_uRsR::synapse0x344f250() {
+   return (neuron0x343e110()*0.385181);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496920() {
-   return (neuron0x2486aa0()*0.224513);
+double NNfunction_sb_uRsR::synapse0x344f290() {
+   return (neuron0x343e450()*0.344957);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496960() {
-   return (neuron0x2486de0()*-0.013836);
+double NNfunction_sb_uRsR::synapse0x344f2d0() {
+   return (neuron0x343e790()*0.632331);
 }
 
-double NNfunction_sb_uRsR::synapse0x24969a0() {
-   return (neuron0x2487120()*0.555679);
+double NNfunction_sb_uRsR::synapse0x344f310() {
+   return (neuron0x343ead0()*-1.1997);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496d20() {
-   return (neuron0x2482560()*0.655356);
+double NNfunction_sb_uRsR::synapse0x344f690() {
+   return (neuron0x3439e80()*0.476213);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496d60() {
-   return (neuron0x24828a0()*0.192698);
+double NNfunction_sb_uRsR::synapse0x344f6d0() {
+   return (neuron0x343a130()*-0.16294);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496da0() {
-   return (neuron0x2482be0()*-0.172362);
+double NNfunction_sb_uRsR::synapse0x344f710() {
+   return (neuron0x343a470()*1.05193);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496de0() {
-   return (neuron0x2482f20()*-0.104668);
+double NNfunction_sb_uRsR::synapse0x344f750() {
+   return (neuron0x343a7b0()*-0.424992);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496e20() {
-   return (neuron0x2483260()*-0.398477);
+double NNfunction_sb_uRsR::synapse0x344f790() {
+   return (neuron0x343aaf0()*-0.247082);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496e60() {
-   return (neuron0x24835a0()*0.481298);
+double NNfunction_sb_uRsR::synapse0x344f7d0() {
+   return (neuron0x343ae30()*0.13294);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496ea0() {
-   return (neuron0x24838e0()*-1.23589);
+double NNfunction_sb_uRsR::synapse0x344f810() {
+   return (neuron0x343b170()*-0.0262544);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496ee0() {
-   return (neuron0x2483c20()*0.625896);
+double NNfunction_sb_uRsR::synapse0x344f850() {
+   return (neuron0x343b4b0()*-0.0774928);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496f20() {
-   return (neuron0x2483f60()*0.616929);
+double NNfunction_sb_uRsR::synapse0x344f890() {
+   return (neuron0x343b7f0()*0.350508);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496f60() {
-   return (neuron0x24842a0()*-0.171998);
+double NNfunction_sb_uRsR::synapse0x344f8d0() {
+   return (neuron0x343bb30()*-0.48506);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496fa0() {
-   return (neuron0x24845e0()*1.28911);
+double NNfunction_sb_uRsR::synapse0x344f910() {
+   return (neuron0x343be70()*0.0461292);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496fe0() {
-   return (neuron0x2484920()*1.36684);
+double NNfunction_sb_uRsR::synapse0x344f950() {
+   return (neuron0x343c1b0()*0.090509);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497020() {
-   return (neuron0x2484c60()*0.968865);
+double NNfunction_sb_uRsR::synapse0x344f990() {
+   return (neuron0x343c4f0()*-0.00698676);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497060() {
-   return (neuron0x2484fa0()*-0.672593);
+double NNfunction_sb_uRsR::synapse0x344f9d0() {
+   return (neuron0x343c830()*0.752743);
 }
 
-double NNfunction_sb_uRsR::synapse0x24970a0() {
-   return (neuron0x24852e0()*0.539032);
+double NNfunction_sb_uRsR::synapse0x344fa10() {
+   return (neuron0x343cb70()*0.376819);
 }
 
-double NNfunction_sb_uRsR::synapse0x24970e0() {
-   return (neuron0x2485620()*-0.198766);
+double NNfunction_sb_uRsR::synapse0x344fa50() {
+   return (neuron0x343ceb0()*0.621972);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496b70() {
-   return (neuron0x2485960()*0.50868);
+double NNfunction_sb_uRsR::synapse0x344f4e0() {
+   return (neuron0x343d1f0()*-0.529831);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496bb0() {
-   return (neuron0x2485ec0()*0.42449);
+double NNfunction_sb_uRsR::synapse0x344f520() {
+   return (neuron0x343d750()*-0.686104);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497230() {
-   return (neuron0x24860e0()*-0.441108);
+double NNfunction_sb_uRsR::synapse0x344fba0() {
+   return (neuron0x343da90()*-0.279714);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497270() {
-   return (neuron0x2486420()*-0.154385);
+double NNfunction_sb_uRsR::synapse0x344fbe0() {
+   return (neuron0x343ddd0()*-0.0930072);
 }
 
-double NNfunction_sb_uRsR::synapse0x24972b0() {
-   return (neuron0x2486760()*0.244977);
+double NNfunction_sb_uRsR::synapse0x344fc20() {
+   return (neuron0x343e110()*0.0232229);
 }
 
-double NNfunction_sb_uRsR::synapse0x24972f0() {
-   return (neuron0x2486aa0()*-0.175951);
+double NNfunction_sb_uRsR::synapse0x344fc60() {
+   return (neuron0x343e450()*-0.0293298);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497330() {
-   return (neuron0x2486de0()*0.033042);
+double NNfunction_sb_uRsR::synapse0x344fca0() {
+   return (neuron0x343e790()*-1.20997);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497370() {
-   return (neuron0x2487120()*-0.726249);
+double NNfunction_sb_uRsR::synapse0x344fce0() {
+   return (neuron0x343ead0()*1.01922);
 }
 
-double NNfunction_sb_uRsR::synapse0x24976f0() {
-   return (neuron0x2482560()*0.585227);
+double NNfunction_sb_uRsR::synapse0x3450060() {
+   return (neuron0x3439e80()*-0.488888);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497730() {
-   return (neuron0x24828a0()*-0.470981);
+double NNfunction_sb_uRsR::synapse0x34500a0() {
+   return (neuron0x343a130()*0.753354);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497770() {
-   return (neuron0x2482be0()*-0.0561446);
+double NNfunction_sb_uRsR::synapse0x34500e0() {
+   return (neuron0x343a470()*0.189514);
 }
 
-double NNfunction_sb_uRsR::synapse0x24977b0() {
-   return (neuron0x2482f20()*1.37793);
+double NNfunction_sb_uRsR::synapse0x3450120() {
+   return (neuron0x343a7b0()*-1.07487);
 }
 
-double NNfunction_sb_uRsR::synapse0x24977f0() {
-   return (neuron0x2483260()*0.265547);
+double NNfunction_sb_uRsR::synapse0x3450160() {
+   return (neuron0x343aaf0()*0.519471);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497830() {
-   return (neuron0x24835a0()*0.0680455);
+double NNfunction_sb_uRsR::synapse0x34501a0() {
+   return (neuron0x343ae30()*-0.605955);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497870() {
-   return (neuron0x24838e0()*0.254439);
+double NNfunction_sb_uRsR::synapse0x34501e0() {
+   return (neuron0x343b170()*-0.252205);
 }
 
-double NNfunction_sb_uRsR::synapse0x24978b0() {
-   return (neuron0x2483c20()*-0.629819);
+double NNfunction_sb_uRsR::synapse0x3450220() {
+   return (neuron0x343b4b0()*0.203617);
 }
 
-double NNfunction_sb_uRsR::synapse0x24978f0() {
-   return (neuron0x2483f60()*-0.832962);
+double NNfunction_sb_uRsR::synapse0x3450260() {
+   return (neuron0x343b7f0()*-0.729917);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497930() {
-   return (neuron0x24842a0()*0.0165373);
+double NNfunction_sb_uRsR::synapse0x34502a0() {
+   return (neuron0x343bb30()*0.631311);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497970() {
-   return (neuron0x24845e0()*-0.0674503);
+double NNfunction_sb_uRsR::synapse0x34502e0() {
+   return (neuron0x343be70()*0.114986);
 }
 
-double NNfunction_sb_uRsR::synapse0x24979b0() {
-   return (neuron0x2484920()*-0.0147495);
+double NNfunction_sb_uRsR::synapse0x3450320() {
+   return (neuron0x343c1b0()*-0.266285);
 }
 
-double NNfunction_sb_uRsR::synapse0x24979f0() {
-   return (neuron0x2484c60()*0.789536);
+double NNfunction_sb_uRsR::synapse0x3450360() {
+   return (neuron0x343c4f0()*0.309151);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497a30() {
-   return (neuron0x2484fa0()*0.266921);
+double NNfunction_sb_uRsR::synapse0x34503a0() {
+   return (neuron0x343c830()*-0.0686668);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497a70() {
-   return (neuron0x24852e0()*0.278825);
+double NNfunction_sb_uRsR::synapse0x34503e0() {
+   return (neuron0x343cb70()*-0.200487);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497ab0() {
-   return (neuron0x2485620()*0.224656);
+double NNfunction_sb_uRsR::synapse0x3450420() {
+   return (neuron0x343ceb0()*-0.213107);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497540() {
-   return (neuron0x2485960()*0.616631);
+double NNfunction_sb_uRsR::synapse0x344feb0() {
+   return (neuron0x343d1f0()*0.076625);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497580() {
-   return (neuron0x2485ec0()*0.260451);
+double NNfunction_sb_uRsR::synapse0x344fef0() {
+   return (neuron0x343d750()*0.00214402);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497c00() {
-   return (neuron0x24860e0()*0.239249);
+double NNfunction_sb_uRsR::synapse0x3450570() {
+   return (neuron0x343da90()*0.601606);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497c40() {
-   return (neuron0x2486420()*0.358761);
+double NNfunction_sb_uRsR::synapse0x34505b0() {
+   return (neuron0x343ddd0()*0.171972);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497c80() {
-   return (neuron0x2486760()*0.110249);
+double NNfunction_sb_uRsR::synapse0x34505f0() {
+   return (neuron0x343e110()*0.125075);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497cc0() {
-   return (neuron0x2486aa0()*-0.346032);
+double NNfunction_sb_uRsR::synapse0x3450630() {
+   return (neuron0x343e450()*0.337891);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497d00() {
-   return (neuron0x2486de0()*0.427806);
+double NNfunction_sb_uRsR::synapse0x3450670() {
+   return (neuron0x343e790()*0.778905);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497d40() {
-   return (neuron0x2487120()*0.0198336);
+double NNfunction_sb_uRsR::synapse0x34506b0() {
+   return (neuron0x343ead0()*-0.174392);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9c10() {
-   return (neuron0x2482560()*0.00132679);
+double NNfunction_sb_uRsR::synapse0x3462580() {
+   return (neuron0x3439e80()*-0.0148719);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9c50() {
-   return (neuron0x24828a0()*0.00709668);
+double NNfunction_sb_uRsR::synapse0x34625c0() {
+   return (neuron0x343a130()*-0.027921);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9c90() {
-   return (neuron0x2482be0()*-0.0110113);
+double NNfunction_sb_uRsR::synapse0x3462600() {
+   return (neuron0x343a470()*-0.00247402);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9cd0() {
-   return (neuron0x2482f20()*2.00874);
+double NNfunction_sb_uRsR::synapse0x3462640() {
+   return (neuron0x343a7b0()*-0.13825);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9d10() {
-   return (neuron0x2483260()*0.00415703);
+double NNfunction_sb_uRsR::synapse0x3462680() {
+   return (neuron0x343aaf0()*0.00552258);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9d50() {
-   return (neuron0x24835a0()*-0.00246753);
+double NNfunction_sb_uRsR::synapse0x34626c0() {
+   return (neuron0x343ae30()*-0.00739716);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9d90() {
-   return (neuron0x24838e0()*-0.00780282);
+double NNfunction_sb_uRsR::synapse0x3462700() {
+   return (neuron0x343b170()*-0.00378062);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9dd0() {
-   return (neuron0x2483c20()*0.0106138);
+double NNfunction_sb_uRsR::synapse0x3462740() {
+   return (neuron0x343b4b0()*0.00301187);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9e10() {
-   return (neuron0x2483f60()*0.000223156);
+double NNfunction_sb_uRsR::synapse0x3462780() {
+   return (neuron0x343b7f0()*-3.81273e-05);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9e50() {
-   return (neuron0x24842a0()*-0.00348396);
+double NNfunction_sb_uRsR::synapse0x34627c0() {
+   return (neuron0x343bb30()*0.00674213);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9e90() {
-   return (neuron0x24845e0()*-0.00544025);
+double NNfunction_sb_uRsR::synapse0x3462800() {
+   return (neuron0x343be70()*0.0255729);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9ed0() {
-   return (neuron0x2484920()*0.00366571);
+double NNfunction_sb_uRsR::synapse0x3462840() {
+   return (neuron0x343c1b0()*0.0649347);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9f10() {
-   return (neuron0x2484c60()*-0.00103452);
+double NNfunction_sb_uRsR::synapse0x3462880() {
+   return (neuron0x343c4f0()*0.0623689);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9f50() {
-   return (neuron0x2484fa0()*-0.0133727);
+double NNfunction_sb_uRsR::synapse0x34628c0() {
+   return (neuron0x343c830()*-0.00469738);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9f90() {
-   return (neuron0x24852e0()*0.171302);
+double NNfunction_sb_uRsR::synapse0x3462900() {
+   return (neuron0x343cb70()*-0.300444);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9fd0() {
-   return (neuron0x2485620()*-0.0144683);
+double NNfunction_sb_uRsR::synapse0x3462940() {
+   return (neuron0x343ceb0()*0.0355349);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497d80() {
-   return (neuron0x2485960()*-0.0177603);
+double NNfunction_sb_uRsR::synapse0x34506f0() {
+   return (neuron0x343d1f0()*-0.000405696);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497dc0() {
-   return (neuron0x2485ec0()*-0.0016121);
+double NNfunction_sb_uRsR::synapse0x3450730() {
+   return (neuron0x343d750()*0.0317333);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa120() {
-   return (neuron0x24860e0()*0.170248);
+double NNfunction_sb_uRsR::synapse0x3462a90() {
+   return (neuron0x343da90()*-0.652262);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa160() {
-   return (neuron0x2486420()*0.0148528);
+double NNfunction_sb_uRsR::synapse0x3462ad0() {
+   return (neuron0x343ddd0()*0.00151993);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa1a0() {
-   return (neuron0x2486760()*-0.00806198);
+double NNfunction_sb_uRsR::synapse0x3462b10() {
+   return (neuron0x343e110()*0.0118217);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa1e0() {
-   return (neuron0x2486aa0()*-0.00176328);
+double NNfunction_sb_uRsR::synapse0x3462b50() {
+   return (neuron0x343e450()*0.000181127);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa220() {
-   return (neuron0x2486de0()*-0.000530702);
+double NNfunction_sb_uRsR::synapse0x3462b90() {
+   return (neuron0x343e790()*-0.0215899);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa260() {
-   return (neuron0x2487120()*-0.00848575);
+double NNfunction_sb_uRsR::synapse0x3462bd0() {
+   return (neuron0x343ead0()*0.019575);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa5e0() {
-   return (neuron0x2482560()*0.026757);
+double NNfunction_sb_uRsR::synapse0x3462f50() {
+   return (neuron0x3439e80()*-0.0175314);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa620() {
-   return (neuron0x24828a0()*-0.00523785);
+double NNfunction_sb_uRsR::synapse0x3462f90() {
+   return (neuron0x343a130()*-0.000652249);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa660() {
-   return (neuron0x2482be0()*0.0518744);
+double NNfunction_sb_uRsR::synapse0x3462fd0() {
+   return (neuron0x343a470()*-0.00857024);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa6a0() {
-   return (neuron0x2482f20()*0.315086);
+double NNfunction_sb_uRsR::synapse0x3463010() {
+   return (neuron0x343a7b0()*1.97756);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa6e0() {
-   return (neuron0x2483260()*-0.0504329);
+double NNfunction_sb_uRsR::synapse0x3463050() {
+   return (neuron0x343aaf0()*0.00660309);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa720() {
-   return (neuron0x24835a0()*-0.00738946);
+double NNfunction_sb_uRsR::synapse0x3463090() {
+   return (neuron0x343ae30()*0.00516171);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa760() {
-   return (neuron0x24838e0()*0.0100589);
+double NNfunction_sb_uRsR::synapse0x34630d0() {
+   return (neuron0x343b170()*0.00641139);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa7a0() {
-   return (neuron0x2483c20()*0.0104799);
+double NNfunction_sb_uRsR::synapse0x3463110() {
+   return (neuron0x343b4b0()*0.00491196);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa7e0() {
-   return (neuron0x2483f60()*-0.0267153);
+double NNfunction_sb_uRsR::synapse0x3463150() {
+   return (neuron0x343b7f0()*-0.0080142);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa820() {
-   return (neuron0x24842a0()*0.000488367);
+double NNfunction_sb_uRsR::synapse0x3463190() {
+   return (neuron0x343bb30()*-0.0077069);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa860() {
-   return (neuron0x24845e0()*0.0202261);
+double NNfunction_sb_uRsR::synapse0x34631d0() {
+   return (neuron0x343be70()*0.0116415);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa8a0() {
-   return (neuron0x2484920()*0.0527404);
+double NNfunction_sb_uRsR::synapse0x3463210() {
+   return (neuron0x343c1b0()*-0.027354);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa8e0() {
-   return (neuron0x2484c60()*0.0428224);
+double NNfunction_sb_uRsR::synapse0x3463250() {
+   return (neuron0x343c4f0()*0.000341593);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa920() {
-   return (neuron0x2484fa0()*0.00328025);
+double NNfunction_sb_uRsR::synapse0x3463290() {
+   return (neuron0x343c830()*0.0321003);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa960() {
-   return (neuron0x24852e0()*-0.491908);
+double NNfunction_sb_uRsR::synapse0x34632d0() {
+   return (neuron0x343cb70()*0.0895748);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa9a0() {
-   return (neuron0x2485620()*0.0034794);
+double NNfunction_sb_uRsR::synapse0x3463310() {
+   return (neuron0x343ceb0()*0.0157171);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa430() {
-   return (neuron0x2485960()*0.00700239);
+double NNfunction_sb_uRsR::synapse0x3462da0() {
+   return (neuron0x343d1f0()*0.0237168);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa470() {
-   return (neuron0x2485ec0()*0.0199428);
+double NNfunction_sb_uRsR::synapse0x3462de0() {
+   return (neuron0x343d750()*0.00815424);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aaaf0() {
-   return (neuron0x24860e0()*3.61245);
+double NNfunction_sb_uRsR::synapse0x3463460() {
+   return (neuron0x343da90()*0.089195);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aab30() {
-   return (neuron0x2486420()*0.00763828);
+double NNfunction_sb_uRsR::synapse0x34634a0() {
+   return (neuron0x343ddd0()*0.00190125);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aab70() {
-   return (neuron0x2486760()*0.0157426);
+double NNfunction_sb_uRsR::synapse0x34634e0() {
+   return (neuron0x343e110()*-0.00643888);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aabb0() {
-   return (neuron0x2486aa0()*-0.00338771);
+double NNfunction_sb_uRsR::synapse0x3463520() {
+   return (neuron0x343e450()*-0.00492266);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aabf0() {
-   return (neuron0x2486de0()*-0.0201502);
+double NNfunction_sb_uRsR::synapse0x3463560() {
+   return (neuron0x343e790()*-0.0148577);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aac30() {
-   return (neuron0x2487120()*-0.00697982);
+double NNfunction_sb_uRsR::synapse0x34635a0() {
+   return (neuron0x343ead0()*-0.0154669);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aafb0() {
-   return (neuron0x2482560()*0.195097);
+double NNfunction_sb_uRsR::synapse0x3463920() {
+   return (neuron0x3439e80()*0.0781153);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aaff0() {
-   return (neuron0x24828a0()*-0.0240891);
+double NNfunction_sb_uRsR::synapse0x3463960() {
+   return (neuron0x343a130()*0.364125);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab030() {
-   return (neuron0x2482be0()*0.439128);
+double NNfunction_sb_uRsR::synapse0x34639a0() {
+   return (neuron0x343a470()*-0.478339);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab070() {
-   return (neuron0x2482f20()*0.435794);
+double NNfunction_sb_uRsR::synapse0x34639e0() {
+   return (neuron0x343a7b0()*0.494343);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab0b0() {
-   return (neuron0x2483260()*0.965272);
+double NNfunction_sb_uRsR::synapse0x3463a20() {
+   return (neuron0x343aaf0()*0.335207);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab0f0() {
-   return (neuron0x24835a0()*-0.469629);
+double NNfunction_sb_uRsR::synapse0x3463a60() {
+   return (neuron0x343ae30()*0.0154644);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab130() {
-   return (neuron0x24838e0()*-0.465933);
+double NNfunction_sb_uRsR::synapse0x3463aa0() {
+   return (neuron0x343b170()*0.20136);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab170() {
-   return (neuron0x2483c20()*-0.337805);
+double NNfunction_sb_uRsR::synapse0x3463ae0() {
+   return (neuron0x343b4b0()*-0.410815);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab1b0() {
-   return (neuron0x2483f60()*0.259964);
+double NNfunction_sb_uRsR::synapse0x3463b20() {
+   return (neuron0x343b7f0()*0.156714);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab1f0() {
-   return (neuron0x24842a0()*0.222696);
+double NNfunction_sb_uRsR::synapse0x3463b60() {
+   return (neuron0x343bb30()*0.0641892);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab230() {
-   return (neuron0x24845e0()*0.352393);
+double NNfunction_sb_uRsR::synapse0x3463ba0() {
+   return (neuron0x343be70()*0.323637);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab270() {
-   return (neuron0x2484920()*0.251204);
+double NNfunction_sb_uRsR::synapse0x3463be0() {
+   return (neuron0x343c1b0()*0.511812);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab2b0() {
-   return (neuron0x2484c60()*0.148505);
+double NNfunction_sb_uRsR::synapse0x3463c20() {
+   return (neuron0x343c4f0()*0.143256);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab2f0() {
-   return (neuron0x2484fa0()*0.392949);
+double NNfunction_sb_uRsR::synapse0x3463c60() {
+   return (neuron0x343c830()*0.468411);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab330() {
-   return (neuron0x24852e0()*-0.475788);
+double NNfunction_sb_uRsR::synapse0x3463ca0() {
+   return (neuron0x343cb70()*-0.15778);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab370() {
-   return (neuron0x2485620()*0.172422);
+double NNfunction_sb_uRsR::synapse0x3463ce0() {
+   return (neuron0x343ceb0()*-0.285463);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aae00() {
-   return (neuron0x2485960()*0.0161654);
+double NNfunction_sb_uRsR::synapse0x3463770() {
+   return (neuron0x343d1f0()*0.0679849);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aae40() {
-   return (neuron0x2485ec0()*-0.24653);
+double NNfunction_sb_uRsR::synapse0x34637b0() {
+   return (neuron0x343d750()*0.365247);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab4c0() {
-   return (neuron0x24860e0()*-0.166703);
+double NNfunction_sb_uRsR::synapse0x3463e30() {
+   return (neuron0x343da90()*-0.470064);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab500() {
-   return (neuron0x2486420()*-1.0298);
+double NNfunction_sb_uRsR::synapse0x3463e70() {
+   return (neuron0x343ddd0()*0.436048);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab540() {
-   return (neuron0x2486760()*0.168757);
+double NNfunction_sb_uRsR::synapse0x3463eb0() {
+   return (neuron0x343e110()*0.378356);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab580() {
-   return (neuron0x2486aa0()*0.32489);
+double NNfunction_sb_uRsR::synapse0x3463ef0() {
+   return (neuron0x343e450()*0.328096);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab5c0() {
-   return (neuron0x2486de0()*0.00987071);
+double NNfunction_sb_uRsR::synapse0x3463f30() {
+   return (neuron0x343e790()*0.388823);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab600() {
-   return (neuron0x2487120()*-0.216125);
+double NNfunction_sb_uRsR::synapse0x3463f70() {
+   return (neuron0x343ead0()*-0.623982);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab980() {
-   return (neuron0x2482560()*0.147742);
+double NNfunction_sb_uRsR::synapse0x34642f0() {
+   return (neuron0x3439e80()*0.0760092);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab9c0() {
-   return (neuron0x24828a0()*-0.384634);
+double NNfunction_sb_uRsR::synapse0x3464330() {
+   return (neuron0x343a130()*0.290182);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aba00() {
-   return (neuron0x2482be0()*0.256987);
+double NNfunction_sb_uRsR::synapse0x3464370() {
+   return (neuron0x343a470()*0.0765406);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aba40() {
-   return (neuron0x2482f20()*-1.11531);
+double NNfunction_sb_uRsR::synapse0x34643b0() {
+   return (neuron0x343a7b0()*-0.974721);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aba80() {
-   return (neuron0x2483260()*-0.644312);
+double NNfunction_sb_uRsR::synapse0x34643f0() {
+   return (neuron0x343aaf0()*-0.134939);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abac0() {
-   return (neuron0x24835a0()*0.585147);
+double NNfunction_sb_uRsR::synapse0x3464430() {
+   return (neuron0x343ae30()*0.209822);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abb00() {
-   return (neuron0x24838e0()*-0.0441058);
+double NNfunction_sb_uRsR::synapse0x3464470() {
+   return (neuron0x343b170()*-0.307598);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abb40() {
-   return (neuron0x2483c20()*0.646944);
+double NNfunction_sb_uRsR::synapse0x34644b0() {
+   return (neuron0x343b4b0()*0.214872);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abb80() {
-   return (neuron0x2483f60()*1.10893);
+double NNfunction_sb_uRsR::synapse0x34644f0() {
+   return (neuron0x343b7f0()*0.120341);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abbc0() {
-   return (neuron0x24842a0()*0.468421);
+double NNfunction_sb_uRsR::synapse0x3464530() {
+   return (neuron0x343bb30()*-0.000686093);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abc00() {
-   return (neuron0x24845e0()*0.118123);
+double NNfunction_sb_uRsR::synapse0x3464570() {
+   return (neuron0x343be70()*0.149204);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abc40() {
-   return (neuron0x2484920()*0.243678);
+double NNfunction_sb_uRsR::synapse0x34645b0() {
+   return (neuron0x343c1b0()*0.171112);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abc80() {
-   return (neuron0x2484c60()*-0.689306);
+double NNfunction_sb_uRsR::synapse0x34645f0() {
+   return (neuron0x343c4f0()*0.133114);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abcc0() {
-   return (neuron0x2484fa0()*1.17482);
+double NNfunction_sb_uRsR::synapse0x3464630() {
+   return (neuron0x343c830()*-0.0436836);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abd00() {
-   return (neuron0x24852e0()*-0.0292318);
+double NNfunction_sb_uRsR::synapse0x3464670() {
+   return (neuron0x343cb70()*1.03162);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abd40() {
-   return (neuron0x2485620()*-0.0862572);
+double NNfunction_sb_uRsR::synapse0x34646b0() {
+   return (neuron0x343ceb0()*0.372149);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab7d0() {
-   return (neuron0x2485960()*-0.498546);
+double NNfunction_sb_uRsR::synapse0x3464140() {
+   return (neuron0x343d1f0()*0.232686);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab810() {
-   return (neuron0x2485ec0()*0.802307);
+double NNfunction_sb_uRsR::synapse0x3464180() {
+   return (neuron0x343d750()*0.260136);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abe90() {
-   return (neuron0x24860e0()*0.0184193);
+double NNfunction_sb_uRsR::synapse0x3464800() {
+   return (neuron0x343da90()*0.880636);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abed0() {
-   return (neuron0x2486420()*-0.568536);
+double NNfunction_sb_uRsR::synapse0x3464840() {
+   return (neuron0x343ddd0()*-0.260593);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abf10() {
-   return (neuron0x2486760()*0.234902);
+double NNfunction_sb_uRsR::synapse0x3464880() {
+   return (neuron0x343e110()*-0.216247);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abf50() {
-   return (neuron0x2486aa0()*-0.288205);
+double NNfunction_sb_uRsR::synapse0x34648c0() {
+   return (neuron0x343e450()*0.284714);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abf90() {
-   return (neuron0x2486de0()*-0.0323256);
+double NNfunction_sb_uRsR::synapse0x3464900() {
+   return (neuron0x343e790()*-0.119414);
 }
 
-double NNfunction_sb_uRsR::synapse0x24abfd0() {
-   return (neuron0x2487120()*0.492329);
+double NNfunction_sb_uRsR::synapse0x3464940() {
+   return (neuron0x343ead0()*-0.227031);
 }
 
-double NNfunction_sb_uRsR::synapse0x2488570() {
-   return (neuron0x24875c0()*-0.2584);
+double NNfunction_sb_uRsR::synapse0x32047b0() {
+   return (neuron0x343ef40()*-0.0723464);
 }
 
-double NNfunction_sb_uRsR::synapse0x24885b0() {
-   return (neuron0x2487ed0()*-1.89368);
+double NNfunction_sb_uRsR::synapse0x32047f0() {
+   return (neuron0x343f780()*-0.22134);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489a80() {
-   return (neuron0x24889b0()*0.406294);
+double NNfunction_sb_uRsR::synapse0x34412f0() {
+   return (neuron0x3440260()*-0.134042);
 }
 
-double NNfunction_sb_uRsR::synapse0x2489ac0() {
-   return (neuron0x2242240()*-0.720786);
+double NNfunction_sb_uRsR::synapse0x3441330() {
+   return (neuron0x343fd00()*0.067233);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a450() {
-   return (neuron0x24897d0()*-1.70722);
+double NNfunction_sb_uRsR::synapse0x3442dc0() {
+   return (neuron0x3441040()*-0.122105);
 }
 
-double NNfunction_sb_uRsR::synapse0x248a490() {
-   return (neuron0x248a1a0()*-0.707383);
+double NNfunction_sb_uRsR::synapse0x3442e00() {
+   return (neuron0x3442b10()*0.0120371);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b220() {
-   return (neuron0x248af70()*0.974513);
+double NNfunction_sb_uRsR::synapse0x3443b90() {
+   return (neuron0x34438e0()*0.111115);
 }
 
-double NNfunction_sb_uRsR::synapse0x248b260() {
-   return (neuron0x248b940()*0.541882);
+double NNfunction_sb_uRsR::synapse0x3443bd0() {
+   return (neuron0x34442b0()*-0.456186);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bbf0() {
-   return (neuron0x248c310()*0.657324);
+double NNfunction_sb_uRsR::synapse0x3444560() {
+   return (neuron0x3444c80()*-0.508146);
 }
 
-double NNfunction_sb_uRsR::synapse0x248bc30() {
-   return (neuron0x248cdf0()*-0.407264);
+double NNfunction_sb_uRsR::synapse0x34445a0() {
+   return (neuron0x3445760()*-0.394037);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c5c0() {
-   return (neuron0x248d7c0()*0.0277202);
+double NNfunction_sb_uRsR::synapse0x3444f30() {
+   return (neuron0x3446130()*-0.0693931);
 }
 
-double NNfunction_sb_uRsR::synapse0x248c600() {
-   return (neuron0x248a8a0()*0.0967237);
+double NNfunction_sb_uRsR::synapse0x3444f70() {
+   return (neuron0x3443210()*0.0626627);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d0a0() {
-   return (neuron0x248f370()*0.223383);
+double NNfunction_sb_uRsR::synapse0x3445a10() {
+   return (neuron0x3447ce0()*-0.58273);
 }
 
-double NNfunction_sb_uRsR::synapse0x248d0e0() {
-   return (neuron0x248fd40()*-0.888054);
+double NNfunction_sb_uRsR::synapse0x3445a50() {
+   return (neuron0x34486b0()*0.0981611);
 }
 
-double NNfunction_sb_uRsR::synapse0x248da70() {
-   return (neuron0x2490710()*-1.09014);
+double NNfunction_sb_uRsR::synapse0x34463e0() {
+   return (neuron0x3449080()*-0.479508);
 }
 
-double NNfunction_sb_uRsR::synapse0x248dab0() {
-   return (neuron0x24910e0()*3.16989);
+double NNfunction_sb_uRsR::synapse0x3446420() {
+   return (neuron0x3449a50()*0.405603);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ab50() {
-   return (neuron0x2492ef0()*-1.37108);
+double NNfunction_sb_uRsR::synapse0x34434c0() {
+   return (neuron0x344b860()*0.129846);
 }
 
-double NNfunction_sb_uRsR::synapse0x248ab90() {
-   return (neuron0x24931d0()*-1.84239);
+double NNfunction_sb_uRsR::synapse0x3443500() {
+   return (neuron0x344bb40()*0.404751);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f620() {
-   return (neuron0x2493ba0()*-0.818039);
+double NNfunction_sb_uRsR::synapse0x3447f90() {
+   return (neuron0x344c510()*0.203207);
 }
 
-double NNfunction_sb_uRsR::synapse0x248f660() {
-   return (neuron0x2494570()*1.76205);
+double NNfunction_sb_uRsR::synapse0x3447fd0() {
+   return (neuron0x344cee0()*-0.254899);
 }
 
-double NNfunction_sb_uRsR::synapse0x248fff0() {
-   return (neuron0x2494f40()*2.49249);
+double NNfunction_sb_uRsR::synapse0x3448960() {
+   return (neuron0x344d8b0()*-0.126427);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490030() {
-   return (neuron0x2495910()*1.87748);
+double NNfunction_sb_uRsR::synapse0x34489a0() {
+   return (neuron0x344e280()*-0.582937);
 }
 
-double NNfunction_sb_uRsR::synapse0x24909c0() {
-   return (neuron0x248e460()*3.74404);
+double NNfunction_sb_uRsR::synapse0x3449330() {
+   return (neuron0x3446dd0()*-0.00258424);
 }
 
-double NNfunction_sb_uRsR::synapse0x2490a00() {
-   return (neuron0x248ee30()*-3.57347);
+double NNfunction_sb_uRsR::synapse0x3449370() {
+   return (neuron0x34477a0()*0.0780456);
 }
 
-double NNfunction_sb_uRsR::synapse0x2491390() {
-   return (neuron0x24986a0()*1.31584);
+double NNfunction_sb_uRsR::synapse0x3449d00() {
+   return (neuron0x3451010()*0.0765637);
 }
 
-double NNfunction_sb_uRsR::synapse0x24913d0() {
-   return (neuron0x2499070()*-0.243891);
+double NNfunction_sb_uRsR::synapse0x3449d40() {
+   return (neuron0x34519e0()*0.177615);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485500() {
-   return (neuron0x2499a40()*0.146316);
+double NNfunction_sb_uRsR::synapse0x343cd90() {
+   return (neuron0x34523b0()*-0.610684);
 }
 
-double NNfunction_sb_uRsR::synapse0x2485540() {
-   return (neuron0x249a410()*-1.32818);
+double NNfunction_sb_uRsR::synapse0x343cdd0() {
+   return (neuron0x3452d80()*-0.160113);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493480() {
-   return (neuron0x249ade0()*1.00411);
+double NNfunction_sb_uRsR::synapse0x344bdf0() {
+   return (neuron0x3453750()*-0.5305);
 }
 
-double NNfunction_sb_uRsR::synapse0x24934c0() {
-   return (neuron0x249b7b0()*0.82429);
+double NNfunction_sb_uRsR::synapse0x344be30() {
+   return (neuron0x3454120()*-0.0844602);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493e50() {
-   return (neuron0x249c180()*1.06914);
+double NNfunction_sb_uRsR::synapse0x344c7c0() {
+   return (neuron0x3454af0()*0.0719217);
 }
 
-double NNfunction_sb_uRsR::synapse0x2493e90() {
-   return (neuron0x249cb50()*-1.28373);
+double NNfunction_sb_uRsR::synapse0x344c800() {
+   return (neuron0x34554c0()*-0.295315);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494820() {
-   return (neuron0x2492be0()*1.95828);
+double NNfunction_sb_uRsR::synapse0x344d190() {
+   return (neuron0x344b550()*0.295333);
 }
 
-double NNfunction_sb_uRsR::synapse0x2494860() {
-   return (neuron0x249f730()*-3.57792);
+double NNfunction_sb_uRsR::synapse0x344d1d0() {
+   return (neuron0x34580a0()*-0.0682113);
 }
 
-double NNfunction_sb_uRsR::synapse0x24951f0() {
-   return (neuron0x24a0100()*-1.70919);
+double NNfunction_sb_uRsR::synapse0x344db60() {
+   return (neuron0x3458a70()*-0.229991);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495230() {
-   return (neuron0x24a0ad0()*5.12935);
+double NNfunction_sb_uRsR::synapse0x344dba0() {
+   return (neuron0x3459440()*-0.292736);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495bc0() {
-   return (neuron0x24a14a0()*2.8933);
+double NNfunction_sb_uRsR::synapse0x344e530() {
+   return (neuron0x3459e10()*-0.248785);
 }
 
-double NNfunction_sb_uRsR::synapse0x2495c00() {
-   return (neuron0x24a1e70()*3.36059);
+double NNfunction_sb_uRsR::synapse0x344e570() {
+   return (neuron0x345a7e0()*-0.261967);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e710() {
-   return (neuron0x24a2840()*-1.20175);
+double NNfunction_sb_uRsR::synapse0x3447080() {
+   return (neuron0x345b1b0()*-0.7644);
 }
 
-double NNfunction_sb_uRsR::synapse0x248e750() {
-   return (neuron0x24a3210()*0.216779);
+double NNfunction_sb_uRsR::synapse0x34470c0() {
+   return (neuron0x345bb80()*-0.0851028);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497fc0() {
-   return (neuron0x24a3be0()*-0.881588);
+double NNfunction_sb_uRsR::synapse0x3450930() {
+   return (neuron0x345c550()*-0.808801);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498000() {
-   return (neuron0x24a47c0()*-0.529321);
+double NNfunction_sb_uRsR::synapse0x3450970() {
+   return (neuron0x345d130()*0.116138);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498950() {
-   return (neuron0x24a5190()*0.709268);
+double NNfunction_sb_uRsR::synapse0x34512c0() {
+   return (neuron0x345db00()*0.0477874);
 }
 
-double NNfunction_sb_uRsR::synapse0x2498990() {
-   return (neuron0x2496010()*0.877902);
+double NNfunction_sb_uRsR::synapse0x3451300() {
+   return (neuron0x344e980()*-0.407792);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499320() {
-   return (neuron0x24969e0()*0.93588);
+double NNfunction_sb_uRsR::synapse0x3451c90() {
+   return (neuron0x344f350()*-0.0269447);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499360() {
-   return (neuron0x24973b0()*-1.31898);
+double NNfunction_sb_uRsR::synapse0x3451cd0() {
+   return (neuron0x344fd20()*-0.252377);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499cf0() {
-   return (neuron0x24a99f0()*-0.61787);
+double NNfunction_sb_uRsR::synapse0x3452660() {
+   return (neuron0x3462360()*-0.0383325);
 }
 
-double NNfunction_sb_uRsR::synapse0x2499d30() {
-   return (neuron0x24aa2a0()*-1.26892);
+double NNfunction_sb_uRsR::synapse0x34526a0() {
+   return (neuron0x3462c10()*-0.0906895);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a6c0() {
-   return (neuron0x24aac70()*-1.63111);
+double NNfunction_sb_uRsR::synapse0x3453030() {
+   return (neuron0x34635e0()*-0.0251878);
 }
 
-double NNfunction_sb_uRsR::synapse0x249a700() {
-   return (neuron0x24ab640()*1.00017);
+double NNfunction_sb_uRsR::synapse0x3453070() {
+   return (neuron0x3463fb0()*0.62821);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ce00() {
-   return (neuron0x24875c0()*0.0620458);
+double NNfunction_sb_uRsR::synapse0x3455770() {
+   return (neuron0x343ef40()*0.0177371);
 }
 
-double NNfunction_sb_uRsR::synapse0x249ce40() {
-   return (neuron0x2487ed0()*-0.638027);
+double NNfunction_sb_uRsR::synapse0x34557b0() {
+   return (neuron0x343f780()*-0.588826);
 }
 
-double NNfunction_sb_uRsR::synapse0x24923c0() {
-   return (neuron0x24889b0()*-0.0264922);
+double NNfunction_sb_uRsR::synapse0x344ad30() {
+   return (neuron0x3440260()*-0.0848475);
 }
 
-double NNfunction_sb_uRsR::synapse0x2492400() {
-   return (neuron0x2242240()*0.061982);
+double NNfunction_sb_uRsR::synapse0x344ad70() {
+   return (neuron0x343fd00()*-0.0968436);
 }
 
-double NNfunction_sb_uRsR::synapse0x249f9e0() {
-   return (neuron0x24897d0()*0.0866039);
+double NNfunction_sb_uRsR::synapse0x3458350() {
+   return (neuron0x3441040()*-1.02925);
 }
 
-double NNfunction_sb_uRsR::synapse0x249fa20() {
-   return (neuron0x248a1a0()*0.103601);
+double NNfunction_sb_uRsR::synapse0x3458390() {
+   return (neuron0x3442b10()*-0.262053);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a03b0() {
-   return (neuron0x248af70()*-0.219819);
+double NNfunction_sb_uRsR::synapse0x3458d20() {
+   return (neuron0x34438e0()*-0.122379);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a03f0() {
-   return (neuron0x248b940()*-0.566755);
+double NNfunction_sb_uRsR::synapse0x3458d60() {
+   return (neuron0x34442b0()*-0.103864);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0d80() {
-   return (neuron0x248c310()*-0.187352);
+double NNfunction_sb_uRsR::synapse0x34596f0() {
+   return (neuron0x3444c80()*0.00666912);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a0dc0() {
-   return (neuron0x248cdf0()*-0.186239);
+double NNfunction_sb_uRsR::synapse0x3459730() {
+   return (neuron0x3445760()*0.511653);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1750() {
-   return (neuron0x248d7c0()*-0.0965827);
+double NNfunction_sb_uRsR::synapse0x345a0c0() {
+   return (neuron0x3446130()*-0.0793651);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a1790() {
-   return (neuron0x248a8a0()*-0.164885);
+double NNfunction_sb_uRsR::synapse0x345a100() {
+   return (neuron0x3443210()*-0.00999479);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2120() {
-   return (neuron0x248f370()*-0.0173091);
+double NNfunction_sb_uRsR::synapse0x345aa90() {
+   return (neuron0x3447ce0()*0.0310377);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2160() {
-   return (neuron0x248fd40()*0.323455);
+double NNfunction_sb_uRsR::synapse0x345aad0() {
+   return (neuron0x34486b0()*0.136041);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2af0() {
-   return (neuron0x2490710()*0.477741);
+double NNfunction_sb_uRsR::synapse0x345b460() {
+   return (neuron0x3449080()*-0.228244);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a2b30() {
-   return (neuron0x24910e0()*-0.724171);
+double NNfunction_sb_uRsR::synapse0x345b4a0() {
+   return (neuron0x3449a50()*0.0554434);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a34c0() {
-   return (neuron0x2492ef0()*0.135468);
+double NNfunction_sb_uRsR::synapse0x345be30() {
+   return (neuron0x344b860()*0.696156);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3500() {
-   return (neuron0x24931d0()*0.696333);
+double NNfunction_sb_uRsR::synapse0x345be70() {
+   return (neuron0x344bb40()*0.0711186);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3e90() {
-   return (neuron0x2493ba0()*-0.057388);
+double NNfunction_sb_uRsR::synapse0x345c800() {
+   return (neuron0x344c510()*-0.177294);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a3ed0() {
-   return (neuron0x2494570()*0.457704);
+double NNfunction_sb_uRsR::synapse0x345c840() {
+   return (neuron0x344cee0()*0.441606);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4a70() {
-   return (neuron0x2494f40()*-0.569482);
+double NNfunction_sb_uRsR::synapse0x345d3e0() {
+   return (neuron0x344d8b0()*-0.51331);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a4ab0() {
-   return (neuron0x2495910()*0.11398);
+double NNfunction_sb_uRsR::synapse0x345d420() {
+   return (neuron0x344e280()*1.183);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5440() {
-   return (neuron0x248e460()*-1.13087);
+double NNfunction_sb_uRsR::synapse0x345ddb0() {
+   return (neuron0x3446dd0()*0.0763801);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a5480() {
-   return (neuron0x248ee30()*-2.18474);
+double NNfunction_sb_uRsR::synapse0x345ddf0() {
+   return (neuron0x34477a0()*1.35374);
 }
 
-double NNfunction_sb_uRsR::synapse0x24962c0() {
-   return (neuron0x24986a0()*-0.527781);
+double NNfunction_sb_uRsR::synapse0x344ec30() {
+   return (neuron0x3451010()*0.182686);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496300() {
-   return (neuron0x2499070()*-0.0232687);
+double NNfunction_sb_uRsR::synapse0x344ec70() {
+   return (neuron0x34519e0()*0.0831145);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496c90() {
-   return (neuron0x2499a40()*0.0701066);
+double NNfunction_sb_uRsR::synapse0x344f600() {
+   return (neuron0x34523b0()*0.100736);
 }
 
-double NNfunction_sb_uRsR::synapse0x2496cd0() {
-   return (neuron0x249a410()*-0.0953585);
+double NNfunction_sb_uRsR::synapse0x344f640() {
+   return (neuron0x3452d80()*0.0793611);
 }
 
-double NNfunction_sb_uRsR::synapse0x2497660() {
-   return (neuron0x249ade0()*-0.247089);
+double NNfunction_sb_uRsR::synapse0x344ffd0() {
+   return (neuron0x3453750()*-0.1607);
 }
 
-double NNfunction_sb_uRsR::synapse0x24976a0() {
-   return (neuron0x249b7b0()*-0.0613396);
+double NNfunction_sb_uRsR::synapse0x3450010() {
+   return (neuron0x3454120()*-1.20557);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9b80() {
-   return (neuron0x249c180()*-0.151469);
+double NNfunction_sb_uRsR::synapse0x34624f0() {
+   return (neuron0x3454af0()*0.0474687);
 }
 
-double NNfunction_sb_uRsR::synapse0x24a9bc0() {
-   return (neuron0x249cb50()*3.26435);
+double NNfunction_sb_uRsR::synapse0x3462530() {
+   return (neuron0x34554c0()*0.0879759);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa550() {
-   return (neuron0x2492be0()*-0.482705);
+double NNfunction_sb_uRsR::synapse0x3462ec0() {
+   return (neuron0x344b550()*-0.246439);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aa590() {
-   return (neuron0x249f730()*-2.52578);
+double NNfunction_sb_uRsR::synapse0x3462f00() {
+   return (neuron0x34580a0()*-0.262236);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aaf20() {
-   return (neuron0x24a0100()*-0.236703);
+double NNfunction_sb_uRsR::synapse0x3463890() {
+   return (neuron0x3458a70()*0.111759);
 }
 
-double NNfunction_sb_uRsR::synapse0x24aaf60() {
-   return (neuron0x24a0ad0()*-0.148981);
+double NNfunction_sb_uRsR::synapse0x34638d0() {
+   return (neuron0x3459440()*-0.490358);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab8f0() {
-   return (neuron0x24a14a0()*-0.119444);
+double NNfunction_sb_uRsR::synapse0x3464260() {
+   return (neuron0x3459e10()*0.0150325);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ab930() {
-   return (neuron0x24a1e70()*-0.599264);
+double NNfunction_sb_uRsR::synapse0x34642a0() {
+   return (neuron0x345a7e0()*-0.104563);
 }
 
-double NNfunction_sb_uRsR::synapse0x24877e0() {
-   return (neuron0x24a2840()*0.388164);
+double NNfunction_sb_uRsR::synapse0x343f1f0() {
+   return (neuron0x345b1b0()*-0.238157);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487820() {
-   return (neuron0x24a3210()*0.026201);
+double NNfunction_sb_uRsR::synapse0x343f230() {
+   return (neuron0x345bb80()*-0.00716437);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b090() {
-   return (neuron0x24a3be0()*0.347904);
+double NNfunction_sb_uRsR::synapse0x3453a00() {
+   return (neuron0x345c550()*-0.83624);
 }
 
-double NNfunction_sb_uRsR::synapse0x249b0d0() {
-   return (neuron0x24a47c0()*0.0473414);
+double NNfunction_sb_uRsR::synapse0x3453a40() {
+   return (neuron0x345d130()*0.45043);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ac010() {
-   return (neuron0x24a5190()*-0.130765);
+double NNfunction_sb_uRsR::synapse0x3464980() {
+   return (neuron0x345db00()*0.838155);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ac050() {
-   return (neuron0x2496010()*-0.461267);
+double NNfunction_sb_uRsR::synapse0x34649c0() {
+   return (neuron0x344e980()*-0.0318673);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ac090() {
-   return (neuron0x24969e0()*-0.249939);
+double NNfunction_sb_uRsR::synapse0x3464a00() {
+   return (neuron0x344f350()*0.0701471);
 }
 
-double NNfunction_sb_uRsR::synapse0x24ac0d0() {
-   return (neuron0x24973b0()*0.495408);
+double NNfunction_sb_uRsR::synapse0x3464a40() {
+   return (neuron0x344fd20()*0.013118);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b2f80() {
-   return (neuron0x24a99f0()*0.296275);
+double NNfunction_sb_uRsR::synapse0x346b8f0() {
+   return (neuron0x3462360()*-0.98877);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b2fc0() {
-   return (neuron0x24aa2a0()*3.23169);
+double NNfunction_sb_uRsR::synapse0x346b930() {
+   return (neuron0x3462c10()*0.278081);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3000() {
-   return (neuron0x24aac70()*0.370798);
+double NNfunction_sb_uRsR::synapse0x346b970() {
+   return (neuron0x34635e0()*0.0848957);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3040() {
-   return (neuron0x24ab640()*-0.344059);
+double NNfunction_sb_uRsR::synapse0x346b9b0() {
+   return (neuron0x3463fb0()*0.0454844);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b33c0() {
-   return (neuron0x24875c0()*2.03063);
+double NNfunction_sb_uRsR::synapse0x346bd30() {
+   return (neuron0x343ef40()*0.0149022);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3400() {
-   return (neuron0x2487ed0()*-1.76691);
+double NNfunction_sb_uRsR::synapse0x346bd70() {
+   return (neuron0x343f780()*0.394525);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3440() {
-   return (neuron0x24889b0()*0.862819);
+double NNfunction_sb_uRsR::synapse0x346bdb0() {
+   return (neuron0x3440260()*0.0515796);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3480() {
-   return (neuron0x2242240()*-2.68051);
+double NNfunction_sb_uRsR::synapse0x346bdf0() {
+   return (neuron0x343fd00()*-0.0440769);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b34c0() {
-   return (neuron0x24897d0()*-0.942114);
+double NNfunction_sb_uRsR::synapse0x346be30() {
+   return (neuron0x3441040()*-1.59192);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3500() {
-   return (neuron0x248a1a0()*1.85242);
+double NNfunction_sb_uRsR::synapse0x346be70() {
+   return (neuron0x3442b10()*-0.171766);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3540() {
-   return (neuron0x248af70()*-1.98373);
+double NNfunction_sb_uRsR::synapse0x346beb0() {
+   return (neuron0x34438e0()*-0.170944);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3580() {
-   return (neuron0x248b940()*-3.06292);
+double NNfunction_sb_uRsR::synapse0x346bef0() {
+   return (neuron0x34442b0()*0.0585492);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b35c0() {
-   return (neuron0x248c310()*-2.8284);
+double NNfunction_sb_uRsR::synapse0x346bf30() {
+   return (neuron0x3444c80()*-0.0859409);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3600() {
-   return (neuron0x248cdf0()*-4.12895);
+double NNfunction_sb_uRsR::synapse0x346bf70() {
+   return (neuron0x3445760()*0.251744);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3640() {
-   return (neuron0x248d7c0()*3.33697);
+double NNfunction_sb_uRsR::synapse0x346bfb0() {
+   return (neuron0x3446130()*0.0968592);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3680() {
-   return (neuron0x248a8a0()*-2.94063);
+double NNfunction_sb_uRsR::synapse0x346bff0() {
+   return (neuron0x3443210()*-0.0133457);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b36c0() {
-   return (neuron0x248f370()*2.02091);
+double NNfunction_sb_uRsR::synapse0x346c030() {
+   return (neuron0x3447ce0()*-0.147173);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3700() {
-   return (neuron0x248fd40()*2.15034);
+double NNfunction_sb_uRsR::synapse0x346c070() {
+   return (neuron0x34486b0()*-0.108155);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3740() {
-   return (neuron0x2490710()*0.989158);
+double NNfunction_sb_uRsR::synapse0x346c0b0() {
+   return (neuron0x3449080()*0.147593);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3780() {
-   return (neuron0x24910e0()*6.45967);
+double NNfunction_sb_uRsR::synapse0x346c0f0() {
+   return (neuron0x3449a50()*-0.0724254);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3210() {
-   return (neuron0x2492ef0()*0.0401321);
+double NNfunction_sb_uRsR::synapse0x346bb80() {
+   return (neuron0x344b860()*-0.154055);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3250() {
-   return (neuron0x24931d0()*0.65699);
+double NNfunction_sb_uRsR::synapse0x346bbc0() {
+   return (neuron0x344bb40()*-0.181566);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b38d0() {
-   return (neuron0x2493ba0()*2.02491);
+double NNfunction_sb_uRsR::synapse0x346c240() {
+   return (neuron0x344c510()*0.187659);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3910() {
-   return (neuron0x2494570()*0.706262);
+double NNfunction_sb_uRsR::synapse0x346c280() {
+   return (neuron0x344cee0()*-0.590224);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3950() {
-   return (neuron0x2494f40()*1.49116);
+double NNfunction_sb_uRsR::synapse0x346c2c0() {
+   return (neuron0x344d8b0()*0.606867);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3990() {
-   return (neuron0x2495910()*0.328979);
+double NNfunction_sb_uRsR::synapse0x346c300() {
+   return (neuron0x344e280()*-1.47393);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b39d0() {
-   return (neuron0x248e460()*4.65473);
+double NNfunction_sb_uRsR::synapse0x346c340() {
+   return (neuron0x3446dd0()*-0.104007);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3a10() {
-   return (neuron0x248ee30()*-2.92469);
+double NNfunction_sb_uRsR::synapse0x346c380() {
+   return (neuron0x34477a0()*1.91476);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3a50() {
-   return (neuron0x24986a0()*0.979782);
+double NNfunction_sb_uRsR::synapse0x346c3c0() {
+   return (neuron0x3451010()*-0.161067);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3a90() {
-   return (neuron0x2499070()*2.07551);
+double NNfunction_sb_uRsR::synapse0x346c400() {
+   return (neuron0x34519e0()*0.151387);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3ad0() {
-   return (neuron0x2499a40()*3.06697);
+double NNfunction_sb_uRsR::synapse0x346c440() {
+   return (neuron0x34523b0()*-0.266669);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3b10() {
-   return (neuron0x249a410()*-2.08057);
+double NNfunction_sb_uRsR::synapse0x346c480() {
+   return (neuron0x3452d80()*-0.036823);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3b50() {
-   return (neuron0x249ade0()*-2.36041);
+double NNfunction_sb_uRsR::synapse0x346c4c0() {
+   return (neuron0x3453750()*0.620083);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3b90() {
-   return (neuron0x249b7b0()*1.68995);
+double NNfunction_sb_uRsR::synapse0x346c500() {
+   return (neuron0x3454120()*0.383164);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3bd0() {
-   return (neuron0x249c180()*1.312);
+double NNfunction_sb_uRsR::synapse0x346c540() {
+   return (neuron0x3454af0()*-0.0486374);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3c10() {
-   return (neuron0x249cb50()*0.260211);
+double NNfunction_sb_uRsR::synapse0x346c580() {
+   return (neuron0x34554c0()*-0.251758);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b37c0() {
-   return (neuron0x2492be0()*-0.146857);
+double NNfunction_sb_uRsR::synapse0x346c130() {
+   return (neuron0x344b550()*0.265925);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3800() {
-   return (neuron0x249f730()*-3.60589);
+double NNfunction_sb_uRsR::synapse0x346c170() {
+   return (neuron0x34580a0()*0.294141);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3840() {
-   return (neuron0x24a0100()*0.646875);
+double NNfunction_sb_uRsR::synapse0x346c1b0() {
+   return (neuron0x3458a70()*-0.251646);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3880() {
-   return (neuron0x24a0ad0()*-0.0263287);
+double NNfunction_sb_uRsR::synapse0x346c1f0() {
+   return (neuron0x3459440()*-0.0387712);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3e60() {
-   return (neuron0x24a14a0()*-1.47047);
+double NNfunction_sb_uRsR::synapse0x346c7d0() {
+   return (neuron0x3459e10()*0.0276035);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3ea0() {
-   return (neuron0x24a1e70()*-1.79205);
+double NNfunction_sb_uRsR::synapse0x346c810() {
+   return (neuron0x345a7e0()*0.0191229);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3ee0() {
-   return (neuron0x24a2840()*2.37272);
+double NNfunction_sb_uRsR::synapse0x346c850() {
+   return (neuron0x345b1b0()*0.827683);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3f20() {
-   return (neuron0x24a3210()*3.39427);
+double NNfunction_sb_uRsR::synapse0x346c890() {
+   return (neuron0x345bb80()*0.0512657);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3f60() {
-   return (neuron0x24a3be0()*-1.53442);
+double NNfunction_sb_uRsR::synapse0x346c8d0() {
+   return (neuron0x345c550()*-1.28213);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3fa0() {
-   return (neuron0x24a47c0()*2.39767);
+double NNfunction_sb_uRsR::synapse0x346c910() {
+   return (neuron0x345d130()*-0.499775);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b3fe0() {
-   return (neuron0x24a5190()*2.06169);
+double NNfunction_sb_uRsR::synapse0x346c950() {
+   return (neuron0x345db00()*-0.0619577);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4020() {
-   return (neuron0x2496010()*-3.25526);
+double NNfunction_sb_uRsR::synapse0x346c990() {
+   return (neuron0x344e980()*0.0338533);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4060() {
-   return (neuron0x24969e0()*1.52365);
+double NNfunction_sb_uRsR::synapse0x346c9d0() {
+   return (neuron0x344f350()*-0.0403739);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b40a0() {
-   return (neuron0x24973b0()*1.33233);
+double NNfunction_sb_uRsR::synapse0x346ca10() {
+   return (neuron0x344fd20()*0.0305371);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b40e0() {
-   return (neuron0x24a99f0()*-1.66493);
+double NNfunction_sb_uRsR::synapse0x346ca50() {
+   return (neuron0x3462360()*-0.931449);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4120() {
-   return (neuron0x24aa2a0()*1.40571);
+double NNfunction_sb_uRsR::synapse0x346ca90() {
+   return (neuron0x3462c10()*0.0405577);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4160() {
-   return (neuron0x24aac70()*-0.268461);
+double NNfunction_sb_uRsR::synapse0x346cad0() {
+   return (neuron0x34635e0()*-0.295437);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b41a0() {
-   return (neuron0x24ab640()*0.925036);
+double NNfunction_sb_uRsR::synapse0x346cb10() {
+   return (neuron0x3463fb0()*-0.093255);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4520() {
-   return (neuron0x24875c0()*0.00120888);
+double NNfunction_sb_uRsR::synapse0x346ce90() {
+   return (neuron0x343ef40()*-0.0474251);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4560() {
-   return (neuron0x2487ed0()*0.0271405);
+double NNfunction_sb_uRsR::synapse0x346ced0() {
+   return (neuron0x343f780()*0.173522);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b45a0() {
-   return (neuron0x24889b0()*0.958224);
+double NNfunction_sb_uRsR::synapse0x346cf10() {
+   return (neuron0x3440260()*0.0758823);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b45e0() {
-   return (neuron0x2242240()*-0.00354521);
+double NNfunction_sb_uRsR::synapse0x346cf50() {
+   return (neuron0x343fd00()*0.0788799);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4620() {
-   return (neuron0x24897d0()*-0.0022757);
+double NNfunction_sb_uRsR::synapse0x346cf90() {
+   return (neuron0x3441040()*-1.07718);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4660() {
-   return (neuron0x248a1a0()*0.00347658);
+double NNfunction_sb_uRsR::synapse0x346cfd0() {
+   return (neuron0x3442b10()*0.344142);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b46a0() {
-   return (neuron0x248af70()*-0.000222862);
+double NNfunction_sb_uRsR::synapse0x346d010() {
+   return (neuron0x34438e0()*0.27077);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b46e0() {
-   return (neuron0x248b940()*0.0251856);
+double NNfunction_sb_uRsR::synapse0x346d050() {
+   return (neuron0x34442b0()*0.0689);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4720() {
-   return (neuron0x248c310()*-0.00033064);
+double NNfunction_sb_uRsR::synapse0x346d090() {
+   return (neuron0x3444c80()*0.0853819);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4760() {
-   return (neuron0x248cdf0()*-0.0453665);
+double NNfunction_sb_uRsR::synapse0x346d0d0() {
+   return (neuron0x3445760()*0.743598);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b47a0() {
-   return (neuron0x248d7c0()*-0.0025936);
+double NNfunction_sb_uRsR::synapse0x346d110() {
+   return (neuron0x3446130()*-0.0285931);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b47e0() {
-   return (neuron0x248a8a0()*0.00870965);
+double NNfunction_sb_uRsR::synapse0x346d150() {
+   return (neuron0x3443210()*0.0549625);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4820() {
-   return (neuron0x248f370()*-0.00625116);
+double NNfunction_sb_uRsR::synapse0x346d190() {
+   return (neuron0x3447ce0()*0.102196);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4860() {
-   return (neuron0x248fd40()*-0.00445242);
+double NNfunction_sb_uRsR::synapse0x346d1d0() {
+   return (neuron0x34486b0()*-0.0624714);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b48a0() {
-   return (neuron0x2490710()*-0.0230702);
+double NNfunction_sb_uRsR::synapse0x346d210() {
+   return (neuron0x3449080()*0.115196);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b48e0() {
-   return (neuron0x24910e0()*0.649147);
+double NNfunction_sb_uRsR::synapse0x346d250() {
+   return (neuron0x3449a50()*-0.0189151);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4370() {
-   return (neuron0x2492ef0()*0.000171113);
+double NNfunction_sb_uRsR::synapse0x346cce0() {
+   return (neuron0x344b860()*1.30086);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b43b0() {
-   return (neuron0x24931d0()*-0.0333412);
+double NNfunction_sb_uRsR::synapse0x346cd20() {
+   return (neuron0x344bb40()*0.0944177);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4a30() {
-   return (neuron0x2493ba0()*0.00336106);
+double NNfunction_sb_uRsR::synapse0x346d3a0() {
+   return (neuron0x344c510()*0.0633942);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4a70() {
-   return (neuron0x2494570()*0.976066);
+double NNfunction_sb_uRsR::synapse0x346d3e0() {
+   return (neuron0x344cee0()*0.0214835);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4ab0() {
-   return (neuron0x2494f40()*0.0753569);
+double NNfunction_sb_uRsR::synapse0x346d420() {
+   return (neuron0x344d8b0()*0.201315);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4af0() {
-   return (neuron0x2495910()*2.06175);
+double NNfunction_sb_uRsR::synapse0x346d460() {
+   return (neuron0x344e280()*-3.23658);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4b30() {
-   return (neuron0x248e460()*0.0355335);
+double NNfunction_sb_uRsR::synapse0x346d4a0() {
+   return (neuron0x3446dd0()*0.0615545);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4b70() {
-   return (neuron0x248ee30()*-0.682139);
+double NNfunction_sb_uRsR::synapse0x346d4e0() {
+   return (neuron0x34477a0()*0.271447);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4bb0() {
-   return (neuron0x24986a0()*0.00939676);
+double NNfunction_sb_uRsR::synapse0x346d520() {
+   return (neuron0x3451010()*-0.0231369);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4bf0() {
-   return (neuron0x2499070()*1.80082);
+double NNfunction_sb_uRsR::synapse0x346d560() {
+   return (neuron0x34519e0()*-0.222037);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4c30() {
-   return (neuron0x2499a40()*0.00834979);
+double NNfunction_sb_uRsR::synapse0x346d5a0() {
+   return (neuron0x34523b0()*0.126273);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4c70() {
-   return (neuron0x249a410()*0.00756569);
+double NNfunction_sb_uRsR::synapse0x346d5e0() {
+   return (neuron0x3452d80()*-0.00695307);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4cb0() {
-   return (neuron0x249ade0()*0.00334084);
+double NNfunction_sb_uRsR::synapse0x346d620() {
+   return (neuron0x3453750()*2.13808);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4cf0() {
-   return (neuron0x249b7b0()*-0.0068167);
+double NNfunction_sb_uRsR::synapse0x346d660() {
+   return (neuron0x3454120()*0.825675);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4d30() {
-   return (neuron0x249c180()*-0.00284427);
+double NNfunction_sb_uRsR::synapse0x346d6a0() {
+   return (neuron0x3454af0()*-0.0519545);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4d70() {
-   return (neuron0x249cb50()*-0.250636);
+double NNfunction_sb_uRsR::synapse0x346d6e0() {
+   return (neuron0x34554c0()*0.122485);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4920() {
-   return (neuron0x2492be0()*-1.27412);
+double NNfunction_sb_uRsR::synapse0x346d290() {
+   return (neuron0x344b550()*0.0108283);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4960() {
-   return (neuron0x249f730()*-0.301971);
+double NNfunction_sb_uRsR::synapse0x346d2d0() {
+   return (neuron0x34580a0()*0.0110157);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b49a0() {
-   return (neuron0x24a0100()*0.00856791);
+double NNfunction_sb_uRsR::synapse0x346d310() {
+   return (neuron0x3458a70()*0.0872489);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b49e0() {
-   return (neuron0x24a0ad0()*0.0555114);
+double NNfunction_sb_uRsR::synapse0x346d350() {
+   return (neuron0x3459440()*-2.06056);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b4fc0() {
-   return (neuron0x24a14a0()*-0.802387);
+double NNfunction_sb_uRsR::synapse0x346d930() {
+   return (neuron0x3459e10()*-0.0530931);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5000() {
-   return (neuron0x24a1e70()*5.48103e-05);
+double NNfunction_sb_uRsR::synapse0x346d970() {
+   return (neuron0x345a7e0()*0.0408105);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5040() {
-   return (neuron0x24a2840()*-0.00468179);
+double NNfunction_sb_uRsR::synapse0x346d9b0() {
+   return (neuron0x345b1b0()*-0.73929);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5080() {
-   return (neuron0x24a3210()*-0.00379477);
+double NNfunction_sb_uRsR::synapse0x346d9f0() {
+   return (neuron0x345bb80()*0.0417956);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b50c0() {
-   return (neuron0x24a3be0()*-0.00337762);
+double NNfunction_sb_uRsR::synapse0x346da30() {
+   return (neuron0x345c550()*0.0683854);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5100() {
-   return (neuron0x24a47c0()*-0.00287619);
+double NNfunction_sb_uRsR::synapse0x346da70() {
+   return (neuron0x345d130()*0.30086);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5140() {
-   return (neuron0x24a5190()*-0.00138187);
+double NNfunction_sb_uRsR::synapse0x346dab0() {
+   return (neuron0x345db00()*-0.715544);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5180() {
-   return (neuron0x2496010()*0.00941336);
+double NNfunction_sb_uRsR::synapse0x346daf0() {
+   return (neuron0x344e980()*-0.016441);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b51c0() {
-   return (neuron0x24969e0()*-0.00363032);
+double NNfunction_sb_uRsR::synapse0x346db30() {
+   return (neuron0x344f350()*-0.0589084);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5200() {
-   return (neuron0x24973b0()*-0.00513311);
+double NNfunction_sb_uRsR::synapse0x346db70() {
+   return (neuron0x344fd20()*-0.0606489);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5240() {
-   return (neuron0x24a99f0()*-2.31566);
+double NNfunction_sb_uRsR::synapse0x346dbb0() {
+   return (neuron0x3462360()*-1.17119);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5280() {
-   return (neuron0x24aa2a0()*-0.254193);
+double NNfunction_sb_uRsR::synapse0x346dbf0() {
+   return (neuron0x3462c10()*1.93812);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b52c0() {
-   return (neuron0x24aac70()*-0.00606048);
+double NNfunction_sb_uRsR::synapse0x346dc30() {
+   return (neuron0x34635e0()*0.0987565);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5300() {
-   return (neuron0x24ab640()*0.00319439);
+double NNfunction_sb_uRsR::synapse0x346dc70() {
+   return (neuron0x3463fb0()*0.0623801);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5680() {
-   return (neuron0x24875c0()*0.563397);
+double NNfunction_sb_uRsR::synapse0x346dff0() {
+   return (neuron0x343ef40()*1.12817);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b56c0() {
-   return (neuron0x2487ed0()*-0.17492);
+double NNfunction_sb_uRsR::synapse0x346e030() {
+   return (neuron0x343f780()*0.504042);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5700() {
-   return (neuron0x24889b0()*0.896958);
+double NNfunction_sb_uRsR::synapse0x346e070() {
+   return (neuron0x3440260()*-1.74552);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5740() {
-   return (neuron0x2242240()*0.390671);
+double NNfunction_sb_uRsR::synapse0x346e0b0() {
+   return (neuron0x343fd00()*1.0145);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5780() {
-   return (neuron0x24897d0()*0.164353);
+double NNfunction_sb_uRsR::synapse0x346e0f0() {
+   return (neuron0x3441040()*-5.14503);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b57c0() {
-   return (neuron0x248a1a0()*0.311032);
+double NNfunction_sb_uRsR::synapse0x346e130() {
+   return (neuron0x3442b10()*-1.8404);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5800() {
-   return (neuron0x248af70()*-0.0256966);
+double NNfunction_sb_uRsR::synapse0x346e170() {
+   return (neuron0x34438e0()*-2.20398);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5840() {
-   return (neuron0x248b940()*0.407372);
+double NNfunction_sb_uRsR::synapse0x346e1b0() {
+   return (neuron0x34442b0()*-1.60317);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5880() {
-   return (neuron0x248c310()*-0.374201);
+double NNfunction_sb_uRsR::synapse0x346e1f0() {
+   return (neuron0x3444c80()*-1.26306);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b58c0() {
-   return (neuron0x248cdf0()*-0.460248);
+double NNfunction_sb_uRsR::synapse0x346e230() {
+   return (neuron0x3445760()*1.60361);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5900() {
-   return (neuron0x248d7c0()*0.498337);
+double NNfunction_sb_uRsR::synapse0x346e270() {
+   return (neuron0x3446130()*1.26868);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5940() {
-   return (neuron0x248a8a0()*0.0802743);
+double NNfunction_sb_uRsR::synapse0x346e2b0() {
+   return (neuron0x3443210()*-1.40651);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5980() {
-   return (neuron0x248f370()*0.146469);
+double NNfunction_sb_uRsR::synapse0x346e2f0() {
+   return (neuron0x3447ce0()*-1.66976);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b59c0() {
-   return (neuron0x248fd40()*0.401878);
+double NNfunction_sb_uRsR::synapse0x346e330() {
+   return (neuron0x34486b0()*0.831895);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5a00() {
-   return (neuron0x2490710()*-0.26096);
+double NNfunction_sb_uRsR::synapse0x346e370() {
+   return (neuron0x3449080()*-1.25523);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5a40() {
-   return (neuron0x24910e0()*0.946345);
+double NNfunction_sb_uRsR::synapse0x346e3b0() {
+   return (neuron0x3449a50()*1.3583);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b54d0() {
-   return (neuron0x2492ef0()*0.725459);
+double NNfunction_sb_uRsR::synapse0x346de40() {
+   return (neuron0x344b860()*5.99079);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5510() {
-   return (neuron0x24931d0()*-0.312662);
+double NNfunction_sb_uRsR::synapse0x346de80() {
+   return (neuron0x344bb40()*-1.4503);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5b90() {
-   return (neuron0x2493ba0()*-0.0141293);
+double NNfunction_sb_uRsR::synapse0x346e500() {
+   return (neuron0x344c510()*-1.09714);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5bd0() {
-   return (neuron0x2494570()*0.415992);
+double NNfunction_sb_uRsR::synapse0x346e540() {
+   return (neuron0x344cee0()*-1.30227);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5c10() {
-   return (neuron0x2494f40()*0.654567);
+double NNfunction_sb_uRsR::synapse0x346e580() {
+   return (neuron0x344d8b0()*-0.365982);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5c50() {
-   return (neuron0x2495910()*0.289767);
+double NNfunction_sb_uRsR::synapse0x346e5c0() {
+   return (neuron0x344e280()*1.25195);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5c90() {
-   return (neuron0x248e460()*0.907278);
+double NNfunction_sb_uRsR::synapse0x346e600() {
+   return (neuron0x3446dd0()*-1.94585);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5cd0() {
-   return (neuron0x248ee30()*0.222695);
+double NNfunction_sb_uRsR::synapse0x346e640() {
+   return (neuron0x34477a0()*0.151915);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5d10() {
-   return (neuron0x24986a0()*0.822564);
+double NNfunction_sb_uRsR::synapse0x346e680() {
+   return (neuron0x3451010()*-1.1763);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5d50() {
-   return (neuron0x2499070()*0.462859);
+double NNfunction_sb_uRsR::synapse0x346e6c0() {
+   return (neuron0x34519e0()*2.57963);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5d90() {
-   return (neuron0x2499a40()*0.272268);
+double NNfunction_sb_uRsR::synapse0x346e700() {
+   return (neuron0x34523b0()*-1.13783);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5dd0() {
-   return (neuron0x249a410()*0.86953);
+double NNfunction_sb_uRsR::synapse0x346e740() {
+   return (neuron0x3452d80()*-1.46505);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5e10() {
-   return (neuron0x249ade0()*0.212483);
+double NNfunction_sb_uRsR::synapse0x346e780() {
+   return (neuron0x3453750()*4.00319);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5e50() {
-   return (neuron0x249b7b0()*0.983698);
+double NNfunction_sb_uRsR::synapse0x346e7c0() {
+   return (neuron0x3454120()*-2.13755);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5e90() {
-   return (neuron0x249c180()*0.526307);
+double NNfunction_sb_uRsR::synapse0x346e800() {
+   return (neuron0x3454af0()*2.1289);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5ed0() {
-   return (neuron0x249cb50()*0.233562);
+double NNfunction_sb_uRsR::synapse0x346e840() {
+   return (neuron0x34554c0()*-1.49986);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5a80() {
-   return (neuron0x2492be0()*0.0912061);
+double NNfunction_sb_uRsR::synapse0x346e3f0() {
+   return (neuron0x344b550()*-0.093858);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5ac0() {
-   return (neuron0x249f730()*-0.011406);
+double NNfunction_sb_uRsR::synapse0x346e430() {
+   return (neuron0x34580a0()*0.119344);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5b00() {
-   return (neuron0x24a0100()*-0.418365);
+double NNfunction_sb_uRsR::synapse0x346e470() {
+   return (neuron0x3458a70()*-0.9664);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b5b40() {
-   return (neuron0x24a0ad0()*0.63099);
+double NNfunction_sb_uRsR::synapse0x346e4b0() {
+   return (neuron0x3459440()*-0.748897);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6120() {
-   return (neuron0x24a14a0()*0.835943);
+double NNfunction_sb_uRsR::synapse0x346ea90() {
+   return (neuron0x3459e10()*1.35054);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6160() {
-   return (neuron0x24a1e70()*0.224705);
+double NNfunction_sb_uRsR::synapse0x346ead0() {
+   return (neuron0x345a7e0()*1.53471);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b61a0() {
-   return (neuron0x24a2840()*0.555692);
+double NNfunction_sb_uRsR::synapse0x346eb10() {
+   return (neuron0x345b1b0()*-0.451901);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b61e0() {
-   return (neuron0x24a3210()*1.03148);
+double NNfunction_sb_uRsR::synapse0x346eb50() {
+   return (neuron0x345bb80()*2.30502);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6220() {
-   return (neuron0x24a3be0()*0.36947);
+double NNfunction_sb_uRsR::synapse0x346eb90() {
+   return (neuron0x345c550()*-1.81508);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6260() {
-   return (neuron0x24a47c0()*-0.021489);
+double NNfunction_sb_uRsR::synapse0x346ebd0() {
+   return (neuron0x345d130()*2.92199);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b62a0() {
-   return (neuron0x24a5190()*0.221407);
+double NNfunction_sb_uRsR::synapse0x346ec10() {
+   return (neuron0x345db00()*2.58713);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b62e0() {
-   return (neuron0x2496010()*0.247563);
+double NNfunction_sb_uRsR::synapse0x346ec50() {
+   return (neuron0x344e980()*1.45361);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6320() {
-   return (neuron0x24969e0()*0.748028);
+double NNfunction_sb_uRsR::synapse0x346ec90() {
+   return (neuron0x344f350()*1.05767);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6360() {
-   return (neuron0x24973b0()*0.331004);
+double NNfunction_sb_uRsR::synapse0x346ecd0() {
+   return (neuron0x344fd20()*1.26676);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b63a0() {
-   return (neuron0x24a99f0()*0.383004);
+double NNfunction_sb_uRsR::synapse0x346ed10() {
+   return (neuron0x3462360()*-1.42795);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b63e0() {
-   return (neuron0x24aa2a0()*0.616639);
+double NNfunction_sb_uRsR::synapse0x346ed50() {
+   return (neuron0x3462c10()*2.0723);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6420() {
-   return (neuron0x24aac70()*0.00437101);
+double NNfunction_sb_uRsR::synapse0x346ed90() {
+   return (neuron0x34635e0()*0.85241);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6460() {
-   return (neuron0x24ab640()*0.480302);
+double NNfunction_sb_uRsR::synapse0x346edd0() {
+   return (neuron0x3463fb0()*-2.20486);
 }
 
-double NNfunction_sb_uRsR::synapse0x2487580() {
-   return (neuron0x24b2840()*-6.59299);
+double NNfunction_sb_uRsR::synapse0x346f030() {
+   return (neuron0x346b1b0()*-0.305198);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b66c0() {
-   return (neuron0x24b2be0()*-1.21152);
+double NNfunction_sb_uRsR::synapse0x346f070() {
+   return (neuron0x346b550()*-4.02611);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6700() {
-   return (neuron0x24b3080()*-5.22467);
+double NNfunction_sb_uRsR::synapse0x346f0b0() {
+   return (neuron0x346b9f0()*-3.3776);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6740() {
-   return (neuron0x24b41e0()*-10.3884);
+double NNfunction_sb_uRsR::synapse0x346f0f0() {
+   return (neuron0x346cb50()*-5.63186);
 }
 
-double NNfunction_sb_uRsR::synapse0x24b6780() {
-   return (neuron0x24b5340()*8.41178);
+double NNfunction_sb_uRsR::synapse0x346f130() {
+   return (neuron0x346dcb0()*-6.30067);
 }
 

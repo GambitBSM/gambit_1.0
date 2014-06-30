@@ -34,6 +34,7 @@
 #include <string>
 
 #include "functors.hpp"
+#include "util_types.hpp"
 #include "depresolver.hpp"
 #include "priors_rollcall.hpp"
 #include "scanner_utils.hpp"
@@ -46,8 +47,8 @@ namespace Gambit
 
   registry
   {
-    typedef void* factory_type(const std::map<std::string, primary_model_functor *> &, 
-     DRes::DependencyResolver &b, Priors::CompositePrior &c, const std::string &purpose);
+    typedef void* factory_type(const std::map<str, primary_model_functor *> &, 
+     DRes::DependencyResolver &b, IniParser::IniFile &c, Priors::CompositePrior &d, const str &purpose);
     reg_elem <factory_type> __scanner_factories__;
   }
   
@@ -56,14 +57,16 @@ namespace Gambit
     private:
       DRes::DependencyResolver &dependencyResolver;
       Priors::CompositePrior &prior;
-      std::map<std::string, primary_model_functor *> functorMap;   
+      IniParser::IniFile &iniFile;
+      std::map<str, primary_model_functor *> functorMap;   
 
     public:
-      Likelihood_Container_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior);
+      Likelihood_Container_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, 
+       IniParser::IniFile &iniFile, Priors::CompositePrior &prior);
       ~Likelihood_Container_Factory(){}
-      const std::vector<std::string> & getKeys() const;
+      const std::vector<str> & getKeys() const;
       unsigned int getDim() const;    
-      void * operator() (const std::string &in, const std::string &purpose) const;   
+      void * operator() (const str &in, const str &purpose) const;   
       void remove(void *a) const;
   };
 

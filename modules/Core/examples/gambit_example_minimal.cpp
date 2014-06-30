@@ -73,7 +73,7 @@ int main( int argc, const char* argv[] )
     iniFile.readFile(inifilename);
  
     // Reading the inifile will also have initialised the LogMaster object, which is
-    // already available here  due to including log.hpp
+    // already available here due to including log.hpp
 
     // Determine selected model(s)
     std::vector<std::string> selectedmodels = iniFile.getModelNames();
@@ -122,14 +122,14 @@ int main( int argc, const char* argv[] )
       if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
         return new Gambit::Scanner::Test_Function_Factory(iniFile.getKeyValuePairNode());
       else
-        return new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, prior);
+        return new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
     }();
   
     //Define the iniFile interface for the scanner
-    Gambit::Scanner::IniFileInterface interface(iniFile.getScannerNode());
+    Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
 
     //Run the scanner!
-    Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface);
+    Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
     //cout << "keys = " << scanner->getKeys() << endl;
     //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
     logger() << core << "Starting scan." << EOM;

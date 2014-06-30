@@ -100,12 +100,13 @@ def update_module(line,module):
             return splitline[2]
     return module
 
-# Harvest type from a START_FUNCTION macro call
+# Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
 def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
     splitline = neatsplit('\(|\)|,|\s',line)
-    if len(splitline)>1 and splitline[0]=="START_FUNCTION":
-        #This line defines a function, so the first argument defines a candidate type
-        candidate_type = splitline[1]
+    if len(splitline)>1 and (splitline[0]=="START_FUNCTION" or splitline[0]=="QUICK_FUNCTION"):
+        #This line defines a function and the first or fifth argument defines a candidate type
+        if splitline[0]=="START_FUNCTION": candidate_type = splitline[1]
+        if splitline[0]=="QUICK_FUNCTION": candidate_type = splitline[5]
         if verbose: print "  {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
         #Now check if the type is declared in any of the module type headers (not very efficient, but simple)
         for header in typeheaders:

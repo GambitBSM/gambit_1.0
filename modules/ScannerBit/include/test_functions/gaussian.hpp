@@ -37,7 +37,7 @@ namespace Gambit
                         //constructor defined in gaussian.cpp
                         Test_Gaussian (const Options &options);
                         
-                        double operator() (std::vector<double> &unit)
+                        double operator() (const std::vector<double> &unit)
                         {
                                 this->Test_Uniform::operator()(unit);
                                 

@@ -415,11 +415,10 @@ namespace Gambit
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 
-    // Tell functor that it invalidated the current point in model space (due
-    // to a large contribution to lnL)
-    void DependencyResolver::notifyOfInvalidation(VertexID vertex)
+    // Tell functor that it invalidated the current point in model space (due to a large contribution to lnL)
+    void DependencyResolver::invalidatePointAt(VertexID vertex)
     {
-      masterGraph[vertex]->notifyOfInvalidation();
+      masterGraph[vertex]->notifyOfInvalidation("Cumulative log-likelihood pushed below threshold.");
     }
 
     // Returns pointer to ini-file entry associated with ObsLike

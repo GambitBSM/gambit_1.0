@@ -28,6 +28,13 @@ namespace Gambit
         /*ScannerBit specific stuff.*/
         namespace Scanner
         {       
+                /*Prior Transform*/
+                class PriorTransform
+                {
+                public:
+                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
+                };
+                
                 /*Inifile Interface*/
                 class IniFileInterface
                 {
@@ -42,8 +49,7 @@ namespace Gambit
                 class Function_Base
                 {
                 public:
-                        virtual const std::vector<double> & getParameters() const = 0;
-                        virtual double operator () (std::vector<double> &) = 0;
+                        virtual double operator () (const std::vector<double> &) = 0;
                         virtual void print(double, const std::string &) const = 0;
                         virtual ~Function_Base() = 0;
                 };
@@ -112,6 +118,24 @@ T get_inifile_value(std::string in, T defaults)                                 
         {                                                                                                               \
                 return defaults;                                                                                        \
         }                                                                                                               \
+}                                                                                                                       \
+                                                                                                                        \
+std::vector<double> &prior_transform(const std::vector<double> &in)                                                     \
+{                                                                                                                       \
+        const static std::vector<std::string> &key = get_input_value<std::vector<std::string>>(1);                      \
+        const static PriorTransform &prior = get_input_value<PriorTransform>(3);                                        \
+        static std::map<std::string, double> key_map;                                                                   \
+        static std::vector<double> ret;                                                                                 \
+                                                                                                                        \
+        prior.transform(in, key_map);                                                                                   \
+                                                                                                                        \
+        auto it_ret = ret.begin();                                                                                      \
+        for (auto it = key.begin(), end = key.end(); it != end; it++, it_ret++)                                         \
+        {                                                                                                               \
+                *it_ret = key_map[*it];                                                                                 \
+        }                                                                                                               \
+                                                                                                                        \
+        return ret;                                                                                                     \
 }                                                                                                                       \
 
 #define SCANNER_PLUGIN(mod_name)                                                                                        \
