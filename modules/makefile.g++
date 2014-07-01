@@ -11,4 +11,5 @@ CC = g++
 FC = gfortran
 CCEXTRA= -pipe -pg -Wextra -g 
 LNFLAGS += -g
+FMODULE = J
 FEXTRA = -ffixed-line-length-none

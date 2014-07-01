@@ -9,7 +9,7 @@ ROOT.gROOT.SetBatch(True)
 
 ## Need two args
 if len(sys.argv) != 3:
-    print "Usage: %s <atlasrootfile>" % sys.argv[0]
+    print "Usage: %s <atlasrootfile> <cmptextfile>" % sys.argv[0]
     sys.exit(1)
 
 ## 1st arg is the ROOT file from ATLAS
@@ -44,13 +44,15 @@ for e in tree:
 ## Read file and compare
 with open(TEXTFILE) as f:
     for line in f:
-        m0, m12, a0, mu, tanB, xsec = [float(x) for x in line.split()]
+        vals = [float(x) for x in line.split()]
+        m0, m12, a0, mu, tanB = vals[:5]
+        xsec = sum(vals[5:])
         atlas_xsecs_m0m12 = atlasxsecs.get((m0, m12))
         if not atlas_xsecs_m0m12:
             print "(m0, m12) = %s missing from ATLAS file... how???" % str( (m0,m12) )
-        dev_qg = dev(xsec, atlas_xsecs_m0m12[1])
+        dev_sg = dev(xsec, atlas_xsecs_m0m12[1])
         dev_gg = dev(xsec, atlas_xsecs_m0m12[2])
-        print m0, m12, dev_gg
+        print m0, m12, dev_sg, dev_gg
 
 
 # def mean(xs):

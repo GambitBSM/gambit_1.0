@@ -615,7 +615,7 @@ $(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
 	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o
 
 $(BACKENDDIR)/lib/libnulike.so:
-	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" 
+	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
 	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
 $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90

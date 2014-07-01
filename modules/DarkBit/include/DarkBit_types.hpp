@@ -42,13 +42,19 @@
 #include <cmath>
 #include <algorithm>
 
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 
 namespace Gambit
 {
 
   namespace DarkBit
-  {    
+  {
+
+    //Local preferred sources of tools.
+    using boost::shared_ptr;
+
     struct DD_couplings
     {
       double gps;
@@ -445,6 +451,26 @@ namespace Gambit
             return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
             }
     };
+
+
+    //////////////////////////////////////////////
+    // Neutrino telescope data structures
+    //////////////////////////////////////////////
+
+    // Neutrino yield function signature
+    typedef double(*nuyield_functype)(double&, int&);
+    
+    // Neutrino telescope data container
+    struct nudata
+    {
+      public:
+        int nobs;
+        double signal;
+        double bg;
+        double loglike;
+        double pvalue;
+    };
+
   }
 }
 
