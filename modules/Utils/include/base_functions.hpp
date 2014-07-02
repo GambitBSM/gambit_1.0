@@ -114,12 +114,37 @@ namespace Gambit
                 //std::cout << "Destructing base function object: " << this->name << std::endl; 
             }
 
+//             template<typename... args>
+//             typename enable_if_not_one_member_vector<double, args...>::type::type
+//             operator()(const args&... params)
+//             {
+//                     assertNdim(sizeof...(args));
+//                     return static_cast<T&>(*this).operator()(params...);
+//             }
+//             
+//             template<typename... args>
+//             typename enable_if_one_member_vector<std::vector<double>, args...>::type::type
+//             operator()(const args&... params)
+//             {
+//                     assertNdim(sizeof...(args));
+//                     int end = getVariadicMaxVector(params...);
+//                     BFargVec retval(end);
+//                     for (int i = 0; i < end; i++)
+//                     {
+//                         retval[i] = static_cast<T&>(*this).operator()(Enter_Crap(i, params)...);
+//                     }
+//                     
+//                     return retval;
+//             }
+            
             template<typename... args>
             typename enable_if_not_one_member_vector<double, args...>::type::type
             operator()(const args&... params)
             {
                     assertNdim(sizeof...(args));
-                    return static_cast<T&>(*this).operator()(params...);
+                    BFargVec v(sizeof...(args));
+                    inputVariadicVector(v.begin(), params...);
+                    return static_cast<T&>(*this).value(v);
             }
             
             template<typename... args>
@@ -129,13 +154,16 @@ namespace Gambit
                     assertNdim(sizeof...(args));
                     int end = getVariadicMaxVector(params...);
                     BFargVec retval(end);
+                    BFargVec v(sizeof...(args));
                     for (int i = 0; i < end; i++)
                     {
-                        retval[i] = static_cast<T&>(*this).operator()(Enter_Crap(i, params)...);
+                        inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
+                        retval[i] = static_cast<T&>(*this).value(v);
                     }
-                    
                     return retval;
             }
+            
+            double value(const BFargVec &vec) {return static_cast<T&>(*this).value(vec);}
 
             // Returns a copy of the shared pointer object.
             BF_temp_ptr(T) getCopy()  { return this->shared_from_this(); }  
@@ -236,6 +264,7 @@ namespace Gambit
 
             // Number of dimensions
             unsigned int ndim;
+            unsigned int nDim() const {return ndim;}
 
             // Name of the current base function (to be defined in derived classes)
             std::string name; 
@@ -247,37 +276,40 @@ namespace Gambit
 
     class BaseFunction : public FunctionExpression<BaseFunction>
     {
-        private:
+    private:
             BFargVec v;
+            
+    protected:
+            unsigned int ndim;
                 
-        public:
-            BaseFunction(const std::string &str, const int &ndim) : FunctionExpression<BaseFunction>(str, ndim), v(ndim) {}
+    public:
+            BaseFunction(const std::string &str, const int &ndim) : FunctionExpression<BaseFunction>(str, ndim), ndim(ndim) {} //v(ndim) {}
             
-            template<typename... args>
-            typename enable_if_not_one_member_vector<double, args...>::type::type
-            operator()(const args&... params)
-            {
-                    assertNdim(sizeof...(args));
-                    //BFargVec v(sizeof...(args));
-                    inputVariadicVector(v.begin(), params...);
-                    return this->value(v);
-            }
-            
-            template<typename... args>
-            typename enable_if_one_member_vector<std::vector<double>, args...>::type::type
-            operator()(const args&... params)
-            {
-                    assertNdim(sizeof...(args));
-                    int end = getVariadicMaxVector(params...);
-                    BFargVec retval(end);
-                    //BFargVec v(sizeof...(args));
-                    for (int i = 0; i < end; i++)
-                    {
-                        inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
-                        retval[i] = this->value(v);
-                    }
-                    return retval;
-            }
+//             template<typename... args>
+//             typename enable_if_not_one_member_vector<double, args...>::type::type
+//             operator()(const args&... params)
+//             {
+//                     assertNdim(sizeof...(args));
+//                     //BFargVec v(sizeof...(args));
+//                     inputVariadicVector(v.begin(), params...);
+//                     return this->value(v);
+//             }
+//             
+//             template<typename... args>
+//             typename enable_if_one_member_vector<std::vector<double>, args...>::type::type
+//             operator()(const args&... params)
+//             {
+//                     assertNdim(sizeof...(args));
+//                     int end = getVariadicMaxVector(params...);
+//                     BFargVec retval(end);
+//                     //BFargVec v(sizeof...(args));
+//                     for (int i = 0; i < end; i++)
+//                     {
+//                         inputVariadicVector(v.begin(), Enter_Crap(i, params)...);
+//                         retval[i] = this->value(v);
+//                     }
+//                     return retval;
+//             }
             
             virtual double value(const BFargVec &vec) = 0;
             
@@ -633,11 +665,22 @@ namespace Gambit
                 if (radProf->getNdim() != 1) this->failHard("RotSym constructor requires 1-dim radial profile.");
             }
             
-            template <typename... args>
-            double operator()(const args&... params)
+            double value(const BFargVec &args)
             {
-                return (*(this->radialProfile))(sqrt(squareVariadic(params...)));
+                double r = 0;
+                for (unsigned int i = 0; i < FunctionExpression<BFrotSym<T>>::nDim(); i++)
+                {
+                    r += args[i] * args[i];
+                }
+                r = sqrt(r);
+                return (*(this->radialProfile))(r);
             }
+            
+            //template <typename... args>
+            //double operator()(const args&... params)
+            //{
+            //    return (*(this->radialProfile))(sqrt(squareVariadic(params...)));
+            //}
 
         private:
             BF_temp_ptr(T) radialProfile;
@@ -649,10 +692,17 @@ namespace Gambit
     class BFaddPar: public FunctionExpression<BFaddPar<T> >
     {
         public:
-            template<typename... args>
-            double operator()(args... params)
+            //template<typename... args>
+            //double operator()(args... params)
+            //{
+            //    return rmVariadicPt(index, *myPointer, params...);
+            //}
+            
+            double value(const BFargVec &args)
             {
-                return rmVariadicPt(index, *myPointer, params...);
+                BFargVec myArgs = args;
+                myArgs.erase(myArgs.begin() + index);
+                return (*myPointer).value(myArgs);
             }
 
             BFaddPar(BF_temp_ptr(T) parent, int i) : 
@@ -671,17 +721,28 @@ namespace Gambit
     class BFvalidRange: public FunctionExpression<BFvalidRange<T> >
     {
         public:
-            template<typename... args>
-            double operator()(const args&... params)
+            //template<typename... args>
+            //double operator()(const args&... params)
+            //{
+            //    double val = getVariadicPt<double>(index, params...);
+            //    if (x0>val or x1<val)
+            //    {
+            //        std::cout << "WARNING: Accessing Base Function object out of range!!!" << std::endl;
+            //        std::cout << "Requested: " << val << ", valid range is " << x0 << " to " << x1 << std::endl;
+            //        return 0;
+            //    }
+            //    return (*myPointer)(params...);
+            //}
+            
+            double value(const BFargVec &args)
             {
-                double val = getVariadicPt<double>(index, params...);
-                if (x0>val or x1<val)
+                if (x0>args[index] or x1<args[index])
                 {
                     std::cout << "WARNING: Accessing Base Function object out of range!!!" << std::endl;
-                    std::cout << "Requested: " << val << ", valid range is " << x0 << " to " << x1 << std::endl;
+                    std::cout << "Requested: " << args[index] << ", valid range is " << x0 << " to " << x1 << std::endl;
                     return 0;
                 }
-                return (*myPointer)(params...);
+                return (*myPointer).value(args);
             }
 
             BFvalidRange(BF_temp_ptr(T) parent, int i, double x0, double x1) : 
@@ -700,10 +761,17 @@ namespace Gambit
     class BFfixPar: public FunctionExpression<BFfixPar<T> >
     {
         public:
-            template <typename... args>
-            double operator()(args... params)
+            //template <typename... args>
+            //double operator()(args... params)
+            //{
+            //    return addVariadicPt(index, x, *myPointer, params...);
+            //}
+            
+            double value(const BFargVec &args)
             {
-                return addVariadicPt(index, x, *myPointer, params...);
+                BFargVec myArgs = args;
+                myArgs.insert(myArgs.begin() + index, x);
+                return (*myPointer).value(myArgs);
             }
 
             BFfixPar(BF_temp_ptr(T) parent, int i, double x) : 
@@ -756,11 +824,40 @@ namespace Gambit
             }
 
             //double value(const BFargVec &args)
-            template <typename... argss>
-            double operator()(const argss&... paramss)
+//             template <typename... argss>
+//             double operator()(const argss&... paramss)
+//             {
+//                 BFargVec args(sizeof...(argss));
+//                 inputVariadicVector(args.begin(), paramss...);
+//                 // If integrand has its own integrator, use that.
+//                 if (integrand->hasIntegrator())
+//                 {
+//                     return integrand->integrator(args, index, x0, x1);
+//                 }
+// 
+//                 //
+//                 // Otherwise, we use GSL:
+//                 //
+//                 double result, error;
+// 
+//                 // Build up n-dim argument vector for integrand from (n-1)-dim args.
+//                 fullArgs.clear();
+//                 for (unsigned int i = 0; i < index; ++i) fullArgs.push_back(args[i]);
+//                 fullArgs.push_back(0);  // Argument that we integrate over.
+//                 for (unsigned int i = index; i < args.size(); ++i) fullArgs.push_back(args[i]);
+// 
+//                 // Setup gsl_function
+//                 function=&BFintegrate::invoke;
+//                 params=this;
+// 
+//                 //TODO: Add error checks to integration output!!
+//                 gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
+// 
+//                 return result;
+//             }//18002216903 4167762466
+            
+            double value(const BFargVec &args)
             {
-                BFargVec args(sizeof...(argss));
-                inputVariadicVector(args.begin(), paramss...);
                 // If integrand has its own integrator, use that.
                 if (integrand->hasIntegrator())
                 {
@@ -786,7 +883,8 @@ namespace Gambit
                 gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
 
                 return result;
-            }//18002216903 4167762466
+            }
+            
         private:
             // Static member function that invokes integrand
             static double invoke(double x, void *params) {
@@ -818,11 +916,18 @@ namespace Gambit
             }
 
             //double value(const BFargVec &args)
-            template <typename... args>
-            double operator()(args... params)
+//             template <typename... args>
+//             double operator()(args... params)
+//             {
+//                 // TODO: Implement LOS-integral.  Two arguments are (theta, phi).
+//                 //(void)args;
+//                 return 0;
+//             }
+            
+            double value(const BFargVec &args)
             {
                 // TODO: Implement LOS-integral.  Two arguments are (theta, phi).
-                //(void)args;
+                (void)args;
                 return 0;
             }
 
@@ -853,6 +958,11 @@ namespace Gambit
             {
                 return (*ptr)(params...);
             }
+            
+            double value(const BFargVec &args)
+            {
+                return (*ptr).value(args);
+            }
 
         private:
             std::vector<double> xgrid;
@@ -870,10 +980,15 @@ namespace Gambit
                 if (f1->getNdim()!=f2->getNdim()) this->failHard("BFsum can only sum objects with matching dimensionality.");
             }
 
-            template <typename... args>
-            double operator()(args... params)
+//             template <typename... args>
+//             double operator()(args... params)
+//             {
+//                 return (*f1)(params...) + (*f2)(params...);
+//             }
+            
+            double value(const BFargVec &args)
             {
-                return (*f1)(params...) + (*f2)(params...);
+                return (*f1).value(args) + (*f2).value(args);
             }
             
         private:    
@@ -891,10 +1006,15 @@ namespace Gambit
                 if (f1->getNdim()!=f2->getNdim()) this->failHard("BFsum can only sum objects with matching dimensionality.");
             }
 
-            template <typename... args>
-            double operator()(args... params)
+            //template <typename... args>
+//             double operator()(args... params)
+//             {
+//                 return (*f1)(params...) - (*f2)(params...);
+//             }
+            
+            double value(const BFargVec &args)
             {
-                return (*f1)(params...) - (*f2)(params...);
+                return (*f1).value(args) - (*f2).value(args);
             }
             
         private:    
@@ -914,10 +1034,15 @@ namespace Gambit
                 //this->ptr = &BFmult::multBFs;
             }
 
-            template<typename... args>
-            double operator()(const args... params)
+//             template<typename... args>
+//             double operator()(const args... params)
+//             {
+//                 return (*f1)(params...) * (*f2)(params...);
+//             }
+            
+            double value(const BFargVec &args)
             {
-                return (*f1)(params...) * (*f2)(params...);
+                return (*f1).value(args) * (*f2).value(args);
             }
             
          private:
@@ -936,10 +1061,15 @@ namespace Gambit
             {
             }
 
-            template<typename... args>
-            double operator()(const args... params)
+//             template<typename... args>
+//             double operator()(const args... params)
+//             {
+//                 return (*f1)(params...) * x;
+//             }
+            
+            double value(const BFargVec &args)
             {
-                return (*f1)(params...) * x;
+                return (*f1).value(args) * x;
             }
             
         private:   
@@ -1107,161 +1237,161 @@ namespace Gambit
 
     // Constant n-dim function
     
-    template <typename T>
-    class BFfromPlainFunctionExpression;
-    
-    template <typename... args>
-    class BFfromPlainFunctionExpression<double (args...)> : public FunctionExpression<BFfromPlainFunction<double (args...)> >
-    {
-    private:
-            double (*ptr)(args ...);
-            
-    public:
-            BFfromPlainFunctionExpression(double (*f)(args...)) : FunctionExpression<BFfromPlainFunction<double (args...)> >("fromPlainFunction", sizeof...(args))
-            {
-                    ptr = f;
-            }
-            
-            //template <typename... argss>
-            double operator()(const args&... params)
-            {
-                    return ptr(params...);
-            }
-            
-            template <typename... argss>
-            double operator()(const argss&... params)
-            {
-                    std::ostringstream os;
-                    os << "BFfromPlainFunction:  " << sizeof...(args) << " arguments expected, " << sizeof...(argss) << " recieved.";
-                    this->failHard(os.str());
-                    
-                    return 0.0;
-            }
-    };
-
-    // Constant n-dim function 
-    class BFconstantExpression: public FunctionExpression<BFconstant>
-    {
-        public:
-            BFconstantExpression(double value, unsigned int ndim) : FunctionExpression<BFconstant>("Constant", ndim)
-            {
-                this->myValue = value;
-            }
-
-            template<typename... args>
-            double operator()(const args&... params)
-            {
-                return myValue;
-            }
-            
-        private:
-            double myValue;
-    };
-
-    // 1-dim function from table
-    class BFinterpolationExpression: public FunctionExpression<BFinterpolation>
-    {
-        public:
-            BFinterpolationExpression(const std::vector<double> &Xgrid, const std::vector<double> &Ygrid, unsigned int ndim, std::string mode = "lin") :
-                FunctionExpression<BFinterpolation>("Interpolation", ndim), mode(mode)
-            {
-                if (ndim != 1) failHard("Only 1-dim interpolation implemented right now.");
-                this->Xgrid = Xgrid;
-                this->Ygrid = Ygrid;
-                this->integratorFlag = true;
-                if ( mode == "lin" ) this->ptr = &BFinterpolationExpression::linearInterp;
-                else if( mode == "log" ) this->ptr = &BFinterpolationExpression::logInterp;
-                else
-                {
-                    failHard("expecting mode = 'lin' or mode = 'log' for linear interpolation in lin-lin or log-log space.");
-                }
-            }
-
-            double operator()(const double &param)
-            {
-                return (this->*ptr)(param);
-            }
-            
-            template <typename... argss>
-            double operator()(const argss&... params)
-            {
-                    std::ostringstream os;
-                    os << "BFinterpolation:  " << 1 << " argument expected, " << sizeof...(argss) << " recieved.";
-                    this->failHard(os.str());
-                    
-                    return 0.0;
-            }
-            
-        protected:
-            // Implementation specific integrator
-            double integrator(const BFargVec &vec, int i, double E0, double E1)
-            {
-                (void)i;
-                if (vec.size() != ndim - 1) failHard("Too many vec-arguments in BFinterpolation::integrator.");
-                // Simple trapezoidal integration in log-log space
-                double sum = 0;
-                if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
-                int i0 = 0; for (; Xgrid[i0] < E0; i0++) {};  // E[i0] > E0
-                int i1 = 0; for (; Xgrid[i1] < E1; i1++) {};  // E[i1] > E1
-                double x0 = E0;
-                double y0 = this->operator()(E0);  // Get interpolated value
-                for (int i = i0; i < i1; i++)
-                {
-                    double x1 = Xgrid[i];
-                    double y1 = Ygrid[i];
-                    sum += (x1-x0)*(y0+y1)/2;
-                    x0 = x1;
-                    y0 = y1;
-                }
-                double x1 = E1;
-                double y1 = this->operator()(E1);
-                if ( mode == "lin" )  // TODO: Remove string comparison
-                {
-                    sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
-                }
-                if ( mode == "log" ) 
-                {
-                    double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
-                    sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
-                }
-                return sum;
-            }
-            
-        private:
-            //double logInterp(const BFargVec &args)
-            double logInterp(const double &args)
-            {
-                // Linear interpolation in log-log space
-                double energy = args;//[0];
-                if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
-                int i = 0; for (; Xgrid[i] < energy; i++) {};  // Find index
-                double x0 = Xgrid[i-1];
-                double x1 = Xgrid[i];
-                double y0 = Ygrid[i-1];
-                double y1 = Ygrid[i];
-                return y0 * exp(log(y1/y0) * log(energy/x0) / log(x1/x0));
-            }
-
-            //double linearInterp(const BFargVec &args)
-            double linearInterp(const double &args)
-            {
-                // Linear interpolation in lin-lin space
-                double energy = args;//[0];
-                if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
-                int i = 0; for (; Xgrid[i] < energy; i++) {};  // Find index
-                double x0 = Xgrid[i-1];
-                double x1 = Xgrid[i];
-                double y0 = Ygrid[i-1];
-                double y1 = Ygrid[i];
-                return y0 + (energy-x0)/(x1-x0)*(y1-y0);
-            }
-
-            //double(BFinterpolation::*ptr)(const BFargVec&);
-            double(BFinterpolationExpression::*ptr)(const double&);
-            std::vector<double> Xgrid;
-            std::vector<double> Ygrid;
-            std::string mode;
-    };
+//     template <typename T>
+//     class BFfromPlainFunctionExpression;
+//     
+//     template <typename... args>
+//     class BFfromPlainFunctionExpression<double (args...)> : public FunctionExpression<BFfromPlainFunction<double (args...)> >
+//     {
+//     private:
+//             double (*ptr)(args ...);
+//             
+//     public:
+//             BFfromPlainFunctionExpression(double (*f)(args...)) : FunctionExpression<BFfromPlainFunction<double (args...)> >("fromPlainFunction", sizeof...(args))
+//             {
+//                     ptr = f;
+//             }
+//             
+//             //template <typename... argss>
+//             double operator()(const args&... params)
+//             {
+//                     return ptr(params...);
+//             }
+//             
+//             template <typename... argss>
+//             double operator()(const argss&... params)
+//             {
+//                     std::ostringstream os;
+//                     os << "BFfromPlainFunction:  " << sizeof...(args) << " arguments expected, " << sizeof...(argss) << " recieved.";
+//                     this->failHard(os.str());
+//                     
+//                     return 0.0;
+//             }
+//     };
+// 
+//     // Constant n-dim function 
+//     class BFconstantExpression: public FunctionExpression<BFconstant>
+//     {
+//         public:
+//             BFconstantExpression(double value, unsigned int ndim) : FunctionExpression<BFconstant>("Constant", ndim)
+//             {
+//                 this->myValue = value;
+//             }
+// 
+//             template<typename... args>
+//             double operator()(const args&... params)
+//             {
+//                 return myValue;
+//             }
+//             
+//         private:
+//             double myValue;
+//     };
+// 
+//     // 1-dim function from table
+//     class BFinterpolationExpression: public FunctionExpression<BFinterpolation>
+//     {
+//         public:
+//             BFinterpolationExpression(const std::vector<double> &Xgrid, const std::vector<double> &Ygrid, unsigned int ndim, std::string mode = "lin") :
+//                 FunctionExpression<BFinterpolation>("Interpolation", ndim), mode(mode)
+//             {
+//                 if (ndim != 1) failHard("Only 1-dim interpolation implemented right now.");
+//                 this->Xgrid = Xgrid;
+//                 this->Ygrid = Ygrid;
+//                 this->integratorFlag = true;
+//                 if ( mode == "lin" ) this->ptr = &BFinterpolationExpression::linearInterp;
+//                 else if( mode == "log" ) this->ptr = &BFinterpolationExpression::logInterp;
+//                 else
+//                 {
+//                     failHard("expecting mode = 'lin' or mode = 'log' for linear interpolation in lin-lin or log-log space.");
+//                 }
+//             }
+// 
+//             double operator()(const double &param)
+//             {
+//                 return (this->*ptr)(param);
+//             }
+//             
+//             template <typename... argss>
+//             double operator()(const argss&... params)
+//             {
+//                     std::ostringstream os;
+//                     os << "BFinterpolation:  " << 1 << " argument expected, " << sizeof...(argss) << " recieved.";
+//                     this->failHard(os.str());
+//                     
+//                     return 0.0;
+//             }
+//             
+//         protected:
+//             // Implementation specific integrator
+//             double integrator(const BFargVec &vec, int i, double E0, double E1)
+//             {
+//                 (void)i;
+//                 if (vec.size() != ndim - 1) failHard("Too many vec-arguments in BFinterpolation::integrator.");
+//                 // Simple trapezoidal integration in log-log space
+//                 double sum = 0;
+//                 if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
+//                 int i0 = 0; for (; Xgrid[i0] < E0; i0++) {};  // E[i0] > E0
+//                 int i1 = 0; for (; Xgrid[i1] < E1; i1++) {};  // E[i1] > E1
+//                 double x0 = E0;
+//                 double y0 = this->operator()(E0);  // Get interpolated value
+//                 for (int i = i0; i < i1; i++)
+//                 {
+//                     double x1 = Xgrid[i];
+//                     double y1 = Ygrid[i];
+//                     sum += (x1-x0)*(y0+y1)/2;
+//                     x0 = x1;
+//                     y0 = y1;
+//                 }
+//                 double x1 = E1;
+//                 double y1 = this->operator()(E1);
+//                 if ( mode == "lin" )  // TODO: Remove string comparison
+//                 {
+//                     sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
+//                 }
+//                 if ( mode == "log" ) 
+//                 {
+//                     double gamma = log(y1/y0)/log(x1/x0);  // Logarithmic interpolation
+//                     sum += y0/(gamma+1) * (pow(x1/x0, gamma+1)-1) * x0;
+//                 }
+//                 return sum;
+//             }
+//             
+//         private:
+//             //double logInterp(const BFargVec &args)
+//             double logInterp(const double &args)
+//             {
+//                 // Linear interpolation in log-log space
+//                 double energy = args;//[0];
+//                 if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
+//                 int i = 0; for (; Xgrid[i] < energy; i++) {};  // Find index
+//                 double x0 = Xgrid[i-1];
+//                 double x1 = Xgrid[i];
+//                 double y0 = Ygrid[i-1];
+//                 double y1 = Ygrid[i];
+//                 return y0 * exp(log(y1/y0) * log(energy/x0) / log(x1/x0));
+//             }
+// 
+//             //double linearInterp(const BFargVec &args)
+//             double linearInterp(const double &args)
+//             {
+//                 // Linear interpolation in lin-lin space
+//                 double energy = args;//[0];
+//                 if (energy<Xgrid.front() or energy>Xgrid.back()) return 0;
+//                 int i = 0; for (; Xgrid[i] < energy; i++) {};  // Find index
+//                 double x0 = Xgrid[i-1];
+//                 double x1 = Xgrid[i];
+//                 double y0 = Ygrid[i-1];
+//                 double y1 = Ygrid[i];
+//                 return y0 + (energy-x0)/(x1-x0)*(y1-y0);
+//             }
+// 
+//             //double(BFinterpolation::*ptr)(const BFargVec&);
+//             double(BFinterpolationExpression::*ptr)(const double&);
+//             std::vector<double> Xgrid;
+//             std::vector<double> Ygrid;
+//             std::string mode;
+//     };
   }
 }
 
