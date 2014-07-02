@@ -37,7 +37,6 @@
 #include <sstream>
 
 #include "model_parameters.hpp"
-#include "shared_ptr.hpp"
 //DEPRECIATED #include "logs.hpp"
 
 namespace Gambit {
@@ -46,7 +45,6 @@ namespace Gambit {
   typedef std::map<std::string, double> parameterMap;
 
   class ModelParameters;
-  typedef shared_ptr<ModelParameters> ModelParametersPtr;
 
   /*! \brief Model Parameters Base class example
   //

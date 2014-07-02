@@ -42,13 +42,19 @@
 #include <cmath>
 #include <algorithm>
 
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 
 namespace Gambit
 {
 
   namespace DarkBit
-  {    
+  {
+
+    //Local preferred sources of tools.
+    using boost::shared_ptr;
+
     struct DD_couplings
     {
       double gps;
