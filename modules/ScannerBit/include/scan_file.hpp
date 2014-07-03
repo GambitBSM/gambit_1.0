@@ -69,27 +69,19 @@ namespace Gambit
                                 ion.write((char *)&in, sizeof(typename is_vector<T>::type));
                 }
 
+                void outputStream(std::ofstream &out)
+                {
+                        return;
+                }
+                
                 template <typename T, typename... args>
                 typename std::enable_if<!is_vector<T>::value, void>::type outputStream(std::ofstream &out, const T &in, const args&...params)
                 {
                         out << in << "   ";
                 }
 
-                template <typename T>
-                typename std::enable_if<!is_vector<T>::value, void>::type outputStream(std::ofstream &out, const T &in)
-                {
-                        out << in << "   ";
-                }
-
                 template <typename T, typename... args>
                 typename std::enable_if<is_vector<T>::value, void>::type outputStream(std::ofstream &out, const T &in, const args&...params)
-                {
-                        for (auto it = in.begin(), end = in.end(); it != end; it++)
-                                out << *it << "\t";
-                }
-
-                template <typename T>
-                typename std::enable_if<is_vector<T>::value, void>::type outputStream(std::ofstream &out, const T &in)
                 {
                         for (auto it = in.begin(), end = in.end(); it != end; it++)
                                 out << *it << "\t";
@@ -123,6 +115,34 @@ namespace Gambit
                 template <typename T>
                 typename std::enable_if<is_vector<T>::value, int>::type totalSize(){return 0;}
                 
+                template <typename T>
+                struct scanner_aux_struct
+                {
+                        const std::string &tag;
+                        const T &data;
+                        scanner_aux_struct(const std::string &tag, const T &data) : tag(tag), data(data)
+                        {
+                        }
+                };
+                
+                template <typename T>
+                inline scanner_aux_struct<T> scanner_aux(const std::string key, const T& data)
+                {
+                        return scanner_aux_struct<T>(key, data);
+                }
+                
+                template <typename T>
+                struct is_aux
+                {
+                        const static bool value = false;
+                };
+                
+                template <typename T>
+                struct is_aux <scanner_aux_struct<T>>
+                {
+                        const static bool value = true;
+                };
+                
                 class ScanFileOutput
                 {
                 private:
@@ -130,7 +150,7 @@ namespace Gambit
                         std::ifstream in;
                         std::ofstream out;
                         std::ofstream fileOut;
-                        std::vector<short int> sizes;
+                        std::vector<int> sizes;
                         std::vector<std::string> key;
                         PriorTransform *prior;
                         unsigned int pos;
@@ -170,7 +190,7 @@ namespace Gambit
                                 
                                 std::vector<double> ret = prior_transform(vec);
                                 
-                                outputStream(params...);
+                                outputStream(fileOut, params...);
                                 for(auto it = vec.begin(), end = vec.end(); it != end; it++)
                                 {
                                         fileOut << *it << "   ";
@@ -184,6 +204,30 @@ namespace Gambit
                                         fileOut << temp << "   ";
                                 }
                                 fileOut << std::endl;
+                        }
+                        
+                        ScanFileOutput & operator[] (const int i)
+                        {
+                                //do stuff
+                                return *this;
+                        }
+                        
+                        template <typename T>
+                        typename enable_if<!is_aux<T>::value, ScanFileOutput &>::type  
+                        operator << (const T &in)
+                        {
+                                sizes.push_back(totalSize(in) + sizes[pos]);
+                                pos++;
+                                inputStream(out, in);
+                                return *this;
+                        }
+                        
+                        template <typename T>
+                        typename enable_if<is_aux<T>::value, ScanFileOutput &>::type
+                        operator << (const T &in)
+                        {
+                                //do stuff
+                                return *this;
                         }
                         
                         std::vector<double> &prior_transform(const std::vector<double> &in)                                                     \
