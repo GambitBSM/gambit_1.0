@@ -53,7 +53,11 @@ namespace Gambit
   {
 
     //Local preferred sources of tools.
+    using boost::weak_ptr;
     using boost::shared_ptr;
+    using boost::dynamic_pointer_cast;
+    using boost::static_pointer_cast;
+    using boost::enable_shared_from_this;
 
     struct DD_couplings
     {

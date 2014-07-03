@@ -105,10 +105,12 @@ namespace Gambit
                         typedef void * (*getFuncType)(std::string);
                         typedef void (*rmFuncType)(void *, std::string);
                         typedef ret (*mainFuncType)(args...);
+                        typedef void (*deconFuncType)();
                         initFuncType initFunc;
                         getFuncType getFunc;
                         rmFuncType rmFunc;
                         mainFuncType main;
+                        deconFuncType deconFunc;
                         
                 public:
                         template <typename... plug_args>
@@ -190,6 +192,8 @@ namespace Gambit
                                                         ss << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"";
                                                         throw Gambit::Plugin::PluginException(ss.str());
                                                 }
+                                                
+                                                deconFunc = (deconFuncType)getFunc("__gambit_plugin_deconstructor__");
                                         }
                                         else
                                         {
@@ -215,7 +219,13 @@ namespace Gambit
                         void *getMember(std::string in){return getFunc(in);}
                         void deleteMember(void *ptr, std::string in){rmFunc(ptr, in);}
                         
-                        ~Plugin_Interface(){if (plugin != 0) dlclose(plugin);}
+                        ~Plugin_Interface()
+                        {
+                                if (deconFunc != NULL)
+                                        deconFunc();
+                                
+                                if (plugin != 0) dlclose(plugin);
+                        }
                 };
         }
 }
