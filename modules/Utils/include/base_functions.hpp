@@ -31,19 +31,28 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
-#include <memory>
+//#include <memory>
 
-#include "shared_ptr.hpp"
+#include "boost/shared_ptr.hpp"
+#include "boost/enable_shared_from_this.hpp"
 #include "variadic_functions.hpp"
 
 //#include "boost/lambda/lambda.hpp"
 //#include "boost/function/function.hpp"
 #include <gsl/gsl_integration.h>
 
+//#define shared_ptr boost::shared_ptr
+
 namespace Gambit 
-  {
+{
   namespace BF
-    {
+  {
+    using boost::weak_ptr;
+    using boost::shared_ptr;
+    using boost::dynamic_pointer_cast;
+    using boost::static_pointer_cast;
+    using boost::enable_shared_from_this;
+
     //////////////////////////////////////////
     // Central Expression Template
     //////////////////////////////////////////
@@ -1395,5 +1404,5 @@ namespace Gambit
 //     };
   }
 }
-
+//#undef shared_ptr
 #endif // defined __base_functions_hpp__
