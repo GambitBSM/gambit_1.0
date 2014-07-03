@@ -31,26 +31,19 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <memory>
 
+#include "shared_ptr.hpp"
 #include "variadic_functions.hpp"
 
 //#include "boost/lambda/lambda.hpp"
 //#include "boost/function/function.hpp"
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 
 namespace Gambit 
   {
   namespace BF
     {
-
-    //////////////////////////////////////////
-    // Local preferred sources of tools.
-    //////////////////////////////////////////
-    using boost::shared_ptr;
-    using boost::enable_shared_from_this;
-
     //////////////////////////////////////////
     // Central Expression Template
     //////////////////////////////////////////
