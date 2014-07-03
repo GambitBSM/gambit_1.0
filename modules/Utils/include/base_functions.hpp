@@ -41,8 +41,6 @@
 //#include "boost/function/function.hpp"
 #include <gsl/gsl_integration.h>
 
-//#define shared_ptr boost::shared_ptr
-
 namespace Gambit 
 {
   namespace BF
@@ -1404,5 +1402,5 @@ namespace Gambit
 //     };
   }
 }
-//#undef shared_ptr
+
 #endif // defined __base_functions_hpp__
