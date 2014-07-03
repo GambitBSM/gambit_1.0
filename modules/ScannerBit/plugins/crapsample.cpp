@@ -147,9 +147,17 @@ scanner_plugin (loopsample)
                         for (int i = 0; i < ma; i++)
                         {
                                 a[i] = gDev.Doub();
-                                out << a[i] << "   ";
+                                
                         }
-                        out << (*LogLike)(a) << endl;
+                        double aux = 2;
+                        scanner_ios.input(a, aux);
+                }
+                
+                scanner_ios.setOutput(output_file.c_str());
+                for (int k = 0; k < N; k++)
+                {
+                        double weight = 1;
+                        scanner_ios.input(k, weight);
                 }
                 
                 return 0;
