@@ -151,15 +151,15 @@ scanner_plugin (loopsample)
                         }
                         double aux = 2;
                         //scanner_ios.input(a, aux);
-                        scanner_ios << a << scanner_aux("aux", aux);
+                        //scanner_ios << a << scanner_aux("aux", aux);
                 }
                 
-                scanner_ios.setOutput(output_file.c_str());
+                //scanner_ios.setOutput(output_file.c_str());
                 for (int k = 0; k < N; k++)
                 {
                         double weight = 1;
-                        scanner_ios[k] << scanner_aux("weight", weight);
-                        scanner_ios.output(k);
+                        //scanner_ios[k] << scanner_aux("weight", weight);
+                        //scanner_ios.output(k);
                 }
                 
                 return 0;
