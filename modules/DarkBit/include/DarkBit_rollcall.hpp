@@ -49,10 +49,6 @@ START_MODULE
       BACKEND_REQ(dsrdinit, (), void, ())
       BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
-      // Initialize MicrOMEGAs with SLHA file
-      BACKEND_REQ(assignVal, (), int, (char*,double))
-      BACKEND_REQ(lesHinput, (), int, (char*))
-      BACKEND_REQ(mass_spectrum, (), int, (char*))
     #undef FUNCTION
 
     #define FUNCTION DarkBit_PointInit_CMSSM
