@@ -40,6 +40,8 @@ START_MODULE
   #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
   START_CAPABILITY
 
+    //The function below has been moved into the DarkSUSY
+    //backend initialization and should be eventually deleted
     #define FUNCTION DarkBit_PointInit_MSSM
       START_FUNCTION(void, INIT_FUNCTION)
       DEPENDENCY(MSSMspectrum, eaSLHA) 

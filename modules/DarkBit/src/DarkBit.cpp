@@ -100,6 +100,8 @@ namespace Gambit {
 
     eaSLHA mySLHA;
 
+    //The function below has been moved into the DarkSUSY
+    //backend initialization and should be eventually deleted.
     void DarkBit_PointInit_MSSM()
     {
       using namespace Pipes::DarkBit_PointInit_MSSM;
