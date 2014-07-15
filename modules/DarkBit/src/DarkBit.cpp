@@ -20,7 +20,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar
+///  \date 2014 Mar, Jul
 ///
 ///  *********************************************
 
@@ -932,6 +932,7 @@ namespace Gambit {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
+        result.M_DM = (*BEreq::mspctm).mass[41];        
         std::cout << "dsddgpgn gives: \n";
         std::cout << " gps: " << result.gps << "\n";
         std::cout << " gns: " << result.gns << "\n";
@@ -943,6 +944,30 @@ namespace Gambit {
     {
         using namespace Pipes::lnL_FakeLux;
         result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
+    }
+
+//////////////////////////////////////////////////////////////////////////
+//
+//                Direct detection likelihoods
+//
+//////////////////////////////////////////////////////////////////////////
+
+    void lnL_Lux2013(double &result)
+    {
+        using namespace Pipes::lnL_Lux2013;
+        BEreq::DDCalc0_InitDetectorLUX2013(NULL);
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;                        
+        BEreq::DDCalc0_SetWIMP( &M_DM,&Gps,&Gns,&Gpa,&Gna,
+                                NULL,NULL,NULL,NULL,
+                                NULL,NULL,NULL,NULL,
+                                NULL,NULL);
+        BEreq::DDCalc0_CalcRates();
+        result = BEreq::DDCalc0_LogLikelihood();
+        std::cout << "Lux 2013 likelihood: " << result << std::endl;
     }
 
 

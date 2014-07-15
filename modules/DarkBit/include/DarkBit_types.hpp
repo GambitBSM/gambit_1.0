@@ -32,7 +32,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar
+///  \date 2014 Mar, Jul
 ///  *********************************************
 
 
@@ -61,6 +61,7 @@ namespace Gambit
 
     struct DD_couplings
     {
+      double M_DM;
       double gps;
       double gns;
       double gpa;

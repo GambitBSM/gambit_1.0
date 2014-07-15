@@ -78,6 +78,7 @@ MCUTILSDIR = contrib/mcutils
 HEPSIMPLEDIR = contrib/hep_simple_lib
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
+DDCALCDIR = ../extras/DDCalc0
 MCUTILSDIR = contrib/mcutils
 
 GCC++EXTRA= -Woverloaded-virtual
@@ -380,6 +381,7 @@ clean:
 	@rm -rf $(FUNCTOR_TYPES)
 	@rm -f $(FASTSIMDIR)/src/*.o
 	@cd $(NULIKEDIR); make clean
+	@cd $(DDCALCDIR); make clean	
 
 # also removes ~ files and other weirdly generated files
 sterile: distclean
@@ -587,18 +589,18 @@ $(SLHAPy8DIR)/libslhapy8.a:
 	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
 gambit_example: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libfastsim.so
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/DDCalc0.so $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libfastsim.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/DDCalc0.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) \
  $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so \
- $(BACKENDDIR)/lib/libnulike.so
+ $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/DDCalc0.so
 	@echo ___________Linking $@:
 	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
 	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
@@ -617,6 +619,10 @@ $(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
 $(BACKENDDIR)/lib/libnulike.so:
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
 	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
+
+$(BACKENDDIR)/lib/DDCalc0.so:
+	cd $(DDCALCDIR); make
+	mv $(DDCALCDIR)/DDCalc0.so $(BACKENDDIR)/lib/
 
 $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
