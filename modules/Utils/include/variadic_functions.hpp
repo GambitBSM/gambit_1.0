@@ -407,8 +407,8 @@ namespace Gambit
         };
         
         template<typename T, typename... args>
-        inline double inputVariadicFunction(T&f, std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end,
-                double in1, double in2, double in3, double in4, double in5, double in6, double in7, double in8, double in9, double in10)
+        inline double inputVariadicFunction(T&, std::vector<double>::const_iterator, std::vector<double>::const_iterator,
+                double, double, double, double, double, double, double, double, double, double)
         {
                 std::cout << "inputVariadicFunction:  Max argument length exceeded." << std::endl;
                 assert(0);

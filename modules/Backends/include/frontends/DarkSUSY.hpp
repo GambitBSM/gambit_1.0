@@ -138,8 +138,39 @@ BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
 BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
 BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 
+BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 
-BE_INI_FUNCTION{}
+BE_INI_FUNCTION
+{
+//    using namespace Pipes::DarkBit_PointInit_MSSM;
+    using namespace SLHAea;
+
+    eaSLHA mySLHA;
+
+    // Initialize DarkSUSY if run for the first time
+    bool static scan_level = true;
+    if (scan_level)
+    {
+        std::cout << "DarkSUSY initialization" << std::endl;
+        dsinit();
+        dsrdinit();
+    }
+    scan_level = false;
+
+    // Save eaSLHA file to disk
+    mySLHA = *Dep::MSSMspectrum;
+    ofstream ofs("DarkBit_temp.slha");
+    ofs << mySLHA;
+    ofs.close();
+
+    // Initialize SUSY spectrum from SLHA
+    int len = 17;
+    int flag = 15;
+    char * filename = "DarkBit_temp.slha";
+    dsSLHAread(byVal(filename),flag, byVal(len));
+    dsprep();
+
+}
 DONE
 
 // BE_VARIABLE(SomeInt, int, "someInt")

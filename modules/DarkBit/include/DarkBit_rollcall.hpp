@@ -40,6 +40,8 @@ START_MODULE
   #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
   START_CAPABILITY
 
+    //The function below has been moved into the DarkSUSY
+    //backend initialization and should be eventually deleted
     #define FUNCTION DarkBit_PointInit_MSSM
       START_FUNCTION(void, INIT_FUNCTION)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
@@ -49,10 +51,6 @@ START_MODULE
       BACKEND_REQ(dsrdinit, (), void, ())
       BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
-      // Initialize MicrOMEGAs with SLHA file
-      BACKEND_REQ(assignVal, (), int, (char*,double))
-      BACKEND_REQ(lesHinput, (), int, (char*))
-      BACKEND_REQ(mass_spectrum, (), int, (char*))
     #undef FUNCTION
 
     #define FUNCTION DarkBit_PointInit_CMSSM
@@ -183,6 +181,7 @@ START_MODULE
     #define FUNCTION DD_couplings_DarkSUSY
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -215,6 +214,19 @@ START_MODULE
     #define FUNCTION lnL_oh2_Simple
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_Lux2013
+  START_CAPABILITY
+    #define FUNCTION lnL_Lux2013
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP, (Same_BE), void, (double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*))   
+      BACKEND_REQ(DDCalc0_CalcRates, (Same_BE), void, ())         
+      BACKEND_REQ(DDCalc0_LogLikelihood, (Same_BE), double, ())     
+      BACKEND_REQ(DDCalc0_InitDetectorLUX2013, (Same_BE), void, (bool*))       
+      FORCE_SAME_BACKEND(Same_BE)                 
     #undef FUNCTION
   #undef CAPABILITY
 

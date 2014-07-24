@@ -27,7 +27,7 @@ BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 
 BE_INI_FUNCTION
 {
-	using namespace SLHAea;
+    using namespace SLHAea;
 
     eaSLHA mySLHA;
 

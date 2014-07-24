@@ -34,6 +34,7 @@
 #include "frontends/micromegas.hpp"
 #include "frontends/FastSim.hpp"
 #include "frontends/nulike.hpp"
+#include "frontends/DDCalc0.hpp"
 //#include "frontend_Pythia8.hpp"
 
 // Get a bit fancy and include duplicate backends 

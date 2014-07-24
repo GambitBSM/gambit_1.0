@@ -67,6 +67,8 @@ namespace Gambit
         }
 }
 
+//#include "scan_file.hpp"
+
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
 #define init_dimension(exp)             INIT_DIMENSION(exp) enum{}
 #define init_keys(exp)                  INIT_KEYS(exp) enum{}
@@ -137,6 +139,7 @@ std::vector<double> &prior_transform(const std::vector<double> &in)             
                                                                                                                         \
         return ret;                                                                                                     \
 }                                                                                                                       \
+/*ScanFileOutput scanner_ios(get_keys(), get_dimension(), &get_input_value<PriorTransform>(3));*/ \
 
 #define SCANNER_PLUGIN(mod_name)                                                                                        \
 GAMBIT_PLUGIN(mod_name)                                                                                                 \
