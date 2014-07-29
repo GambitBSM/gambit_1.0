@@ -1,0 +1,15 @@
+ - presentation title,
+    Beyond the Standard Model or Bust 
+
+ - brief presentation abstract (less than 150 words),
+    Searches for particle physics beyond the Standard Model come in many forms, from the Large Hadron Collider to smaller particle accelerators, gamma-ray telescopes, cosmic antimatter probes, ultra-clean experiments in the world's deepest mines, and a neutrino telescope embedded in the Antarctic ice at the South Pole.  Efforts to combine multiple search channels in 'global fits' to new physics scenarios typically consider only a subset of the available channels, and apply them to a very small range of possible theories.  Astroparticle searches in particular are usually only included in a very approximate way, if at all.  In this talk I will review recent progress in improving this situation, and preview some of the future developments and challenges in this field.
+
+ - speaker profile picture (image width > 300 pixels),
+    see attached photo.jpg
+
+ - palatable science picture (optional),
+    see attached Fig7a.pdf 
+
+ - short caption (50 words or less) for science picture (optional).
+    Allowed parameters of the simplest theory for dark matter.  X axis is the dark matter mass, y axis is the cross-section for scattering on protons.  Black regions are ruled out by overproduction of dark matter, pink regions by the LHC and blue regions by different xenon-based direct searches.
+
