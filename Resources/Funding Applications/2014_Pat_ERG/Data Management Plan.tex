@@ -1,0 +1,40 @@
+\documentclass[11pt,oneside,onecolumn,a4paper]{article}
+
+\usepackage{graphicx}
+\usepackage[footnotesize,bf]{caption}
+\usepackage{fancyhdr}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, linkcolor=BrickRed, citecolor=Blue, urlcolor=Blue, filecolor=Blue]{hyperref}
+\input{jdefs.tex}
+
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO,RE]{Pat Scott}
+\fancyhead[C]{STFC Ernest Rutherford Grant}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+
+\author{Pat Scott}
+\date{}
+
+\setlist{nolistsep}
+
+\begin{document}
+
+\thispagestyle{fancy}
+
+\centerline{\LARGE \textbf{Data Management Plan}}\bigskip 
+
+\noindent Data products are
+\begin{enumerate}
+\item the GAMBIT code, in physics (DarkBit, FlavBit, SpecBit, etc) and non-physics modules (Core, Utils, Models, Backends, ScannerBit),
+\item reduced experimental data used as inputs, and
+\item sets of parameter points from GAMBIT scans.
+\end{enumerate}
+
+\vspace{3mm}\noindent GAMBIT codes, documentation and datafiles will be publicly available on Hepforge (the standard for HEP), with a \texttt{git} interface administered via GitHub.  Individual physics modules will be available, configured for standalone use.  All points in model parameter spaces referred to in GAMBIT papers will be posted on the GAMBIT Collaboration website (served from Hepforge) as the papers appear on the arXiv.  Everything will be stored in triplicate on Hepforge, GitHub and the server included in the the budget of this ERG.  Data products will remain available for the lifetime of Hepforge.
+
+\end{document}

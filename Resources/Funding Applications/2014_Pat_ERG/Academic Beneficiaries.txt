@@ -1,0 +1,21 @@
+The extensions included in this ERG will enhance the academic benefits of my ERF in 5 key ways:
+
+1. Improved state of knowledge about physics Beyond the Standard Model
+--
+By performing extensive global fits to Higgs-portal and non-standard Higgs theories, this grant will significantly increase the number of theories that can be analysed in the GAMBIT Project. Including all LHC Higgs channels and additional tools to allow loop-corrected Standard Model processes to be taken into account (via an interface to MadGraph5_aMC@NLO) will allow global fits to be done much more accurately, as the fits will contain additional specialised information that would otherwise be unavailable. Overall, this means that I can provide a far larger volume of more accurate information to the academic community on the relative viability of different theories beyond the Standard Model, and the preferred areas of their parameter spaces.
+
+2. Availability of second-generation global fitting software 
+--
+GAMBIT Project software will be open source; the Data Management Plan facilitating this is attached. GAMBIT software will become the default for careful analyses of theories beyond the Standard Model, by phenomenologists, experimentalists and theorists alike. Individual modules will also be available as stand-alone downloads, providing direct access to observable and likelihood calculations. This will give theorists and phenomenologists a versatile toolkit for quickly checking new ideas in model-building, before launching into full statistical analyses.
+
+3. Centralised availability of results from experiments and GAMBIT scans
+--
+The GAMBIT Repository will contain all the input data required by the physics modules for calculating likelihoods. The Repository will become a de facto centralised store for all the most constraining reduced data in particle and astroparticle physics, which will save researchers the effort of harvesting and collating data from experiments and/or extracting data from publications. This grant will add new data on all Higgs channels probed at the LHC, and full GAMBIT definitions for a range of Higgs-portal and non-standard Higgs sector theoretical models. Results of all GAMBIT global fits will also be made available, so experimentalists can quickly compare sensitivities of experiments with the current state of knowledge about different theories.
+
+4. Increased ease for theorists
+--
+The interface to MadGraph5 I will develop will reduce the amount of time and effort required to implement new models by roughly a factor of 5--10. This will make the GAMBIT software far more useful to theorists interested in using it to quickly test and compare different versions of new models that they are in the process of developing.
+
+5. Increased cross-disciplinary interaction and awareness between astronomers, experimentalists and particle theorists
+--
+GAMBIT establishes strong multidisciplinary links between experts in particle theory, particle experiment, astronomy and statistics. This allows each member to learn from members in other fields, and to spread that experience within their home institute and 'home field'. This will enhance cross-disciplinary interactions and collaboration between the fields beyond the borders of GAMBIT.
