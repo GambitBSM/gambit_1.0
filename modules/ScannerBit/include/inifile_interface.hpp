@@ -63,6 +63,8 @@ namespace Gambit
                                 }
                         }
                         
+                        YAML::Node getNode(const std::string &str) const {return options.getNode(str);}
+                        
                         ~IniFileInterface(){}
                 };
                 

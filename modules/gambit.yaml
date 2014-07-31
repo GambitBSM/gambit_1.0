@@ -138,7 +138,7 @@ options:
 --- # Scanner setup
 ##############################
 
-plugin:  crapsample
+plugin:  loopsample
 file_path:  ScannerBit/lib/libsample.so
 
 #scanner:
@@ -160,6 +160,8 @@ loopsample:
   point_number: 2
   output_file:  output
   like:  Likelihood
+  files:
+    output_file: "weights ..."
   
 multinest:
   output_file:  output
