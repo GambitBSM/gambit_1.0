@@ -27,6 +27,7 @@
 
 #include "yaml_parser.hpp"
 #include "priors.hpp"
+#include "printer_interface.hpp"
 
 namespace Gambit
 {
@@ -56,6 +57,7 @@ namespace Gambit
                         virtual const std::string pluginName() const = 0;
                         virtual const std::string fileName() const = 0;
                         virtual const std::string getValue(const std::string &in) const = 0;
+                        virtual YAML::Node getNode(const std::string &str) const = 0;
                         virtual ~IniFileInterface_Base() {};
                 };
                 
@@ -65,9 +67,10 @@ namespace Gambit
                         const Factory_Base &factory;
                         const IniFileInterface_Base &interface;
                         const Priors::BasePrior &prior;
+                        printer_interface *printerInterface;
 
                 public:
-                        Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface, const Priors::BasePrior &prior) : factory(factory), interface(interface), prior(prior)
+                        Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface, const Priors::BasePrior &prior, printer_interface *printerInterface = 0) : factory(factory), interface(interface), prior(prior), printerInterface(printerInterface)
                         {       
                         }
 

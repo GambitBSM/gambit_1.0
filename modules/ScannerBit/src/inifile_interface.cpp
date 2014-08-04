@@ -41,9 +41,9 @@ namespace Gambit
                                 if (options.hasKey("redirect_output", "scanner"))
                                 {
                                         std::string file = options.getValue<std::string>("redirect_output", "scanner");
-                                        
                                         outputHandler::out.set("scanner", file);
                                 }
+                                
                                 if (options.hasKey("redirect_output", "error"))
                                 {
                                         std::string file = options.getValue<std::string>("redirect_output", "error");

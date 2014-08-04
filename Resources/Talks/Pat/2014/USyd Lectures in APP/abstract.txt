@@ -1,0 +1,12 @@
+Lecture 1: Particle Cosmology (Cosmology meets astroparticle physics)
+13:00 Tues Feb 25: Lecture Theatre 5 (Physics A28)
+
+Lecture 2: Dark Matter (Astrophysics meets astroparticle physics)
+13:00 Weds Feb 26: Rosehill St Seminar Room (SIfA)
+
+Lecture 3: Global Fits (Particle physics meets astroparticle physics)
+13:00 Thu Feb 27: Lecture Theatre 5 (Physics A28)
+
+I will go through the most important current problems, techniques and theories in astroparticle physics, with a specific focus on the interface between theory and observation/experiment.  The lectures will be pedagogically oriented, pitched at about the PhD student level. Throughout I will draw on both my own research and that of other workers in the field for examples.  Discussion, questions (stupid or otherwise), heckling and other comments are all actively encouraged; each lecture will consist of only about 40 minutes of prepared slides so as to allow ample time for this.
+
+The first lecture will focus on early-to-mid Universe cosmology, from the LambdaCDM model to proposed extensions to it, their predictions and ways in which they can be tested.  Lecture 2 will deal with particle dark matter: theories for its identity, its production and direct and indirect detection of it.  The final lecture will bring the two previous topics together with more traditional particle searches to cover the burgeoning field of global fits, where a multi-messenger approach to particle physics is brought to bear on theories for physics beyond the Standard Model. 

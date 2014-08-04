@@ -131,6 +131,7 @@ scanner_plugin (loopsample)
 {
         int plugin_main ()
         {
+                SET_SCAN_IOS(files);
                 std::vector<std::string> &keys     = get_keys();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);
@@ -150,17 +151,17 @@ scanner_plugin (loopsample)
                                 
                         }
                         double aux = 2;
-                        //scanner_ios.input(a, aux);
-                        //scanner_ios << a << scanner_aux("aux", aux);
+                        scan_ios << a << scan::endl;
                 }
                 
                 //scanner_ios.setOutput(output_file.c_str());
                 for (int k = 0; k < N; k++)
                 {
                         double weight = 1;
-                        //scanner_ios[k] << scanner_aux("weight", weight);
+                        scan_ios[k] << scan::aux("weight", weight);
                         //scanner_ios.output(k);
                 }
+                scan_ios.print();
                 
                 return 0;
         }
