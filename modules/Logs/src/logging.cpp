@@ -290,6 +290,12 @@ namespace Gambit
        silenced = true;
     }
  
+    // Function to check if all log messages are silenced
+    bool LogMaster::disabled()
+    {
+       return silenced;
+    }
+
     // Dump the prelim buffer to the 'finalsend' function
     void LogMaster::dump_prelim_buffer()
     {
