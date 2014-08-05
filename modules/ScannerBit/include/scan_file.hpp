@@ -13,7 +13,7 @@
 #include <streambuf>
 #include <istream>
 #include <typeinfo>
-#include <typeindex>
+#include <type_index.hpp>
 #include <cassert>
 #include <iterator>
 #include <utility>
@@ -27,6 +27,10 @@
 #include <forward_list>
 
 SCAN_FILE_NAMESPACE_BEGIN
+
+//#define typeid(...) boost::typeindex::type_id<__VA_ARGS__>()
+
+using Gambit::type_index;
 
 template <typename T>
 struct remove_all
@@ -350,10 +354,10 @@ __output__ (std::ostream& out, std::istream &in)
 template <typename T>
 inline void _output_ (std::ostream&out, std::istream &in){__output__<T>(out, in);}
 
-//inline void __input_types__(std::unordered_map<std::type_index, void (*)(std::ostream &, std::istream &)> &mapIn) {}
+//inline void __input_types__(std::unordered_map<type_index, void (*)(std::ostream &, std::istream &)> &mapIn) {}
 
 //template <typename T>
-//inline void __input_types__(std::unordered_map<std::type_index, void (*)(std::ostream &, std::istream &)> &mapIn)
+//inline void __input_types__(std::unordered_map<type_index, void (*)(std::ostream &, std::istream &)> &mapIn)
 //{
 //        if(mapIn.find(typeid(T)) == mapIn.end())
 //                mapIn[typeid(T)] = _output_<T>;
@@ -361,18 +365,18 @@ inline void _output_ (std::ostream&out, std::istream &in){__output__<T>(out, in)
 
 template <typename T, typename... args>
 inline typename std::enable_if<sizeof...(args) == 0, void>::type
- __input_types__(std::unordered_map<std::type_index, void (*)(std::ostream &, std::istream &)> &mapIn)
+ __input_types__(std::unordered_map<type_index, void (*)(std::ostream &, std::istream &)> &mapIn)
 {
-        std::type_index type = typeid(T);
+        type_index type = typeid(T);
         if(mapIn.find(type) == mapIn.end())
                 mapIn[type] = _output_<T>;
 }
 
 template <typename T, typename... args>
 inline typename std::enable_if<sizeof...(args) != 0, void>::type
-__input_types__(std::unordered_map<std::type_index, void (*)(std::ostream &, std::istream &)> &mapIn)
+__input_types__(std::unordered_map<type_index, void (*)(std::ostream &, std::istream &)> &mapIn)
 {
-        std::type_index type = typeid(T);
+        type_index type = typeid(T);
         if(mapIn.find(type) == mapIn.end())
                 mapIn[type] = _output_<T>;
         __input_types__<args...>(mapIn);
@@ -443,7 +447,7 @@ class ScanFileOutput
 private:
         std::map<std::string, aux_struct> auxs;
         std::map<std::string, file_struct> files;
-        std::unordered_map<std::type_index, void (*)(std::ostream &, std::istream &)> converts;
+        std::unordered_map<type_index, void (*)(std::ostream &, std::istream &)> converts;
         std::vector<std::string> key;
         PriorTransform *prior;
         int line;
@@ -537,7 +541,7 @@ public:
         typename std::enable_if<!is_aux<T>::value, ScanFileOutput &>::type  
         operator << (const T &input)
         {
-                std::type_index type = typeid(T);
+                type_index type = typeid(T);
                 if (converts.find(type) == converts.end())
                         converts[type] = _output_<T>;
                 //std::istream in(&mainBuff);
@@ -551,7 +555,7 @@ public:
         typename std::enable_if<is_aux<T>::value, ScanFileOutput &>::type
         operator << (const T &input)
         {
-                std::type_index type = typeid(typename T::type);
+                type_index type = typeid(typename T::type);
                 if (converts.find(type) == converts.end())
                         converts[type] = __output__<typename T::type>;
                 std::ostream out(&auxs[input.tag].buf);
@@ -591,7 +595,7 @@ public:
                                 for (auto iit = ins.begin(), iitl = inst.begin(), end = ins.end(); iit != end; iit++, iitl++)
                                 {
                                         size_t size;
-                                        std::type_index index(typeid(int));
+                                        type_index index(typeid(int));
                                         
                                         if (iitl->read((char *)&size, sizeof(size_t)))
                                         {
@@ -601,7 +605,7 @@ public:
                                                 iit->seekg(pos);
                                                 while (size > size_t(iit->tellg()) - size_t(pos))
                                                 {
-                                                        iit->read((char *)&index, sizeof(std::type_index));
+                                                        iit->read((char *)&index, sizeof(type_index));
                                                         if (converts.find(index) != converts.end())
                                                                 converts[index](out, *iit);
                                                 }
@@ -638,14 +642,14 @@ public:
                                 for (auto iit = ins.begin(), iitl = inst.begin(), end = ins.end(); iit != end; iit++, iitl++)
                                 {
                                         size_t size;
-                                        std::type_index index(typeid(int));
+                                        type_index index(typeid(int));
                                         
                                         if (iitl->read((char *)&size, sizeof(size_t)))
                                         {
                                                 size_t pos = iit->tellg();
                                                 while (size > size_t(iit->tellg()) - pos)
                                                 {
-                                                        iit->read((char *)&index, sizeof(std::type_index));
+                                                        iit->read((char *)&index, sizeof(type_index));
                                                         std::cout << "index "<< "   " << size << std::endl; 
                                                         if (converts.find(index) == converts.end())
                                                                 std::cout << "Cannot load types. need " << index.name() << std::endl;
@@ -719,4 +723,5 @@ inline ScanFileOutput & clear (ScanFileOutput &out)
 
 SCAN_FILE_NAMESPACE_END
 
+//#undef typeid
 #endif
