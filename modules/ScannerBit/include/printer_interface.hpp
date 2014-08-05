@@ -14,14 +14,8 @@
 ///
 ///  *********************************************
 
-#ifndef SCANNER_PLUGIN_HPP
-#define SCANNER_PLUGIN_HPP
-
-#include "plugin_defs.hpp"
-#include "plugin_macros.hpp"
-#include <yaml-cpp/yaml.h>
-
-using namespace std;
+#ifndef PRINTER_INTERFACE_HPP
+#define PRINTER_INTERFACE_HPP
 
 namespace Gambit
 {
@@ -29,6 +23,7 @@ namespace Gambit
         {
                 class printer_interface
                 {
+                public:
                         virtual void inputValue() = 0;
                         virtual void inputValue(int thread, int tag, const std::string &, double a);
                         virtual void inputValue(int thread, int tag, const std::string &, const std::vector<double> &);
