@@ -663,21 +663,7 @@ namespace Gambit
               if ( masterGraph[*it]->modelExplicitlyAllowed(*mit) ) newVertexCandidates.push_back(*it);
             }
             // Step up a level in the model hierarchy for this model.
-            std::vector<str> pvec = parents(*mit);
-            if (pvec.size() > 1)
-            {
-              str errmsg = "Multi-parent models cannot be used in cases where model specific functor rules need";
-              errmsg += "to be invoked. Please specify your required dependencies more fully in your inifile.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
-            }
-            else if (pvec.size() == 0) 
-            {
-             *mit = "none";
-            }
-            else 
-            {
-             *mit = pvec[0];
-            }
+            *mit = parent(*mit);
           }
           parentModelList.erase(std::remove(parentModelList.begin(), parentModelList.end(), "none"), parentModelList.end());
         }

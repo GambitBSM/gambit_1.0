@@ -88,6 +88,9 @@ namespace Gambit
     return os;
   }
 
+  // Spacing utility for stream overloads
+  std::string spacing(int len, int maxlen);
+
 }
 
 #endif /* defined(__stream_printers_hpp__) */

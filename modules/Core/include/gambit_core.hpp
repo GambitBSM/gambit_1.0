@@ -45,9 +45,6 @@ namespace Gambit
       /// List of all declared backends
       std::set<str> backends;
 
-      /// List of all declared models
-      std::set<str> models;
-
       /// List of all declared capabilities
       std::set<str> capabilities;
 
@@ -74,6 +71,12 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
+      /// Command-line info function
+      void bail();
+
+      /// Diagnostics function
+      void run_diagnostic(str);
+
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
 
@@ -88,18 +91,6 @@ namespace Gambit
 
       /// Add entries to the map of activated primary model functors
       void registerActiveModelFunctors(const pmfVec&); 
-
-      /// Get a reference to the list of modules
-      const std::set<str>& getModules() const ; 
-
-      /// Get a reference to the list of backends
-      const std::set<str>& getBackends() const ; 
-
-      /// Get a reference to the list of models
-      const std::set<str>& getModels() const ; 
-
-      /// Get a reference to the list of capabilities
-      const std::set<str>& getCapabilities() const ; 
 
       /// Get a reference to the list of module functors
       const fVec& getModuleFunctors() const ; 

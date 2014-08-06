@@ -353,16 +353,11 @@ ifndef SHH
 endif
 
 # all phony stuff here
-.PHONY: default all clean sterile distclean doxygen mh
+.PHONY: default all clean sterile distclean doxygen minihelp
 
-# gambit_examples does not compile for me due to fastsim dependency...
-#TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
-#default: mh gambit_example gambit_example_minimal
-
-TARGETS = gambit_example gambit_example_minimal ExampleBit_A_standalone
-default: mh gambit_example gambit_example_minimal
-
-all: mh gambit_example gambit_example_minimal doxygen
+TARGETS = gambit gambit_example ExampleBit_A_standalone
+default: minihelp gambit
+all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
 
 clean:
 	@echo cleaning
@@ -381,11 +376,11 @@ clean:
 	@rm -f $(FASTSIMDIR)/src/*.o
 	@cd $(NULIKEDIR); make clean
 
-# also removes ~ files and other weirdly generated files
 sterile: distclean
 	@true
 
 distclean: clean
+        # also removes ~ files and other weirdly generated files
 	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
 	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
 
@@ -405,7 +400,7 @@ $(COREDIR)/build/.minihelp:
 	echo "* make $$t" ; done
 	@echo "*******************************************"
 	@touch $(COREDIR)/build/.minihelp
-mh: $(COREDIR)/build/.minihelp
+minihelp: $(COREDIR)/build/.minihelp
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -575,10 +570,10 @@ endif
 
 $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC)
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) YAML_CFLAGS="$(CFLAGS)"
 
-# Force rebuild of library...
 slhapy8:
+        # Forced rebuild of library.
 	@echo ___________Rebuilding slhapy8 library...
 	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
@@ -586,15 +581,15 @@ $(SLHAPy8DIR)/libslhapy8.a:
 	@echo ___________Building SLHA interface library \(from Pythia 8\):
 	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
+gambit: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) \
+ $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
+	@echo ___________Linking $@:
+	$(LN) $(COREDIR)/build/gambit.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
+
 gambit_example: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libfastsim.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
-
-gambit_example_minimal: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example_minimal.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
-	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example_minimal.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) \
  $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so \
