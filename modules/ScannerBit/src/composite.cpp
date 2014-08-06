@@ -72,12 +72,14 @@ namespace Gambit
                         std::vector <std::string> modelNames = model_options.getNames();
                         
                         //main loop to enter in parameter values
-                        std::for_each (modelNames.begin(), modelNames.end(), [&](std::string &mod)
+                        for (auto mod_it = modelNames.begin(), mod_end = modelNames.end(); mod_it != mod_end; mod_it++)
                         {//loop over iniFile models
+                                std::string &mod = *mod_it;
                                 std::vector <std::string> parameterNames = model_options.getNames(mod);
                                 
-                                std::for_each (parameterNames.begin(), parameterNames.end(), [&](std::string &par)
+                                for (auto par_it = parameterNames.begin(), par_end = parameterNames.end(); par_it != par_end; par_it++)
                                 {//loop over iniFile parameters
+                                        std::string &par = *par_it;
                                         param_names.push_back(mod + std::string("::") + par);
                                         
                                         if (model_options.hasKey(mod, par, "same_as"))
@@ -150,38 +152,39 @@ namespace Gambit
                                                         needSet.insert(joined_parname);
                                                 }
                                         }
-                                });
-                        });
+                                }
+                        }
                         
                         // Get the list of priors to build from the iniFile
                         std::vector<std::string> priorNames = prior_options.getNames();
                         std::unordered_set<std::string> paramSet(shown_param_names.begin(), shown_param_names.end()); 
 
-                        std::for_each (priorNames.begin(), priorNames.end(), [&](std::string &priorname)
+                        for (auto priorname_it = priorNames.begin(), priorname_end = priorNames.end(); priorname_it != priorname_end; priorname_it++)
                         {
+                                std::string &priorname = *priorname_it;
                                 if (prior_options.hasKey(priorname, "parameters") && prior_options.hasKey(priorname, "prior_type"))
                                 {
                                         auto params = prior_options.getValue<std::vector<std::string>>(priorname, "parameters");
                                         
-                                        std::for_each (params.begin(), params.end(), [&](std::string &par)
+                                        for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                         {
-                                                if (paramSet.find(par) == paramSet.end())
+                                                if (paramSet.find(*par_it) == paramSet.end())
                                                 {
-                                                        scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                                        scanLog::err << "Parameter " << *par_it << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
                                                 }
                                                 else
                                                 {
-                                                        auto find_it = needSet.find(par);
+                                                        auto find_it = needSet.find(*par_it);
                                                         if (find_it == needSet.end())
                                                         {
-                                                                scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                                scanLog::err << "Parameter " << *par_it << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
                                                         }
                                                         else
                                                         {
                                                                 needSet.erase(find_it);
                                                         }
                                                 }
-                                        });
+                                        }
 
                                         auto options = prior_options.getOptions(priorname);
                                         auto priortype = prior_options.getValue<std::string>(priorname, "prior_type");
@@ -194,13 +197,13 @@ namespace Gambit
                                         {
                                                 if (priortype == "fixed")
                                                 {
-                                                        std::for_each (params.begin(), params.end(), [&](std::string &par)
+                                                        for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                                         {
                                                                 shown_param_names.erase
                                                                 (
-                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
                                                                 );
-                                                        });
+                                                        }
                                                         
                                                         my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
                                                 }
@@ -209,14 +212,14 @@ namespace Gambit
                                                         if (options.hasKey("same_as"))
                                                         {
                                                                 std::string same_name = options.getValue<std::string>("same_as");
-                                                                std::for_each (params.begin(), params.end(), [&](std::string &par)
+                                                                for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                                                 {
                                                                         shown_param_names.erase
                                                                         (
-                                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                                std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
                                                                         );
-                                                                        sameMap[par] = same_name;
-                                                                });
+                                                                        sameMap[*par_it] = same_name;
+                                                                }
                                                         }
                                                         else
                                                         {
@@ -233,7 +236,7 @@ namespace Gambit
                                 {
                                         scanLog::err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scanLog::endl;
                                 }
-                        });
+                        }
                         
                         if (needSet.size() != 0)
                         {
@@ -250,19 +253,19 @@ namespace Gambit
                         std::unordered_map<std::string, std::string> keyMap;
                         std::string index, result;
                         unsigned int reps;
-                        std::for_each (sameMap.begin(), sameMap.end(), [&](std::pair<std::string, std::string> strMap)
+                        for (auto strMap = sameMap.begin(), strMap_end = sameMap.end(); strMap != strMap_end; strMap++)
                         {
-                                index = strMap.first;
-                                result = strMap.second;
+                                index = strMap->first;
+                                result = strMap->second;
                                 reps = 0;
                                 while (sameMap.find(result) != sameMap.end())
                                 {
                                         index = result;
                                         result = sameMap[index];
                                         
-                                        if (result == strMap.first)
+                                        if (result == strMap->first)
                                         {
-                                                scanLog::err << "Parameter " << strMap.first << " is \"same as\" itself." << scanLog::endl;
+                                                scanLog::err << "Parameter " << strMap->first << " is \"same as\" itself." << scanLog::endl;
                                                 break;
                                         }
                                         
@@ -275,37 +278,37 @@ namespace Gambit
                                 }
                                 
                                 if (keyMap.find(result) == keyMap.end())
-                                        keyMap[result] = strMap.first + std::string("+") + result;
+                                        keyMap[result] = strMap->first + std::string("+") + result;
                                 else
-                                        keyMap[result] = strMap.first + std::string("+") + keyMap[result];
-                        });
+                                        keyMap[result] = strMap->first + std::string("+") + keyMap[result];
+                        }
                         
-                        std::for_each (shown_param_names.begin(), shown_param_names.end(), [&](std::string &str)
+                        for (auto str_it = shown_param_names.begin(), str_end = shown_param_names.end(); str_it != str_end; str_it++)
                         {
-                                auto it = keyMap.find(str);
+                                auto it = keyMap.find(*str_it);
                                 if (it != keyMap.end())
                                 {
-                                        str = it->second;
+                                        *str_it = it->second;
                                 }
-                        });
+                        }
                         
-                        std::for_each (keyMap.begin(), keyMap.end(), [&](std::pair<std::string, std::string> key)
+                        for (auto key_it = keyMap.begin(), key_end = keyMap.end(); key_it != key_end; key_it++)
                         {
-                                if (paramSet.find(key.first) == paramSet.end())
+                                if (paramSet.find(key_it->first) == paramSet.end())
                                 {
-                                        scanLog::err << "same_as:  " << key.first << " is not defined in inifile." << scanLog::endl;
+                                        scanLog::err << "same_as:  " << key_it->first << " is not defined in inifile." << scanLog::endl;
                                 }
                                 else
                                 {
-                                        my_subpriors.push_back(new MultiPriors(key.second));
+                                        my_subpriors.push_back(new MultiPriors(key_it->second));
                                 }
-                        });
+                        }
                         
                         int param_size = 0;
-                        std::for_each (my_subpriors.begin(), my_subpriors.end(), [&](BasePrior* &subprior)
+                        for (auto subprior = my_subpriors.begin(), prior_end = my_subpriors.end(); subprior != prior_end; subprior++)
                         {
-                                param_size += subprior->size();
-                        });
+                                param_size += (*subprior)->size();
+                        }
                         
                         setSize(param_size);
                         
@@ -320,14 +323,16 @@ namespace Gambit
 
                         auto priorNames = options_in.getNames();
                         
-                        std::for_each (priorNames.begin(), priorNames.end(), [&](std::string &priorname)
+                        for (auto priorname_it = priorNames.begin(), priorname_end = priorNames.end(); priorname_it != priorname_end; priorname_it++)
                         {
+                                std::string &priorname = *priorname_it;
                                 if (options_in.hasKey(priorname, "parameters") && options_in.hasKey(priorname, "prior_type"))
                                 {
                                         auto params = options_in.getValue<std::vector<std::string>>(priorname, "parameters");
                                         
-                                        std::for_each (params.begin(), params.end(), [&](std::string &par)
+                                        for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                         {
+                                                std::string &par = *par_it;
                                                 if (paramSet.find(par) == paramSet.end())
                                                 {
                                                         scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
@@ -344,7 +349,7 @@ namespace Gambit
                                                                 needSet.erase(find_it);
                                                         }
                                                 }
-                                        });
+                                        }
 
                                         auto options = options_in.getOptions(priorname);
                                         auto priortype = options_in.getValue<std::string>(priorname, "prior_type");
@@ -357,13 +362,13 @@ namespace Gambit
                                         {
                                                 if (priortype == "fixed")
                                                 {
-                                                        std::for_each (params.begin(), params.end(), [&](std::string &par)
+                                                        for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                                         {
                                                                 shown_param_names.erase
                                                                 (
-                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                        std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
                                                                 );
-                                                        });
+                                                        }
                                                         
                                                         my_subpriors.push_back( prior_creators.at(priortype)(params,options) );
                                                 }
@@ -372,14 +377,14 @@ namespace Gambit
                                                         if (options.hasKey("same_as"))
                                                         {
                                                                 std::string same_name = options.getValue<std::string>("same_as");
-                                                                std::for_each (params.begin(), params.end(), [&](std::string &par)
+                                                                for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                                                 {
                                                                         shown_param_names.erase
                                                                         (
-                                                                                std::find(shown_param_names.begin(), shown_param_names.end(), par)
+                                                                                std::find(shown_param_names.begin(), shown_param_names.end(), *par_it)
                                                                         );
-                                                                        sameMap[par] = same_name;
-                                                                });
+                                                                        sameMap[*par_it] = same_name;
+                                                                }
                                                         }
                                                         else
                                                         {
@@ -396,7 +401,7 @@ namespace Gambit
                                 {
                                         scanLog::err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scanLog::endl;
                                 }
-                        });
+                        }
                         
                         if (needSet.size() != 0)
                         {
@@ -413,19 +418,19 @@ namespace Gambit
                         std::unordered_map<std::string, std::string> keyMap;
                         std::string index, result;
                         unsigned int reps;
-                        std::for_each (sameMap.begin(), sameMap.end(), [&](std::pair<std::string, std::string> strMap)
+                        for (auto strMap_it = sameMap.begin(), strMap_end = sameMap.end(); strMap_it != strMap_end; strMap_it++)
                         {
-                                index = strMap.first;
-                                result = strMap.second;
+                                index = strMap_it->first;
+                                result = strMap_it->second;
                                 reps = 0;
                                 while (sameMap.find(result) != sameMap.end())
                                 {
                                         index = result;
                                         result = sameMap[index];
                                         
-                                        if (result == strMap.first)
+                                        if (result == strMap_it->first)
                                         {
-                                                scanLog::err << "Parameter " << strMap.first << " is \"same as\" itself." << scanLog::endl;
+                                                scanLog::err << "Parameter " << strMap_it->first << " is \"same as\" itself." << scanLog::endl;
                                                 break;
                                         }
                                         
@@ -438,37 +443,37 @@ namespace Gambit
                                 }
                                 
                                 if (keyMap.find(result) == keyMap.end())
-                                        keyMap[result] = strMap.first + std::string("+") + result;
+                                        keyMap[result] = strMap_it->first + std::string("+") + result;
                                 else
-                                        keyMap[result] = strMap.first + std::string("+") + keyMap[result];
-                        });
+                                        keyMap[result] = strMap_it->first + std::string("+") + keyMap[result];
+                        }
                         
-                        std::for_each (shown_param_names.begin(), shown_param_names.end(), [&](std::string &str)
+                        for (auto str_it = shown_param_names.begin(), str_end = shown_param_names.end(); str_it != str_end; str_it++)
                         {
-                                auto it = keyMap.find(str);
+                                auto it = keyMap.find(*str_it);
                                 if (it != keyMap.end())
                                 {
-                                        str = it->second;
+                                        *str_it = it->second;
                                 }
-                        });
+                        }
                         
-                        std::for_each (keyMap.begin(), keyMap.end(), [&](std::pair<std::string, std::string> key)
+                        for (auto key_it = keyMap.begin(), key_end = keyMap.end(); key_it != key_end; key_it++)
                         {
-                                if (paramSet.find(key.first) == paramSet.end())
+                                if (paramSet.find(key_it->first) == paramSet.end())
                                 {
-                                        scanLog::err << "same_as:  " << key.first << " is not defined in inifile." << scanLog::endl;
+                                        scanLog::err << "same_as:  " << key_it->first << " is not defined in inifile." << scanLog::endl;
                                 }
                                 else
                                 {
-                                        my_subpriors.push_back(new MultiPriors(key.second));
+                                        my_subpriors.push_back(new MultiPriors(key_it->second));
                                 }
-                        });
+                        }
                         
                         int param_size = 0;
-                        std::for_each (my_subpriors.begin(), my_subpriors.end(), [&](BasePrior* &subprior)
+                        for (auto subprior = my_subpriors.begin(), subprior_end = my_subpriors.end(); subprior != subprior_end; subprior++)
                         {
-                                param_size += subprior->size();
-                        });
+                                param_size += (*subprior)->size();
+                        }
                         
                         setSize(param_size);
                 }
