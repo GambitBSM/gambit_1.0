@@ -2,16 +2,13 @@
 //   *********************************************
 ///  \file
 ///
-///  Example of GAMBIT core framework use.
-///
-///  A program to demo what can be done with the 
-///  current development version of the code. 
+///  GAMBIT core framework.
 ///
 ///  *********************************************
 ///
-///  Authors (add name and date if you modify):
+///  Authors:
 ///   
-///  \author GAMBIT Collaboration
+///  \author The GAMBIT Collaboration
 ///  \date 2012 Oct --> ??
 ///
 ///  *********************************************
@@ -23,7 +20,6 @@
 #include "scannerbit.hpp"
 #include "test_function_rollcall.hpp"
 #include "priors_rollcall.hpp"
-#include "modelgraph.hpp"
 #include "model_rollcall.hpp"
 #include "backend_rollcall.hpp"
 #include "module_rollcall.hpp"
@@ -35,6 +31,123 @@
 using namespace Gambit;
 using namespace LogTags;
 
+// Inform the user of the ways to invoke GAMBIT, then die.
+void getout()
+{ 
+  cout << "\nGAMBIT command-line options                                                 "
+          "\n---------------------------                                                 "
+          "\n                                                                            "
+          "\n   Start a scan                                       gambit <inifile>      " 
+          "\n   e.g.                                               gambit gambit.yaml    "
+          "\n                                                                            "
+          "\n   List registered modules                            gambit modules        " 
+          "\n                                                                            "
+          "\n   List registered backends and their status          gambit backends       " 
+          "\n                                                                            "
+          "\n   List registered models and output model graph      gambit models         " 
+          "\n                                                                            "
+          "\n   List all registered function capabilities          gambit capabilities   " 
+          "\n                                                                            "
+          "\n   Give info on a specific module, backend, model or  gambit <name>         "
+          "\n   capability, e.g.                                   gambit DarkBit        "
+          "\n                                                      gambit Pythia         "
+          "\n                                                      gambit MSSM           "
+          "\n                                                      gambit IC79WL_loglike "
+          "\n                                                                            "
+          "\n   Print GAMBIT version information                   gambit -v/--version   " << endl << endl; 
+  logger().disable();
+  core_error().silent_forced_throw();
+}
+
+
+// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration
+#include "modelgraph.hpp"
+void run_diagnostic(str command)
+{
+
+  if (command == "modules")
+  {
+    cout << "\nThis is GAMBIT. Registered modules:" << endl;
+    cout <<   "-----------------------------------" << endl;
+    std::set<str> modules = Core().getModules();
+    for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
+    {
+      cout << *it << endl;
+    }
+    cout << endl;
+    //number of module functions
+  }
+
+  else if (command == "backends")
+  {
+    cout << "\nThis is GAMBIT. Registered backends:" << endl;
+    cout <<   "------------------------------------" << endl;
+    std::set<str> backends = Core().getBackends();
+    for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
+    {
+      cout << *it << endl;
+    }
+    cout << endl;
+    // number of backend functions, path to lib, present/loaded successfully
+  }
+
+  else if (command == "models")
+  {
+    // Create a graph of the available model hierarchy.
+    ModelGraph().makeGraph(Core().getPrimaryModelFunctors());
+    cout << "\nThis is GAMBIT. Registered models:" << endl;
+    cout <<   "----------------------------------" << endl;
+    std::set<str> models = Core().getModels();
+    for (std::set<str>::const_iterator it = models.begin(); it != models.end(); ++it)
+    {
+      cout << *it << endl;
+    }
+    cout << endl;
+    //parent, number of parameters
+
+  }
+
+  else if (command == "capabilities")
+  {
+    cout << "\nThis is GAMBIT. Registered capabilities:" << endl;
+    cout <<   "----------------------------------------" << endl;
+    std::set<str> capabilities = Core().getCapabilities();
+    for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
+    {
+      cout << *it << endl;
+    }
+    cout << endl;
+    // available from (origin only)
+  }
+
+  else 
+  {
+    //Iterate over all modules to see if command matches one of them
+    // functions + capabilities and types, loop manager or not, nested or not, statuses
+    //   -dependencies
+    //   -backend requirements + grouped or not
+
+    //Iterate over all backends to see if command matches one of them
+    // path to
+    // load status
+    // functions, capabilities, types (inc args), statuses
+
+    //Iterate over all models to see if command matches one of them
+    // parent, children, parameters
+
+    //Iterate over all capabilities to see if command matches one of them
+    // available from (type, origin, function name)
+    // explanation
+
+    return;
+  }
+
+  logger().disable();
+  core_error().silent_forced_throw();
+
+}
+
+
 int main( int argc, const char* argv[] )
 {
 
@@ -43,38 +156,25 @@ int main( int argc, const char* argv[] )
   try
   {
 
-    const char* inifilename;
-
     // Parse command line arguments
-    if (argc < 2)  // If not enough parameters have been passed, inform user and exit.
-    { 
-      str errmsg = "Error! No input file specified!";
-      // Inform the user of how to use the program
-      errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
-                 "\n  e.g.  : gambit_example_minimal gambit.yaml"
-                 "\n        : gambit_example_minimal models_test.yaml";
-      core_error().raise(LOCAL_INFO,errmsg);
-      inifilename = "";
-    }
-    inifilename = argv[1];
+    if (argc != 2) getout();        // If the wrong number of parameters have been passed, inform the user and exit.
+    run_diagnostic(argv[1]);        // Launch into the appropriate diagnostic mode if the argument passed warrants it.
+    const char* filename = argv[1]; // If not, roll on as if the argument is a filename.
   
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
 
-    logger() << core << "Command invoked: " << argv[0] << " " << inifilename << endl;
+    logger() << core << "Command invoked: " << argv[0] << " " << filename << endl;
     logger() << core << "Starting GAMBIT" << endl << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";
     logger() << Core().getModuleFunctors().size() << endl;
     logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
     logger() << Core().getBackendFunctors().size() << endl << EOM;
  
-    // Read INI file
+    // Read YAML file, which also initialises the logger. 
     IniParser::IniFile iniFile;
-    iniFile.readFile(inifilename);
+    iniFile.readFile(filename);
  
-    // Reading the inifile will also have initialised the LogMaster object, which is
-    // already available here due to including log.hpp
-
     // Determine selected model(s)
     std::vector<std::string> selectedmodels = iniFile.getModelNames();
     //cout << "Your selected models are: " << selectedmodels << endl;
@@ -108,10 +208,6 @@ int main( int argc, const char* argv[] )
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder();
-
-    // Create a graph of the available model hierarchy. Currently for 
-    // visualisation purposes only.
-    ModelGraph().makeGraph(Core().getPrimaryModelFunctors());
  
     //Define the prior
     Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
@@ -142,9 +238,11 @@ int main( int argc, const char* argv[] )
 
   catch (std::exception& e)
   {
-    cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    if (not logger().disabled()) cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
   }
 
   return 0;
 
 }
+
+ 

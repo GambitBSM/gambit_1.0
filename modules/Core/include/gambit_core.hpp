@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott
 ///  \date 2013 Aug
-///  \date 2014 Feb
+///  \date 2014 Feb, Aug
 ///
 ///  *********************************************
 
@@ -38,6 +38,18 @@ namespace Gambit
       typedef std::vector<primary_model_functor*> pmfVec;
       typedef std::map<str, primary_model_functor*> pmfMap;
       /// @}     
+
+      /// Set of all declared modules
+      std::set<str> modules;
+      
+      /// List of all declared backends
+      std::set<str> backends;
+
+      /// List of all declared models
+      std::set<str> models;
+
+      /// List of all declared capabilities
+      std::set<str> capabilities;
 
       /// List of all declared module functors
       fVec functorList;
@@ -76,6 +88,18 @@ namespace Gambit
 
       /// Add entries to the map of activated primary model functors
       void registerActiveModelFunctors(const pmfVec&); 
+
+      /// Get a reference to the list of modules
+      const std::set<str>& getModules() const ; 
+
+      /// Get a reference to the list of backends
+      const std::set<str>& getBackends() const ; 
+
+      /// Get a reference to the list of models
+      const std::set<str>& getModels() const ; 
+
+      /// Get a reference to the list of capabilities
+      const std::set<str>& getCapabilities() const ; 
 
       /// Get a reference to the list of module functors
       const fVec& getModuleFunctors() const ; 
