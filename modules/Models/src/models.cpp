@@ -159,7 +159,7 @@ namespace Gambit
     /// Add parents to the parents database
     void ModelFunctorClaw::add_parents (const str &model, const str &parent)
     {
-      if (parent != "PARENT") myParentsDB[model].push_back(parent); 
+      if (parent != "PARENT") myParentsDB[model] = parent; 
     }          
 
     /// Add lineage vector to the lineage database
@@ -209,9 +209,9 @@ namespace Gambit
     }
 
     /// Retrieve the parents for a given model
-    std::vector<str> ModelFunctorClaw::get_parents (const str &model)
+    str ModelFunctorClaw::get_parent (const str &model)
     {
-      return myParentsDB.find(model) == myParentsDB.end() ? std::vector<str>() : myParentsDB[model];
+      return myParentsDB.find(model) == myParentsDB.end() ? "none" : myParentsDB[model];
     }
 
     /// Check if model 1 is descended from model 2

@@ -97,27 +97,19 @@ namespace Gambit
         std::cout<<"    Vertex added: "<<model<<std::endl;
       }
       
-      // Loop over all vertices (models) in vertexIDmap, look up the 'parents' 
+      // Loop over all vertices (models) in vertexIDmap, look up the 'parent' 
       // of each one in modelClaw().myParentsDB, and add an edge from parent to child in the
       // model graph.
-      //
       typedef std::map<str, DRes::VertexID>::iterator vertexIDmap_it;
       for (vertexIDmap_it vimap = vertexIDmap.begin(); 
               vimap != vertexIDmap.end(); vimap++) 
       {
         model = vimap->first;
-        std::vector<str> parents = modelClaw().get_parents(model);  
-        std::cout<<model<<"; parents: "<<parents<<std::endl;;
-        
-        // Loop through vector of parents of 'model'
-        for(std::vector<str>::const_iterator 
-                    parent = parents.begin(); 
-                    parent!= parents.end(); parent++) 
-        {
-          // Add edge between parent and child
-          boost::add_edge(vertexIDmap[*parent], vertexIDmap[model], modelGraph);
-          std::cout<<"    Edge added: "<<model<<" ---> "<<*parent<<std::endl;
-        }
+        str parent = modelClaw().get_parent(model);  
+        std::cout<<model<<"; parent: "<<parent<<std::endl;;       
+        // Add edge between parent and child
+        boost::add_edge(vertexIDmap[parent], vertexIDmap[model], modelGraph);
+        std::cout<<"    Edge added: "<<model<<" ---> "<<parent<<std::endl;
       }
       std::cout<<std::endl;
       

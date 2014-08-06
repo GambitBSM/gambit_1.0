@@ -62,7 +62,7 @@ namespace Gambit
         /// \name Private lineage/ancestry databases
         /// @{
         std::set<str> allmodelnames;
-        std::map<str, std::vector<str> > myParentsDB;
+        std::map<str, str> myParentsDB;
         std::map<str, std::vector<str> > myLineageDB;
         std::map<str, std::vector<str> > myDescendantsDB;
         std::map<str, LineageFunction  > myIsDescendantOfDB;
@@ -114,8 +114,8 @@ namespace Gambit
         /// Retrieve the descendants for a given model
         std::vector<str> get_descendants (const str &);
         
-        /// Retrieve the parents for a given model
-        std::vector<str> get_parents (const str&);
+        /// Retrieve the parent model for a given model
+        str get_parent (const str&);
 
         /// Check if model 1 is descended from model 2
         bool descended_from (const str &, const str &);
