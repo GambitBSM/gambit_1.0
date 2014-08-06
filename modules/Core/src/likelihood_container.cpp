@@ -41,18 +41,18 @@ namespace Gambit
     target_vertices = dependencyResolver.getObsLikeOrder();
     int size = 0;
     auto it = target_vertices.begin();
-    std::for_each (target_vertices.begin(), target_vertices.end(), [&] (DRes::VertexID &vert)
+    for (auto vert_it = target_vertices.begin(), vert_end = target_vertices.end(); vert_it != vert_end; vert_it++)
     {
-      if (dependencyResolver.getIniEntry(vert)->purpose == purpose)
+      if (dependencyResolver.getIniEntry(*vert_it)->purpose == purpose)
       {
-        *(it++) = vert;
+        *(it++) = *vert_it;
         size++;
       }
       else
       {
-        aux_vertices.push_back(vert);
+        aux_vertices.push_back(*vert_it);
       }
-    });
+    }
 
     target_vertices.resize(size);
   }
@@ -71,20 +71,21 @@ namespace Gambit
   {
     prior.transform(vec, parameterMap);
     
-    std::transform (prior.getShownParameters().begin(), prior.getShownParameters().end(), realParameters.begin(), [&] (const str &par) -> double
+    auto real_it = realParameters.begin();
+    for (auto par_it = prior.getShownParameters().begin(), par_end = prior.getShownParameters().end(); par_it != par_end; par_it++, real_it++)
     {
-      return parameterMap[par];
-    });
+      *real_it = parameterMap[*par_it];
+    }
       
-    std::for_each (functorMap.begin(), functorMap.end(), [&] (std::pair<str, primary_model_functor *> act)
+    for (auto act_it = functorMap.begin(), act_end = functorMap.end(); act_it != act_end; act_it++)
     {
-      auto paramkeys = act.second->getcontentsPtr()->getKeys();
-      std::for_each (paramkeys.begin(), paramkeys.end(), [&] (str &par)
+      auto paramkeys = act_it->second->getcontentsPtr()->getKeys();
+      for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
         //std::cout << (act_it->first + "::" + *it) << "   " << parameterMap[act_it->first + "::" + *it] << std::endl;
-        act.second->getcontentsPtr()->setValue(par, parameterMap[act.first + "::" + par]);
-      });
-    });
+        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[act_it->first + "::" + *par_it]);
+      }
+    }
     //getchar();
   }
     
