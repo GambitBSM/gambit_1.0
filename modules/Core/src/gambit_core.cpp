@@ -22,6 +22,7 @@
 #include "error_handlers.hpp"
 #include "version.hpp"
 #include "modelgraph.hpp"
+#include "stream_printers.hpp"
 
 namespace Gambit
 {
@@ -126,14 +127,20 @@ namespace Gambit
 
       else if (command == "modules")
       {
-        cout << "\nThis is GAMBIT. Registered modules:" << endl;
-        cout <<   "-----------------------------------" << endl;
+        const int maxlen = 20;
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        cout << "Modules             Num. module functions" << endl;
+        cout << "-----------------------------------------" << endl;
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
-          cout << *it << endl;
+          int nf = 0;
+          for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+          {
+            if ((*jt)->origin() == *it) nf++;
+          } 
+          cout << *it << spacing(it->length(),maxlen) << nf << endl;
         }
         cout << endl;
-        //FIXME include number of module functions
       }
     
       else if (command == "backends")
@@ -165,14 +172,39 @@ namespace Gambit
     
       else if (command == "capabilities")
       {
-        cout << "\nThis is GAMBIT. Registered capabilities:" << endl;
-        cout <<   "----------------------------------------" << endl;
+        const int maxlen1 = 35;
+        const int maxlen2 = 25;
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
+        cout << "---------------------------------------------------------------------------------------------" << endl;
         for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
         {
-          cout << *it << endl;
+          std::set<str> modset, beset;
+          str mods, bes;
+          // Make sets of matching modules and backends
+          for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+          {
+            if ((*jt)->capability() == *it) modset.insert((*jt)->origin());
+          } 
+          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+          {
+            if ((*jt)->capability() == *it) beset.insert((*jt)->origin());
+          }         
+          // Make strings out of the sets
+          for (std::set<str>::const_iterator jt = modset.begin(); jt != modset.end(); ++jt)
+          {
+            if (jt != modset.begin()) mods += ", "; 
+            mods += *jt;
+          }
+          for (std::set<str>::const_iterator jt = beset.begin(); jt != beset.end(); ++jt)
+          {
+            if (jt != beset.begin()) bes += ", "; 
+            bes += *jt;
+          }
+          // Print them
+          cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
         cout << endl;
-        //FIXME include: available from (origin only)
       }
     
       else 
