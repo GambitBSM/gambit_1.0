@@ -404,7 +404,7 @@ minihelp: $(COREDIR)/build/.minihelp
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
-COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(CORESRC))))
+COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o, $(CORESRC))))
 
 MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp) \
  $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
@@ -570,7 +570,7 @@ endif
 
 $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) YAML_CFLAGS="$(CFLAGS)"
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) YAML_CFLAGS="$(CFLAGS) -Iinclude"
 
 slhapy8:
         # Forced rebuild of library.
@@ -589,7 +589,7 @@ gambit: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(A
 gambit_example: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libfastsim.so
 	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example.o $(ALLOBJECTS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(COREDIR)/build/gambit_example.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 
 ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) \
  $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so \
