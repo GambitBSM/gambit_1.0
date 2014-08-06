@@ -21,6 +21,7 @@
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
+#include "models.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
 
@@ -68,6 +69,7 @@ namespace Gambit
     void gambit_core::registerModuleFunctor(functor &f)
     {
       functorList.push_back(&f);
+      std::set<str> models = modelClaw().get_allmodels();
       if (models.find(f.origin()) == models.end()) modules.insert(f.origin());
       capabilities.insert(f.capability());
     }
@@ -87,8 +89,6 @@ namespace Gambit
     void gambit_core::registerPrimaryModelFunctor(primary_model_functor &f)
     {
       primaryModelFunctorList.push_back(&f);
-      models.insert(f.origin());
-      modules.erase(f.origin());
       capabilities.insert(f.capability());
     }
 
@@ -157,17 +157,19 @@ namespace Gambit
     
       else if (command == "models")
       {
+        int maxlen = 22;
         // Create a graph of the available model hierarchy.
         ModelGraph().makeGraph(getPrimaryModelFunctors());
-        cout << "\nThis is GAMBIT. Registered models:" << endl;
-        cout <<   "----------------------------------" << endl;
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        cout << "Models                     Parent          " << endl;
+        cout << "-------------------------------------------" << endl;
+        std::set<str> models = modelClaw().get_allmodels();
         for (std::set<str>::const_iterator it = models.begin(); it != models.end(); ++it)
         {
-          cout << *it << endl;
+          cout << *it << spacing(it->length(),maxlen) << parent(*it) << endl;
         }
         cout << endl;
-        //FIXME include parent, number of parameters
-    
+        //FIXME include number of parameters    
       }
     
       else if (command == "capabilities")

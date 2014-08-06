@@ -99,11 +99,11 @@ namespace Gambit
 
     }
    
+    /// Return set of all models recognised by GAMBIT
+    std::set<str>& ModelFunctorClaw::get_allmodels() { return allmodelnames; }
+
     /// Retrieve the internally stored vector of activated models
-    std::vector<str> ModelFunctorClaw::get_activemodels()   
-    {
-      return activemodels;
-    } 
+    std::vector<str> ModelFunctorClaw::get_activemodels() { return activemodels; }
 
     /// Active model functor "usefulness" checker
     ///

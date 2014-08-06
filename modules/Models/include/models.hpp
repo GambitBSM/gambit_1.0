@@ -105,6 +105,9 @@ namespace Gambit
         /// List all the models recognised by GAMBIT
         str list_models();
 
+        /// Return set of all models recognised by GAMBIT
+        std::set<str>& get_allmodels();
+
         /// Return vector of the active models;
         std::vector<str> get_activemodels();
 

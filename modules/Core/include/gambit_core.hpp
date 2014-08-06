@@ -45,9 +45,6 @@ namespace Gambit
       /// List of all declared backends
       std::set<str> backends;
 
-      /// List of all declared models
-      std::set<str> models;
-
       /// List of all declared capabilities
       std::set<str> capabilities;
 
