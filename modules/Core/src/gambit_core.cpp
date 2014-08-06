@@ -203,7 +203,9 @@ namespace Gambit
             if (jt != beset.begin()) bes += ", "; 
             bes += *jt;
           }
-          // Print them
+          // Identify the primary model parameters with their models.
+          if (mods.length() == 0 and bes.length() == 0) mods = it->substr(0,it->length()-11);
+          // Print the entry in the table.
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
         cout << endl;
