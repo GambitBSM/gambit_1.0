@@ -20,11 +20,48 @@
 
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
+#include "version.hpp"
+#include "modelgraph.hpp"
 
 namespace Gambit
 {
 
+  /// Core accessor function
+  gambit_core& Core()
+  {
+    static gambit_core local;
+    return local;
+  }
+
   /// Definitions of public methods in GAMBIT core class.
+
+    /// Inform the user of the ways to invoke GAMBIT, then die.
+    void gambit_core::bail()
+    { 
+      cout << "\nGAMBIT command-line options                                                 "
+              "\n---------------------------                                                 "
+              "\n                                                                            "
+              "\n   Start a scan                                       gambit <inifile>      " 
+              "\n   e.g.                                               gambit gambit.yaml    "
+              "\n                                                                            "
+              "\n   List registered modules                            gambit modules        " 
+              "\n                                                                            "
+              "\n   List registered backends and their status          gambit backends       " 
+              "\n                                                                            "
+              "\n   List registered models and output model graph      gambit models         " 
+              "\n                                                                            "
+              "\n   List all registered function capabilities          gambit capabilities   " 
+              "\n                                                                            "
+              "\n   Give info on a specific module, backend, model or  gambit <name>         "
+              "\n   capability, e.g.                                   gambit DarkBit        "
+              "\n                                                      gambit Pythia         "
+              "\n                                                      gambit MSSM           "
+              "\n                                                      gambit IC79WL_loglike "
+              "\n                                                                            "
+              "\n   Print GAMBIT version information                   gambit -v/--version   " << endl << endl; 
+      logger().disable();
+      core_error().silent_forced_throw();
+    } 
 
     /// Add a new module functor to functorList
     void gambit_core::registerModuleFunctor(functor &f)
@@ -63,18 +100,6 @@ namespace Gambit
       }
     }
 
-    /// Get a reference to the list of modules
-    const std::set<str>& gambit_core::getModules() const { return modules; } 
-
-    /// Get a reference to the list of backends
-    const std::set<str>& gambit_core::getBackends() const { return backends; } 
-
-    /// Get a reference to the list of models
-    const std::set<str>& gambit_core::getModels() const { return models; } 
-
-    /// Get a reference to the list of capabilities
-    const std::set<str>& gambit_core::getCapabilities() const { return capabilities; } 
-
     /// Get a reference to the list of module functors
     const gambit_core::fVec& gambit_core::getModuleFunctors() const { return functorList; } 
 
@@ -90,12 +115,91 @@ namespace Gambit
     /// Get a reference to the map of all user-activated primary model functors
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
 
+    /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
+    void gambit_core::run_diagnostic(str command)
+    {
+    
+      if (command == "-v" or command == "--version")
+      {
+        cout << "\nThis is GAMBIT v" + version << endl << endl;
+      }
 
-  /// Core accessor function
-  gambit_core& Core()
-  {
-    static gambit_core local;
-    return local;
-  }
+      else if (command == "modules")
+      {
+        cout << "\nThis is GAMBIT. Registered modules:" << endl;
+        cout <<   "-----------------------------------" << endl;
+        for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
+        {
+          cout << *it << endl;
+        }
+        cout << endl;
+        //FIXME include number of module functions
+      }
+    
+      else if (command == "backends")
+      {
+        cout << "\nThis is GAMBIT. Registered backends:" << endl;
+        cout <<   "------------------------------------" << endl;
+        for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
+        {
+          cout << *it << endl;
+        }
+        cout << endl;
+        //FIXME include versions, number of backend functions, path to lib, present/loaded successfully
+      }
+    
+      else if (command == "models")
+      {
+        // Create a graph of the available model hierarchy.
+        ModelGraph().makeGraph(getPrimaryModelFunctors());
+        cout << "\nThis is GAMBIT. Registered models:" << endl;
+        cout <<   "----------------------------------" << endl;
+        for (std::set<str>::const_iterator it = models.begin(); it != models.end(); ++it)
+        {
+          cout << *it << endl;
+        }
+        cout << endl;
+        //FIXME include parent, number of parameters
+    
+      }
+    
+      else if (command == "capabilities")
+      {
+        cout << "\nThis is GAMBIT. Registered capabilities:" << endl;
+        cout <<   "----------------------------------------" << endl;
+        for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
+        {
+          cout << *it << endl;
+        }
+        cout << endl;
+        //FIXME include: available from (origin only)
+      }
+    
+      else 
+      {
+        //Iterate over all modules to see if command matches one of them
+        // functions + capabilities and types, loop manager or not, nested or not, statuses
+        //   -dependencies
+        //   -backend requirements + grouped or not
+    
+        //Iterate over all backends to see if command matches one of them
+        // path to
+        // load status
+        // functions, capabilities, types (inc args), statuses
+    
+        //Iterate over all models to see if command matches one of them
+        // parent, children, parameters
+    
+        //Iterate over all capabilities to see if command matches one of them
+        // available from (type, origin, function name)
+        // explanation
+    
+        return;
+      }
+    
+      logger().disable();
+      core_error().silent_forced_throw();
+    
+    }
 
 }

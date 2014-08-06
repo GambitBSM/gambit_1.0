@@ -474,7 +474,7 @@ int main( int, const char*[] )
   
 
   // for the fastsim backend
-  //ExampleBit_A::Functown::init_sim.resolveBackendReq(&Gambit::Backends::LibFastSim_1_0::Functown::FastSim_Init_deprecated);
+  ExampleBit_A::Functown::fast_sim.resolveBackendReq(&Gambit::Backends::LibFastSim_1_0::Functown::FastSim_Init);
 
 
 
@@ -535,8 +535,8 @@ int main( int, const char*[] )
   cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
   if (ExampleBit_A::Accessors::provides("fast_sim"))
   {
-    ExampleBit_A::Functown::init_sim.calculate();
-    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::init_sim(0) << endl ;
+    ExampleBit_A::Functown::fast_sim.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::fast_sim(0) << endl ;
   }
 
 
