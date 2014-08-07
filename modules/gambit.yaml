@@ -212,8 +212,8 @@ twalk_beta:
   module:       ""
 
 # Uncomment to test neutrino likelihoods
-- purpose:      Likelihood
-  capability:   IceCube_likelihood
+#- purpose:      Likelihood
+#  capability:   IceCube_likelihood
 
 # Uncomment to test FastSim
 #- purpose:      Likelihood
@@ -247,8 +247,8 @@ twalk_beta:
 #  capability:   SI_Btaunu
 
 # Uncomment to test HEColliderBit
-#- purpose:      Observable
-#  capability:   analysisAccumulator
+- purpose:      Observable
+  capability:   analysisAccumulator
 
 # Test Pythia8 SLHA reader
 - purpose:      Likelihood
@@ -303,10 +303,10 @@ twalk_beta:
   dependencies:
   - {capability: "nevents", module: "ExampleBit_A"}  
 
-#- capability:   "analysisAccumulator"
-#  type: "double"
-#  dependencies:
-#  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
+- capability:   "analysisAccumulator"
+  type: "double"
+  dependencies:
+  - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 
 - capability:    "nevents_postcuts"
   dependencies:
