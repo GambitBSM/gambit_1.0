@@ -27,6 +27,7 @@
 ///
 ///  *********************************************
 
+#include "config.h"
 
 #include "functors.hpp"
 #include "all_functor_types.hpp"

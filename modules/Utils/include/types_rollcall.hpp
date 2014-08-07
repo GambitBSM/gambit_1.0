@@ -107,8 +107,11 @@
 #include "MSSM_types.hpp"
 
 // Include the module-specific types
-#include "DarkBit_types.hpp"
-#include "ExampleBit_A_types.hpp"
+#ifdef DARKBIT
+  #include "DarkBit_types.hpp"
+  #include "ExampleBit_A_types.hpp"
+#endif
+
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
   #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)
