@@ -67,7 +67,8 @@ namespace Gambit
                         gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
-                                for (auto it = outputFuncs.begin(); it != outputFuncs.end(); it++)
+                                for (auto it = outputFuncs.begin(), end = outputFuncs.end(); it != end; it++)
+
                                 {
                                         delete it->second;
                                 }
