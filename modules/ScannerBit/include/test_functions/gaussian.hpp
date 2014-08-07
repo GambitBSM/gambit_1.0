@@ -49,7 +49,7 @@ namespace Gambit
                         ~Test_Gaussian(){}
                 };
                 
-                LOAD_TEST_FUNCTOR(gaussian, Test_Gaussian)
+                //LOAD_TEST_FUNCTOR(gaussian, Test_Gaussian)
         }
 }
 

@@ -1,3 +1,18 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  Variadic utilty functions.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date Aug 2014
+///
+///  *********************************************
 
 #ifndef TYPE_INDEX_HPP
 #define TYPE_INDEX_HPP

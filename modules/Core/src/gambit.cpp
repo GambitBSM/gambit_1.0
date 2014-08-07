@@ -98,13 +98,7 @@ int main( int argc, const char* argv[] )
     Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
     //Define the likelihood container object for the scanner
-    Gambit::Scanner::Factory_Base *factory = [&]()->Gambit::Scanner::Factory_Base *
-    {
-      if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-        return new Gambit::Scanner::Test_Function_Factory(iniFile.getKeyValuePairNode());
-      else
-        return new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
-    }();
+    Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
   
     //Define the iniFile interface for the scanner
     Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());

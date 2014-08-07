@@ -264,10 +264,10 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         if (input != 0)                                                                                 \
                                 pluginData.inputData = *input;                                                          \
                                                                                                                         \
-                        std::for_each (pluginData.inits.begin(), pluginData.inits.end(), [&](void (*func)(gambitData &))\
+                        for(auto it = pluginData.inits.begin(), end = pluginData.inits.end(); it != end; it++)          \
                         {                                                                                               \
-                                func(pluginData);                                                                       \
-                        });                                                                                             \
+                                (*it)(pluginData);                                                                       \
+                        }                                                                                               \
                                                                                                                         \
                         pluginData.inits.clear();                                                                       \
                                                                                                                         \

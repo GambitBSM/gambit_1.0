@@ -94,7 +94,7 @@ namespace Gambit
                         }
                 };
                 
-                LOAD_TEST_FUNCTOR(uniform, Test_Uniform)
+                //LOAD_TEST_FUNCTOR(uniform, Test_Uniform)
         }
 }
 

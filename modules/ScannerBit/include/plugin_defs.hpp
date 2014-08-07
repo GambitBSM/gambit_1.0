@@ -67,10 +67,10 @@ namespace Gambit
                         gambitData(std::string name) : name(name) {}
                         ~gambitData()
                         {
-                                std::for_each (outputFuncs.begin(), outputFuncs.end(), [] (std::pair<std::string, factoryBase *> outputMap)
+                                for (auto it = outputFuncs.begin(), end = outputFuncs.end(), it != end; it++)
                                 {
-                                        delete outputMap.second;
-                                });
+                                        delete it->second;
+                                }
                         }
                 };  
         }
