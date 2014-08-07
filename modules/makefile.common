@@ -404,7 +404,7 @@ minihelp: $(COREDIR)/build/.minihelp
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
-COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o, $(CORESRC))))
+COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(CORESRC))))
 
 MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp) \
  $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
@@ -570,7 +570,7 @@ endif
 
 $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) YAML_CFLAGS="$(CFLAGS) -Iinclude"
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) CFLAGS="$(CFLAGS)"
 
 slhapy8:
         # Forced rebuild of library.
