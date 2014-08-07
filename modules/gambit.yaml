@@ -247,8 +247,8 @@ twalk_beta:
 #  capability:   SI_Btaunu
 
 # Uncomment to test HEColliderBit
-- purpose:      Observable
-  capability:   analysisAccumulator
+#- purpose:      Observable
+#  capability:   analysisAccumulator
 
 # Test Pythia8 SLHA reader
 - purpose:      Likelihood
