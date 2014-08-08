@@ -144,15 +144,15 @@ namespace Gambit
     }
 
     // FastSim
-    void init_sim(double &which) {
+    void fast_sim(double &which) {
       
-      using namespace Pipes::init_sim;
+      using namespace Pipes::fast_sim;
       cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::init_fastsim.name() << " from " <<
-        BEreq::init_fastsim.backend() << ", v" << 
-        BEreq::init_fastsim.version() << "." << endl;
+        BEreq::FastSim_Init.name() << " from " <<
+        BEreq::FastSim_Init.backend() << ", v" << 
+        BEreq::FastSim_Init.version() << "." << endl;
 
-      cout << " calling function from library" << BEreq::init_fastsim(1) << endl;
+      cout << " calling function from library" << BEreq::FastSim_Init(1) << endl;
       which = 10;
 
     }

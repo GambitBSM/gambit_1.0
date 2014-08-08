@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott
 ///  \date 2013 Aug
-///  \date 2014 Feb
+///  \date 2014 Feb, Aug
 ///
 ///  *********************************************
 
@@ -39,6 +39,15 @@ namespace Gambit
       typedef std::map<str, primary_model_functor*> pmfMap;
       /// @}     
 
+      /// Set of all declared modules
+      std::set<str> modules;
+      
+      /// List of all declared backends
+      std::set<str> backends;
+
+      /// List of all declared capabilities
+      std::set<str> capabilities;
+
       /// List of all declared module functors
       fVec functorList;
 
@@ -61,6 +70,12 @@ namespace Gambit
 
       /// Destructor
       ~gambit_core(){}
+
+      /// Command-line info function
+      void bail();
+
+      /// Diagnostics function
+      void run_diagnostic(str);
 
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);

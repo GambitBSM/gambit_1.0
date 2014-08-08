@@ -58,10 +58,10 @@ namespace Gambit
     return ancestor_of(model1, model2);
   }
 
-  /// Short function to allow retrieval of a model's parents
-  std::vector<str> parents (const str& model)
+  /// Short function to allow retrieval of a model's parent
+  str parent (const str& model)
   {
-    return modelClaw().get_parents(model);
+    return modelClaw().get_parent(model);
   }
 
   /// Function to help static initialisation of our const data member vectors.

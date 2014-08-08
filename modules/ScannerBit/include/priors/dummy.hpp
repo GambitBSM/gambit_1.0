@@ -40,10 +40,10 @@ namespace Gambit
                         void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
                         {
                                 auto it_vec = unitpars.begin();
-                                std::for_each (param_names.begin(), param_names.end(), [&] (const std::string &par)
+                                for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
                                 {
-                                        outputMap[par] = *(it_vec++);
-                                });
+                                        outputMap[*it] = *(it_vec++);
+                                }
                         }
                 };
                 

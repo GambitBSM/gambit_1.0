@@ -68,7 +68,7 @@ namespace Gambit
         }
 }
 
-#include "scan_file.hpp"
+//#include "scan_file.hpp"
 
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
 #define init_dimension(exp)             INIT_DIMENSION(exp) enum{}
@@ -140,10 +140,10 @@ std::vector<double> &prior_transform(const std::vector<double> &in)             
                                                                                                                         \
         return ret;                                                                                                     \
 }                                                                                                                       \
-Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(3)); \
+//Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(3)); \
 
-#define SET_SCAN_IOS(file) \
-scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); \
+//#define SET_SCAN_IOS(file) \
+//scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); \
 
 #define SCANNER_PLUGIN(mod_name)                                                                                        \
 GAMBIT_PLUGIN(mod_name)                                                                                                 \

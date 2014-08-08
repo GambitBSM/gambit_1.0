@@ -212,12 +212,12 @@ twalk_beta:
   module:       ""
 
 # Uncomment to test neutrino likelihoods
-- purpose:      Likelihood
-  capability:   IceCube_likelihood
+#- purpose:      Likelihood
+#  capability:   IceCube_likelihood
 
 # Uncomment to test FastSim
-- purpose:      Likelihood
-  capability:   fast_sim
+#- purpose:      Likelihood
+#  capability:   fast_sim
 
 # Uncomment to test array and -> operators in safety buckets.
 - purpose:      Observable
@@ -303,10 +303,10 @@ twalk_beta:
   dependencies:
   - {capability: "nevents", module: "ExampleBit_A"}  
 
-#- capability:   "analysisAccumulator"
-#  type: "double"
-#  dependencies:
-#  - {capability:"GambitColliderEvent", type:"HEP_Simple_Lib::Event", function:"reconstructDelphesEvent"}
+- capability:   "analysisAccumulator"
+  type: "double"
+  dependencies:
+  - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 
 - capability:    "nevents_postcuts"
   dependencies:

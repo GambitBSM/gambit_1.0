@@ -2,16 +2,13 @@
 //   *********************************************
 ///  \file
 ///
-///  Example of GAMBIT core framework use.
-///
-///  A program to demo what can be done with the 
-///  current development version of the code. 
+///  GAMBIT executable.
 ///
 ///  *********************************************
 ///
-///  Authors (add name and date if you modify):
+///  Authors:
 ///   
-///  \author GAMBIT Collaboration
+///  \author The GAMBIT Collaboration
 ///  \date 2012 Oct --> ??
 ///
 ///  *********************************************
@@ -23,7 +20,6 @@
 #include "scannerbit.hpp"
 #include "test_function_rollcall.hpp"
 #include "priors_rollcall.hpp"
-#include "modelgraph.hpp"
 #include "model_rollcall.hpp"
 #include "backend_rollcall.hpp"
 #include "module_rollcall.hpp"
@@ -35,6 +31,8 @@
 using namespace Gambit;
 using namespace LogTags;
 
+
+/// Main GAMBIT program
 int main( int argc, const char* argv[] )
 {
 
@@ -43,38 +41,25 @@ int main( int argc, const char* argv[] )
   try
   {
 
-    const char* inifilename;
-
     // Parse command line arguments
-    if (argc < 2)  // If not enough parameters have been passed, inform user and exit.
-    { 
-      str errmsg = "Error! No input file specified!";
-      // Inform the user of how to use the program
-      errmsg +=  "\nUsage is: gambit_example_minimal <inifile>" 
-                 "\n  e.g.  : gambit_example_minimal gambit.yaml"
-                 "\n        : gambit_example_minimal models_test.yaml";
-      core_error().raise(LOCAL_INFO,errmsg);
-      inifilename = "";
-    }
-    inifilename = argv[1];
+    if (argc != 2) Core().bail();   // If the wrong number of parameters have been passed, inform the user and exit.
+    Core().run_diagnostic(argv[1]); // Launch into the appropriate diagnostic mode if the argument passed warrants it.
+    const char* filename = argv[1]; // If not, roll on as if the argument is a filename.
   
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
 
-    logger() << core << "Command invoked: " << argv[0] << " " << inifilename << endl;
+    logger() << core << "Command invoked: " << argv[0] << " " << filename << endl;
     logger() << core << "Starting GAMBIT" << endl << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";
     logger() << Core().getModuleFunctors().size() << endl;
     logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
     logger() << Core().getBackendFunctors().size() << endl << EOM;
  
-    // Read INI file
+    // Read YAML file, which also initialises the logger. 
     IniParser::IniFile iniFile;
-    iniFile.readFile(inifilename);
+    iniFile.readFile(filename);
  
-    // Reading the inifile will also have initialised the LogMaster object, which is
-    // already available here due to including log.hpp
-
     // Determine selected model(s)
     std::vector<std::string> selectedmodels = iniFile.getModelNames();
     //cout << "Your selected models are: " << selectedmodels << endl;
@@ -108,22 +93,12 @@ int main( int argc, const char* argv[] )
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder();
-
-    // Create a graph of the available model hierarchy. Currently for 
-    // visualisation purposes only.
-    ModelGraph().makeGraph(Core().getPrimaryModelFunctors());
  
     //Define the prior
     Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
     //Define the likelihood container object for the scanner
-    Gambit::Scanner::Factory_Base *factory = [&]()->Gambit::Scanner::Factory_Base *
-    {
-      if (iniFile.hasKey("enable_testing") && iniFile.getValue<bool>("enable_testing"))
-        return new Gambit::Scanner::Test_Function_Factory(iniFile.getKeyValuePairNode());
-      else
-        return new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
-    }();
+    Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
   
     //Define the iniFile interface for the scanner
     Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
@@ -142,7 +117,7 @@ int main( int argc, const char* argv[] )
 
   catch (std::exception& e)
   {
-    cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    if (not logger().disabled()) cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
   }
 
   return 0;

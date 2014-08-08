@@ -64,7 +64,7 @@ namespace Gambit
                         ~EggBox(){}
                 };
                 
-                LOAD_TEST_FUNCTOR(eggbox, EggBox)
+                //LOAD_TEST_FUNCTOR(eggbox, EggBox)
         }
 }
 

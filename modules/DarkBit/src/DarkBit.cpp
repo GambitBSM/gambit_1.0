@@ -919,6 +919,20 @@ namespace Gambit {
       result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
     }
 
+    void dump_GammaSpectrum(double &result)
+    {
+        using namespace Pipes::dump_GammaSpectrum;
+        // Construct interpolated function, using GAMBIT base functions.
+        BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
+        for (int i = 0; i<=50; i++)
+        {
+            double energy = pow(10., i/10. - 2.);
+            std::cout << energy << ": " << (*spectrum)(energy) << std::endl;
+        }
+
+        result = 0.;
+    }
+
 
 //////////////////////////////////////////////////////////////////////////
 //

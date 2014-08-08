@@ -54,19 +54,20 @@ namespace Gambit
                         {
                                 std::vector<double> vec(unitpars.size());
                                 
-                                std::transform (unitpars.begin(), unitpars.end(), vec.begin(), [] (const double &elem) -> double
+                                auto v_it = vec.begin();
+                                for (auto elem_it = unitpars.begin(), elem_end = unitpars.end(); elem_it != elem_end; elem_it++, v_it++)
                                 {
-                                        return M_SQRT2*boost::math::erf_inv(2.0*elem - 1.0);      
-                                });
+                                        *v_it = M_SQRT2*boost::math::erf_inv(2.0*(*elem_it) - 1.0); 
+                                }
                                 
                                 col.ElMult(vec);
                                 
-                                auto v_it = vec.begin();
+                                v_it = vec.begin();
                                 auto m_it = mean.begin();
-                                std::for_each (param.begin(), param.end(), [&] (const std::string &str)
+                                for (auto str_it = param.begin(), str_end = param.end(); str_it != str_end; str_it++)
                                 {
-                                        outputMap[str] = *(v_it++) + *(m_it++);
-                                });
+                                        outputMap[*str_it] = *(v_it++) + *(m_it++);
+                                }
                         }
                 };
         

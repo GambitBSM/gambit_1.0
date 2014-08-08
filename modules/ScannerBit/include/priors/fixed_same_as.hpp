@@ -50,10 +50,10 @@ namespace Gambit
                         
                         void transform(const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
                         {
-                                std::for_each (names.begin(), names.end(), [&] (const std::string &name)
+                                for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
-                                        outputMap[name] = value;
-                                });
+                                        outputMap[*it] = value;
+                                }
                         }
                 };
                 
@@ -98,10 +98,10 @@ namespace Gambit
                         {
                                 double value = outputMap[name];
                                 
-                                std::for_each (names.begin(), names.end(), [&] (const std::string &nam)
+                                for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
-                                        outputMap[nam] = value;
-                                });
+                                        outputMap[*it] = value;
+                                }
                         }
                 };
                 

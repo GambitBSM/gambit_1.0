@@ -44,6 +44,7 @@
 #include "types_rollcall.hpp"
 #include "functors.hpp"
 #include "backend_type_macros.hpp"
+#include "backend_info.hpp"
 #include "log.hpp"
 #include "standalone_error_handlers.hpp"
 #include "module_macros_incore.hpp"
@@ -66,6 +67,12 @@ namespace Gambit
 {
   namespace Backends
   {
+
+    /// Global variables providing info on backend libraries; avoids needing actual backend objects
+    std::map<str,bool> works;
+    std::map<str,str> paths;
+    std::map<str,str> dlerrors;
+
     typedef void(*voidFptr)();
     /// Hack to suppress warnings about casting between void pointers and function pointers.
     /// "Necessary" as long as dlsym has no separate functionality for retrieving function pointers.
@@ -74,6 +81,7 @@ namespace Gambit
       void *ptr;      // Use this for objects
       voidFptr fptr;  // Use this for functions
     };
+
   }
 }
 
@@ -246,12 +254,15 @@ namespace Gambit                                                            \
       std::vector<str> allowed_models;                                      \
       void loadLibrary()                                                    \
       {                                                                     \
+        paths[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)]= LIBPATH;           \
         pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
         if(not pHandle)                                                     \
         {                                                                   \
           std::ostringstream err;                                           \
+          str error = dlerror();                                            \
+          dlerrors[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = error;       \
           err << "Failed loading library from " << LIBPATH                  \
-              << " due to error: " << dlerror() << std::endl                \
+              << " due to error: " << error << std::endl                    \
               << "All functors generated from this library will get "       \
                  "status=-1.";                                              \
           backend_warning().raise(LOCAL_INFO,err.str());                    \
@@ -263,6 +274,7 @@ namespace Gambit                                                            \
                    << LogTags::backends << LogTags::info << EOM;            \
           present = true;                                                   \
         }                                                                   \
+        works[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = present;          \
       }                                                                     \
                                                                             \
       /*The code within the void function 'loadLibrary' is executed         \

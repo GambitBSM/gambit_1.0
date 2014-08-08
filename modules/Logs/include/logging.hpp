@@ -188,6 +188,8 @@ namespace Gambit
 
         // Function to silence all log messages
         void disable();
+        // Function to check if all log messages are silenced
+        bool disabled();
 
         /// Main logging function (user-friendly overloaded version)
         // Need a bunch of overloads of this to deal with 

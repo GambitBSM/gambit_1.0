@@ -67,24 +67,24 @@ namespace Gambit
                         void transform(const std::vector<double> &unitPars, std::map<std::string,double> &outputMap) const
                         {
                                 std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
-                                std::for_each (my_subpriors.begin(), my_subpriors.end(), [&] (BasePrior* subprior)
+                                for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
                                 {
-                                        unit_next = unit_it + subprior->size();
+                                        unit_next = unit_it + (*it)->size();
                                         std::vector<double> subUnit(unit_it, unit_next);
                                         unit_it = unit_next;
-                                        subprior->transform(subUnit, outputMap);
-                                });
+                                        (*it)->transform(subUnit, outputMap);
+                                }
                         }
                         
                         //~CompositePrior() noexcept
                         ~CompositePrior()
                         {
                                 // Need to destroy all the prior objects that we created using 'new'
-                                std::for_each (my_subpriors.begin(), my_subpriors.end(), [] (BasePrior* prior)
+                                for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
                                 {  
                                         // Delete prior object
-                                        delete prior;
-                                });
+                                        delete *it;
+                                }
                         }  
                 };
                 
