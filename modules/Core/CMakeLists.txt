@@ -19,3 +19,5 @@ set(header_files include/container_factory.hpp
 )
 
 add_gambit_library(Core SOURCES ${source_files} HEADERS ${header_files})
+
+add_gambit_executable(gambit_example_minimal SOURCES examples/gambit_example_minimal.cpp HEADERS DONT_LINK_GAMBIT)

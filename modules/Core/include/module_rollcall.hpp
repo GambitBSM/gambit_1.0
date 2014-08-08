@@ -36,11 +36,13 @@
 #include "module_macros_incore.hpp"
 
 // Create all the modules
+#ifdef DARKBIT
 #include "ExampleBit_A_rollcall.hpp"
 #include "ExampleBit_B_rollcall.hpp"
 #include "DarkBit_rollcall.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 #include "FlavBit_rollcall.hpp"
+#endif
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
   #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)

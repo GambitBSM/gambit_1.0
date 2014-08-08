@@ -99,16 +99,19 @@ endif()
 
 include(FindPythonInterp)
 find_package (PythonInterp)
-if(NOT EXISTS "{PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
+if(EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
+  message(STATUS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp already exists. Do nothing.")
+else(NOT EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
   execute_process(COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/functor_type_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endif()
 
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
 add_subdirectory(Logs)
-#add_subdirectory(Utils)
-#add_subdirectory(Models)
-#add_subdirectory(Printers)
+add_subdirectory(Utils)
+add_subdirectory(Models)
+add_subdirectory(Printers)
+add_subdirectory(ScannerBit)
 add_subdirectory(Core)
 
 export(PACKAGE GAMBIT)
