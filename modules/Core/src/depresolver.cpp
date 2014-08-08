@@ -192,9 +192,11 @@ namespace Gambit
     ///////////////////////////////////////////////////
 
     // Constructor
-    DependencyResolver::DependencyResolver(const gambit_core &core, const
-            IniParser::IniFile &iniFile, Printers::BasePrinter &printer)
-     : boundCore(&core), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
+    DependencyResolver::DependencyResolver(const gambit_core &core, 
+                                           const Models::ModelFunctorClaw &claw,
+                                           const IniParser::IniFile &iniFile,
+                                                 Printers::BasePrinter &printer)
+     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
     {
       addFunctors();
     }
@@ -506,7 +508,7 @@ namespace Gambit
 
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       std::vector<functor *>::const_iterator fi, fi_end = boundCore->getBackendFunctors().end();
-      std::vector<str> modelList = modelClaw().get_activemodels();
+      std::vector<str> modelList = boundClaw->get_activemodels();
 
       // Activate those functors that match one of the models being scanned.
       for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
@@ -652,7 +654,7 @@ namespace Gambit
         // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
         // found at a given level in the hierarchy.
         std::vector<DRes::VertexID> newVertexCandidates;
-        std::vector<str> parentModelList = modelClaw().get_activemodels();
+        std::vector<str> parentModelList = boundClaw->get_activemodels();
         while (newVertexCandidates.size() == 0 and not parentModelList.empty())
         {
           for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)

@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "util_types.hpp"
+#include "models.hpp"
 #include "functors.hpp"
 
 namespace Gambit
@@ -38,6 +39,9 @@ namespace Gambit
       typedef std::vector<primary_model_functor*> pmfVec;
       typedef std::map<str, primary_model_functor*> pmfMap;
       /// @}     
+
+      /// Internal model claw
+      const Models::ModelFunctorClaw* modelInfo;
 
       /// Set of all declared modules
       std::set<str> modules;
@@ -66,7 +70,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      gambit_core(){};
+      gambit_core(const Models::ModelFunctorClaw&);
 
       /// Destructor
       ~gambit_core(){}

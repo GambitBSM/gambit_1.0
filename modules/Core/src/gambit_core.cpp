@@ -21,7 +21,6 @@
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
-#include "models.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
 #include "backend_info.hpp"
@@ -32,11 +31,14 @@ namespace Gambit
   /// Core accessor function
   gambit_core& Core()
   {
-    static gambit_core local;
+    static gambit_core local(modelClaw());
     return local;
   }
 
   /// Definitions of public methods in GAMBIT core class.
+
+    /// Constructor
+    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw) : modelInfo(&claw) {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
@@ -73,7 +75,7 @@ namespace Gambit
     void gambit_core::registerModuleFunctor(functor &f)
     {
       functorList.push_back(&f);
-      std::set<str> models = modelClaw().get_allmodels();
+      const std::set<str> models = modelInfo->get_allmodels();
       if (models.find(f.origin()) == models.end()) modules.insert(f.origin());
       capabilities.insert(f.capability());
     }
@@ -150,7 +152,7 @@ namespace Gambit
       {
         int maxlens[4] = {18, 7, 40, 15};
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Backends               Version     Path to lib (from GAMBIT directory)          Status    Num. functions" << endl;
+        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status    Num. functions" << endl;
         cout << "--------------------------------------------------------------------------------------------------------" << endl;
         for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
         {
@@ -190,8 +192,6 @@ namespace Gambit
       {
         int maxlen1 = 22;
         int maxlen2 = 22;
-        // Create a graph of the available model hierarchy.
-        ModelGraph().makeGraph(primaryModelFunctorList);
         cout << "\nThis is GAMBIT." << endl << endl; 
         cout << "Models                     Parent             Parameters" << endl;
         cout << "--------------------------------------------------------" << endl;
@@ -202,6 +202,11 @@ namespace Gambit
           int nparams = (*it)->valuePtr()->getValuesPtr()->size();
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
+        // Create and spit out graph of the model hierarchy.
+        str graphfile = "GAMBIT_model_hierarchy.gv";
+        ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
+        cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
+        cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
       }
     
       else if (command == "capabilities")
