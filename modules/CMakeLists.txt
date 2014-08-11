@@ -2,6 +2,15 @@
 
 # require a minimum cmake version of 2.6
 cmake_minimum_required(VERSION 2.6)
+if(POLICY CMP0012)
+  cmake_policy(SET CMP0012 NEW)
+endif()
+if(POLICY CMP0022)
+  cmake_policy(SET CMP0022 NEW)
+endif()
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW)
+endif()
 
 # enable Fortran compiler
 enable_language(Fortran)
@@ -17,12 +26,13 @@ set(GAMBIT_VERSION_MINOR 0)
 configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
                "${PROJECT_BINARY_DIR}/config.h")
  
-# add the binary tree to the search path for include files so that we will find TutorialConfig.h
+# add the binary tree to the search path for include files so that we will find config.h
 include_directories("${PROJECT_BINARY_DIR}")
 
 ###################### FIXME
 set(HAVE_MAC 1)
 set(SSH 1)
+set(STANDALONE 1)
 ###################### FIXME
 
 # add -fPIC for 64 bit systems
@@ -32,8 +42,9 @@ endif()
 
 # set minimal MacOS SDK version for deployment reasons
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  option(DEPLOY "Deployment build on Mac" OFF)
+  option(DEPLOY "Deployment build on Mac" 0)
   if (${DEPLOY})
+    message(STATUS "Deployment build on Mac is on")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7")
     EXEC_PROGRAM(xcodebuild
                  ARGS -version -sdk macosx10.9 Path
@@ -45,12 +56,30 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   endif()
 endif()
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+# use, i.e. don't skip the full RPATH for the build tree
+  SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+  SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
+# the RPATH to be used when installing, but only if it's not a system directory
+  LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+  IF("${isSystemDir}" STREQUAL "-1")
+   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  ENDIF("${isSystemDir}" STREQUAL "-1")
+endif()
+
 # don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
-
-# include cmake scripts
-include(cmake/warnings.cmake)
-include(cmake/gambit.cmake)
 
 # include ./cmake in search path for projects
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
@@ -82,9 +111,6 @@ endforeach()
 
 enable_testing()
 
-find_package(Boost 1.42 COMPONENTS date_time REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-
 #check for C++11 support -- if we use special c++11 features we should check for them too at a later stage...
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -97,6 +123,30 @@ else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
+# check for Boost
+find_package(Boost 1.42 COMPONENTS date_time REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+
+# check for yaml
+include(FindPkgConfig)
+pkg_check_modules(yaml yaml-cpp>=0.5.1)
+
+if(NOT yaml_FOUND)
+  message(STATUS "No yaml package found. Need to compile the distributed one")
+  include(ExternalProject)
+  ExternalProject_Add(yaml-cpp
+   SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
+   BUILD_IN_SOURCE 1
+   CONFIGURE_COMMAND ""
+   BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${CMAKE_CXX_FLAGS}
+   INSTALL_COMMAND ""
+   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
+   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+  )
+  add_custom_target(yaml COMMAND make yaml-cpp)
+endif()
+
+
 include(FindPythonInterp)
 find_package (PythonInterp)
 if(EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
@@ -104,6 +154,10 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
 else(NOT EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
   execute_process(COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/functor_type_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endif()
+
+# include cmake scripts
+include(cmake/warnings.cmake)
+include(cmake/gambit.cmake)
 
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
@@ -113,5 +167,13 @@ add_subdirectory(Models)
 add_subdirectory(Printers)
 add_subdirectory(ScannerBit)
 add_subdirectory(Core)
+
+add_gambit_executable(gambit_example SOURCES Core/examples/gambit_example.cpp)
+if(NOT yaml_FOUND)
+  add_dependencies(gambit_example yaml)
+endif()
+
+link_directories(${yaml_LIBRARY_DIRS})
+
 
 export(PACKAGE GAMBIT)

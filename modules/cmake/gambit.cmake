@@ -1,6 +1,5 @@
 # set include directores for GAMBIT
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include")
-#set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/frontends")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Logs/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Utils/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Models/include")
@@ -26,9 +25,13 @@ function(add_gambit_library libraryname)
 
   add_library(${libraryname} ${ARG_SOURCES} ${ARG_HEADERS})
   set_target_properties(${libraryname} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "")
-#  if (NOT "${libraryname}" STREQUAL "gambitcore")
-#    add_dependencies(${libraryname} gambitcore)
-#  endif()
+  if (yaml_FOUND)
+    set_target_properties(${libraryname} PROPERTIES COMPILE_FLAGS ${yaml_CFLAGS})
+  endif()
+  
+  if(${libraryname} STREQUAL gambitcore)
+    target_link_libraries(gambitcore ${yaml_LIBRARIES})
+  endif()
 endfunction()
 
 # function to add GAMBIT executable
@@ -45,6 +48,9 @@ function(add_gambit_executable executablename)
   endif()
   if (MPI_FOUND)
     set(LIBRARIES ${LIBRARIES} ${MPI_CXX_LIBRARIES})
+  endif()
+  if (yaml_FOUND)
+    set(LIBRARIES ${LIBRARIES} ${yaml_LIBRARIES})
   endif()
   target_link_libraries(${executablename} ${LIBRARIES})
 endfunction()

@@ -414,13 +414,15 @@ int main( int, const char*[] )
     // Resolve dependency by hand
     Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(\
         &Models::CMSSM_demo::Functown::primary_parameters);
+#ifdef EXAMPLEBIT_A
     // Have now added an extra dependency, resolve this too:
     Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(\
         &ExampleBit_A::Functown::nevents_dbl);
     
     // Make sure nevents is computed first!
     ExampleBit_A::Functown::nevents_dbl.calculate();
-    
+#endif
+
     // Compute the parent parameters
     cout<<"Ok use my parameters to compute the MSSM_demo parameters."<<endl;
     cout<<"Models::CMSSM_demo::Functown::MSSM_demo_parameters.calculate()"<<endl; 
@@ -464,7 +466,7 @@ int main( int, const char*[] )
   // Models demo code END
   // ****************
 
-  
+#ifdef EXAMPLEBIT_A
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
   ExampleBit_B::Functown::nevents_postcuts.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
@@ -635,7 +637,7 @@ int main( int, const char*[] )
   cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts", "OtherModel") << endl;
 
   cout <<  endl;
-
+#endif
   // ****************
   // Example_SUSYspecBit test code
   // ****************
@@ -680,6 +682,7 @@ int main( int, const char*[] )
   //   GAMBIT_MSG_LOG("Caught exception: "<<exceptions::get_exception_dump(e,1));
   // }
 
+#ifdef EXAMPLEBIT_A
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::commonBlock);
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::printStuff); 
@@ -689,7 +692,7 @@ int main( int, const char*[] )
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray2);
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFunc);            
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
-    
+#endif
 
   }
 

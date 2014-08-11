@@ -23,6 +23,7 @@ set(header_files include/backend_macros.hpp
                  include/standalone_error_handlers.hpp
                  include/static_members.hpp
                  include/terminator.hpp
+                 include/type_index.hpp
                  include/types_rollcall.hpp
                  include/util_functions.hpp
                  include/util_macros.hpp
@@ -30,5 +31,8 @@ set(header_files include/backend_macros.hpp
                  include/variadic_functions.hpp
                  include/yaml_options.hpp
 )
+
+#add_gambit_sources(gambitcore ${source_files})
+#add_gambit_headers(gambitcore ${header_files})
 
 add_gambit_library(Utils SOURCES ${source_files} HEADERS ${header_files})

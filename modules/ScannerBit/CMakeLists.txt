@@ -34,6 +34,15 @@ set(header_files include/cholesky.hpp
                  include/test.h
                  include/test_factory.hpp
                  include/test_function_rollcall.hpp
+                 include/priors/cauchy.hpp
+                 include/priors/composite.hpp
+                 include/priors/dummy.hpp
+                 include/priors/fixed_same_as.hpp
+                 include/priors/flat_log.hpp
+                 include/priors/gaussian.hpp
+                 include/test_functions/eggbox.hpp
+                 include/test_functions/gaussian.hpp
+                 include/test_functions/uniform.hpp
 )
 
 add_gambit_library(ScannerBit SOURCES ${source_files} HEADERS ${header_files})

@@ -24,7 +24,9 @@
 #include "models.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
-#include "backend_info.hpp"
+#ifdef HAVE_BACKENDINFO
+  #include "backend_info.hpp"
+#endif
 
 namespace Gambit
 {
@@ -145,7 +147,8 @@ namespace Gambit
           cout << *it << spacing(it->length(),maxlen) << nf << endl;
         }
       }
-    
+
+#ifdef HAVE_BACKENDINFO
       else if (command == "backends")
       {
         int maxlens[4] = {18, 7, 40, 15};
@@ -185,7 +188,8 @@ namespace Gambit
           }
         }
       }
-    
+#endif
+      
       else if (command == "models")
       {
         int maxlen1 = 22;
