@@ -39,42 +39,17 @@
 namespace Gambit
 {
 
-  namespace Models
-  {
-
-    /// Helper class for drawing the model hierarchy graph
-    class labelWriter
-    {
-      private:
-        const DRes::MasterGraphType * myGraph;
-      public:
-        labelWriter(const DRes::MasterGraphType * modelGraph) : myGraph(modelGraph) {};
-        void operator()(std::ostream& out, const DRes::VertexID& v) const
-        {
-          if ( (*myGraph)[v]->status() == 2 )
-          {
-            out << "[fillcolor=\"red\", style=\"rounded,filled\", shape=box,";
-            out << "label=< ";
-            out << "<font point-size=\"20\" color=\"black\">" << (*myGraph)[v]->origin() << "</font><br/>";
-          }
-          else
-          {
-            out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
-            out << "label=< ";
-            out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->origin() << "</font><br/>";
-          } 
-          /*out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";
-          out <<  "Function: " << (*myGraph)[v]->name() << "<br/>";
-          out <<  "Module: " << (*myGraph)[v]->origin();*/
-          out << ">]";
-        }
-    };
-  }
-
-    /// ModelHierarchy method definitions
-    /// Creates a graph of the model hierarchy for visualisation purposes.
-    /// @{
+  /// ModelHierarchy method definitions
+  /// Creates a graph of the model hierarchy for visualisation purposes.
+  /// @{
     
+    /// Constructor
+    ModelHierarchy::ModelHierarchy(const Models::ModelFunctorClaw& claw, const primodel_vec& pmv, str file, bool talky)
+     : boundClaw(&claw), filename(file), verbose(talky)
+    {
+      makeGraph(pmv);
+    }
+
     /// Figure out relationships between primary model functors    
     void ModelHierarchy::makeGraph(const primodel_vec& primaryModelFunctors)
     {
@@ -82,7 +57,7 @@ namespace Gambit
       std::map<str, DRes::VertexID> vertexIDmap;
       str model;
       
-      std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
+      if (verbose) std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
 
       // Add all primary model functors to the model hierarchy graph
       addFunctorsToGraph(primaryModelFunctors);
@@ -94,28 +69,31 @@ namespace Gambit
       {
         model = (*modelGraph[*vi]).origin();
         vertexIDmap[model] = *vi;
-        std::cout<<"    Vertex added: "<<model<<std::endl;
+        if (verbose) std::cout<<"    Vertex added: "<<model<<std::endl;
       }
       
       // Loop over all vertices (models) in vertexIDmap, look up the 'parent' 
-      // of each one in modelClaw().myParentsDB, and add an edge from parent to child in the
-      // model graph.
+      // of each one in the parents database boundClaw->myParentsDB, and add
+      // an edge from parent to child in the model graph.
       typedef std::map<str, DRes::VertexID>::iterator vertexIDmap_it;
       for (vertexIDmap_it vimap = vertexIDmap.begin(); 
               vimap != vertexIDmap.end(); vimap++) 
       {
         model = vimap->first;
-        str parent = modelClaw().get_parent(model);  
-        std::cout<<model<<"; parent: "<<parent<<std::endl;;       
-        // Add edge between parent and child
-        boost::add_edge(vertexIDmap[parent], vertexIDmap[model], modelGraph);
-        std::cout<<"    Edge added: "<<model<<" ---> "<<parent<<std::endl;
+        str parent = boundClaw->get_parent(model);  
+        if (verbose) std::cout<<model<<"; parent: "<<parent<<std::endl;;       
+        // If there is a parent, add an edge between parent and child
+        if (parent != "none")
+        {
+          boost::add_edge(vertexIDmap[parent], vertexIDmap[model], modelGraph);
+          if (verbose) std::cout<<"    Edge added: "<<model<<" ---> "<<parent<<std::endl;
+        }
       }
-      std::cout<<std::endl;
+      if (verbose) std::cout<<std::endl;
       
       // Generate graphviz plot
-      std::ofstream outf("modelgraph.gv");
-      write_graphviz(outf, modelGraph, Models::labelWriter(&modelGraph)); 
+      std::ofstream outf(filename);
+      write_graphviz(outf, modelGraph, labelWriter(&modelGraph)); 
       
     }
 
@@ -132,15 +110,34 @@ namespace Gambit
       }
     }
 
-    /// @}    
+  /// @}    
 
-  //}
 
-  /// ModelGraph accessor function
-  ModelHierarchy& ModelGraph()
-  {
-    static ModelHierarchy local;
-    return local;
-  }
+  /// ModelHierarchy::labelWriter method definitions
+  /// @{
+
+    /// Constructor
+    ModelHierarchy::labelWriter::labelWriter(const DRes::MasterGraphType * modelGraph) : myGraph(modelGraph) {}
+
+    void ModelHierarchy::labelWriter::operator()(std::ostream& out, const DRes::VertexID& v) const
+    {
+      if ( (*myGraph)[v]->status() == 2 )
+      {
+        out << "[fillcolor=\"red\", style=\"rounded,filled\", shape=box,";
+        out << "label=< ";
+        out << "<font point-size=\"20\" color=\"black\">" << (*myGraph)[v]->origin() << "</font><br/>";
+      }
+      else
+      {
+        out << "[fillcolor=\"#F0F0D0\", style=\"rounded,filled\", shape=box,";
+        out << "label=< ";
+        out << "<font point-size=\"20\" color=\"red\">" << (*myGraph)[v]->origin() << "</font><br/>";
+      } 
+      /*out <<  "Type: " << (*myGraph)[v]->type() << "<br/>";
+      out <<  "Function: " << (*myGraph)[v]->name() << "<br/>";
+      out <<  "Module: " << (*myGraph)[v]->origin();*/
+      out << ">]";
+    }
+
 
 }

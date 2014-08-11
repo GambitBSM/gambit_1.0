@@ -80,7 +80,7 @@ int main( int argc, const char* argv[] )
     Gambit::Printers::PrinterManager printerManager(iniFile.getPrinterNode());
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), iniFile, *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), modelClaw(), iniFile, *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();

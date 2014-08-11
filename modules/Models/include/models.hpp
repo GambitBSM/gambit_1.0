@@ -85,7 +85,7 @@ namespace Gambit
         /// Checks that all the active primary model functors are actually used 
         /// for something in the dependency tree. If not throws an error to warn
         /// the user.
-        void checkPrimaryModelFunctorUsage(const activemodel_map&);
+        void checkPrimaryModelFunctorUsage(const activemodel_map&) const;
         
         /// Add a model to those recongnised by GAMBIT
         void add_model (const str &);
@@ -100,28 +100,28 @@ namespace Gambit
         void add_descendant (const str &, const LineageFunction);
 
         /// Indicate whether a model is recognised by GAMBIT or not
-        bool model_exists (const str &); 
+        bool model_exists (const str &) const; 
 
         /// List all the models recognised by GAMBIT
-        str list_models();
+        str list_models() const;
 
         /// Return set of all models recognised by GAMBIT
-        std::set<str>& get_allmodels();
+        const std::set<str>& get_allmodels() const;
 
         /// Return vector of the active models;
-        std::vector<str> get_activemodels();
+        std::vector<str> get_activemodels() const;
 
         /// Retrieve the lineage for a given model
-        std::vector<str> get_lineage (const str &);
+        std::vector<str> get_lineage (const str &) const;
 
         /// Retrieve the descendants for a given model
-        std::vector<str> get_descendants (const str &);
+        std::vector<str> get_descendants (const str &) const;
         
         /// Retrieve the parent model for a given model
-        str get_parent (const str&);
+        str get_parent (const str&) const;
 
         /// Check if model 1 is descended from model 2
-        bool descended_from (const str &, const str &);
+        bool descended_from (const str &, const str &) const;
 
     };
  

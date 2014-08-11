@@ -27,6 +27,7 @@
 #define __modelgraph_hpp__
 
 #include "depresolver.hpp"
+#include "models.hpp"
 
 
 namespace Gambit
@@ -36,25 +37,52 @@ namespace Gambit
   class ModelHierarchy
   {
 
-     typedef std::vector<primary_model_functor*> primodel_vec;
+    /// Shorthand for vector of pointers to primary model functors
+    typedef std::vector<primary_model_functor*> primodel_vec;
 
-     private:
+    private:
+     
+      /// Helper class for drawing the model hierarchy graph
+      class labelWriter
+      {
+
+        private:
+
+          const DRes::MasterGraphType * myGraph;
+
+        public:
+
+          /// Constructor
+          labelWriter(const DRes::MasterGraphType*);
+
+          void operator()(std::ostream&, const DRes::VertexID&) const;
+
+      };
+
+      /// Turn on verbose operation
+      bool verbose;
+
+      /// Output filename
+      str filename;
+   
+      /// The model claw that provides all the model info
+      const Models::ModelFunctorClaw* boundClaw;
+
+      /// The central boost graph object for the model hierarchy
+      DRes::MasterGraphType modelGraph;
 
       /// Add model functors (vertices) to model hierarchy graph
       void addFunctorsToGraph(const primodel_vec&);
         
-      /// The central boost graph object for the model hierarchy
-      DRes::MasterGraphType modelGraph;
+      /// Add edges (relationships) to model hierarchy graph
+      void makeGraph (const primodel_vec&);
 
     public:
 
-      /// Add edges (relationships) to model hierarchy graph
-      void makeGraph (const primodel_vec&);
+      /// Constructor
+      ModelHierarchy(const Models::ModelFunctorClaw&, const primodel_vec&, str, bool);
  
   };
-
-  /// ModelGraph accessor function
-  ModelHierarchy& ModelGraph();
 
 }
 
