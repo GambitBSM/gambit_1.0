@@ -44,9 +44,7 @@
 #include "types_rollcall.hpp"
 #include "functors.hpp"
 #include "backend_type_macros.hpp"
-#ifdef HAVE_BACKENDINFO
-  #include "backend_info.hpp"
-#endif
+#include "backend_info.hpp"
 #include "log.hpp"
 #include "standalone_error_handlers.hpp"
 #include "module_macros_incore.hpp"

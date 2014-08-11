@@ -2,14 +2,18 @@
 
 # require a minimum cmake version of 2.6
 cmake_minimum_required(VERSION 2.6)
-if(POLICY CMP0012)
-  cmake_policy(SET CMP0012 NEW)
-endif()
-if(POLICY CMP0022)
-  cmake_policy(SET CMP0022 NEW)
-endif()
-if(POLICY CMP0042)
-  cmake_policy(SET CMP0042 NEW)
+#if(POLICY CMP0012)
+#  cmake_policy(SET CMP0012 NEW)
+#endif()
+#if(POLICY CMP0022)
+#  cmake_policy(SET CMP0022 NEW)
+#endif()
+#if(POLICY CMP0042)
+#  cmake_policy(SET CMP0042 NEW)
+#endif()
+
+if(NOT DEFINED CMAKE_MACOSX_RPATH)
+  set(CMAKE_MACOSX_RPATH 0)
 endif()
 
 # enable Fortran compiler
@@ -124,8 +128,13 @@ else()
 endif()
 
 # check for Boost
+set(BOOST_ROOT
+    "/usr/local/Cellar/boost/1.55.0_2"
+    CACHE PATH "")
 find_package(Boost 1.42 COMPONENTS date_time REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIR})
+endif()
 
 # check for yaml
 include(FindPkgConfig)
@@ -144,8 +153,10 @@ if(NOT yaml_FOUND)
    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
   )
   add_custom_target(yaml COMMAND make yaml-cpp)
+  set(yaml_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
+  set(yaml_LIBRARIES "yaml-cpp")
 endif()
-
+  include_directories("${yaml_INCLUDE_DIRS}")
 
 include(FindPythonInterp)
 find_package (PythonInterp)
@@ -172,6 +183,8 @@ add_gambit_executable(gambit_example SOURCES Core/examples/gambit_example.cpp)
 if(NOT yaml_FOUND)
   add_dependencies(gambit_example yaml)
 endif()
+target_link_libraries(gambit_example ScannerBit)
+
 
 link_directories(${yaml_LIBRARY_DIRS})
 

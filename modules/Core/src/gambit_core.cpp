@@ -23,9 +23,7 @@
 #include "version.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
-#ifdef HAVE_BACKENDINFO
-  #include "backend_info.hpp"
-#endif
+#include "backend_info.hpp"
 
 namespace Gambit
 {
@@ -150,7 +148,6 @@ namespace Gambit
         }
       }
 
-#ifdef HAVE_BACKENDINFO
       else if (command == "backends")
       {
         int maxlens[4] = {18, 7, 40, 15};
@@ -190,7 +187,6 @@ namespace Gambit
           }
         }
       }
-#endif
       
       else if (command == "models")
       {

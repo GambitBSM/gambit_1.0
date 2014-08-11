@@ -34,9 +34,9 @@ endif()
 
 # list static libs to link
 set(GAMBIT_LIBRARIES Logs
+                     Utils
                      Models
                      Printers
-                     Utils
 )
 
 set(LIBRARIES ${yaml_LIBRARIES} 
