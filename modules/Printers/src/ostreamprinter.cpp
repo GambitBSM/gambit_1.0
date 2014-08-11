@@ -61,33 +61,33 @@ namespace Gambit
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
-    void ostreamPrinter::print(double const& value, const functor* f)
+    void ostreamPrinter::print(double const& value, const std::string& label, const int IDcode)
     {
       if (verbose) {std::cout<<"printing a double using ostreamPrinter!"<<std::endl;}
       my_ostream<<value<<std::endl;       
     }
 
-    void ostreamPrinter::print(std::vector<double> const& value, const functor* f)
+    void ostreamPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode)
     {
       if (verbose) {std::cout<<"printing a std::vector<double> using ostreamPrinter!"<<std::endl;}
       my_ostream<<value<<std::endl;       
     }
     
     
-    void ostreamPrinter::print(int const& value, const functor* f)
+    void ostreamPrinter::print(int const& value, const std::string& label, const int IDcode)
     {
       if (verbose) {std::cout<<"printing an int using ostreamPrinter!"<<std::endl;}
       my_ostream<<value<<std::endl;       
     }
 
-    void ostreamPrinter::print(std::vector<int> const& value, const functor* f)
+    void ostreamPrinter::print(std::vector<int> const& value, const std::string& label, const int IDcode)
     {
       if (verbose) {std::cout<<"printing a std::vector<int> using ostreamPrinter!"<<std::endl;}
       my_ostream<<value<<std::endl;       
     }
 
 
-    void ostreamPrinter::print(ModelParameters const& value, const functor* f)
+    void ostreamPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode)
     {
       std::map<std::string, double> parameter_map = value.getValues();
       typedef std::map<std::string, double>::iterator map_it;
