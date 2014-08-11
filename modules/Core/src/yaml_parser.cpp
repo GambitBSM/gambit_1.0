@@ -99,7 +99,15 @@ namespace Gambit
           filename = (it->second).as<std::string>();
     
           // Add entry to the loggerinfo map
-          loggerinfo[tags] = prefix + filename;
+          if((filename=="stdout") or (filename=="stderr"))
+          {
+            // Special cases to trigger redirection to standard output streams
+            loggerinfo[tags] = filename;
+          }
+          else
+          {
+            loggerinfo[tags] = prefix + filename;
+          }
       }
       // Initialise global LogMaster object
       logger().initialise(loggerinfo);

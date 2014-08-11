@@ -300,7 +300,7 @@ namespace Gambit
     }
 
     // Pretty print function evaluation order
-    void DependencyResolver::printFunctorEvalOrder()
+    void DependencyResolver::printFunctorEvalOrder(bool toterminal)
     { 
       // Running this lets us check the order of execution. Also helps
       // to verify that we actually have pointers to all the required
@@ -315,8 +315,7 @@ namespace Gambit
       logger() << endl << "Initial functor evaluation order" << endl;
       logger() << "----------------------------------" << endl;
       logger() << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
-      logger() << EOM;
-       
+ 
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
                   vi != order.end(); ++vi) 
@@ -326,10 +325,10 @@ namespace Gambit
          i%
          (*masterGraph[*vi]).name()%
          (*masterGraph[*vi]).origin();
-        logger() << EOM;
         i++;
       }
-    
+      logger() << EOM;
+   
     }
 
     //
