@@ -19,6 +19,7 @@
 
 using namespace ExampleBit_A::Accessors;    // Helper functions that provide some info about the module
 using namespace ExampleBit_A::Functown;     // Functors wrapping the module's actual module functions
+using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 // Register ad-hoc module functions for use; as many or as few models can be given as desired.
 // Full declaration as per regular rollcall headers such as ExampleBit_A_rollcall.hpp is also allowed.
@@ -39,24 +40,25 @@ namespace Gambit
 int main()
 {
 
-  ///TODO - clear Utils folder of routines not used at all, and of those only used in GAMBIT (those to go to Core folder)
-  ///     - clear existing core header inclusions from all headers included from this file (e.g. ModelBit things using graphs)
-
   try
   {
 
     cout << endl << "Start ExampleBit_A standalone example" << endl;
     cout << "----------" << endl;
 
+
     //------- Initialise (or disable) logging -------------
+
     // Uncomment to completely silence logger (initialisation will still create output files though, so remove it if you don't want files created)
     //logger().disable();
 
-    std::string prefix("runs/ExampleBit_A_standalone/logs/");
-  
+    // Make a logging object
     std::map<std::string, std::string> loggerinfo;
     //(you can use a std::map<std::set<std::string>, std::string> instead, but it is more "wordy" to fill)
     
+    // Define where the logs will end up
+    std::string prefix("runs/ExampleBit_A_standalone/logs/");
+  
     // Add entries to the loggerinfo map
     loggerinfo["Core, Error"] = prefix+"core_errors.log";
     loggerinfo["Default"]     = prefix+"default.log";
@@ -66,11 +68,16 @@ int main()
     // Initialise global LogMaster object
     logger().initialise(loggerinfo);
 
+    // Change the fatality of different errors and warnings from the defaults, if desired.
+    model_warning().set_fatal(true);
+    ExampleBit_A::ExampleBit_A_error().set_fatal(false);
+
     // Test message
     // Note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag.
     logger()<<"Running ExampleBit_A standalone example"<<LogTags::info<<EOM;
 
     //-----------------------------------------------------
+
 
     // Retrieve a raw pointer to the parameter set of each primary model to be scanned, for manually setting parameter values
     ModelParameters* CMSSM_primary_parameters = Models::CMSSM_demo::Functown::primary_parameters.getcontentsPtr();
@@ -131,32 +138,43 @@ int main()
 
     // Start a loop over some low-E points in the primary model parameter space
     cout << "Starting model scan..." << endl << endl;
-    for (int i = 0; i<10; i++)
+    for (int i = 0; i<5; i++)
     {
 
-      // Give the primary model parameters
-      CMSSM_primary_parameters->setValue("M0",i*1.);
-      CMSSM_primary_parameters->setValue("A0",i*5.);
-      CMSSM_primary_parameters->setValue("M12",i*2.);
-      CMSSM_primary_parameters->setValue("tanb",i*10.);
-      CMSSM_primary_parameters->setValue("sgnmu",1.);
+      try
+      {
 
-      // Call the appropriate point-level backend initialisation functions.
-      //PointInit_Default.reset_and_calculate();
+        // Give the primary model parameters
+        CMSSM_primary_parameters->setValue("M0",i*1.);
+        CMSSM_primary_parameters->setValue("A0",i*5.);
+        CMSSM_primary_parameters->setValue("M12",i*2.);
+        CMSSM_primary_parameters->setValue("tanb",i*10.);
+        CMSSM_primary_parameters->setValue("sgnmu",1.);
 
-      // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
-      // i.e. calculate quantities that other quantities depend on first.
-      nevents_dummy.reset_and_calculate();
-      Models::CMSSM_demo::Functown::MSSM_demo_parameters.reset_and_calculate();
-      local_xsection.reset_and_calculate();
-      nevents_dbl.reset_and_calculate();
-      nevents_int.reset_and_calculate();
-      function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain, so could go anywhere.)
+        // Call the initialisation functions for all backends that are in use. 
+        LibFortran_1_0_init.reset_and_calculate();
 
-      // Retrieve the (cached) results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
-      double r1 = nevents_dbl(0); 
-      int r2 = nevents_int(0);
-      cout << endl << "Retrieved results: " << r1 << ", " << r2 << endl << endl;
+        // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
+        // i.e. calculate quantities that other quantities depend on first.
+        nevents_dummy.reset_and_calculate();
+        Models::CMSSM_demo::Functown::MSSM_demo_parameters.reset_and_calculate();
+        local_xsection.reset_and_calculate();
+        nevents_dbl.reset_and_calculate();
+        nevents_int.reset_and_calculate();
+        function_pointer_retriever.reset_and_calculate(); // (This one doesn't actually matter for the rest of the dependency chain, so could go anywhere.)
+
+        // Retrieve the (cached) results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
+        double r1 = nevents_dbl(0); 
+        int r2 = nevents_int(0);
+        cout << endl << "Retrieved results: " << r1 << ", " << r2 << endl << endl;
+
+      }
+
+      // Be sure to do something sensible in cases where the point was invalidated by one of functions.
+      catch (Gambit::invalid_point_exception& e)
+      {
+        cout << endl << "That was a bad point.  Oh well, try again." << endl << endl;
+      }
 
     }
 

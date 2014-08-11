@@ -87,8 +87,8 @@ namespace Gambit
     void nevents_int(int &result)    
     { 
       result = (int) (*Pipes::nevents_int::Dep::nevents); 
-      // Randomly raise some ficticious alarms about this point in 40% of cases.
-      if (random_0to5(twistor) < 2.0)
+      // Randomly raise some ficticious alarms about this point in 10% of cases.
+      if (random_0to5(twistor) < 0.5)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
