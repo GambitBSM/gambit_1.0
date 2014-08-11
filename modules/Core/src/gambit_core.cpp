@@ -23,22 +23,17 @@
 #include "version.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
-#include "backend_info.hpp"
 
 namespace Gambit
 {
 
-  /// Core accessor function
-  gambit_core& Core()
-  {
-    static gambit_core local(modelClaw());
-    return local;
-  }
-
   /// Definitions of public methods in GAMBIT core class.
 
     /// Constructor
-    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw) : modelInfo(&claw) {}
+    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
+     modelInfo(&claw),
+     backendData(&beinfo)
+   {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
@@ -168,9 +163,9 @@ namespace Gambit
               auto new_v = versions.insert(version); // Attempt to add this version to the set 
               if (new_v.second)                      // This version was not in the version set yet
               {
-                nfuncs[version] = 0;                               // Initialise the count of functions in this version
-                paths[version]  = Backends::paths[*it+version];    // Save the path of this backend
-                status[version] = Backends::works[*it+version] ? "present" : "absent/broken";  // Save the status of this backend 
+                nfuncs[version] = 0;                                  // Initialise the count of functions in this version
+                paths[version]  = backendData->paths.at(*it+version); // Save the path of this backend
+                status[version] = backendData->works.at(*it+version) ? "present" : "absent/broken";  // Save the status of this backend 
               }
               nfuncs[version]++; // Increment the count of the functions in this version
             }

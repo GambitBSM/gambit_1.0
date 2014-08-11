@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Simple containers used for storing info about
+///  Simple container used for storing info about
 ///  backends during initialisation time.
 ///
 ///  *********************************************
@@ -19,15 +19,24 @@
 #define __backend_info_hpp__
 
 #include <map>
+#include "util_types.hpp"
 
 namespace Gambit
 {
+
   namespace Backends
   {
-    extern std::map<str,bool> works;
-    extern std::map<str,str> paths;
-    extern std::map<str,str> dlerrors;
+
+    /// Structure providing info on backend libraries
+    struct backend_info
+    {
+      std::map<str,bool> works;
+      std::map<str,str> paths;
+      std::map<str,str> dlerrors;
+    };
+
   }
+
 }
 
 

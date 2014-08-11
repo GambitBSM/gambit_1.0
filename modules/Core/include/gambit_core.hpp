@@ -23,6 +23,7 @@
 #include "util_types.hpp"
 #include "models.hpp"
 #include "functors.hpp"
+#include "backend_info.hpp"
 
 namespace Gambit
 {
@@ -40,8 +41,11 @@ namespace Gambit
       typedef std::map<str, primary_model_functor*> pmfMap;
       /// @}     
 
-      /// Internal model claw
+      /// Internal model claw pointer
       const Models::ModelFunctorClaw* modelInfo;
+
+      /// Internal backend info pointer
+      const Backends::backend_info* backendData;
 
       /// Set of all declared modules
       std::set<str> modules;
@@ -70,7 +74,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      gambit_core(const Models::ModelFunctorClaw&);
+      gambit_core(const Models::ModelFunctorClaw&, const Backends::backend_info&);
 
       /// Destructor
       ~gambit_core(){}
@@ -112,9 +116,6 @@ namespace Gambit
       const pmfMap& getActiveModelFunctors() const ;
 
   };
-
-  /// Core accessor function
-  gambit_core& Core();
 
 }
 

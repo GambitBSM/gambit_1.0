@@ -2,9 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  Helper macros for model definitions. Mostly 
-///  based on contents of Utils/include/observable.hpp
-///  (i.e. functors that wrap module functions).
+///  Helper macros for model definitions.
 ///
 ///  *********************************************
 ///
@@ -29,7 +27,7 @@
 #include "model_functions.hpp"
 #include "module_macros_incore.hpp"
 #include "types_rollcall.hpp"
-#include "models.hpp"
+#include "claw_singleton.hpp"
 #include "boost_fallbacks.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>

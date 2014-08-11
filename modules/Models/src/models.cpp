@@ -225,11 +225,4 @@ namespace Gambit
     
   }
 
-  /// Claw accessor function
-  Models::ModelFunctorClaw& modelClaw()
-  {
-    static Models::ModelFunctorClaw local;
-    return local;
-  }
-
 }

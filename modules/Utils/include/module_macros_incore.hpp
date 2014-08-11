@@ -58,7 +58,7 @@
 #include "safety_bucket.hpp"
 #include "log.hpp"
 #ifndef STANDALONE
-  #include "gambit_core.hpp"
+  #include "core_singleton.hpp"
 #endif
 
 #include <boost/preprocessor/logical/bitand.hpp>

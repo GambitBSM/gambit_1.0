@@ -65,7 +65,7 @@ int main( int argc, const char* argv[] )
     //cout << "Your selected models are: " << selectedmodels << endl;
   
     // Activate "primary" model functors
-    Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
+    Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
@@ -80,7 +80,7 @@ int main( int argc, const char* argv[] )
     Gambit::Printers::PrinterManager printerManager(iniFile.getPrinterNode());
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), modelClaw(), iniFile, *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();
@@ -89,7 +89,7 @@ int main( int argc, const char* argv[] )
     dependencyResolver.doResolution();
 
     // Check that all requested models are used for at least one computation
-    modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
+    Models::modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder();
