@@ -29,6 +29,7 @@
 
 
 #include "functors.hpp"
+#include "models.hpp"
 #include "all_functor_types.hpp"
 #include "standalone_error_handlers.hpp"
 #include "log.hpp"
@@ -62,11 +63,13 @@ namespace Gambit
     functor::functor (str func_name,
                       str func_capability,
                       str result_type,
-                      str origin_name) :      
+                      str origin_name,
+                      Models::ModelFunctorClaw &claw) :      
      myName          (func_name),
      myCapability    (func_capability),
      myType          (strip_whitespace_except_after_const(result_type)),
      myOrigin        (origin_name),
+     myClaw          (&claw),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
@@ -334,9 +337,9 @@ namespace Gambit
     {
       for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
       {
-        if (model_is_registered(*it))
+        if (myClaw->model_exists(*it))
         {
-          if (descendant_of(model, *it)) return true;
+          if (myClaw->descended_from(model, *it)) return true;
         } 
       }    
       return false;    
@@ -347,9 +350,9 @@ namespace Gambit
     {
       for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
-        if (model_is_registered(it->first))
+        if (myClaw->model_exists(it->first))
         {
-          if (descendant_of(model, it->first)) return it->first;
+          if (myClaw->descended_from(model, it->first)) return it->first;
         } 
       }    
       return "";    
@@ -361,8 +364,9 @@ namespace Gambit
     module_functor_common::module_functor_common(str func_name,
                                                  str func_capability,
                                                  str result_type,
-                                                 str origin_name)
-    : functor            (func_name, func_capability, result_type, origin_name),
+                                                 str origin_name,
+                                                 Models::ModelFunctorClaw &claw)
+    : functor            (func_name, func_capability, result_type, origin_name, claw),
       runtime            (FUNCTORS_RUNTIME_INIT),
       runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
@@ -1111,8 +1115,9 @@ namespace Gambit
                                    str func_name,
                                    str func_capability,
                                    str result_type,
-                                   str origin_name)
-    : module_functor_common(func_name, func_capability, result_type, origin_name),
+                                   str origin_name,
+                                   Models::ModelFunctorClaw &claw)
+    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction  (inputFunction),
       myPrintFlag (false)
     {
@@ -1217,8 +1222,9 @@ namespace Gambit
                                          str func_name,
                                          str func_capability,
                                          str result_type,
-                                         str origin_name)
-    : module_functor_common(func_name, func_capability, result_type, origin_name),
+                                         str origin_name,
+                                         Models::ModelFunctorClaw &claw)
+    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction (inputFunction) {}
 
     /// Calculate method
@@ -1254,12 +1260,9 @@ namespace Gambit
                                  str func_name,
                                  str func_capability,
                                  str result_type,
-                                 str origin_name)
-    : module_functor<ModelParameters>(inputFunction,
-                                      func_name,
-                                      func_capability,
-                                      result_type,
-                                      origin_name) {}   
+                                 str origin_name,
+                                 Models::ModelFunctorClaw &claw)
+    : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
     
     /// Function for adding a new parameter to the map inside the ModelParameters object
     void model_functor::addParameter(str parname)
@@ -1286,12 +1289,9 @@ namespace Gambit
                                                  str func_name,
                                                  str func_capability,
                                                  str result_type,
-                                                 str origin_name)
-    : model_functor(inputFunction,
-                    func_name,
-                    func_capability,
-                    result_type,
-                    origin_name) {}   
+                                                 str origin_name,
+                                                 Models::ModelFunctorClaw &claw)
+    : model_functor(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
     
     /// Functor contents raw pointer "get" function
     /// Returns a raw pointer to myValue, so that the contents may be 

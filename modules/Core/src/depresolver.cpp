@@ -665,7 +665,7 @@ namespace Gambit
               if ( masterGraph[*it]->modelExplicitlyAllowed(*mit) ) newVertexCandidates.push_back(*it);
             }
             // Step up a level in the model hierarchy for this model.
-            *mit = parent(*mit);
+            *mit = boundClaw->get_parent(*mit);
           }
           parentModelList.erase(std::remove(parentModelList.begin(), parentModelList.end(), "none"), parentModelList.end());
         }

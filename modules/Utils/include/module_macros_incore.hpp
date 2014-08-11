@@ -57,6 +57,7 @@
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
 #include "log.hpp"
+#include "claw_singleton.hpp"
 #ifndef STANDALONE
   #include "core_singleton.hpp"
 #endif
@@ -596,7 +597,7 @@
       module_functor<TYPE>                                                     \
     )                                                                          \
     FUNCTION (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),   \
-     STRINGIFY(TYPE), STRINGIFY(ORIGIN));                                      \
+     STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::modelClaw());                 \
   }                                                                            \
                                                                                \
   namespace Pipes                                                              \

@@ -43,11 +43,12 @@
 #include "util_types.hpp"
 #include "types_rollcall.hpp"
 #include "functors.hpp"
-#include "backend_type_macros.hpp"
-#include "backend_singleton.hpp"
 #include "log.hpp"
 #include "standalone_error_handlers.hpp"
 #include "module_macros_incore.hpp"
+#include "backend_type_macros.hpp"
+#include "backend_singleton.hpp"
+#include "claw_singleton.hpp"
 #ifndef STANDALONE
   #include "core_singleton.hpp"
 #endif
@@ -416,8 +417,8 @@ namespace Gambit                                                            \
          SAFE_STRINGIFY(STRIP_PARENS(TYPE)*),                               \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION),                                                \
-         STRINGIFY(SAFE_VERSION) );                                         \
-                                                                            \
+         STRINGIFY(SAFE_VERSION),                                           \
+         Models::modelClaw() );                                             \
       } /* end namespace Functown */                                        \
                                                                             \
       /* Set the allowed model properties of the functor. */                \
@@ -676,7 +677,8 @@ namespace Gambit                                                                
          STRINGIFY(TYPE) STRINGIFY(FE_ARGS) BOOST_PP_COMMA()                                    \
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* Create functor object FIXME DEPRECATED!!*/                                             \
@@ -689,7 +691,8 @@ namespace Gambit                                                                
          STRINGIFY(TYPE) BOOST_PP_COMMA()                                                       \
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
@@ -809,7 +812,8 @@ namespace Gambit                                                                
          STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                                                   \
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION),                                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \

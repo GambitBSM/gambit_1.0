@@ -196,6 +196,18 @@ namespace Gambit
       return temp;
     }
 
+    /// Verify that a string matches a model recognised by GAMBIT, crash otherwise
+    void ModelFunctorClaw::verify_model(const str &model) const
+    {
+      if (not model_exists(model))
+      {
+        str errmsg = "Error: model \"";
+        errmsg += model + "\" is not in the GAMBIT database.";
+        errmsg += "\nRecognised models are:" + list_models();
+        model_error().raise(LOCAL_INFO,errmsg); 
+      }
+    }
+
     /// Retrieve the lineage for a given model
     std::vector<str> ModelFunctorClaw::get_lineage (const str &model) const
     {      
@@ -218,7 +230,13 @@ namespace Gambit
     bool ModelFunctorClaw::descended_from (const str &model1, const str &model2) const
     {
       if (myIsDescendantOfDB.find(model1) == myIsDescendantOfDB.end()) model_error().raise(LOCAL_INFO,"Unrecognised model: "+model1);
-      return myIsDescendantOfDB.at(model1)(model2);
+      return myIsDescendantOfDB.at(model1)(model2,this);
+    }
+
+    /// Check if model 1 is an ancestor of model 2
+    bool ModelFunctorClaw::ancestor_of (const str &model1, const str &model2) const
+    {
+      return descended_from(model2, model1);
     }
 
     /// @}

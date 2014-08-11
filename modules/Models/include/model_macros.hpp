@@ -24,8 +24,8 @@
 
 #include "util_macros.hpp"
 #include "util_types.hpp"
-#include "model_functions.hpp"
 #include "module_macros_incore.hpp"
+#include "orphan.hpp"
 #include "types_rollcall.hpp"
 #include "claw_singleton.hpp"
 #include "boost_fallbacks.hpp"
@@ -68,9 +68,9 @@
            specified model (or is itself the specified model) ) 
            Returns 'true' if the supplied string is an element of 'lineage',
            else returns 'false'. */                                            \
-        bool is_descendant_of(str testmodel)                                   \
+        bool is_descendant_of(const str testmodel, const ModelFunctorClaw*claw)\
         {                                                                      \
-          verify_model(testmodel);                                             \
+          claw->verify_model(testmodel);                                        \
           for (std::vector<str>::const_iterator it = lineage.begin();          \
                it!=lineage.end(); ++it)                                        \
           {                                                                    \
@@ -441,7 +441,7 @@
   {                                                                            \
     primary_model_functor FUNCTION                                             \
      (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
-     "ModelParameters", STRINGIFY(ORIGIN));                                    \
+     "ModelParameters", STRINGIFY(ORIGIN), modelClaw());                       \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function. */  \

@@ -99,7 +99,8 @@ namespace Gambit
 
   void Likelihood_Container_Base::print(double in, const str &type) const
   {
-    //stuff here;
+    //real stuff here to replace what is below;
+    double tmp = in; tmp++; str tmp2 = type;
   }
 		
 
@@ -108,8 +109,8 @@ namespace Gambit
   /// Constructor
   Likelihood_Container::Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, const str &purpose) :
-   min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
-   Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose)
+   Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose),
+   min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {}
    
   /// Evaluate total likelihood function

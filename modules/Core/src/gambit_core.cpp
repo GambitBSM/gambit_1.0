@@ -193,7 +193,7 @@ namespace Gambit
         for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
         {
           str model = (*it)->origin();
-          str parentof = parent(model);
+          str parentof = modelInfo->get_parent(model);
           int nparams = (*it)->valuePtr()->getValuesPtr()->size();
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
