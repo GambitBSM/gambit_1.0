@@ -119,6 +119,8 @@ namespace Gambit
       int vertexID() const;
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
+      /// Getter for the wrapped function's printer label
+      str label() const;
 
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool);
@@ -217,6 +219,8 @@ namespace Gambit
       int myVertexID;
       /// Debug flag
       bool verbose;
+      /// String label used by printer system to label output of this function
+      str myLabel;    
 
       /// Internal storage of function options, as a YAML node
       Options myOptions;

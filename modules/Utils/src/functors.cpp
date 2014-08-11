@@ -35,7 +35,7 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-#define FWDPRINT(r,data,elem) virtual void print(elem const&, const functor*) = 0;
+#define FWDPRINT(r,data,elem) virtual void print(elem const&, const std::string&, const int) = 0;
 
 namespace Gambit
 {
@@ -67,6 +67,7 @@ namespace Gambit
      myCapability    (func_capability),
      myType          (strip_whitespace_except_after_const(result_type)),
      myOrigin        (origin_name),
+     myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
@@ -125,6 +126,8 @@ namespace Gambit
     int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
+    /// Getter for the printer label
+    str functor::label()       const { if (this == NULL) failBigTime("label"); return myLabel; }
 
     /// Setter for indicating if the wrapped function's result should to be printed
     void functor::setPrintRequirement(bool flag)
@@ -1201,7 +1204,7 @@ namespace Gambit
         // of 'print' which is appropriate for the type of 'myValue'. If the printers only expect
         // module_functors, then we could use the template type of the pointer to do the resolution, but 
         // it might just be more straightforward to pass 'myValue' like we are currently doing...
-        printer->print(myValue[0],this);
+        printer->print(myValue[0],myLabel,myVertexID);
       }
     }
 
