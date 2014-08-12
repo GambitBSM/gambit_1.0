@@ -21,21 +21,19 @@
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
-#include "models.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
 
 namespace Gambit
 {
 
-  /// Core accessor function
-  gambit_core& Core()
-  {
-    static gambit_core local;
-    return local;
-  }
-
   /// Definitions of public methods in GAMBIT core class.
+
+    /// Constructor
+    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
+     modelInfo(&claw),
+     backendData(&beinfo)
+   {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
@@ -54,11 +52,14 @@ namespace Gambit
               "\n                                                                            "
               "\n   List all registered function capabilities          gambit capabilities   " 
               "\n                                                                            "
-              "\n   Give info on a specific module, backend, model or  gambit <name>         "
-              "\n   capability, e.g.                                   gambit DarkBit        "
+              "\n   List registered scanners                           gambit scanners       " 
+              "\n                                                                            "
+              "\n   Give info on a specific module, backend, model,    gambit <name>         "
+              "\n   capability or scanner e.g.                         gambit DarkBit        "
               "\n                                                      gambit Pythia         "
               "\n                                                      gambit MSSM           "
               "\n                                                      gambit IC79WL_loglike "
+              "\n                                                      gambit MultiNest      "
               "\n                                                                            "
               "\n   Print GAMBIT version information                   gambit -v/--version   " << endl << endl; 
       logger().disable();
@@ -69,7 +70,7 @@ namespace Gambit
     void gambit_core::registerModuleFunctor(functor &f)
     {
       functorList.push_back(&f);
-      std::set<str> models = modelClaw().get_allmodels();
+      const std::set<str> models = modelInfo->get_allmodels();
       if (models.find(f.origin()) == models.end()) modules.insert(f.origin());
       capabilities.insert(f.capability());
     }
@@ -122,15 +123,15 @@ namespace Gambit
     
       if (command == "-v" or command == "--version")
       {
-        cout << "\nThis is GAMBIT v" + version << endl << endl;
+        cout << "\nThis is GAMBIT v" + version << endl;
       }
 
       else if (command == "modules")
       {
-        const int maxlen = 20;
+        const int maxlen = 25;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Modules             Num. module functions" << endl;
-        cout << "-----------------------------------------" << endl;
+        cout << "Modules             Num. functions" << endl;
+        cout << "----------------------------------" << endl;
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
           int nf = 0;
@@ -140,36 +141,67 @@ namespace Gambit
           } 
           cout << *it << spacing(it->length(),maxlen) << nf << endl;
         }
-        cout << endl;
       }
     
       else if (command == "backends")
       {
-        cout << "\nThis is GAMBIT. Registered backends:" << endl;
-        cout <<   "------------------------------------" << endl;
+        int maxlens[4] = {18, 7, 40, 15};
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status    Num. functions" << endl;
+        cout << "--------------------------------------------------------------------------------------------------------" << endl;
         for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
         {
-          cout << *it << endl;
+          std::set<str> versions;
+          std::map<str,int> nfuncs;
+          std::map<str,str> paths;
+          std::map<str,str> status;
+          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+          {
+            if ((*jt)->origin() == *it)              // Backend matches
+            {
+              str version = (*jt)->version();        // Retrieve the version
+              auto new_v = versions.insert(version); // Attempt to add this version to the set 
+              if (new_v.second)                      // This version was not in the version set yet
+              {
+                nfuncs[version] = 0;                                  // Initialise the count of functions in this version
+                paths[version]  = backendData->paths.at(*it+version); // Save the path of this backend
+                status[version] = backendData->works.at(*it+version) ? "present" : "absent/broken";  // Save the status of this backend 
+              }
+              nfuncs[version]++; // Increment the count of the functions in this version
+            }
+          }         
+          for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
+          {
+            str firstentry = "";
+            if (jt == versions.begin()) firstentry = *it;
+            cout << firstentry  << spacing(firstentry.length(),maxlens[0]);
+            cout << *jt         << spacing(jt->length(),maxlens[1]);
+            cout << paths[*jt]  << spacing(paths[*jt].length(),maxlens[2]);
+            cout << status[*jt] << spacing(status[*jt].length(),maxlens[3]);
+            cout << nfuncs[*jt] << endl;
+          }
         }
-        cout << endl;
-        //FIXME include versions, number of backend functions, path to lib, present/loaded successfully
       }
     
       else if (command == "models")
       {
-        int maxlen = 22;
-        // Create a graph of the available model hierarchy.
-        ModelGraph().makeGraph(getPrimaryModelFunctors());
+        int maxlen1 = 22;
+        int maxlen2 = 22;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Models                     Parent          " << endl;
-        cout << "-------------------------------------------" << endl;
-        std::set<str> models = modelClaw().get_allmodels();
-        for (std::set<str>::const_iterator it = models.begin(); it != models.end(); ++it)
+        cout << "Models                     Parent             Parameters" << endl;
+        cout << "--------------------------------------------------------" << endl;
+        for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
         {
-          cout << *it << spacing(it->length(),maxlen) << parent(*it) << endl;
+          str model = (*it)->origin();
+          str parentof = modelInfo->get_parent(model);
+          int nparams = (*it)->valuePtr()->getValuesPtr()->size();
+          cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
-        cout << endl;
-        //FIXME include number of parameters    
+        // Create and spit out graph of the model hierarchy.
+        str graphfile = "GAMBIT_model_hierarchy.gv";
+        ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
+        cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
+        cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
       }
     
       else if (command == "capabilities")
@@ -208,9 +240,19 @@ namespace Gambit
           // Print the entry in the table.
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
-        cout << endl;
       }
     
+      else if (command == "scanners")
+      {
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        cout << "Scanners            Accepted options" << endl;
+        cout << "------------------------------------" << endl;
+        //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
+        //{
+        //  cout << *it << endl;
+        //}
+      }
+
       else 
       {
         //Iterate over all modules to see if command matches one of them
@@ -233,6 +275,7 @@ namespace Gambit
         return;
       }
     
+      cout << endl;
       logger().disable();
       core_error().silent_forced_throw();
     

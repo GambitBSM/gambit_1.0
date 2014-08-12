@@ -15,6 +15,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Aug, Nov
+///  \date 2014 Aug        
 ///
 ///  *********************************************
 
@@ -44,24 +45,28 @@ namespace Gambit
 
     using namespace boost;
 
-    // Typedefs for central boost graph
+    /// Typedefs for central boost graph
+    /// @{
     typedef adjacency_list<vecS, vecS, bidirectionalS, functor*, vecS> MasterGraphType;
     typedef graph_traits<MasterGraphType>::vertex_descriptor VertexID;
     typedef graph_traits<MasterGraphType>::edge_descriptor EdgeID;
     typedef property_map<MasterGraphType,vertex_index_t>::type IndexMap;
+    /// @}
 
-    // Typedefs for communication channels with the master-likelihood
+    /// Typedefs for communication channels with the master-likelihood
+    /// @{
     typedef std::map<std::string, double *> inputMapType;
     typedef std::map<std::string, std::vector<functor*> > outputMapType;
+    /// @}
 
-    // Minimal info about outputVertices
+    /// Minimal info about outputVertices
     struct OutputVertexInfo
     {
       VertexID vertex;
       const IniParser::ObservableType * iniEntry;
     };
 
-    // Information in parameter queue
+    /// Information in parameter queue
     struct QueueEntry
     {
       QueueEntry() {}
@@ -78,26 +83,26 @@ namespace Gambit
       bool printme;
     };
 
-    // Check whether s1 (wildcard + regex allowed) matches s2
+    /// Check whether s1 (wildcard + regex allowed) matches s2
     bool stringComp(str s1, str s2);
 
-    // Main dependency resolver
+    /// Main dependency resolver
     class DependencyResolver
     {
       public:
-        // Constructor, provide module and backend functor lists
-        DependencyResolver(const gambit_core&, const IniParser::IniFile&, Printers::BasePrinter&);
+        /// Constructor, provide module and backend functor lists
+        DependencyResolver(const gambit_core&, const Models::ModelFunctorClaw&, const IniParser::IniFile&, Printers::BasePrinter&);
 
-        // The dependency resolution
+        /// The dependency resolution
         void doResolution();
 
-        // Pretty print module functor information
+        /// Pretty print module functor information
         void printFunctorList();
 
-        // Pretty print function evaluation order
+        /// Pretty print function evaluation order
         void printFunctorEvalOrder();
 
-        // New IO routines
+        /// New IO routines
         std::vector<VertexID> getObsLikeOrder();
 
         void calcObsLike(VertexID);
@@ -111,42 +116,44 @@ namespace Gambit
         void resetAll();
 
       private:
-        // Adds list of functor pointers to master graph
+        /// Adds list of functor pointers to master graph
         void addFunctors();
 
-        // Pretty print backend functor information
+        /// Pretty print backend functor information
         str printGenericFunctorList(const std::vector<functor*>&);
 
-        // Initialise the printer object with a list of functors for it to expect to be printed.
+        /// Initialise the printer object with a list of functors for it to expect to be printed.
         void initialisePrinter();
 
         /// Deactivate functors that are not allowed to be used with the model(s) being scanned. 
         void makeFunctorsModelCompatible();
 
-        // Resolution of individual module function dependencies
+        /// Resolution of individual module function dependencies
         boost::tuple<const IniParser::ObservableType *, DRes::VertexID>
           resolveDependency(DRes::VertexID toVertex, sspair quantity);
 
-        // Generate full dependency tree
+        /// Generate full dependency tree
         void generateTree(std::queue<QueueEntry> parQueue);
 
-        // Helper functions/arrays
+        /// Helper functions/arrays
         void fillParQueue(std::queue<QueueEntry> *parQueue,
             DRes::VertexID vertex);
 
-        // Topological sort
+        /// Topological sort
         std::list<VertexID> run_topological_sort();
 
-        // Find entries (comparison of inifile entry with quantity or functor)
+        /// Find entries (comparison of inifile entry with quantity or functor)
+        /// @{
         const IniParser::ObservableType * findIniEntry(
             sspair quantity, const IniParser::ObservablesType &, const str &);
         const IniParser::ObservableType * findIniEntry(
             DRes::VertexID toVertex, const IniParser::ObservablesType &, const str &);
+        /// @}
 
-        // Main function for resolution of backend requirements
+        /// Main function for resolution of backend requirements
         void resolveVertexBackend(VertexID);
 
-        // Find backend function matching any one of a number of capability-type pairs. 
+        /// Find backend function matching any one of a number of capability-type pairs. 
         functor* solveRequirement(std::vector<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
@@ -156,28 +163,31 @@ namespace Gambit
         // Private data members
         //
 
-        // Core to which this dependency resolver is bound
+        /// Core to which this dependency resolver is bound
         const gambit_core *boundCore;
 
-        // ini file to which this dependency resolver is bound
+        /// Model claw to which this dependency resolver is bound
+        const Models::ModelFunctorClaw *boundClaw;
+
+        /// ini file to which this dependency resolver is bound
         const IniParser::IniFile *boundIniFile;
 
-        // Printer object to which this dependency resolver is bound
+        /// Printer object to which this dependency resolver is bound
         Printers::BasePrinter *boundPrinter;
 
-        // *** Output Vertex Infos
+        /// *** Output Vertex Infos
         std::vector<OutputVertexInfo> outputVertexInfos;
 
-        // *** The central boost graph object
+        /// *** The central boost graph object
         MasterGraphType masterGraph;
 
-        // *** Saved calling order for functions
+        /// *** Saved calling order for functions
         std::list<VertexID> function_order;
 
-        // Temporary map for loop manager -> list of nested functions
+        /// Temporary map for loop manager -> list of nested functions
         std::map<VertexID, std::set<VertexID>> loopManagerMap;
 
-        // Indices associated with graph vertices (used by printers to identify functors)
+        /// Indices associated with graph vertices (used by printers to identify functors)
         IndexMap index;
 
     };

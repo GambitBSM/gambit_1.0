@@ -205,6 +205,12 @@ namespace Gambit
   /// Gambit invalid point exception class.
   class invalid_point_exception : public special_exception
   {
+
+    private:
+
+      /// The functor responsible for throwing this exception.
+      functor* myThrower;
+
     public:
 
       /// Constructor
@@ -219,11 +225,6 @@ namespace Gambit
       /// Raise the exception, i.e. throw it.
       virtual void raise(const std::string&);
     
-    private:
-
-      /// The functor responsible for throwing this exception.
-      functor* myThrower;
-
   };
 
 

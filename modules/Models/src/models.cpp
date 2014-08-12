@@ -100,17 +100,17 @@ namespace Gambit
     }
    
     /// Return set of all models recognised by GAMBIT
-    std::set<str>& ModelFunctorClaw::get_allmodels() { return allmodelnames; }
+    const std::set<str>& ModelFunctorClaw::get_allmodels() const { return allmodelnames; }
 
     /// Retrieve the internally stored vector of activated models
-    std::vector<str> ModelFunctorClaw::get_activemodels() { return activemodels; }
+    std::vector<str> ModelFunctorClaw::get_activemodels() const { return activemodels; }
 
     /// Active model functor "usefulness" checker
     ///
     /// Checks that all the active primary model functors are actually used for
     /// something in the dependency tree. If not throws an error to warn the
     /// user.
-    void ModelFunctorClaw::checkPrimaryModelFunctorUsage(const activemodel_map& activeModelFunctors)
+    void ModelFunctorClaw::checkPrimaryModelFunctorUsage(const activemodel_map& activeModelFunctors) const
     {
       std::vector<std::string> unusedmodels;
       std::string modelname;
@@ -180,13 +180,13 @@ namespace Gambit
     }                                                                      
 
     /// Indicate whether a model is recognised by GAMBIT or not
-    bool ModelFunctorClaw::model_exists (const str &model) 
+    bool ModelFunctorClaw::model_exists (const str &model) const
     {
       return allmodelnames.find(model) != allmodelnames.end();
     }
 
     /// List all the models recognised by GAMBIT
-    str ModelFunctorClaw::list_models()
+    str ModelFunctorClaw::list_models() const
     {
       str temp = "";
       for (std::set<str>::iterator it = allmodelnames.begin(); it != allmodelnames.end(); ++it)
@@ -196,39 +196,51 @@ namespace Gambit
       return temp;
     }
 
+    /// Verify that a string matches a model recognised by GAMBIT, crash otherwise
+    void ModelFunctorClaw::verify_model(const str &model) const
+    {
+      if (not model_exists(model))
+      {
+        str errmsg = "Error: model \"";
+        errmsg += model + "\" is not in the GAMBIT database.";
+        errmsg += "\nRecognised models are:" + list_models();
+        model_error().raise(LOCAL_INFO,errmsg); 
+      }
+    }
+
     /// Retrieve the lineage for a given model
-    std::vector<str> ModelFunctorClaw::get_lineage (const str &model)
+    std::vector<str> ModelFunctorClaw::get_lineage (const str &model) const
     {      
-      return myLineageDB.find(model) == myLineageDB.end() ? std::vector<str>() : myLineageDB[model];
+      return myLineageDB.find(model) == myLineageDB.end() ? std::vector<str>() : myLineageDB.at(model);
     }
 
     /// Retrieve the descendants for a given model
-    std::vector<str> ModelFunctorClaw::get_descendants (const str &model)
+    std::vector<str> ModelFunctorClaw::get_descendants (const str &model) const
     {
-      return myDescendantsDB.find(model) == myDescendantsDB.end() ? std::vector<str>() : myDescendantsDB[model];
+      return myDescendantsDB.find(model) == myDescendantsDB.end() ? std::vector<str>() : myDescendantsDB.at(model);
     }
 
     /// Retrieve the parents for a given model
-    str ModelFunctorClaw::get_parent (const str &model)
+    str ModelFunctorClaw::get_parent (const str &model) const
     {
-      return myParentsDB.find(model) == myParentsDB.end() ? "none" : myParentsDB[model];
+      return myParentsDB.find(model) == myParentsDB.end() ? "none" : myParentsDB.at(model);
     }
 
     /// Check if model 1 is descended from model 2
-    bool ModelFunctorClaw::descended_from (const str &model1, const str &model2) 
+    bool ModelFunctorClaw::descended_from (const str &model1, const str &model2) const
     {
-      return myIsDescendantOfDB[model1](model2);
+      if (myIsDescendantOfDB.find(model1) == myIsDescendantOfDB.end()) model_error().raise(LOCAL_INFO,"Unrecognised model: "+model1);
+      return myIsDescendantOfDB.at(model1)(model2,this);
+    }
+
+    /// Check if model 1 is an ancestor of model 2
+    bool ModelFunctorClaw::ancestor_of (const str &model1, const str &model2) const
+    {
+      return descended_from(model2, model1);
     }
 
     /// @}
     
-  }
-
-  /// Claw accessor function
-  Models::ModelFunctorClaw& modelClaw()
-  {
-    static Models::ModelFunctorClaw local;
-    return local;
   }
 
 }

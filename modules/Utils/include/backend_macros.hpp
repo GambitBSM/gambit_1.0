@@ -43,12 +43,14 @@
 #include "util_types.hpp"
 #include "types_rollcall.hpp"
 #include "functors.hpp"
-#include "backend_type_macros.hpp"
 #include "log.hpp"
 #include "standalone_error_handlers.hpp"
 #include "module_macros_incore.hpp"
+#include "backend_type_macros.hpp"
+#include "backend_singleton.hpp"
+#include "claw_singleton.hpp"
 #ifndef STANDALONE
-  #include "gambit_core.hpp"
+  #include "core_singleton.hpp"
 #endif
 
 #include <boost/preprocessor/control/iif.hpp>
@@ -66,6 +68,7 @@ namespace Gambit
 {
   namespace Backends
   {
+
     typedef void(*voidFptr)();
     /// Hack to suppress warnings about casting between void pointers and function pointers.
     /// "Necessary" as long as dlsym has no separate functionality for retrieving function pointers.
@@ -74,6 +77,7 @@ namespace Gambit
       void *ptr;      // Use this for objects
       voidFptr fptr;  // Use this for functions
     };
+
   }
 }
 
@@ -116,7 +120,7 @@ namespace Gambit                                                            \
   {                                                                         \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
-      namespace                                                             \       
+      namespace                                                             \
 
 /// Closer for convenience and initialisation function definitional boilerplate.
 #define DONE }}}    
@@ -246,12 +250,17 @@ namespace Gambit                                                            \
       std::vector<str> allowed_models;                                      \
       void loadLibrary()                                                    \
       {                                                                     \
+        backendInfo().paths[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
+         LIBPATH;                                                           \
         pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
         if(not pHandle)                                                     \
         {                                                                   \
           std::ostringstream err;                                           \
+          str error = dlerror();                                            \
+          backendInfo().dlerrors[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =\
+           error;                                                           \
           err << "Failed loading library from " << LIBPATH                  \
-              << " due to error: " << dlerror() << std::endl                \
+              << " due to error: " << error << std::endl                    \
               << "All functors generated from this library will get "       \
                  "status=-1.";                                              \
           backend_warning().raise(LOCAL_INFO,err.str());                    \
@@ -263,6 +272,8 @@ namespace Gambit                                                            \
                    << LogTags::backends << LogTags::info << EOM;            \
           present = true;                                                   \
         }                                                                   \
+        backendInfo().works[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
+         present;                                                           \
       }                                                                     \
                                                                             \
       /*The code within the void function 'loadLibrary' is executed         \
@@ -406,8 +417,8 @@ namespace Gambit                                                            \
          SAFE_STRINGIFY(STRIP_PARENS(TYPE)*),                               \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION),                                                \
-         STRINGIFY(SAFE_VERSION) );                                         \
-                                                                            \
+         STRINGIFY(SAFE_VERSION),                                           \
+         Models::modelClaw() );                                             \
       } /* end namespace Functown */                                        \
                                                                             \
       /* Set the allowed model properties of the functor. */                \
@@ -666,7 +677,8 @@ namespace Gambit                                                                
          STRINGIFY(TYPE) STRINGIFY(FE_ARGS) BOOST_PP_COMMA()                                    \
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* Create functor object FIXME DEPRECATED!!*/                                             \
@@ -679,7 +691,8 @@ namespace Gambit                                                                
          STRINGIFY(TYPE) BOOST_PP_COMMA()                                                       \
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
@@ -799,7 +812,8 @@ namespace Gambit                                                                
          STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                                                   \
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION),                                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \

@@ -42,7 +42,6 @@
 #include "util_types.hpp"
 #include "util_functions.hpp"
 #include "model_types.hpp"
-#include "model_functions.hpp"
 #include "yaml_options.hpp"
 #include "log.hpp"
 
@@ -59,6 +58,9 @@ namespace Gambit
   /// Forward declaration of Printers::BasePrinter class for use in print functions.
   namespace Printers { class BasePrinter; }
 
+  /// Forward declaration of Models::ModelFunctorClaw class for use in constructors.
+  namespace Models { class ModelFunctorClaw; }
+
   /// Function wrapper (functor) base class
   class functor
   {
@@ -66,7 +68,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      functor (str, str, str, str);
+      functor (str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate();
@@ -211,6 +213,9 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
+      /// Bound model functor claw, for checking relationships between models
+      const Models::ModelFunctorClaw* myClaw;
+
       /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
@@ -248,7 +253,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      module_functor_common(str, str, str, str);
+      module_functor_common(str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Getter for averaged runtime
       double getRuntimeAverage();
@@ -497,7 +502,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      module_functor(void(*)(TYPE &), str, str, str, str);
+      module_functor(void(*)(TYPE &), str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Destructor
       ~module_functor();
@@ -549,7 +554,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      module_functor(void (*)(), str, str, str, str);
+      module_functor(void (*)(), str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Calculate method
       void calculate();
@@ -595,7 +600,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor_common (funcPtrType, str, str, str, str, str, str);
+      backend_functor_common (funcPtrType, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Update the internal function pointer wrapped by the functor
       void updatePointer(funcPtrType inputFunction);
@@ -620,7 +625,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str);
+      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Operation (execute function and return value) 
       TYPE operator()(ARGS... args);
@@ -640,7 +645,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor (void (*)(ARGS...), str, str, str, str, str, str);
+      backend_functor (void (*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
     
       /// Operation (execute function and return value) 
       void operator()(ARGS... args);
@@ -654,7 +659,7 @@ namespace Gambit
     public:
     
       /// Constructor
-      model_functor(void (*)(ModelParameters &), str, str, str, str);
+      model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Function for adding a new parameter to the map inside the ModelParameters object
       void addParameter(str parname);
@@ -674,7 +679,7 @@ namespace Gambit
     public:
     
       /// Constructor
-      primary_model_functor(void (*)(ModelParameters &), str, str, str, str);
+      primary_model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Functor contents raw pointer "get" function
       /// Returns a raw pointer to myValue, so that the contents may be 
@@ -704,8 +709,9 @@ namespace Gambit
                                                                    str result_type,
                                                                    str origin_name,
                                                                    str origin_version,
-                                                                   str origin_safe_version) 
-    : functor (func_name, func_capability, result_type, origin_name),
+                                                                   str origin_safe_version,
+                                                                   Models::ModelFunctorClaw &claw) 
+    : functor (func_name, func_capability, result_type, origin_name, claw),
       myFunction (inputFunction),
       myLogTag(-1),
       inUse(false)
@@ -769,9 +775,10 @@ namespace Gambit
                                                      str result_type,
                                                      str origin_name,
                                                      str origin_version,
-                                                     str safe_version)
+                                                     str safe_version,
+                                                     Models::ModelFunctorClaw &claw)
     : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version, safe_version) {}
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
 
     /// Operation (execute function and return value) 
     template <typename TYPE, typename... ARGS>
@@ -804,9 +811,10 @@ namespace Gambit
                                                      str result_type,
                                                      str origin_name,
                                                      str origin_version,
-                                                     str safe_version)
+                                                     str safe_version, 
+                                                     Models::ModelFunctorClaw &claw)
     : backend_functor_common<void, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version, safe_version) {}
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
     
     /// Operation (execute function and return value) 
     template <typename... ARGS>
