@@ -148,11 +148,11 @@ namespace Gambit
       
       using namespace Pipes::fast_sim;
       cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::FastSim_Init.name() << " from " <<
-        BEreq::FastSim_Init.backend() << ", v" << 
-        BEreq::FastSim_Init.version() << "." << endl;
+        BEreq::fast_sim_init.name() << " from " <<
+        BEreq::fast_sim_init.backend() << ", v" << 
+        BEreq::fast_sim_init.version() << "." << endl;
 
-      cout << " calling function from library" << BEreq::FastSim_Init(1) << endl;
+      cout << " calling function from library" << BEreq::fast_sim_init(1) << endl;
       which = 10;
 
     }

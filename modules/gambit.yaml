@@ -216,8 +216,8 @@ twalk_beta:
 #  capability:   IceCube_likelihood
 
 # Uncomment to test FastSim
-#- purpose:      Likelihood
-#  capability:   fast_sim
+- purpose:      Likelihood
+  capability:   fast_sim
 
 # Uncomment to test array and -> operators in safety buckets.
 - purpose:      Observable
