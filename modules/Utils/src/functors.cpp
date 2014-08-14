@@ -68,7 +68,7 @@ namespace Gambit
      myType          (strip_whitespace_except_after_const(result_type)),
      myOrigin        (origin_name),
      myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
-     myStatus        (0),
+     myStatus        (1),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
      needs_recalculating (true)

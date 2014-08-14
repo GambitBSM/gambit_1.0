@@ -38,7 +38,7 @@ namespace Gambit
   /// Definitions of public methods in GAMBIT core class.
 
     /// Constructor
-    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw) : modelInfo(&claw) {}
+    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw) : modelInfo(&claw), show_runorder(false) {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
@@ -58,6 +58,8 @@ namespace Gambit
               "\n   List all registered function capabilities          gambit capabilities   " 
               "\n                                                                            "
               "\n   List registered scanners                           gambit scanners       " 
+              "\n                                                                            "
+              "\n   List initial functor eval. order (and then stop)   gambit <inifile> runorder"
               "\n                                                                            "
               "\n   Give info on a specific module, backend, model,    gambit <name>         "
               "\n   capability or scanner e.g.                         gambit DarkBit        "
@@ -246,7 +248,14 @@ namespace Gambit
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
       }
-    
+ 
+      else if (command == "runorder")
+      {
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        // Rest of the message obtained from dependency resolver. Set a flag to trigger this to occur.
+        show_runorder = true;
+        return; // Need to continue running gambit for a bit longer to get the requested info.
+      }
       else if (command == "scanners")
       {
         cout << "\nThis is GAMBIT." << endl << endl; 

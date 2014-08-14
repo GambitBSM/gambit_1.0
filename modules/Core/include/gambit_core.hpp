@@ -81,6 +81,9 @@ namespace Gambit
       /// Diagnostics function
       void run_diagnostic(str);
 
+      /// Flag to trigger dependency resolver to report functor run order
+      bool show_runorder;
+
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
 

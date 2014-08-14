@@ -242,6 +242,11 @@ namespace Gambit
           std::set<std::string> yamltags = infopair->first;
           std::string filename = infopair->second; 
           std::set<int> tags;
+           
+          // Log the loggers being created :)
+          // (will be put into a preliminary buffer until loggers are all constructed)
+          *this << LogTag::logs << LogTag::debug << std::endl << "Creating logger for tags [";
+
           // Iterate through string tags and convert them to the corresponding index
           for(std::set<std::string>::iterator stag = yamltags.begin(); 
                 stag != yamltags.end(); ++stag) 
@@ -256,8 +261,9 @@ namespace Gambit
               errormsg << "Error in Logging::str2tag function! Tag name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile! Tag string was ["<<*stag<<"]";
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
+            *this << *stag <<", ";
             tags.insert(newtag);
-          }
+          } 
           // Build the logger object
           StdLogger* newlogger;
           if(filename=="stdout")
@@ -272,8 +278,10 @@ namespace Gambit
           {
             newlogger = new StdLogger(filename);
           }
+          *this << "]; output is \"" << filename << "\"";
           loggers[tags] = newlogger; 
        }
+       *this << EOM; // End message about loggers.
        // Set logger objects ready for use and dump any buffered messages
        loggers_readyQ = true;
        dump_prelim_buffer();

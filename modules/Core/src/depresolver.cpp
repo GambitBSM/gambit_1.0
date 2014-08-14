@@ -263,7 +263,7 @@ namespace Gambit
       initialisePrinter();
 
       // Generate graphviz plot
-      std::ofstream outf("graph.gv");
+      std::ofstream outf("GAMBIT_active_functor_graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
 
       // Done
@@ -307,28 +307,110 @@ namespace Gambit
       // functors.
       //
       // Get order of evaluation
+      std::set<VertexID> parents;
+      std::set<VertexID> done; //set of vertices already accounted for
       std::vector<VertexID> order = getObsLikeOrder();
 
-      str formatString = "%-5s %-25s %-25s\n";
+      str formatString  = "%-5s %-25s %-25s\n";
+      // Might need to check if terminal supports unicode characters...
+      str formatString0 = "%-7s %-23s %-25s\n";  // header
+      str formatString1a= "%-8s %-21s %-25s\n";  // target functors 
+      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s\n";  // target functors 
+      str formatString2a= "     \u250C\u2500 %-23s %-25s\n";  // parents
+      str formatString2b= "     \u251C\u2500 %-23s %-25s\n";
+      str formatString3a= "     \u250CX %-23s %-25s\n"; // "already done" parents
+      str formatString3b= "     \u251CX %-23s %-25s\n";
+
       int i = 0;
-      logger() << LogTags::dependency_resolver;
-      logger() << endl << "Initial functor evaluation order" << endl;
-      logger() << "----------------------------------" << endl;
-      logger() << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
+
+      // Show the order in which the target functors will be attacked.
+      std::ostringstream ss;
+      ss << endl << "Initial target functor evaluation order" << endl;
+      ss << "----------------------------------" << endl;
+      ss << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
  
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
                   vi != order.end(); ++vi) 
       {
-        logger() << LogTags::dependency_resolver;
-        logger() << boost::format(formatString)%
+        ss << boost::format(formatString)%
          i%
          (*masterGraph[*vi]).name()%
          (*masterGraph[*vi]).origin();
         i++;
       }
-      logger() << EOM;
-   
+
+      ss << endl;
+
+      i = 0; // Reset counter
+      // Do another loop to show the full initial sequence of functor evaluation
+      // This doesn't figure out the sequence within each target functor group; I'm not 100% sure where that is determined. This does, however, show which groups get evaluated first, and which functors are already evaluated.
+      ss << endl << "Full initial functor evaluation order" << endl;
+      ss << "----------------------------------" << endl;
+      ss << boost::format(formatString0)% "#"% "FUNCTION"% "ORIGIN";
+ 
+      for (std::vector<VertexID>::const_iterator 
+                  vi  = order.begin(); 
+                  vi != order.end(); ++vi) 
+      {
+        // loop through parents of each target functor
+        parents = getParentVertices(*vi, masterGraph);
+        bool first = true;
+        for (std::set<VertexID>::const_iterator 
+                  vi2  = parents.begin(); 
+                  vi2 != parents.end(); ++vi2) 
+        {
+            str formatstr;
+            bool dowrite = false;
+            // Check if parent functor has been ticked off the list
+            bool is_done = done.find(*vi2) != done.end();
+            if( (not is_done) and (*vi != *vi2) )
+            {
+                formatstr = formatString2b;
+                if (first) formatstr = formatString2a;
+                dowrite = true;
+            }
+            else if( *vi != *vi2)
+            {
+                // Might be better to just do nothing here, i.e. set dowrite=false. For now just flagging functor as done with a special format string.
+                formatstr = formatString3b;
+                if (first) formatstr = formatString3a;
+                dowrite = true;
+            }
+
+            if (dowrite)
+            {
+              ss << boost::format(formatstr)%
+                (*masterGraph[*vi2]).name()%
+                (*masterGraph[*vi2]).origin();
+            }
+            done.insert(*vi2); // tick parent functor off the list
+            first = false;
+        }
+
+        // Now show target functor info
+        str formatstr;
+        if(parents.size()==1) { formatstr = formatString1a; }
+        else { formatstr = formatString1b; }
+        ss << boost::format(formatstr)%
+         i%
+         (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).origin();
+        i++;
+       
+        done.insert(*vi); // tick this target functor off the list
+
+      }
+      ss << "(\"X\" indicates that the functor is pre-evaluated before the marked position)" << endl << endl;
+      
+      if (toterminal)
+      {
+        // There is a command line flag to get this information, since it is very handy to check before launching a full job. It can always be checked via the logs, but I found myself wanting to see this often so I added this feature for convenience.
+        cout << ss.str();
+        str graphfile = "GAMBIT_active_functor_graph.gv"; // make sure this stays in sync with name in "doResolution" function. Probably should make a common variable for this.
+        cout << endl << "Please run ./graphviz.sh "+graphfile+" to get postscript plot of active functors." << endl;
+      }
+      logger() << LogTags::dependency_resolver << ss.str() << EOM;
     }
 
     //
