@@ -36,6 +36,7 @@
 #define MODULE ExampleBit_A
 START_MODULE
 
+
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY
 
@@ -75,7 +76,6 @@ START_MODULE
   #undef CAPABILITY
 
 
-
   #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more 
   START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
 
@@ -104,30 +104,15 @@ START_MODULE
   #undef CAPABILITY
 
 
-  /*
-  #define CAPABILITY Aldo_sim                // calling fastsim
-  START_CAPABILITY
-
-    #define FUNCTION  Aldo_test          // Name of the function that initializes the fastsim
-    START_FUNCTION(int)                    // returns the number of events for now
-      #define BACKEND_REQ_deprecated Read_Aldo_Sim            
-      START_BACKEND_REQ_deprecated(int)
-      BACKEND_OPTION_deprecated(LibAldo)         // Specify that backend libfastsim possesses initialize
-      #undef BACKEND_REQ_deprecated
-
-    #undef FUNCTION
-
-  #undef CAPABILITY
-  */
-
   #define CAPABILITY event_gen                // calling fastsim
   START_CAPABILITY
 
-    #define FUNCTION  Aldos_evgen          // Name of the function that initializes the fastsim
-    START_FUNCTION(HEP_Simple_Lib::Event)  // returns the number of events for now
+    #define FUNCTION Aldos_evgen          // Name of the function that initializes the fastsim
+    START_FUNCTION(HEP_Simple_Lib::Event) // returns the number of events for now
     #undef FUNCTION
 
   #undef CAPABILITY
+
 
   #define CAPABILITY fast_sim                // calling fastsim
   START_CAPABILITY
@@ -136,22 +121,7 @@ START_MODULE
       BACKEND_REQ(fast_sim_init, (), int, (int))
     #undef FUNCTION
   #undef CAPABILITY
-/*
-  #define CAPABILITY fast_sim                // calling fastsim
-  START_CAPABILITY
 
-    #define FUNCTION  init_sim          // Name of the function that initializes the fastsim
-    START_FUNCTION(double)              // returns the number of events for now
-
-      #define BACKEND_REQ_deprecated init_fastsim            
-      START_BACKEND_REQ_deprecated(int)
-      BACKEND_OPTION_deprecated(LibFastSim)         // Specify that backend libfastsim possesses initialize
-      #undef BACKEND_REQ_deprecated
-
-    #undef FUNCTION
-
-  #undef CAPABILITY
-*/
 
   #define CAPABILITY function_pointer
   START_CAPABILITY
@@ -176,7 +146,6 @@ START_MODULE
   #undef CAPABILITY
 
 
-
   #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
   START_CAPABILITY
   
@@ -193,6 +162,7 @@ START_MODULE
 
   #undef CAPABILITY
 
+
   #define CAPABILITY normaldist_loglike   // Test likelihood: normal distribution
   START_CAPABILITY
   
@@ -202,6 +172,7 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
+
 
   #define CAPABILITY doFarrayStuff 
   START_CAPABILITY   
@@ -229,6 +200,7 @@ START_MODULE
       BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
+
 
 #undef MODULE
 

@@ -525,18 +525,14 @@ int main( int, const char*[] )
     ExampleBit_A::Functown::Aldos_evgen.calculate();
     HEP_Simple_Lib::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0); 
     cout << " the number of muons generated " << myevent.visible_particles().size() << endl;
-    //cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::Aldos_evgen(0) << endl ;
   }
 
-  //cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
-  //if (ExampleBit_A::Accessors::provides("fast_sim"))
-  //{
-  //  ExampleBit_A::Functown::fast_sim.calculate();
-  //  cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::fast_sim(0) << endl ;
-  //}
-
-
-
+  cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
+  if (ExampleBit_A::Accessors::provides("fast_sim"))
+  {
+    ExampleBit_A::Functown::fast_sim.calculate();
+    cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::fast_sim(0) << endl ;
+  }
 
   cout <<  endl;
   cout << "My name is " << ExampleBit_B::Accessors::name() << endl;
