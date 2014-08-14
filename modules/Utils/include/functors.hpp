@@ -365,15 +365,6 @@ namespace Gambit
       /// Add one or more rules for forcing backends reqs with the same tags to always be resolved from the same backend.
       void makeBackendMatchingRule(str tag);
 
-      // !FIXME delete!!
-      /// Add multiple versions of a permitted backend !FIXME deprecated!!
-      void setPermittedBackend_deprecated(str req, str be, str ver);
-      /// Add an unconditional backend requirement
-      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq_deprecated(str, str, void(*)(functor*));
-      //
-
-
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);
 

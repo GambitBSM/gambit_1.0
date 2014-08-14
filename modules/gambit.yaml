@@ -368,9 +368,6 @@ dependency_resolution:
 likelihood:
   model_invalid_for_lnlike_below: -1e6
 
-#Whether to run GAMBIT in safe mode or not
-safe_mode: true
-
 #By default, errors are fatal and warnings non-fatal
 exceptions:
   dependency_resolver_error: fatal

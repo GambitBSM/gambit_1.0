@@ -118,14 +118,6 @@ namespace Gambit
         auxiliaries.push_back((*it).as<Types::Observable>());
       }
 
-      
-      // Set safe mode for the backend safety buckets  //FIXME safe mode is deprecated!!
-      if (hasKey("safe_mode"))
-      {       
-         // Retrieve the entry and set the safe_mode flag accordingly.
-         BE_bucket_base::safe_mode = getValue<bool>("safe_mode");
-      }      
-
     }
   }
 }

@@ -681,20 +681,6 @@ namespace Gambit                                                                
          Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
                                                                                                 \
-      /* Create functor object FIXME DEPRECATED!!*/                                             \
-      namespace Functown                                                                        \
-      {                                                                                         \
-        backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> CAT(NAME,_deprecated)(                   \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
-         STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
-         CAPABILITY BOOST_PP_COMMA()                                                            \
-         STRINGIFY(TYPE) BOOST_PP_COMMA()                                                       \
-         STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
-         STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
-         Models::modelClaw());                                                                  \
-      } /* end namespace Functown */                                                            \
-                                                                                                \
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
          them to call the backend function with appropriate translated args */                  \
       BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS)                    \
@@ -714,12 +700,10 @@ namespace Gambit                                                                
         BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),                               \
                                      BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
         Functown::NAME.updatePointer(NAME);                                                     \
-        Functown::CAT(NAME,_deprecated).updatePointer(NAME);                                    \
         /* -- Disable the functor if the library is not present or the symbol not found. */     \
         if(!present)                                                                            \
         {                                                                                       \
           Functown::NAME.setStatus(-1);                                                         \
-          Functown::CAT(NAME,_deprecated).setStatus(-1);                                        \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
@@ -728,7 +712,6 @@ namespace Gambit                                                                
               << "The functor generated for this symbol will get status=-2" << std::endl;       \
           backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
           Functown::NAME.setStatus(-2);                                                         \
-          Functown::CAT(NAME,_deprecated).setStatus(-2);                                        \
         }                                                                                       \
                                                                                                 \
       }                                                                                         \
@@ -762,8 +745,6 @@ namespace Gambit                                                                
       {                                                                                         \
         /* Register functor. */                                                                 \
         Core().registerBackendFunctor(Functown::NAME);                                          \
-        /* Register functor. FIXME Deprecated!!*/                                               \
-        Core().registerBackendFunctor(Functown::CAT(NAME,_deprecated));                         \
       }                                                                                         \
                                                                                                 \
       /* The code within the void function 'constructVarPointer_supp_NAME'                      \

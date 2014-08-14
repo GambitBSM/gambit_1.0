@@ -64,10 +64,8 @@
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
-#define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
 #define FORCE_SAME_BACKEND(...)                           DUMMYARG(__VA_ARGS__)                               
-#define BE_OPTION_deprecated(BACKEND,VERSTRING)           DUMMYARG(BACKEND,VERSTRING)
 /// @}
 
 
@@ -296,35 +294,6 @@
             typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
              CAT(REQ,func);                                                    \
             extern CAT(REQ,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQ;            \
-          }                                                                    \
-        }                                                                      \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-
-
-/// Redirection of START_BACKEND_REQ_deprecated(TYPE, [VAR/FUNC]) when invoked from within
-/// a module. 
-#define MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                          \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-    namespace MODULE                                                           \
-    {                                                                          \
-      namespace Pipes                                                          \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace BEreq                                                      \
-          {                                                                    \
-            /* Create a safety_bucket for the backend variable/function.       \
-            To be initialized by the dependency resolver at runtime. */        \
-            BOOST_PP_IIF(IS_VARIABLE,                                          \
-              /* If IS_VARIABLE = 1: */                                        \
-              extern BEvariable_bucket<TYPE> BACKEND_REQ_deprecated;                      \
-              , /* If IS_VARAIBLE = 0: */                                      \
-              extern BEfunction_bucket_deprecated<TYPE> BACKEND_REQ_deprecated;           \
-            ) /* End BOOST_PP_IIF */                                           \
           }                                                                    \
         }                                                                      \
       }                                                                        \

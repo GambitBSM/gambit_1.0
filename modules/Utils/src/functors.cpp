@@ -893,42 +893,6 @@ namespace Gambit
       }
     } 
 
-
-    /// FIXME!  delete! delete!
-    /// Add multiple versions of a permitted backend !FIXME deprecated!!
-    void module_functor_common::setPermittedBackend_deprecated(str req, str be, str ver)
-    {
-      // Split the version string and send each version to be registered
-      std::vector<str> versions = delimiterSplit(ver, ",");
-      for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
-      {
-        setPermittedBackend(req, be, *it);
-      }
-    }
-    /// Add an unconditional backend requirement
-    /// FIXME This is deprecated... 
-    void module_functor_common::setBackendReq_deprecated(str req, str type, void(*resolver)(functor*))
-    { 
-      sspair key (req, type);
-      backendreq_types[req] = type;
-      myBackendReqs.push_back(key);
-      myResolvableBackendReqs.push_back(key);
-      if ( std::find(myGroups.begin(), myGroups.end(), "none") == myGroups.end() )
-      {
-        myGroups.push_back("none");
-        std::vector<sspair> empty;
-        myGroupedBackendReqs["none"] = empty;
-      }
-      myGroupedBackendReqs["none"].push_back(key);
-      backendreq_map[key] = resolver;
-      std::vector<str> empty;
-      backendreq_tagmap[key] = empty;      
-      backendreq_groups[key] = "none";
-    }
-
-
-
-
     /// Resolve a dependency using a pointer to another functor object
     void module_functor_common::resolveDependency (functor* dep_functor)
     {
@@ -1000,7 +964,7 @@ namespace Gambit
 
           //Check if this backend requirement is part of a group.
           str group = backendreq_groups[key];
-          if (group != "none" and group !="") //FIXME second condition is deprecated!!           
+          if (group != "none")           
           {                                                      
             //If it is part of a group, make sure that group has actually been declared.
             if (chosenReqsFromGroups.find(group) != chosenReqsFromGroups.end() )

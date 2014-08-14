@@ -83,18 +83,6 @@
 #define START_FUNCTION_1(_1)                                     CAT(START_FUNCTION_,CANNOT_MANAGE_LOOPS)(_1)
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
-
-/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC]) !FIXME DEPRECATED!!
-#define START_BACKEND_REQ_deprecated_VAR(TYPE)                        DECLARE_BACKEND_REQ_deprecated(TYPE,1)
-#define START_BACKEND_REQ_deprecated_FUNC(TYPE)                       DECLARE_BACKEND_REQ_deprecated(TYPE,0)
-#define START_BACKEND_REQ_deprecated_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ_deprecated; should be VAR, FUNC or absent.")
-#define DEFINED_START_BACKEND_REQ_deprecated_VAR  ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
-#define DEFINED_START_BACKEND_REQ_deprecated_FUNC ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
-#define START_BACKEND_REQ_deprecated_2(_1, _2)                        CAT(START_BACKEND_REQ_deprecated_,IF_DEFINED(START_BACKEND_REQ_deprecated_##_2,_2))(_1)  
-#define START_BACKEND_REQ_deprecated_1(_1)                            START_BACKEND_REQ_deprecated_FUNC(_1) 
-#define START_BACKEND_REQ_deprecated(...)                             VARARG(START_BACKEND_REQ_deprecated, __VA_ARGS__)
-
-
 /// \name Variadic redirection macro for BACKEND_REQ_FROM_GROUP(GROUP, CAPABILITY, (TAGS), TYPE, [(ARGS)])
 #define BACKEND_REQ_FROM_GROUP_5(_1, _2, _3, _4, _5)          DECLARE_BACKEND_REQ(_1, _2, _3, _4, _5, 0)  
 #define BACKEND_REQ_FROM_GROUP_4(_1, _2, _3, _4)              DECLARE_BACKEND_REQ(_1, _2, _3, _4, (), 1) 
@@ -168,25 +156,6 @@
 #define BACKEND_GROUPS_2(_1, _2)                                   BE_GROUP(_1) BE_GROUP(_2)  
 #define BACKEND_GROUPS_1(_1)                                       BE_GROUP(_1)
 #define BACKEND_GROUPS(...)                                        VARARG(BACKEND_GROUPS, __VA_ARGS__)
-/// @}
-
-
-/// \name Variadic redirection macros for BACKEND_OPTION_deprecated(BACKEND, [VERSIONS])
-/// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
-/// be provided by backend \em BACKEND, versions \em [VERSIONS].  Permitted
-/// versions are passed as optional additional arguments; if no version 
-/// information is passed, all versions of \em BACKEND are considered valid.
-/// @{
-
-/// BACKEND_OPTION_deprecated() called with no versions; allow any backend version
-#define BE_OPTION_deprecated_0(_1)      BE_OPTION_deprecated(_1, "any")
-/// BACKEND_OPTION_deprecated() called with more than one argument; allow specified backend versions
-#define BE_OPTION_deprecated_1(_1, ...) BE_OPTION_deprecated(_1, #__VA_ARGS__)
-///  Redirects the BACKEND_OPTION_deprecated(BACKEND, [VERSIONS]) macro to the 
-///  BE_OPTION_deprecated(BACKEND, VERSTRING) macro according to whether it has been called with 
-///  version numbers or not (making the version number 'any' if it is omitted).
-#define BACKEND_OPTION_deprecated(...)  CAT(BE_OPTION_deprecated_, BOOST_PP_GREATER \
-                             (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
 /// @}
 
 
