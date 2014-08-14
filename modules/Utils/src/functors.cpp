@@ -1196,6 +1196,7 @@ namespace Gambit
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
       // Check if this functor is set to output its contents
+      std::cout<<"printflag?"<<myPrintFlag<<std::endl;
       if(myPrintFlag)
       {
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 

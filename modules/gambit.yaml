@@ -138,7 +138,7 @@ options:
 --- # Scanner setup
 ##############################
 
-plugin:  loopsample
+plugin:  crapsample
 file_path:  ScannerBit/lib/libsample.so
 
 #scanner:
@@ -157,7 +157,7 @@ crapsample:
   like:  Likelihood
 
 loopsample:
-  point_number: 2
+  point_number: 20
   output_file:  output
   like:  Likelihood
   files:

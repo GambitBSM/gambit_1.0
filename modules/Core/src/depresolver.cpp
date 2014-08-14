@@ -313,13 +313,13 @@ namespace Gambit
 
       str formatString  = "%-5s %-25s %-25s\n";
       // Might need to check if terminal supports unicode characters...
-      str formatString0 = "%-7s %-23s %-25s\n";  // header
-      str formatString1a= "%-8s %-21s %-25s\n";  // target functors 
-      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s\n";  // target functors 
-      str formatString2a= "     \u250C\u2500 %-23s %-25s\n";  // parents
-      str formatString2b= "     \u251C\u2500 %-23s %-25s\n";
-      str formatString3a= "     \u250CX %-23s %-25s\n"; // "already done" parents
-      str formatString3b= "     \u251CX %-23s %-25s\n";
+      str formatString0 = "%-7s %-23s %-25s %-6s\n";  // header
+      str formatString1a= "%-9s %-21s %-25s %-6s\n";  // target functors 
+      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-6s\n";  // target functors 
+      str formatString2a= "     \u250C\u2500 %-23s %-25s %-6s\n";  // parents
+      str formatString2b= "     \u251C\u2500 %-23s %-25s %-6s\n";
+      str formatString3a= "     \u250CX %-23s %-25s %-6s\n"; // "already done" parents
+      str formatString3b= "     \u251CX %-23s %-25s %-6s\n";
 
       int i = 0;
 
@@ -347,7 +347,7 @@ namespace Gambit
       // This doesn't figure out the sequence within each target functor group; I'm not 100% sure where that is determined. This does, however, show which groups get evaluated first, and which functors are already evaluated.
       ss << endl << "Full initial functor evaluation order" << endl;
       ss << "----------------------------------" << endl;
-      ss << boost::format(formatString0)% "#"% "FUNCTION"% "ORIGIN";
+      ss << boost::format(formatString0)% "#"% "FUNCTION"% "ORIGIN"% "PRINT?";
  
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
@@ -382,7 +382,8 @@ namespace Gambit
             {
               ss << boost::format(formatstr)%
                 (*masterGraph[*vi2]).name()%
-                (*masterGraph[*vi2]).origin();
+                (*masterGraph[*vi2]).origin()%
+                (*masterGraph[*vi2]).requiresPrinting();
             }
             done.insert(*vi2); // tick parent functor off the list
             first = false;
@@ -395,7 +396,8 @@ namespace Gambit
         ss << boost::format(formatstr)%
          i%
          (*masterGraph[*vi]).name()%
-         (*masterGraph[*vi]).origin();
+         (*masterGraph[*vi]).origin()%
+         (*masterGraph[*vi]).requiresPrinting();
         i++;
        
         done.insert(*vi); // tick this target functor off the list
