@@ -72,6 +72,7 @@ namespace Gambit
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void asciiPrinter::initialise(const std::vector<int>& printmevec)
     {
+      //std::cout << "Initialising asciiprinter..." << std::endl;
       // Loop through buffer and initialise all the elements
       for (int i=0; i<bufferlength; i++)
       {
@@ -149,6 +150,7 @@ namespace Gambit
     void asciiPrinter::addtobuffer(const int& vID, const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels) 
     {
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
+      std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl;
       buffer[buf_loc][vID] = functor_data;
       
       if ( info_file_written == false )
@@ -168,6 +170,7 @@ namespace Gambit
       // Note the downside of using a map as the buffer; the order of stuff in the output file is going
       // to be kind of haphazard due to the sorted order used by map. Will have to do more work to achieve
       // an ordering that reflects the order of stuff in, say, the inifile.
+      std::cout << "dumping asciiprinter buffer" << std::endl;
       if (info_file_written==false)
       {
         int column_index = 1;
