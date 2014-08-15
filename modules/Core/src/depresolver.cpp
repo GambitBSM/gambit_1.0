@@ -305,7 +305,9 @@ namespace Gambit
       // Running this lets us check the order of execution. Also helps
       // to verify that we actually have pointers to all the required
       // functors.
-      //
+      
+      std::set<VertexID> done;  // list of processed functor IDs.
+
       // Get order of evaluation
       std::vector<VertexID> order = getObsLikeOrder();
 
@@ -352,7 +354,7 @@ namespace Gambit
                   vi != order.end(); ++vi) 
       {
         // loop through parents of each target functor
-        parents = getParentVertices(*vi, masterGraph);
+        std::set<VertexID> parents = getParentVertices(*vi, masterGraph);
         bool first = true;
         for (std::set<VertexID>::const_iterator 
                   vi2  = parents.begin(); 

@@ -42,10 +42,12 @@ int main( int argc, const char* argv[] )
   {
 
     // Parse command line arguments
-    if (argc != 2) Core().bail();   // If the wrong number of parameters have been passed, inform the user and exit.
+    if (argc < 2 or argc > 3) Core().bail();   // If the wrong number of parameters have been passed, inform the user and exit.
     Core().run_diagnostic(argv[1]); // Launch into the appropriate diagnostic mode if the argument passed warrants it.
     const char* filename = argv[1]; // If not, roll on as if the argument is a filename.
-  
+ 
+    if (argc == 3) Core().run_diagnostic(argv[2]); // Check for diagnostic actions that need the inifile loaded. (probably we'll want to upgrade our argument handling to use boost::program_options or some such)
+ 
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
 
@@ -92,7 +94,8 @@ int main( int argc, const char* argv[] )
     modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
     // Report the proposed (output) functor evaluation order
-    dependencyResolver.printFunctorEvalOrder();
+    dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
+    if(Core().show_runorder) return 0; // Bail out: just wanted the run order, not a scan
  
     //Define the prior
     Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());

@@ -59,6 +59,8 @@ namespace Gambit
               "\n                                                                            "
               "\n   List registered scanners                           gambit scanners       " 
               "\n                                                                            "
+              "\n   List initial functor eval. order (and then stop)   gambit <inifile> runorder"
+              "\n                                                                            "
               "\n   Give info on a specific module, backend, model,    gambit <name>         "
               "\n   capability or scanner e.g.                         gambit DarkBit        "
               "\n                                                      gambit Pythia         "
@@ -246,7 +248,15 @@ namespace Gambit
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
       }
-    
+   
+      else if (command == "runorder")
+      {
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        // Rest of the message obtained from dependency resolver. Set a flag to trigger this to occur.
+        show_runorder = true;
+        return; // Need to continue running gambit for a bit longer to get the requested info.
+      }
+ 
       else if (command == "scanners")
       {
         cout << "\nThis is GAMBIT." << endl << endl; 

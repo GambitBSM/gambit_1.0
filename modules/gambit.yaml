@@ -345,8 +345,8 @@ redirection:
   [ExampleBit_B] : "ExampleBit_B.log"
   [BackendIniBit]: "BackendIniBit.log"
   [LibFirst] : "libfirst.log"
-  [Core] : "stdout"
-  [Dependency Resolver] : "stdout"
+#  [Core] : "stdout"
+#  [Dependency Resolver] : "stdout"
 
 ###############################
 #--- # Printer (output) setup
