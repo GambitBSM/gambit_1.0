@@ -306,8 +306,6 @@ namespace Gambit
       // to verify that we actually have pointers to all the required
       // functors.
       
-      std::set<VertexID> done;  // list of processed functor IDs.
-
       // Get order of evaluation
       std::set<VertexID> parents;
       std::set<VertexID> done; //set of vertices already accounted for
