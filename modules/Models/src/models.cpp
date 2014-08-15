@@ -64,7 +64,6 @@ namespace Gambit
         el = std::find(selectedmodels.begin(), selectedmodels.end(), (*it)->origin());
         if(el != selectedmodels.end())
         {
-          std::cout << "something should be printing..." <<std::endl;
           // If yes, activate this functor.  Default is inactivated.
           (*it)->setStatus(1);               // 1 means "available".
           (*it)->setPrintRequirement(true);  // Tell printer to output this functor

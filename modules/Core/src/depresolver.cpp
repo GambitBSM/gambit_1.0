@@ -397,10 +397,20 @@ namespace Gambit
          (*masterGraph[*vi]).origin()%
          (*masterGraph[*vi]).requiresPrinting();
         i++;
+        
+        done.insert(*vi); // tick this target functor off the list
+
+      }
+      ss << "(\"X\" indicates that the functor is pre-evaluated before the marked position)" << endl << endl;
+      
+      if (toterminal)
+      {
+        // There is a command line flag to get this information, since it is very handy to check before launching a full job. It can always be checked via the logs, but I found myself wanting to see this often so I added this feature for convenience.
+        cout << ss.str();
+        str graphfile = "GAMBIT_active_functor_graph.gv"; // make sure this stays in sync with name in "doResolution" function. Probably should make a common variable for this.
+        cout << endl << "Please run ./graphviz.sh "+graphfile+" to get postscript plot of active functors." << endl;
       }
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
-      // toterminal can be set via a command line argument to easily check what is to be evaluated.
-      if(toterminal) std::cout << ss.str();   
 
     }
 
@@ -834,12 +844,9 @@ namespace Gambit
         logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
         //logger() << EOM;
 
-        // If toVertex is the Core, then fromVertex is one of our target functors, which are
-        // the things we want to output to the printer system.  Turn printing on for these.
-        if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        {
-           masterGraph[fromVertex]->setPrintRequirement(true);
-        }
+        // Check if we wanted to output this observable to the printer system.
+        //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
+        if(printme) masterGraph[fromVertex]->setPrintRequirement(true);
 
         // Apply resolved dependency to masterGraph and functors
         if ( toVertex != OBSLIKE_VERTEXID )

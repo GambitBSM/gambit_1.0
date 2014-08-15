@@ -199,7 +199,7 @@ namespace Gambit
         {
           str model = (*it)->origin();
           str parentof = parent(model);
-          int nparams = (*it)->valuePtr()->getValuesPtr()->size();
+          int nparams = (*it)->valuePtr()->getNumberOfPars();
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
         // Create and spit out graph of the model hierarchy.

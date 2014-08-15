@@ -254,7 +254,7 @@ twalk_beta:
 - purpose:      Likelihood
   capability:   MSSMslha_testLogL
   function:     MSSMtestLogL
-#  printme:      false
+  printme:      false
 
 # Test vector output of printer
 - purpose:      Observable

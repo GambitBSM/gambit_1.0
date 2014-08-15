@@ -1146,11 +1146,13 @@ namespace Gambit
 
     /// Setter for indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; }
+    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; std::cout<<"Setting myPrintFlag ="<<flag<<"("<<myPrintFlag<<") for functor "<<myName<<std::endl;}
 
     /// Getter indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    bool module_functor<TYPE>::requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
+    bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); 
+std::cout<<"?"<<myPrintFlag<<std::endl;
+return myPrintFlag; }
 
     /// Calculate method
     template <typename TYPE>
