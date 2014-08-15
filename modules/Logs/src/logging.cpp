@@ -233,15 +233,20 @@ namespace Gambit
 
     /// Function to construct loggers according to blueprint
     // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
-    void LogMaster::initialise(std::map<std::set<std::string>, std::string>& loggerinfo)
+    void LogMaster::initialise(std::vector<std::pair< std::set<std::string>, std::string >>& loggerinfo)
     {
        // Iterate through map and build the logger objects
-       for(std::map<std::set<std::string>, std::string>::iterator infopair = loggerinfo.begin(); 
+       for(std::vector<std::pair< std::set<std::string>, std::string >>::iterator infopair = loggerinfo.begin(); 
             infopair != loggerinfo.end(); ++infopair) 
        {
           std::set<std::string> yamltags = infopair->first;
           std::string filename = infopair->second; 
           std::set<int> tags;
+           
+          // Log the loggers being created :)
+          // (will be put into a preliminary buffer until loggers are all constructed)
+          *this << LogTag::logs << LogTag::debug << std::endl << "Creating logger for tags [";
+
           // Iterate through string tags and convert them to the corresponding index
           for(std::set<std::string>::iterator stag = yamltags.begin(); 
                 stag != yamltags.end(); ++stag) 
@@ -256,17 +261,46 @@ namespace Gambit
               errormsg << "Error in Logging::str2tag function! Tag name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile! Tag string was ["<<*stag<<"]";
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
+            *this << *stag <<", ";
             tags.insert(newtag);
-          }
+          } 
           // Build the logger object
-          StdLogger* newlogger = new StdLogger(filename);
+          StdLogger* newlogger;
+          if(filename=="stdout")
+          {
+            newlogger = new StdLogger(std::cout);
+          }
+          else if(filename=="stderr")
+          {
+            newlogger = new StdLogger(std::cerr);
+          }
+          else
+          {
+            newlogger = new StdLogger(filename);
+          }
+          *this << "]; output is \"" << filename << "\"";
           loggers[tags] = newlogger; 
        }
+       *this << EOM; // End message about loggers.
        // Set logger objects ready for use and dump any buffered messages
        loggers_readyQ = true;
        dump_prelim_buffer();
     }
 
+    // Overload for initialise to allow input of logging instructions via maps
+    void LogMaster::initialise(std::map<std::set<std::string>, std::string>& loggerinfo)
+    {
+       std::vector<std::pair< std::set<std::string>, std::string >> loggerinfo_vec;
+       // Iterate through map and convert it to a vector of pairs
+       for(std::map<std::set<std::string>, std::string>::iterator infopair = loggerinfo.begin(); 
+            infopair != loggerinfo.end(); ++infopair) 
+       {
+          loggerinfo_vec.push_back(std::make_pair(infopair->first,infopair->second));
+       }
+       // Run the 'normal' initialise function
+       initialise(loggerinfo_vec);
+    }
+ 
     // Overload for initialise, to make it easier to manually initialise the logger in standalone modules
     void LogMaster::initialise(std::map<std::string, std::string>& loggerinfo)
     {
@@ -646,12 +680,13 @@ namespace Gambit
     /// "Standard" logger class
   
     /// Constructor
-    /// Attach logger object to a stream
-    StdLogger::StdLogger(std::ofstream& logfile) : my_fstream(logfile)
+    /// Attach logger object to an existing stream
+    StdLogger::StdLogger(std::ostream& logstream) : my_stream(logstream)
     {}
  
+    /// Open new file stream and manage it internally
     StdLogger::StdLogger(const std::string& filename) 
-     : my_own_fstream(filename, std::ofstream::out), my_fstream(my_own_fstream)
+     : my_own_fstream(filename, std::ofstream::out), my_stream(my_own_fstream)
     {}
 
     StdLogger::~StdLogger() {}
@@ -660,16 +695,16 @@ namespace Gambit
     void StdLogger::write(const SortedMessage& mail)
     {
       // Message reception time (UTC)
-      my_fstream<<"("<<pt::to_iso_extended_string(mail.received_at)<<")";
+      my_stream<<"("<<pt::to_iso_extended_string(mail.received_at)<<")";
       // milliseconds elapsed since start_time
       pt::time_duration diff = mail.received_at - start_time;
-      my_fstream<<"("<<diff.total_milliseconds()<<"ms)";
+      my_stream<<"("<<diff.total_milliseconds()<<"ms)";
       // Message tags
       writetags(mail.component_tags);
       writetags(mail.type_tags);
       writetags(mail.flag_tags);
       // Message proper
-      my_fstream<<" : "<<mail.message<<std::endl; 
+      my_stream<<" : "<<mail.message<<std::endl; 
 
     }
 
@@ -690,17 +725,17 @@ namespace Gambit
       
       if( not tags.empty() )
       {
-        my_fstream<<"[";
+        my_stream<<"[";
         bool firstloop = true;  
         for (it = tags.begin(); it != tags.end(); ++it)
         {
-          if (not firstloop) { my_fstream<<","; }
+          if (not firstloop) { my_stream<<","; }
           //std::cout<<"test: "<<*it<<std::endl;
           //std::cout<<"test2:"<<tag2str().at(*it)<<std::endl;
-          my_fstream << tag2str().at(*it); // replace with a lookup of the correct string
+          my_stream << tag2str().at(*it); // replace with a lookup of the correct string
           firstloop = false;
         }
-        my_fstream<<"]";
+        my_stream<<"]";
       }
     }
 
@@ -708,7 +743,7 @@ namespace Gambit
     // Possibly unnecessary...
     void StdLogger::flush()
     { 
-      my_fstream.flush(); 
+      my_stream.flush(); 
     }
 
     /// Destructor

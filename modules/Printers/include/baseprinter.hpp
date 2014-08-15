@@ -46,16 +46,12 @@
 
 // Virtual print methods for base printer class
 #define VPRINT(r,data,elem)                                        \
-  virtual void print(elem const&, const functor* f)                \
+  virtual void print(elem const&, const std::string& label, const int)   \
   {                                                                \
     str errmsg = "No print function override has been ";           \
     errmsg +=  "\ndefined for this type (for whatever printer"     \
                "\nclass the current printer comes from)"           \
-               "\n  Dumping Functor info..."                       \
-               "\n   Name       : " + f->name() +                  \
-               "\n   Capability : " + f->capability() +            \
-               "\n   Type       : " + f->type() +                  \
-               "\n   Origin     : " + f->origin();                 \
+               "\n Input label: " + label;                         \
     printer_warning().raise(LOCAL_INFO,errmsg);                    \
   }                                              
 

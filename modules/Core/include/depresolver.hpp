@@ -100,7 +100,7 @@ namespace Gambit
         void printFunctorList();
 
         /// Pretty print function evaluation order
-        void printFunctorEvalOrder();
+        void printFunctorEvalOrder(bool toterminal=false);
 
         /// New IO routines
         std::vector<VertexID> getObsLikeOrder();

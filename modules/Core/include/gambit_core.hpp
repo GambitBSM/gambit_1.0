@@ -79,6 +79,9 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
+      /// Flag to trigger dependency resolver to report functor run order
+      bool show_runorder;
+
       /// Command-line info function
       void bail();
 

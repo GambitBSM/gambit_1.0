@@ -36,7 +36,7 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-#define FWDPRINT(r,data,elem) virtual void print(elem const&, const functor*) = 0;
+#define FWDPRINT(r,data,elem) virtual void print(elem const&, const std::string&, const int) = 0;
 
 namespace Gambit
 {
@@ -70,6 +70,7 @@ namespace Gambit
      myType          (strip_whitespace_except_after_const(result_type)),
      myOrigin        (origin_name),
      myClaw          (&claw),
+     myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
@@ -128,6 +129,8 @@ namespace Gambit
     int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
+    /// Getter for the printer label
+    str functor::label()       const { if (this == NULL) failBigTime("label"); return myLabel; }
 
     /// Setter for indicating if the wrapped function's result should to be printed
     void functor::setPrintRequirement(bool flag)
@@ -1112,11 +1115,11 @@ namespace Gambit
 
     /// Setter for indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; }
+    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
 
     /// Getter indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    bool module_functor<TYPE>::requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
+    bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
 
     /// Calculate method
     template <typename TYPE>
@@ -1162,6 +1165,7 @@ namespace Gambit
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
       // Check if this functor is set to output its contents
+      std::cout<<"printflag?"<<myPrintFlag<<std::endl;
       if(myPrintFlag)
       {
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
@@ -1170,7 +1174,7 @@ namespace Gambit
         // of 'print' which is appropriate for the type of 'myValue'. If the printers only expect
         // module_functors, then we could use the template type of the pointer to do the resolution, but 
         // it might just be more straightforward to pass 'myValue' like we are currently doing...
-        printer->print(myValue[0],this);
+        printer->print(myValue[0],myLabel,myVertexID);
       }
     }
 

@@ -72,6 +72,7 @@ namespace Gambit
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void asciiPrinter::initialise(const std::vector<int>& printmevec)
     {
+      //std::cout << "Initialising asciiprinter..." << std::endl;
       // Loop through buffer and initialise all the elements
       for (int i=0; i<bufferlength; i++)
       {
@@ -149,6 +150,7 @@ namespace Gambit
     void asciiPrinter::addtobuffer(const int& vID, const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels) 
     {
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
+      std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl;
       buffer[buf_loc][vID] = functor_data;
       
       if ( info_file_written == false )
@@ -168,6 +170,7 @@ namespace Gambit
       // Note the downside of using a map as the buffer; the order of stuff in the output file is going
       // to be kind of haphazard due to the sorted order used by map. Will have to do more work to achieve
       // an ordering that reflects the order of stuff in, say, the inifile.
+      std::cout << "dumping asciiprinter buffer" << std::endl;
       if (info_file_written==false)
       {
         int column_index = 1;
@@ -226,14 +229,14 @@ namespace Gambit
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
-    void asciiPrinter::print(double const& value, const functor* f)
+    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode)
     {
       std::vector<double> vdvalue(1,value);
-      std::vector<std::string> labels(1,f->origin()+"::"+f->name()+" ("+f->capability()+")");
-      addtobuffer(f->vertexID(),vdvalue,labels);       
+      std::vector<std::string> labels(1,label);
+      addtobuffer(IDcode,vdvalue,labels);       
     }
  
-    void asciiPrinter::print(std::vector<double> const& value, const functor* f)
+    void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode)
     {
       std::vector<std::string> labels;
       labels.reserve(value.size());
@@ -241,13 +244,13 @@ namespace Gambit
       {
         // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
         std::stringstream ss;
-        ss<<f->origin()<<"::"<<f->name()<<"["<<i<<"] ("<<f->capability()<<")"; 
+        ss<<label<<"["<<i<<"]"; 
         labels.push_back(ss.str());
       }
-      addtobuffer(f->vertexID(),value,labels);
+      addtobuffer(IDcode,value,labels);
     }
    
-    void asciiPrinter::print(ModelParameters const& value, const functor* f)
+    void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode)
     {
       std::map<std::string, double> parameter_map = value.getValues();
       std::vector<std::string> names;
@@ -258,11 +261,11 @@ namespace Gambit
         it = parameter_map.begin(); it != parameter_map.end(); it++)
       {
         std::stringstream ss;
-        ss<<f->origin()<<"::"<<f->name()<<"::"<<it->first<<" ("<<f->capability()<<")";
+        ss<<label<<"::"<<it->first;
         names.push_back( ss.str() ); 
         vdvalue.push_back( it->second );
       }
-      addtobuffer(f->vertexID(),vdvalue,names);
+      addtobuffer(IDcode,vdvalue,names);
     }
      
   } // end namespace printers

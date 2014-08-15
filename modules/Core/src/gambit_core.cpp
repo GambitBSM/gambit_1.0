@@ -32,8 +32,9 @@ namespace Gambit
     /// Constructor
     gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
      modelInfo(&claw),
-     backendData(&beinfo)
-   {}
+     backendData(&beinfo), 
+     show_runorder(false)
+    {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
@@ -53,6 +54,8 @@ namespace Gambit
               "\n   List all registered function capabilities          gambit capabilities   " 
               "\n                                                                            "
               "\n   List registered scanners                           gambit scanners       " 
+              "\n                                                                            "
+              "\n   List initial functor eval. order (and then stop)   gambit <inifile> runorder"
               "\n                                                                            "
               "\n   Give info on a specific module, backend, model,    gambit <name>         "
               "\n   capability or scanner e.g.                         gambit DarkBit        "
@@ -194,7 +197,7 @@ namespace Gambit
         {
           str model = (*it)->origin();
           str parentof = modelInfo->get_parent(model);
-          int nparams = (*it)->valuePtr()->getValuesPtr()->size();
+          int nparams = (*it)->valuePtr()->getNumberOfPars();
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
         // Create and spit out graph of the model hierarchy.
@@ -241,7 +244,15 @@ namespace Gambit
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
       }
-    
+
+      else if (command == "runorder")
+      {
+        cout << "\nThis is GAMBIT." << endl << endl; 
+        // Rest of the message obtained from dependency resolver. Set a flag to trigger this to occur.
+        show_runorder = true;
+        return; // Need to continue running gambit for a bit longer to get the requested info.
+      }
+
       else if (command == "scanners")
       {
         cout << "\nThis is GAMBIT." << endl << endl; 

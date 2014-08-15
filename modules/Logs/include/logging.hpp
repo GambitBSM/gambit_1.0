@@ -130,8 +130,8 @@ namespace Gambit
     {
       public:
         /// Constructor
-        // Attach logger object to a stream
-        StdLogger(std::ofstream&);
+        // Attach logger object to an existing stream
+        StdLogger(std::ostream&);
     
         /// Alternate constructor
         // Opens a file and takes care of the stream itself
@@ -152,7 +152,7 @@ namespace Gambit
  
       private:
         std::ofstream my_own_fstream; //Don't use this except in constructor
-        std::ofstream& my_fstream;
+        std::ostream& my_stream;
     };
  
     /// Logging "controller" object
@@ -182,7 +182,12 @@ namespace Gambit
 
         /// Function to construct loggers according to blueprint
         // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
+        // This needs to be a vector of pairs rather than a map in case people want duplicate output streams of certain logs. In this case there will be duplicate keys, which a map cannot allow.
+        void initialise(std::vector<std::pair< std::set<std::string>, std::string>>&);
+
+        // Overload to allow using maps as input
         void initialise(std::map<std::set<std::string>, std::string>&);
+
         // Overload of initialise function to allow easier manual initialisation in standalone modules
         void initialise(std::map<std::string, std::string>&);
 

@@ -158,7 +158,7 @@ crapsample:
   like:  Likelihood
 
 loopsample:
-  point_number: 2
+  point_number: 20
   output_file:  output
   like:  Likelihood
   files:
@@ -217,8 +217,8 @@ twalk_beta:
 #  capability:   IceCube_likelihood
 
 # Uncomment to test FastSim
-- purpose:      Likelihood
-  capability:   fast_sim
+#- purpose:      Likelihood
+#  capability:   fast_sim
 
 # Uncomment to test array and -> operators in safety buckets.
 - purpose:      Observable
@@ -255,7 +255,7 @@ twalk_beta:
 - purpose:      Likelihood
   capability:   MSSMslha_testLogL
   function:     MSSMtestLogL
-#  printme:      false
+  printme:      false
 
 # Test vector output of printer
 - purpose:      Observable
@@ -331,6 +331,8 @@ twalk_beta:
 #########################
 
 # Redirectory of specific messages according to tags
+# Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
+
 prefix : "runs/example_minimal_test/logs/"
 redirection:
   [Debug] : "debug.log"
@@ -344,6 +346,9 @@ redirection:
   [ExampleBit_B] : "ExampleBit_B.log"
   [BackendIniBit]: "BackendIniBit.log"
   [LibFirst] : "libfirst.log"
+#  [Logger, Debug] : "stdout"
+#  [Core] : "stdout"
+#  [Dependency Resolver] : "stdout"
 
 ###############################
 #--- # Printer (output) setup
