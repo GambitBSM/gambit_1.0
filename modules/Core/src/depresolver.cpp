@@ -399,7 +399,7 @@ namespace Gambit
          (*masterGraph[*vi]).origin()%
          (*masterGraph[*vi]).requiresPrinting();
         i++;
-       
+        
         done.insert(*vi); // tick this target functor off the list
 
       }
@@ -845,12 +845,9 @@ namespace Gambit
         logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
         //logger() << EOM;
 
-        // If toVertex is the Core, then fromVertex is one of our target functors, which are
-        // the things we want to output to the printer system.  Turn printing on for these.
-        if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        {
-           masterGraph[fromVertex]->setPrintRequirement(true);
-        }
+        // Check if we wanted to output this observable to the printer system.
+        //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
+        if(printme) masterGraph[fromVertex]->setPrintRequirement(true);
 
         // Apply resolved dependency to masterGraph and functors
         if ( toVertex != OBSLIKE_VERTEXID )

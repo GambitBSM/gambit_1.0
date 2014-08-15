@@ -513,7 +513,7 @@ namespace Gambit
       virtual void setPrintRequirement(bool flag);
 
       /// Getter indicating if the wrapped function's result should to be printed
-      virtual bool requiresPrinting();
+      virtual bool requiresPrinting() const;
 
       /// Calculate method
       void calculate();

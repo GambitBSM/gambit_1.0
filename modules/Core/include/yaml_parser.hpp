@@ -60,6 +60,21 @@ namespace Gambit
         Options options;
         std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
         std::vector<Observable> backends; // ..deps of deps of deps of obs possible
+
+        ///Default constructor, to ensure the default values are not gibberish
+        Observable():
+          purpose(),
+          capability(),
+          type(),
+          function(),
+          module(),
+          backend(),
+          version(),
+          printme(true),
+          options(),
+          dependencies(),
+          backends()
+        {}
       };
 
       // struct Parameter
@@ -81,6 +96,7 @@ namespace YAML {
       #define READ(NAME) \
       if (node[#NAME].IsDefined()) \
         rhs.NAME = node[#NAME].as<std::string>();
+
       READ(purpose)
       READ(capability)
       READ(type)
@@ -88,6 +104,10 @@ namespace YAML {
       READ(module)
       READ(backend)
       READ(version)
+      
+      if (node["printme"].IsDefined())
+          rhs.printme = node["printme"].as<bool>();
+
       if (node["options"].IsDefined())
           rhs.options = Gambit::Options(node["options"]);
       #undef READ
