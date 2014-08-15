@@ -38,7 +38,7 @@ namespace Gambit
   /// Definitions of public methods in GAMBIT core class.
 
     /// Constructor
-    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw) : modelInfo(&claw) {}
+    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw) : modelInfo(&claw), show_runorder(false) {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
@@ -248,7 +248,7 @@ namespace Gambit
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
       }
-   
+
       else if (command == "runorder")
       {
         cout << "\nThis is GAMBIT." << endl << endl; 
@@ -256,7 +256,7 @@ namespace Gambit
         show_runorder = true;
         return; // Need to continue running gambit for a bit longer to get the requested info.
       }
- 
+
       else if (command == "scanners")
       {
         cout << "\nThis is GAMBIT." << endl << endl; 

@@ -1146,7 +1146,7 @@ namespace Gambit
 
     /// Setter for indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; }
+    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; std::cout<<"Setting myPrintFlag ="<<flag<<"("<<myPrintFlag<<") for functor "<<myName<<std::endl;}
 
     /// Getter indicating if the wrapped function's result should to be printed
     template <typename TYPE>
@@ -1196,6 +1196,7 @@ namespace Gambit
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
       // Check if this functor is set to output its contents
+      std::cout<<"printflag?"<<myPrintFlag<<std::endl;
       if(myPrintFlag)
       {
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 

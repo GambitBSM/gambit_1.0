@@ -263,7 +263,7 @@ namespace Gambit
       initialisePrinter();
 
       // Generate graphviz plot
-      std::ofstream outf("graph.gv");
+      std::ofstream outf("GAMBIT_active_functor_graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
 
       // Done
@@ -309,6 +309,8 @@ namespace Gambit
       std::set<VertexID> done;  // list of processed functor IDs.
 
       // Get order of evaluation
+      std::set<VertexID> parents;
+      std::set<VertexID> done; //set of vertices already accounted for
       std::vector<VertexID> order = getObsLikeOrder();
 
       str formatString  = "%-5s %-25s %-25s\n";
@@ -354,7 +356,7 @@ namespace Gambit
                   vi != order.end(); ++vi) 
       {
         // loop through parents of each target functor
-        std::set<VertexID> parents = getParentVertices(*vi, masterGraph);
+        parents = getParentVertices(*vi, masterGraph);
         bool first = true;
         for (std::set<VertexID>::const_iterator 
                   vi2  = parents.begin(); 
@@ -413,7 +415,6 @@ namespace Gambit
         cout << endl << "Please run ./graphviz.sh "+graphfile+" to get postscript plot of active functors." << endl;
       }
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
-
     }
 
     //
