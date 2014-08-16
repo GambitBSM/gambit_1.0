@@ -41,16 +41,6 @@ namespace Gambit {
     /// @todo Put in actual analyses rather than a simple counter
     double counter = 0.;
 
-    /// @todo void? or return Pythia instance?
-    void PointInit_Default()
-    {
-      logger() << "==================" << endl;
-      logger() << "HEColliderBit says,";
-      logger() << "\"Hi there. Initializing...\"" << endl;
-      logger() << LogTags::info << endl << EOM;
-      /// @todo Init pythia!!
-    }
-
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -62,12 +52,12 @@ namespace Gambit {
     /// \todo Assume that spectrum comes from somewhere else...
     /// \note Play with SoftSUSY class loading with Anders
     void getslhaFileName(std::string &result)
-          { result = "/home/krill/Dropbox/gambit/modules/HEColliderBit/data/sps1aWithDecays.spc"; }
+          { result = "HEColliderBit/data/sps1aWithDecays.spc"; }
 
     /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
     /// @note That means that the class loaders had better be working by then...
     void getDelphesConfigFileName (std::string &result)
-          { result = "delphes_card_ATLAS.tcl"; }
+          { result = "HEColliderBit/data/delphes_card_ATLAS.tcl"; }
 
     /// @todo nEvents should really depend on the xsec calculation, which again is bound to analyses
     void getNEvents(int &result)
