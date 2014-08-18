@@ -266,24 +266,165 @@ namespace Gambit
 
       else 
       {
+
+        bool is_yaml = true;
+
         //Iterate over all modules to see if command matches one of them
-        // functions + capabilities and types, loop manager or not, nested or not, statuses
-        //   -dependencies
-        //   -backend requirements + grouped or not
+        for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
+        {
+          if (command == *it)
+          {
+            cout << "\nThis is GAMBIT." << endl << endl; 
+            cout << "Information for module " << *it << "." << endl << endl;
+            cout << "Function                             Capability                              Result Type               Loop Manager: Is   Needs";
+            cout << "                   Dependencies[] & Backend Reqs{}" << endl;
+            cout << "-------------------------------------------------------------------------------------------------------------------------------";
+            cout << "--------------------------------------------------" << endl;
+
+            for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+            {
+              if ((*jt)->origin() == *it)              // Module matches
+              {
+                str f = (*jt)->name();
+                str c = (*jt)->capability();
+                str t = (*jt)->type();
+                str islm = (*jt)->canBeLoopManager() ? "Yes" : "No ";
+                str nlm  = (*jt)->loopManagerCapability();
+                std::vector<sspair> deps = (*jt)->dependencies();
+                std::vector<sspair> reqs = (*jt)->backendreqs();
+                cout << f << spacing(f.length()-2,30) << c << spacing(c.length(),35);
+                cout << t << spacing(t.length(),35) << islm << "  " << nlm << spacing(nlm.length(),19);
+                if (not deps.empty())
+                {
+                  for (std::vector<sspair>::const_iterator kt = deps.begin(); kt != deps.end(); ++kt)
+                  {
+                    if (kt != deps.begin()) cout << std::string(146,' ');
+                    cout << kt->first << "[" << kt->second << "]" << endl;
+                  }
+                } 
+                if (not reqs.empty())
+                {
+                  for (std::vector<sspair>::const_iterator kt = reqs.begin(); kt != reqs.end(); ++kt)
+                  {
+                    if (kt != reqs.begin() or not deps.empty()) cout << std::string(146,' ');
+                    cout << kt->first << "{" << kt->second << "}" << endl;
+                  }
+                }
+                if (reqs.empty() and deps.empty()) cout << endl;
+              }
+            } 
+
+            is_yaml = false;
+            break;
+          }
+        }
     
         //Iterate over all backends to see if command matches one of them
-        // path to
-        // load status
-        // functions, capabilities, types (inc args), statuses
+        for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
+        {
+          if (command == *it)
+          {
+            cout << "\nThis is GAMBIT." << endl << endl; 
+            cout << "Information for backend " << *it << "." << endl << endl;
+
+            std::set<str> versions;
+            std::map<str,str> paths;
+            std::map<str,str> status;
+            std::map<str,fVec> befunctors;
+    
+            for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+            {
+              if ((*jt)->origin() == *it)              // Backend matches
+              {
+                str version = (*jt)->version();        // Retrieve the version
+                auto new_v = versions.insert(version); // Attempt to add this version to the set 
+                if (new_v.second)                      // This version was not in the version set yet
+                {
+                  paths[version]  = backendData->paths.at(*it+version); // Save the path of this backend
+                  status[version] = backendData->works.at(*it+version) ? "present" : "absent/broken";  // Save the status of this backend 
+                }
+                befunctors[version].push_back(*jt);
+              }
+            }            
+
+            for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
+            {
+              cout << "Version: " << *jt << endl;
+              cout << "Path to library: " << paths[*jt] << endl;
+              cout << "Library status: " << status[*jt] << endl << endl; 
+              cout << "  Function                      Capability                              Type                                         Status         " << endl;
+              cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl;
+              for (fVec::const_iterator kt = befunctors[*jt].begin(); kt != befunctors[*jt].end(); ++kt)
+              {
+                str f = (*kt)->name();
+                str c = (*kt)->capability();
+                str t = (*kt)->type();
+                int s = (*kt)->status();
+                str ss;
+                if (s == -2) ss = "Function absent";
+                if (s == -1) ss = "Backend absent";
+                if (s >= 0)  ss = "Available";
+                cout << "  " << f << spacing(f.length(),25) << c << spacing(c.length(),35);
+                cout << t << spacing(t.length(),40) << ss << endl;
+              }
+              cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl << endl;
+            }
+
+            is_yaml = false;
+            break;
+          }
+        }
     
         //Iterate over all models to see if command matches one of them
-        // parent, children, parameters
-    
+        for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
+        {
+          str model = (*it)->origin();
+          if (command == model)
+          {
+            cout << "\nThis is GAMBIT." << endl << endl; 
+            cout << "Information for model " << model << "." << endl << endl;;
+          
+            // parent, children, parameters
+
+            is_yaml = false;
+            break;
+          }
+        }  
+
         //Iterate over all capabilities to see if command matches one of them
-        // available from (type, origin, function name)
-        // explanation
+        for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
+        {
+          if (command == *it)
+          {
+            cout << "\nThis is GAMBIT." << endl << endl; 
+            cout << "Information for capability " << *it << "." << endl << endl;
+          
+            // available from (type, module/backend, function name)
+            // explanation from capability database
+
+            is_yaml = false;
+            break;
+          }
+        }
     
-        return;
+        //Iterate over all scanners to see if command matches one of them
+        //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
+        {
+          //if (command == *it)
+          //{
+          //  cout << "\nThis is GAMBIT." << endl << endl; 
+          //  cout << "Information for scanner " << model << "." << endl << endl;;
+          
+            // stuff about the scanner
+
+            //is_yaml = false;
+            //break;
+          //}
+        }  
+
+        //Looks like a yaml file.
+        if (is_yaml) return;
+
       }
     
       cout << endl;
