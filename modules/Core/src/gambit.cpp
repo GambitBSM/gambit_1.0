@@ -33,26 +33,28 @@ using namespace LogTags;
 
 
 /// Main GAMBIT program
-int main( int argc, const char* argv[] )
+int main(int argc, char* argv[])
 {
 
   std::set_terminate(terminator);
 
   try
   {
-
     // Parse command line arguments
-    if (argc < 2 or argc > 3) Core().bail();   // If the wrong number of parameters have been passed, inform the user and exit.
-    Core().run_diagnostic(argv[1]); // Launch into the appropriate diagnostic mode if the argument passed warrants it.
-    const char* filename = argv[1]; // If not, roll on as if the argument is a filename.
- 
-    if (argc == 3) Core().run_diagnostic(argv[2]); // Check for diagnostic actions that need the inifile loaded. (probably we'll want to upgrade our argument handling to use boost::program_options or some such)
+    if (argc < 2) Core().bail();   // Definitely need at least one argument (-h, or --help, at minimum)
+
+    const char* filename = argv[1]; // Stash potential filename (argv will get all rearranged by getargs)
+    std::vector<std::string> arguments(argv, argv + argc); // Also stash the rest of the arguments for reporting to the logger
+    
+    Core().run_diagnostic(argv[1],argc,argv); // Launch into the appropriate diagnostic mode if the argument passed warrants it.
+    // If nothing has stopped us so far, roll on as if the argument is a filename.
  
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
+    cout << "YAML file: "<< filename << endl;
 
     logger() << core << "Command invoked: ";
-    for(int i=0;i<argc;i++){ logger() << argv[i] << " "; }
+    for(int i=0;i<argc;i++){ logger() << arguments[i] << " "; }
     logger() << endl;
     logger() << core << "Starting GAMBIT" << endl << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";

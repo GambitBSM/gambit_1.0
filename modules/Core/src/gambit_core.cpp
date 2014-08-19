@@ -14,10 +14,14 @@
 ///
 ///  *********************************************
 
-
 #include <map>
 #include <vector>
 
+// Headers for GNU getopt command line parsing library
+#include <stdlib.h>
+#include <getopt.h>
+
+// Gambit headers
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
@@ -26,48 +30,104 @@
 
 namespace Gambit
 {
+    /// Gambit 'standard mode' command line option definitions (needed by getopt)
+    // Basically this is a clone of the example in the getopt_long documentation
+    // (http://www.gnu.org/savannah-checkouts/gnu/libc/manual/html_node/Getopt-Long-Option-Example.html#Getopt-Long-Option-Example)
+    // 
+    // Note that specialised versions of this structure exist for some of the special run modes.
+    static const int poptions_size(3); // Number of options, for merging options arrays. 
+    const struct option primary_options[] =
+    {
+      {"version", no_argument, 0, 10}, /*10 is just a unique integer key to identify this argument*/
+      {"verbose", no_argument, 0, 'v'},
+      {"help",    no_argument, 0, 'h'},
+      {"runorder", no_argument,0, 'r'},
+      {0,0,0,0},
+    };
 
-  /// Definitions of public methods in GAMBIT core class.
+    /// Definitions of public methods in GAMBIT core class.
 
     /// Constructor
     gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
      modelInfo(&claw),
-     backendData(&beinfo), 
-     show_runorder(false)
+     backendData(&beinfo),
+     /* command line flags */ 
+     processed_options(false),
+     show_runorder(false),
+     verbose_flag(false)
     {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
-    { 
-      cout << "\nGAMBIT command-line options                                                 "
-              "\n---------------------------                                                 "
-              "\n                                                                            "
-              "\n   Start a scan                                       gambit <inifile>      " 
-              "\n   e.g.                                               gambit gambit.yaml    "
-              "\n                                                                            "
-              "\n   List registered modules                            gambit modules        " 
-              "\n                                                                            "
-              "\n   List registered backends and their status          gambit backends       " 
-              "\n                                                                            "
-              "\n   List registered models and output model graph      gambit models         " 
-              "\n                                                                            "
-              "\n   List all registered function capabilities          gambit capabilities   " 
-              "\n                                                                            "
-              "\n   List registered scanners                           gambit scanners       " 
-              "\n                                                                            "
-              "\n   List initial functor eval. order (and then stop)   gambit <inifile> runorder"
-              "\n                                                                            "
-              "\n   Give info on a specific module, backend, model,    gambit <name>         "
-              "\n   capability or scanner e.g.                         gambit DarkBit        "
-              "\n                                                      gambit Pythia         "
-              "\n                                                      gambit MSSM           "
-              "\n                                                      gambit IC79WL_loglike "
-              "\n                                                      gambit MultiNest      "
-              "\n                                                                            "
-              "\n   Print GAMBIT version information                   gambit -v/--version   " << endl << endl; 
+    {
+      // I changed the format of this to better accommodate the options. Hope you weren't attached to the other format! If we allow each command to take seperate options (i.e. that do different things) we'll have to rearrange things a bit. This is perfectly possibly using the getopts setup I added, btw."
+      cout << "\nusage: gambit [<command>] [options]                                      "
+              "\n                                                                         "
+              "\nAvailable commands:                                                      "
+              "\n   <inifile>           Start a scan using instructions from inifile      "
+              "\n                         e.g.: gambit gambit.yaml                        "        
+              "\n   modules             List registered modules                           "
+              "\n   backends            List registered backends and their status         "
+              "\n   models              List registered models and output model graph     "
+              "\n   capabilities        List all registered function capabilities         "
+              "\n   scanners            List registered scanners                          "
+              "\n   <name>              Give info on a specific module, backend, model,   "
+              "\n                         capability or scanner                           "
+              "\n                         e.g.: gambit DarkBit                            "       
+              "\n                               gambit Pythia                             "        
+              "\n                               gambit MSSM                               "          
+              "\n                               gambit IC79WL_loglike                     "
+              "\n                               gambit MultiNest                          "     
+              "\n                                                                         "
+              "\nAvailable options (apply to <inifile> command only, or no command):      "
+              "\n   --version           Display GAMBIT version information                "
+              "\n   -h/--help           Display this usage information                    "
+              "\n   -v/--verbose        Turn on verbose mode (doesn't do much right now)  "
+              "\n   -r/--runorder       List the function evaluation order computed based " 
+              "\n                         on inifile                                      "
+              "\n" << endl << endl; 
       logger().disable();
       core_error().silent_forced_throw();
     } 
+
+    /// Process default mode command line options
+    void gambit_core::process_primary_options(int argc, char **argv)
+    {
+      int index;
+      int iarg=0;
+    
+      while(iarg != -1)
+      {
+        iarg = getopt_long(argc, argv, "vhr", primary_options, &index);
+
+        switch (iarg)
+        {
+          case 10:
+            // Display version number
+            cout << "\nThis is GAMBIT v" + version << endl;
+            logger().disable();
+            core_error().silent_forced_throw(); //trigger shutdown of gambit ///TODO is this the proper way to do this?
+          case 'v':
+            // Turn on verbose mode
+            gambit_core::verbose_flag = true; 
+            break;
+          case 'h':
+          case '?':
+            // Display usage message and quit
+            // (this is also what happens on unrecognised options I think)
+            gambit_core::bail();
+            break;
+          case 'r':
+            // Display proposed functor evaluation order and quit
+            gambit_core::show_runorder = true; // Sorted out in dependency resolver
+          //default:
+            // This is in the example, not sure exactly when it runs...
+            //abort();
+        }
+      }
+      // Set flag telling core object that command line option processing is complete
+      processed_options = true;
+    }
 
     /// Add a new module functor to functorList
     void gambit_core::registerModuleFunctor(functor &f)
@@ -121,15 +181,16 @@ namespace Gambit
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
 
     /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
-    void gambit_core::run_diagnostic(str command)
+    void gambit_core::run_diagnostic(str command, int argc, char **argv)
     {
+      // Check which mode we are running in
+      // (each mode may process command line arguments differently)
     
       if (command == "-v" or command == "--version")
       {
-        cout << "\nThis is GAMBIT v" + version << endl;
-      }
+             }
 
-      else if (command == "modules")
+      if (command == "modules")
       {
         const int maxlen = 25;
         cout << "\nThis is GAMBIT." << endl << endl; 
@@ -245,14 +306,6 @@ namespace Gambit
         }
       }
 
-      else if (command == "runorder")
-      {
-        cout << "\nThis is GAMBIT." << endl << endl; 
-        // Rest of the message obtained from dependency resolver. Set a flag to trigger this to occur.
-        show_runorder = true;
-        return; // Need to continue running gambit for a bit longer to get the requested info.
-      }
-
       else if (command == "scanners")
       {
         cout << "\nThis is GAMBIT." << endl << endl; 
@@ -266,7 +319,6 @@ namespace Gambit
 
       else 
       {
-
         bool is_yaml = true;
 
         //Iterate over all modules to see if command matches one of them
@@ -421,6 +473,20 @@ namespace Gambit
             //break;
           //}
         }  
+
+        // If we haven't yet, process the command line options
+        // (this may be done differently in one of the non-standard run modes, though if it
+        //  is then gambit should probably stop running before we get to here...)
+        if (not processed_options) 
+        {
+          gambit_core::process_primary_options(argc,argv);
+        }
+        else 
+        {
+          cout<<"Command line options have already been processed in a special run mode... gambit should not reach this point. Aborting..."<<endl;
+          logger().disable();
+          core_error().silent_forced_throw();
+        }
 
         //Looks like a yaml file.
         if (is_yaml) return;

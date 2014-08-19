@@ -79,14 +79,24 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
+      /// Flags set by command line options
       /// Flag to trigger dependency resolver to report functor run order
-      bool show_runorder;
+      int show_runorder;
+      /// Verbosity mode
+      // Set 'true' by '--verbose'
+      bool verbose_flag;
 
+      /// Flag specifying whether command line options have been processed yet.
+      bool processed_options;
+ 
       /// Command-line info function
       void bail();
 
+      /// Process default command line options
+      void process_primary_options(int,char**);
+
       /// Diagnostics function
-      void run_diagnostic(str);
+      void run_diagnostic(str,int,char**);
 
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
