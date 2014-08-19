@@ -40,19 +40,15 @@ int main(int argc, char* argv[])
 
   try
   {
-    // Parse command line arguments
-    if (argc < 2) Core().bail();   // Definitely need at least one argument (-h, or --help, at minimum)
+    // Parse command line arguments, launching into the appropriate diagnostic mode
+    // if the argument passed warrants it. Otherwise just get the filename.
+    const str filename = Core().run_diagnostic(argc,argv);
 
-    const char* filename = argv[1]; // Stash potential filename (argv will get all rearranged by getargs)
-    std::vector<std::string> arguments(argv, argv + argc); // Also stash the rest of the arguments for reporting to the logger
-    
-    Core().run_diagnostic(argv[1],argc,argv); // Launch into the appropriate diagnostic mode if the argument passed warrants it.
-    // If nothing has stopped us so far, roll on as if the argument is a filename.
- 
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
     cout << "YAML file: "<< filename << endl;
 
+    std::vector<std::string> arguments(argv, argv + argc);
     logger() << core << "Command invoked: ";
     for(int i=0;i<argc;i++){ logger() << arguments[i] << " "; }
     logger() << endl;
