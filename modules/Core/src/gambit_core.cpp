@@ -45,30 +45,35 @@ namespace Gambit
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
     {
-      cout << "\nusage: gambit [options] [<command>]                                      "
-              "\n                                                                         "
-              "\nAvailable commands:                                                      "
-              "\n   <inifile>           Start a scan using instructions from inifile      "
-              "\n                         e.g.: gambit gambit.yaml                        "        
-              "\n   modules             List registered modules                           "
-              "\n   backends            List registered backends and their status         "
-              "\n   models              List registered models and output model graph     "
-              "\n   capabilities        List all registered function capabilities         "
-              "\n   scanners            List registered scanners                          "
-              "\n   <name>              Give info on a specific module, backend, model,   "
-              "\n                         capability or scanner                           "
-              "\n                         e.g.: gambit DarkBit                            "       
-              "\n                               gambit Pythia                             "        
-              "\n                               gambit MSSM                               "          
-              "\n                               gambit IC79WL_loglike                     "
-              "\n                               gambit MultiNest                          "     
-              "\n                                                                         "
-              "\nAvailable options                                                        "
-              "\n   --version           Display GAMBIT version information                "
-              "\n   -h/--help           Display this usage information                    "
-              "\n   -v/--verbose        Turn on verbose mode (use with <inifile> command) "
-              "\n   -r/--runorder       List the function evaluation order computed based " 
-              "\n                         on inifile (use with <inifile> command)         "
+      cout << "\nusage: gambit [options] [<command>]                                        "
+              "\n                                                                           "
+              "\nAvailable commands:                                                        "
+              "\n   <inifile>             Start a scan using instructions from inifile      "
+              "\n                           options: See below                              "
+              "\n                           e.g.: gambit gambit.yaml                        "        
+              "\n   modules               List registered modules                           "
+              "\n   backends              List registered backends and their status         "
+              "\n   models                List registered models and output model graph     "
+              "\n   capabilities          List all registered function capabilities         "
+              "\n                           options:                                        "
+              "\n                            -f/--full   Display all full descriptions (long!)"
+              "\n                            -n/--name   Display named capability only      "
+              "\n   scanners              List registered scanners                          "
+              "\n   <name>                Give info on a specific module, backend, model,   "
+              "\n                           capability or scanner                           "
+              "\n                           e.g.: gambit DarkBit                            "       
+              "\n                                 gambit Pythia                             "        
+              "\n                                 gambit MSSM                               "          
+              "\n                                 gambit IC79WL_loglike                     "
+              "\n                                 gambit MultiNest                          "     
+              "\n                                                                           "
+              "\nBasic options:                                                             "
+              "\n   --version             Display GAMBIT version information                "
+              "\n   -h/--help             Display this usage information                    "
+              "\nOptions for <inifile> command:                                             "
+              "\n   -v/--verbose          Turn on verbose mode                              "
+              "\n   -r/--runorder         List the function evaluation order computed based " 
+              "\n                           on inifile                                      "
               "\n" << endl << endl; 
       logger().disable();
       core_error().silent_forced_throw();
@@ -114,7 +119,7 @@ namespace Gambit
             break;
           case 'h':
           case '?':
-            // Display usage message and quit (also happens on unrecognised options)
+            // display usage message and quit (also happens on unrecognised options)
             bail();
             break;
           case 'r':
@@ -275,11 +280,69 @@ namespace Gambit
       {
         const int maxlen1 = 35;
         const int maxlen2 = 25;
+
+        // Check for options
+        int index;
+        int iarg(0);
+        str named_cap("");
+        bool full_format(false);
+
+        const struct option capabilities_options[] =
+        {
+          {"full", no_argument, 0, 'f'},
+          {"name", required_argument, 0, 'n'},
+          {0,0,0,0},
+        };
+
+        while(iarg != -1)
+        {
+          iarg = getopt_long(argc, argv, "fn:", capabilities_options, &index);
+  
+          switch (iarg)
+          {
+            case 'n':
+              // Display full description of the named capability only
+              named_cap = optarg;
+            case 'f':
+              // Display full description of each capability (grabbed from database entries)
+              // Also displays warning if some capabilities not found in the database
+              full_format = true; // Sorted out in dependency resolver
+              break;
+            case '?':
+              // Display usage message and quit (also happens on unrecognised options)
+              bail();
+              break;
+            case -1:
+              if (optind >= argc) bail();
+          }
+        }
+        // Set flag telling core object that command line option processing is complete
+        processed_options = true;
+
+        // Check if named capability is registered
+        if( (named_cap!="") and (std::find(capabilities.begin(),capabilities.end(), named_cap)==capabilities.end()) )
+        {
+          // Nope no capability with that name
+          std::ostringstream errmsg;
+          errmsg << "No capability with the name \""<<named_cap<< "\" could be found. Please check for typos and try again.";
+
+          ///TODO this is possibly a little severe for this kind of error...
+          core_error().raise(LOCAL_INFO,errmsg.str());
+        }
+
+        // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
-        cout << "---------------------------------------------------------------------------------------------" << endl;
+
+        if(not full_format)
+        {
+          // Default, list-format output header
+          cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
+          cout << "---------------------------------------------------------------------------------------------" << endl;
+        }
         for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
         {
+          if(full_format and (named_cap != "") and (*it != named_cap)) {continue;}
+
           std::set<str> modset, beset;
           str mods, bes;
           // Make sets of matching modules and backends
@@ -304,8 +367,22 @@ namespace Gambit
           }
           // Identify the primary model parameters with their models.
           if (mods.length() == 0 and bes.length() == 0) mods = it->substr(0,it->length()-11);
-          // Print the entry in the table.
-          cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
+
+          // Choose display format (list or full)
+          if(full_format)
+          {
+            cout << "-----------------------------------------------------" << endl;
+            cout << "Capability name: " << *it << endl;
+            cout << "Available in (modules/models) : " << mods << endl;
+            cout << "Available in (backends)       : " << bes << endl;
+            cout << "Description:" << endl;
+            cout << "  " << "Blah blah goes here (harvest from database)" << endl;
+          }
+          else
+          {
+            // Print the entry in the table (list format)
+            cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
+          }
         }
       }
 
