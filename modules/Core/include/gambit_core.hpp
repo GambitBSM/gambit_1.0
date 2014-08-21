@@ -127,7 +127,24 @@ namespace Gambit
 
       /// Get a reference to the map of all user-activated primary model functors
       const pmfMap& getActiveModelFunctors() const ;
+    
+      /// Get the description of the named item from the named database
+      // e.g. second argument might be "capability", with the first argument being
+      // the name of a capability
+      const str get_description(const str&, const str&) const ;
+   
+      /// Check the named database for conflicts and missing descriptions
+      // Emits a report
+      void check_database(const str&) const;
 
+      /// Helper struct to carry around capability information
+      struct capability_info
+      {
+         str name; // capability name
+         std::set<str> modset; // Set of modules in which capability is used
+         std::set<str> beset;  // Set of backends in which capability is used
+         str description; // Full description of capability
+      };
   };
 
 }

@@ -56,8 +56,8 @@ namespace Gambit
               "\n   models                List registered models and output model graph     "
               "\n   capabilities          List all registered function capabilities         "
               "\n                           options:                                        "
-              "\n                            -f/--full   Display all full descriptions (long!)"
-              "\n                            -n/--name   Display named capability only      "
+              "\n                            -f/--full         Display all full descriptions (long!)"
+              "\n                            -n/--name <name>  Display named capability only"
               "\n   scanners              List registered scanners                          "
               "\n   <name>                Give info on a specific module, backend, model,   "
               "\n                           capability or scanner                           "
@@ -187,6 +187,109 @@ namespace Gambit
 
     /// Get a reference to the map of all user-activated primary model functors
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
+
+    /// Check the named database for conflicts and missing descriptions
+    // Emits a report
+    void gambit_core::check_database(const str& database) const
+    {
+      if(database == "capabilities")
+      {
+        // Loop through registered capabilities and try to find their descriptions (potentially from many files, but for now just checking one)
+        str orig_descriptions("capabilities.dat"); // Write descriptions in here
+        cout << "Parsing descriptions..." << endl; // temporary
+        YAML::Node description_file = YAML::LoadFile(orig_descriptions);
+
+        str centralised_descriptions("central_capabilities.dat"); // GAMBIT pools descriptions into this file (including empty descriptions: everything should be found exactly once in here)
+
+        std::vector<capability_info> info; // Harvested info about registered capababilities
+
+        for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
+        {
+          capability_info capinfo;
+          capinfo.name = *it;
+
+          // Make sets of matching modules and backends
+          for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+          {
+            if ((*jt)->capability() == *it) capinfo.modset.insert((*jt)->origin());
+          } 
+          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+          {
+            if ((*jt)->capability() == *it) capinfo.beset.insert((*jt)->origin());
+          } 
+ 
+          // Check original description files for descriptions matching this capability
+          // (I think YAML will already have checked for conflicting keys...)  
+          capinfo.description = description_file[*it].as<std::string>();
+          
+          // Add all this info to the information vector
+          info.push_back(capinfo);
+        }
+        // Write out the centralised database file containing all this information
+        // (we could also keep this in memory for other functions to use; it's probably not that large)
+        // Should probably sort it by module or something.    
+    
+        // Could have built this directly in the other loop, but for now it is separate.
+        YAML::Emitter out;
+
+        for (std::vector<capability_info>::const_iterator it = info.begin(); it != info.end(); ++it)
+        {
+          // There is probably some fancier, more description formatting we could use (comments etc?)
+          out << YAML::BeginMap;
+          out << YAML::Key << "name";
+          out << YAML::Value << it->name;
+          out << YAML::Key << "modules";
+          out << YAML::Value << YAML::BeginSeq;
+          for (std::set<str>::const_iterator jt = it->modset.begin(); jt != it->modset.end(); ++jt)
+          {
+            out << *jt;
+          }
+          out << YAML::EndSeq;
+          out << YAML::Key << "backends";
+          out << YAML::Value << YAML::BeginSeq;
+          for (std::set<str>::const_iterator jt = it->beset.begin(); jt != it->beset.end(); ++jt)
+          {
+            out << *jt;
+          }
+          out << YAML::EndSeq;
+          // This doesn't emit in the proper long string format... need to figure out how to do that.
+          out << YAML::Key << "description:" << it->description;
+          out << YAML::EndMap;  
+        }
+        // Create file and write YAML output there
+        ofstream outfile;
+        outfile.open(centralised_descriptions);
+        outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
+        outfile << "# Edit \"" << orig_descriptions << "\" instead." << endl << endl << out.c_str();
+      }
+      else
+      {
+        // Sorry, no other databases implented yet
+        std::ostringstream errmsg;
+        errmsg << "No description database with the name \""<<database<< "\" currently exists. Please check for typos and try again.";
+        core_error().raise(LOCAL_INFO,errmsg.str());
+      }
+    }
+
+    /// Get the description of the named capability from the description database
+    // e.g. second argument might be "capability", with the first argument being
+    // the name of a capability
+    const str gambit_core::get_description(const str& name, const str& type) const
+    {
+      // There are lots of ways we could set this up...
+      // For now I am just going to read these from a central yaml file.
+      // We may want a seperate description file within each module though, to make them easier to maintain seperately.
+      // We could then check them for consistency here, i.e. warning if there are duplicate descriptions and forcing
+      // users to delete one of them or else rename their capabilities to avoid collisions with other modules.
+      // For now I am just doing capabilities, but we'll probably want something similar for models, modules, etc., just
+      // for documentation purposes. Maybe we can even pull the descriptions into the full documentation somehow.
+      //
+      // Update: I am now running check_database first, which could do the pooling of descriptions from various sources
+      // into the central file which we check here. That helps modularise this task a bit.
+
+
+      return "";
+    }
 
     /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
     str gambit_core::run_diagnostic(int argc, char **argv)
@@ -376,7 +479,7 @@ namespace Gambit
             cout << "Available in (modules/models) : " << mods << endl;
             cout << "Available in (backends)       : " << bes << endl;
             cout << "Description:" << endl;
-            cout << "  " << "Blah blah goes here (harvest from database)" << endl;
+            cout << "  " << get_description(*it,"capability") << endl;
           }
           else
           {
@@ -384,6 +487,10 @@ namespace Gambit
             cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
           }
         }
+
+        // Check capabilities database for missing/conflicting descriptions and emit a report
+        // Could put this elsewhere so that it always runs when gambit runs, possibly...
+        check_database("capabilities");
       }
 
       else if (command == "scanners")
