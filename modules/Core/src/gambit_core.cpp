@@ -27,6 +27,7 @@
 #include "version.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
+#include "yaml_description_database.hpp"
 
 namespace Gambit
 {
@@ -188,21 +189,25 @@ namespace Gambit
     /// Get a reference to the map of all user-activated primary model functors
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
 
+    
+
     /// Check the named database for conflicts and missing descriptions
     // Emits a report
-    void gambit_core::check_database(const str& database) const
+    void gambit_core::check_database(const str& database)
     {
       if(database == "capabilities")
       {
         // Loop through registered capabilities and try to find their descriptions (potentially from many files, but for now just checking one)
         str orig_descriptions("capabilities.dat"); // Write descriptions in here
-        cout << "Parsing descriptions..." << endl; // temporary
-        YAML::Node description_file = YAML::LoadFile(orig_descriptions);
-
+        DescriptionDatabase description_file(orig_descriptions); // Load descriptions file
         str centralised_descriptions("central_capabilities.dat"); // GAMBIT pools descriptions into this file (including empty descriptions: everything should be found exactly once in here)
+        std::set<str> parsed_descriptions; // Set of capabilities whose description we have parsed
+        bool missing_flag = false; // Lets us know if any missing descriptions identified
+ 
+        // Check for duplicate description keys
+        std::map<str,int> duplicates = description_file.check_for_duplicates();
 
-        std::vector<capability_info> info; // Harvested info about registered capababilities
-
+        // Search through GAMBIT for information about registered capabilities to match to the descriptions
         for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
         {
           capability_info capinfo;
@@ -219,12 +224,64 @@ namespace Gambit
           } 
  
           // Check original description files for descriptions matching this capability
-          // (I think YAML will already have checked for conflicting keys...)  
-          capinfo.description = description_file[*it].as<std::string>();
-          
-          // Add all this info to the information vector
-          info.push_back(capinfo);
+          if( description_file.hasKey(*it) )
+          {
+            // Check whether there are duplicates of this key
+            if (duplicates[*it] > 0)
+            {
+              std::vector<str> dups = description_file.get_all_values(*it);
+              std::ostringstream errmsg;
+              errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<< "\"! Only one description is permitted, since all capabilities going by the same name must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
+              errmsg << "This capability is provided by the following modules and backends:" <<endl;
+              errmsg << "Modules :"<<capinfo.modset<<endl;
+              errmsg << "Backends:"<<capinfo.beset<<endl<<endl;
+              errmsg << "The duplicate descriptions are:" <<endl;
+              errmsg << "---------------------" <<endl;
+              int dup_num = 0;
+              for(std::vector<str>::iterator kt = dups.begin(); kt != dups.end(); ++kt)
+              { 
+                errmsg << dup_num << ":" <<endl;
+                errmsg << *kt;
+                errmsg << "----------------------" <<endl;
+                dup_num++;
+              }
+              core_error().raise(LOCAL_INFO,errmsg.str());
+            } 
+            else 
+            {
+              capinfo.description = description_file.getValue<str>(*it);
+              capinfo.has_description = true;
+            }
+          }
+          else
+          {
+            // Record that this description is missing
+            capinfo.description = "Missing!"; 
+            capinfo.has_description = false;
+            missing_flag = true;
+          }
+       
+          capability_dbase.push_back(capinfo);
         }
+
+        if(missing_flag)
+        {
+          // Warn user of missing descriptions
+          std::ostringstream msg;
+          msg << "Warning! Descriptions are missing for the following capabilities:" <<endl;
+          for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
+          {
+            if(not it->has_description)
+            {
+              msg << "   " << it->name << endl;
+            }
+          }
+          msg << "Please add descriptions of these to "<< orig_descriptions <<endl;
+          cout << msg.str(); 
+          ///TODO not sure which of these is preferable... warning only goes to log...
+          //   core_warning().raise(LOCAL_INFO,msg.str());
+        }
+
         // Write out the centralised database file containing all this information
         // (we could also keep this in memory for other functions to use; it's probably not that large)
         // Should probably sort it by module or something.    
@@ -232,7 +289,7 @@ namespace Gambit
         // Could have built this directly in the other loop, but for now it is separate.
         YAML::Emitter out;
 
-        for (std::vector<capability_info>::const_iterator it = info.begin(); it != info.end(); ++it)
+        for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
         {
           // There is probably some fancier, more description formatting we could use (comments etc?)
           out << YAML::BeginMap;
@@ -253,7 +310,8 @@ namespace Gambit
           }
           out << YAML::EndSeq;
           // This doesn't emit in the proper long string format... need to figure out how to do that.
-          out << YAML::Key << "description:" << it->description;
+          out << YAML::Key << "description";
+          out << YAML::Literal << it->description; // Long string format
           out << YAML::EndMap;  
         }
         // Create file and write YAML output there

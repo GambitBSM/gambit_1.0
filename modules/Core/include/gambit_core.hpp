@@ -135,7 +135,7 @@ namespace Gambit
    
       /// Check the named database for conflicts and missing descriptions
       // Emits a report
-      void check_database(const str&) const;
+      void check_database(const str&);
 
       /// Helper struct to carry around capability information
       struct capability_info
@@ -144,7 +144,11 @@ namespace Gambit
          std::set<str> modset; // Set of modules in which capability is used
          std::set<str> beset;  // Set of backends in which capability is used
          str description; // Full description of capability
+         bool has_description; // Flag to check if description is missing
       };
+
+      /// Vector of all capability_info objects
+      std::vector<capability_info> capability_dbase;
   };
 
 }

@@ -36,7 +36,17 @@ namespace Gambit
     void IniFile::readFile(std::string filename)
     {
       // Read inifile file
-      std::vector<YAML::Node> roots = YAML::LoadAllFromFile(filename);
+      std::vector<YAML::Node> roots;
+      try { 
+        roots = YAML::LoadAllFromFile(filename);
+      } 
+      catch (YAML::Exception &e) {
+        std::ostringstream msg;
+        msg << "Error reading Inifile \""<<filename<<"\"! ";
+        msg << "Please check that file exist!" << endl;
+        msg << "(yaml-cpp error: "<<e.what()<<" )";
+        inifile_error().raise(LOCAL_INFO,msg.str());
+      }
 
       // Set central nodes
       ///TODO Ben> We might want to rethink the yaml file structure we are using. Currently it is all going to break if people leave
