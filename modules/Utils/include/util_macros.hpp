@@ -293,7 +293,6 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define DEFINED_MODULE                 ()
 #define DEFINED_CAPABILITY             ()
 #define DEFINED_FUNCTION               ()
-#define DEFINED_BACKEND_REQ_deprecated ()
 #define DEFINED_CONDITIONAL_DEPENDENCY ()
 /// @}
 

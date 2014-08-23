@@ -27,21 +27,6 @@
 #define MODULE HEColliderBit
 START_MODULE
 
-  /// Initialization capabilities (deprecated -- init happens in backend init functions now)
-  #define CAPABILITY PointInit
-  START_CAPABILITY
-    #define FUNCTION PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
-      /* \todo set up pythia as a backend
-      #define BACKEND_REQ_deprecated pyinit
-        START_BACKEND_REQ_deprecated(void)
-        BACKEND_OPTION_deprecated(Pythia, 8.xx)
-        // HERE!!!!
-      #undef BACKEND_REQ_deprecated
-      */
-    #undef FUNCTION
-  #undef CAPABILITY
-
   /// \todo Move the rest of this stuff into proper Gambity initialization function
   //
   /// \todo Assume that spectrum comes from somewhere else...
@@ -122,6 +107,7 @@ START_MODULE
     #define FUNCTION manageVanillaLoop
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     DEPENDENCY(nEvents, int)
+    DEPENDENCY(readiedDetectorSim, Delphes3Backend*)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -172,8 +158,8 @@ START_MODULE
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    DEPENDENCY(hardScatteringEvent, PythiaEvent)
     DEPENDENCY(readiedDetectorSim, Delphes3Backend*)
+    DEPENDENCY(hardScatteringEvent, PythiaEvent)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format

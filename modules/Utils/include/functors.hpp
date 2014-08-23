@@ -121,6 +121,8 @@ namespace Gambit
       int vertexID() const;
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
+      /// Getter for the wrapped function's printer label
+      str label() const;
 
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool);
@@ -222,6 +224,8 @@ namespace Gambit
       int myVertexID;
       /// Debug flag
       bool verbose;
+      /// String label used by printer system to label output of this function
+      str myLabel;    
 
       /// Internal storage of function options, as a YAML node
       Options myOptions;
@@ -365,15 +369,6 @@ namespace Gambit
       /// Add one or more rules for forcing backends reqs with the same tags to always be resolved from the same backend.
       void makeBackendMatchingRule(str tag);
 
-      // !FIXME delete!!
-      /// Add multiple versions of a permitted backend !FIXME deprecated!!
-      void setPermittedBackend_deprecated(str req, str be, str ver);
-      /// Add an unconditional backend requirement
-      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq_deprecated(str, str, void(*)(functor*));
-      //
-
-
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);
 
@@ -514,7 +509,7 @@ namespace Gambit
       virtual void setPrintRequirement(bool flag);
 
       /// Getter indicating if the wrapped function's result should to be printed
-      virtual bool requiresPrinting();
+      virtual bool requiresPrinting() const;
 
       /// Calculate method
       void calculate();

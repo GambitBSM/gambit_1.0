@@ -79,11 +79,24 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
+      /// Flag specifying whether command line options have been processed yet.
+      bool processed_options;
+ 
+      /// Flags set by command line options
+      /// Flag to trigger dependency resolver to report functor run order
+      int show_runorder;
+      /// Verbosity mode
+      // Set 'true' by '--verbose'
+      bool verbose_flag;
+
       /// Command-line info function
       void bail();
 
+      /// Process default command line options
+      str process_primary_options(int,char**);
+
       /// Diagnostics function
-      void run_diagnostic(str);
+      str run_diagnostic(int,char**);
 
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
@@ -114,7 +127,28 @@ namespace Gambit
 
       /// Get a reference to the map of all user-activated primary model functors
       const pmfMap& getActiveModelFunctors() const ;
+    
+      /// Get the description of the named item from the named database
+      // e.g. second argument might be "capability", with the first argument being
+      // the name of a capability
+      const str get_description(const str&, const str&) const ;
+   
+      /// Check the named database for conflicts and missing descriptions
+      // Emits a report
+      void check_database(const str&);
 
+      /// Helper struct to carry around capability information
+      struct capability_info
+      {
+         str name; // capability name
+         std::set<str> modset; // Set of modules in which capability is used
+         std::set<str> beset;  // Set of backends in which capability is used
+         str description; // Full description of capability
+         bool has_description; // Flag to check if description is missing
+      };
+
+      /// Vector of all capability_info objects
+      std::vector<capability_info> capability_dbase;
   };
 
 }

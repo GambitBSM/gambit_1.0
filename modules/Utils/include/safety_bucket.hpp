@@ -176,9 +176,6 @@ namespace Gambit
         return _functor_base_ptr->version();
       }
 
-      /// Flag indicating whether to operate in safe mode or not (true by default) !FIXME DEPRECATED
-      static bool safe_mode;
-
   };
 
 
@@ -245,92 +242,6 @@ namespace Gambit
       {
         if (not _initialized) dieGracefully();
         return _svptr;
-      }
-
-  };
-
-
-
-  /// An interface class for backend functions.
-  template <typename TYPE>
-  class BEfunction_bucket_deprecated : public BE_bucket_base
-  {
-
-    public:
-
-      /// Constructor for BEfunctions_bucket.
-      BEfunction_bucket_deprecated(functor * functor_ptr_in = NULL)
-      {
-        initialize(functor_ptr_in);
-      }
-
-      /// Initialize this bucket with a functor pointer.
-      void initialize(functor * functor_ptr_in)
-      {
-        _functor_ptr      = functor_ptr_in;
-        _functor_base_ptr = functor_ptr_in;
-
-        if (functor_ptr_in == NULL)  
-        {
-          _initialized = false;
-        }
-        else 
-        { 
-          _initialized = true;
-        }
-      }
-
-      /// Call backend function.
-      template <typename... ARGS>
-      TYPE operator ()(ARGS&& ...args)
-      {
-        if (not _initialized) dieGracefully();
-        backend_functor<TYPE, ARGS...> * temp_functor_ptr = safe_mode_functor_cast<ARGS...>();
-        return (*temp_functor_ptr)(std::forward<ARGS>(args)...);
-      }
-
-      /// Return the underlying function pointer.
-      template <typename... ARGS>
-      TYPE (*pointer())(ARGS...)
-      {
-        if (not _initialized) dieGracefully();
-        backend_functor<TYPE, ARGS...> * temp_functor_ptr = safe_mode_functor_cast<ARGS...>();
-        return temp_functor_ptr->handoutFunctionPointer();
-      }
-
-
-    protected:
-
-      functor * _functor_ptr;
-
-      // Depending on whether the buckets are running in 'safe_mode' or not, 
-      // perform a dynamic or static cast of _functor_ptr from type functor*
-      // to type backend_functor<TYPE, ARGS...>*.
-      template <typename... ARGS> 
-      backend_functor<TYPE, ARGS...>* safe_mode_functor_cast()
-      {
-
-        backend_functor<TYPE, ARGS...> * temp_functor_ptr;
-
-        if (safe_mode)                                            
-        {
-          temp_functor_ptr = dynamic_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
-          if (temp_functor_ptr == 0)                                                
-          {                                                              
-            str errmsg = "Error: Null returned from dynamic cast in ";    
-            errmsg +=  "\nattempting to retrieve backend requirement"    
-                       "\n" + name() + " from backend " + backend() + "."
-                       "\nProbably you have passed arguments of the "  
-                       "\nwrong type(s) when calling this function."; 
-            utils_error().raise(LOCAL_INFO,errmsg);    
-          }                                                              
-        }                                                                
-        else                                                             
-        {
-          temp_functor_ptr = static_cast<backend_functor<TYPE, ARGS...>*>(_functor_ptr);
-        }                                                                
-
-        return temp_functor_ptr;
       }
 
   };

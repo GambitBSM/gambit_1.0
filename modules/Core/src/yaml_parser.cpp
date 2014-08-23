@@ -36,7 +36,17 @@ namespace Gambit
     void IniFile::readFile(std::string filename)
     {
       // Read inifile file
-      std::vector<YAML::Node> roots = YAML::LoadAllFromFile(filename);
+      std::vector<YAML::Node> roots;
+      try { 
+        roots = YAML::LoadAllFromFile(filename);
+      } 
+      catch (YAML::Exception &e) {
+        std::ostringstream msg;
+        msg << "Error reading Inifile \""<<filename<<"\"! ";
+        msg << "Please check that file exist!" << endl;
+        msg << "(yaml-cpp error: "<<e.what()<<" )";
+        inifile_error().raise(LOCAL_INFO,msg.str());
+      }
 
       // Set central nodes
       ///TODO Ben> We might want to rethink the yaml file structure we are using. Currently it is all going to break if people leave
@@ -99,7 +109,15 @@ namespace Gambit
           filename = (it->second).as<std::string>();
     
           // Add entry to the loggerinfo map
-          loggerinfo[tags] = prefix + filename;
+          if((filename=="stdout") or (filename=="stderr"))
+          {
+            // Special cases to trigger redirection to standard output streams
+            loggerinfo[tags] = filename;
+          }
+          else
+          {
+            loggerinfo[tags] = prefix + filename;
+          }
       }
       // Initialise global LogMaster object
       logger().initialise(loggerinfo);
@@ -117,14 +135,6 @@ namespace Gambit
       {
         auxiliaries.push_back((*it).as<Types::Observable>());
       }
-
-      
-      // Set safe mode for the backend safety buckets  //FIXME safe mode is deprecated!!
-      if (hasKey("safe_mode"))
-      {       
-         // Retrieve the entry and set the safe_mode flag accordingly.
-         BE_bucket_base::safe_mode = getValue<bool>("safe_mode");
-      }      
 
     }
   }
