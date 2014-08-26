@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
-    cout << "YAML file: "<< filename << endl;
+    if(Core().found_inifile) cout << "YAML file: "<< filename << endl;
 
     std::vector<std::string> arguments(argv, argv + argc);
     logger() << core << "Command invoked: ";

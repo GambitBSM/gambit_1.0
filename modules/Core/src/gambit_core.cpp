@@ -40,7 +40,8 @@ namespace Gambit
      /* command line flags */ 
      processed_options(false),
      show_runorder(false),
-     verbose_flag(false)
+     verbose_flag(false),
+     found_inifile(false)
     {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
@@ -48,17 +49,15 @@ namespace Gambit
     {
       cout << "\nusage: gambit [options] [<command>]                                        "
               "\n                                                                           "
+              "\nRun scan:                                                                  "
+              "\n   gambit -f <inifile>   Start a scan using instructions from inifile      "
+              "\n                           e.g.: gambit -f gambit.yaml                     "        
+              "\n                                                                           "
               "\nAvailable commands:                                                        "
-              "\n   <inifile>             Start a scan using instructions from inifile      "
-              "\n                           options: See below                              "
-              "\n                           e.g.: gambit gambit.yaml                        "        
               "\n   modules               List registered modules                           "
               "\n   backends              List registered backends and their status         "
               "\n   models                List registered models and output model graph     "
               "\n   capabilities          List all registered function capabilities         "
-              "\n                           options:                                        "
-              "\n                            -f/--full         Display all full descriptions (long!)"
-              "\n                            -n/--name <name>  Display named capability only"
               "\n   scanners              List registered scanners                          "
               "\n   <name>                Give info on a specific module, backend, model,   "
               "\n                           capability or scanner                           "
@@ -71,7 +70,7 @@ namespace Gambit
               "\nBasic options:                                                             "
               "\n   --version             Display GAMBIT version information                "
               "\n   -h/--help             Display this usage information                    "
-              "\nOptions for <inifile> command:                                             "
+              "\n   -f <inifile>          Start scan using <inifile>                        "
               "\n   -v/--verbose          Turn on verbose mode                              "
               "\n   -r/--runorder         List the function evaluation order computed based " 
               "\n                           on inifile                                      "
@@ -105,7 +104,7 @@ namespace Gambit
 
       while(iarg != -1)
       {
-        iarg = getopt_long(argc, argv, "vhr", primary_options, &index);
+        iarg = getopt_long(argc, argv, "vhrf:", primary_options, &index);
 
         switch (iarg)
         {
@@ -127,10 +126,10 @@ namespace Gambit
             // Display proposed functor evaluation order and quit
             show_runorder = true; // Sorted out in dependency resolver
             break;
-          case -1:
-            if (optind >= argc) bail();
-            // Bingo, got the filename
-            filename = argv[optind];
+          case 'f':
+            // Argument must contain the ini-filename 
+            filename = optarg;
+            found_inifile = true;
         }
       }
       // Set flag telling core object that command line option processing is complete
@@ -457,92 +456,28 @@ namespace Gambit
         const int maxlen1 = 35;
         const int maxlen2 = 25;
 
-        // Check for options
-        int index;
-        int iarg(0);
-        str named_cap("");
-        bool full_format(false);
-
-        const struct option capabilities_options[] =
-        {
-          {"full", no_argument, 0, 'f'},
-          {"name", required_argument, 0, 'n'},
-          {0,0,0,0},
-        };
-
-        while(iarg != -1)
-        {
-          iarg = getopt_long(argc, argv, "fn:", capabilities_options, &index);
-  
-          switch (iarg)
-          {
-            case 'n':
-              // Display full description of the named capability only
-              named_cap = optarg;
-            case 'f':
-              // Display full description of each capability (grabbed from database entries)
-              // Also displays warning if some capabilities not found in the database
-              full_format = true; // Sorted out in dependency resolver
-              break;
-            case '?':
-              // Display usage message and quit (also happens on unrecognised options)
-              bail();
-              break;
-            case -1:
-              if (optind >= argc) bail();
-          }
-        }
-        // Set flag telling core object that command line option processing is complete
-        processed_options = true;
-
-        // Check if named capability is registered
-        if( (named_cap!="") and (std::find(capabilities.begin(),capabilities.end(), named_cap)==capabilities.end()) )
-        {
-          // Nope no capability with that name
-          std::ostringstream errmsg;
-          errmsg << "No capability with the name \""<<named_cap<< "\" could be found. Please check for typos and try again.";
-
-          ///TODO this is possibly a little severe for this kind of error...
-          core_error().raise(LOCAL_INFO,errmsg.str());
-        }
-
         // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
 
-        // Check capabilities database for missing/conflicting descriptions and emit a report
-        // Could put this elsewhere so that it always runs when gambit runs, possibly...
-        // This now needs to run first to collect the backend and module data, but now the report
-        // comes first and is a little clunky. Need to streamline.
-        check_database("capabilities");
-
-        if(not full_format)
-        {
-          // Default, list-format output header
-          cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
-          cout << "---------------------------------------------------------------------------------------------" << endl;
-        }
+        
+        // Default, list-format output header
+        cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
+        cout << "---------------------------------------------------------------------------------------------" << endl;
+        
         for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
         {
-          if(full_format and (named_cap != "") and (*it != named_cap)) {continue;}
-
           std::set<str> modset, beset;
           str mods, bes, description;
 
-          // // Make sets of matching modules and backends
-          // for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
-          // {
-          //   if ((*jt)->capability() == *it) modset.insert((*jt)->origin());
-          // } 
-          // for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
-          // {
-          //   if ((*jt)->capability() == *it) beset.insert((*jt)->origin());
-          // }         
-
-          // The above stuff can now been replaced by the following
-          capability_info cap = get_capability_info(*it);
-          modset = cap.modset;
-          beset  = cap.beset;         
-          description = cap.description;     
+          // Make sets of matching modules and backends
+          for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+          {
+            if ((*jt)->capability() == *it) modset.insert((*jt)->origin());
+          } 
+          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+          {
+            if ((*jt)->capability() == *it) beset.insert((*jt)->origin());
+          }         
 
           // Make strings out of the sets
           for (std::set<str>::const_iterator jt = modset.begin(); jt != modset.end(); ++jt)
@@ -559,22 +494,13 @@ namespace Gambit
           // Identify the primary model parameters with their models.
           if (mods.length() == 0 and bes.length() == 0) mods = it->substr(0,it->length()-11);
 
-          // Choose display format (list or full)
-          if(full_format)
-          {
-            cout << "-----------------------------------------------------" << endl;
-            cout << "Capability name: " << *it << endl;
-            cout << "Available in (modules/models) : " << mods << endl;
-            cout << "Available in (backends)       : " << bes << endl;
-            cout << "Description:" << endl;
-            cout << "  " << description << endl;
-          }
-          else
-          {
-            // Print the entry in the table (list format)
-            cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
-          }
+          // Print the entry in the table (list format)
+          cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
+
+        // Check capabilities database for missing/conflicting descriptions and emit a report
+        // Could put this elsewhere so that it always runs when gambit runs, possibly...
+        check_database("capabilities");
 
       }
 
@@ -758,6 +684,13 @@ namespace Gambit
         if (not processed_options) 
         {
           filename = process_primary_options(argc,argv);
+          // Check if we indeed received a valid filename (needs -f option now)
+          if( not found_inifile)
+          {
+            // Ok then, report an unrecognised command and bail
+            cout<<"Unrecognised command received!"<<endl;
+            bail();
+          }
         }
         else 
         {

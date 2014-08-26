@@ -161,6 +161,9 @@ namespace Gambit
       /// Flag specifying whether command line options have been processed yet.
       bool processed_options;
  
+      /// Flag recording whether an inifile has been supplied
+      bool found_inifile;
+
       /// Flags set by command line options
       /// Flag to trigger dependency resolver to report functor run order
       int show_runorder;
