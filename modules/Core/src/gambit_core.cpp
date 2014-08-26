@@ -288,7 +288,7 @@ namespace Gambit
     
         // Could have built this directly in the other loop, but for now it is separate.
         YAML::Emitter out;
-
+        out << YAML::BeginSeq;
         for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
         {
           // There is probably some fancier, more description formatting we could use (comments etc?)
@@ -313,7 +313,9 @@ namespace Gambit
           out << YAML::Key << "description";
           out << YAML::Literal << it->description; // Long string format
           out << YAML::EndMap;  
+          out << YAML::Newline;
         }
+        out << YAML::EndSeq;
         // Create file and write YAML output there
         ofstream outfile;
         outfile.open(centralised_descriptions);
@@ -332,7 +334,7 @@ namespace Gambit
     /// Get the description of the named capability from the description database
     // e.g. second argument might be "capability", with the first argument being
     // the name of a capability
-    const str gambit_core::get_description(const str& name, const str& type) const
+    const capability_info gambit_core::get_capability_info(const str& name) const
     {
       // There are lots of ways we could set this up...
       // For now I am just going to read these from a central yaml file.
@@ -345,8 +347,21 @@ namespace Gambit
       // Update: I am now running check_database first, which could do the pooling of descriptions from various sources
       // into the central file which we check here. That helps modularise this task a bit.
 
-
-      return "";
+      str centralised_descriptions("central_capabilities.dat"); // Probably should add this as a member variable of Core
+      
+      YAML::Node parser = YAML::LoadFile(centralised_descriptions);
+      for(YAML::const_iterator it=parser.begin();it!=parser.end();++it)
+      {
+        capability_info cap = it->as<capability_info>();
+        if(cap.name==name)
+        {
+          return cap; //Should only be one match possible after database check
+        }
+      }
+      // If we didn't find any matching capability this is bad; raise an error.
+      std::ostringstream errmsg;
+      errmsg << "No capability with the name \""<<name<< "\" could be found in the database file '"<<centralised_descriptions<<"'. This function should not run when we don't know if the capability exists! Either there is a bug in the calling code, or something went wrong creating the capability database file.";
+      core_error().raise(LOCAL_INFO,errmsg.str());
     }
 
     /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
@@ -494,6 +509,12 @@ namespace Gambit
         // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
 
+        // Check capabilities database for missing/conflicting descriptions and emit a report
+        // Could put this elsewhere so that it always runs when gambit runs, possibly...
+        // This now needs to run first to collect the backend and module data, but now the report
+        // comes first and is a little clunky. Need to streamline.
+        check_database("capabilities");
+
         if(not full_format)
         {
           // Default, list-format output header
@@ -505,16 +526,24 @@ namespace Gambit
           if(full_format and (named_cap != "") and (*it != named_cap)) {continue;}
 
           std::set<str> modset, beset;
-          str mods, bes;
-          // Make sets of matching modules and backends
-          for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
-          {
-            if ((*jt)->capability() == *it) modset.insert((*jt)->origin());
-          } 
-          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
-          {
-            if ((*jt)->capability() == *it) beset.insert((*jt)->origin());
-          }         
+          str mods, bes, description;
+
+          // // Make sets of matching modules and backends
+          // for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+          // {
+          //   if ((*jt)->capability() == *it) modset.insert((*jt)->origin());
+          // } 
+          // for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+          // {
+          //   if ((*jt)->capability() == *it) beset.insert((*jt)->origin());
+          // }         
+
+          // The above stuff can now been replaced by the following
+          capability_info cap = get_capability_info(*it);
+          modset = cap.modset;
+          beset  = cap.beset;         
+          description = cap.description;     
+
           // Make strings out of the sets
           for (std::set<str>::const_iterator jt = modset.begin(); jt != modset.end(); ++jt)
           {
@@ -526,6 +555,7 @@ namespace Gambit
             if (jt != beset.begin()) bes += ", "; 
             bes += *jt;
           }
+ 
           // Identify the primary model parameters with their models.
           if (mods.length() == 0 and bes.length() == 0) mods = it->substr(0,it->length()-11);
 
@@ -537,7 +567,7 @@ namespace Gambit
             cout << "Available in (modules/models) : " << mods << endl;
             cout << "Available in (backends)       : " << bes << endl;
             cout << "Description:" << endl;
-            cout << "  " << get_description(*it,"capability") << endl;
+            cout << "  " << description << endl;
           }
           else
           {
@@ -546,9 +576,6 @@ namespace Gambit
           }
         }
 
-        // Check capabilities database for missing/conflicting descriptions and emit a report
-        // Could put this elsewhere so that it always runs when gambit runs, possibly...
-        check_database("capabilities");
       }
 
       else if (command == "scanners")
@@ -695,9 +722,15 @@ namespace Gambit
           {
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for capability " << *it << "." << endl << endl;
-          
+
+            // Retrieve info on this capability from the database file
+            capability_info cap = get_capability_info(*it); 
+
+            cout << "  Available in modules: " << cap.modset << endl;
+            cout << "  Available in backends:" << cap.beset << endl;
+            cout << "  Description: " << endl << cap.description << endl;
+            ///TODO Hmm need to get the type information still...
             // available from (type, module/backend, function name)
-            // explanation from capability database
 
             is_yaml = false;
             break;

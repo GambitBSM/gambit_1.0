@@ -20,10 +20,89 @@
 #include <map>
 #include <vector>
 
+#include <yaml-cpp/yaml.h>
+
 #include "util_types.hpp"
 #include "models.hpp"
 #include "functors.hpp"
 #include "backend_info.hpp"
+
+// Probably should find somewhere else to stick these couple of things
+namespace Gambit {
+  /// Helper struct to carry around capability information
+  struct capability_info
+  {
+     str name; // capability name
+     std::set<str> modset; // Set of modules in which capability is used
+     std::set<str> beset;  // Set of backends in which capability is used
+     str description; // Full description of capability
+     bool has_description; // Flag to check if description is missing
+  };
+}
+
+// Decoder for YAML node into capability struct
+namespace YAML {
+  template<> struct convert<Gambit::capability_info>
+  {
+    static bool decode(const Node& node, Gambit::capability_info& rhs)
+    {
+
+      #define READ(NAME) \
+      if (node[#NAME].IsDefined()) \
+      {\
+        rhs.NAME = node[#NAME].as<std::string>();\
+      }\
+      else\
+      {\
+        std::ostringstream errmsg; \
+        errmsg << "Error decoding capability_info struct from YAML file. Could not find key '" STRINGIFY(#NAME) "'"; \
+        Gambit::core_error().raise(LOCAL_INFO,errmsg.str()); \
+      }\
+
+      READ(name)
+      READ(description)
+
+      #undef READ
+
+      if(rhs.description=="Missing!") rhs.has_description=false;
+      else rhs.has_description=true;
+
+      if (node["modules"].IsDefined())
+      {
+         for(YAML::const_iterator it=node["modules"].begin();
+          it!=node["modules"].end(); ++it)
+         {
+           rhs.modset.insert((*it).as<std::string>());
+         }
+      }
+      else
+      {
+        std::ostringstream errmsg;
+        errmsg << "Error decoding capability_info struct from YAML file. Could not find key 'modules'";
+        Gambit::core_error().raise(LOCAL_INFO,errmsg.str());
+      }
+
+      if (node["backends"].IsDefined())
+      {
+         for(YAML::const_iterator it=node["backends"].begin();
+          it!=node["backends"].end(); ++it)
+         {
+           rhs.modset.insert((*it).as<std::string>());
+         }
+      }
+      else
+      {
+        std::ostringstream errmsg;
+        errmsg << "Error decoding capability_info struct from YAML file. Could not find key 'backends'";
+        Gambit::core_error().raise(LOCAL_INFO,errmsg.str());
+      }
+     
+      return true;
+    }
+  };
+}
+
+
 
 namespace Gambit
 {
@@ -131,22 +210,12 @@ namespace Gambit
       /// Get the description of the named item from the named database
       // e.g. second argument might be "capability", with the first argument being
       // the name of a capability
-      const str get_description(const str&, const str&) const ;
-   
+      const capability_info get_capability_info(const str&) const;
+
       /// Check the named database for conflicts and missing descriptions
       // Emits a report
       void check_database(const str&);
-
-      /// Helper struct to carry around capability information
-      struct capability_info
-      {
-         str name; // capability name
-         std::set<str> modset; // Set of modules in which capability is used
-         std::set<str> beset;  // Set of backends in which capability is used
-         str description; // Full description of capability
-         bool has_description; // Flag to check if description is missing
-      };
-
+ 
       /// Vector of all capability_info objects
       std::vector<capability_info> capability_dbase;
   };
