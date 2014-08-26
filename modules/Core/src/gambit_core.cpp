@@ -368,7 +368,7 @@ namespace Gambit
     {
       str filename;
       const str command = argc > 1 ? argv[1] : "none";
-      bool is_yaml = false;
+      bool no_scan = false; // Set to true if something happens that means we should stop cleanly after checking commands
     
       // Check which mode we are running in
       // (each mode may process command line arguments differently)
@@ -388,6 +388,7 @@ namespace Gambit
           } 
           cout << *it << spacing(it->length(),maxlen) << nf << endl;
         }
+        no_scan = true;
       }
     
       else if (command == "backends")
@@ -428,6 +429,7 @@ namespace Gambit
             cout << nfuncs[*jt] << endl;
           }
         }
+        no_scan = true;
       }
     
       else if (command == "models")
@@ -449,6 +451,8 @@ namespace Gambit
         ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
         cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
         cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
+
+        no_scan = true;
       }
     
       else if (command == "capabilities")
@@ -501,7 +505,7 @@ namespace Gambit
         // Check capabilities database for missing/conflicting descriptions and emit a report
         // Could put this elsewhere so that it always runs when gambit runs, possibly...
         check_database("capabilities");
-
+        no_scan = true;
       }
 
       else if (command == "scanners")
@@ -513,17 +517,17 @@ namespace Gambit
         //{
         //  cout << *it << endl;
         //}
+        no_scan = true;
       }
 
       else 
       {
-        is_yaml = true;
-
         //Iterate over all modules to see if command matches one of them
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
           if (command == *it)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for module " << *it << "." << endl << endl;
             cout << "Function                             Capability                              Result Type               Loop Manager: Is   Needs";
@@ -563,8 +567,6 @@ namespace Gambit
                 if (reqs.empty() and deps.empty()) cout << endl;
               }
             } 
-
-            is_yaml = false;
             break;
           }
         }
@@ -574,6 +576,7 @@ namespace Gambit
         {
           if (command == *it)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for backend " << *it << "." << endl << endl;
 
@@ -620,7 +623,6 @@ namespace Gambit
               cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl << endl;
             }
 
-            is_yaml = false;
             break;
           }
         }
@@ -631,12 +633,12 @@ namespace Gambit
           str model = (*it)->origin();
           if (command == model)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for model " << model << "." << endl << endl;;
           
             // parent, children, parameters
 
-            is_yaml = false;
             break;
           }
         }  
@@ -646,6 +648,7 @@ namespace Gambit
         {
           if (command == *it)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for capability " << *it << "." << endl << endl;
 
@@ -658,7 +661,6 @@ namespace Gambit
             ///TODO Hmm need to get the type information still...
             // available from (type, module/backend, function name)
 
-            is_yaml = false;
             break;
           }
         }
@@ -677,38 +679,37 @@ namespace Gambit
             //break;
           //}
         }  
-
-        // If we haven't yet, process the command line options
-        // (this may be done differently in one of the non-standard run modes, though if it
-        //  is then gambit should probably stop running before we get to here...)
-        if (not processed_options) 
-        {
-          filename = process_primary_options(argc,argv);
-          // Check if we indeed received a valid filename (needs -f option now)
-          if( not found_inifile)
-          {
-            // Ok then, report an unrecognised command and bail
-            cout<<"Unrecognised command received!"<<endl;
-            bail();
-          }
-        }
-        else 
-        {
-          cout<<"Command line options have already been processed in a special run mode... GAMBIT should not reach this point. Aborting..."<<endl;
-          logger().disable();
-          core_error().silent_forced_throw();
-        }
-
       }
-    
-      //Looks like time to die.
-      if (not is_yaml) 
+   
+      // Check if some command or other was run and we should stop.
+      if (no_scan) 
       {
         cout << endl;
         logger().disable();
         core_error().silent_forced_throw();
       }
 
+      // If we haven't yet, process the command line options
+      // (this may be done differently in one of the non-standard run modes, though if it
+      //  is then gambit should probably stop running before we get to here...)
+      if (not processed_options) 
+      {
+        filename = process_primary_options(argc,argv);
+        // Check if we indeed received a valid filename (needs -f option now)
+        if( not found_inifile)
+        {
+          // Ok then, report an unrecognised command and bail
+          cout<<"Unrecognised command received!"<<endl;
+          bail();
+        }
+      }
+      else 
+      {
+        cout<<"Command line options have already been processed in a special run mode... GAMBIT should not reach this point. Aborting..."<<endl;
+        logger().disable();
+        core_error().silent_forced_throw();
+      }    
+    
       return filename;
     
     }
