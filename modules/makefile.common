@@ -67,6 +67,7 @@ BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
+DECAYDIR = DecayBit
 EXAMPLEADIR = ExampleBit_A
 EXAMPLEBDIR = ExampleBit_B
 EXSUSYSPECDIR = Example_SUSYspecBit
@@ -89,13 +90,13 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SCANDIR)/include \
   -I$(BACKENDDIR)/include \
   -I$(DARKDIR)/include \
-  -I$(FLAVDIR)/include \
   -I$(HECOLLIDERDIR)/include \
   -I$(EXAMPLEADIR)/include \
   -I$(EXAMPLEBDIR)/include \
   -I$(DARKDIR)/include \
   -I$(EXSUSYSPECDIR)/include \
   -I$(FLAVDIR)/include \
+  -I$(DECAYDIR)/include \
   -I$(YAMLDIR)/include \
   -I$(SLHAPy8DIR) \
   -I$(SLHAEADIR) \
@@ -440,6 +441,10 @@ FLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
 FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp)
 FLAVOBJS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(FLAVSRC))))
 
+DECAYINC:=$(wildcard $(DECAYDIR)/include/*hpp) $(wildcard $(DECAYDIR)/include/*h)
+DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
+DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
+
 HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
 HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
 HECOLLIDERDELPHESSRC:=$(wildcard $(HECOLLIDERDIR)/src/delphes/*Module.cc) 
@@ -458,7 +463,7 @@ EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
 GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
@@ -523,6 +528,10 @@ $(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(GAMBITINC) $(DARKINC)
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(GAMBITINC) $(DECAYINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
