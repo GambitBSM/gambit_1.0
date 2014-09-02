@@ -41,7 +41,9 @@
 #include "DarkBit_rollcall.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 #include "FlavBit_rollcall.hpp"
+#include "HiggsBit_rollcall.hpp"
 #include "DecayBit_rollcall.hpp"
+
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
   #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)

@@ -184,8 +184,9 @@ ObsLikes:
     capability:	marg_lnlike_test
 
   # Uncomment to test FlavBit
-  #- purpose:      Likelihood
+  #- purpose:      NotLikelihood
   #  capability:   SI_fill
+  #  printme:      false
   #- purpose:      Likelihood
   #  capability:   SI_bsgamma
   #- purpose:      Likelihood
@@ -196,6 +197,12 @@ ObsLikes:
   #  capability:   SI_Bdmumu
   #- purpose:      Likelihood
   #  capability:   SI_Btaunu
+
+  # Uncomment to test HiggsBit
+  #- purpose:  Likelihood
+  #  capability:  HB_LEPchisq
+  #- purpose:  Likelihood
+  #  capability:  HS_LHCchisq
 
   # Uncomment to test HEColliderBit
   #- purpose:      Observable

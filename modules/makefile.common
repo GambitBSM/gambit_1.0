@@ -67,6 +67,7 @@ BACKENDDIR = Backends
 HECOLLIDERDIR = HEColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
+HIGGSDIR = HiggsBit
 DECAYDIR = DecayBit
 EXAMPLEADIR = ExampleBit_A
 EXAMPLEBDIR = ExampleBit_B
@@ -96,6 +97,7 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(DARKDIR)/include \
   -I$(EXSUSYSPECDIR)/include \
   -I$(FLAVDIR)/include \
+  -I$(HIGGSDIR)/include \
   -I$(DECAYDIR)/include \
   -I$(YAMLDIR)/include \
   -I$(SLHAPy8DIR) \
@@ -358,7 +360,8 @@ endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
 default: minihelp gambit
-all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
+# all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
+all: minihelp gambit gambit_example ExampleBit_A_standalone
 
 clean:
 	@echo cleaning
@@ -441,6 +444,10 @@ FLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
 FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp)
 FLAVOBJS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(FLAVSRC))))
 
+HIGGSINC:=$(wildcard $(HIGGSDIR)/include/*hpp) $(wildcard $(HIGGSDIR)/include/*h)
+HIGGSSRC:=$(wildcard $(HIGGSDIR)/src/*cpp)
+HIGGSOBJS:=$(addprefix $(HIGGSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(HIGGSSRC))))
+
 DECAYINC:=$(wildcard $(DECAYDIR)/include/*hpp) $(wildcard $(DECAYDIR)/include/*h)
 DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
 DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
@@ -463,7 +470,7 @@ EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
 GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
@@ -529,6 +536,10 @@ $(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(GAMBITINC) $(DARKINC)
 
 $(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
 	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(GAMBITINC) $(HIGGSINC)
+        @echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(GAMBITINC) $(DECAYINC)
@@ -631,8 +642,8 @@ $(SCANDIR)/plugins/%.o: $(SCANDIR)/plugins/%.cpp
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 	
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/crapsample.o
-	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so 
-
+	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so -L$(YAMLDIR) -lyaml-cpp
+	
 $(SCANDIR)/lib/libexamples.so: $(SCANDIR)/plugins/examples.o
 	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so 
 	
@@ -650,7 +661,7 @@ $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim_Log.o $(FASTSIMDIR)/s
 # Intention is to pull symbols from FastJet into the fastsim backend (same should happen for direct pythia event filling... and any analyses that use jet structure)
 # Currently breaks formost symbols because symbols can't be copied unless libfastjet.a was unusually built with the -fPIC flag
 #	$(CC) -shared -L$(FJ_DIR)/lib -o $@ $^ -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
-	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS)
+	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS) -lgsl
 
 #libmultinest_interface.so
 multinest:
