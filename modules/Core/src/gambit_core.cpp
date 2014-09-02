@@ -16,6 +16,7 @@
 
 #include <map>
 #include <vector>
+#include <fstream>
 
 // Headers for GNU getopt command line parsing library
 #include <stdlib.h>
@@ -41,7 +42,13 @@ namespace Gambit
      processed_options(false),
      show_runorder(false),
      verbose_flag(false),
-     found_inifile(false)
+     found_inifile(false),
+     input_capability_descriptions("capabilities.dat"),
+     capability_dbase_file("central_capabilities.dat"),
+     input_model_descriptions("models.dat"),
+     model_dbase_file("central_models.dat"),
+     report_file("report.txt"),
+     report(report_file.c_str())
     {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
@@ -187,147 +194,212 @@ namespace Gambit
 
     /// Get a reference to the map of all user-activated primary model functors
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
-
     
-
-    /// Check the named database for conflicts and missing descriptions
-    // Emits a report
-    void gambit_core::check_database(const str& database)
+    /// Check the capability and model databases for conflicts and missing descriptions
+    // Emits a report to file regard missing and conflicting descriptions.
+    void gambit_core::check_databases()
     {
-      if(database == "capabilities")
+      // Loop through registered capabilities and try to find their descriptions (potentially from many files, but for now just checking one)
+      DescriptionDatabase description_file(input_capability_descriptions); // Load descriptions file
+      //std::set<str> parsed_descriptions; // Set of capabilities whose description we have parsed
+      bool missing_flag = false; // Lets us know if any missing descriptions identified
+
+      // Check for duplicate description keys
+      std::map<str,int> duplicates = description_file.check_for_duplicates();
+
+      // Search through GAMBIT for information about registered capabilities to match to the descriptions
+      for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
       {
-        // Loop through registered capabilities and try to find their descriptions (potentially from many files, but for now just checking one)
-        str orig_descriptions("capabilities.dat"); // Write descriptions in here
-        DescriptionDatabase description_file(orig_descriptions); // Load descriptions file
-        str centralised_descriptions("central_capabilities.dat"); // GAMBIT pools descriptions into this file (including empty descriptions: everything should be found exactly once in here)
-        std::set<str> parsed_descriptions; // Set of capabilities whose description we have parsed
-        bool missing_flag = false; // Lets us know if any missing descriptions identified
- 
-        // Check for duplicate description keys
-        std::map<str,int> duplicates = description_file.check_for_duplicates();
+        capability_info capinfo;
+        capinfo.name = *it;
 
-        // Search through GAMBIT for information about registered capabilities to match to the descriptions
-        for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
+        // Make sets of matching modules and backends
+        for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
         {
-          capability_info capinfo;
-          capinfo.name = *it;
-
-          // Make sets of matching modules and backends
-          for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
-          {
-            if ((*jt)->capability() == *it) capinfo.modset.insert((*jt)->origin());
-          } 
-          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
-          {
-            if ((*jt)->capability() == *it) capinfo.beset.insert((*jt)->origin());
-          } 
- 
-          // Check original description files for descriptions matching this capability
-          if( description_file.hasKey(*it) )
-          {
-            // Check whether there are duplicates of this key
-            if (duplicates[*it] > 0)
-            {
-              std::vector<str> dups = description_file.get_all_values(*it);
-              std::ostringstream errmsg;
-              errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<< "\"! Only one description is permitted, since all capabilities going by the same name must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
-              errmsg << "This capability is provided by the following modules and backends:" <<endl;
-              errmsg << "Modules :"<<capinfo.modset<<endl;
-              errmsg << "Backends:"<<capinfo.beset<<endl<<endl;
-              errmsg << "The duplicate descriptions are:" <<endl;
-              errmsg << "---------------------" <<endl;
-              int dup_num = 0;
-              for(std::vector<str>::iterator kt = dups.begin(); kt != dups.end(); ++kt)
-              { 
-                errmsg << dup_num << ":" <<endl;
-                errmsg << *kt;
-                errmsg << "----------------------" <<endl;
-                dup_num++;
-              }
-              core_error().raise(LOCAL_INFO,errmsg.str());
-            } 
-            else 
-            {
-              capinfo.description = description_file.getValue<str>(*it);
-              capinfo.has_description = true;
-            }
-          }
-          else
-          {
-            // Record that this description is missing
-            capinfo.description = "Missing!"; 
-            capinfo.has_description = false;
-            missing_flag = true;
-          }
-       
-          capability_dbase.push_back(capinfo);
-        }
-
-        if(missing_flag)
+          if ((*jt)->capability() == *it) capinfo.modset.insert((*jt)->origin());
+        } 
+        for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
         {
-          // Warn user of missing descriptions
-          std::ostringstream msg;
-          msg << "Warning! Descriptions are missing for the following capabilities:" <<endl;
-          for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
+          if ((*jt)->capability() == *it) capinfo.beset.insert((*jt)->origin());
+        } 
+ 
+        // Check original description files for descriptions matching this capability
+        if( description_file.hasKey(*it) )
+        {
+          // Check whether there are duplicates of this key
+          if ( duplicates[*it] > 0 )
           {
-            if(not it->has_description)
-            {
-              msg << "   " << it->name << endl;
+            std::vector<str> dups = description_file.get_all_values(*it);
+            std::ostringstream errmsg;
+            errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<< "\"! Only one description is permitted, since all capabilities going by the same name must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
+            errmsg << "This capability is provided by the following modules and backends:" <<endl;
+            errmsg << "Modules :"<<capinfo.modset<<endl;
+            errmsg << "Backends:"<<capinfo.beset<<endl<<endl;
+            errmsg << "The duplicate descriptions are:" <<endl;
+            errmsg << "---------------------" <<endl;
+            int dup_num = 0;
+            for(std::vector<str>::iterator kt = dups.begin(); kt != dups.end(); ++kt)
+            { 
+              errmsg << dup_num << ":" <<endl;
+              errmsg << *kt;
+              errmsg << "----------------------" <<endl;
+              dup_num++;
             }
+            core_error().raise(LOCAL_INFO,errmsg.str());
+          } 
+          else 
+          {
+            capinfo.description = description_file.getValue<str>(*it);
+            capinfo.has_description = true;
           }
-          msg << "Please add descriptions of these to "<< orig_descriptions <<endl;
-          cout << msg.str(); 
-          ///TODO not sure which of these is preferable... warning only goes to log...
-          //   core_warning().raise(LOCAL_INFO,msg.str());
         }
+        else
+        {
+          // Record that this description is missing
+          capinfo.description = "Missing!"; 
+          capinfo.has_description = false;
+          missing_flag = true;
+        }
+        capability_dbase.push_back(capinfo);
+      }
 
-        // Write out the centralised database file containing all this information
-        // (we could also keep this in memory for other functions to use; it's probably not that large)
-        // Should probably sort it by module or something.    
-    
-        // Could have built this directly in the other loop, but for now it is separate.
-        YAML::Emitter out;
-        out << YAML::BeginSeq;
+      if(missing_flag)
+      {
+        // Warn user of missing descriptions
+        std::ostringstream msg;
+        msg << "Warning! Descriptions are missing for the following capabilities:" <<endl;
         for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
         {
-          // There is probably some fancier, more description formatting we could use (comments etc?)
-          out << YAML::BeginMap;
-          out << YAML::Key << "name";
-          out << YAML::Value << it->name;
-          out << YAML::Key << "modules";
-          out << YAML::Value << YAML::BeginSeq;
-          for (std::set<str>::const_iterator jt = it->modset.begin(); jt != it->modset.end(); ++jt)
+          if(not it->has_description)
           {
-            out << *jt;
+            msg << "   " << it->name << endl;
           }
-          out << YAML::EndSeq;
-          out << YAML::Key << "backends";
-          out << YAML::Value << YAML::BeginSeq;
-          for (std::set<str>::const_iterator jt = it->beset.begin(); jt != it->beset.end(); ++jt)
-          {
-            out << *jt;
-          }
-          out << YAML::EndSeq;
-          // This doesn't emit in the proper long string format... need to figure out how to do that.
-          out << YAML::Key << "description";
-          out << YAML::Literal << it->description; // Long string format
-          out << YAML::EndMap;  
-          out << YAML::Newline;
         }
-        out << YAML::EndSeq;
-        // Create file and write YAML output there
-        ofstream outfile;
-        outfile.open(centralised_descriptions);
-        outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
-        outfile << "# Edit \"" << orig_descriptions << "\" instead." << endl << endl << out.c_str();
+        msg << "Please add descriptions of these to "<< input_capability_descriptions <<endl; 
+        //core_warning().raise(LOCAL_INFO,msg.str()); //Ok can't do this since logger isn't initialised yet, and gets disabled anyway.
+        // Send to a hardcoded file for now
+        report << msg.str() << endl;
+        // Also make user directly aware of this problem
+        cout << "Warning! Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
       }
-      else
+
+      // Write out the centralised database file containing all this information
+      // (we could also keep this in memory for other functions to use; it's probably not that large)
+      // Should probably sort it by module or something.    
+    
+      // Could have built this directly in the other loop, but for now it is separate.
+      YAML::Emitter out;
+      out << YAML::BeginSeq;
+      for (std::vector<capability_info>::iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
       {
-        // Sorry, no other databases implented yet
-        std::ostringstream errmsg;
-        errmsg << "No description database with the name \""<<database<< "\" currently exists. Please check for typos and try again.";
-        core_error().raise(LOCAL_INFO,errmsg.str());
+        //capability_info tmp = *it;
+        out << *it; //custom emitter to do this is in yaml_description_database.hpp
       }
+      out << YAML::EndSeq;
+      // Create file and write YAML output there
+      ofstream outfile;
+      outfile.open(capability_dbase_file);
+      outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
+      outfile << "# Edit \"" << input_capability_descriptions << "\" instead." << endl << endl << out.c_str();
+      
+
+      // Now the models
+      // This is distressingly similar to the capabilities case, but it doesn't seem so straightforward to modularise any further...
+        
+      // Loop through registered models and try to find their descriptions (potentially from many files, but for now just checking one)
+      DescriptionDatabase model_description_file(input_model_descriptions); // Load descriptions file
+      missing_flag = false; // reset this flag
+ 
+      // Check for duplicate description keys
+      duplicates = description_file.check_for_duplicates();
+
+      // Search through GAMBIT for information about registered models to match to the descriptions
+      for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
+      {
+        model_info model;
+        model.name = (*it)->origin();
+
+        // Check original description files for descriptions matching this capability
+        if( model_description_file.hasKey(model.name) )
+        {
+          // Check whether there are duplicates of this key
+          if (duplicates[model.name] > 0)
+          {
+            std::vector<str> dups = model_description_file.get_all_values(model.name);
+            std::ostringstream errmsg;
+            errmsg << "Error! Duplicate model descriptions found for model \""<<model.name<< "\"! Only one description is permitted, since model names must be unique. Please rename a model or delete one of the descriptions."<<endl;
+            errmsg << "The duplicate descriptions are:" <<endl;
+            errmsg << "---------------------" <<endl;
+            int dup_num = 0;
+            for(std::vector<str>::iterator kt = dups.begin(); kt != dups.end(); ++kt)
+            { 
+              errmsg << dup_num << ":" <<endl;
+              errmsg << *kt;
+              errmsg << "----------------------" <<endl;
+              dup_num++;
+            }
+            core_error().raise(LOCAL_INFO,errmsg.str());
+          } 
+          else 
+          {
+            model.description = model_description_file.getValue<str>(model.name);
+            model.has_description = true;
+          }
+        }
+        else
+        {
+          // Record that this description is missing
+          model.description = "Missing!"; 
+          model.has_description = false;
+          missing_flag = true;
+        }
+  
+        // Get the rest of the info
+        model.nparams = (*it)->valuePtr()->getNumberOfPars();
+        model.parameters = (*it)->valuePtr()->getKeys();
+        model.parent = modelInfo->get_parent(model.name);
+        model.lineage = modelInfo->get_lineage(model.name);
+        model.descendants = modelInfo->get_descendants(model.name);
+
+        model_dbase.push_back(model);
+      }
+
+      if(missing_flag)
+      {
+        // Warn user of missing descriptions
+        std::ostringstream msg;
+        msg << "Warning! Descriptions are missing for the following models:" <<endl;
+        for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
+        {
+          if(not it->has_description)
+          {
+            msg << "   " << it->name << endl;
+          }
+        }
+        msg << "Please add descriptions of these to "<< input_model_descriptions <<endl;
+        report << msg.str() << endl;
+        // Also make user directly aware of this problem
+        cout << "Warning! Descriptions missing for some models! See "<<report_file<<" for details." << endl;
+      }
+
+      // Write out the centralised database file containing all this information
+      // (we could also keep this in memory for other functions to use; it's probably not that large)
+      // Should probably sort it by module or something.    
+  
+      // Could have built this directly in the other loop, but for now it is separate.
+      YAML::Emitter out2;
+      out2 << YAML::BeginSeq;
+      for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
+      {
+        out2 << *it; //custom emitter to do this is in yaml_description_database.hpp
+      }
+      out2 << YAML::EndSeq;
+      // Create file and write YAML output there
+      ofstream outfile2;
+      outfile2.open(model_dbase_file);
+      outfile2 << "# Auto-generated model description library. Edits will be erased." << endl;;
+      outfile2 << "# Edit \"" << input_model_descriptions << "\" instead." << endl << endl << out2.c_str();
+  
     }
 
     /// Get the description of the named capability from the description database
@@ -335,33 +407,50 @@ namespace Gambit
     // the name of a capability
     const capability_info gambit_core::get_capability_info(const str& name) const
     {
-      // There are lots of ways we could set this up...
-      // For now I am just going to read these from a central yaml file.
-      // We may want a seperate description file within each module though, to make them easier to maintain seperately.
-      // We could then check them for consistency here, i.e. warning if there are duplicate descriptions and forcing
-      // users to delete one of them or else rename their capabilities to avoid collisions with other modules.
-      // For now I am just doing capabilities, but we'll probably want something similar for models, modules, etc., just
-      // for documentation purposes. Maybe we can even pull the descriptions into the full documentation somehow.
-      //
-      // Update: I am now running check_database first, which could do the pooling of descriptions from various sources
-      // into the central file which we check here. That helps modularise this task a bit.
+      // I am now keeping a vector of all the descriptions around... so no need to
+      // actually read from the database file...
 
-      str centralised_descriptions("central_capabilities.dat"); // Probably should add this as a member variable of Core
-      
-      YAML::Node parser = YAML::LoadFile(centralised_descriptions);
-      for(YAML::const_iterator it=parser.begin();it!=parser.end();++it)
-      {
-        capability_info cap = it->as<capability_info>();
-        if(cap.name==name)
-        {
-          return cap; //Should only be one match possible after database check
-        }
-      }
+      // YAML::Node parser = YAML::LoadFile(centralised_descriptions);
+      // for(YAML::const_iterator it=parser.begin();it!=parser.end();++it)
+      // {
+      //   capability_info cap = it->as<capability_info>();
+      //   if(cap.name==name)
+      //   {
+      //     return cap; //Should only be one match possible after database check
+      //   }
+      // }
       // If we didn't find any matching capability this is bad; raise an error.
+
+      for(std::vector<capability_info>::const_iterator it=capability_dbase.begin();
+           it!=capability_dbase.end();++it)
+      {
+         if(it->name==name)
+         {
+           return *it; //Should only be one match possible after database check
+         }
+      }
+      // if no match...
       std::ostringstream errmsg;
-      errmsg << "No capability with the name \""<<name<< "\" could be found in the database file '"<<centralised_descriptions<<"'. This function should not run when we don't know if the capability exists! Either there is a bug in the calling code, or something went wrong creating the capability database file.";
+      errmsg << "No capability with the name \""<<name<< "\" could be found in the capability database. This function should not run when we don't know if the capability exists! Either there is a bug in the calling code, or something went wrong creating the capability database.";
       core_error().raise(LOCAL_INFO,errmsg.str());
     }
+
+    const model_info gambit_core::get_model_info(const str& name) const
+    {
+      for(std::vector<model_info>::const_iterator it=model_dbase.begin();
+           it!=model_dbase.end();++it)
+      {
+         if(it->name==name)
+         {
+           return *it; //Should only be one match possible after database check
+         }
+      }
+      // if no match...
+      std::ostringstream errmsg;
+      errmsg << "No model with the name \""<<name<< "\" could be found in the model database. This function should not run when we don't know if the model exists! Either there is a bug in the calling code, or something went wrong creating the model database.";
+      core_error().raise(LOCAL_INFO,errmsg.str());
+    }
+
 
     /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
     str gambit_core::run_diagnostic(int argc, char **argv)
@@ -502,9 +591,6 @@ namespace Gambit
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
 
-        // Check capabilities database for missing/conflicting descriptions and emit a report
-        // Could put this elsewhere so that it always runs when gambit runs, possibly...
-        check_database("capabilities");
         no_scan = true;
       }
 
@@ -522,6 +608,9 @@ namespace Gambit
 
       else 
       {
+        // If we aren't just checking what stuff is registered, we could end up running a scan, or needing the descriptions of things. Therefore we must construct the description databases and make sure there are no naming conflicts etc.
+        check_databases();
+
         //Iterate over all modules to see if command matches one of them
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
@@ -637,7 +726,23 @@ namespace Gambit
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for model " << model << "." << endl << endl;;
           
-            // parent, children, parameters
+            // Retrieve info on this capability from the database file
+            model_info mod = get_model_info(model); 
+
+            // Need copies of lineage and descendant vectors with self-reference removed
+            std::vector<str> lin_X = mod.lineage;
+            std::vector<str> des_X = mod.descendants;
+          
+            // Erase element matching name
+            lin_X.erase(std::remove(lin_X.begin(), lin_X.end(), mod.name), lin_X.end());
+            des_X.erase(std::remove(des_X.begin(), des_X.end(), mod.name), des_X.end());
+
+            cout << "  Parent Model: " << mod.parent << endl;
+            cout << "  Number of parameters: " << mod.nparams << endl;
+            cout << "  Parameter names:" << mod.parameters << endl;
+            cout << "  'Ancestor' models:" << lin_X << endl;
+            cout << "  'Descendant' models:" << des_X << endl;
+            cout << "  Description: " << endl << mod.description << endl;
 
             break;
           }

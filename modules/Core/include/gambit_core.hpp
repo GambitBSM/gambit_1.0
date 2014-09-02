@@ -26,83 +26,7 @@
 #include "models.hpp"
 #include "functors.hpp"
 #include "backend_info.hpp"
-
-// Probably should find somewhere else to stick these couple of things
-namespace Gambit {
-  /// Helper struct to carry around capability information
-  struct capability_info
-  {
-     str name; // capability name
-     std::set<str> modset; // Set of modules in which capability is used
-     std::set<str> beset;  // Set of backends in which capability is used
-     str description; // Full description of capability
-     bool has_description; // Flag to check if description is missing
-  };
-}
-
-// Decoder for YAML node into capability struct
-namespace YAML {
-  template<> struct convert<Gambit::capability_info>
-  {
-    static bool decode(const Node& node, Gambit::capability_info& rhs)
-    {
-
-      #define READ(NAME) \
-      if (node[#NAME].IsDefined()) \
-      {\
-        rhs.NAME = node[#NAME].as<std::string>();\
-      }\
-      else\
-      {\
-        std::ostringstream errmsg; \
-        errmsg << "Error decoding capability_info struct from YAML file. Could not find key '" STRINGIFY(#NAME) "'"; \
-        Gambit::core_error().raise(LOCAL_INFO,errmsg.str()); \
-      }\
-
-      READ(name)
-      READ(description)
-
-      #undef READ
-
-      if(rhs.description=="Missing!") rhs.has_description=false;
-      else rhs.has_description=true;
-
-      if (node["modules"].IsDefined())
-      {
-         for(YAML::const_iterator it=node["modules"].begin();
-          it!=node["modules"].end(); ++it)
-         {
-           rhs.modset.insert((*it).as<std::string>());
-         }
-      }
-      else
-      {
-        std::ostringstream errmsg;
-        errmsg << "Error decoding capability_info struct from YAML file. Could not find key 'modules'";
-        Gambit::core_error().raise(LOCAL_INFO,errmsg.str());
-      }
-
-      if (node["backends"].IsDefined())
-      {
-         for(YAML::const_iterator it=node["backends"].begin();
-          it!=node["backends"].end(); ++it)
-         {
-           rhs.beset.insert((*it).as<std::string>());
-         }
-      }
-      else
-      {
-        std::ostringstream errmsg;
-        errmsg << "Error decoding capability_info struct from YAML file. Could not find key 'backends'";
-        Gambit::core_error().raise(LOCAL_INFO,errmsg.str());
-      }
-     
-      return true;
-    }
-  };
-}
-
-
+#include "yaml_description_database.hpp"
 
 namespace Gambit
 {
@@ -135,6 +59,9 @@ namespace Gambit
       /// List of all declared capabilities
       std::set<str> capabilities;
 
+      /// List of all declared models
+      std::set<str> models;
+
       /// List of all declared module functors
       fVec functorList;
 
@@ -150,6 +77,21 @@ namespace Gambit
       /// A map of all user-activated primary model functors
       pmfMap activeModelFunctorList;
 
+      /// Flag specifying whether command line options have been processed yet.
+      bool processed_options;
+ 
+      /// Filename of the centralized capability description database
+      const str capability_dbase_file;
+      /// Filename of the file from which to harvest capability descriptions
+      const str input_capability_descriptions;
+      /// Filename of the centralized model description database
+      const str model_dbase_file;
+      /// Filename of the file from which to harvest model descriptions
+      const str input_model_descriptions;
+      /// File stream for 'preliminary report', for telling user about missing descriptions (and perhaps other things)
+      const str report_file;
+      std::ofstream report;
+
     public:
 
       /// Constructor
@@ -158,9 +100,6 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
-      /// Flag specifying whether command line options have been processed yet.
-      bool processed_options;
- 
       /// Flag recording whether an inifile has been supplied
       bool found_inifile;
 
@@ -210,17 +149,22 @@ namespace Gambit
       /// Get a reference to the map of all user-activated primary model functors
       const pmfMap& getActiveModelFunctors() const ;
     
-      /// Get the description of the named item from the named database
-      // e.g. second argument might be "capability", with the first argument being
-      // the name of a capability
+      /// Get the description (and other info) of the named item from the capability database
       const capability_info get_capability_info(const str&) const;
 
+      /// Get the description (and other info) of the named item from the model database
+      const model_info get_model_info(const str&) const;
+ 
       /// Check the named database for conflicts and missing descriptions
-      // Emits a report
-      void check_database(const str&);
+      // Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts
+      void check_databases();
  
       /// Vector of all capability_info objects
       std::vector<capability_info> capability_dbase;
+
+      /// Vector of all model_info objects
+      std::vector<model_info> model_dbase;
+
   };
 
 }
