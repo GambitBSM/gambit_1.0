@@ -87,7 +87,7 @@ namespace YAML {
          for(YAML::const_iterator it=node["backends"].begin();
           it!=node["backends"].end(); ++it)
          {
-           rhs.modset.insert((*it).as<std::string>());
+           rhs.beset.insert((*it).as<std::string>());
          }
       }
       else
