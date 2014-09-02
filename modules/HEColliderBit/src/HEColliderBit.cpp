@@ -17,11 +17,16 @@
 ///
 ///  *********************************************
 
+#ifndef DEBUG
+#define DEBUG terminex
+#endif
+
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <memory>
 #include <numeric>
+#include <vector>
 
 #include "gambit_module_headers.hpp"
 #include "HEColliderBit_types.hpp"
@@ -40,31 +45,43 @@ namespace Gambit {
 
     /// @todo Put in actual analyses rather than a simple counter
     double counter = 0.;
+    /// @todo backend Pythia properly
+    std::vector<Pythia8Backend*> pythiaVector;
+    std::string slhaFilename = "";
+    Delphes3Backend* delphes = 0;
+    std::string delphesConfigFilename = "";
+    bool isScatteringReady = false;
+    bool isDetectorReady = false;
+    unsigned nEvents = 0;
 
+    void debugMe(std::string label) {
+      #ifdef DEBUG
+      std::cout<<"\n\nHECollider is here: "<<label;
+      std::cout<<"\n    Checking locals: ";
+      std::cout<<"\n    counter: "<<counter;
+      std::cout<<"\n    nEvents: "<<nEvents;
+      std::cout<<"\n    slhaFilename: "<<slhaFilename;
+      std::cout<<"\n    delphesConfigFilename: "<<delphesConfigFilename;
+      std::cout<<"\n    delphes (points to): "<<delphes;
+      std::cout<<"\n    isDetectorReady: "<<isDetectorReady;
+      std::cout<<"\n    pythiaVector (points to): ";
+      for (auto ptr : pythiaVector)
+        std::cout<<"\n        "<<ptr;
+      std::cout<<"\n    isScatteringReady: "<<isScatteringReady;
+      std::cout<<"\n\n [Press Enter]";
+      std::getchar();
+      #endif
+    }
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
 
     /// *** Initialization for managers ***
-    /// \todo Move the rest of this stuff into proper Gambity initialization function
-
-    /// \todo Assume that spectrum comes from somewhere else...
-    /// \note Play with SoftSUSY class loading with Anders
-    void getslhaFileName(std::string &result)
-          { result = "HEColliderBit/data/sps1aWithDecays.spc"; }
-
-    /// @todo We'll eventually need more than just ATLAS, so Delphes/FastSim handling will need to be bound to analyses (and cached)
-    /// @note That means that the class loaders had better be working by then...
-    void getDelphesConfigFileName (std::string &result)
-          { result = "HEColliderBit/data/delphes_card_ATLAS.tcl"; }
-
-    /// @todo nEvents should really depend on the xsec calculation, which again is bound to analyses
-    void getNEvents(int &result)
-          { result = 2000; }
-
     /// @todo More subprocesses. For current testing, only ~g and ~q.
+    /// \todo Will this get passed into the loop properly?
     void getSubprocessGroup(SubprocessGroup &result) {
+      debugMe("getSubprocessGroup");
       result = SubprocessGroup(0.6, //< xsec estimate
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                                2000001, 2000002, 2000003, 2000004}},
@@ -78,29 +95,15 @@ namespace Gambit {
     /// *** Finalization for analyses ***
 
     /// @todo Scaling will depend on nEvents, xsec, and analysis luminosity
-    void getScaleFactor(double &result) { result = 1.5; }
-
-
-    /// *** Readied Simulation Tools ***
-
-    /// Proper backending must wait until the class loader is ready.
-    /// Until then, let's just hard code these.
-    void readyPythiaBackend(Pythia8Backend* &result) {
-      using namespace Pipes::readyPythiaBackend;
-      result = new Pythia8Backend(omp_get_thread_num());
-      result->set("SLHA:file", *Dep::slhaFileName);
-      result->set("SUSY:idVecA", (*Dep::subprocessGroup).particlesInProcess1);
-      result->set("SUSY:idVecB", (*Dep::subprocessGroup).particlesInProcess2);
-    }
-
-    void readyDelphesBackend(Delphes3Backend* &result) {
-      using namespace Pipes::readyDelphesBackend;
-      result = new Delphes3Backend(*Dep::delphesConfigFileName);
+    void getScaleFactor(double &result) {
+      debugMe("getScaleFactor");
+      result = 1.5;
     }
 
 
     /// *** Loop Managers ***
     void manageXsecDependentLoop() {
+      debugMe("manageXsecDependentLoop");
       using namespace Pipes::manageXsecDependentLoop;
       /// \todo Will need to remind myself how Andy's code works.
       /// \todo Check out HEColliderMain.cpp in extras folder.
@@ -113,6 +116,7 @@ namespace Gambit {
     }
 
     void manageVanillaLoop() {
+      debugMe("manageVanillaLoop");
       using namespace Pipes::manageVanillaLoop;
       logger() << "==================" << endl;
       logger() << "HEColliderBit says,";
@@ -121,15 +125,25 @@ namespace Gambit {
       logger() << "  iteration, event met, thread, counts" << endl;
       logger() << LogTags::info << endl << EOM;
 
+      try {
+        nEvents = runOptions->getValue<unsigned>("nEvents");
+      } catch (...) {
+        HEColliderBit_error().raise(LOCAL_INFO,"Specify 'nEvents' in yaml file.");
+      }
+
       Loop::executeIteration(0);
-      #pragma omp parallel
+      #pragma omp parallel shared(pythiaVector)
       {
         #pragma omp for
-        for (int it=1; it<*Dep::nEvents-1; it++) {
+        for (unsigned it=1; it<nEvents-1; it++) {
           Loop::executeIteration(it);
         }
       }
-      Loop::executeIteration(*Dep::nEvents);
+      Loop::executeIteration(nEvents);
+
+      isScatteringReady = false;
+      isDetectorReady = false;
+
       logger() << "==================" << endl;
       logger() << "HEColliderBit says,";
       logger() << "\"manageVanillaLoop() completed.\"" << endl;
@@ -137,26 +151,58 @@ namespace Gambit {
     }
 
     /// Hard Scattering Event Generators
-    void generatePythia8Event(PythiaEvent &result) {
+    void generatePythia8Event(Pythia8::Event &result) {
+      debugMe("generatePythia8Event");
       using namespace Pipes::generatePythia8Event;
       result.clear();
+
+      if (!isScatteringReady) {
+        pythiaVector.clear();
+        try {
+          slhaFilename = runOptions->getValue<std::string>("slhaFilename");
+        } catch (...) {
+          HEColliderBit_error().raise(LOCAL_INFO, "Specify 'slhaFilename' in yaml file.");
+        }
+        #pragma omp parallel shared(pythiaVector,slhaFilename) 
+        {
+          Pythia8Backend* temp = new Pythia8Backend(omp_get_thread_num(), slhaFilename, *Dep::subprocessGroup);
+          #pragma omp critical (pythiaVector)
+          {
+            pythiaVector.push_back(temp);
+          }
+        }
+        isScatteringReady = true;
+      }
       /// Get the next event from Pythia8
-      (*Dep::readiedHardScatteringSim)->nextEvent(result);
+      pythiaVector[omp_get_thread_num()]->nextEvent(result);
     }
 
     /// Standard Event Format Functions
     void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
+      debugMe("reconstructDelphesEvent");
       using namespace Pipes::reconstructDelphesEvent;
       result.clear();
-      /// Feed the Pythia8 event to Delphes for detector simulation
-      /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
+
       #pragma omp critical (Delphes)
       {
-        (*Dep::readiedDetectorSim)->processEvent(*Dep::hardScatteringEvent, result);
+        if (!isDetectorReady) {
+          try {
+            delphesConfigFilename = runOptions->getValue<std::string>("delphesConfigFilename");
+          } catch (...) {
+            HEColliderBit_error().raise(LOCAL_INFO, "Specify 'delphesConfigFilename' in yaml file.");
+          }
+          delete delphes;
+          delphes = new Delphes3Backend(delphesConfigFilename);
+          isDetectorReady = true;
+        }
+      /// Feed the Pythia8 event to Delphes for detector simulation
+      /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
+        delphes->processEvent(*Dep::hardScatteringEvent, result);
       }
     }
 
     void convertPythia8Event(HEP_Simple_Lib::Event &result) {
+      debugMe("convertPythia8Event");
       using namespace Pipes::convertPythia8Event;
       result.clear();
       /// Feed the Pythia8 event to the converter
@@ -166,8 +212,8 @@ namespace Gambit {
     /// Analysis Accumulators
     // Adds an integral event count to a total number of accumulated events.
     // At the end, scales the result by some adjustment factor.
-    void simpleCounter(double &result)
-    {
+    void simpleCounter(double &result) {
+      debugMe("simpleCounter");
       using namespace Pipes::simpleCounter;
       if (*Loop::iteration == 0)
       {
@@ -177,9 +223,14 @@ namespace Gambit {
       {
         counter += 1.;
       }
-      result = counter * *Dep::scaleFactor;
+      result = counter * (*Dep::scaleFactor);
       #pragma omp critical (print)
       {
+        #ifdef DEBUG
+        std::cout<<"\n    iteration number: "<<*Loop::iteration;
+        std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
+        std::cout<<"\n    simpleCounter result: "<<result;
+        #endif
         logger() << "  " << *Loop::iteration << ", ";
         logger() << (*Dep::GambitColliderEvent).met() << ", ";
         logger() << omp_get_thread_num() << ", ";

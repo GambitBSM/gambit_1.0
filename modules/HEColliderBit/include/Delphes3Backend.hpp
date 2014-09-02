@@ -42,23 +42,24 @@
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
 
-#include "HEColliderBit_types.hpp"
+#include "Pythia8/Pythia.h"
 
 #include "Event.hpp"
+#include "Particle.hpp"
+#include "Jet.hpp"
 #include "Py8Utils.hpp"
+#include "MCUtils/PIDCodes.h"
 
 namespace Gambit {
   namespace HEColliderBit {
 
-
-
     class Delphes3Backend {
     public:
-      Delphes3Backend(string configFileName);
+      Delphes3Backend(string configFilename);
       ~Delphes3Backend();
 
-      void processEvent(const PythiaEvent& eventIn, HEP_Simple_Lib::Event& eventOut);
-      void convertInput(const PythiaEvent& event);
+      void processEvent(const Pythia8::Event& eventIn, HEP_Simple_Lib::Event& eventOut);
+      void convertInput(const Pythia8::Event& event);
       void convertOutput(HEP_Simple_Lib::Event& event);
 
     private:

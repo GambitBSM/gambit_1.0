@@ -23,36 +23,12 @@
 #define __HEColliderBit_rollcall_hpp__
 
 #include <string>
+#include "HEColliderBit_types.hpp"
 
 #define MODULE HEColliderBit
 START_MODULE
 
-  /// \todo Move the rest of this stuff into proper Gambity initialization function
-  //
-  /// \todo Assume that spectrum comes from somewhere else...
-  /// \note Play with SoftSUSY class loading with Anders
-  #define CAPABILITY slhaFileName
-  START_CAPABILITY
-    #define FUNCTION getslhaFileName
-    START_FUNCTION(std::string)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  /// \note Leave Delphes hard coded for now.
-  #define CAPABILITY delphesConfigFileName
-  START_CAPABILITY
-    #define FUNCTION getDelphesConfigFileName
-    START_FUNCTION(std::string)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY nEvents
-  START_CAPABILITY
-    #define FUNCTION getNEvents
-    START_FUNCTION(int)
-    #undef FUNCTION
-  #undef CAPABILITY
-
+  /// \todo Can fancy class instances like this somehow be specified in yaml?
   #define CAPABILITY subprocessGroup
   START_CAPABILITY
     #define FUNCTION getSubprocessGroup
@@ -66,26 +42,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION getScaleFactor
     START_FUNCTION(double)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  /// Fully initialized simulation tool capabilities
-  /// \todo Backend these properly once the class loader is ready.
-  #define CAPABILITY readiedHardScatteringSim
-  START_CAPABILITY
-    #define FUNCTION readyPythiaBackend
-    START_FUNCTION(Pythia8Backend*)
-    DEPENDENCY(slhaFileName, std::string)
-    DEPENDENCY(subprocessGroup, SubprocessGroup)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY readiedDetectorSim
-  START_CAPABILITY
-    #define FUNCTION readyDelphesBackend
-    START_FUNCTION(Delphes3Backend*)
-    DEPENDENCY(delphesConfigFileName, std::string)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -106,19 +62,29 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION manageVanillaLoop
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
-    DEPENDENCY(nEvents, int)
-    DEPENDENCY(readiedDetectorSim, Delphes3Backend*)
+    /// DEPENDENCY(nEvents, int)
+    /// instead of this dependency, use runOptions->hasKey("nEvents")
+    /// then adjust the yaml file for each run
     #undef FUNCTION
   #undef CAPABILITY
 
 
   /// Event capabilities
+  /// \todo I had huge problems putting the initialization of this outside the loop.
+  /// \todo THEN, I had problems initializing enough Pythia instances inside the
+  ///       loop, BUT ONLY ONCE, at the start of the loop.
+  /// \todo FINALLY, the Pythia instances were not receiving their init data
+  ///       (slhaFilename) so I moved its specification to the yaml file.
+  /// \TODO !!!! Do we really want it to be this tricky to configure loops?
   #define CAPABILITY hardScatteringEvent
   START_CAPABILITY
     #define FUNCTION generatePythia8Event
-    START_FUNCTION(PythiaEvent)
+    START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    DEPENDENCY(readiedHardScatteringSim, Pythia8Backend*)
+    /// DEPENDENCY(slhaFilename, std::string)
+    /// instead of this dependency, use runOptions->hasKey("slhaFilename")
+    /// then adjust the yaml file for each run
+    DEPENDENCY(subprocessGroup, SubprocessGroup)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -158,15 +124,17 @@ START_MODULE
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    DEPENDENCY(readiedDetectorSim, Delphes3Backend*)
-    DEPENDENCY(hardScatteringEvent, PythiaEvent)
+    /// DEPENDENCY(delphesConfigFilename, std::string)
+    /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
+    /// then adjust the yaml file for each run
+    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
     #define FUNCTION convertPythia8Event
     START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManager)
-    DEPENDENCY(hardScatteringEvent, PythiaEvent)
+    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.

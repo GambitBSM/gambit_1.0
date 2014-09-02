@@ -21,22 +21,23 @@
 //  //  ********************************************
 
 #include "Pythia8Backend.hpp"
+using namespace std;
 
 namespace Gambit {
   namespace HEColliderBit {
 
 
-    Pythia8Backend::Pythia8Backend(int seed) {
-      _initialized = false;
+    Pythia8Backend::Pythia8Backend(int seed, const string& slhaFilename,
+                                   const SubprocessGroup& subprocessGroup) {
       _pythiaInstance = new Pythia8::Pythia("DUMMYPATH", false);
 
       // Basic setup
-      set("Beams:eCM", 8000);
-      set("Main:numberOfEvents", 1000);
-      set("Main:timesAllowErrors", 1000);
-      set("Print:quiet", true);
-      set("SLHA:verbose", 0);
-      // set("Init:showProcesses", true);
+      set("Beams:eCM = 8000");
+      set("Main:numberOfEvents = 1000");
+      set("Main:timesAllowErrors = 1000");
+      set("Print:quiet = on");
+      set("SLHA:file = " + slhaFilename);
+      set("Init:showProcesses = on");
       // set("Init:showMultipartonInteractions", false);
       // set("Init:showChangedSettings", false);
       // set("Init:showChangedParticleData", false);
@@ -45,27 +46,25 @@ namespace Gambit {
       // set("Next:numberShowProcess", 0);
 
       // Default to SUSY with precise subprocess control
-      set("SUSY:all", true);
+      set("SUSY:all = on");
+      set("SUSY:idVecA", subprocessGroup.particlesInProcess1);
+      set("SUSY:idVecB", subprocessGroup.particlesInProcess2);
       // set("SUSY:idA", 1);
 
       // Modelling elements
-      set("PartonLevel:MPI", false);
+      set("PartonLevel:MPI = off");
       // set("PartonLevel:ISR", false);
       // set("PartonLevel:FSR", false);
       // set("HadronLevel:all", false);
 
       // Random seed setup
-      set("Random:setSeed", true);
+      set("Random:setSeed = on");
       set("Random:seed", seed);
+      _pythiaInstance->init();
     }
 
 
-    void Pythia8Backend::nextEvent(PythiaEvent& event) {
-      // Automatically initialize when a first event is requested
-      if (!_initialized) {
-        _pythiaInstance->init();
-        _initialized = true;
-      }
+    void Pythia8Backend::nextEvent(Pythia8::Event& event) {
       // Try to make and populate an event
       if (!_pythiaInstance->next()) throw EventFailureError();
       event = _pythiaInstance->event;
@@ -73,11 +72,6 @@ namespace Gambit {
 
 
     void Pythia8Backend::nextEvent(HEP_Simple_Lib::Event& event) {
-      // Automatically initialize when a first event is requested
-      if (!_initialized) {
-        _pythiaInstance->init();
-        _initialized = true;
-      }
       // Try to make and populate an event
       if (!_pythiaInstance->next()) throw EventFailureError();
       event.clear();
@@ -86,7 +80,7 @@ namespace Gambit {
 
 
     /// Fill a Gambit::HECollider::Event from a Pythia8 event
-    void Pythia8Backend::convertOutput(const PythiaEvent& pevt, HEP_Simple_Lib::Event& gevt) const {
+    void Pythia8Backend::convertOutput(const Pythia8::Event& pevt, HEP_Simple_Lib::Event& gevt) const {
       Pythia8::Vec4 ptot;
       vector<fastjet::PseudoJet> jetparticles;
       vector<fastjet::PseudoJet> bhadrons, taus;

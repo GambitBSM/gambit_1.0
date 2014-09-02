@@ -19,16 +19,11 @@
 //
 //
 #include <stdexcept>
-#include <string>
 #include <iostream>
 #include <cstdlib>
 using namespace std;
 
-#include "Event.hpp"
-#include "Particle.hpp"
-#include "Jet.hpp"
 #include "Delphes3Backend.hpp"
-#include "MCUtils/PIDCodes.h"
 using namespace MCUtils;
 
 
@@ -36,11 +31,11 @@ namespace Gambit {
   namespace HEColliderBit {
 
 
-    Delphes3Backend::Delphes3Backend(string configFileName) {
+    Delphes3Backend::Delphes3Backend(string configFilename) {
       try {
         // To read Delphes Config File
         confReader = new ExRootConfReader();
-        confReader->ReadFile(configFileName.c_str());
+        confReader->ReadFile(configFilename.c_str());
 
         // Modularity of Delphes set by Config File
         modularDelphes = new Delphes("Delphes");
@@ -78,7 +73,8 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::processEvent(const PythiaEvent& eventIn, HEP_Simple_Lib::Event &eventOut) {
+    void Delphes3Backend::processEvent(const Pythia8::Event& eventIn,
+                                       HEP_Simple_Lib::Event &eventOut) {
       try {
         modularDelphes->Clear();
         convertInput(eventIn);
@@ -91,7 +87,7 @@ namespace Gambit {
     }
 
 
-    void Delphes3Backend::convertInput(const PythiaEvent& event) {
+    void Delphes3Backend::convertInput(const Pythia8::Event& event) {
 
       for (int ip = 0; ip < event.size(); ++ip) {
         const Pythia8::Particle& p = event[ip];
@@ -130,7 +126,6 @@ namespace Gambit {
     }
 
 
-    // ReconstructedEvent is a boring class in the HEColliderBit namespace
     // See the DelphesGambit.hpp file for details
     void Delphes3Backend::convertOutput(HEP_Simple_Lib::Event &event) {
       event.clear();
