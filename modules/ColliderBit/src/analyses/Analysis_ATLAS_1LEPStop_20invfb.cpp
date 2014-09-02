@@ -28,7 +28,7 @@ using namespace std;
 //    ===> STF: Now using mt2 bisect method from H. Cheng, Z. Han, arXiv:0810.5178 for mT2 calculation
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
     /// A useful MT2 class for this module
     class MT2 {

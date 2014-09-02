@@ -10,7 +10,7 @@ using namespace std;
 #endif
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     /// Rename as Analysis_ATLAS_0LEP_XXinvfb when lumi known

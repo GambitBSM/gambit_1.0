@@ -1,7 +1,7 @@
 #pragma once
 
-#include "HEColliderBit_types.hpp"
 #include "Event.hpp"
+#include "Pythia8/Pythia.h"
 
 #include "MCUtils/PIDUtils.h"
 #include "MCUtils/Vectors.h"
@@ -9,7 +9,7 @@
 using namespace MCUtils;
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     /// @name Converters to/from Pythia8's native 4-vector
@@ -62,7 +62,7 @@ namespace Gambit {
 
 
     /// @todo Rewrite using the Py8 > 176 particle-based methods
-    inline bool fromBottom(int n, const PythiaEvent& evt) {
+    inline bool fromBottom(int n, const Pythia8::Event& evt) {
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 5 || HEP_Simple_Lib::PID::hasBottom(p.id())) return true;
       /// @todo What about partonic decays?
@@ -75,7 +75,7 @@ namespace Gambit {
 
 
     /// @todo Rewrite using the Py8 > 176 particle-based methods
-    inline bool fromTau(int n, const PythiaEvent& evt) {
+    inline bool fromTau(int n, const Pythia8::Event& evt) {
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 15) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
@@ -87,7 +87,7 @@ namespace Gambit {
 
 
     /// @todo Rewrite using the Py8 > 176 particle-based methods
-    inline bool fromHadron(int n, const PythiaEvent& evt) {
+    inline bool fromHadron(int n, const Pythia8::Event& evt) {
       const Pythia8::Particle& p = evt[n];
       if (p.isHadron()) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
@@ -98,13 +98,13 @@ namespace Gambit {
     }
 
 
-    inline bool isReplica(int n, const PythiaEvent& evt) {
+    inline bool isReplica(int n, const Pythia8::Event& evt) {
       const Pythia8::Particle& p = evt[n];
       return p.daughter1() != 0 && p.daughter1() == p.daughter2();
     }
 
 
-    inline void finalDescendants(int n, const PythiaEvent& evt, vector<int>& rtn) {
+    inline void finalDescendants(int n, const Pythia8::Event& evt, vector<int>& rtn) {
       const Pythia8::Particle& p = evt[n];
       //assert(!p.isParton());
       if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
@@ -118,7 +118,7 @@ namespace Gambit {
     }
 
 
-    inline bool isFinalB(int n, const PythiaEvent& evt) {
+    inline bool isFinalB(int n, const Pythia8::Event& evt) {
       // *This* particle must be a b or b-hadron
       if (!HEP_Simple_Lib::PID::hasBottom(evt[n].id())) return false;
       // Daughters must *not* include a b or b-hadron
@@ -129,7 +129,7 @@ namespace Gambit {
     }
 
 
-    inline bool isFinalTau(int n, const PythiaEvent& evt) {
+    inline bool isFinalTau(int n, const Pythia8::Event& evt) {
       // *This* particle must be a tau
       if (abs(evt[n].id()) != 15) return false;
       // Daughters must *not* include a tau
@@ -140,7 +140,7 @@ namespace Gambit {
     }
 
 
-    // inline vector<int> get_anaparticles(const PythiaEvent& evt) {
+    // inline vector<int> get_anaparticles(const Pythia8::Event& evt) {
     //   // Get the most physical b hadron and tau IDs
     //   vector<int> unstables;
     //   for (int n = 0; n < evt.size(); ++n) {
@@ -169,7 +169,7 @@ namespace Gambit {
 
 
     /// Fill a Gambit::Event from a Pythia8 event
-    inline void fillGambitEvent(const PythiaEvent& pevt, HEP_Simple_Lib::Event& gevt) {
+    inline void fillGambitEvent(const Pythia8::Event& pevt, HEP_Simple_Lib::Event& gevt) {
       Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;

@@ -25,7 +25,7 @@ using namespace std;
 
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     class Analysis_ATLAS_2bStop_20invfb : public Analysis {

@@ -4,7 +4,7 @@
 //  //  ********************************************
 //  //
 //  //  Header for eventual rollcall for the
-//  //  HEColliderBit Pythia8Backend
+//  //  ColliderBit Pythia8Backend
 //  //
 //  //  ********************************************
 //  //
@@ -24,21 +24,44 @@
 //  //
 //  //  ********************************************
 
-#include "HEColliderBit_types.hpp"
+#include <string>
+#include <vector>
+#include <memory>
+using namespace std;
+
+#include "Pythia8/Pythia.h"
 #include "Py8Utils.hpp"
 #include "Event.hpp"
-
-// #define PYTHIA8BACKEND_PRIVATE Gambit::HEColliderBit::Pythia8Backend::pythiaInstance,Gambit::HEColliderBit::Pythia8Backend::eventFailureError
+#include "Analysis.hpp"
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
+    struct SubprocessGroup {
+      SubprocessGroup()
+        : xsec(-1), nevts(-1) { }
+      SubprocessGroup(double xs, const vector<int>& parts1,
+                      const vector<int>& parts2)
+        : xsec(xs), nevts(-1), particlesInProcess1(parts1),
+          particlesInProcess2(parts2) { }
+      void addAnalysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
+      double xsec;
+      // string name; // or int id = 1000*sp_type + sp_instance
+      int nevts;
+      /// @todo Add some metric of CPU cost per event for this process type?
+      /// The processes are selected by the IDs of the particles which
+      /// must be in the process.
+      vector<int> particlesInProcess1;
+      vector<int> particlesInProcess2;
+      vector<shared_ptr<Analysis>> analyses;
+    };
 
     class Pythia8Backend {
     public:
 
       /// Constructor with a random number seed argument
-      Pythia8Backend(int seed);
+      Pythia8Backend(int seed, const string& slhaFilename,
+                     const SubprocessGroup& subprocessGroup);
 
       /// Destructor
       /// @todo Use a smart ptr and eliminate the need for a destructor?
@@ -65,12 +88,12 @@ namespace Gambit {
       //@}
 
       /// Make the next event and fill it into the Py8::Event
-      void nextEvent(PythiaEvent& event);
+      void nextEvent(Pythia8::Event& event);
       /// Make the next event and directly fill a Gambit event (no Py8::Event copy)
       void nextEvent(HEP_Simple_Lib::Event& event);
 
       /// Convert the supplied Py8 event into a Gambit event
-      void convertOutput(const PythiaEvent& pevt, HEP_Simple_Lib::Event& gevt) const;
+      void convertOutput(const Pythia8::Event& pevt, HEP_Simple_Lib::Event& gevt) const;
 
       /// @name Get the number of events requested / errors permitted in a run
       //@{
@@ -79,7 +102,7 @@ namespace Gambit {
       //@}
 
       /// @name Cross-section and error in pb
-      /// @todo What will our std xsec unit be (in HEColliderBit or GAMBIT as a whole)?
+      /// @todo What will our std xsec unit be (in ColliderBit or GAMBIT as a whole)?
       //@{
       double xsec() { return _pythiaInstance->info.sigmaGen() * 1e9; }
       double xsecErr() { return _pythiaInstance->info.sigmaErr() * 1e9; }
@@ -94,10 +117,6 @@ namespace Gambit {
           return "For whatever reason, Pythia could not make the next event.";
         }
       };
-
-
-      /// Initialization flag
-      bool _initialized;
 
       /// @todo Smart ptr?
       Pythia8::Pythia* _pythiaInstance;

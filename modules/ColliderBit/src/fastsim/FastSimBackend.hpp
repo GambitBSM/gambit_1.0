@@ -4,7 +4,7 @@
 //  //  ********************************************
 //  //
 //  //  Header for eventual rollcall for the
-//  //  HEColliderBit FastSimBackend
+//  //  ColliderBit FastSimBackend
 //  //
 //  //  Also contains some useful Utility functions
 //  //  which are used by FastSimBackend
@@ -44,7 +44,7 @@
 
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     class FastSimBackend {

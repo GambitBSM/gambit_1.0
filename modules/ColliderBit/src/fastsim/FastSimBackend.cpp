@@ -33,7 +33,7 @@ using namespace std;
 
 namespace Gambit
 {
-  namespace HEColliderBit
+  namespace ColliderBit
   {
     FastSimBackend::FastSimBackend(DetectorType detector)
     {
@@ -159,7 +159,7 @@ namespace Gambit
       modularFastSim->setParticles(_electrons, _muons, _photons, _chargedhads, _bjets, _tauhads, _weakly_interactings);
     }
 
-    // ReconstructedEvent is a boring class in the HEColliderBit namespace
+    // ReconstructedEvent is a boring class in the ColliderBit namespace
     //    See the DelphesGambit.hpp file for details
     void FastSimBackend::convertOutput(Event &event)
     {
