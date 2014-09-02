@@ -539,7 +539,7 @@ $(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(GAMBITINC) $(HIGGSINC)
-        @echo ___________Compiling $<:
+	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(GAMBITINC) $(DECAYINC)

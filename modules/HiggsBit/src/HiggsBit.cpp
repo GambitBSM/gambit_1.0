@@ -81,7 +81,7 @@ namespace Gambit
       dMhneut[2] = 0.;
       double dMhch[1];
       dMhch[0] = 0.;
-      BEreq::HiggsBounds_set_mass_uncertainties(dMhneut,dMhch);
+      BEreq::HiggsBounds_set_mass_uncertainties(&dMhneut[0],&dMhch[0]);
 
       // run Higgs bounds 'classic'
       double HBresult, obsratio;
