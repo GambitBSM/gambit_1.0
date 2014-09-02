@@ -204,7 +204,7 @@ ObsLikes:
   #- purpose:  Likelihood
   #  capability:  HS_LHCchisq
 
-  # Uncomment to test HEColliderBit
+  # Uncomment to test ColliderBit
   #- purpose:      Observable
   #  capability:   analysisAccumulator
 

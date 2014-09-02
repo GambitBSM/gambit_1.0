@@ -45,10 +45,10 @@ int main()
   int counter;
 
   // For event generation
-  Gambit::HEColliderBit::cmndFileName *pythia8_input;
-  Gambit::HEColliderBit::Pythia8Backend *myPythia;
-  Gambit::HEColliderBit::FastSimBackend *myFastSim;
-  myFastSim = new Gambit::HEColliderBit::FastSimBackend(myDetector);
+  Gambit::ColliderBit::cmndFileName *pythia8_input;
+  Gambit::ColliderBit::Pythia8Backend *myPythia;
+  Gambit::ColliderBit::FastSimBackend *myFastSim;
+  myFastSim = new Gambit::ColliderBit::FastSimBackend(myDetector);
 
   // For event storage
   Pythia8::Event genEvent;
@@ -64,8 +64,8 @@ int main()
   ana->init();
 
 
-  pythia8_input = new Gambit::HEColliderBit::cmndFileName(12345,"cmndpythia_zee.cmnd");
-  myPythia = new Gambit::HEColliderBit::Pythia8Backend(*pythia8_input);
+  pythia8_input = new Gambit::ColliderBit::cmndFileName(12345,"cmndpythia_zee.cmnd");
+  myPythia = new Gambit::ColliderBit::Pythia8Backend(*pythia8_input);
 
   // For a reasonable output
 

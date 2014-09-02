@@ -4,7 +4,7 @@
 //  //  ********************************************
 //  //
 //  //  Header for eventual rollcall for the
-//  //  HEColliderBit Pythia8Backend
+//  //  ColliderBit Pythia8Backend
 //  //
 //  //  ********************************************
 //  //
@@ -35,7 +35,7 @@ using namespace std;
 #include "Analysis.hpp"
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
     struct SubprocessGroup {
       SubprocessGroup()
@@ -102,7 +102,7 @@ namespace Gambit {
       //@}
 
       /// @name Cross-section and error in pb
-      /// @todo What will our std xsec unit be (in HEColliderBit or GAMBIT as a whole)?
+      /// @todo What will our std xsec unit be (in ColliderBit or GAMBIT as a whole)?
       //@{
       double xsec() { return _pythiaInstance->info.sigmaGen() * 1e9; }
       double xsecErr() { return _pythiaInstance->info.sigmaErr() * 1e9; }

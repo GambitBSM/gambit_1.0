@@ -19,7 +19,7 @@ using namespace std;
 
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
     struct Subprocess {
       Subprocess()
@@ -54,7 +54,7 @@ namespace Gambit {
 
 
 
-namespace GHEC = Gambit::HEColliderBit;
+namespace GHEC = Gambit::ColliderBit;
 
 int main() {
 

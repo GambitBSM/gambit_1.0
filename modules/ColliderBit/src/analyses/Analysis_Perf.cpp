@@ -12,7 +12,7 @@
 using namespace std;
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     bool SortPt(Particle *i, Particle *j) { return (i->pT() > j->pT()); }

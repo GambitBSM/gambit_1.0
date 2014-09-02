@@ -6,7 +6,7 @@ using namespace HEP_Simple_Lib;
 using namespace MCUtils;
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     // Macros for analysis factory fns

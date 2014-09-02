@@ -3,14 +3,14 @@
 ///  \file
 ///
 ///  Type definition header for module
-///  HEColliderBit.
+///  ColliderBit.
 ///
 ///  Compile-time registration of type definitions 
 ///  required for the rest of the code to
-///  communicate with HEColliderBit.
+///  communicate with ColliderBit.
 ///
 ///  Add to this if you want to define a new type
-///  for the functions in HEColliderBit to return,
+///  for the functions in ColliderBit to return,
 ///  but you don't expect that type to be needed
 ///  by any other modules.
 ///
@@ -25,12 +25,12 @@
 ///  *********************************************
 
 
-#ifndef __HEColliderBit_types_hpp__
-#define __HEColliderBit_types_hpp__
+#ifndef __ColliderBit_types_hpp__
+#define __ColliderBit_types_hpp__
 
 /// \todo Some of these includes may eventually need to be in shared_types
 /// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
 #include "Delphes3Backend.hpp"
 #include "Pythia8Backend.hpp"
 
-#endif /* defined __HEColliderBit_types_hpp__ */
+#endif /* defined __ColliderBit_types_hpp__ */

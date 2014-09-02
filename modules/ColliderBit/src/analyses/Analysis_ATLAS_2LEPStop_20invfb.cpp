@@ -27,7 +27,7 @@ using namespace std;
 
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
 

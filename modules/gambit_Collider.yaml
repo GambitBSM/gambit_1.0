@@ -1,8 +1,8 @@
 # GAMBIT Initialization file (in YAML)
 #
-# A testing Gambit ini file for HEColliderBit
+# A testing Gambit ini file for ColliderBit
 #  - attempting to remove anything not needed for testing only
-#    HEColliderBit.... Why is that so difficult?
+#    ColliderBit.... Why is that so difficult?
 
 
 ##############################
@@ -31,7 +31,7 @@ Printer:
 
 ObsLikes:
 
-  # Uncomment to test HEColliderBit
+  # Uncomment to test ColliderBit
   - purpose:      Observable
     capability:   analysisAccumulator
 
@@ -41,7 +41,7 @@ ObsLikes:
 
 Auxiliaries:
 
-  #HEColliderBit options (note, these ones are mandatory at this moment)
+  #ColliderBit options (note, these ones are mandatory at this moment)
   - capability:  eventLoopManager
     function:    manageVanillaLoop
     options:
@@ -50,12 +50,12 @@ Auxiliaries:
   - capability:  GambitColliderEvent
     function:    reconstructDelphesEvent
     options:
-      delphesConfigFilename: "HEColliderBit/data/delphes_card_ATLAS.tcl" 
+      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
 
   - capability:  hardScatteringEvent
     function:    generatePythia8Event
     options:
-      slhaFilename: "HEColliderBit/data/sps1aWithDecays.spc" 
+      slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
 
   - capability:   analysisAccumulator
     dependencies:
@@ -79,7 +79,7 @@ Logger:
     [Core,Error] : "core_errors.log"
     [Core,Error,Fatal] : "fatal_core_errors.log"
     [Dependency Resolver] : "dependency_resolver.log"
-    [HEColliderBit] : "HEColliderBit.log"
+    [ColliderBit] : "ColliderBit.log"
 
 
 ###############################

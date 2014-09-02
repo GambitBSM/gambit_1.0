@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Functions of HEColliderBit_eventLoop. Based
+///  Functions of ColliderBit_eventLoop. Based
 ///  heavily on the ExampleBit_A Functions
 ///
 ///  *********************************************
@@ -29,15 +29,15 @@
 #include <vector>
 
 #include "gambit_module_headers.hpp"
-#include "HEColliderBit_types.hpp"
-#include "HEColliderBit_rollcall.hpp"
+#include "ColliderBit_types.hpp"
+#include "ColliderBit_rollcall.hpp"
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
 // xsec calculation is ongoing.
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
     /// ********************************************
     /// Non-rollcalled Functions and Local Variables
@@ -109,17 +109,17 @@ namespace Gambit {
       /// \todo Check out HEColliderMain.cpp in extras folder.
       /// \todo Delete this entire module function if vanilla loops are better.
       logger() << "==================" << endl;
-      logger() << "HEColliderBit says,";
+      logger() << "ColliderBit says,";
       logger() << "\"manageXsecDependentLoop() was called.\"" << endl;
       logger() << LogTags::info << endl << EOM;
-      HEColliderBit_error().raise(LOCAL_INFO,"Xsec dependent loop not implemented.");
+      ColliderBit_error().raise(LOCAL_INFO,"Xsec dependent loop not implemented.");
     }
 
     void manageVanillaLoop() {
       debugMe("manageVanillaLoop");
       using namespace Pipes::manageVanillaLoop;
       logger() << "==================" << endl;
-      logger() << "HEColliderBit says,";
+      logger() << "ColliderBit says,";
       logger() << "\"manageVanillaLoop() was called.\"" << endl;
       logger() << "*** NOTE: Each iteration will report:" << endl;
       logger() << "  iteration, event met, thread, counts" << endl;
@@ -128,7 +128,7 @@ namespace Gambit {
       try {
         nEvents = runOptions->getValue<unsigned>("nEvents");
       } catch (...) {
-        HEColliderBit_error().raise(LOCAL_INFO,"Specify 'nEvents' in yaml file.");
+        ColliderBit_error().raise(LOCAL_INFO,"Specify 'nEvents' in yaml file.");
       }
 
       Loop::executeIteration(0);
@@ -145,7 +145,7 @@ namespace Gambit {
       isDetectorReady = false;
 
       logger() << "==================" << endl;
-      logger() << "HEColliderBit says,";
+      logger() << "ColliderBit says,";
       logger() << "\"manageVanillaLoop() completed.\"" << endl;
       logger() << LogTags::info << endl << EOM;
     }
@@ -161,7 +161,7 @@ namespace Gambit {
         try {
           slhaFilename = runOptions->getValue<std::string>("slhaFilename");
         } catch (...) {
-          HEColliderBit_error().raise(LOCAL_INFO, "Specify 'slhaFilename' in yaml file.");
+          ColliderBit_error().raise(LOCAL_INFO, "Specify 'slhaFilename' in yaml file.");
         }
         #pragma omp parallel shared(pythiaVector,slhaFilename) 
         {
@@ -189,7 +189,7 @@ namespace Gambit {
           try {
             delphesConfigFilename = runOptions->getValue<std::string>("delphesConfigFilename");
           } catch (...) {
-            HEColliderBit_error().raise(LOCAL_INFO, "Specify 'delphesConfigFilename' in yaml file.");
+            ColliderBit_error().raise(LOCAL_INFO, "Specify 'delphesConfigFilename' in yaml file.");
           }
           delete delphes;
           delphes = new Delphes3Backend(delphesConfigFilename);

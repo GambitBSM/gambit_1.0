@@ -9,7 +9,7 @@
 using namespace MCUtils;
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     /// @name Converters to/from Pythia8's native 4-vector

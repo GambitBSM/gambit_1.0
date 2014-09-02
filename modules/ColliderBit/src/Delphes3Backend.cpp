@@ -28,7 +28,7 @@ using namespace MCUtils;
 
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     Delphes3Backend::Delphes3Backend(string configFilename) {

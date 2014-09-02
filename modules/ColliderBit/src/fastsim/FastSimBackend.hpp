@@ -4,10 +4,10 @@
 //  //  ********************************************
 //  //
 //  //  Header for eventual rollcall for the
-//  //  HEColliderBit Delphes3Backend
+//  //  ColliderBit FastSimBackend
 //  //
 //  //  Also contains some useful Utility functions
-//  //  which are used by Delphes3Backend
+//  //  which are used by FastSimBackend
 //  //
 //  //  ********************************************
 //  //
@@ -16,10 +16,8 @@
 //  //
 //  //  (add name and date if you modify)
 //  //
-//  //  Abram Krislock
-//  //  2013 Apr 19, Apr 23, May 9
-//  //  Aldo Saavedra
-//  //  2014 March 2nd
+//  //  Aldo F Saavedra
+//  //  2013 June 13
 //  //
 //  //  ********************************************
 //
@@ -30,6 +28,7 @@
 #include <cassert>
 #include <cmath>
 
+/*
 #include "TROOT.h"
 #include "TTask.h"
 #include "TApplication.h"
@@ -37,32 +36,43 @@
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
 #include "TLorentzVector.h"
-#include "modules/Delphes.h"
-#include "classes/DelphesClasses.h"
-#include "classes/DelphesFactory.h"
-#include "ExRootAnalysis/ExRootConfReader.h"
+*/
 
-#include "Pythia8/Pythia.h"
-
+#include "Pythia.h"
 #include "Event.hpp"
-#include "Particle.hpp"
-#include "Jet.hpp"
-#include "Py8Utils.hpp"
-#include "MCUtils/PIDCodes.h"
+#include "FastSim.hpp"
+
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
-    class Delphes3Backend {
+
+    class FastSimBackend {
     public:
-      Delphes3Backend(string configFilename);
-      ~Delphes3Backend();
+      FastSimBackend(DetectorType detector);
+      ~FastSimBackend();
 
-      void processEvent(const Pythia8::Event& eventIn, HEP_Simple_Lib::Event& eventOut);
-      void convertInput(const Pythia8::Event& event);
-      void convertOutput(HEP_Simple_Lib::Event& event);
+      void processEvent(Pythia8::Event &eventIn, Event &eventOut);
+      void convertInput(Pythia8::Event &event);
+      void convertOutput(Event &event);
+
+      void clear(); // clear the vector, each time at the begining fo the event
 
     private:
+      
+      FastSim *modularFastSim;
+
+      vector<Particle*> _electrons;
+      vector<Particle*> _muons;
+      vector<Particle*> _photons;
+      vector<Particle*> _bjets;
+      vector<Particle*> _tauhads;
+      vector<Particle*> _chargedhads;
+      vector<Particle*> _weakly_interactings; // stdm neutrinos, susy neutralinos
+
+
+
+      /*
       // To read Delphes Config File
       ExRootConfReader *confReader;
       // Modularity of Delphes is set by said Config File.
@@ -79,7 +89,7 @@ namespace Gambit {
       Candidate *candidate;
       TParticlePDG *pdgParticle;
       Int_t pdgCode;
-
+      */
       // TODO: rollcall?
     };
 

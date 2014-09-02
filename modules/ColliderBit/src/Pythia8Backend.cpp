@@ -24,7 +24,7 @@
 using namespace std;
 
 namespace Gambit {
-  namespace HEColliderBit {
+  namespace ColliderBit {
 
 
     Pythia8Backend::Pythia8Backend(int seed, const string& slhaFilename,

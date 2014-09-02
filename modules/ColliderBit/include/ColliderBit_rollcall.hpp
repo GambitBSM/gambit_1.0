@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Rollcall header for module HEColliderBit's 
+///  Rollcall header for module ColliderBit's 
 ///  eventLoop functionality. Based heavily on the
 ///  eventLoopManager example in ExampleBit_A
 ///
@@ -19,13 +19,13 @@
 ///  *********************************************
 
 
-#ifndef __HEColliderBit_rollcall_hpp__
-#define __HEColliderBit_rollcall_hpp__
+#ifndef __ColliderBit_rollcall_hpp__
+#define __ColliderBit_rollcall_hpp__
 
 #include <string>
-#include "HEColliderBit_types.hpp"
+#include "ColliderBit_types.hpp"
 
-#define MODULE HEColliderBit
+#define MODULE ColliderBit
 START_MODULE
 
   /// \todo Can fancy class instances like this somehow be specified in yaml?
@@ -183,4 +183,4 @@ START_MODULE
 #undef MODULE
 
 
-#endif /* defined __HEColliderBit_rollcall_hpp__ */
+#endif /* defined __ColliderBit_rollcall_hpp__ */
