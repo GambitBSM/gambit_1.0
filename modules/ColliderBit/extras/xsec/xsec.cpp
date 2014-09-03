@@ -274,7 +274,23 @@ namespace xsec{
       //cout << par[1] << " " << par[2] << " " << par[3] << endl;
     }
 
-
+    // Check that parameters are reasonable, reset if not
+    for(int i = 1; i < 24; i++){
+      if(i == 0 && (par[i] > 50. || par[i] < 2.)){
+        cout << "\tan\beta outside of range of validity of NN" << endl;
+        if(par[i] < 2.) par[i] = 2.;
+        if(par[i] > 50.) par[i] = 50.;
+        cout << "Reset to " << par[i] << endl;
+      }
+      // Soft masses
+      else if(i > 0 && abs(par[i]) > 2000.){
+        cout << "Soft parameter" << i << " outside of range of validity of NN" << endl;
+        par[i] = par[i]/abs(par[i])*2000.;
+        cout << "Reset to " << par[i] << endl;
+      }
+    }
+    
+    
   }
 
 
