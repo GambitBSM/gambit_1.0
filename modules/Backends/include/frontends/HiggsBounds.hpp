@@ -7,7 +7,7 @@
 
 /* Specify the path to the shared library along with a backend name. */
 
-#define LIBPATH      "Backends/lib/libhiggsbounds.so"
+#define LIBPATH      "Backends/lib/libHB.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

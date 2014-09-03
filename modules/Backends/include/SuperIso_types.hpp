@@ -65,7 +65,7 @@ namespace Gambit
 	double mass_b_1S,mass_b_pole,mtmt;
 	double Lambda5; /* Lambda QCD */
 	
-	/* Flavour constants */
+	/* Flavour parameters */
 	double f_B,f_Bs,f_Ds,f_D,fK_fpi;
 	double f_K_par,f_K_perp;
 	double m_B,m_Bs,m_Bd,m_pi,m_Ds,m_K,m_Kstar,m_D0,m_D;
@@ -73,9 +73,10 @@ namespace Gambit
 	double a1par,a2par,a1perp,a2perp;
 	double zeta3A,zeta3V,wA10,deltatp,deltatm;
 	double lambda_Bp,rho1,lambda2;
+	double BR_BXclnu_exp; /* Used in bsgamma.c and bsll.c */
 	
 	/* CKM matrix */
-	double _Complex Vud,Vus,Vub,Vcd,Vcs,Vcb,Vtd,Vts,Vtb;
+	std::complex<double> Vud,Vus,Vub,Vcd,Vcs,Vcb,Vtd,Vts,Vtb;
 	
 	/* 2HDM */
 	int THDM_model;
@@ -87,7 +88,6 @@ namespace Gambit
 	/* Decay widths */
 	double width_Z,width_W;
   };
-
 }
 
 #endif /* defined __SuperIso_types_hpp__ */
