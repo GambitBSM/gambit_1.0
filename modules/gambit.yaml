@@ -199,10 +199,10 @@ ObsLikes:
   #  capability:   SI_Btaunu
 
   # Uncomment to test HiggsBit
-  #- purpose:  Likelihood
-  #  capability:  HB_LEPchisq
-  #- purpose:  Likelihood
-  #  capability:  HS_LHCchisq
+  - purpose:  Likelihood
+    capability:  HB_LEPchisq
+  - purpose:  Likelihood
+    capability:  HS_LHCchisq
 
   # Uncomment to test ColliderBit
   #- purpose:      Observable
