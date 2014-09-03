@@ -185,19 +185,57 @@ ObsLikes:
 
   # Uncomment to test FlavBit
   #- purpose:      NotLikelihood
-  #  capability:   SI_fill
-  #  printme:      false
+    #capability:   SI_fill
+    #printme:      false
   #- purpose:      Likelihood
-  #  capability:   SI_bsgamma
+    #capability:   SI_bsgamma
   #- purpose:      Likelihood
-  #  capability:   SI_Bsmumu
+    #capability:   SI_Bsmumu
   #- purpose:      Likelihood
-  #  capability:   SI_Bsmumu_untag
+    #capability:   SI_Bsmumu_untag
   #- purpose:      Likelihood
-  #  capability:   SI_Bdmumu
+    #capability:   SI_Bdmumu
   #- purpose:      Likelihood
-  #  capability:   SI_Btaunu
-
+    #capability:   SI_Btaunu
+  #- purpose:      Likelihood
+    #capability:   SI_BDtaunu
+  #- purpose:      Likelihood
+    #capability:   SI_BDtaunu_BDenu
+  #- purpose:      Likelihood
+    #capability:   SI_Kmunu_pimunu
+  #- purpose:      Likelihood
+    #capability:   SI_Rmu23
+  #- purpose:      Likelihood
+    #capability:   SI_Dstaunu
+  #- purpose:      Likelihood
+    #capability:   SI_Dsmunu
+  #- purpose:      Likelihood
+    #capability:   SI_Dmunu
+  #- purpose:      Likelihood
+    #capability:   SI_muon_gm2
+  #- purpose:      Likelihood
+    #capability:   SI_delta0
+  #- purpose:      Likelihood
+    #capability:   SI_BRBXsmumu_lowq2
+  #- purpose:      Likelihood
+    #capability:   SI_BRBXsmumu_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXsmumu_lowq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXsmumu_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXsmumu_zero
+  #- purpose:      Likelihood
+    #capability:   SI_BRBXstautau_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXstautau_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_BRBKstarmumu
+  #- purpose:      Likelihood
+    #capability:   SI_AI_BKstarmumu
+  #- purpose:      Likelihood
+    #capability:   SI_AI_BKstarmumu_zero
+    
   # Uncomment to test HiggsBit
   - purpose:  Likelihood
     capability:  HB_LEPchisq
