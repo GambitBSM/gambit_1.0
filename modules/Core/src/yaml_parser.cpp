@@ -33,24 +33,104 @@ namespace Gambit
 {
   namespace IniParser
   {
+    // Recursive import
+    int importRound(YAML::Node node)
+    {
+      int counter = 0;
+      // std::cout << node << " type: " << node.Type() << std::endl;
+      if (node.Type() == YAML::NodeType::Scalar)
+      {
+        if ( node.Tag() == "!import" )
+        {
+          YAML::Node import;
+          std::string filename = node.as<std::string>();
+          std::cout << "Importing: " << filename << std::endl;
+          try { 
+            import = YAML::LoadFile(filename);
+          } 
+          catch (YAML::Exception &e) {
+            std::ostringstream msg;
+            msg << "Error reading Inifile \""<<filename<<"\" recursively! ";
+            msg << "Please check that file exist!" << endl;
+            msg << "(yaml-cpp error: "<<e.what()<<" )";
+            inifile_error().raise(LOCAL_INFO,msg.str());
+          }
+          node = import;
+          return 1;
+        }
+        return 0;
+      }
+      if (node.Type() == YAML::NodeType::Sequence)
+      {
+        for (unsigned int i = 0; i<node.size(); ++i)
+        {
+          counter += importRound(node[i]);
+        }
+        return counter;
+      }
+      if (node.Type() == YAML::NodeType::Map)
+      {
+        for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+        {
+          counter += importRound(it->second);  // Only values are processed
+        }
+        return counter;
+      }
+      return 0;
+    }
+
+    void recursiveImport(YAML::Node node)
+    {
+      int import_counter = 0;
+      int last_import_counter = 0;
+      for ( int i = 0; i < 10; ++i)
+      {
+        last_import_counter = importRound(node);
+        import_counter += last_import_counter;
+      }
+      if (last_import_counter > 0)
+      {
+        std::cout << last_import_counter << std::endl;
+        std::cout << "WARNING: YAML imports were truncated after 10 recursions." << std::endl;
+      }
+    }
+
     void IniFile::readFile(std::string filename)
     {
       // Read inifile file
-      std::vector<YAML::Node> roots = YAML::LoadAllFromFile(filename);
+      YAML::Node root;
+      try { 
+        root = YAML::LoadFile(filename);
+        //roots = YAML::LoadAllFromFile(filename);
+      } 
+      catch (YAML::Exception &e) {
+        std::ostringstream msg;
+        msg << "Error reading Inifile \""<<filename<<"\"! ";
+        msg << "Please check that file exist!" << endl;
+        msg << "(yaml-cpp error: "<<e.what()<<" )";
+        inifile_error().raise(LOCAL_INFO,msg.str());
+      }
 
-      // Set central nodes
-      ///TODO Ben> We might want to rethink the yaml file structure we are using. Currently it is all going to break if people leave
-      // a section out of their yaml file, or specify them in the wrong order, etc. It is impossible to "name" yaml documents (i.e.
-      // our sections seperated via ---) so we might just want all the inifile options inside the one document, under their own
-      // named key entries. The order will then not matter, and we could deal with missing sections. 
-      parametersNode = roots[0];
-      priorsNode = roots[1];
-      printerNode = roots[2];
-      scannerNode = roots[3];
-      YAML::Node outputNode = roots[4];
-      YAML::Node auxNode = roots[5];
-      YAML::Node logNode = roots[6];
-      keyValuePairNode = roots[7];
+      recursiveImport(root);
+      parametersNode = root["Parameters"];
+      priorsNode = root["Priors"];
+      printerNode = root["Printer"];
+      scannerNode = root["Scanner"];
+      YAML::Node outputNode = root["ObsLikes"];
+      YAML::Node auxNode = root["Auxiliaries"];
+      YAML::Node logNode = root["Logger"];
+      keyValuePairNode = root["KeyValues"];
+
+      /*
+      parametersNode = root[0];
+      priorsNode = root[1];
+      printerNode = root[2];
+      scannerNode = root[3];
+      YAML::Node outputNode = root[4];
+      YAML::Node auxNode = root[5];
+      YAML::Node logNode = root[6];
+      keyValuePairNode = root[7];
+      */
 
       // Set fatality of exceptions
       if (hasKey("exceptions"))

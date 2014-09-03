@@ -20,10 +20,13 @@
 #include <map>
 #include <vector>
 
+#include <yaml-cpp/yaml.h>
+
 #include "util_types.hpp"
 #include "models.hpp"
 #include "functors.hpp"
 #include "backend_info.hpp"
+#include "yaml_description_database.hpp"
 
 namespace Gambit
 {
@@ -56,6 +59,9 @@ namespace Gambit
       /// List of all declared capabilities
       std::set<str> capabilities;
 
+      /// List of all declared models
+      std::set<str> models;
+
       /// List of all declared module functors
       fVec functorList;
 
@@ -71,6 +77,21 @@ namespace Gambit
       /// A map of all user-activated primary model functors
       pmfMap activeModelFunctorList;
 
+      /// Flag specifying whether command line options have been processed yet.
+      bool processed_options;
+ 
+      /// Filename of the centralized capability description database
+      const str capability_dbase_file;
+      /// Filename of the file from which to harvest capability descriptions
+      const str input_capability_descriptions;
+      /// Filename of the centralized model description database
+      const str model_dbase_file;
+      /// Filename of the file from which to harvest model descriptions
+      const str input_model_descriptions;
+      /// File stream for 'preliminary report', for telling user about missing descriptions (and perhaps other things)
+      const str report_file;
+      std::ofstream report;
+
     public:
 
       /// Constructor
@@ -79,9 +100,9 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
-      /// Flag specifying whether command line options have been processed yet.
-      bool processed_options;
- 
+      /// Flag recording whether an inifile has been supplied
+      bool found_inifile;
+
       /// Flags set by command line options
       /// Flag to trigger dependency resolver to report functor run order
       int show_runorder;
@@ -127,6 +148,22 @@ namespace Gambit
 
       /// Get a reference to the map of all user-activated primary model functors
       const pmfMap& getActiveModelFunctors() const ;
+    
+      /// Get the description (and other info) of the named item from the capability database
+      const capability_info get_capability_info(const str&) const;
+
+      /// Get the description (and other info) of the named item from the model database
+      const model_info get_model_info(const str&) const;
+ 
+      /// Check the named database for conflicts and missing descriptions
+      // Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts
+      void check_databases();
+ 
+      /// Vector of all capability_info objects
+      std::vector<capability_info> capability_dbase;
+
+      /// Vector of all model_info objects
+      std::vector<model_info> model_dbase;
 
   };
 

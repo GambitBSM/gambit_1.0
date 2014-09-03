@@ -10,7 +10,7 @@ IncludeDirs = [
     './Printers/include',
     './ScannerBit/include',
     './Backends/include',    
-    './HEColliderBit/include',    
+    './ColliderBit/include',    
     './DarkBit/include',    
     './FlavBit/include',    
     './ExampleBit_A/include',    

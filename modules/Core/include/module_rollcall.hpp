@@ -41,11 +41,14 @@
 #include "DarkBit_rollcall.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 #include "FlavBit_rollcall.hpp"
+#include "HiggsBit_rollcall.hpp"
+#include "DecayBit_rollcall.hpp"
+
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
   #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)
-  #pragma message "Included from module_rollcall: HEColliderBit_rollcall.hpp"
-  #include "HEColliderBit_rollcall.hpp"
+  #pragma message "Included from module_rollcall: ColliderBit_rollcall.hpp"
+  #include "ColliderBit_rollcall.hpp"
 #endif
 
 #endif /* defined(__module_rollcall__) */

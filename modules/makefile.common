@@ -24,11 +24,11 @@ ifdef SHH
   SHH = stfu
 endif
 
-# set COLLIDE to anything to also include HEColliderBit compilation
+# set COLLIDE to anything to also include ColliderBit compilation
 # NOTE: You can do so on the command line:
 #       make -f makefile.xxx COLLIDE=whatever
 # TODO: Once this works for everyone (or, once the class loader is ready and
-#       we need to completely change the way HEColliderBit compiles), then
+#       we need to completely change the way ColliderBit compiles), then
 #       we should get rid of this flag entirely.
 ifndef SHH
   $(info COLLIDE = $(COLLIDE))
@@ -44,7 +44,7 @@ ifndef SHH
   $(info )
   $(info -------- Gambit main compilation --------)
   ifdef COLLIDE
-    $(info *** Including HEColliderBit $(COLLIDE) ***)
+    $(info *** Including ColliderBit $(COLLIDE) ***)
   endif
   $(info )
 endif
@@ -64,9 +64,11 @@ PRINTERSDIR = Printers
 LOGGINGDIR = Logs
 SCANDIR = ScannerBit
 BACKENDDIR = Backends
-HECOLLIDERDIR = HEColliderBit
+HECOLLIDERDIR = ColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
+HIGGSDIR = HiggsBit
+DECAYDIR = DecayBit
 EXAMPLEADIR = ExampleBit_A
 EXAMPLEBDIR = ExampleBit_B
 EXSUSYSPECDIR = Example_SUSYspecBit
@@ -89,13 +91,14 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SCANDIR)/include \
   -I$(BACKENDDIR)/include \
   -I$(DARKDIR)/include \
-  -I$(FLAVDIR)/include \
   -I$(HECOLLIDERDIR)/include \
   -I$(EXAMPLEADIR)/include \
   -I$(EXAMPLEBDIR)/include \
   -I$(DARKDIR)/include \
   -I$(EXSUSYSPECDIR)/include \
   -I$(FLAVDIR)/include \
+  -I$(HIGGSDIR)/include \
+  -I$(DECAYDIR)/include \
   -I$(YAMLDIR)/include \
   -I$(SLHAPy8DIR) \
   -I$(SLHAEADIR) \
@@ -207,7 +210,7 @@ endif
 #**********************  Begin temporary ColliderBit no-backend hackery
 ifdef COLLIDE
 
-  # Flags, switches and directories for external libraries used in HEColliderBit.
+  # Flags, switches and directories for external libraries used in ColliderBit.
   # TODO: once the class-loader is ready, these will all either not be required, or just set automatically at BOSS time or configure time
 
   ifndef DELPHES
@@ -226,9 +229,9 @@ ifdef COLLIDE
   else
     $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
     ifdef COLLIDE
-      $(error HEColliderBit dependency error....)
+      $(error ColliderBit dependency error....)
     else
-      $(info Be sure to set that variable when compiling HEColliderBit)
+      $(info Be sure to set that variable when compiling ColliderBit)
     endif
   endif
 
@@ -255,9 +258,9 @@ ifdef COLLIDE
     $(info /where/pythia/is/lib/archive in your)
     $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
     ifdef COLLIDE
-      $(error HEColliderBit dependency error....)
+      $(error ColliderBit dependency error....)
     else
-      $(info Be sure to set these PATHs when compiling HEColliderBit)
+      $(info Be sure to set these PATHs when compiling ColliderBit)
     endif
   else
     ifndef SHH
@@ -276,7 +279,7 @@ ifdef COLLIDE
     $(info ***!!!***)
     $(info ROOT compile flags failed to configure.)
     $(info Please use the 'thisroot' shell script from your ROOT installation.)
-    $(error HEColliderBit dependency error....)
+    $(error ColliderBit dependency error....)
   else
     ifndef SHH
       $(info INFO:)
@@ -295,7 +298,7 @@ ifdef COLLIDE
     $(info Delphes compile flags failed to configure.)
     $(info Please define an environment variable DELPHESDIR containing)
     $(info the path to the root Delphes directory)
-    $(error HEColliderBit dependency error....)
+    $(error ColliderBit dependency error....)
   else
     ifndef SHH
       $(info INFO:)
@@ -328,9 +331,9 @@ ifndef FJ_CXXFLAGS
   $(info You may also need to include /where/fastjet/is/lib in your)
   $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
   ifdef COLLIDE
-    $(error HEColliderBit dependency error....)
+    $(error ColliderBit dependency error....)
   else
-    $(info Be sure to set these PATHs when compiling HEColliderBit)
+    $(info Be sure to set these PATHs when compiling ColliderBit)
   endif
 else
   ifndef SHH
@@ -357,7 +360,8 @@ endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
 default: minihelp gambit
-all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
+# all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
+all: minihelp gambit gambit_example ExampleBit_A_standalone
 
 clean:
 	@echo cleaning
@@ -440,6 +444,14 @@ FLAVINC:=$(wildcard $(FLAVDIR)/include/*hpp) $(wildcard $(FLAVDIR)/include/*h)
 FLAVSRC:=$(wildcard $(FLAVDIR)/src/*cpp)
 FLAVOBJS:=$(addprefix $(FLAVDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(FLAVSRC))))
 
+HIGGSINC:=$(wildcard $(HIGGSDIR)/include/*hpp) $(wildcard $(HIGGSDIR)/include/*h)
+HIGGSSRC:=$(wildcard $(HIGGSDIR)/src/*cpp)
+HIGGSOBJS:=$(addprefix $(HIGGSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(HIGGSSRC))))
+
+DECAYINC:=$(wildcard $(DECAYDIR)/include/*hpp) $(wildcard $(DECAYDIR)/include/*h)
+DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
+DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
+
 HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
 HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
 HECOLLIDERDELPHESSRC:=$(wildcard $(HECOLLIDERDIR)/src/delphes/*Module.cc) 
@@ -458,7 +470,7 @@ EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
 GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
@@ -526,6 +538,14 @@ $(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
+$(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(GAMBITINC) $(HIGGSINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(GAMBITINC) $(DECAYINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 $(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(GAMBITINC) $(EXSUSYSPECINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -563,7 +583,7 @@ $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
 	@sed 's,$(HECOLLIDERDIR)/src/delphes/,,g' $(patsubst %.cc,%.h,$@) > temp_dict.h
 	@mv temp_dict.h $(patsubst %.cc,%.h,$@)
 
-# HEColliderBit
+# ColliderBit
 $(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -622,8 +642,8 @@ $(SCANDIR)/plugins/%.o: $(SCANDIR)/plugins/%.cpp
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 	
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/crapsample.o
-	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so 
-
+	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so -L$(YAMLDIR) -lyaml-cpp
+	
 $(SCANDIR)/lib/libexamples.so: $(SCANDIR)/plugins/examples.o
 	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so 
 	
@@ -641,7 +661,7 @@ $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim_Log.o $(FASTSIMDIR)/s
 # Intention is to pull symbols from FastJet into the fastsim backend (same should happen for direct pythia event filling... and any analyses that use jet structure)
 # Currently breaks formost symbols because symbols can't be copied unless libfastjet.a was unusually built with the -fPIC flag
 #	$(CC) -shared -L$(FJ_DIR)/lib -o $@ $^ -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
-	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS)
+	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS) -lgsl
 
 #libmultinest_interface.so
 multinest:

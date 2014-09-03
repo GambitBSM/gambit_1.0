@@ -62,6 +62,20 @@
              mdR,msR,mbR)
 #undef MODEL
 
+#define MODEL MSSM25
+  START_MODEL
+  DEFINEPARS(M_input, 
+             M1,M2,M3,
+             At,Ab,Atau,
+             mH12,mH22,
+             mu,tanb,
+             meL,mmuL,mtauL,
+             meR,mmuR,mtauR,
+             mq1L,mq2L,mq3L,
+             muR,mcR,mtR,
+             mdR,msR,mbR)
+#undef MODEL
+
 #define MODEL MSSMBen
 #define PARENT MSSM29
   START_MODEL

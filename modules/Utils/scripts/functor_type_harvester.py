@@ -203,8 +203,8 @@ def main(argv):
     if collide:
       exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
     else:
-      print "Excluding HEColliderBit rollcall headers from type harvesting..."
-      exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "HEColliderBit_rollcall.hpp", "HEColliderBit_types.hpp"])
+      print "Excluding ColliderBit rollcall headers from type harvesting..."
+      exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "ColliderBit_rollcall.hpp", "ColliderBit_types.hpp"])
     
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_type=set(["void"])

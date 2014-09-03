@@ -16,6 +16,7 @@
 
 #include <map>
 #include <vector>
+#include <fstream>
 
 // Headers for GNU getopt command line parsing library
 #include <stdlib.h>
@@ -27,6 +28,7 @@
 #include "version.hpp"
 #include "modelgraph.hpp"
 #include "stream_printers.hpp"
+#include "yaml_description_database.hpp"
 
 namespace Gambit
 {
@@ -39,36 +41,46 @@ namespace Gambit
      /* command line flags */ 
      processed_options(false),
      show_runorder(false),
-     verbose_flag(false)
+     verbose_flag(false),
+     found_inifile(false),
+     input_capability_descriptions("capabilities.dat"),
+     capability_dbase_file("central_capabilities.dat"),
+     input_model_descriptions("models.dat"),
+     model_dbase_file("central_models.dat"),
+     report_file("report.txt"),
+     report(report_file.c_str())
     {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail()
     {
-      cout << "\nusage: gambit [options] [<command>]                                      "
-              "\n                                                                         "
-              "\nAvailable commands:                                                      "
-              "\n   <inifile>           Start a scan using instructions from inifile      "
-              "\n                         e.g.: gambit gambit.yaml                        "        
-              "\n   modules             List registered modules                           "
-              "\n   backends            List registered backends and their status         "
-              "\n   models              List registered models and output model graph     "
-              "\n   capabilities        List all registered function capabilities         "
-              "\n   scanners            List registered scanners                          "
-              "\n   <name>              Give info on a specific module, backend, model,   "
-              "\n                         capability or scanner                           "
-              "\n                         e.g.: gambit DarkBit                            "       
-              "\n                               gambit Pythia                             "        
-              "\n                               gambit MSSM                               "          
-              "\n                               gambit IC79WL_loglike                     "
-              "\n                               gambit MultiNest                          "     
-              "\n                                                                         "
-              "\nAvailable options                                                        "
-              "\n   --version           Display GAMBIT version information                "
-              "\n   -h/--help           Display this usage information                    "
-              "\n   -v/--verbose        Turn on verbose mode (use with <inifile> command) "
-              "\n   -r/--runorder       List the function evaluation order computed based " 
-              "\n                         on inifile (use with <inifile> command)         "
+      cout << "\nusage: gambit [options] [<command>]                                        "
+              "\n                                                                           "
+              "\nRun scan:                                                                  "
+              "\n   gambit -f <inifile>   Start a scan using instructions from inifile      "
+              "\n                           e.g.: gambit -f gambit.yaml                     "        
+              "\n                                                                           "
+              "\nAvailable commands:                                                        "
+              "\n   modules               List registered modules                           "
+              "\n   backends              List registered backends and their status         "
+              "\n   models                List registered models and output model graph     "
+              "\n   capabilities          List all registered function capabilities         "
+              "\n   scanners              List registered scanners                          "
+              "\n   <name>                Give info on a specific module, backend, model,   "
+              "\n                           capability or scanner                           "
+              "\n                           e.g.: gambit DarkBit                            "       
+              "\n                                 gambit Pythia                             "        
+              "\n                                 gambit MSSM                               "          
+              "\n                                 gambit IC79WL_loglike                     "
+              "\n                                 gambit MultiNest                          "     
+              "\n                                                                           "
+              "\nBasic options:                                                             "
+              "\n   --version             Display GAMBIT version information                "
+              "\n   -h/--help             Display this usage information                    "
+              "\n   -f <inifile>          Start scan using <inifile>                        "
+              "\n   -v/--verbose          Turn on verbose mode                              "
+              "\n   -r/--runorder         List the function evaluation order computed based " 
+              "\n                           on inifile                                      "
               "\n" << endl << endl; 
       logger().disable();
       core_error().silent_forced_throw();
@@ -99,7 +111,7 @@ namespace Gambit
 
       while(iarg != -1)
       {
-        iarg = getopt_long(argc, argv, "vhr", primary_options, &index);
+        iarg = getopt_long(argc, argv, "vhrf:", primary_options, &index);
 
         switch (iarg)
         {
@@ -114,17 +126,17 @@ namespace Gambit
             break;
           case 'h':
           case '?':
-            // Display usage message and quit (also happens on unrecognised options)
+            // display usage message and quit (also happens on unrecognised options)
             bail();
             break;
           case 'r':
             // Display proposed functor evaluation order and quit
             show_runorder = true; // Sorted out in dependency resolver
             break;
-          case -1:
-            if (optind >= argc) bail();
-            // Bingo, got the filename
-            filename = argv[optind];
+          case 'f':
+            // Argument must contain the ini-filename 
+            filename = optarg;
+            found_inifile = true;
         }
       }
       // Set flag telling core object that command line option processing is complete
@@ -182,13 +194,270 @@ namespace Gambit
 
     /// Get a reference to the map of all user-activated primary model functors
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
+    
+    /// Check the capability and model databases for conflicts and missing descriptions
+    // Emits a report to file regard missing and conflicting descriptions.
+    void gambit_core::check_databases()
+    {
+      // Loop through registered capabilities and try to find their descriptions (potentially from many files, but for now just checking one)
+      DescriptionDatabase description_file(input_capability_descriptions); // Load descriptions file
+      //std::set<str> parsed_descriptions; // Set of capabilities whose description we have parsed
+      bool missing_flag = false; // Lets us know if any missing descriptions identified
+
+      // Check for duplicate description keys
+      std::map<str,int> duplicates = description_file.check_for_duplicates();
+
+      // Search through GAMBIT for information about registered capabilities to match to the descriptions
+      for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
+      {
+        capability_info capinfo;
+        capinfo.name = *it;
+
+        // Make sets of matching modules and backends
+        for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
+        {
+          if ((*jt)->capability() == *it) capinfo.modset.insert((*jt)->origin());
+        } 
+        for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
+        {
+          if ((*jt)->capability() == *it) capinfo.beset.insert((*jt)->origin());
+        } 
+ 
+        // Check original description files for descriptions matching this capability
+        if( description_file.hasKey(*it) )
+        {
+          // Check whether there are duplicates of this key
+          if ( duplicates[*it] > 0 )
+          {
+            std::vector<str> dups = description_file.get_all_values(*it);
+            std::ostringstream errmsg;
+            errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<< "\"! Only one description is permitted, since all capabilities going by the same name must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
+            errmsg << "This capability is provided by the following modules and backends:" <<endl;
+            errmsg << "Modules :"<<capinfo.modset<<endl;
+            errmsg << "Backends:"<<capinfo.beset<<endl<<endl;
+            errmsg << "The duplicate descriptions are:" <<endl;
+            errmsg << "---------------------" <<endl;
+            int dup_num = 0;
+            for(std::vector<str>::iterator kt = dups.begin(); kt != dups.end(); ++kt)
+            { 
+              errmsg << dup_num << ":" <<endl;
+              errmsg << *kt;
+              errmsg << "----------------------" <<endl;
+              dup_num++;
+            }
+            core_error().raise(LOCAL_INFO,errmsg.str());
+          } 
+          else 
+          {
+            capinfo.description = description_file.getValue<str>(*it);
+            capinfo.has_description = true;
+          }
+        }
+        else
+        {
+          // Record that this description is missing
+          capinfo.description = "Missing!"; 
+          capinfo.has_description = false;
+          missing_flag = true;
+        }
+        capability_dbase.push_back(capinfo);
+      }
+
+      if(missing_flag)
+      {
+        // Warn user of missing descriptions
+        std::ostringstream msg;
+        msg << "Warning! Descriptions are missing for the following capabilities:" <<endl;
+        for (std::vector<capability_info>::const_iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
+        {
+          if(not it->has_description)
+          {
+            msg << "   " << it->name << endl;
+          }
+        }
+        msg << "Please add descriptions of these to "<< input_capability_descriptions <<endl; 
+        //core_warning().raise(LOCAL_INFO,msg.str()); //Ok can't do this since logger isn't initialised yet, and gets disabled anyway.
+        // Send to a hardcoded file for now
+        report << msg.str() << endl;
+        // Also make user directly aware of this problem
+        cout << "Warning! Descriptions missing for some capabilities! See "<<report_file<<" for details." << endl;
+      }
+
+      // Write out the centralised database file containing all this information
+      // (we could also keep this in memory for other functions to use; it's probably not that large)
+      // Should probably sort it by module or something.    
+    
+      // Could have built this directly in the other loop, but for now it is separate.
+      YAML::Emitter out;
+      out << YAML::BeginSeq;
+      for (std::vector<capability_info>::iterator it = capability_dbase.begin(); it != capability_dbase.end(); ++it)
+      {
+        //capability_info tmp = *it;
+        out << *it; //custom emitter to do this is in yaml_description_database.hpp
+      }
+      out << YAML::EndSeq;
+      // Create file and write YAML output there
+      ofstream outfile;
+      outfile.open(capability_dbase_file);
+      outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
+      outfile << "# Edit \"" << input_capability_descriptions << "\" instead." << endl << endl << out.c_str();
+      
+
+      // Now the models
+      // This is distressingly similar to the capabilities case, but it doesn't seem so straightforward to modularise any further...
+        
+      // Loop through registered models and try to find their descriptions (potentially from many files, but for now just checking one)
+      DescriptionDatabase model_description_file(input_model_descriptions); // Load descriptions file
+      missing_flag = false; // reset this flag
+ 
+      // Check for duplicate description keys
+      duplicates = description_file.check_for_duplicates();
+
+      // Search through GAMBIT for information about registered models to match to the descriptions
+      for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
+      {
+        model_info model;
+        model.name = (*it)->origin();
+
+        // Check original description files for descriptions matching this capability
+        if( model_description_file.hasKey(model.name) )
+        {
+          // Check whether there are duplicates of this key
+          if (duplicates[model.name] > 0)
+          {
+            std::vector<str> dups = model_description_file.get_all_values(model.name);
+            std::ostringstream errmsg;
+            errmsg << "Error! Duplicate model descriptions found for model \""<<model.name<< "\"! Only one description is permitted, since model names must be unique. Please rename a model or delete one of the descriptions."<<endl;
+            errmsg << "The duplicate descriptions are:" <<endl;
+            errmsg << "---------------------" <<endl;
+            int dup_num = 0;
+            for(std::vector<str>::iterator kt = dups.begin(); kt != dups.end(); ++kt)
+            { 
+              errmsg << dup_num << ":" <<endl;
+              errmsg << *kt;
+              errmsg << "----------------------" <<endl;
+              dup_num++;
+            }
+            core_error().raise(LOCAL_INFO,errmsg.str());
+          } 
+          else 
+          {
+            model.description = model_description_file.getValue<str>(model.name);
+            model.has_description = true;
+          }
+        }
+        else
+        {
+          // Record that this description is missing
+          model.description = "Missing!"; 
+          model.has_description = false;
+          missing_flag = true;
+        }
+  
+        // Get the rest of the info
+        model.nparams = (*it)->valuePtr()->getNumberOfPars();
+        model.parameters = (*it)->valuePtr()->getKeys();
+        model.parent = modelInfo->get_parent(model.name);
+        model.lineage = modelInfo->get_lineage(model.name);
+        model.descendants = modelInfo->get_descendants(model.name);
+
+        model_dbase.push_back(model);
+      }
+
+      if(missing_flag)
+      {
+        // Warn user of missing descriptions
+        std::ostringstream msg;
+        msg << "Warning! Descriptions are missing for the following models:" <<endl;
+        for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
+        {
+          if(not it->has_description)
+          {
+            msg << "   " << it->name << endl;
+          }
+        }
+        msg << "Please add descriptions of these to "<< input_model_descriptions <<endl;
+        report << msg.str() << endl;
+        // Also make user directly aware of this problem
+        cout << "Warning! Descriptions missing for some models! See "<<report_file<<" for details." << endl;
+      }
+
+      // Write out the centralised database file containing all this information
+      // (we could also keep this in memory for other functions to use; it's probably not that large)
+      // Should probably sort it by module or something.    
+  
+      // Could have built this directly in the other loop, but for now it is separate.
+      YAML::Emitter out2;
+      out2 << YAML::BeginSeq;
+      for (std::vector<model_info>::const_iterator it = model_dbase.begin(); it != model_dbase.end(); ++it)
+      {
+        out2 << *it; //custom emitter to do this is in yaml_description_database.hpp
+      }
+      out2 << YAML::EndSeq;
+      // Create file and write YAML output there
+      ofstream outfile2;
+      outfile2.open(model_dbase_file);
+      outfile2 << "# Auto-generated model description library. Edits will be erased." << endl;;
+      outfile2 << "# Edit \"" << input_model_descriptions << "\" instead." << endl << endl << out2.c_str();
+  
+    }
+
+    /// Get the description of the named capability from the description database
+    // e.g. second argument might be "capability", with the first argument being
+    // the name of a capability
+    const capability_info gambit_core::get_capability_info(const str& name) const
+    {
+      // I am now keeping a vector of all the descriptions around... so no need to
+      // actually read from the database file...
+
+      // YAML::Node parser = YAML::LoadFile(centralised_descriptions);
+      // for(YAML::const_iterator it=parser.begin();it!=parser.end();++it)
+      // {
+      //   capability_info cap = it->as<capability_info>();
+      //   if(cap.name==name)
+      //   {
+      //     return cap; //Should only be one match possible after database check
+      //   }
+      // }
+      // If we didn't find any matching capability this is bad; raise an error.
+
+      for(std::vector<capability_info>::const_iterator it=capability_dbase.begin();
+           it!=capability_dbase.end();++it)
+      {
+         if(it->name==name)
+         {
+           return *it; //Should only be one match possible after database check
+         }
+      }
+      // if no match...
+      std::ostringstream errmsg;
+      errmsg << "No capability with the name \""<<name<< "\" could be found in the capability database. This function should not run when we don't know if the capability exists! Either there is a bug in the calling code, or something went wrong creating the capability database.";
+      core_error().raise(LOCAL_INFO,errmsg.str());
+    }
+
+    const model_info gambit_core::get_model_info(const str& name) const
+    {
+      for(std::vector<model_info>::const_iterator it=model_dbase.begin();
+           it!=model_dbase.end();++it)
+      {
+         if(it->name==name)
+         {
+           return *it; //Should only be one match possible after database check
+         }
+      }
+      // if no match...
+      std::ostringstream errmsg;
+      errmsg << "No model with the name \""<<name<< "\" could be found in the model database. This function should not run when we don't know if the model exists! Either there is a bug in the calling code, or something went wrong creating the model database.";
+      core_error().raise(LOCAL_INFO,errmsg.str());
+    }
+
 
     /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
     str gambit_core::run_diagnostic(int argc, char **argv)
     {
       str filename;
       const str command = argc > 1 ? argv[1] : "none";
-      bool is_yaml = false;
+      bool no_scan = false; // Set to true if something happens that means we should stop cleanly after checking commands
     
       // Check which mode we are running in
       // (each mode may process command line arguments differently)
@@ -208,6 +477,7 @@ namespace Gambit
           } 
           cout << *it << spacing(it->length(),maxlen) << nf << endl;
         }
+        no_scan = true;
       }
     
       else if (command == "backends")
@@ -248,6 +518,7 @@ namespace Gambit
             cout << nfuncs[*jt] << endl;
           }
         }
+        no_scan = true;
       }
     
       else if (command == "models")
@@ -269,19 +540,28 @@ namespace Gambit
         ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
         cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
         cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
+
+        no_scan = true;
       }
     
       else if (command == "capabilities")
       {
         const int maxlen1 = 35;
         const int maxlen2 = 25;
+
+        // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
+
+        
+        // Default, list-format output header
         cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
         cout << "---------------------------------------------------------------------------------------------" << endl;
+        
         for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
         {
           std::set<str> modset, beset;
-          str mods, bes;
+          str mods, bes, description;
+
           // Make sets of matching modules and backends
           for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
           {
@@ -291,6 +571,7 @@ namespace Gambit
           {
             if ((*jt)->capability() == *it) beset.insert((*jt)->origin());
           }         
+
           // Make strings out of the sets
           for (std::set<str>::const_iterator jt = modset.begin(); jt != modset.end(); ++jt)
           {
@@ -302,11 +583,15 @@ namespace Gambit
             if (jt != beset.begin()) bes += ", "; 
             bes += *jt;
           }
+ 
           // Identify the primary model parameters with their models.
           if (mods.length() == 0 and bes.length() == 0) mods = it->substr(0,it->length()-11);
-          // Print the entry in the table.
+
+          // Print the entry in the table (list format)
           cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
         }
+
+        no_scan = true;
       }
 
       else if (command == "scanners")
@@ -318,17 +603,20 @@ namespace Gambit
         //{
         //  cout << *it << endl;
         //}
+        no_scan = true;
       }
 
       else 
       {
-        is_yaml = true;
+        // If we aren't just checking what stuff is registered, we could end up running a scan, or needing the descriptions of things. Therefore we must construct the description databases and make sure there are no naming conflicts etc.
+        check_databases();
 
         //Iterate over all modules to see if command matches one of them
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
           if (command == *it)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for module " << *it << "." << endl << endl;
             cout << "Function                             Capability                              Result Type               Loop Manager: Is   Needs";
@@ -368,8 +656,6 @@ namespace Gambit
                 if (reqs.empty() and deps.empty()) cout << endl;
               }
             } 
-
-            is_yaml = false;
             break;
           }
         }
@@ -379,6 +665,7 @@ namespace Gambit
         {
           if (command == *it)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for backend " << *it << "." << endl << endl;
 
@@ -425,7 +712,6 @@ namespace Gambit
               cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl << endl;
             }
 
-            is_yaml = false;
             break;
           }
         }
@@ -436,12 +722,28 @@ namespace Gambit
           str model = (*it)->origin();
           if (command == model)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for model " << model << "." << endl << endl;;
           
-            // parent, children, parameters
+            // Retrieve info on this capability from the database file
+            model_info mod = get_model_info(model); 
 
-            is_yaml = false;
+            // Need copies of lineage and descendant vectors with self-reference removed
+            std::vector<str> lin_X = mod.lineage;
+            std::vector<str> des_X = mod.descendants;
+          
+            // Erase element matching name
+            lin_X.erase(std::remove(lin_X.begin(), lin_X.end(), mod.name), lin_X.end());
+            des_X.erase(std::remove(des_X.begin(), des_X.end(), mod.name), des_X.end());
+
+            cout << "  Parent Model: " << mod.parent << endl;
+            cout << "  Number of parameters: " << mod.nparams << endl;
+            cout << "  Parameter names:" << mod.parameters << endl;
+            cout << "  'Ancestor' models:" << lin_X << endl;
+            cout << "  'Descendant' models:" << des_X << endl;
+            cout << "  Description: " << endl << mod.description << endl;
+
             break;
           }
         }  
@@ -451,13 +753,19 @@ namespace Gambit
         {
           if (command == *it)
           {
+            no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for capability " << *it << "." << endl << endl;
-          
-            // available from (type, module/backend, function name)
-            // explanation from capability database
 
-            is_yaml = false;
+            // Retrieve info on this capability from the database file
+            capability_info cap = get_capability_info(*it); 
+
+            cout << "  Available in modules: " << cap.modset << endl;
+            cout << "  Available in backends:" << cap.beset << endl;
+            cout << "  Description: " << endl << cap.description << endl;
+            ///TODO Hmm need to get the type information still...
+            // available from (type, module/backend, function name)
+
             break;
           }
         }
@@ -476,31 +784,37 @@ namespace Gambit
             //break;
           //}
         }  
-
-        // If we haven't yet, process the command line options
-        // (this may be done differently in one of the non-standard run modes, though if it
-        //  is then gambit should probably stop running before we get to here...)
-        if (not processed_options) 
-        {
-          filename = process_primary_options(argc,argv);
-        }
-        else 
-        {
-          cout<<"Command line options have already been processed in a special run mode... GAMBIT should not reach this point. Aborting..."<<endl;
-          logger().disable();
-          core_error().silent_forced_throw();
-        }
-
       }
-    
-      //Looks like time to die.
-      if (not is_yaml) 
+   
+      // Check if some command or other was run and we should stop.
+      if (no_scan) 
       {
         cout << endl;
         logger().disable();
         core_error().silent_forced_throw();
       }
 
+      // If we haven't yet, process the command line options
+      // (this may be done differently in one of the non-standard run modes, though if it
+      //  is then gambit should probably stop running before we get to here...)
+      if (not processed_options) 
+      {
+        filename = process_primary_options(argc,argv);
+        // Check if we indeed received a valid filename (needs -f option now)
+        if( not found_inifile)
+        {
+          // Ok then, report an unrecognised command and bail
+          cout<<"Unrecognised command received!"<<endl;
+          bail();
+        }
+      }
+      else 
+      {
+        cout<<"Command line options have already been processed in a special run mode... GAMBIT should not reach this point. Aborting..."<<endl;
+        logger().disable();
+        core_error().silent_forced_throw();
+      }    
+    
       return filename;
     
     }
