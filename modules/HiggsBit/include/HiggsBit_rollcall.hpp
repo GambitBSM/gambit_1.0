@@ -88,7 +88,6 @@ START_MODULE
     START_CAPABILITY
       #define FUNCTION HS_LHCchisq
       START_FUNCTION(double)
-        BACKEND_REQ(initialize_HiggsBounds_int_HS, (libhiggssignals), void, (int&, int&, int&))
         BACKEND_REQ(initialize_HiggsSignals_latestresults, (libhiggssignals), void, (int&, int&))
         BACKEND_REQ(HiggsBounds_input_SLHA_HS, (libhiggssignals), void, (const char&))
         BACKEND_REQ(setup_pdf, (libhiggssignals), void, (int&))  
@@ -96,7 +95,6 @@ START_MODULE
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
         BACKEND_REQ(finish_HiggsSignals, (libhiggssignals), void, ())
-        BACKEND_REQ(finish_HiggsBounds_HS, (libhiggssignals), void, ())
         BACKEND_OPTION( (HiggsSignals, 1.2), (libhiggssignals) )
      #undef FUNCTION
   #undef CAPABILITY
