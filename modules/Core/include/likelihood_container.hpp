@@ -28,7 +28,7 @@
 #define __likelihood_container_hpp__
 
 #include "container_factory.hpp"
-
+#include "baseprinter.hpp"
 
 namespace Gambit
 {

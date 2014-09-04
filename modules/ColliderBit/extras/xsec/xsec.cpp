@@ -172,9 +172,9 @@ namespace xsec{
 
     // Find scales
     double Qxsec = 1000.; // we want params at 1 TeV since that's where the interpolators were fitted
-    double Qmsoft = point.msoft.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
+    double Qmsoft = point.msoft.q()*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     double Qextpar = point.extpar(0);
-    double Qhmix = point.hmix.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
+    double Qhmix = point.hmix.q()*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     cout << "Qmsoft " << Qmsoft << endl;
     cout << "Qextpar " << Qextpar << endl;
 
@@ -217,13 +217,13 @@ namespace xsec{
     // Order of parameters defined by Martin's NN training string
     // @tanB,@M_1,@M_2,@M_3,@mA,@meL,@mmuL,@mtauL,@meR,@mmuR,@mtauR,@mqL1,@mqL2,@mqL3,@muR,@mcR,@mtR,@mdR,@msR,@mbR,@At,@Ab,@Atau,@mu
     else if (abs(Qmsoft-Qhmix) < 1.0 && abs(Qmsoft) > 0.1){
-      par[0] = point.hmix(3);  // \tan\beta
+      par[0] = point.hmix(2);  // \tan\beta
       par[1] = point.msoft(1);  // M_1
       par[2] = point.msoft(2);  // M_2
       par[3] = point.msoft(3);  // M_3
 
-      cout << endl << "Started with these masses: " << endl;
-      cout << par[1] << " " << par[2] << " " << par[3] << endl;
+      //cout << endl << "Started with these masses: " << endl;
+      //cout << par[1] << " " << par[2] << " " << par[3] << endl;
 
       par[4] = sqrt(point.hmix(4));  // m_A WARNING: not pole
       par[5] = point.msoft(31); // meL
@@ -271,11 +271,26 @@ namespace xsec{
         par[i] = par[i] + 1./8./pow(pi,2)*b[i]*pow(g[i],2)*par[i]*dt;
         g[i] = g[i] + 1./16./pow(pi,2)*b[i]*pow(g[i],3)*dt;
       }
-      cout << par[1] << " " << par[2] << " " << par[3] << endl;
+      //cout << par[1] << " " << par[2] << " " << par[3] << endl;
     }
 
-    cout << "Wanted these masses: " << endl;
-    cout << -1.87089880e+02 << " " << 1.53667310e+02 << " " << -5.32953183e+02 << endl;
+    // Check that parameters are reasonable, reset if not
+    for(int i = 1; i < 24; i++){
+      if(i == 0 && (par[i] > 50. || par[i] < 2.)){
+        cout << "\tan\beta outside of range of validity of NN" << endl;
+        if(par[i] < 2.) par[i] = 2.;
+        if(par[i] > 50.) par[i] = 50.;
+        cout << "Reset to " << par[i] << endl;
+      }
+      // Soft masses
+      else if(i > 0 && abs(par[i]) > 2000.){
+        cout << "Soft parameter" << i << " outside of range of validity of NN" << endl;
+        par[i] = par[i]/abs(par[i])*2000.;
+        cout << "Reset to " << par[i] << endl;
+      }
+    }
+    
+    
   }
 
 
@@ -495,10 +510,8 @@ namespace xsec{
     if(process == "cLuRbar") return sb_cLuR.Value(0,par);
     if(process == "cRcRbar") return sb_cRcR.Value(0,par);
     if(process == "b1b1bar") return b1b1.Value(0,par);
-    if(process == "b1b2bar") return 0;
     if(process == "b2b2bar") return b2b2.Value(0,par);
     if(process == "t1t1bar") return t1t1.Value(0,par);
-    if(process == "t1t2bar") return 0;
     if(process == "t2t2bar") return t2t2.Value(0,par);
 
     // Squark + squark production

@@ -98,7 +98,9 @@ namespace Gambit
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
       void setVertexID(int);
-   
+      /// Setter for label (used in printer system)
+      void setLabel(str);  
+ 
       /// Getter for the wrapped function's name
       str name() const;
       /// Getter for the wrapped function's reported capability
@@ -119,10 +121,10 @@ namespace Gambit
       str purpose() const;
       /// Getter for vertex ID
       int vertexID() const;
+      /// Getter for string label
+      str label() const;
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
-      /// Getter for the wrapped function's printer label
-      str label() const;
 
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool);
@@ -234,10 +236,10 @@ namespace Gambit
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
+      /// String label, used to label functor results in printer system
+      str myLabel;
       /// Debug flag
       bool verbose;
-      /// String label used by printer system to label output of this function
-      str myLabel;    
 
       /// Internal storage of function options, as a YAML node
       Options myOptions;

@@ -76,7 +76,11 @@ namespace Gambit
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
      needs_recalculating (true)
-    {}
+    {
+       std::stringstream ss;
+       ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name(); 
+       setLabel(ss.str());
+    }
     
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
@@ -108,6 +112,9 @@ namespace Gambit
       setInUse(myStatus == 2);       
     }
 
+    /// Setter for label (used in printer system)
+    void functor::setLabel(str label) { if (this == NULL) failBigTime("setLabel"); myLabel = label; } 
+   
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
     /// Getter for the wrapped function's reported capability
@@ -1289,11 +1296,6 @@ namespace Gambit
       if(myPrintFlag)
       {
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
-        // We now pass the 'this' pointer for this functor to the print function. In principle we could
-        // probably pass only this, but it is a little tricky because we still have to call the overload
-        // of 'print' which is appropriate for the type of 'myValue'. If the printers only expect
-        // module_functors, then we could use the template type of the pointer to do the resolution, but 
-        // it might just be more straightforward to pass 'myValue' like we are currently doing...
         printer->print(myValue[0],myLabel,myVertexID);
       }
     }

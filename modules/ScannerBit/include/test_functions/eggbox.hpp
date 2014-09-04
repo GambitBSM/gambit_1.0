@@ -59,7 +59,7 @@ namespace Gambit
                                 return pow((2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2)), 5.0);
                         }
                         
-                        void print(double in, const std::string & type) const {}
+                        void print(double in, const std::string & type, int ID) const {}
                         
                         ~EggBox(){}
                 };

@@ -27,6 +27,7 @@
 
 #include "scanner_plugin.hpp"
 
+
 // Auxilliary classes and functions needed by multinest
 // (cloned largely from eggbox.cc, and modified to use cwrapper.f90 interface instead of multinest.h)
 
@@ -46,8 +47,8 @@ namespace Gambit {
       class LogLikeWrapper
       {
          private:
-            // Pointer to a ScannerBit::Function_Base
-            ::Gambit::Scanner::Function_Base *boundLogLike;
+            // Reference to a ScannerBit::Function_Base
+            ::Gambit::Scanner::Function_Base& boundLogLike;
             // Number of free parameters
             int my_ndim;
             // Parameter keys (names)
@@ -58,7 +59,7 @@ namespace Gambit {
   
             // Constructor
             // Possibly replace the function pointer to the prior function with something nicer, some virtual base class object or something.
-            LogLikeWrapper(::Gambit::Scanner::Function_Base* LogLike, int ndim, const std::vector<std::string>& keys) 
+            LogLikeWrapper(::Gambit::Scanner::Function_Base& LogLike, int ndim, const std::vector<std::string>& keys) 
               : boundLogLike(LogLike), my_ndim(ndim), parameter_keys(keys)
             { }
    
@@ -81,26 +82,35 @@ namespace Gambit {
             double LogLike(double *Cube, int ndim, int npars)
             {
                    // We need to get the unit interval parameters out of "Cube", transform them to their physical values, and then pass them to the Scanner LogLike function to compute the log likelihood value
-                   std::map<std::string,double> unitpars(Cube, Cube + ndim); //convert C style array to C++ vector class
-                   std::map<std::string,double> physicalpars;
+                   //std::map<std::string,double> unitpars(Cube, Cube + ndim); 
+                   std::vector<double> unitpars(Cube, Cube + ndim); //convert C style array to C++ vector class
+                   //std::map<std::string,double> physicalpars;
                    double lnew;
-                   int i;
-                   if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
-                   if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
+                   //int i;
+   
+                   // No scan_error?
+                   //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
+                   //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
                    
                    // WANT TO DO THIS:
              	   //lnew = (*boundLogLike)(physicalpars);
                    // BUT FOR NOW HAVE TO DO THIS:
                    lnew = boundLogLike(unitpars); 
                    //get transformed parameters.
-                   physicalpars = boundLogLike->getParameters();
+                   //physicalpars = boundLogLike->getParameters();
+
+                   // Just testing out the print function
+                   // Removed this for now since changing the interface...
+                   // boundLogLike.print(lnew, "test_LogLike",-1);
 
                    // Write the physical parameters back into Cube for multinest to write to output file (no other purpose)
                    // (at this point any extra observables that have been computed could also be added to Cube for transfer to the multinest-controlled output files. Must be sufficiently many slots reserved in Cube for this.
-                   for(i = 0; i < ndim; i++)
-                   {
-                      Cube[i] = physicalpars[i];
-                   }
+                   // Not writing output, so don't bother doing this.
+
+                   //for(i = 0; i < ndim; i++)
+                   //{
+                   //   Cube[i] = physicalpars[i];
+                   //}
 
                    // Done! (lnew will be used by MultiNest to guide the search)
                    return lnew;                  
@@ -132,6 +142,19 @@ namespace Gambit {
             
             void dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double *paramConstr, double maxLogLike, double logZ, double logZerr)
             {
+                // Should now be able to send things from here to the Gambit printer system
+
+                //boundLogLike.print(*posterior, "posterior");  // Currently accepts a double, and a labelling string
+                // Gah, can't do that, that is the full posterior, which multinest recomputes constantly!
+                // I just wanted the prior weights, but they don't seem to be here. I guess we will have to recompute them ourselves, it is easy enough I guess.
+
+                // Bah! dumper only runs every updint*10 iterations! No good for printing info about points, need some different system if we want this stuff.
+                //boundLogLike.print(maxLogLike, "maxLogLike",-1);
+                //boundLogLike.print(logZ, "logZ",-2);
+                //boundLogLike.print(logZerr, "logZerr",-3);
+
+                // ------Old default stuff below---------
+
             	// convert the 2D Fortran arrays to C++ arrays
             	
             	
@@ -212,42 +235,48 @@ scanner_plugin (multinest)
                 int ma = keys.size();
 
                 // set the MultiNest sampling parameters 
-                // TODO: Transfer these in via ini file
-                // NOTE! There is now a flag (called 'outfile') to prevent MultiNest from writing any output files, so once the printer system is working we can safely turn this output off and not be left with all that junk floating around.
+                // NOTE! There is now a flag (called 'outfile') to prevent MultiNest from writing any output files, so once the printer system is working we can safely turn this output off and not be left with all that junk floating around. UPDATE: Now done.
         	
-        	int IS = 1;					// do Nested Importance Sampling?
-        	int mmodal = 0;					// do mode separation?
-        	int ceff = 0;					// run in constant efficiency mode?
-        	int nlive = 1000;				// number of live points
-        	double efr = 0.8;				// set the required efficiency
-        	double tol = 0.5;				// tol, defines the stopping criteria
-        	int ndims = ma;					// dimensionality (no. of free parameters)
-        	int nPar = ndims;					// total no. of parameters including free & derived parameters
-        	int nClsPar = ndims;				// no. of parameters to do mode separation on
-        	int updInt = 1000;				// after how many iterations feedback is required & the output files should be updated
-        							// note: posterior files are updated & dumper routine is called after every updInt*10 iterations
-        	double Ztol = -1E90;				// all the modes with logZ < Ztol are ignored
-        	int maxModes = 100;				// expected max no. of modes (used only for memory allocation)
-        	int pWrap[ndims];				// which parameters to have periodic boundary conditions?
+                int IS (	get_inifile_value<int>("IS", 1) );					// do Nested Importance Sampling?
+        	int mmodal ( 	get_inifile_value<int>("mmodal", 0) );					// do mode separation?
+        	int ceff ( 	get_inifile_value<int>("ceff", 0) );					// run in constant efficiency mode?
+        	int nlive ( 	get_inifile_value<int>("nlive", 1000) );				// number of live points
+        	double efr ( 	get_inifile_value<double>("efr", 0.8) );				// set the required efficiency
+        	double tol ( 	get_inifile_value<double>("tol", 0.5) );				// tol, defines the stopping criteria
+        	int ndims ( 	get_inifile_value<int>("ndims", ma) );					// dimensionality (no. of free parameters)
+        	int nPar ( 	get_inifile_value<int>("nPar", ma) );					// total no. of parameters including free & derived parameters
+        	int nClsPar ( 	get_inifile_value<int>("nClsPar", ma) );				// no. of parameters to do mode separation on
+        	int updInt ( 	get_inifile_value<int>("updInt", 1000) );				// after how many iterations feedback is required & the output files should be updated
+        									// note: posterior files are updated & dumper routine is called after every updInt*10 iterations
+        	double Ztol (	get_inifile_value<double>("Ztol", -1E90) );				// all the modes with logZ < Ztol are ignored
+        	int maxModes (	get_inifile_value<int>("maxModes", 100) );				// expected max no. of modes (used only for memory allocation)
+
+                // Need to do more work if we want to enable the periodic boundary conditions.
+        	//int pWrap[ndims]; //cannot declare VLA				// which parameters to have periodic boundary conditions?
+                int* pWrap = new int[ndims]; //remember to delete!
         	for(int i = 0; i < ndims; i++) pWrap[i] = 0;
-        	char root[100] = "chains/mnest_test";           // root for output files
-        	int seed = -1;					// random no. generator seed, if < 0 then take the seed from system clock
-        	int fb = 1;					// need feedback on standard output?
-        	int resume = 1;					// resume from a previous job?
-        	int outfile = 1;				// write output files?
-        	int initMPI = 1;				// initialize MPI routines?, relevant only if compiling with MPI
-        							// set it to F if you want your main program to handle MPI initialization
-        	double logZero = -1E90;				// points with loglike < logZero will be ignored by MultiNest
-        	int maxiter = 0;				// max no. of iterations, a non-positive value means infinity. MultiNest will terminate if either it 
-        							// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
+                
+        	std::string root_str ( get_inifile_value<std::string>("root", "chains/") );           // root for output files
+                char root[100];
+                root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
+
+        	int seed (	get_inifile_value<int>("seed", -1) );					// random no. generator seed, if < 0 then take the seed from system clock
+        	int fb (	get_inifile_value<int>("fb", 1) );					// need feedback on standard output?
+        	int resume (	get_inifile_value<int>("resume", 1) );					// resume from a previous job?
+        	int outfile (	get_inifile_value<int>("outfile", 0) );				// write output files?
+        	int initMPI (	get_inifile_value<int>("initMPI", 1) );				// initialize MPI routines?, relevant only if compiling with MPI
+        									// set it to F if you want your main program to handle MPI initialization
+        	double logZero (get_inifile_value<double>("logZero", -1E90) );				// points with loglike < logZero will be ignored by MultiNest
+        	int maxiter (	get_inifile_value<int>("maxiter", 0) );				// max no. of iterations, a non-positive value means infinity. MultiNest will terminate if either it 
+        									// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
-        
+                
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
                 // NOTE 2: Prior creation now shifted into Models code! Pointer to a prior object must wind up here somehow!
                 // WANT TO DO THIS:
-                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, ndims, keys);
+                ::Gambit::MultiNest::LogLikeWrapper loglwrapper(*LogLike, ndims, keys);
                 // // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
                 // std::vector< ::Gambit::Priors::BasePrior* > subpriors;
                 // std::pair<double,double> unit_range(0,1);
@@ -270,7 +299,9 @@ scanner_plugin (multinest)
                 std::cout << "Starting multinest..." << std::endl;
        	        run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, ::Gambit::MultiNest::callback_loglike, ::Gambit::MultiNest::callback_dumper, context);
                 std::cout << "Multinest finished!" << std::endl;
+
                 // Do some cleanup or something.
+                delete [] pWrap;
 
                 return 0;
 

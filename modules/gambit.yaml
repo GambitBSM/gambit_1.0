@@ -90,9 +90,8 @@ Scanner:
   plugin: crapsample
   file_path:  ScannerBit/lib/libsample.so
 
-  #scanner:
-  #  module:  multinest
-  #  file_path:  ScannerBit/lib/libmultinest_interface.so
+  #plugin:  multinest
+  #file_path:  ScannerBit/lib/libmultinest_interface.so 
       
   enable_redirect: false
 
@@ -113,6 +112,8 @@ Scanner:
       output_file: "weights ..."
     
   multinest:
+    nlive: 500
+    tol: 0.1
     output_file:  output
     
   twalk_beta:
