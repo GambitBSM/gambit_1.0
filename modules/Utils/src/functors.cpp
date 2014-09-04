@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar-May
+///  \date 2014 Jan, Mar-May, Sep
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -19,11 +19,12 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June, July 2013
+///  \date 2013 May, June, July
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 July, Sep, 2014 Jan
+///  \date 2013 July, Sep
+///  \date 2014 Jan
 ///
 ///  *********************************************
 
@@ -290,7 +291,7 @@ namespace Gambit
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
     bool functor::modelAllowed(str model)
     {
-      if (allowedModels.empty()) return true;
+      if (allowedModels.empty() and allowedGroupCombos.empty()) return true;
       if (allowed_parent_model_exists(model)) return true;
       return false;        
     }
@@ -305,11 +306,79 @@ namespace Gambit
     /// Test whether the functor is allowed to be used with all models
     bool functor::allModelsAllowed()
     {
-      return allowedModels.empty();
+      return allowedModels.empty() and allowedGroupCombos.empty();
     }
 
     /// Add a model to the internal list of models for which this functor is allowed to be used.
     void functor::setAllowedModel(str model) { allowedModels.insert(model); }
+
+    /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
+    bool functor::modelComboAllowed(std::vector<str> combo)
+    {
+      // If any model in the combo is always allowed, then give the combo a thumbs up.
+      for(std::vector<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
+      {
+        if (modelAllowed(*model)) return true;
+      }
+      // Loop over the allowed combinations, and check if the passed combo matches any of them
+      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      {  
+        bool matches = true;
+        //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it somehow.
+        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        {
+          matches = matches and contains_any_descendents_of(combo, *group);
+          if (not matches) break;
+        }
+        //Return true immediately if all entries in the allowed group combination have been matched.
+        if (matches) return true;
+      }
+      return false;
+    }
+
+    /// Test whether the functor has been explictly allowed to be used with a given combination of models 
+    bool functor::modelComboExplicitlyAllowed(std::vector<str> combo)
+    {
+      // If any model in the combo is always explicitly allowed, then give the combo a thumbs up.
+      for(std::vector<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
+      {
+        if (modelExplicitlyAllowed(*model)) return true;
+      }
+      // Loop over the allowed combinations, and check if the passed combo matches any of them
+      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      {
+        bool matches = true;
+        //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it explicitly.
+        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        {
+          matches = matches and has_common_elements(combo, *group);
+          if (not matches) break;
+        }
+        //Return true immediately if all entries in the allowed group combination have been matched.
+        if (matches) return true;
+      }
+      return false;
+    }
+
+    /// Add a model group definition to the internal list of model groups.
+    void functor::setModelGroup(str group, str contents)
+    {
+      //Strip the group contents of its parentheses, then split it, turn it into a set and save it in the map
+      strip_parentheses(contents);
+      std::vector<str> v = delimiterSplit(contents, ",");
+      std::set<str> combo(v.begin(), v.end());
+      modelGroups[group] = combo;
+    }
+
+    /// Add a model group combination to the internal list of combinations for which this functor is allowed to be used.
+    void functor::setAllowedModelGroupCombo(str groups)
+    {
+      //Strip the group combo of its parentheses, then split it and save it in the vector of allowed combos
+      strip_parentheses(groups);
+      std::vector<str> group_combo = delimiterSplit(groups, ",");
+      allowedGroupCombos.insert(group_combo);
+    }
+
 
     /// Print function
     void functor::print(Printers::BasePrinter*)
@@ -336,7 +405,7 @@ namespace Gambit
     }
 
     /// Test if a model has a parent model in the functor's allowedModels list
-    bool functor::allowed_parent_model_exists(str model)
+    inline bool functor::allowed_parent_model_exists(str model)
     {
       for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
       {
@@ -345,6 +414,65 @@ namespace Gambit
           if (myClaw->descended_from(model, *it)) return true;
         } 
       }    
+      return false;    
+    }
+
+    /// Check that a model is actually part of a combination that is allowed to be used with this functor.
+    inline bool functor::in_allowed_combo(str model)
+    {
+      // If the model is allowed on its own, just give the thumbs up immediately.
+      if (modelAllowed(model)) return true;
+      // Loop over the allowed combinations, and check if the passed model matches anything in any of them
+      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      {
+        //Loop over each group in the allowed group combination, and check if the model descends from or matches a model in the group.
+        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        {
+          // Work through the members of the model group
+          std::set<str> models = modelGroups.at(*group);
+          for (std::set<str>::reverse_iterator it = models.rbegin() ; it != models.rend(); ++it)
+          {
+            if (myClaw->model_exists(*it))
+            {
+              if (myClaw->descended_from(model, *it)) return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    /// Test whether any of the entries in a given model group has any descendents in a given combination
+    inline bool functor::contains_any_descendents_of(std::vector<str> combo, str group)
+    {
+      // Work through the members of the model group
+      std::set<str> models = modelGroups.at(group);
+      for (std::set<str>::const_iterator it = models.begin() ; it != models.end(); ++it)
+      {
+        if (myClaw->model_exists(*it))
+        {
+          // Work through the members of the combination
+          for (std::vector<str>::const_iterator jt = combo.begin() ; jt != combo.end(); ++jt)
+          {
+            if (myClaw->model_exists(*jt))
+            {
+              if (myClaw->descended_from(*jt, *it)) return true;
+            }
+          } 
+        }    
+      }
+      return false;    
+    }
+
+    /// Work out whether a given combination of models and a model group have any elements in common
+    inline bool functor::has_common_elements(std::vector<str> combo, str group)
+    {
+      // Work through the members of the model group
+      std::set<str> models = modelGroups.at(group);
+      for (std::set<str>::reverse_iterator it = models.rbegin() ; it != models.rend(); ++it)
+      {
+        if ( std::find(combo.begin(), combo.end(), *it) == combo.end() ) return true;
+      }
       return false;    
     }
 
@@ -1022,14 +1150,8 @@ namespace Gambit
     /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
     void module_functor_common::notifyOfModel(str model)
     {
-      //Make sure this model is actually allowed to be used with this functor, otherwise die gracefully.
-      if (not modelAllowed(model))
-      {                                                                      
-        str errmsg = "Problem encountered when notifying functor of model:";
-        errmsg +=  "\nFunction " + myName + " in " + myOrigin + " cannot be used"
-                   "\nwith model " + model + ".  Check module header or input file for errors.";
-        utils_error().raise(LOCAL_INFO,errmsg);
-      }        
+      //Add the model to the internal list of models being scanned.
+      myModels.push_back(model);
       //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
       std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
       for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
@@ -1045,8 +1167,6 @@ namespace Gambit
         myResolvableBackendReqs.push_back(*it);
         myGroupedBackendReqs[backendreq_groups[*it]].push_back(*it);
       }
-      //Add the model to the internal list of models being scanned.
-      myModels.push_back(model);
     }
 
     /// Do pre-calculate timing things

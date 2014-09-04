@@ -168,7 +168,9 @@ START_MODULE
   
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    ALLOW_MODELS(NormalDist, test_parent_I)
+    MODEL_GROUP(group1, (NormalDist))
+    MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
+    ALLOW_MODEL_COMBINATION(group1, group2)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -194,10 +196,10 @@ START_MODULE
   #define CAPABILITY marg_lnlike_test
   START_CAPABILITY
     #define FUNCTION marg_poisson_test
-      START_FUNCTION(double)
-      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
-      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
-      BACKEND_GROUP(lnlike_marg_poisson)
+    START_FUNCTION(double)
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
 

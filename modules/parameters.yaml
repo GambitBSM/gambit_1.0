@@ -34,6 +34,13 @@ CMSSM_demo:
   tanb:
   #  fixed_value: 1
 
+NormalDist:
+  mu:
+    fixed_value: 1
+  sigma:
+    fixed_value: 1
+
+
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
     # range: [-1, 1]

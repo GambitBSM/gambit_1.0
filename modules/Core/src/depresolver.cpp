@@ -593,19 +593,22 @@ namespace Gambit
       std::vector<functor *>::const_iterator fi, fi_end = boundCore->getBackendFunctors().end();
       std::vector<str> modelList = boundClaw->get_activemodels();
 
-      // Activate those functors that match one of the models being scanned.
-      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      // Activate those module functors that match the combination of models being scanned.
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        // Module functors
-        for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+        if (masterGraph[*vi]->modelComboAllowed(modelList))
         {
-          if (masterGraph[*vi]->modelAllowed(*it))
+          for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
           {
             masterGraph[*vi]->notifyOfModel(*it);
             masterGraph[*vi]->setStatus(1);
           }
         }
-        // Backend functors
+      }
+
+      // Activate those backend functors that match one of the models being scanned.
+      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      {
         for (fi = boundCore->getBackendFunctors().begin(); fi != fi_end; ++fi)
         {
           // Activate if the backend vertex permits the model and has not been (severely) disabled by the backend system

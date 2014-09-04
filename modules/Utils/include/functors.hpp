@@ -175,7 +175,7 @@ namespace Gambit
       /// Resolve a backend requirement using a pointer to another functor object
       virtual void resolveBackendReq (functor*);
 
-      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      /// Notify the functor that a certain model is being scanned, so that it can activate itself accordingly.
       virtual void notifyOfModel(str);
 
       /// Notify the functor about an instance of the options class that contains
@@ -186,17 +186,29 @@ namespace Gambit
       /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
       safe_ptr<Options> getOptions();
 
-      /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
-      bool modelAllowed(str model);
-
-      /// Test whether the functor has been explictly allowed to be used with a given model 
-      bool modelExplicitlyAllowed(str model);
-
       /// Test whether the functor is allowed to be used with all models
       bool allModelsAllowed();
 
+      /// Test whether the functor is always allowed (either explicitly or implicitly) to be used with a given model
+      bool modelAllowed(str model);
+
+      /// Test whether the functor is explictly always allowed to be used with a given model 
+      bool modelExplicitlyAllowed(str model);
+
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model);
+
+      /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
+      bool modelComboAllowed(std::vector<str> combo);
+
+      /// Test whether the functor has been explictly allowed to be used with a given combination of models 
+      bool modelComboExplicitlyAllowed(std::vector<str> combo);
+
+      /// Add a model group definition to the internal list of model groups.
+      void setModelGroup(str group, str contents);
+
+      /// Add a combination of model groups to the internal list of combinations for which this functor is allowed to be used.
+      void setAllowedModelGroupCombo(str groups);
 
       /// Print function
       virtual void print(Printers::BasePrinter*);
@@ -233,6 +245,12 @@ namespace Gambit
       /// List of allowed models
       std::set<str> allowedModels;
 
+      /// List of allowed model group combinations
+      std::set<std::vector<str> > allowedGroupCombos;
+
+      /// Map from model group names to group contents
+      std::map<str, std::set<str> > modelGroups;
+
       /// Needs recalculating or not?
       bool needs_recalculating;
 
@@ -240,7 +258,16 @@ namespace Gambit
       static void failBigTime(str method);
 
       /// Test if a model has a parent model in the functor's allowedModels list
-      bool allowed_parent_model_exists(str model);
+      inline bool allowed_parent_model_exists(str model);
+
+      /// Check that a model is actually part of a combination that is allowed to be used with this functor.
+      inline bool in_allowed_combo(str model);
+
+      /// Test whether any of the entries in a given model group has any descendents in a given combination
+      inline bool contains_any_descendents_of(std::vector<str> combo, str group);
+
+      /// Work out whether a given combination of models and a model group have any elements in common
+      inline bool has_common_elements(std::vector<str> combo, str group);
 
       /// Try to find a parent model in some user-supplied map from models to sspair vectors
       str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
