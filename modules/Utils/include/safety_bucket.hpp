@@ -125,7 +125,7 @@ namespace Gambit
       {
         if (not _initialized) dieGracefully();
         //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just access the first element.
-        int index = dep_bucket::use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
+        int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr[index];                 
       }
 

@@ -220,7 +220,7 @@
         namespace FUNCTION                                                     \
         {                                                                      \
           namespace Dep {extern dep_bucket<ModelParameters>                    \
-           CAT(MODEL,_parameters); }                                           \
+           MODEL##_parameters; }                                              \
         }                                                                      \
       }                                                                        \
                                                                                \
