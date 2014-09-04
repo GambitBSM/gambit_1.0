@@ -56,7 +56,6 @@ namespace Gambit
   {
     private:
       DRes::DependencyResolver &dependencyResolver;
-      Printers::BasePrinter &printer;
       Priors::CompositePrior &prior;
       IniParser::IniFile &iniFile;
       std::map<str, primary_model_functor *> functorMap;   

@@ -40,7 +40,6 @@ namespace Gambit
       std::vector<DRes::VertexID> target_vertices;
       std::vector<DRes::VertexID> aux_vertices;
       DRes::DependencyResolver &dependencyResolver;
-      Printers::BasePrinter &printer;
       std::vector<double> realParameters;
       Priors::CompositePrior &prior;
       std::map<str, double> parameterMap;

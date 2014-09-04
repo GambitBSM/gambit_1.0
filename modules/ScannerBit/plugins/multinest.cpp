@@ -100,7 +100,8 @@ namespace Gambit {
                    //physicalpars = boundLogLike->getParameters();
 
                    // Just testing out the print function
-                   boundLogLike.print(lnew, "test_LogLike",-1);
+                   // Removed this for now since changing the interface...
+                   // boundLogLike.print(lnew, "test_LogLike",-1);
 
                    // Write the physical parameters back into Cube for multinest to write to output file (no other purpose)
                    // (at this point any extra observables that have been computed could also be added to Cube for transfer to the multinest-controlled output files. Must be sufficiently many slots reserved in Cube for this.

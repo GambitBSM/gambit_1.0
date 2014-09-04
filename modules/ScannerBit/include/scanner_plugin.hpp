@@ -51,14 +51,8 @@ namespace Gambit
                 class Function_Base
                 {
                 public:
-<<<<<<< HEAD
                         virtual double operator () (const std::vector<double> &) = 0;
                         virtual void print(double, const std::string &) const = 0;
-=======
-                        virtual const std::vector<double> & getParameters() const = 0;
-                        virtual double operator () (std::vector<double> &) = 0;
-                        virtual void print(double, const std::string &, const int) const = 0;
->>>>>>> basic scanner/printer interfact pretty much done, though some of the output looks a little fishy so I think there is some bug hunting to be done yet
                         virtual ~Function_Base() = 0;
                 };
                 
