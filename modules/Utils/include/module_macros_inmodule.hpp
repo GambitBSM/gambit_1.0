@@ -38,9 +38,6 @@
 #include "safety_bucket.hpp"
 #include "module_macros_common.hpp"
 
-#include <boost/preprocessor/punctuation/comma.hpp>
-#include <boost/preprocessor/control/iif.hpp>
-
 /// \name Rollcall macros
 /// These are called from within rollcall headers in each module to 
 /// register module functions, their capabilities, return types, dependencies,
@@ -220,7 +217,7 @@
         namespace FUNCTION                                                     \
         {                                                                      \
           namespace Dep {extern dep_bucket<ModelParameters>                    \
-           MODEL##_parameters; }                                              \
+           CAT(MODEL,_parameters); }                                           \
         }                                                                      \
       }                                                                        \
                                                                                \

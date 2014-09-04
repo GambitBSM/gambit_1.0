@@ -31,7 +31,11 @@
 
 #include "util_macros.hpp"
 
+#include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/comparison/greater.hpp>
+#include <boost/preprocessor/punctuation/comma.hpp>
+#include <boost/preprocessor/control/iif.hpp>
+#include <boost/preprocessor/tuple/to_seq.hpp>
 
 
 /// \name Simple macro constants
