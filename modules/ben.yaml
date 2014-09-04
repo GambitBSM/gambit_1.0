@@ -1,0 +1,136 @@
+# Ben's test GAMBIT Initialization file (in YAML)
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Sep 2014
+#
+
+# Parameter setup
+
+Parameters: !import parameters.yaml
+
+
+# Prior setup
+
+Priors:
+
+  m0_prior:
+    parameters: [CMSSM_demo::M0]
+    prior_type: log
+    range: [0.001,1000]
+
+  m12_prior: 
+    parameters: [CMSSM_demo::M12]
+    prior_type: composite
+    options: 
+      new_prior: 
+        parameters: [CMSSM_demo::M12]
+        prior_type: log
+        range: [100,2000]
+
+  tanbMstop_prior: 
+    parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
+    prior_type: cauchy
+    options:
+      cov: [[0.5, 0.1],[0.1, 0.6]]
+      demo: 45
+
+
+# Printer setup
+
+Printer:
+
+  printer: ascii
+
+  options:
+    # name of output file
+    output_file: runs/example_minimal_test/samples/gambit_output.txt
+    # name of info file (explains content of output file)
+    info_file: runs/example_minimal_test/samples/gambit_output.info
+
+
+# Scanner setup
+
+Scanner:
+
+  plugin:  multinest
+  file_path:  ScannerBit/lib/libmultinest_interface.so 
+      
+  enable_redirect: false
+   
+  multinest:
+    nlive: 500
+    tol: 0.1
+    output_file:  output
+   
+
+# Observables of interest
+
+ObsLikes:
+
+  # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
+  - purpose:      Likelihood
+    capability:   lnL_ExampleBitB
+    type:         double
+    function:     ""
+    module:       ""
+
+  # Test loop manager
+  - purpose:      Likelihood
+    capability:   nevents_like
+    type:         double
+
+  # Test marginalised Poisson likelihood
+  - purpose:	Likelihood
+    capability:	marg_lnlike_test
+
+
+# Auxiliary entries
+# Use these to aid dependency resolution
+
+Auxiliaries:
+
+  - capability:   nevents_postcuts
+    dependencies:
+    - {capability: id, module: ExampleBit_B}
+
+  - capability:	marg_lnlike_test
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  - capability: external_funcs
+    backends:
+    - {capability: externalComplicatedFunction}
+
+
+
+# Logging setup
+
+Logger:
+
+  prefix : runs/ben_test/logs/
+  redirection:
+    [Default] : default.log
+    [Error]   : errors.log
+    [Warning] : warnings.log
+
+
+# Name/Value Section
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    scan_error: non-fatal #make this fatal to see an example error
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+
