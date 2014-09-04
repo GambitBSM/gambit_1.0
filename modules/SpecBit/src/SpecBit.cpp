@@ -27,6 +27,9 @@ namespace Gambit
   {
     using namespace LogTags;
 
+    /// Quick macro to simplify the check of Pipe::Models
+    #define QUERYMODELS(MODEL) std::find(Pipe::Models->begin(), Pipe::Models->end(), MODEL) != Pipe::Models->end()
+
     /// Module convenience functions
     // These are not known to Gambit.
 
@@ -42,22 +45,23 @@ namespace Gambit
       Spectrum generic_spectrum; // This is what we want to produce
 
       // Access the pipes for this function to get model and parameter information
-      using namespace Pipes::get_lowE_MSSM_spectrum;
+      //using namespace Pipes::get_lowE_MSSM_spectrum;
+      namespace Pipe = Pipes::get_lowE_MSSM_spectrum; // I think I like this alias method better
 
       // If MSSM24 is being scanned...
-      if( std::find(Models->begin(), Models->end(), "MSSM24") != Models->end() )
+      if( QUERYMODELS("MSSM24") )
       { 
         // do stuff
-        *Param["M1"]; // Do something with parameters
+        *Pipe::Param["M1"]; // Do something with parameters
 
         generic_spectrum = call_spectrum_generator( <params> );
       }
 
       // If CMSSM is being scanned...
-      else if( std::find(Models->begin(), Models->end(), "CMSSM") != Models->end() )
+      else if( QUERYMODELS("CMSSM") )
       { 
         // do stuff
-        *Param["M1"]; // Do something with parameters
+        *Pipe::Param["M0"]; // Do something with parameters
 
         generic_spectrum = call_spectrum_generator_method2( <params> );
       }
@@ -66,7 +70,7 @@ namespace Gambit
       else
       {
         std::ostringstream errmsg;
-        errmsg << "Uh oh, the SpecBit rollcall header claims that this function can deal with one of the models " << *Models << ", however this is a lie. Please change the entries in the ALLOW_MODELS macro or update this function to handle the new model.";
+        errmsg << "Uh oh, the SpecBit rollcall header claims that this function can deal with one of the models " << *Pipe::Models << ", however this is a lie. Please change the entries in the ALLOW_MODELS macro or update this function to handle the new model.";
         SpecBit_error().raise(LOCAL_INFO,errmsg.str());
       }
 
