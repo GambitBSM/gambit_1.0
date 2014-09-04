@@ -97,10 +97,13 @@ Auxiliaries:
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
-  - capability: external_funcs
+  - capability: function_pointer
     backends:
-    - {capability: externalComplicatedFunction}
+    - {function: externalFunction2}
 
+  - capability:   LibFirst_1_1_init
+    dependencies:
+    - {capability: nevents, module: ExampleBit_A}  
 
 
 # Logging setup
