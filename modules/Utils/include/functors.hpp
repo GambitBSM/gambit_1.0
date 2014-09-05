@@ -232,12 +232,12 @@ namespace Gambit
       /// Bound model functor claw, for checking relationships between models
       const Models::ModelFunctorClaw* myClaw;
 
+      /// String label, used to label functor results in printer system
+      str myLabel;
       /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
-      /// String label, used to label functor results in printer system
-      str myLabel;
       /// Debug flag
       bool verbose;
 

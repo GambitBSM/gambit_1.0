@@ -215,7 +215,7 @@
                                                                                \
   }                                                                            \
   /* Tell this functor to only activate for MODEL */                           \
-  /*LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL)                */            \
+  /*LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)                */                   \
 //end LINK_PARAMETER_TO_CAPABILITY
 
   

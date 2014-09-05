@@ -52,10 +52,12 @@
                                                           MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
-#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
-#define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
+#define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
+#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) \
+                                                          MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
+#define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
 #define ALLOW_MODEL_COMBINATION(...)                      DUMMYARG(__VA_ARGS__)
-#define MODEL_GROUP(GROUPNAME, GROUP)                     MODULE_MODEL_GROUP(MODULE,CAPABILITY,FUNCTION,GROUPNAME,GROUP)
+#define MODEL_GROUP(GROUPNAME, GROUP)                     DUMMYARG(GROUPNAME, GROUP)
 
 #define BE_GROUP(GROUP)                                   MODULE_BE_GROUP(GROUP)
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
@@ -202,7 +204,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within a module.
-#define MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                 \
+#define MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -226,7 +228,7 @@
   }                                                                            \
 
 //"Littleguys" version of allowed_model
-#define LITTLEGUY_ALLOWED_MODEL(CAPABILITY,FUNCTION,MODEL)                     \
+#define LITTLEGUY_ALLOWED_MODEL(FUNCTION,MODEL)                                \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -249,17 +251,6 @@
     }                                                                          \
    }                                                                           \
   }                                                                            \
-
-
-/// Redirector for ALLOWED_MODELS when called from a model group 
-#define REDIRECTOR(r, data, elem) MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,elem)
-
-/// Redirection of MODEL_GROUP when invoked from within a module.
-#define MODULE_MODEL_GROUP(MODULE,CAPABILITY,FUNCTION,GROUPNAME,GROUP)           \
-                                                                               \
-  /* Register dependencies for each of the individual models in the group. */  \
-  BOOST_PP_SEQ_FOR_EACH(REDIRECTOR, ,            \
-   BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(GROUP))))                               \
 
 
 /// Redirection of BACKEND_GROUP(GROUP) when invoked from within a module.

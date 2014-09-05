@@ -217,11 +217,11 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 
 /// \name Variadic macro expanders taking 3 leading arguments 
 /// @{
-#define VA_NARGS_ABC_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
-#define VA_NARGS_ABC(...) VA_NARGS_ABC_IMPL(X,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define VARARG_ABC_IMPL2(base, A, B, C, count, ...) base##_##count(A, B, C, __VA_ARGS__)
-#define VARARG_ABC_IMPL(base, A, B, C, count, ...) VARARG_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
-#define VARARG_ABC(base, A, B, C, ...) VARARG_ABC_IMPL(base, A, B, C, VA_NARGS_ABC(__VA_ARGS__), __VA_ARGS__)
+#define VA_NARGS_AB_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
+#define VA_NARGS_AB(...) VA_NARGS_AB_IMPL(X,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define VARARG_AB_IMPL2(base, A, B, count, ...) base##_##count(A, B, __VA_ARGS__)
+#define VARARG_AB_IMPL(base, A, B, count, ...) VARARG_AB_IMPL2(base, A, B, count, __VA_ARGS__) 
+#define VARARG_AB(base, A, B, ...) VARARG_AB_IMPL(base, A, B, VA_NARGS_AB(__VA_ARGS__), __VA_ARGS__)
 /// @}
 
 /// \name Variadic macro expanders for distinguishing between 1 and >1 variadic argument  
