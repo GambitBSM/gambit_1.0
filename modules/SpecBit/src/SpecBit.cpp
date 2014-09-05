@@ -54,6 +54,12 @@ namespace Gambit
         // do stuff
         *Pipe::Param["M1"]; // Do something with parameters
 
+        // Call some spectrum generator function from a backend?
+        // I suppose this needs BOSS; but I guess the spectrum generator
+        // backend will deal with translating into a Spectrum object?
+        //
+        // BEreq::spectrum_generator;
+
         generic_spectrum = call_spectrum_generator( <params> );
       }
 
