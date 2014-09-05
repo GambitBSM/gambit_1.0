@@ -91,9 +91,18 @@ namespace Gambit
       }
       if (verbose) std::cout<<std::endl;
       
+      // Property writer for graph; see http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/write-graphviz.html
+      // Also for valid properties see http://www.graphviz.org/pdf/dotguide.pdf
+      struct graphWriter{
+          void operator()(std::ostream& out) const {
+            out << "rankdir = LR;" << std::endl; // Turn graph orientation left to right.
+          }
+        };
+ 
       // Generate graphviz plot
       std::ofstream outf(filename);
-      write_graphviz(outf, modelGraph, labelWriter(&modelGraph)); 
+      // args: output stream, vertex list, vertex property writer (PW), edge PW, graph PW. 
+      write_graphviz(outf, modelGraph, labelWriter(&modelGraph), boost::default_writer(), graphWriter()); 
       
     }
 
