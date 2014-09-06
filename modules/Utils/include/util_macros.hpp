@@ -48,6 +48,9 @@
 #define SAFE_STRINGIFY2(...) #__VA_ARGS__
 /// @}
 
+/// \name Macro returning only the first argument passed
+#define FIRST_ARG(A1,...) A1
+
 /// \name Macro returning all but the first argument passed
 /// @{
 #define REMFIRST(A1,...) REMFIRST_I(A1,##__VA_ARGS__)
@@ -86,7 +89,7 @@
 /// @}
 
 /// \name Macro chain checking if the argument has parantheses
-/// Usage: STRIP_PARENS(x). Example: STRIP_PARENS((y,z)) expands to y,z
+/// Usage: HAS_PARENS(x). Example: HAS_PARENS((y,z)) expands to 1
 /// @{
 #define HAS_PARENS(x) EVAL_HASP((HAS_PARENS_I x), x) 
 #define HAS_PARENS_I(...) 1,1 
@@ -232,6 +235,16 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
 #define VARARG_SWITCH_ON_GT_ONE_IMPL(base, count, ...) VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, __VA_ARGS__) 
 #define VARARG_SWITCH_ON_GT_ONE(base, ...) VARARG_SWITCH_ON_GT_ONE_IMPL(base, VA_NARGS_SWITCH_ON_GT_ONE(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
+/// \name Variadic macro expanders for distinguishing between 1 and >1 variadic argument, taking 1 leading argument  
+/// @{
+#define VARARG_SWITCH_ON_GT_ONE_A_TESTER_1 1)(1
+#define VA_NARGS_SWITCH_ON_GT_ONE_A_IMPL(_1, _2, _3, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_ONE_A_TESTER,N,N,MORE)
+#define VA_NARGS_SWITCH_ON_GT_ONE_A(...) VA_NARGS_SWITCH_ON_GT_ONE_A_IMPL(X,##__VA_ARGS__, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_ONE_A_IMPL2(base, A, count, ...) base##_##count(A, __VA_ARGS__)
+#define VARARG_SWITCH_ON_GT_ONE_A_IMPL(base, A, count, ...) VARARG_SWITCH_ON_GT_ONE_A_IMPL2(base, A, count, __VA_ARGS__) 
+#define VARARG_SWITCH_ON_GT_ONE_A(base, A, ...) VARARG_SWITCH_ON_GT_ONE_A_IMPL(base, A, VA_NARGS_SWITCH_ON_GT_ONE_A(__VA_ARGS__), __VA_ARGS__)
 /// @}
 
 /// \name Variadic macro expanders for distinguishing between 1 and >1 variadic argument, taking 3 leading arguments  

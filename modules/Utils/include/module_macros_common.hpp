@@ -58,11 +58,56 @@
 /// Quick, one-line declaration of simple module functions.
 /// Allows declaration of capability, function name and type, as well as up to ten allowed 
 /// models, all in one hit.  Typically used to supplement standalone modules so that all 
-/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY
-/// flag can be either NEW_CAPABILITY or OLD_CAPABILITY.
+/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY_FLAG
+/// can be either NEW_CAPABILITY or OLD_CAPABILITY.
 #define QUICK_FUNCTION(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, ...)               \
  BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY()) \
  START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)        
+
+/// \name Variadic redirectors for \link QUICK_FUNCTION_NDEPS() QUICK_FUNCTION_NDEPS\endlink function.
+/// @{
+#define QFND_ALLOW_MODELS_MORE(A, B, ...)                           ALLOW_MODELS_AB(A, B, __VA_ARGS__)
+#define QFND_ALLOW_MODELS_1(A, _1)                                  DUMMYARG(A, _1)
+#define QFND_ALLOW_MODELS(A,...)                                    VARARG_SWITCH_ON_GT_ONE_A(QFND_ALLOW_MODELS, A, __VA_ARGS__)
+#define EXPAND_DEPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_10))
+#define EXPAND_DEPS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) 
+#define EXPAND_DEPS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8))
+#define EXPAND_DEPS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7))
+#define EXPAND_DEPS_6(A,B,_1, _2, _3, _4, _5, _6)                   LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6))
+#define EXPAND_DEPS_5(A,B,_1, _2, _3, _4, _5)                       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5))
+#define EXPAND_DEPS_4(A,B,_1, _2, _3, _4)                           LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) 
+#define EXPAND_DEPS_3(A,B,_1, _2, _3)                               LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) 
+#define EXPAND_DEPS_2(A,B,_1, _2)                                   LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2))  
+#define EXPAND_DEPS_1(A,B,_1)                                       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) 
+#define EXPAND_DEPS_AB(A,B,...)                                     VARARG_AB(EXPAND_DEPS, A, B, __VA_ARGS__)
+/// }@
+
+/// Quick, one-line declaration of simple module functions, including dependencies.
+/// Allows declaration of capability, function name and type, dependencies and up to ten allowed 
+/// models, all in one hit.  Typically used to supplement standalone modules so that all 
+/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY_FLAG
+/// can be either NEW_CAPABILITY or OLD_CAPABILITY.
+/// {@
+#define QUICK_FUNCTION_NDEPS(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, MODELS, ...) \
+ BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY())       \
+ START_FUNCTION_AND_ALLOW_MODELS_NDEPS(MODULE, CAPABILITY, FUNCTION, TYPE, MODELS, __VA_ARGS__)    
+#define START_FUNCTION_AND_ALLOW_MODELS_NDEPS(MODULE, CAPABILITY, FUNCTION, TYPE, MODELS, ...)     \
+ LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)                                      \
+ QFND_ALLOW_MODELS(MODULE, FUNCTION INSERT_NONEMPTY(MODELS))                                       \
+ EXPAND_DEPS_AB(MODULE, FUNCTION, __VA_ARGS__)
+/// }@
 
 
 /// \name Variadic redirection macro for START_FUNCTION(TYPE,[CAN_MANAGE_LOOPS/CANNOT_MANAGE_LOOPS])
@@ -137,6 +182,7 @@
 #define ALLOW_MODELS_AB(A,B,...)                                     VARARG_AB(ALLOW_MODELS, A, B, __VA_ARGS__)
 #define ALLOW_MODELS(...)                                            ALLOW_MODELS_AB(MODULE, FUNCTION, __VA_ARGS__)
 /// @}
+
 
 /// \name Variadic redirection macros for ALLOW_MODELS_ONLY_VIA_GROUPS([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may only be used

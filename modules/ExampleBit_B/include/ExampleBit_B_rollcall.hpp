@@ -85,7 +85,7 @@ START_MODULE
     #define FUNCTION exampleCharge          // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
     ALLOW_MODEL(NormalDist)
-    ALLOW_MODELS(MSSM_demo, TWOHDM, UED)       // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
+    ALLOW_MODELS(MSSM_demo, TWOHDM, UED)    // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -144,13 +144,6 @@ START_MODULE
 
   #undef CAPABILITY
 
-  #define CAPABILITY test_vector
-  START_CAPABILITY
-    #define FUNCTION exampleVec             // Observable: test vector of doubles
-    START_FUNCTION(std::vector<double>)     // Function calculates a vector of doubles
-    #undef FUNCTION
-  #undef CAPABILITY
-
   #define CAPABILITY ptrmeth_arr_tester
   START_CAPABILITY
     #define FUNCTION ptrMethArrTester
@@ -161,17 +154,31 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Some likelihood of type double that depends on postcuts
-  #define CAPABILITY lnL_ExampleBitB
-  START_CAPABILITY
-    #define FUNCTION lnL_ExampleBitB
-    START_FUNCTION(double)
-    DEPENDENCY(nevents_postcuts, int)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
 #undef MODULE
+
+// Observable: test vector of doubles, declared as a quick function.
+// Equivalent to:
+//   #define CAPABILITY test_vector
+//   START_CAPABILITY
+//     #define FUNCTION exampleVec             
+//     START_FUNCTION(std::vector<double>)
+//     #undef FUNCTION
+//   #undef CAPABILITY
+// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, n x ALLOWED_MODEL, where 0 <= n <= 10.
+QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vector<double>)
+
+// Some likelihood of type double that depends on postcuts, declared as a quick function with dependencies.
+// Equivalent to:
+//   #define CAPABILITY lnL_ExampleBitB
+//   START_CAPABILITY
+//     #define FUNCTION lnL_ExampleBitB
+//     START_FUNCTION(double)
+//     DEPENDENCY(nevents_postcuts, int)
+//   #undef FUNCTION
+//   #undef CAPABILITY
+// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, (n x ALLOWED_MODEL), m x (DEPENDENCY, DEPENDENCY_TYPE) where 0 <= n <= 10, 0 < m <= 10.
+QUICK_FUNCTION_NDEPS(ExampleBit_B, lnL_ExampleBitB, NEW_CAPABILITY, lnL_ExampleBitB, double, (), (nevents_postcuts, int))
+
 
 #endif // defined(__ExampleBit_B_rollcall_hpp__)
 
