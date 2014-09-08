@@ -144,6 +144,9 @@ namespace Gambit
       return filename;
     }
 
+    /// Add a new module to modules list
+    void gambit_core::registerModule(str module) { modules.insert(module); }
+
     /// Add a new module functor to functorList
     void gambit_core::registerModuleFunctor(functor &f)
     {
@@ -186,7 +189,7 @@ namespace Gambit
     /// Get a reference to the list of nested module functors
     const gambit_core::fVec& gambit_core::getNestedModuleFunctors() const { return nestedFunctorList; } 
 
-    /// Get a reference to the list of backend model functors
+    /// Get a reference to the list of backend functors
     const gambit_core::fVec& gambit_core::getBackendFunctors() const { return backendFunctorList; }
 
     /// Get a reference to the list of primary model functors
@@ -231,7 +234,9 @@ namespace Gambit
           {
             std::vector<str> dups = description_file.get_all_values(*it);
             std::ostringstream errmsg;
-            errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<< "\"! Only one description is permitted, since all capabilities going by the same name must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
+            errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<<
+             "\"! Only one description is permitted, since all capabilities going by the same name "
+             "must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
             errmsg << "This capability is provided by the following modules and backends:" <<endl;
             errmsg << "Modules :"<<capinfo.modset<<endl;
             errmsg << "Backends:"<<capinfo.beset<<endl<<endl;
@@ -327,7 +332,9 @@ namespace Gambit
           {
             std::vector<str> dups = model_description_file.get_all_values(model.name);
             std::ostringstream errmsg;
-            errmsg << "Error! Duplicate model descriptions found for model \""<<model.name<< "\"! Only one description is permitted, since model names must be unique. Please rename a model or delete one of the descriptions."<<endl;
+            errmsg << "Error! Duplicate model descriptions found for model \""<<model.name<< 
+             "\"! Only one description is permitted, since model names must be unique. "
+             "Please rename a model or delete one of the descriptions."<<endl;
             errmsg << "The duplicate descriptions are:" <<endl;
             errmsg << "---------------------" <<endl;
             int dup_num = 0;
@@ -431,7 +438,9 @@ namespace Gambit
       }
       // if no match...
       std::ostringstream errmsg;
-      errmsg << "No capability with the name \""<<name<< "\" could be found in the capability database. This function should not run when we don't know if the capability exists! Either there is a bug in the calling code, or something went wrong creating the capability database.";
+      errmsg << "No capability with the name \""<<name<< "\" could be found in the capability database. "
+       "This function should not run when we don't know if the capability exists! Either there is a bug "
+       "in the calling code, or something went wrong creating the capability database.";
       core_error().raise(LOCAL_INFO,errmsg.str());
     }
 
@@ -447,7 +456,9 @@ namespace Gambit
       }
       // if no match...
       std::ostringstream errmsg;
-      errmsg << "No model with the name \""<<name<< "\" could be found in the model database. This function should not run when we don't know if the model exists! Either there is a bug in the calling code, or something went wrong creating the model database.";
+      errmsg << "No model with the name \""<<name<< "\" could be found in the model database. This function "
+       "should not run when we don't know if the model exists! Either there is a bug in the calling code, or "
+       "something went wrong creating the model database.";
       core_error().raise(LOCAL_INFO,errmsg.str());
     }
 

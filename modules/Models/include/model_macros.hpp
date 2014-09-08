@@ -57,7 +57,7 @@
                                                                                \
         /* Basic machinery, same as for modules 
            (macro from module_macros_incore.hpp) */                            \
-        CORE_START_MODULE_COMMON(MODEL)                                        \
+        CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
                                                                                \
         /* Model lineage                                                       
            Each model is automatically marked as a child of the parent model.*/\

@@ -33,7 +33,7 @@
 #define MODULE DecayBit
 START_MODULE
 
-  QUICK_FUNCTION(DecayBit, test_deleteme, NEW_CAPABILITY, deleteme, int)
+  //QUICK_FUNCTION(DecayBit, test_deleteme, NEW_CAPABILITY, deleteme, int)
 
 #undef MODULE
 

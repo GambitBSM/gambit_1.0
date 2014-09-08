@@ -207,6 +207,17 @@
 /// These macros do the actual heavy lifting within the rollcall system.
 /// @{
 
+// Determine whether to make registration calls to the Core in the START_MODULE
+// macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define CORE_START_MODULE_COMMON(MODULE)                                     \
+          CORE_START_MODULE_COMMON_MAIN(MODULE)
+#else
+  #define CORE_START_MODULE_COMMON(MODULE)                                     \
+          CORE_START_MODULE_COMMON_MAIN(MODULE)                                \
+          CORE_START_MODULE_COMMON_SUPP(MODULE)
+#endif
+
 /// Redirection of \link START_MODULE() START_MODULE\endlink when invoked from 
 /// within the core.
 #define CORE_START_MODULE                                                      \
@@ -266,8 +277,9 @@
     }                                                                          \
   }                                                                            \
 
+
 /// Central module definition macro, used by modules and models.
-#define CORE_START_MODULE_COMMON(MODULE)                                       \
+#define CORE_START_MODULE_COMMON_MAIN(MODULE)                                  \
                                                                                \
       namespace Accessors                                                      \
       {                                                                        \
@@ -461,6 +473,24 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
+
+
+/// Supplementary module definition macro, used by modules and models only if
+/// STANDALONE flag is not set.
+#define CORE_START_MODULE_COMMON_SUPP(MODULE)                                  \
+                                                                               \
+  /* Set up the supplementary commands to be called at runtime to register     \
+  the module*/                                                                 \
+  void CAT(rt_register_module_supp_,MODULE)()                                  \
+  {                                                                            \
+    Core().registerModule(STRINGIFY(MODULE));                                  \
+  }                                                                            \
+                                                                               \
+  /* Create the supplementary module initialisation object */                  \
+  namespace Ini                                                                \
+  {                                                                            \
+    ini_code CAT(MODULE,_supp) (&CAT(rt_register_module_supp_,MODULE));        \
+  }                                                                            \
 
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  

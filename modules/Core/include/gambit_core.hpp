@@ -82,10 +82,10 @@ namespace Gambit
  
       /// Filename of the centralized capability description database
       const str capability_dbase_file;
-      /// Filename of the file from which to harvest capability descriptions
-      const str input_capability_descriptions;
       /// Filename of the centralized model description database
       const str model_dbase_file;
+      /// Filename of the file from which to harvest capability descriptions
+      const str input_capability_descriptions;
       /// Filename of the file from which to harvest model descriptions
       const str input_model_descriptions;
       /// File stream for 'preliminary report', for telling user about missing descriptions (and perhaps other things)
@@ -100,15 +100,15 @@ namespace Gambit
       /// Destructor
       ~gambit_core(){}
 
-      /// Flag recording whether an inifile has been supplied
-      bool found_inifile;
-
       /// Flags set by command line options
       /// Flag to trigger dependency resolver to report functor run order
       int show_runorder;
       /// Verbosity mode
       // Set 'true' by '--verbose'
       bool verbose_flag;
+
+      /// Flag recording whether an inifile has been supplied
+      bool found_inifile;
 
       /// Command-line info function
       void bail();
@@ -118,6 +118,9 @@ namespace Gambit
 
       /// Diagnostics function
       str run_diagnostic(int,char**);
+
+      /// Add a new module to modules list
+      void registerModule(str);
 
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
