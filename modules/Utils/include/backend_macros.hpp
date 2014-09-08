@@ -630,10 +630,10 @@ namespace Gambit
 /// Connect pointers to the backend library
 /// @{
 #define BE_FUNC_CONNECT_POINTERS(NAME,TRANS) CAT(BE_FUNC_CONNECT_POINTERS,TRANS)(NAME)
-#define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym.fptr);
+#define BE_FUNC_CONNECT_POINTERS0(NAME) const NAME##_type NAME = reinterpret_cast<const NAME##_type>(pSym.fptr);
 #define BE_FUNC_CONNECT_POINTERS1(NAME)                                                         \
-  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym.fptr);                                \
-  NAME = NAME##_wrapper;             
+  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym.fptr);                          \
+  const NAME##_type NAME = NAME##_wrapper;             
 /// @}
 
 /// Adds function to frontBackFuncMap
@@ -663,9 +663,42 @@ namespace Gambit                                                                
       /* Define a type NAME_type to be a suitable function pointer. */                          \
       typedef TYPE (*NAME##_type) FE_ARGS;                                                      \
       typedef TYPE (*NAME##_BEtype) BE_ARGS;                                                    \
-      /* Declare a pointer NAME of type NAME_type */                                            \
-      NAME##_type NAME;                                                                         \
+                                                                                                \
       BOOST_PP_IIF(TRANS, BE_FUNC_ADD_UNWRAPPED_POINTER(NAME), )                                \
+      /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
+         them to call the backend function with appropriate translated args */                  \
+      BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS)                    \
+                                                                                                \
+      NAME##_type CAT(constructFuncPointer_,NAME)()                                             \
+      {                                                                                         \
+        /* Obtain a void pointer (pSym) to the library symbol. */                               \
+        /* -- First clear error code by calling dlerror() */                                    \
+        dlerror();                                                                              \
+        /* -- Obtain pointer from symbol */                                                     \
+        pSym.ptr = dlsym(pHandle BOOST_PP_COMMA() SYMBOLNAME);                                  \
+        BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
+        /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),                               \
+                                     BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
+        return NAME;                                                                            \
+        /* -- Disable the functor if the library is not present or the symbol not found. */     \
+        /*if(!present)                                                                          \
+        {                                                                                       \
+          Functown::NAME.setStatus(-1);                                                         \
+        }                                                                                       \
+        else if(dlerror() != NULL)                                                              \
+        {                                                                                       \
+          std::ostringstream err;                                                               \
+          err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
+              << "The functor generated for this symbol will get status=-2" << std::endl;       \
+          backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
+          Functown::NAME.setStatus(-2);                                                         \
+        }                                                                                       \
+                                          */                                                    \
+      }                                                                                         \
+                                                                                                \
+      /* Declare a pointer NAME of type NAME_type */                                            \
+      const NAME##_type NAME = CAT(constructFuncPointer_,NAME)();                               \
                                                                                                 \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
@@ -681,48 +714,8 @@ namespace Gambit                                                                
          Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
                                                                                                 \
-      /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
-         them to call the backend function with appropriate translated args */                  \
-      BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS)                    \
-                                                                                                \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
-                                                                                                \
-      void CAT(constructFuncPointer_,NAME)()                                                    \
-      {                                                                                         \
-        /* Obtain a void pointer (pSym) to the library symbol. */                               \
-        /* -- First clear error code by calling dlerror() */                                    \
-        dlerror();                                                                              \
-        /* -- Obtain pointer from symbol */                                                     \
-        pSym.ptr = dlsym(pHandle BOOST_PP_COMMA() SYMBOLNAME);                                  \
-        BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
-        /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
-        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),                               \
-                                     BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
-        Functown::NAME.updatePointer(NAME);                                                     \
-        /* -- Disable the functor if the library is not present or the symbol not found. */     \
-        if(!present)                                                                            \
-        {                                                                                       \
-          Functown::NAME.setStatus(-1);                                                         \
-        }                                                                                       \
-        else if(dlerror() != NULL)                                                              \
-        {                                                                                       \
-          std::ostringstream err;                                                               \
-          err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
-              << "The functor generated for this symbol will get status=-2" << std::endl;       \
-          backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
-          Functown::NAME.setStatus(-2);                                                         \
-        }                                                                                       \
-                                                                                                \
-      }                                                                                         \
-                                                                                                \
-      /* The code within the void function 'constructVarPointer_NAME'                           \
-         is executed when we create the following instance of                                   \
-         the 'ini_code' struct. */                                                              \
-      namespace ini                                                                             \
-      {                                                                                         \
-        ini_code NAME(&CAT(constructFuncPointer_,NAME));                                        \
-      }                                                                                         \
                                                                                                 \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
   } /* end namespace Backends */                                                                \
