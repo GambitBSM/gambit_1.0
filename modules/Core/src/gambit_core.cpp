@@ -38,17 +38,17 @@ namespace Gambit
     gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
      modelInfo(&claw),
      backendData(&beinfo),
+     capability_dbase_file("central_capabilities.dat"),
+     model_dbase_file("central_models.dat"),
+     input_capability_descriptions("capabilities.dat"),
+     input_model_descriptions("models.dat"),
+     report_file("report.txt"),
+     report(report_file.c_str()),
      /* command line flags */ 
      processed_options(false),
      show_runorder(false),
      verbose_flag(false),
-     found_inifile(false),
-     input_capability_descriptions("capabilities.dat"),
-     capability_dbase_file("central_capabilities.dat"),
-     input_model_descriptions("models.dat"),
-     model_dbase_file("central_models.dat"),
-     report_file("report.txt"),
-     report(report_file.c_str())
+     found_inifile(false)
     {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
@@ -151,8 +151,6 @@ namespace Gambit
     void gambit_core::registerModuleFunctor(functor &f)
     {
       functorList.push_back(&f);
-      const std::set<str> models = modelInfo->get_allmodels();
-      if (models.find(f.origin()) == models.end()) modules.insert(f.origin());
       capabilities.insert(f.capability());
     }
 

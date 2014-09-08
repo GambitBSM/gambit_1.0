@@ -77,9 +77,6 @@ namespace Gambit
       /// A map of all user-activated primary model functors
       pmfMap activeModelFunctorList;
 
-      /// Flag specifying whether command line options have been processed yet.
-      bool processed_options;
- 
       /// Filename of the centralized capability description database
       const str capability_dbase_file;
       /// Filename of the centralized model description database
@@ -92,6 +89,9 @@ namespace Gambit
       const str report_file;
       std::ofstream report;
 
+      /// Flag specifying whether command line options have been processed yet.
+      bool processed_options;
+ 
     public:
 
       /// Constructor
