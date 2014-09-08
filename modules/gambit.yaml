@@ -248,8 +248,8 @@ ObsLikes:
   #  capability:  HS_LHCchisq
 
   # Uncomment to test ColliderBit
-  #- purpose:      Observable
-  #  capability:   analysisAccumulator
+  - purpose:      Observable
+    capability:   analysisAccumulator
 
   # Test Pythia8 SLHA reader
   - purpose:      Likelihood
@@ -276,7 +276,27 @@ ObsLikes:
 
 Auxiliaries:
 
-  #Choose either a log-normal or a Gaussian distribution to marginalise over
+  #ColliderBit options (note, these ones are mandatory at this moment)
+  - capability:  colliderLoopManager
+    function:    manageVanillaLoop
+    options:
+      nEvents:   2000
+
+  - capability:  GambitColliderEvent
+    function:    reconstructDelphesEvent
+    options:
+      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
+
+  - capability:  hardScatteringEvent
+    function:    generatePythia8Event
+    options:
+      slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
+
+  - capability:   analysisAccumulator
+    dependencies:
+    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
+
+#Choose either a log-normal or a Gaussian distribution to marginalise over
   #for the marginalised Poisson likelihood example.
   - capability:	marg_lnlike_test
     backends:
@@ -306,11 +326,6 @@ Auxiliaries:
   - capability:   "LibFirst_1_1_init"
     dependencies:
     - {capability: "nevents", module: "ExampleBit_A"}  
-
-  - capability:   "analysisAccumulator"
-    type: "double"
-    dependencies:
-    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 
   - capability:    "nevents_postcuts"
     dependencies:

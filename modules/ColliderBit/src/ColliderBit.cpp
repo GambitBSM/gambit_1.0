@@ -17,10 +17,6 @@
 ///
 ///  *********************************************
 
-#ifndef DEBUG
-#define DEBUG terminex
-#endif
-
 #include <string>
 #include <iostream>
 #include <fstream>
