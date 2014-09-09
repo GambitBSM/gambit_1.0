@@ -1192,7 +1192,7 @@
          Tags::FUNCTION>;                                                      \
                                                                                \
         /* First try casting the pointer passed in to a backend_functor*/      \
-        typedef backend_functor<TYPE*>* var;                                   \
+        typedef backend_functor<TYPE*const>* var;                              \
         typedef backend_functor<TYPE INSERT_NONEMPTY(ARGS)>* func;             \
         auto ptr =                                                             \
           dynamic_cast<BOOST_PP_IIF(IS_VARIABLE,var,func)>(be_functor);        \
@@ -1201,8 +1201,9 @@
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
           str errmsg = "Null returned from dynamic cast in";                   \
-          errmsg +=  "\nMODULE::resolve_backendreq, for backend requirement"   \
-                     "\nREQUIREMENT of function FUNCTION.  Attempt was to"     \
+          errmsg +=  "\n"STRINGIFY(MODULE)"::resolve_backendreq, for backend " \
+                     "requirement\n"STRINGIFY(REQUIREMENT)" of function "      \
+                     STRINGIFY(FUNCTION)".  Attempt was to"                    \
                      "\nresolve to " + be_functor->name() + " in " +           \
                      be_functor->origin() + ".";                               \
           utils_error().raise(LOCAL_INFO,errmsg);                              \
