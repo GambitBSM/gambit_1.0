@@ -12,6 +12,13 @@ using namespace std;
 namespace xsec{
 
 
+  namespace {
+    template <typename T> int sgn(T val) {
+      return (T(0) < val) - (val < T(0));
+    }
+  }
+
+
   void Evaluator::_init_pidmap() {
     // Make pid map
 
@@ -275,22 +282,20 @@ namespace xsec{
     }
 
     // Check that parameters are reasonable, reset if not
-    for(int i = 1; i < 24; i++){
-      if(i == 0 && (par[i] > 50. || par[i] < 2.)){
-        cout << "\tan\beta outside of range of validity of NN" << endl;
-        if(par[i] < 2.) par[i] = 2.;
-        if(par[i] > 50.) par[i] = 50.;
-        cout << "Reset to " << par[i] << endl;
+    for (int i = 1; i < 24; i++) {
+      const double val = par[i];
+      if (i == 0) { // tanB in [2,50]
+        if (val < 2.) par[i] = 2.;
+        if (val > 50.) par[i] = 50.;
+      } else if (i > 0 && i < 20 && abs(val) > 2000.) { // Soft masses in [-2000,2000]
+        par[i] = sgn(val) * 2000.;
       }
-      // Soft masses
-      else if(i > 0 && abs(par[i]) > 2000.){
-        cout << "Soft parameter" << i << " outside of range of validity of NN" << endl;
-        par[i] = par[i]/abs(par[i])*2000.;
-        cout << "Reset to " << par[i] << endl;
-      }
+      if (val != par[i])
+        cout << "Param " << i << " reset to NN validity boundary: "
+             << val << " -> " << par[i] << endl;
     }
-    
-    
+
+
   }
 
 
