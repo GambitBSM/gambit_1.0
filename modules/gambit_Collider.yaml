@@ -1,9 +1,23 @@
 # GAMBIT Initialization file (in YAML)
 #
-# A testing Gambit ini file for ColliderBit
-#  - attempting to remove anything not needed for testing only
-#    ColliderBit.... Why is that so difficult?
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
 
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+  NormalDist:
+    mu:
+      fixed_value: 1
+    sigma:
+      fixed_value: 1
 
 ##############################
 # Printer setup
@@ -25,13 +39,32 @@ Printer:
     # name of info file (explains content of output file)
     info_file: "runs/example_minimal_test/samples/gambit_output.info"
 
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  plugin: crapsample
+  file_path:  ScannerBit/lib/libsample.so
+
+  enable_redirect: false
+  redirect_output:
+     scanner:  xterm
+  #   error:  test_errors
+      
+  crapsample:
+    point_number: 2
+    output_file:  output
+    like:  Observable
+
 ###############################
 # Observables of interest
 ###############################
 
 ObsLikes:
 
-  # Uncomment to test ColliderBit
+  # ColliderBit
   - purpose:      Observable
     capability:   analysisAccumulator
 
@@ -42,7 +75,7 @@ ObsLikes:
 Auxiliaries:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
-  - capability:  eventLoopManager
+  - capability:  colliderLoopManager
     function:    manageVanillaLoop
     options:
       nEvents:   2000
@@ -81,15 +114,6 @@ Logger:
     [Dependency Resolver] : "dependency_resolver.log"
     [ColliderBit] : "ColliderBit.log"
 
-
-###############################
-## Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
-
 ##########################
 # Name/Value Section
 ##########################
@@ -97,7 +121,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
@@ -108,14 +132,3 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
     scan_error: non-fatal #make this fatal to see an example error
-
-  enable_testing: false
-  test_function: uniform
-      
-  uniform:
-    dim: 2
-    priors:
-      gauss_prior:
-        parameters: [0, 1]
-        options:
-          cov: [[1, 0], [0, 1]]

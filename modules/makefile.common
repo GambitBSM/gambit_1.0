@@ -387,6 +387,9 @@ distclean: clean
         # also removes ~ files and other weirdly generated files
 	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
 	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
+	@rm -f Example_SUSYspecBit/test_output.slha
+	@rm -f output report.txt testmodule.mod
+	@rm -f central_capabilities.dat central_models.dat
 
 $(COREDIR)/build/.minihelp:
 	@echo "*******************************************"

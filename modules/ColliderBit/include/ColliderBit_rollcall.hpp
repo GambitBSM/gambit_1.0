@@ -173,6 +173,7 @@ START_MODULE
     /// \todo Make a group of analyses rather than a simple counter.
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
+    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
     DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
     DEPENDENCY(scaleFactor, double)
