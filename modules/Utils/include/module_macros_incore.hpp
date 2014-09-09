@@ -1201,9 +1201,9 @@
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
           str errmsg = "Null returned from dynamic cast in";                   \
-          errmsg +=  "\n"STRINGIFY(MODULE)"::resolve_backendreq, for backend " \
-                     "requirement\n"STRINGIFY(REQUIREMENT)" of function "      \
-                     STRINGIFY(FUNCTION)".  Attempt was to"                    \
+          errmsg +=  "\n" STRINGIFY(MODULE) "::resolve_backendreq, for backend"\
+                     " requirement\n" STRINGIFY(REQUIREMENT) " of function "   \
+                     STRINGIFY(FUNCTION) ".  Attempt was to"                   \
                      "\nresolve to " + be_functor->name() + " in " +           \
                      be_functor->origin() + ".";                               \
           utils_error().raise(LOCAL_INFO,errmsg);                              \
