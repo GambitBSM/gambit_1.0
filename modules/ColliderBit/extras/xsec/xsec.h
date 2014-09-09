@@ -6,51 +6,102 @@
 #include "Pythia8/SusyLesHouches.h"
 
 // Include all NN-classes
-#include "networks/NNfunction_NN_1_1.h"
-#include "networks/NNfunction_NN_1_2.h"
-#include "networks/NNfunction_NN_1_3.h"
-#include "networks/NNfunction_NN_1_4.h"
-#include "networks/NNfunction_NN_1_5.h"
-#include "networks/NNfunction_NN_1_6.h"
-#include "networks/NNfunction_NN_1_7.h"
-#include "networks/NNfunction_NN_1_8.h"
-#include "networks/NNfunction_NN_2_2.h"
-#include "networks/NNfunction_NN_2_3.h"
-#include "networks/NNfunction_NN_2_4.h"
-#include "networks/NNfunction_NN_2_5.h"
-#include "networks/NNfunction_NN_2_6.h"
-#include "networks/NNfunction_NN_2_7.h"
-#include "networks/NNfunction_NN_2_8.h"
-#include "networks/NNfunction_NN_3_3.h"
-#include "networks/NNfunction_NN_3_4.h"
-#include "networks/NNfunction_NN_3_5.h"
-#include "networks/NNfunction_NN_3_6.h"
-#include "networks/NNfunction_NN_3_7.h"
-#include "networks/NNfunction_NN_3_8.h"
-#include "networks/NNfunction_NN_4_4.h"
-#include "networks/NNfunction_NN_5_7.h"
-#include "networks/NNfunction_NN_5_8.h"
-#include "networks/NNfunction_NN_6_7.h"
-#include "networks/NNfunction_NN_6_8.h"
+#include "networks/NNfunction_nn_chi1_chi1.h"
+#include "networks/NNfunction_nn_chi1_chi2.h"
+#include "networks/NNfunction_nn_chi1_chi3.h"
+#include "networks/NNfunction_nn_chi1_chi4.h"
+#include "networks/NNfunction_nn_chi1_charge1p.h"
+#include "networks/NNfunction_nn_chi1_charge2p.h"
+#include "networks/NNfunction_nn_chi1_charge1m.h"
+#include "networks/NNfunction_nn_chi1_charge2m.h"
+#include "networks/NNfunction_nn_chi2_chi2.h"
+#include "networks/NNfunction_nn_chi2_chi3.h"
+#include "networks/NNfunction_nn_chi2_chi4.h"
+#include "networks/NNfunction_nn_chi2_charge1p.h"
+#include "networks/NNfunction_nn_chi2_charge2p.h"
+#include "networks/NNfunction_nn_chi2_charge1m.h"
+#include "networks/NNfunction_nn_chi2_charge2m.h"
+#include "networks/NNfunction_nn_chi3_chi3.h"
+#include "networks/NNfunction_nn_chi3_chi4.h"
+#include "networks/NNfunction_nn_chi3_charge1p.h"
+#include "networks/NNfunction_nn_chi3_charge2p.h"
+#include "networks/NNfunction_nn_chi3_charge1m.h"
+#include "networks/NNfunction_nn_chi3_charge2m.h"
+#include "networks/NNfunction_nn_chi4_chi4.h"
+#include "networks/NNfunction_nn_charge1p_charge1m.h"
+#include "networks/NNfunction_nn_charge1p_charge2m.h"
+#include "networks/NNfunction_nn_charge2p_charge1m.h"
+#include "networks/NNfunction_nn_charge2p_charge2m.h"
 
-#include "networks/NNfunction_NG_1.h"
-#include "networks/NNfunction_NG_2.h"
-#include "networks/NNfunction_NG_3.h"
-#include "networks/NNfunction_NG_4.h"
-#include "networks/NNfunction_NG_5.h"
-#include "networks/NNfunction_NG_6.h"
-#include "networks/NNfunction_NG_7.h"
-#include "networks/NNfunction_NG_8.h"
+#include "networks/NNfunction_ng_chi01.h"
+#include "networks/NNfunction_ng_chi02.h"
+#include "networks/NNfunction_ng_chi03.h"
+#include "networks/NNfunction_ng_chi04.h"
+#include "networks/NNfunction_ng_chiPlus1.h"
+#include "networks/NNfunction_ng_chiPlus2.h"
+#include "networks/NNfunction_ng_chiMinus1.h"
+#include "networks/NNfunction_ng_chiMinus2.h"
 
-#include "networks/NNfunction_b1b1.h"
-#include "networks/NNfunction_b2b2.h"
-#include "networks/NNfunction_cLg.h"
-#include "networks/NNfunction_cRg.h"
-#include "networks/NNfunction_dLg.h"
-#include "networks/NNfunction_dRg.h"
+#include "networks/NNfunction_ns_chi01_cL.h"
+#include "networks/NNfunction_ns_chi01_cR.h"
+#include "networks/NNfunction_ns_chi01_dL.h"
+#include "networks/NNfunction_ns_chi01_dR.h"
+#include "networks/NNfunction_ns_chi01_sL.h"
+#include "networks/NNfunction_ns_chi01_sR.h"
+#include "networks/NNfunction_ns_chi01_uL.h"
+#include "networks/NNfunction_ns_chi01_uR.h"
+#include "networks/NNfunction_ns_chi02_cL.h"
+#include "networks/NNfunction_ns_chi02_cR.h"
+#include "networks/NNfunction_ns_chi02_dL.h"
+#include "networks/NNfunction_ns_chi02_dR.h"
+#include "networks/NNfunction_ns_chi02_sL.h"
+#include "networks/NNfunction_ns_chi02_sR.h"
+#include "networks/NNfunction_ns_chi02_uL.h"
+#include "networks/NNfunction_ns_chi02_uR.h"
+#include "networks/NNfunction_ns_chi03_cL.h"
+#include "networks/NNfunction_ns_chi03_cR.h"
+#include "networks/NNfunction_ns_chi03_dL.h"
+#include "networks/NNfunction_ns_chi03_dR.h"
+#include "networks/NNfunction_ns_chi03_sL.h"
+#include "networks/NNfunction_ns_chi03_sR.h"
+#include "networks/NNfunction_ns_chi03_uL.h"
+#include "networks/NNfunction_ns_chi03_uR.h"
+#include "networks/NNfunction_ns_chi04_cL.h"
+#include "networks/NNfunction_ns_chi04_cR.h"
+#include "networks/NNfunction_ns_chi04_dL.h"
+#include "networks/NNfunction_ns_chi04_dR.h"
+#include "networks/NNfunction_ns_chi04_sL.h"
+#include "networks/NNfunction_ns_chi04_sR.h"
+#include "networks/NNfunction_ns_chi04_uL.h"
+#include "networks/NNfunction_ns_chi04_uR.h"
+#include "networks/NNfunction_ns_chiMinus1_cL.h"
+#include "networks/NNfunction_ns_chiMinus1_dL.h"
+#include "networks/NNfunction_ns_chiMinus1_sL.h"
+#include "networks/NNfunction_ns_chiMinus1_uL.h"
+#include "networks/NNfunction_ns_chiMinus2_cL.h"
+#include "networks/NNfunction_ns_chiMinus2_dL.h"
+#include "networks/NNfunction_ns_chiMinus2_sL.h"
+#include "networks/NNfunction_ns_chiMinus2_uL.h"
+#include "networks/NNfunction_ns_chiPlus1_cL.h"
+#include "networks/NNfunction_ns_chiPlus1_dL.h"
+#include "networks/NNfunction_ns_chiPlus1_sL.h"
+#include "networks/NNfunction_ns_chiPlus1_uL.h"
+#include "networks/NNfunction_ns_chiPlus2_cL.h"
+#include "networks/NNfunction_ns_chiPlus2_dL.h"
+#include "networks/NNfunction_ns_chiPlus2_sL.h"
+#include "networks/NNfunction_ns_chiPlus2_uL.h"
+
 #include "networks/NNfunction_gg.h"
-#include "networks/NNfunction_sLg.h"
-#include "networks/NNfunction_sRg.h"
+
+#include "networks/NNfunction_sg_dL.h"
+#include "networks/NNfunction_sg_dR.h"
+#include "networks/NNfunction_sg_uL.h"
+#include "networks/NNfunction_sg_uR.h"
+#include "networks/NNfunction_sg_sL.h"
+#include "networks/NNfunction_sg_sR.h"
+#include "networks/NNfunction_sg_cL.h"
+#include "networks/NNfunction_sg_cR.h"
+
 #include "networks/NNfunction_sb_cLcL.h"
 #include "networks/NNfunction_sb_cLcR.h"
 #include "networks/NNfunction_sb_cLdL.h"
@@ -62,6 +113,7 @@
 #include "networks/NNfunction_sb_cRcR.h"
 #include "networks/NNfunction_sb_dLcR.h"
 #include "networks/NNfunction_sb_dLdL.h"
+#include "networks/NNfunction_sb_dLuL.h"
 #include "networks/NNfunction_sb_dLdR.h"
 #include "networks/NNfunction_sb_dLsR.h"
 #include "networks/NNfunction_sb_dLuR.h"
@@ -86,6 +138,7 @@
 #include "networks/NNfunction_sb_uRdR.h"
 #include "networks/NNfunction_sb_uRsR.h"
 #include "networks/NNfunction_sb_uRuR.h"
+
 #include "networks/NNfunction_ss_cLcL.h"
 #include "networks/NNfunction_ss_cLcR.h"
 #include "networks/NNfunction_ss_cLdL.h"
@@ -99,6 +152,7 @@
 #include "networks/NNfunction_ss_dLdL.h"
 #include "networks/NNfunction_ss_dLdR.h"
 #include "networks/NNfunction_ss_dLsR.h"
+#include "networks/NNfunction_ss_dLuL.h"
 #include "networks/NNfunction_ss_dLuR.h"
 #include "networks/NNfunction_ss_dRcR.h"
 #include "networks/NNfunction_ss_dRdR.h"
@@ -121,10 +175,11 @@
 #include "networks/NNfunction_ss_uRdR.h"
 #include "networks/NNfunction_ss_uRsR.h"
 #include "networks/NNfunction_ss_uRuR.h"
-#include "networks/NNfunction_t1t1.h"
-#include "networks/NNfunction_t2t2.h"
-#include "networks/NNfunction_uLg.h"
-#include "networks/NNfunction_uRg.h"
+
+#include "networks/NNfunction_bb_b1b1.h"
+#include "networks/NNfunction_bb_b2b2.h"
+#include "networks/NNfunction_tb_t1t1.h"
+#include "networks/NNfunction_tb_t2t2.h"
 
 using namespace std;
 
@@ -134,51 +189,102 @@ namespace xsec{
 
     // One object of every NN class
     // Mutable so their Value methods can be called despite not being declared const by ROOT...
-    mutable NNfunction_NN_1_1 nn_n1n1;
-    mutable NNfunction_NN_1_2 nn_n1n2;
-    mutable NNfunction_NN_1_3 nn_n1n3;
-    mutable NNfunction_NN_1_4 nn_n1n4;
-    mutable NNfunction_NN_1_5 nn_n1n5;
-    mutable NNfunction_NN_1_6 nn_n1n6;
-    mutable NNfunction_NN_1_7 nn_n1n7;
-    mutable NNfunction_NN_1_8 nn_n1n8;
-    mutable NNfunction_NN_2_2 nn_n2n2;
-    mutable NNfunction_NN_2_3 nn_n2n3;
-    mutable NNfunction_NN_2_4 nn_n2n4;
-    mutable NNfunction_NN_2_5 nn_n2n5;
-    mutable NNfunction_NN_2_6 nn_n2n6;
-    mutable NNfunction_NN_2_7 nn_n2n7;
-    mutable NNfunction_NN_2_8 nn_n2n8;
-    mutable NNfunction_NN_3_3 nn_n3n3;
-    mutable NNfunction_NN_3_4 nn_n3n4;
-    mutable NNfunction_NN_3_5 nn_n3n5;
-    mutable NNfunction_NN_3_6 nn_n3n6;
-    mutable NNfunction_NN_3_7 nn_n3n7;
-    mutable NNfunction_NN_3_8 nn_n3n8;
-    mutable NNfunction_NN_4_4 nn_n4n4;
-    mutable NNfunction_NN_5_7 nn_n5n7;
-    mutable NNfunction_NN_5_8 nn_n5n8;
-    mutable NNfunction_NN_6_7 nn_n6n7;
-    mutable NNfunction_NN_6_8 nn_n6n8;
+    mutable NNfunction_nn_chi1_chi1 nn_n1n1;
+    mutable NNfunction_nn_chi1_chi2 nn_n1n2;
+    mutable NNfunction_nn_chi1_chi3 nn_n1n3;
+    mutable NNfunction_nn_chi1_chi4 nn_n1n4;
+    mutable NNfunction_nn_chi1_charge1p nn_n1n5;
+    mutable NNfunction_nn_chi1_charge2p nn_n1n6;
+    mutable NNfunction_nn_chi1_charge1m nn_n1n7;
+    mutable NNfunction_nn_chi1_charge2m nn_n1n8;
+    mutable NNfunction_nn_chi2_chi2 nn_n2n2;
+    mutable NNfunction_nn_chi2_chi3 nn_n2n3;
+    mutable NNfunction_nn_chi2_chi4 nn_n2n4;
+    mutable NNfunction_nn_chi2_charge1p nn_n2n5;
+    mutable NNfunction_nn_chi2_charge2p nn_n2n6;
+    mutable NNfunction_nn_chi2_charge1m nn_n2n7;
+    mutable NNfunction_nn_chi2_charge2m nn_n2n8;
+    mutable NNfunction_nn_chi3_chi3 nn_n3n3;
+    mutable NNfunction_nn_chi3_chi4 nn_n3n4;
+    mutable NNfunction_nn_chi3_charge1p nn_n3n5;
+    mutable NNfunction_nn_chi3_charge2p nn_n3n6;
+    mutable NNfunction_nn_chi3_charge1m nn_n3n7;
+    mutable NNfunction_nn_chi3_charge2m nn_n3n8;
+    mutable NNfunction_nn_chi4_chi4 nn_n4n4;
+    mutable NNfunction_nn_charge1p_charge1m nn_n5n7;
+    mutable NNfunction_nn_charge1p_charge2m nn_n5n8;
+    mutable NNfunction_nn_charge2p_charge1m nn_n6n7;
+    mutable NNfunction_nn_charge2p_charge2m nn_n6n8;
 
-    mutable NNfunction_NG_1 ng_n1g;
-    mutable NNfunction_NG_2 ng_n2g;
-    mutable NNfunction_NG_3 ng_n3g;
-    mutable NNfunction_NG_4 ng_n4g;
-    mutable NNfunction_NG_5 ng_n5g;
-    mutable NNfunction_NG_6 ng_n6g;
-    mutable NNfunction_NG_7 ng_n7g;
-    mutable NNfunction_NG_8 ng_n8g;
+    mutable NNfunction_ng_chi01 ng_chi01;
+    mutable NNfunction_ng_chi02 ng_chi02;
+    mutable NNfunction_ng_chi03 ng_chi03;
+    mutable NNfunction_ng_chi04 ng_chi04;
+    mutable NNfunction_ng_chiPlus1 ng_chiPlus1;
+    mutable NNfunction_ng_chiPlus2 ng_chiPlus2;
+    mutable NNfunction_ng_chiMinus1 ng_chiMinus1;
+    mutable NNfunction_ng_chiMinus2 ng_chiMinus2;
 
-    mutable NNfunction_b1b1 b1b1;
-    mutable NNfunction_b2b2 b2b2;
-    mutable NNfunction_cLg cLg;
-    mutable NNfunction_cRg cRg;
-    mutable NNfunction_dLg dLg;
-    mutable NNfunction_dRg dRg;
+    mutable NNfunction_ns_chi01_cL ns_chi01_cL;
+    mutable NNfunction_ns_chi01_cR ns_chi01_cR;
+    mutable NNfunction_ns_chi01_dL ns_chi01_dL;
+    mutable NNfunction_ns_chi01_dR ns_chi01_dR;
+    mutable NNfunction_ns_chi01_sL ns_chi01_sL;
+    mutable NNfunction_ns_chi01_sR ns_chi01_sR;
+    mutable NNfunction_ns_chi01_uL ns_chi01_uL;
+    mutable NNfunction_ns_chi01_uR ns_chi01_uR;
+    mutable NNfunction_ns_chi02_cL ns_chi02_cL;
+    mutable NNfunction_ns_chi02_cR ns_chi02_cR;
+    mutable NNfunction_ns_chi02_dL ns_chi02_dL;
+    mutable NNfunction_ns_chi02_dR ns_chi02_dR;
+    mutable NNfunction_ns_chi02_sL ns_chi02_sL;
+    mutable NNfunction_ns_chi02_sR ns_chi02_sR;
+    mutable NNfunction_ns_chi02_uL ns_chi02_uL;
+    mutable NNfunction_ns_chi02_uR ns_chi02_uR;
+    mutable NNfunction_ns_chi03_cL ns_chi03_cL;
+    mutable NNfunction_ns_chi03_cR ns_chi03_cR;
+    mutable NNfunction_ns_chi03_dL ns_chi03_dL;
+    mutable NNfunction_ns_chi03_dR ns_chi03_dR;
+    mutable NNfunction_ns_chi03_sL ns_chi03_sL;
+    mutable NNfunction_ns_chi03_sR ns_chi03_sR;
+    mutable NNfunction_ns_chi03_uL ns_chi03_uL;
+    mutable NNfunction_ns_chi03_uR ns_chi03_uR;
+    mutable NNfunction_ns_chi04_cL ns_chi04_cL;
+    mutable NNfunction_ns_chi04_cR ns_chi04_cR;
+    mutable NNfunction_ns_chi04_dL ns_chi04_dL;
+    mutable NNfunction_ns_chi04_dR ns_chi04_dR;
+    mutable NNfunction_ns_chi04_sL ns_chi04_sL;
+    mutable NNfunction_ns_chi04_sR ns_chi04_sR;
+    mutable NNfunction_ns_chi04_uL ns_chi04_uL;
+    mutable NNfunction_ns_chi04_uR ns_chi04_uR;
+    mutable NNfunction_ns_chiMinus1_cL ns_chiMinus1_cL;
+    mutable NNfunction_ns_chiMinus1_dL ns_chiMinus1_dL;
+    mutable NNfunction_ns_chiMinus1_sL ns_chiMinus1_sL;
+    mutable NNfunction_ns_chiMinus1_uL ns_chiMinus1_uL;
+    mutable NNfunction_ns_chiMinus2_cL ns_chiMinus2_cL;
+    mutable NNfunction_ns_chiMinus2_dL ns_chiMinus2_dL;
+    mutable NNfunction_ns_chiMinus2_sL ns_chiMinus2_sL;
+    mutable NNfunction_ns_chiMinus2_uL ns_chiMinus2_uL;
+    mutable NNfunction_ns_chiPlus1_cL ns_chiPlus1_cL;
+    mutable NNfunction_ns_chiPlus1_dL ns_chiPlus1_dL;
+    mutable NNfunction_ns_chiPlus1_sL ns_chiPlus1_sL;
+    mutable NNfunction_ns_chiPlus1_uL ns_chiPlus1_uL;
+    mutable NNfunction_ns_chiPlus2_cL ns_chiPlus2_cL;
+    mutable NNfunction_ns_chiPlus2_dL ns_chiPlus2_dL;
+    mutable NNfunction_ns_chiPlus2_sL ns_chiPlus2_sL;
+    mutable NNfunction_ns_chiPlus2_uL ns_chiPlus2_uL;
+
     mutable NNfunction_gg gg;
-    mutable NNfunction_sLg sLg;
-    mutable NNfunction_sRg sRg;
+
+    mutable NNfunction_sg_dL dLg;
+    mutable NNfunction_sg_dR dRg;
+    mutable NNfunction_sg_uL uLg;
+    mutable NNfunction_sg_uR uRg;
+    mutable NNfunction_sg_sL sLg;
+    mutable NNfunction_sg_sR sRg;
+    mutable NNfunction_sg_cL cLg;
+    mutable NNfunction_sg_cR cRg;
+
     mutable NNfunction_sb_cLcL sb_cLcL;
     mutable NNfunction_sb_cLcR sb_cLcR;
     mutable NNfunction_sb_cLdL sb_cLdL;
@@ -190,6 +296,7 @@ namespace xsec{
     mutable NNfunction_sb_cRcR sb_cRcR;
     mutable NNfunction_sb_dLcR sb_dLcR;
     mutable NNfunction_sb_dLdL sb_dLdL;
+    mutable NNfunction_sb_dLuL sb_dLuL;
     mutable NNfunction_sb_dLdR sb_dLdR;
     mutable NNfunction_sb_dLsR sb_dLsR;
     mutable NNfunction_sb_dLuR sb_dLuR;
@@ -214,6 +321,7 @@ namespace xsec{
     mutable NNfunction_sb_uRdR sb_uRdR;
     mutable NNfunction_sb_uRsR sb_uRsR;
     mutable NNfunction_sb_uRuR sb_uRuR;
+    
     mutable NNfunction_ss_cLcL ss_cLcL;
     mutable NNfunction_ss_cLcR ss_cLcR;
     mutable NNfunction_ss_cLdL ss_cLdL;
@@ -227,6 +335,7 @@ namespace xsec{
     mutable NNfunction_ss_dLdL ss_dLdL;
     mutable NNfunction_ss_dLdR ss_dLdR;
     mutable NNfunction_ss_dLsR ss_dLsR;
+    mutable NNfunction_ss_dLuL ss_dLuL;
     mutable NNfunction_ss_dLuR ss_dLuR;
     mutable NNfunction_ss_dRcR ss_dRcR;
     mutable NNfunction_ss_dRdR ss_dRdR;
@@ -249,10 +358,11 @@ namespace xsec{
     mutable NNfunction_ss_uRdR ss_uRdR;
     mutable NNfunction_ss_uRsR ss_uRsR;
     mutable NNfunction_ss_uRuR ss_uRuR;
-    mutable NNfunction_t1t1 t1t1;
-    mutable NNfunction_t2t2 t2t2;
-    mutable NNfunction_uLg uLg;
-    mutable NNfunction_uRg uRg;
+    
+    mutable NNfunction_bb_b1b1 bb_b1b1;
+    mutable NNfunction_bb_b2b2 bb_b2b2;
+    mutable NNfunction_tb_t1t1 tb_t1t1;
+    mutable NNfunction_tb_t2t2 tb_t2t2;
 
     // Map for pid codes and strings
     map<int,string> pidmap;
