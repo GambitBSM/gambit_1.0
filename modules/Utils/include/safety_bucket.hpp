@@ -186,20 +186,20 @@ namespace Gambit
 
     protected:
 
-      backend_functor<TYPE*> * _functor_ptr;
+      backend_functor<TYPE*const> * _functor_ptr;
       safe_variable_ptr<TYPE> _svptr;
 
     public:
 
       /// Constructor for BEvariable_bucket.
-      BEvariable_bucket(backend_functor<TYPE*> * functor_ptr_in = NULL)
+      BEvariable_bucket(backend_functor<TYPE*const> * functor_ptr_in = NULL)
       {
         initialize(functor_ptr_in);
       }
 
 
       /// Initialize this bucket with a functor pointer.
-      void initialize(backend_functor<TYPE*> * functor_ptr_in)
+      void initialize(backend_functor<TYPE*const> * functor_ptr_in)
       {
         _functor_ptr      = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
