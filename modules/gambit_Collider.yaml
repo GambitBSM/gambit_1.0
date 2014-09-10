@@ -54,7 +54,7 @@ Scanner:
   #   error:  test_errors
       
   crapsample:
-    point_number: 2
+    point_number: 1
     output_file:  output
     like:  Observable
 

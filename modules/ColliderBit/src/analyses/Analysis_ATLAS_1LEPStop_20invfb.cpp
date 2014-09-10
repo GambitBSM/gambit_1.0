@@ -94,7 +94,7 @@ namespace Gambit {
 
         int nTrueBJets=0;
         for(Jet * tmpJet: jets){
-          if(tmpJet->getPdgId()==5){
+          if(tmpJet->isBJet()){
             trueBjet1=tmpJet;
             nTrueBJets++;
             break;
@@ -102,7 +102,7 @@ namespace Gambit {
         }
 
         for(Jet * tmpJet: jets){
-          if(tmpJet->getPdgId()==5 && tmpJet!=trueBjet1){
+          if(tmpJet->isBJet() && tmpJet!=trueBjet1){
             trueBjet2=tmpJet;
             nTrueBJets++;
             break;

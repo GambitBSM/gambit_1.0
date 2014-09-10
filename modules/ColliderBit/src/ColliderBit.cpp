@@ -84,7 +84,9 @@ namespace Gambit {
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                                2000001, 2000002, 2000003, 2000004}});
       /// \todo Test boring event counter first.  Uncomment analysis later.
-      // result.add_analysis( mkAnalysis("ATLAS_0LEP") );
+      cout << "Make analysis" << endl;
+      result.addAnalysis( mkAnalysis("ATLAS_0LEP") );
+      cout << "Made analysis" << endl;
     }
 
 

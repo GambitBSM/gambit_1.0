@@ -456,7 +456,7 @@ DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
 DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
 
 HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
-HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c)
+HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c) $(wildcard $(HECOLLIDERDIR)/src/analyses/*cpp)
 HECOLLIDERDELPHESSRC:=$(wildcard $(HECOLLIDERDIR)/src/delphes/*Module.cc) 
 HECOLLIDEROBJS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(HECOLLIDERSRC)))) $(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(HECOLLIDERDELPHESSRC)))) $(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(HECOLLIDERDELPHESSRC)))) 
 
