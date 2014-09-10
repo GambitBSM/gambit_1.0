@@ -1,25 +1,9 @@
 CXXFLAGS := -std=c++11 -fPIC
 
 FILES_NETWORKS = \
-  networks/NNfunction_b1b1.o \
-  networks/NNfunction_b2b2.o \
   networks/NNfunction_bb_b1b1.o \
   networks/NNfunction_bb_b2b2.o \
-  networks/NNfunction_cLg.o \
-  networks/NNfunction_cRg.o \
-  networks/NNfunction_dLg.o \
-  networks/NNfunction_dRg.o \
   networks/NNfunction_gg.o \
-  networks/NNfunction_n1n1.o \
-  networks/NNfunction_n1n2.o \
-  networks/NNfunction_NG_1.o \
-  networks/NNfunction_NG_2.o \
-  networks/NNfunction_NG_3.o \
-  networks/NNfunction_NG_4.o \
-  networks/NNfunction_NG_5.o \
-  networks/NNfunction_NG_6.o \
-  networks/NNfunction_NG_7.o \
-  networks/NNfunction_NG_8.o \
   networks/NNfunction_ng_chi01.o \
   networks/NNfunction_ng_chi02.o \
   networks/NNfunction_ng_chi03.o \
@@ -28,32 +12,6 @@ FILES_NETWORKS = \
   networks/NNfunction_ng_chiMinus2.o \
   networks/NNfunction_ng_chiPlus1.o \
   networks/NNfunction_ng_chiPlus2.o \
-  networks/NNfunction_NN_1_1.o \
-  networks/NNfunction_NN_1_2.o \
-  networks/NNfunction_NN_1_3.o \
-  networks/NNfunction_NN_1_4.o \
-  networks/NNfunction_NN_1_5.o \
-  networks/NNfunction_NN_1_6.o \
-  networks/NNfunction_NN_1_7.o \
-  networks/NNfunction_NN_1_8.o \
-  networks/NNfunction_NN_2_2.o \
-  networks/NNfunction_NN_2_3.o \
-  networks/NNfunction_NN_2_4.o \
-  networks/NNfunction_NN_2_5.o \
-  networks/NNfunction_NN_2_6.o \
-  networks/NNfunction_NN_2_7.o \
-  networks/NNfunction_NN_2_8.o \
-  networks/NNfunction_NN_3_3.o \
-  networks/NNfunction_NN_3_4.o \
-  networks/NNfunction_NN_3_5.o \
-  networks/NNfunction_NN_3_6.o \
-  networks/NNfunction_NN_3_7.o \
-  networks/NNfunction_NN_3_8.o \
-  networks/NNfunction_NN_4_4.o \
-  networks/NNfunction_NN_5_7.o \
-  networks/NNfunction_NN_5_8.o \
-  networks/NNfunction_NN_6_7.o \
-  networks/NNfunction_NN_6_8.o \
   networks/NNfunction_nn_charge1p_charge1m.o \
   networks/NNfunction_nn_charge1p_charge2m.o \
   networks/NNfunction_nn_charge2p_charge1m.o \
@@ -80,9 +38,6 @@ FILES_NETWORKS = \
   networks/NNfunction_nn_chi3_chi3.o \
   networks/NNfunction_nn_chi3_chi4.o \
   networks/NNfunction_nn_chi4_chi4.o \
-  networks/NNfunction_nn_n1n3.o \
-  networks/NNfunction_nn_n1n4.o \
-  networks/NNfunction_nn_n1n5.o \
   networks/NNfunction_ns_chi01_cL.o \
   networks/NNfunction_ns_chi01_cR.o \
   networks/NNfunction_ns_chi01_dL.o \
@@ -175,8 +130,6 @@ FILES_NETWORKS = \
   networks/NNfunction_sg_sR.o \
   networks/NNfunction_sg_uL.o \
   networks/NNfunction_sg_uR.o \
-  networks/NNfunction_sLg.o \
-  networks/NNfunction_sRg.o \
   networks/NNfunction_ss_cLcL.o \
   networks/NNfunction_ss_cLcR.o \
   networks/NNfunction_ss_cLdL.o \
@@ -213,13 +166,8 @@ FILES_NETWORKS = \
   networks/NNfunction_ss_uRdR.o \
   networks/NNfunction_ss_uRsR.o \
   networks/NNfunction_ss_uRuR.o \
-  networks/NNfunction_t1t1.o \
-  networks/NNfunction_t2t2.o \
   networks/NNfunction_tb_t1t1.o \
-  networks/NNfunction_tb_t2t2.o \
-  networks/NNfunction_uLg.o \
-  networks/NNfunction_uRg.o
-
+  networks/NNfunction_tb_t2t2.o
 
 .PHONY = all clean
 

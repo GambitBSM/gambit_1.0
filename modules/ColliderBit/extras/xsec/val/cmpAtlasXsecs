@@ -15,7 +15,7 @@ else:
     ROOTFILE = sys.argv[1]
 
 ## 2nd (optional) arg is xsec cutoff
-XSECMIN = float(sys.argv[2]) if len(sys.argv) >= 3 else 1e-10
+XSECMIN = float(sys.argv[2]) if len(sys.argv) >= 3 else 1e-5
 
 
 from math import sqrt
@@ -25,7 +25,8 @@ def dev(sig, sigref, reg=0):
     #return (sig-sigref) / (abs(sigref) + abs(reg))
     return (sig-sigref) / sqrt(abs(sigref*reg))
 def dev(sig, sigref, reg=0):
-    if sig < reg or sigref < reg:
+    #if sig < reg or sigref < reg:
+    if sigref < reg:
         sys.stderr.write("Vetoing: {:7.2g} (sig) vs {:7.2g} (ref)  [reg = {:5.2g}]\n".format(sig, sigref, reg))
         return -1.0
     return (sig-sigref) / (abs(sigref) + abs(reg))

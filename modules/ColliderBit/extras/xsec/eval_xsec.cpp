@@ -43,10 +43,6 @@ int main(int argc, char* argv[]) {
   const double xs_ll = ev.xsec({{1000011, 1000012, 1000013, 1000014, 1000015, 1000016}},
                                {{1000011, 1000012, 1000013, 1000014, 1000015, 1000016}}, argv[1]);
 
-  // cout << xs_gg << endl;
-  cout << xs_gg << " " << xs_xg << " " << xs_xx << " " << xs_qg << " "
-       << xs_xq << " " << xs_qq << " " << xs_bb << " " << xs_tt << " " << xs_ll << endl;
-
 
   // Are's tests
   //cout << xs_qq << endl;
@@ -59,15 +55,19 @@ int main(int argc, char* argv[]) {
   for (int im = 0; im < 20; im++) {
     par_sps1a[11] += 100;
     cout << "@" << im << "\t" << par_sps1a[11] << "\t"
-         << ev.xsec({{1000001}}, {{ 1000001}},  par_sps1a) << "\t"  // dLdL
-         << ev.xsec({{1000001}}, {{ 1000002}},  par_sps1a) << "\t"  // dLuL
-         << ev.xsec({{1000001}}, {{-1000001}},  par_sps1a) << "\t"  // dLdLbar
-         << ev.xsec({{1000003}}, {{ 1000001}},  par_sps1a) << "\t"  // sLdL
-         << ev.xsec({{1000004}}, {{ 1000004}},  par_sps1a) << "\t"  // cLcL
-         << ev.xsec({{1000004}}, {{-1000004}},  par_sps1a) << "\t"  // cLcLbar
-         << ev.xsec({{1000004}}, {{ 1000001}},  par_sps1a) << "\t"  // cLdL
-         << ev.xsec({{2000003}}, {{ 2000004}},  par_sps1a) << endl; // sRcR
+         << ev.xsec({{1000001}}, {{1000001}},  par_sps1a) << "\t"  // dLdL
+         << ev.xsec({{1000001}}, {{1000002}},  par_sps1a) << "\t"  // dLuL
+         << ev.xsec({{1000003}}, {{1000001}},  par_sps1a) << "\t"  // sLdL
+         << ev.xsec({{1000004}}, {{1000003}},  par_sps1a) << "\t"  // cLsLbar
+         << ev.xsec({{1000004}}, {{1000004}},  par_sps1a) << "\t"  // cLcL
+         << ev.xsec({{1000004}}, {{1000001}},  par_sps1a) << "\t"  // cLdL
+         << ev.xsec({{2000003}}, {{2000004}},  par_sps1a) << endl; // sRcR
   }
+
+
+  // Print out cross-sections for ATLAS CMSSM validation (must be last line of terminal output)
+  cout << xs_gg << " " << xs_xg << " " << xs_xx << " " << xs_qg << " "
+       << xs_xq << " " << xs_qq << " " << xs_bb << " " << xs_tt << " " << xs_ll << endl;
 
   return 0;
 }

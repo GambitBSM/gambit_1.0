@@ -157,7 +157,7 @@ namespace xsec{
 
       }
     }
-    cout << "  xs_tot = " << xs << " pb" << endl;
+    cout << "  => xs_tot = " << xs << " pb" << endl;
     return xs;
   }
 
@@ -493,11 +493,11 @@ namespace xsec{
     if(process == "sLuRbar") return sb_sLuR.Value(0,par);
     if(process == "sRcRbar") return sb_sRcR.Value(0,par);
     if(process == "sRsRbar") return sb_sRsR.Value(0,par);
-    if(process == "cLcLbar") return sb_cLcL.Value(0,par); //
+    if(process == "cLcLbar") return 0; // BROKEN!!! return sb_cLcL.Value(0,par); //
     if(process == "cLcRbar") return sb_cLcR.Value(0,par);
     if(process == "cLdLbar") return sb_cLdL.Value(0,par);
     if(process == "cLdRbar") return sb_cLdR.Value(0,par);
-    if(process == "cLsLbar") return sb_cLsL.Value(0,par); //
+    if(process == "cLsLbar") return 0; // BROKEN!!! return sb_cLsL.Value(0,par); //
     if(process == "cLsRbar") return sb_cLsR.Value(0,par);
     if(process == "cLuLbar") return sb_cLuL.Value(0,par);
     if(process == "cLuRbar") return sb_cLuR.Value(0,par);
@@ -537,11 +537,11 @@ namespace xsec{
     if(process == "sLuR") return ss_sLuR.Value(0,par);
     if(process == "sRcR") return ss_sRcR.Value(0,par);
     if(process == "sRsR") return ss_sRsR.Value(0,par);
-    if(process == "cLcL") return ss_cLcL.Value(0,par); //
+    if(process == "cLcL") return 0; // BROKEN!!! return ss_cLcL.Value(0,par); //
     if(process == "cLcR") return ss_cLcR.Value(0,par);
     if(process == "cLdL") return ss_cLdL.Value(0,par);
     if(process == "cLdR") return ss_cLdR.Value(0,par);
-    if(process == "cLsL") return ss_cLsL.Value(0,par); //
+    if(process == "cLsL") return 0; // BROKEN!!! return ss_cLsL.Value(0,par); //
     if(process == "cLsR") return ss_cLsR.Value(0,par);
     if(process == "cLuL") return ss_cLuL.Value(0,par);
     if(process == "cLuR") return ss_cLuR.Value(0,par);
