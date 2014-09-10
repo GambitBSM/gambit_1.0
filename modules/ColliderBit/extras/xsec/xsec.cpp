@@ -157,6 +157,7 @@ namespace xsec{
 
       }
     }
+    cout << "  xs_tot = " << xs << " pb" << endl;
     return xs;
   }
 
@@ -292,6 +293,7 @@ namespace xsec{
 
 
   double Evaluator::xsec(const string& process, const string& slhafile) const {
+    /// @todo: Do some caching via static variables to avoid reloading the same file... thread safety?
     Pythia8::SusyLesHouches point(slhafile);
     return xsec(process, point);
   }
@@ -320,9 +322,10 @@ namespace xsec{
     // meL, mmuL, mtauL, meR, mmuR, mtauR
     // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
-    // The NN gives log10 of cross section
+    // The NN gives log10 of cross section. If log(xs) = 0 there's an error: return 0
     try {
-      const double xsec = pow(10., log10xsec(process, par));
+      const double logxs = log10xsec(process, par);
+      const double xsec = (logxs != 0) ? pow(10., logxs) : 0;
       //cout << process << " got evaluated: " << xsec << " pb" << endl;
       return xsec;
     } catch (const std::exception& e) {
@@ -490,11 +493,11 @@ namespace xsec{
     if(process == "sLuRbar") return sb_sLuR.Value(0,par);
     if(process == "sRcRbar") return sb_sRcR.Value(0,par);
     if(process == "sRsRbar") return sb_sRsR.Value(0,par);
-    if(process == "cLcLbar") return sb_cLcL.Value(0,par);
+    if(process == "cLcLbar") return sb_cLcL.Value(0,par); //
     if(process == "cLcRbar") return sb_cLcR.Value(0,par);
     if(process == "cLdLbar") return sb_cLdL.Value(0,par);
     if(process == "cLdRbar") return sb_cLdR.Value(0,par);
-    if(process == "cLsLbar") return sb_cLsL.Value(0,par);
+    if(process == "cLsLbar") return sb_cLsL.Value(0,par); //
     if(process == "cLsRbar") return sb_cLsR.Value(0,par);
     if(process == "cLuLbar") return sb_cLuL.Value(0,par);
     if(process == "cLuRbar") return sb_cLuR.Value(0,par);
@@ -534,11 +537,11 @@ namespace xsec{
     if(process == "sLuR") return ss_sLuR.Value(0,par);
     if(process == "sRcR") return ss_sRcR.Value(0,par);
     if(process == "sRsR") return ss_sRsR.Value(0,par);
-    if(process == "cLcL") return ss_cLcL.Value(0,par);
+    if(process == "cLcL") return ss_cLcL.Value(0,par); //
     if(process == "cLcR") return ss_cLcR.Value(0,par);
     if(process == "cLdL") return ss_cLdL.Value(0,par);
     if(process == "cLdR") return ss_cLdR.Value(0,par);
-    if(process == "cLsL") return ss_cLsL.Value(0,par);
+    if(process == "cLsL") return ss_cLsL.Value(0,par); //
     if(process == "cLsR") return ss_cLsR.Value(0,par);
     if(process == "cLuL") return ss_cLuL.Value(0,par);
     if(process == "cLuR") return ss_cLuR.Value(0,par);
