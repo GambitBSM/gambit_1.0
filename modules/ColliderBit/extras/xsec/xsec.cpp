@@ -281,21 +281,6 @@ namespace xsec{
       //cout << par[1] << " " << par[2] << " " << par[3] << endl;
     }
 
-    // Check that parameters are reasonable, reset if not
-    for (int i = 1; i < 24; i++) {
-      const double val = par[i];
-      if (i == 0) { // tanB in [2,50]
-        if (val < 2.) par[i] = 2.;
-        if (val > 50.) par[i] = 50.;
-      } else if (i > 0 && i < 20 && abs(val) > 2000.) { // Soft masses in [-2000,2000]
-        par[i] = sgn(val) * 2000.;
-      }
-      if (val != par[i])
-        cout << "Param " << i << " reset to NN validity boundary: "
-             << val << " -> " << par[i] << endl;
-    }
-
-
   }
 
 
@@ -312,7 +297,7 @@ namespace xsec{
   }
 
 
-  double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches & point) const {
+  double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches& point) const {
     const string process = get_process(pid1, pid2);
     // if (process.empty()) {
     //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
@@ -328,7 +313,7 @@ namespace xsec{
   }
 
 
-  double Evaluator::xsec(const string& process, double * par) const {
+  double Evaluator::xsec(const string& process, double* par) const {
     // Returns cross section in pb
     // par is expected to be 24 parameter array with MSSM parameters:
     // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
@@ -337,7 +322,7 @@ namespace xsec{
 
     // The NN gives log10 of cross section
     try {
-      const double xsec = pow(10.,log10xsec(process, par));
+      const double xsec = pow(10., log10xsec(process, par));
       //cout << process << " got evaluated: " << xsec << " pb" << endl;
       return xsec;
     } catch (const std::exception& e) {
@@ -347,7 +332,7 @@ namespace xsec{
   }
 
 
-  double Evaluator::log10xsec(const string& process, double * par) const {
+  double Evaluator::log10xsec(const string& process, double* par) const {
     // Returns log10(cross section in pb)
     // par is expected to be 24 parameter array with MSSM parameters:
     // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
@@ -355,6 +340,21 @@ namespace xsec{
     // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
     //#define NO_IMPL_PROC throw std::runtime_error(("Unimplemented xsec process type, " + process).c_str())
+
+    // Check that parameters are reasonable, reset if not
+    // cout << "CHECKING PARAMS" << endl;
+    for (int i = 1; i < 24; i++) {
+      const double val = par[i];
+      if (i == 0) { // tanB in [2,50]
+        if (val < 2.) par[i] = 2.;
+        if (val > 50.) par[i] = 50.;
+      } else if (i > 0 && i < 20 && abs(val) > 2000.) { // Soft masses in [-2000,2000]
+        par[i] = sgn(val) * 2000.;
+      }
+      if (val != par[i])
+        cout << "Param " << i << " reset to NN validity boundary: "
+             << val << " -> " << par[i] << endl;
+    }
 
     // Gluino pair production
     if(process == "gg") return gg.Value(0,par);
@@ -499,7 +499,7 @@ namespace xsec{
     if(process == "cLuLbar") return sb_cLuL.Value(0,par);
     if(process == "cLuRbar") return sb_cLuR.Value(0,par);
     if(process == "cRcRbar") return sb_cRcR.Value(0,par);
-    
+
     if(process == "b1b1bar") return bb_b1b1.Value(0,par);
     if(process == "b2b2bar") return bb_b2b2.Value(0,par);
     if(process == "t1t1bar") return tb_t1t1.Value(0,par);
