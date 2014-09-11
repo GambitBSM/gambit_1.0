@@ -37,7 +37,6 @@ BE_FUNCTION(InitDetectorLUX2013, void, (bool*), "__ddcalc0_MOD_initdetectorlux20
 BE_FUNCTION(SetWIMP, void, (double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*), "__ddcalc0_MOD_setwimp", "DDCalc0_SetWIMP")
 BE_FUNCTION(CalcRates, void, (), "__ddcalc0_MOD_calcrates", "DDCalc0_CalcRates")
 BE_FUNCTION(LogLikelihood, double, (), "__ddcalc0_MOD_loglikelihood", "DDCalc0_LogLikelihood")
-// All arguments of Initialize and SetWIMP are optional. Use NOARG(TYPE) as argument to skip unused arguments.
 
 BE_INI_FUNCTION
 {

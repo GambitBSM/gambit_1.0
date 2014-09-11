@@ -7,291 +7,288 @@
 # Dec 2013
 #
 
-############################
---- # Input parameter declarations
+ 
+###################################
+# Input parameter declarations
 ###################################
 
-# First, simply register parameters, whether they are fixed, what value they are fixed to etc
-# Ben: the 'ranges' keyword CAN be entered here. If this is done, GAMBIT assumes you want
-# to sample from a flat prior over this range. For any other prior, you need to specify it
-# properly in the "priors" section.
+Parameters: !import parameters.yaml
 
-CMSSM_demo:
-  # SM pars
-#  MZ:
-#    fixed_value: 80
-#  Mbot:
-#    fixed_value: 90
-#  Mtop:
-#    fixed_value: 170
-#  g1:
-#    fixed_value: 0.001
-#  g2:
-#    fixed_value: 0.003
-#  g3:
-#    fixed_value: 0.1
-
-  # CMSSM pars
-  A0:
-    range: [-1000, 1000]
-  M0:
-    fixed_value: 100
-    prior_type: log
-    range: [0.001,1000]
-  M12:
-    fixed_value: 90
-    #same_as: CMSSM_I::M0
-  Mstop:
-    fixed_value: 100
-    #same_as: CMSSM_I::M12
-  sgnmu:
-     range: [-1, 1]
-     fixed_value: 1
-  tanb:
-     fixed_value: 10
-
-# Ben: this was in the old inifile: I don't know what it does 
-#  param_not_in_gambit:
-    # range: [-1, 1]
-
-# The "adhoc" model bypasses ModelBit and produces some model parameter nodes
-# on the fly. This can be used for testing purposes.
-#adhoc:
-#  m0:
-#    fixed: true
-#    range: [0, 5]
-#  m1:
-#    fixed: true
-#    range: [6, 10]
-#  m2:
-#    fixed: true
-#    range: [50, 500]
-
-# Ben: proposed replacement for the input parameters section (to allow more general treatment of priors)
 
 ##############################
---- # Prior setup
+# Prior setup
 ##############################
 
-# Here specify the priors, the parameters they work with, and any options as needed for that prior
-# A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
-# and then they are combined into a "composite" prior 
+Priors:
 
-# (I put this is a section outside of CMSSM_I, since in principle we could create composite priors that
-# mix together parameters of different models, though that would be weird. Might have to specify the
-# model name along with the parameter... e.g. CMSSM_I::M0, as in the "same_as" option.
-# The category names for each sub-prior are arbitrary, but I think needed due to the way yaml works.
-# (since I can't have several categories with the same name, e.g. "log")
-# Will need to think about how to deal with "effective" priors also...
-# Maybe just specify a module function which computes the effective prior factor?
-# Gambit will have to know to use this effective prior to weight the likelihood.
-# Really it can go straight into the likelihood, it is just that we need to keep
-# track of it so that it can be REMOVED from the likelihood when plotting
-# the likelihood itself (since it is NOT a likelihood). Actually, I think we
-# decided that we can deal with this via the "purpose" system.
+  # Here specify the priors, the parameters they work with, and any options as needed for that prior
+  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
+  # and then they are combined into a "composite" prior 
 
-#m0_prior:
-#  parameters: [CMSSM_I::M0]
-#  prior_type: log
-#  range: [0.001,1000]
+  # (I put this is a section outside of CMSSM_I, since in principle we could create composite priors that
+  # mix together parameters of different models, though that would be weird. Might have to specify the
+  # model name along with the parameter... e.g. CMSSM_I::M0, as in the "same_as" option.
+  # The category names for each sub-prior are arbitrary, but I think needed due to the way yaml works.
+  # (since I can't have several categories with the same name, e.g. "log")
+  # Will need to think about how to deal with "effective" priors also...
+  # Maybe just specify a module function which computes the effective prior factor?
+  # Gambit will have to know to use this effective prior to weight the likelihood.
+  # Really it can go straight into the likelihood, it is just that we need to keep
+  # track of it so that it can be REMOVED from the likelihood when plotting
+  # the likelihood itself (since it is NOT a likelihood). Actually, I think we
+  # decided that we can deal with this via the "purpose" system.
 
-#m12_prior: 
-#  parameters: [CMSSM_I::M12]
-#  prior_type: composite
-#  options: 
-#    new_prior: 
-#      parameters: [CMSSM_I::M12]
-#      prior_type: log
-#      range: [100,2000]
+  #m0_prior:
+  #  parameters: [CMSSM_demo::M0]
+  #  prior_type: log
+  #  range: [0.001,1000]
 
-#tanbMstop_prior: 
-#  parameters: [CMSSM_I::tanb, CMSSM_I::Mstop]
-#  prior_type: cauchy
-#  options:
-#    cov: [[0.5, 0.1],[0.1, 0.6]]
-#    demo: 45
+  m12_prior: 
+    parameters: [CMSSM_demo::M12]
+    prior_type: composite
+    options: 
+      new_prior: 
+        parameters: [CMSSM_demo::M12]
+        prior_type: log
+        range: [100,2000]
+
+  tanbMstop_prior: 
+    parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
+    prior_type: cauchy
+    options:
+      cov: [[0.5, 0.1],[0.1, 0.6]]
+      demo: 45
+
 
 ##############################
---- # Scanner setup
+# Printer setup
 ##############################
 
-scanner:
-  plugin:  crapsample
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  #plugin:  loopsample
+  plugin: crapsample
   file_path:  ScannerBit/lib/libsample.so
 
-#scanner:
-#  module:  multinest
-#  file_path:  ScannerBit/lib/libmultinest_interface.so
-    
-enable_redirect: false
+  #scanner:
+  #  module:  multinest
+  #  file_path:  ScannerBit/lib/libmultinest_interface.so
+      
+  enable_redirect: false
 
-redirect_output:
-   scanner:  xterm
-#   error:  test_errors
-    
-crapsample:
-  point_number: 2
-  output_file:  output
-  like:  Likelihood
+  redirect_output:
+     scanner:  xterm
+  #   error:  test_errors
+      
+  crapsample:
+    point_number: 2
+    output_file:  output
+    like:  Likelihood
 
-loopsample:
-  point_number: 2
-  output_file:  output
-  like:  Likelihood
-  
-multinest:
-  output_file:  output
+  loopsample:
+    point_number: 20
+    output_file:  output
+    like:  Likelihood
+    files:
+      output_file: "weights ..."
+    
+  multinest:
+    output_file:  output
+    
+  twalk_beta:
+    kwalk_ratio: 0.9836
+    projection_dimension: 4
+    gaussian_distance: 2.4
+    walk_distance: 2.5
+    transverse_distance: 6.0
+    ran_seed: 0
+    file_name: output_file
+    tolorance: 1.01
+    thread_number: 10
+    cut: 100
     
 ###############################
---- # Observables of interest
+# Observables of interest
 ###############################
 
-# Ben: In order to make the printer system robust, I believe we 
-# have to specify here explicitly everything that we want to print.
-# For now, I am taking it that we want to print the 'observables
-# of interest' and nothing else.
-# In the future, we may want to add extra flags here like 
-# "do not print me", and extra options to be passed from that
-# function to the printer, say if we want it to print to a different
-# file or database or something.
-# In factor, for types that have mutable size, say vectors, we will
-# probably need to pass in a parameter saying how to reserve output
-# space for the observable (e.g. number of columns to give it in a
-# table), and will have to throw an error if this is exceeded. I
-# don't think we can reasonably do this dynamically... some printers
-# may be able to handle it though. Anyway the simple ones won't be
-# able to do this.
-# Oh, actually some kinds of databases would allow us print different
-# obserables at different iterations. So it will depend on the printer.
+ObsLikes:
 
-# Uncomment to test DarkBit
-#- purpose:      Likelihood
-#  capability:   RD_oh2
+  # Ben: In order to make the printer system robust, I believe we 
+  # have to specify here explicitly everything that we want to print.
+  # For now, I am taking it that we want to print the 'observables
+  # of interest' and nothing else.
+  # In the future, we may want to add extra flags here like 
+  # "do not print me", and extra options to be passed from that
+  # function to the printer, say if we want it to print to a different
+  # file or database or something.
+  # In factor, for types that have mutable size, say vectors, we will
+  # probably need to pass in a parameter saying how to reserve output
+  # space for the observable (e.g. number of columns to give it in a
+  # table), and will have to throw an error if this is exceeded. I
+  # don't think we can reasonably do this dynamically... some printers
+  # may be able to handle it though. Anyway the simple ones won't be
+  # able to do this.
+  # Oh, actually some kinds of databases would allow us print different
+  # obserables at different iterations. So it will depend on the printer.
 
-# Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-#- purpose:      Likelihood
-#  capability:   lnL_ExampleBitB
-#  type:         double
-#  function:     ""
-#  module:       ""
+  # Uncomment to test DarkBit
+  #- purpose:      Likelihood
+  #  capability:   RD_oh2
 
-# Test loop manager
-#- purpose:      Likelihood
-#  capability:   nevents_like
-#  type:         double
+  # Uncomment to test neutrino likelihoods
+  #- purpose:      Likelihood
+  #  capability:   IceCube_likelihood
 
-# Uncomment to test FlavBit
-#- purpose:      Likelihood
-#  capability:   SI_bsgamma
+  ## Test DarkBit relic density with Micromegas
+  #- purpose:      Likelihood
+  #  capability:   RD_oh2
+  #  type:         double
+  #  function:     RD_oh2_micromegas
+  #  function:     RD_oh2_DarkSUSY
 
-# Test Pythia8 SLHA reader
-#- purpose:      Likelihood
-#  capability:   MSSMslha_testLogL
-#  printme:      false
+  - purpose:      Observable
+    capability:   GA_AnnYield
 
-#- purpose:       Likelihood
-#  capability:    lnL_FermiLATdwarfs
+  #- purpose:       Likelihood
+  #  capability:    lnL_FermiLATdwarfs
 
-- purpose:       Likelihood
-  capability:    lnL_oh2
+  - purpose:       Likelihood
+    capability:    lnL_oh2
 
-#- purpose:       Likelihood
-#  capability:    lnL_FakeLux
+  #- purpose:       Likelihood
+  #  capability:    lnL_FakeLux
 
-#- purpose:       Likelihood
-#  capability:    CalcAv
+  #- purpose:       Likelihood
+  #  capability:    CalcAv
+
 
 #########################
---- # Auxiliary entries
+# Auxiliary entries
 #########################
 
-- capability:   GA_AnnYield
-  options:
-    Emin: 10.
-    Emax: 123.
+Auxiliaries:
 
-- capability:   lnL_oh2
-  dependencies:
-  - {capability: "RD_oh2", function: "RD_oh2_general"}
-  #- {capability: "RD_oh2", function: "RD_oh2_DarkSUSY"}
+  - capability:   GA_AnnYield
+    options:
+      Emin: 10.
+      Emax: 123.
 
-- capability:   "MSSMspectrum"
+  - capability:   lnL_oh2
+    dependencies:
+    - {capability: "RD_oh2", function: "RD_oh2_general"}
+    #- {capability: "RD_oh2", function: "RD_oh2_DarkSUSY"}
 
-- capability:   "omega_DM"
-  type:         ""
-  function:     ""
-  module:       ""
-  dependencies:
-  - {capability: "Weff", type: "", function: "Weff", module: ""}
-  backends:
-  - {capability: "", function: "", backend: "", version: ""}
+  - capability:   RD_oh2
+    function:     RD_oh2_micromegas
+    options:
+      fast: 1
+      Beps: 1e-5
 
-- capability:    "nevents_postcuts"
-  dependencies:
-  - {capability: "id", module: "ExampleBit_B"}
+  - capability:   RD_oh2
+    function:     RD_oh2_DarkSUSY
+    options:
+      fast: 0
+      omtype: 1
 
-- capability:    "xsection"
-  options:
-    scale: 15.5
+  - capability:   "omega_DM"
+    type:         ""
+    function:     ""
+    module:       ""
+    dependencies:
+    - {capability: "Weff", type: "", function: "Weff", module: ""}
+    backends:
+    - {capability: "", function: "", backend: "", version: ""}
 
-#- capability:   "awesomeness"
-#  type:         ""
-#  function:     ""
-#  backend:      "libFirst"
+
 
 #########################
---- # Logging setup
+# Logging setup
 #########################
 
-# Redirectory of specific messages according to tags
-prefix : "runs/example_minimal_test/logs/"
-redirection:
-  [Debug] : "debug.log"
-  [Default] : "default.log"
-  [Error] : "errors.log"
-  [Warning] : "warnings.log"
-  [Core,Error] : "core_errors.log"
-  [Core,Error,Fatal] : "fatal_core_errors.log"
-  [Dependency Resolver] : "dependency_resolver.log"
-  [ExampleBit_A] : "ExampleBit_A.log"
-  [ExampleBit_B] : "ExampleBit_B.log"
-  [LibFirst] : "libfirst.log"
+Logger:
+
+  # Redirectory of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
+
+  prefix : "runs/example_minimal_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "dependency_resolver.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+  #  [Logger, Debug] : "stdout"
+  #  [Core] : "stdout"
+  #  [Dependency Resolver] : "stdout"
+
 
 ###############################
-#--- # Printer (output) setup
+## Printer (output) setup
 ###############################
 
 # Ben: Here we will choose which printer(s?) we want to use. For now
 # it is hardcoded: I'll come back to this.
 
+
 ##########################
---- # Name/Value Section
+# Name/Value Section
 ##########################
 
-# Some example keys and subkeys
-my_key: 123
-another_key:
-  subkey3:
-    subsubkey1: value2
+KeyValues:
 
-dependency_resolution:
-  prefer_model_specific_functions: true
+  # Some example keys and subkeys
+  my_key: 123
+  another_key:
+    subkey3:
+      subsubkey1: value2
 
-#By default, errors are fatal and warnings non-fatal
-exceptions:
-  dependency_resolver_error: fatal
-  dependency_resolver_warning: non-fatal
-  core_warning: fatal
-  scan_error: non-fatal #make this fatal to see an example error
-  ExampleBit_B_error: non-fatal
+  dependency_resolution:
+    prefer_model_specific_functions: true
 
-enable_testing: false
-test_function: uniform
-    
-uniform:
-  dim: 2
-  priors:
-    gauss_prior:
-      parameters: [0, 1]
-      options:
-        cov: [[1, 0], [0, 1]]
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    scan_error: non-fatal #make this fatal to see an example error
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+  test_function: uniform
+      
+  uniform:
+    dim: 2
+    priors:
+      gauss_prior:
+        parameters: [0, 1]
+        options:
+          cov: [[1, 0], [0, 1]]

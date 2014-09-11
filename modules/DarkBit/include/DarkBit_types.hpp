@@ -58,6 +58,8 @@ namespace Gambit
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
+    using Gambit::BF::intLimitFunc;
+    using Gambit::BF::BFargVec;
 
     struct DD_couplings
     {
@@ -68,53 +70,115 @@ namespace Gambit
       double gna;
     };
 
+    // Integration limits for E1 for the DS gamma 3-body decays. Specify mass of WIMP and (non-photon) final states through template parameters.
+    class DSg3_IntLims_E1 : public intLimitFunc
+    {
+        public:
+            // Constructor
+            DSg3_IntLims_E1(double M_DM,double m1,double m2) : M_DM(M_DM), m1(m1), m2(m2){}
+            void operator ()(double &x0, double &x1, const BFargVec &args)
+            {
+                // First, calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
+                double Eg = args[0]; // Photon energy
+                double x = Eg/M_DM;
+                double eta = pow(m1/M_DM,2);
+                double diffeta=pow(m2/M_DM,2);
+                diffeta   = 0.25*(eta-diffeta);
+                double f1 = 0.25*eta + diffeta*x/(2*(1-x));
+                double f2 = pow(1+diffeta/(1-x),2);
+                f2 = sqrt(f2-eta/(1-x));
+                double aint = f1 + 0.5*(1-f2)*x;
+                double bint = f1 + 0.5*(1+f2)*x;
+                // Now convert these limits to limits on E1
+                double f3 = pow(0.5*m2/M_DM,2);
+                x0 = M_DM*(1-x+aint-f3);
+                x1 = M_DM*(1-x+bint-f3);
+            }
+        private:
+            double M_DM, m1, m2;
+    };
+
     class DSgamma3bdyKinFunc : public BF::BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);
       public:
-        DSgamma3bdyKinFunc(int& chn, double& M, double& m1, double& m2, BEptr ib, BEptr fsr, bool& doFSR, bool& doIB)
+        DSgamma3bdyKinFunc(int chn, double M, double m1, double m2, BEptr ib, BEptr fsr, bool subFSR)
         : BaseFunction("DSgamma3bdyKinFunc", 2)
         {
-          M_DM = M;
-          IBch = chn;
-          IBfunc = ib;
-          FSRfunc = fsr;
-          m_1 = m1;
-          m_2 = m2;
-          calculateFSR = doFSR;
-          calculateIB = doIB;
+            M_DM = M;
+            IBch = chn;
+            IBfunc = ib;
+            FSRfunc = fsr;
+            m_1 = m1;
+            m_2 = m2;
+            subtractFSR = subFSR;
+            if(IBfunc == NULL)
+            {
+                // TODO: Throw error
+            }
         }
-        shared_ptr<DSgamma3bdyKinFunc> set_calculateFSR(bool doFSR)
+        shared_ptr<DSgamma3bdyKinFunc> set_subtractFSR(bool subFSR)
         {
-            this->calculateFSR = doFSR;
+            this->subtractFSR = subFSR;
             return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
         }        
-        shared_ptr<DSgamma3bdyKinFunc> set_calculateIB(bool doIB)
+        double value(const BFargVec &args)
         {
-            this->calculateFSR = doIB;
-            return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
-        }  
-        double value(const BF::BFargVec &args)
-        {
-          double E_gamma = args[0];
-          double E1 = args[1];
-          double E2 = 2*M_DM-E_gamma-E1;  
-          if((E1 < m_1) || (E_gamma+E1 > 2*M_DM) || (E2 < m_2))
-            return 0;
-          double x = E_gamma/M_DM;
-          double y = (m_2*m_2+4*M_DM*(E_gamma+E1-M_DM))/(4*M_DM*M_DM);
-          // TODO: Check if IB and ISR are summed correctly
-          double result = 0;       
-          if(calculateFSR && (FSRfunc != NULL)) 
-            result += FSRfunc(IBch,x,y);
-          if(calculateIB) 
-            result += IBfunc(IBch,x,y);
-          std::cout << E_gamma << "\t" << E1 << "\t" << x << "\t" << y << "\t" << result << std::endl;
-          return result;
+            double Eg = args[0]; // Photon energy
+            double E1 = args[1];
+            double E2 = 2*M_DM - Eg - E1;  
+            double p12 = E1*E1-m_1*m_1;
+            double p22 = E2*E2-m_2*m_2;
+            double p22min = Eg*Eg+p12-2*Eg*sqrt(p12);
+            double p22max = Eg*Eg+p12+2*Eg*sqrt(p12);
+            
+            // Check if the process is kinematically allowed
+            /*
+            if((E1 < m_1) || (Eg+E1+m_2 > 2*M_DM) || (p22<p22min) || (p22>p22max))
+            {
+                return 0;
+            }
+            */
+            // For debug purposes, print the actual case:
+            if(E1 < m_1)
+            {
+                cout << "E1 < m_1" << endl;
+                return 0;
+            }
+            else if(Eg+E1+m_2 > 2*M_DM)
+            {
+                cout << "Eg+E1+m_2 > 2*M_DM" << endl;
+                return 0;
+            }
+            else if(p22<p22min)
+            {
+                cout << "p22<p22min" << endl;
+                return 0;
+            }
+            else if(p22>p22max)
+            {
+                cout << "p22>p22max" << endl;
+                return 0;
+            }
+            double x = Eg/M_DM;
+            double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);
+            double result = IBfunc(IBch,x,y);          
+            if(subtractFSR)
+            {
+                if(FSRfunc != NULL)
+                { 
+                    result -= FSRfunc(IBch,x,y);
+                }
+                else
+                {
+                    // TODO: Throw error
+                }
+            }
+            std::cout << M_DM << "\t" << Eg << "\t" << E1 << "\t" << E2 << "\t" << x << "\t" << y << "\t" << result << std::endl;
+            return result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
         }
       private:
-        bool calculateIB;
-        bool calculateFSR;
+        bool subtractFSR;
         BEptr IBfunc;
         BEptr FSRfunc;
         double M_DM;
