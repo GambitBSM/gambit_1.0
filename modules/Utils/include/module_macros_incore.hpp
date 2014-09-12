@@ -1164,7 +1164,9 @@
             /* Create a safety_bucket for the backend variable/function.       \
             To be initialized by the dependency resolver at runtime. */        \
             typedef BEvariable_bucket<TYPE> CAT(REQUIREMENT,var);              \
-            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
+            typedef BEfunction_bucket<BOOST_PP_IIF(IS_VARIABLE,int,TYPE(*)     \
+             CONVERT_VARIADIC_ARG(ARGS)), TYPE                                 \
+             INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))>                        \
              CAT(REQUIREMENT,func);                                            \
             CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT;   \
           }                                                                    \
@@ -1192,8 +1194,10 @@
          Tags::FUNCTION>;                                                      \
                                                                                \
         /* First try casting the pointer passed in to a backend_functor*/      \
-        typedef backend_functor<TYPE*const>* var;                              \
-        typedef backend_functor<TYPE INSERT_NONEMPTY(ARGS)>* func;             \
+        typedef backend_functor<TYPE*(*)(), TYPE*>* var;                       \
+        typedef backend_functor<BOOST_PP_IIF(IS_VARIABLE,int,TYPE(*)           \
+         CONVERT_VARIADIC_ARG(ARGS)), TYPE                                     \
+         INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))>* func;                     \
         auto ptr =                                                             \
           dynamic_cast<BOOST_PP_IIF(IS_VARIABLE,var,func)>(be_functor);        \
                                                                                \
@@ -1225,7 +1229,7 @@
          Tags::FUNCTION>;                                                      \
                                                                                \
         str varsig = STRINGIFY(TYPE*);                                         \
-        str funcsig = STRINGIFY(TYPE) STRINGIFY(ARGS);                         \
+        str funcsig = STRINGIFY(TYPE) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS));   \
                                                                                \
         Accessors::iMayNeedFromBackends[STRINGIFY(REQUIREMENT)] =              \
           BOOST_PP_IIF(IS_VARIABLE, varsig, funcsig);                          \

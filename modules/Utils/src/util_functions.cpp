@@ -19,7 +19,7 @@
 ///
 ///  *********************************************
 
-#include <util_functions.hpp>
+#include "util_functions.hpp"
 
 namespace Gambit
 {
@@ -51,6 +51,28 @@ namespace Gambit
     // Split up the list of versions by the delimiters
     boost::split(vec, s, boost::is_any_of(delim), boost::token_compress_on);
     return vec;
+  }
+
+  /// Strips namespace from the start of a string, or after "const".
+  str strip_leading_namespace(str s, str ns)
+  {
+    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
+      regex expression("(^|[\\s\\*\\&\\(\\,\\[])"+ns+"::");
+      s = regex_replace(s, expression, str("\\1"));
+    #else                                // Using lame-o methods >:(
+      int len = ns.length() + 2;
+      if (s.substr(0,len) == ns+str("::")) s.replace(0,len,"");
+      boost::replace_all(s, str(",")+ns+"::", str(","));
+      boost::replace_all(s, str("*")+ns+"::", str("*"));
+      boost::replace_all(s, str("&")+ns+"::", str("&"));
+      boost::replace_all(s, str("(")+ns+"::", str("("));
+      boost::replace_all(s, str("[")+ns+"::", str("["));
+      for (int i = 0; i != 5; i++)
+      {
+        boost::replace_all(s, whitespaces[i]+ns+"::", whitespaces[i]);
+      }
+    #endif
+    return s;
   }
 
   /// Strips all whitespaces from a string, but re-inserts a single regular space after "const".

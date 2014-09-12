@@ -24,6 +24,7 @@
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
+#include <boost/preprocessor/arithmetic/sub.hpp>
 #include <boost/current_function.hpp> 
 
 /// \name Local information macro.
@@ -307,6 +308,30 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define DEFINED_CAPABILITY             ()
 #define DEFINED_FUNCTION               ()
 #define DEFINED_CONDITIONAL_DEPENDENCY ()
+/// @}
+
+/// Pop the last argument off a Boost preprocessor sequence
+/// @{
+#define POP_LAST(...) CAT(POP_LAST_, BOOST_PP_VARIADIC_SIZE __VA_ARGS__) __VA_ARGS__
+#define POP_LAST_1(x1)
+#define POP_LAST_2(x1, x2) x1
+#define POP_LAST_3(x1, x2, x3) x1, x2
+#define POP_LAST_4(x1, x2, x3, x4) x1, x2, x3
+#define POP_LAST_5(x1, x2, x3, x4, x5) x1, x2, x3, x4
+#define POP_LAST_6(x1, x2, x3, x4, x5, x6) x1, x2, x3, x4, x5
+#define POP_LAST_7(x1, x2, x3, x4, x5, x6, x7) x1, x2, x3, x4, x5, x6
+#define POP_LAST_8(x1, x2, x3, x4, x5, x6, x7, x8) x1, x2, x3, x4, x5, x6, x7
+#define POP_LAST_9(x1, x2, x3, x4, x5, x6, x7, x8, x9) x1, x2, x3, x4, x5, x6, x7, x8
+#define POP_LAST_10(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) x1, x2, x3, x4, x5, x6, x7, x8, x9
+/// @}
+
+/// Macros for dealing with variadic function arguments in backend functions
+/// @{
+#define etc_etc 1)(1
+#define LAST_ARG_VARIADIC(T) IS_ELLIPSIS(BOOST_PP_TUPLE_ELEM(BOOST_PP_SUB(BOOST_PP_VARIADIC_SIZE T,1),T))
+#define IS_ELLIPSIS(ELEM) IS_EQUAL(etc,ELEM)
+#define STRIP_VARIADIC_ARG(T)   BOOST_PP_IIF(LAST_ARG_VARIADIC(T), (POP_LAST(T)),      T)
+#define CONVERT_VARIADIC_ARG(T) BOOST_PP_IIF(LAST_ARG_VARIADIC(T), (POP_LAST(T), ...), T)
 /// @}
 
 #endif //defined __util_macros_hpp__
