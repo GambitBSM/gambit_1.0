@@ -253,7 +253,6 @@ namespace Gambit {
         // cout << tmp << " -> " << _numAT << endl;
       }
 
-
       void finalize() {
         cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " "
              << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " "
@@ -265,12 +264,13 @@ namespace Gambit {
         #endif
       }
 
-
       double loglikelihood() {
         /// @todo Implement!
+	cout << "NUMEVENTS: " << _numAT << " " << _numAM << " " << _numAL << " "
+             << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << _numCL << " "
+             << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
         return 0;
       }
-
 
       ///////////////////
 
@@ -300,8 +300,6 @@ namespace Gambit {
 
 
     };
-
-
 
     // Factory fn
     DEFINE_ANAFACTORY(ATLAS_0LEP)

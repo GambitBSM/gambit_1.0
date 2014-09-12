@@ -36,6 +36,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Capability that holds list of analyses to run
+  // Eventually needs to be configurable from yaml file
+  #define CAPABILITY ListOfAnalyses
+  START_CAPABILITY
+    #define FUNCTION specifyAnalysisList
+    START_FUNCTION(AnalysisList)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   /// Finalization capabilities
   #define CAPABILITY scaleFactor
@@ -165,10 +173,23 @@ START_MODULE
   */
   #undef CAPABILITY
 
+  // A capability that calculates the log likelihood
+  // Runs all analyses and selects the best SR
+  #define CAPABILITY ColliderLogLikelihood
+  START_CAPABILITY
+    #define FUNCTION getLogLike
+    START_FUNCTION(double) //return type is colliderLogLikes struct
+    ALLOW_MODELS(NormalDist)
+    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
+    DEPENDENCY(scaleFactor, double)
+    DEPENDENCY(ListOfAnalyses, AnalysisList)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   /// Event accumulators
   /// \todo Do we need one of these defined for each analysis??
-  #define CAPABILITY analysisAccumulator
+/*#define CAPABILITY analysisAccumulator
   START_CAPABILITY
     /// \todo Make a group of analyses rather than a simple counter.
     #define FUNCTION simpleCounter
@@ -178,7 +199,7 @@ START_MODULE
     DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
     DEPENDENCY(scaleFactor, double)
     #undef FUNCTION
-  #undef CAPABILITY
+    #undef CAPABILITY*/
   /// \todo How many more do we need to define...?
 
 #undef MODULE

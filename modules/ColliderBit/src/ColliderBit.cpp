@@ -83,12 +83,14 @@ namespace Gambit {
                                2000001, 2000002, 2000003, 2000004}},
                     {{1000021, 1000001, 1000002, 1000003, 1000004,
                                2000001, 2000002, 2000003, 2000004}});
-      /// \todo Test boring event counter first.  Uncomment analysis later.
-      cout << "Make analysis" << endl;
-      result.addAnalysis( mkAnalysis("ATLAS_0LEP") );
-      cout << "Made analysis" << endl;
+        
     }
 
+    void specifyAnalysisList (AnalysisList &result) {
+      debugMe("specifyAnalysisList");
+      result.addAnalysis( mkAnalysis("ATLAS_0LEP") );
+      result.addAnalysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
+    }
 
     /// *** Finalization for analyses ***
 
@@ -207,10 +209,51 @@ namespace Gambit {
       fillGambitEvent(*Dep::hardScatteringEvent, result);
     }
 
+    
     /// Analysis Accumulators
+    
+    void getLogLike(double &result) {
+      debugMe("getLogLike");
+      using namespace Pipes::getLogLike;
+      
+      if (*Loop::iteration == 0)
+      {
+        //Nothing to do (analyses are already initialised)
+	
+      }
+
+      else if (*Loop::iteration == nEvents){
+        //The final iteration: get log likelihoods for the analyses
+        vector<shared_ptr<Analysis>> analyses=(*Dep::ListOfAnalyses).analyses;
+        for (shared_ptr<Analysis> ana : analyses)ana->loglikelihood();
+      }
+      else 
+      #pragma omp critical (accumulator_update)
+      {
+        //counter += 1.;
+	//cout << "Doing analysis in event loop" << endl;
+        vector<shared_ptr<Analysis>> analyses=(*Dep::ListOfAnalyses).analyses;
+        //Loop over analyses and run them
+        for (shared_ptr<Analysis> ana : analyses)ana->analyze(*Dep::GambitColliderEvent);       
+      }
+      //result = ana->results();
+      #pragma omp critical (print)
+      {
+        #ifdef DEBUG
+        std::cout<<"\n    iteration number: "<<*Loop::iteration;
+        std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
+        std::cout<<"\n    analysisCounter result: "<<result;
+        #endif
+        logger() << "  " << *Loop::iteration << ", ";
+        logger() << (*Dep::GambitColliderEvent).met() << ", ";
+        logger() << omp_get_thread_num() << ", ";
+        logger() << result << EOM;
+      }
+    }
+
     // Adds an integral event count to a total number of accumulated events.
     // At the end, scales the result by some adjustment factor.
-    void simpleCounter(double &result) {
+    /*    void simpleCounter(double &result) {
       debugMe("simpleCounter");
       using namespace Pipes::simpleCounter;
       if (*Loop::iteration == 0)
@@ -234,7 +277,7 @@ namespace Gambit {
         logger() << omp_get_thread_num() << ", ";
         logger() << result << EOM;
       }
-    }
+      }*/
 
   }
 }

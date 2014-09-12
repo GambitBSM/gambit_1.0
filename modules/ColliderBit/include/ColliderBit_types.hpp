@@ -33,4 +33,20 @@
 #include "Delphes3Backend.hpp"
 #include "Pythia8Backend.hpp"
 
+namespace Gambit {
+  
+  namespace ColliderBit {
+    
+    struct AnalysisList {
+      AnalysisList() {}
+      
+      void addAnalysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
+      vector<shared_ptr<Analysis>> analyses;
+    };
+    
+  }
+}
+
+
+
 #endif /* defined __ColliderBit_types_hpp__ */
