@@ -66,7 +66,7 @@ ObsLikes:
 
   # ColliderBit
   - purpose:      Observable
-    capability:   analysisAccumulator
+    capability:   ColliderLogLikelihood
 
 #########################
 # Auxiliary entries
@@ -90,7 +90,7 @@ Auxiliaries:
     options:
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
 
-  - capability:   analysisAccumulator
+  - capability:   ColliderLogLikelihood
     dependencies:
     - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 
