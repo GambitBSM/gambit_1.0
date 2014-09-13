@@ -103,6 +103,8 @@ START_MODULE
     BACKEND_REQ(awesomeness, (lib123), double, (int))
     BACKEND_REQ(refex, (common_be), double, (double&))
     BACKEND_REQ(refex2, (common_be), void, (double&, double))
+    BACKEND_REQ(varex, (common_be), double, (int, etc))
+    BACKEND_REQ(varex2, (common_be), double, (int, etc))
     BACKEND_REQ(runMe, (), void, (double (*)(int&), int&))
     BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
     BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())

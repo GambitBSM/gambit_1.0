@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdarg>
 
 //
 // Some global variables:
@@ -83,3 +84,16 @@ double returnResult()
 }
 
 
+// an example variadic function
+double nastyExample(int count, ...)
+{
+  double result = 0;
+  va_list args;
+  va_start(args, count);
+  for (int i = 0; i < count; ++i)
+  {
+    result += va_arg(args, double);
+  }
+  va_end(args);
+  return result;
+}

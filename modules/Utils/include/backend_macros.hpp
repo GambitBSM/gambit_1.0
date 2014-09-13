@@ -406,12 +406,13 @@ namespace Gambit                                                            \
                                                                             \
       /* Set the variable pointer and the getptr function. */               \
       STRIP_PARENS(TYPE) * const NAME = CAT(constructVarPointer_,NAME)();   \
-      STRIP_PARENS(TYPE) * const CAT(getptr,NAME)() { return NAME; }        \
+      STRIP_PARENS(TYPE) * CAT(getptr,NAME)() { return NAME; }              \
                                                                             \
       /* Create functor objects */                                          \
       namespace Functown                                                    \
       {                                                                     \
-        backend_functor<STRIP_PARENS(TYPE)*const> NAME(                     \
+        backend_functor<STRIP_PARENS(TYPE)*(*)(),                           \
+         STRIP_PARENS(TYPE)*> NAME(                                         \
          Gambit::Backends::CAT_3(BACKENDNAME,_,                             \
           SAFE_VERSION)::CAT(getptr,NAME),                                  \
          STRINGIFY(NAME),   /* functor name */                              \
@@ -653,12 +654,13 @@ namespace Gambit                                                                
     {                                                                                           \
                                                                                                 \
       /* Define a type NAME_type to be a suitable function pointer. */                          \
-      typedef TYPE (*NAME##_type) FE_ARGS;                                                      \
-      typedef TYPE (*NAME##_BEtype) BE_ARGS;                                                    \
+      typedef TYPE (*NAME##_type) CONVERT_VARIADIC_ARG(FE_ARGS);                                \
+      typedef TYPE (*NAME##_BEtype) CONVERT_VARIADIC_ARG (BE_ARGS);                             \
                                                                                                 \
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
          them to call the backend function with appropriate translated args */                  \
-      BOOST_PP_IIF(TRANS, BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE), )   \
+      BOOST_PP_IIF(TRANS, BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,                              \
+       CONVERT_VARIADIC_ARG(CALLARGS_FE),CONVERT_VARIADIC_ARG(CALLARGS_BE)), )                  \
                                                                                                 \
       /* Declare a function that can be used to get the pointer to the backend function. */     \
       NAME##_type CAT(constructFuncPointer_,NAME)()                                             \
@@ -681,11 +683,12 @@ namespace Gambit                                                                
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \
-        backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> NAME(                                    \
+        backend_functor<TYPE(*)CONVERT_VARIADIC_ARG(FE_ARGS), TYPE                              \
+         INSERT_NONEMPTY(STRIP_VARIADIC_ARG(FE_ARGS))> NAME(                                    \
          Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
          STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
          CAPABILITY BOOST_PP_COMMA()                                                            \
-         STRINGIFY(TYPE) STRINGIFY(FE_ARGS) BOOST_PP_COMMA()                                    \
+         STRINGIFY(TYPE) STRINGIFY(CONVERT_VARIADIC_ARG(FE_ARGS)) BOOST_PP_COMMA()              \
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
          STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
@@ -724,7 +727,8 @@ namespace Gambit                                                                
   /* Create the safe pointer to the 'in use' flag of the functor. */                            \
   MAKE_INUSE_POINTER(NAME)                                                                      \
                                                                                                 \
-} /* end namespace Gambit */                                                                    \
+} /* end namespace Gambit*/                                                
+   
 
 /// Supplemenentary backend function macro
 #define BE_FUNCTION_IMPL2_SUPP(NAME)                                                            \
@@ -776,15 +780,16 @@ namespace Gambit                                                                
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
       /* Forward declare function */                                                            \
-      namespace { TYPE NAME(STRIP_PARENS(ARGSLIST)); }                                          \
+      namespace { TYPE NAME(STRIP_PARENS(CONVERT_VARIADIC_ARG(ARGSLIST))); }                    \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \
-        backend_functor<TYPE INSERT_NONEMPTY(ARGSLIST)> NAME(                                   \
+        backend_functor<TYPE(*)CONVERT_VARIADIC_ARG(ARGSLIST), TYPE                             \
+         INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGSLIST))> NAME(                                   \
          Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
-         STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                                                   \
+         STRINGIFY(TYPE) STRINGIFY(CONVERT_VARIADIC_ARG(ARGSLIST)),                             \
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION),                                                                    \
          STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \

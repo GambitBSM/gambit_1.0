@@ -43,6 +43,7 @@ BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction", (CMSSM_
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv","LibFirst_returnResult_capability")
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
+BE_FUNCTION(nastyExample, double, (int, etc), "_Z12nastyExampleiz", "varex")
 
 // Variables
 BE_VARIABLE(GENERAL_VAR(int,SomeInt), "someInt", "SomeInt", (UED))
@@ -56,6 +57,7 @@ BE_INI_CONDITIONAL_DEPENDENCY(bar, double, CMSSM_I)
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM_I, UED))
+BE_CONV_FUNCTION(variadicConvenience, double, (int, etc), "varex2")
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
@@ -82,6 +84,8 @@ DONE
 // Convenience functions (definitions)
 BE_NAMESPACE
 {
+  #include <cstdarg>
+
   double awesomenessByAnders(int a)
   {
     logger().send("Message from 'awesomenessByAnders' backend convenience function in libfirst wrapper",LogTags::info);
@@ -89,9 +93,22 @@ BE_NAMESPACE
     someFunction();
     return returnResult();
   }
+
+  double variadicConvenience(int count, ...)
+  {
+    double result = *SomeDouble;
+    va_list args;
+    va_start(args, count);
+    for (int i = 0; i < count; ++i)
+    {
+      result += va_arg(args, double);
+    }
+    va_end(args);
+    return result;
+  }
+
 }
 DONE
-
 
 // End
 #undef LIBPATH 
