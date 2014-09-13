@@ -128,6 +128,10 @@ namespace Gambit {
         return 0;
       }
 
+      void collectresults() {
+	return;
+      }
+
 
     };
 

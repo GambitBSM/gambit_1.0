@@ -174,16 +174,32 @@ START_MODULE
   #undef CAPABILITY
 
   // A capability that calculates the log likelihood
-  // Runs all analyses and selects the best SR
-  #define CAPABILITY ColliderLogLikelihood
+  // Runs all analyses and fills vector of analysis results
+  #define CAPABILITY AnalysisNumbers
   START_CAPABILITY
-    #define FUNCTION getLogLike
-    START_FUNCTION(double) //return type is colliderLogLikes struct
+    #define FUNCTION runAnalyses
+    START_FUNCTION(vector<vector<ColliderBit::SignalRegionData>>) //return type is colliderLogLikes struct
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
     DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
     DEPENDENCY(scaleFactor, double)
     DEPENDENCY(ListOfAnalyses, AnalysisList)
+//BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+//BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+//BACKEND_GROUP(lnlike_marg_poisson)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  //Calculate the log likelihood from the analysis numbers
+  #define CAPABILITY LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calcLogLike
+    START_FUNCTION(double)
+    ALLOW_MODELS(NormalDist)
+    DEPENDENCY(AnalysisNumbers,vector<vector<ColliderBit::SignalRegionData>>)
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
 

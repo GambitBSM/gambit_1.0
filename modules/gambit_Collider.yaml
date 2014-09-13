@@ -65,8 +65,13 @@ Scanner:
 ObsLikes:
 
   # ColliderBit
-  - purpose:      Observable
-    capability:   ColliderLogLikelihood
+  #- purpose:      Observable
+  #  capability:   LogLikelihood
+
+  # Test marginalised Poisson likelihood
+  - purpose:    Likelihood
+    capability: LogLikelihood
+
 
 #########################
 # Auxiliary entries
@@ -75,10 +80,18 @@ ObsLikes:
 Auxiliaries:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
+
+  - capability: ListOfAnalyses
+    function: specifyAnalysisList
+    options:  
+      AnalysisList: ["ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb"]
+
   - capability:  colliderLoopManager
     function:    manageVanillaLoop
     options:
       nEvents:   2000
+
+  - capability: AnalysisList
 
   - capability:  GambitColliderEvent
     function:    reconstructDelphesEvent
@@ -90,7 +103,12 @@ Auxiliaries:
     options:
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
 
-  - capability:   ColliderLogLikelihood
+  - capability: LogLikelihood
+    function:   calcLogLike
+    backends:
+    - {capability: lnlike_marg_poisson_gaussian_error}
+
+  - capability: AnalysisNumbers
     dependencies:
     - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 

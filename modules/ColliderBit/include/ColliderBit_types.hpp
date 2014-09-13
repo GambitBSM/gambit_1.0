@@ -32,11 +32,13 @@
 /// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
 #include "Delphes3Backend.hpp"
 #include "Pythia8Backend.hpp"
+#include "Analysis.hpp"
 
 namespace Gambit {
   
   namespace ColliderBit {
     
+    //A list of analyses to be run 
     struct AnalysisList {
       AnalysisList() {}
       

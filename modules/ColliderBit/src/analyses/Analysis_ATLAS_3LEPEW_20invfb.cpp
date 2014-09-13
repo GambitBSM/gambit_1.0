@@ -415,6 +415,62 @@ namespace Gambit {
 	/// @todo Implement!
 	return 1.0;
       }
+
+      void collectresults() {
+
+	 _numSRnoZa, _numSRnoZb, _numSRnoZc, _numSRZa, _numSRZb, _numSRZc;
+
+	 SignalRegionData results_SRnoZa;
+	 results_SRnoZa.set_observation(101.);
+	 results_SRnoZa.set_background(96.);
+	 results_SRnoZa.set_backgroundsys(19.);
+	 results_SRnoZa.set_signalsys(0.);
+	 results_SRnoZa.set_signal(_numSRnoZa);
+	 
+	 SignalRegionData results_SRnoZb;
+	 results_SRnoZb.set_observation(32.);
+	 results_SRnoZb.set_background(29.);
+	 results_SRnoZb.set_backgroundsys(6.);
+	 results_SRnoZb.set_signalsys(0.);
+	 results_SRnoZb.set_signal(_numSRnoZb);
+
+	 SignalRegionData results_SRnoZc;
+	 results_SRnoZc.set_observation(5.);
+	 results_SRnoZc.set_background(4.4);
+	 results_SRnoZc.set_backgroundsys(1.8);
+	 results_SRnoZc.set_signalsys(0.);
+	 results_SRnoZc.set_signal(_numSRnoZc);
+
+	 SignalRegionData results_SRZa;
+	 results_SRZa.set_observation(273.);
+	 results_SRZa.set_background(249.);
+	 results_SRZa.set_backgroundsys(35.);
+	 results_SRZa.set_signalsys(0.);
+	 results_SRZa.set_signal(_numSRZa);
+
+	 SignalRegionData results_SRZc;
+	 results_SRZc.set_observation(6.);
+	 results_SRZc.set_background(6.3);
+	 results_SRZc.set_backgroundsys(1.5);
+	 results_SRZc.set_signalsys(0.);
+	 results_SRZc.set_signal(_numSRZc);
+
+	 SignalRegionData results_SRZb;
+	 results_SRZb.set_observation(23.);
+	 results_SRZb.set_background(22.);
+	 results_SRZb.set_backgroundsys(5.);
+	 results_SRZb.set_signalsys(0.);
+	 results_SRZb.set_signal(_numSRZb);
+
+	 addresult(results_SRnoZa);
+	 addresult(results_SRnoZb);
+	 addresult(results_SRnoZc);
+	 addresult(results_SRZa);
+	 addresult(results_SRZb);
+	 addresult(results_SRZc);
+
+	return;
+      }
           
     };
 
