@@ -363,52 +363,6 @@ default: minihelp gambit
 # all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
 all: minihelp gambit gambit_example ExampleBit_A_standalone
 
-clean:
-	@echo cleaning
-	@rm -rf $(TARGETS)
-	@rm -rf */build/*
-	@cd contrib/yaml-cpp-0.5.1; make clean
-	@cd contrib/SLHAPy8; make clean
-	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
-	@rm -rf $(COREDIR)/build/.minihelp
-	@rm -f _*.txt
-	@rm -f *.gv
-	@rm -rf $(DOCDIR)/html
-	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
-	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/plugins/*.o
-	@rm -rf $(FUNCTOR_TYPES)
-	@rm -f $(FASTSIMDIR)/src/*.o
-	@cd $(NULIKEDIR); make clean
-
-sterile: distclean
-	@true
-
-distclean: clean
-        # also removes ~ files and other weirdly generated files
-	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
-	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
-	@rm -f Example_SUSYspecBit/test_output.slha
-	@rm -f output report.txt testmodule.mod
-	@rm -f central_capabilities.dat central_models.dat
-
-$(COREDIR)/build/.minihelp:
-	@echo "*******************************************"
-	@echo "* gambit.                                  "
-	@echo "*                                          "
-	@echo "*   make rules:                            "
-	@echo "*                                          "
-	@echo "* make doxygen   ...creates docs           "
-	@echo "* make clean     ...cleans                 "
-	@echo "* make distclean ...cleans even more       "
-	@echo "*                                          "
-	@echo "*   file targets:                          "
-	@echo "*                                          "
-	@for t in $(TARGETS); do \
-	echo "* make $$t" ; done
-	@echo "*******************************************"
-	@touch $(COREDIR)/build/.minihelp
-minihelp: $(COREDIR)/build/.minihelp
-
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
 COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(CORESRC))))
@@ -493,6 +447,12 @@ ifdef COLLIDE
   HARVESTER_OPTS += -c
 endif
 
+
+##### Modules ###############
+
+$(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
+	python $(HARVESTER) $(HARVESTER_OPTS)
+
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(GAMBITINC) $(ROLLCALL_HEADERS)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
@@ -519,6 +479,9 @@ $(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(GAMBITINC)
 
 $(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(GAMBITINC) $(SCANINC)
 	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(SCANDIR)/plugins/%.o: $(SCANDIR)/plugins/%.cpp 
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_AINC)
@@ -592,18 +555,8 @@ $(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(GAMBITINC)
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
 
-$(YAMLDIR)/libyaml-cpp.a:
-	@echo ___________Building YAML:
-	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) CFLAGS="$(CFLAGS)"
 
-slhapy8:
-        # Forced rebuild of library.
-	@echo ___________Rebuilding slhapy8 library...
-	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
-
-$(SLHAPy8DIR)/libslhapy8.a:
-	@echo ___________Building SLHA interface library \(from Pythia 8\):
-	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
+##### Executables #############
 
 gambit: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) \
  $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
@@ -622,28 +575,25 @@ ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(F
 	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
 	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
 
-$(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
-	python $(HARVESTER) $(HARVESTER_OPTS)
 
-$(BACKENDDIR)/lib/libfirst.so: $(BACKENDDIR)/lib/libfirst.cpp
-	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
-	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o
+##### Contributed codes ##############
 
-$(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
-	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
-	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o
+$(YAMLDIR)/libyaml-cpp.a:
+	@echo ___________Building YAML:
+	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) CFLAGS="$(CFLAGS)"
 
-$(BACKENDDIR)/lib/libnulike.so:
-	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
-	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
+slhapy8:
+        # Forced rebuild of library.
+	@echo ___________Rebuilding slhapy8 library...
+	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
-$(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
-	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
-	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
+$(SLHAPy8DIR)/libslhapy8.a:
+	@echo ___________Building SLHA interface library \(from Pythia 8\):
+	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
 
-$(SCANDIR)/plugins/%.o: $(SCANDIR)/plugins/%.cpp 
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-	
+
+#### Scanner plugins ##########
+
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/crapsample.o
 	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so -L$(YAMLDIR) -lyaml-cpp
 	
@@ -654,11 +604,33 @@ $(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/test.o
 
+multinest:
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/multinest.cpp -o $(SCANDIR)/build/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
+	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/build/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
+
+
+#### Backends #################
+
+$(BACKENDDIR)/lib/libfirst.so: $(BACKENDDIR)/lib/libfirst.cpp
+	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
+	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o
+
+$(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
+	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
+	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o
+
+$(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
+	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
+	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
+
+$(BACKENDDIR)/lib/libnulike.so:
+	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
+	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
+
 $(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cpp
 	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
 $(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cc
 	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
-
 
 $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim_Log.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/jsoncpp.o $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/FastSim_Reader.o $(FASTSIMDIR)/src/fastsim_interface.o
 # Intention is to pull symbols from FastJet into the fastsim backend (same should happen for direct pythia event filling... and any analyses that use jet structure)
@@ -666,10 +638,27 @@ $(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim_Log.o $(FASTSIMDIR)/s
 #	$(CC) -shared -L$(FJ_DIR)/lib -o $@ $^ -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
 	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS) -lgsl
 
-#libmultinest_interface.so
-multinest:
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/multinest.cpp -o $(SCANDIR)/build/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
-	$(CC) -shared -o $(SCANDIR)/lib/libmultinest_interface.so $(SCANDIR)/build/multinest.o -L$(MULTINESTLIBDIR) -lmultinest
+
+#### Documentation ##########
+
+minihelp: .minihelp
+
+.minihelp:
+	@echo "*******************************************"
+	@echo "* gambit.                                  "
+	@echo "*                                          "
+	@echo "*   make rules:                            "
+	@echo "*                                          "
+	@echo "* make doxygen   ...creates docs           "
+	@echo "* make clean     ...cleans                 "
+	@echo "* make distclean ...cleans even more       "
+	@echo "*                                          "
+	@echo "*   file targets:                          "
+	@echo "*                                          "
+	@for t in $(TARGETS); do \
+	echo "* make $$t" ; done
+	@echo "*******************************************"
+	@touch .minihelp
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
@@ -678,11 +667,43 @@ $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 
 doxygen: $(DOCDIR)/html/index.html
 
-headertest:
-	@echo "simple, standalone header test: "
-	@for q in $(COREDIR)/include/*.hpp $(COREDIR)/include/*.hpp ; do \
-	 echo "==================================================" ;\
-	 echo "======= testing: $(CC) $(CFLAGS) $$q -o /dev/null";\
-	 if ! $(CC) $(CFLAGS) $$q -o /dev/null; then echo "";echo "$$q failed";break;fi ;done
 
-ht: headertest
+#### Cleaning #################
+
+clean:  clean_modules clean_executables clean_contributed clean_plugins clean_backends clean_docs
+	@rm -f _*.txt, *.gv, *.ps, central_capabilities.dat central_models.dat
+
+distclean: clean
+        # also removes ~ files and other weirdly generated files
+	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
+	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
+	@rm -f Example_SUSYspecBit/test_output.slha
+	@rm -f output report.txt testmodule.mod
+
+sterile: distclean
+	@true
+
+clean_modules:
+	@rm -rf $(FUNCTOR_TYPES)
+	@rm -rf */build/*
+	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
+
+clean_executables:
+	@rm -rf $(TARGETS)
+
+clean_contributed:
+	@cd contrib/yaml-cpp-0.5.1; make clean
+	@cd contrib/SLHAPy8; make clean
+
+clean_plugins:
+	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/plugins/*.o
+
+clean_backends:
+	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
+	@cd $(NULIKEDIR); make clean
+	@rm -f $(FASTSIMDIR)/src/*.o
+
+clean_docs:
+	@rm -rf .minihelp
+	@rm -rf $(DOCDIR)/html
+
