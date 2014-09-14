@@ -78,9 +78,10 @@ SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
 HEPSIMPLEDIR = contrib/hep_simple_lib
+MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
-MCUTILSDIR = contrib/mcutils
+DDCALC0DIR = ../extras/DDCalc0
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -318,35 +319,8 @@ ifdef COLLIDE
     $(DELPHES_LDFLAGS)
 
 endif
+
 #**********************
-
-FJ_CXXFLAGS := $(shell fastjet-config --cxxflags)
-FJ_LDFLAGS := $(shell fastjet-config --libs)
-FJ_DIR := $(shell fastjet-config --prefix)
-
-ifndef FJ_CXXFLAGS
-  $(info ***!!!***)
-  $(info Fastjet compile flags failed to configure.)
-  $(info Please include /where/fastjet/is/bin in your $$PATH variable.)
-  $(info You may also need to include /where/fastjet/is/lib in your)
-  $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-  ifdef COLLIDE
-    $(error ColliderBit dependency error....)
-  else
-    $(info Be sure to set these PATHs when compiling ColliderBit)
-  endif
-else
-  ifndef SHH
-    $(info INFO:)
-    $(info -- Fastjet Flags --)
-    $(info Compile > $(FJ_CXXFLAGS))
-    $(info Link    > $(FJ_LDFLAGS))
-    $(info )
-  endif
-endif
-
-CFLAGS += $(FJ_CXXFLAGS)
-LNFLAGS += $(FJ_LDFLAGS)
 
 ifndef SHH
   $(info CFLAGS = $(CFLAGS))
@@ -355,20 +329,15 @@ ifndef SHH
   $(info )
 endif
 
-# all phony stuff here
-.PHONY: default all clean sterile distclean doxygen minihelp
-
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-default: minihelp gambit
-# all: minihelp doxygen gambit gambit_example ExampleBit_A_standalone
-all: minihelp gambit gambit_example ExampleBit_A_standalone
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
 COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(CORESRC))))
 
-MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/models/*hpp) \
- $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/models/*h)
+MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/*/*hpp) \
+ $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/*/*h)
 MODELSRC:=$(wildcard $(MODELDIR)/src/*cpp)
 MODELOBJS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(MODELSRC))))
 
@@ -384,8 +353,8 @@ LOGINC:=$(wildcard $(LOGGINGDIR)/include/*hpp) $(wildcard $(LOGGINGDIR)/include/
 LOGSRC:=$(wildcard $(LOGGINGDIR)/src/*cpp)
 LOGOBJS:=$(addprefix $(LOGGINGDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(LOGSRC))))
 
-BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp)  $(wildcard $(BACKENDDIR)/lib/*hpp) \
- $(wildcard $(BACKENDDIR)/include/*h)  $(wildcard $(BACKENDDIR)/lib/*h)
+BACKENDINC:=$(wildcard $(BACKENDDIR)/include/*hpp) $(wildcard $(BACKENDDIR)/include/*/*hpp)\
+ $(wildcard $(BACKENDDIR)/include/*h) $(wildcard $(BACKENDDIR)/include/*/*h)
 BACKENDSRC:=$(wildcard $(BACKENDDIR)/src/*cpp)
 BACKENDOBJS:=$(addprefix $(BACKENDDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(BACKENDSRC))))
 
@@ -426,16 +395,13 @@ EXSUSYSPECINC:=$(wildcard $(EXSUSYSPECDIR)/include/*hpp) $(wildcard $(EXSUSYSPEC
 EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
-GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
-
+STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(PRINTINC) $(LOGINC)
+STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS)
+MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 ifdef COLLIDE
-  ALLOBJECTS += $(HECOLLIDEROBJS)
+  MODULEOBJS += $(HECOLLIDEROBJS)
 endif
-
-# Ben: Currently if we change things in headers then stuff doesn't get recompiled: need to add these dependencies in
-# I'm not sure I added them everywhere necessary... might be safer to make everything depend on them...
-HEADERDEPS = $(COREINC) $(MODELINC) $(UTILSINC) $(PRINTINC) $(LOGINC)
+ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(COREOBJS) 
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -448,71 +414,72 @@ ifdef COLLIDE
 endif
 
 
+##### Niceties ##############
+
+.PHONY: default all backends clean sterile distclean doxygen minihelp  $(BACKENDS) $(TARGETS) 
+
+default: minihelp gambit
+
+all: minihelp doxygen backends $(TARGETS)
+
+
 ##### Modules ###############
 
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
 	python $(HARVESTER) $(HARVESTER_OPTS)
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(GAMBITINC) $(ROLLCALL_HEADERS)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(COREINC) $(ROLLCALL_HEADERS)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(GAMBITINC)
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC) 
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(GAMBITINC)
+$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(PRINTINC) $(GAMBITINC)
+$(LOGGINGDIR)/build/%.o: $(LOGGINGDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(LOGGINGDIR)/build/%.o: $(LOGGINGDIR)/src/%.cpp $(LOGINC) $(GAMBITINC)
+$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(GAMBITINC)
+$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(STANDALONEINC) $(SCANINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(SCANDIR)/build/%.o: $(SCANDIR)/src/%.cpp $(GAMBITINC) $(SCANINC)
+$(SCANDIR)/plugins/%.o: $(SCANDIR)/plugins/%.cpp $(STANDALONEINC) $(SCANINC)
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(STANDALONEINC) $(EXAMPLE_AINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(SCANDIR)/plugins/%.o: $(SCANDIR)/plugins/%.cpp 
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_AINC)
+$(EXAMPLEBDIR)/build/%.o: $(EXAMPLEBDIR)/src/%.cpp $(STANDALONEINC) $(EXAMPLE_BINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(BACKENDINC) $(UTILSINC) $(MODELINC) $(EXAMPLE_AINC)
+$(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(STANDALONEINC) $(DARKINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(EXAMPLEBDIR)/build/%.o: $(EXAMPLEBDIR)/src/%.cpp $(GAMBITINC) $(EXAMPLE_BINC)
+$(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(STANDALONEINC) $(FLAVINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(DARKDIR)/build/%.o: $(DARKDIR)/src/%.cpp $(GAMBITINC) $(DARKINC)
+$(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(STANDALONEINC) $(HIGGSINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
+$(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(STANDALONEINC) $(DECAYINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(GAMBITINC) $(HIGGSINC)
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-$(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(GAMBITINC) $(DECAYINC)
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
-$(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(GAMBITINC) $(EXSUSYSPECINC)
+$(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(STANDALONEINC) $(EXSUSYSPECINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -550,7 +517,7 @@ $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
 	@mv temp_dict.h $(patsubst %.cc,%.h,$@)
 
 # ColliderBit
-$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(GAMBITINC)
+$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
@@ -558,35 +525,35 @@ endif
 
 ##### Executables #############
 
-gambit: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so $(BACKENDDIR)/lib/libFarrayTest.so
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(STANDALONEINC) $(COREINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(STANDALONEINC) $(EXAMPLE_AINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 
-gambit_example: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o \
- $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libnulike.so $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libfastsim.so
+gambit_example: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o $(SCANDIR)/lib/libsample.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit_example.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 
-ExampleBit_A_standalone: $(YAMLDIR)/libyaml-cpp.a $(SLHAPy8DIR)/libslhapy8.a $(FUNCTOR_TYPES) $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) \
- $(BACKENDOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libFarrayTest.so \
- $(BACKENDDIR)/lib/libnulike.so
+ExampleBit_A_standalone: yaml-cpp slhapy8 libfortran $(FUNCTOR_TYPES) $(STANDALONEOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o
 	@echo ___________Linking $@:
-	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(PRINTOBJS) $(BACKENDOBJS) \
-	 $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
+	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(STANDALONEOBJS) $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
 
 
 ##### Contributed codes ##############
 
+yaml-cpp: $(YAMLDIR)/libyaml-cpp.a
 $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) CFLAGS="$(CFLAGS)"
 
-slhapy8:
-        # Forced rebuild of library.
-	@echo ___________Rebuilding slhapy8 library...
-	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
-
+slhapy8: $(SLHAPy8DIR)/libslhapy8.a
 $(SLHAPy8DIR)/libslhapy8.a:
 	@echo ___________Building SLHA interface library \(from Pythia 8\):
 	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
@@ -611,32 +578,47 @@ multinest:
 
 #### Backends #################
 
+backends: $(BACKENDS)
+
+libfirst: $(BACKENDDIR)/lib/libfirst.so
 $(BACKENDDIR)/lib/libfirst.so: $(BACKENDDIR)/lib/libfirst.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(BACKENDDIR)/lib/libfirst.cpp -o $(BACKENDDIR)/lib/libfirst.o
 	$(CC) -shared -o $(BACKENDDIR)/lib/libfirst.so $(BACKENDDIR)/lib/libfirst.o
 
+libfortran: $(BACKENDDIR)/lib/libfortran.so
 $(BACKENDDIR)/lib/libfortran.so: $(BACKENDDIR)/lib/libfortran.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libfortran.f90 -o $(BACKENDDIR)/lib/libfortran.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libfortran.so $(BACKENDDIR)/lib/libfortran.o
 
+libFarrayTest: $(BACKENDDIR)/lib/libFarrayTest.so
 $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
+DDCalc0: $(BACKENDDIR)/lib/libDDCalc0.so
+$(BACKENDDIR)/lib/libDDCalc0.so:
+	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
+	mv $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
+
+micromegas:
+
+darksusy:
+
+superiso:
+
+higgsbounds:
+
+higgssignals:
+
+nulike: $(BACKENDDIR)/lib/libnulike.so
 $(BACKENDDIR)/lib/libnulike.so:
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
 	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
-$(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cpp
-	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
-$(FASTSIMDIR)/src/%.o : $(FASTSIMDIR)/src/%.cc
-	$(CC) -c $(CFLAGS) $(FJ_CXXFLAGS) -I$(FASTSIMDIR) -fPIC $< -o $@
-
-$(BACKENDDIR)/lib/libfastsim.so: $(FASTSIMDIR)/src/FastSim_Log.o $(FASTSIMDIR)/src/DetectorResponse.o $(FASTSIMDIR)/src/jsoncpp.o $(FASTSIMDIR)/src/FastSim.o $(FASTSIMDIR)/src/FastSim_Reader.o $(FASTSIMDIR)/src/fastsim_interface.o
-# Intention is to pull symbols from FastJet into the fastsim backend (same should happen for direct pythia event filling... and any analyses that use jet structure)
-# Currently breaks formost symbols because symbols can't be copied unless libfastjet.a was unusually built with the -fPIC flag
-#	$(CC) -shared -L$(FJ_DIR)/lib -o $@ $^ -Wl,-Bstatic -lfastjettools -lfastjet -Wl,-Bdynamic
-	$(CC) -shared -o $@ $^ $(FJ_LDFLAGS) -lgsl
+fastsim: $(BACKENDDIR)/lib/libfastsim.so
+$(BACKENDDIR)/lib/libfastsim.so:
+	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
+	mv $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
 
 #### Documentation ##########
@@ -701,7 +683,8 @@ clean_plugins:
 clean_backends:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
 	@cd $(NULIKEDIR); make clean
-	@rm -f $(FASTSIMDIR)/src/*.o
+	@cd $(FASTSIMDIR); make clean
+	@cd $(DDCALC0DIR); make clean
 
 clean_docs:
 	@rm -rf .minihelp
