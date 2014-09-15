@@ -6,6 +6,7 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
+
     // Fwd declarations
     DECLARE_ANAFACTORY(Perf);
     DECLARE_ANAFACTORY(ATLAS_0LEP);

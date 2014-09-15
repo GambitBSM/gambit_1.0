@@ -79,35 +79,35 @@ namespace Gambit {
     void getSubprocessGroup(SubprocessGroup &result) {
       debugMe("getSubprocessGroup");
       result = SubprocessGroup(0.6, //< xsec estimate
-                    {{1000021, 1000001, 1000002, 1000003, 1000004,
-                               2000001, 2000002, 2000003, 2000004}},
-                    {{1000021, 1000001, 1000002, 1000003, 1000004,
-                               2000001, 2000002, 2000003, 2000004}});
-        
+                               {{1000021, 1000001, 1000002, 1000003, 1000004,
+                                     2000001, 2000002, 2000003, 2000004}},
+                               {{1000021, 1000001, 1000002, 1000003, 1000004,
+                                     2000001, 2000002, 2000003, 2000004}});
+
     }
-    
+
     void specifyAnalysisList (AnalysisList &result) {
       using namespace Pipes::specifyAnalysisList;
       debugMe("specifyAnalysisList");
-      
+
       vector<std::string> analysisNames;
-      
+
       try {
         analysisNames = runOptions->getValue<std::vector<string>>("AnalysisList");
-	for(int i=0;i<analysisNames.size();i++){
-	  cout << "Analysis name " << analysisNames[i] << endl;
-	  result.addAnalysis( mkAnalysis(analysisNames[i]) );	
-	}
+        for(int i=0;i<analysisNames.size();i++){
+          cout << "Analysis name " << analysisNames[i] << endl;
+          result.addAnalysis( mkAnalysis(analysisNames[i]) );
+        }
       } catch (...) {
         ColliderBit_error().raise(LOCAL_INFO,"Specify 'AnalysisList' in yaml file.");
-      }      
+      }
 
       /*result.addAnalysis( mkAnalysis("ATLAS_0LEP") );
-      result.addAnalysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
-      result.addAnalysis( mkAnalysis("ATLAS_1LEPStop_20invfb") );
-      result.addAnalysis( mkAnalysis("ATLAS_2bStop_20invfb") );
-      result.addAnalysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
-      result.addAnalysis( mkAnalysis("ATLAS_3LEPEW_20invfb") );*/
+        result.addAnalysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
+        result.addAnalysis( mkAnalysis("ATLAS_1LEPStop_20invfb") );
+        result.addAnalysis( mkAnalysis("ATLAS_2bStop_20invfb") );
+        result.addAnalysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
+        result.addAnalysis( mkAnalysis("ATLAS_3LEPEW_20invfb") );*/
     }
 
     /// *** Finalization for analyses ***
@@ -168,6 +168,7 @@ namespace Gambit {
       logger() << LogTags::info << endl << EOM;
     }
 
+
     /// Hard Scattering Event Generators
     void generatePythia8Event(Pythia8::Event &result) {
       debugMe("generatePythia8Event");
@@ -181,7 +182,7 @@ namespace Gambit {
         } catch (...) {
           ColliderBit_error().raise(LOCAL_INFO, "Specify 'slhaFilename' in yaml file.");
         }
-        #pragma omp parallel shared(pythiaVector,slhaFilename) 
+        #pragma omp parallel shared(pythiaVector,slhaFilename)
         {
           Pythia8Backend* temp = new Pythia8Backend(omp_get_thread_num(), slhaFilename, *Dep::subprocessGroup);
           #pragma omp critical (pythiaVector)
@@ -191,9 +192,11 @@ namespace Gambit {
         }
         isScatteringReady = true;
       }
+
       /// Get the next event from Pythia8
       pythiaVector[omp_get_thread_num()]->nextEvent(result);
     }
+
 
     /// Standard Event Format Functions
     void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
@@ -213,11 +216,12 @@ namespace Gambit {
           delphes = new Delphes3Backend(delphesConfigFilename);
           isDetectorReady = true;
         }
-      /// Feed the Pythia8 event to Delphes for detector simulation
-      /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
+        /// Feed the Pythia8 event to Delphes for detector simulation
+        /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
         delphes->processEvent(*Dep::hardScatteringEvent, result);
       }
     }
+
 
     void convertPythia8Event(HEP_Simple_Lib::Event &result) {
       debugMe("convertPythia8Event");
@@ -227,96 +231,91 @@ namespace Gambit {
       fillGambitEvent(*Dep::hardScatteringEvent, result);
     }
 
-    
+
     /// Analysis Accumulators
-    
-    void runAnalyses(vector<vector<SignalRegionData>> &result) {
+
+    void runAnalyses(vector<vector<SignalRegionData>>& result) {
       debugMe("runAnalyses");
       using namespace Pipes::runAnalyses;
-      
-      if (*Loop::iteration == 0)
-      {
-        //Nothing to do (analyses are already initialised)
-	
+
+      if (*Loop::iteration == 0) {
+        // Nothing to do (analyses are already initialised)
       }
-      
-      else if (*Loop::iteration == nEvents){
-        //The final iteration: get log likelihoods for the analyses
-        vector<shared_ptr<Analysis>> analyses=(*Dep::ListOfAnalyses).analyses;
-        vector<vector <SignalRegionData> > finalnumbers;
-	for (shared_ptr<Analysis> ana : analyses){
 
-	  ana->collectresults();
-	  cout << "SR number test " << ana->getresults()[0].n_signal << endl;
-	  finalnumbers.push_back(ana->getresults());
-
-	}
-
-	result = finalnumbers;	
-
-      }
-      
-      else 
-#pragma omp critical (accumulator_update)
-	{
-	  //counter += 1.;
-	  //cout << "Doing analysis in event loop" << endl;
-	  vector<shared_ptr<Analysis>> analyses=(*Dep::ListOfAnalyses).analyses;
-	  //Loop over analyses and run them
-	  for (shared_ptr<Analysis> ana : analyses)ana->analyze(*Dep::GambitColliderEvent);       
-	}
-      //result = ana->results();
-#pragma omp critical (print)
-      {
-#ifdef DEBUG
-	std::cout<<"\n    iteration number: "<<*Loop::iteration;
-	std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
-#endif
-      }
-      }
-            
-      void calcLogLike(double &result){
-	debugMe("calcLogLike");
-	using namespace Pipes::calcLogLike;
-	vector< vector<SignalRegionData> >  analysisResults=(*Dep::AnalysisNumbers);
-	//Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
-	cout << "In calcLogLike" << endl;
-
-	vector <double> observedLikelihoods;
-	for(int analysis=0;analysis<analysisResults.size();analysis++){
-	  for(int SR=0;SR<analysisResults[analysis].size();SR++){
-	    SignalRegionData srData=analysisResults[analysis][SR];
-	    int n_obs = (int)srData.n_observed;                      // Actual observed number of events
-	    double n_predicted_exact = 0.;     // A contribution to the predicted number of events that is know exactly (e.g. from data-driven background estimate)
-	    double n_predicted_uncertain = srData.n_background + srData.n_background; // A contribution to the predicted number of events that is not know exactly
-	    double uncertainty=0.;
-	    if(srData.n_signal!=0){
-	      uncertainty = sqrt((srData.background_sys/srData.n_background)*(srData.background_sys/srData.n_background) * (srData.signal_sys/srData.n_signal)*(srData.signal_sys/srData.n_signal));           // A fractional uncertainty on n_predicted_uncertain (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
-	    }
-	    else {
-	      uncertainty = (srData.background_sys/srData.n_background);
-	    }
-	    
-	    if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") 
-	      {
-		// Use a log-normal distribution for the nuisance parameter (more correct)
-		result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+      else if (*Loop::iteration == nEvents) {
+        // The final iteration: get log likelihoods for the analyses
+        vector<shared_ptr<Analysis>> analyses = (*Dep::ListOfAnalyses).analyses;
+        vector<vector<SignalRegionData>> finalnumbers;
+        for (shared_ptr<Analysis> ana : analyses) {
+          // ana->collect_results();
+          cout << "SR number test " << ana->get_results()[0].n_signal << endl;
+          finalnumbers.push_back(ana->get_results());
         }
-        else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error")
+        result = finalnumbers;
+      }
+
+      else
+        #pragma omp critical (accumulator_update)
         {
-          // Use a Gaussian distribution for the nuisance parameter (marginally faster)
-          result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+          //counter += 1.;
+          //cout << "Doing analysis in event loop" << endl;
+          vector<shared_ptr<Analysis>> analyses=(*Dep::ListOfAnalyses).analyses;
+          // Loop over analyses and run them
+          for (shared_ptr<Analysis> ana : analyses) ana->analyze(*Dep::GambitColliderEvent);
+        }
+      //result = ana->results();
+      #pragma omp critical (print)
+      {
+        #ifdef DEBUG
+        std::cout<<"\n    iteration number: "<<*Loop::iteration;
+        std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
+        #endif
+      }
+    }
 
-	  cout << "COLLIDER RESULT" << result << endl;
+
+    void calcLogLike(double& result) {
+      debugMe("calcLogLike");
+      using namespace Pipes::calcLogLike;
+      vector< vector<SignalRegionData> >  analysisResults = (*Dep::AnalysisNumbers);
+      //Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
+      cout << "In calcLogLike" << endl;
+
+      vector <double> observedLikelihoods;
+      for(int analysis=0;analysis<analysisResults.size();analysis++){
+        for(int SR=0;SR<analysisResults[analysis].size();SR++){
+          SignalRegionData srData=analysisResults[analysis][SR];
+          int n_obs = (int)srData.n_observed;                      // Actual observed number of events
+          double n_predicted_exact = 0.;     // A contribution to the predicted number of events that is know exactly (e.g. from data-driven background estimate)
+          double n_predicted_uncertain = srData.n_background + srData.n_background; // A contribution to the predicted number of events that is not know exactly
+          double uncertainty=0.;
+          if(srData.n_signal!=0){
+            uncertainty = sqrt((srData.background_sys/srData.n_background)*(srData.background_sys/srData.n_background) * (srData.signal_sys/srData.n_signal)*(srData.signal_sys/srData.n_signal));           // A fractional uncertainty on n_predicted_uncertain (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+          }
+          else {
+            uncertainty = (srData.background_sys/srData.n_background);
+          }
+
+          if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error")
+            {
+              // Use a log-normal distribution for the nuisance parameter (more correct)
+              result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            }
+          else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error")
+            {
+              // Use a Gaussian distribution for the nuisance parameter (marginally faster)
+              result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+
+              cout << "COLLIDER RESULT" << result << endl;
+
+            }
+
 
         }
-	    
-	    
-	  }
-	}
-	
-	return;
       }
-      
+
+      return;
+    }
+
   }
 }

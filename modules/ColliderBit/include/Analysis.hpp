@@ -17,21 +17,23 @@ namespace Gambit {
     #define DEFINE_ANAFACTORY(A) Analysis* create_Analysis_ ## A() { return new Analysis_ ## A(); }
 
     struct SignalRegionData {
-      
+
       SignalRegionData() {}
+
       void set_observation(double a) {n_observed=a;}
       void set_signal(double a) {n_signal=a;}
       void set_background(double a) {n_background=a;}
       void set_signalsys(double a) {signal_sys=a;}
       void set_backgroundsys(double a) {background_sys=a;}
-      
+
       double n_observed;
       double n_signal;
       double n_background;
       double signal_sys;
       double background_sys;
-      
+
     };
+
 
     class Analysis {
     public:
@@ -53,9 +55,6 @@ namespace Gambit {
 
       /// Analyze the event (accessed by reference)
       void analyze(const HEP_Simple_Lib::Event& e) { analyze(&e); }
-
-      void addresult(SignalRegionData res) { _results.push_back(res);}
-      std::vector<SignalRegionData> getresults() { return _results;}
 
       /// Analyze the event (accessed by pointer)
       /// @note Needs to be called from Derived::analyze()
@@ -112,12 +111,19 @@ namespace Gambit {
 
       /// @name Likelihood functions
       //@{
+
+      /// Get the collection of SignalRegionData for likelihood computation
+      std::vector<SignalRegionData> get_results() {
+        if (_results.empty()) collect_results();
+        return _results;
+      }
+
       /// Return the log_e likelihood (at the end of the run)
       virtual double loglikelihood() = 0;
 
-      virtual void collectresults() = 0;
       /// Return the likelihood (at the end of the run, via logLikelihood)
       virtual double likelihood() { return std::exp(loglikelihood()); }
+
       //@}
 
 
@@ -126,6 +132,12 @@ namespace Gambit {
 
 
     private:
+
+      /// Add the given result to the internal results list
+      void add_result(const SignalRegionData& res) { _results.push_back(res);}
+
+      /// Gather together the info for likelihood calculation
+      virtual void collect_results() = 0;
 
       /// Number of events and cross-section internal variables
       /// @note C++11 default value syntax

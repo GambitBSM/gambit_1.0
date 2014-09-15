@@ -433,40 +433,41 @@ namespace Gambit {
         return 0;
       }
 
-      void collectresults() {
-	
-	SignalRegionData results_SR1;
-	results_SR1.set_observation(15.);
-	results_SR1.set_background(17.5);
-	results_SR1.set_backgroundsys(3.2);
-	results_SR1.set_signalsys(0.);
-	results_SR1.set_signal(_numSR1);
 
-	SignalRegionData results_SR2;
-	results_SR2.set_observation(2.);
-	results_SR2.set_background(4.7);
-	results_SR2.set_backgroundsys(1.5);
-	results_SR2.set_signalsys(0.);
-	results_SR2.set_signal(_numSR2);
-	
-	SignalRegionData results_SR3;
-	results_SR3.set_observation(1.);
-	results_SR3.set_background(2.7);
-	results_SR3.set_backgroundsys(1.2);
-	results_SR3.set_signalsys(0.);
-	results_SR3.set_signal(_numSR3);
+      void collect_results() {
 
-	addresult(results_SR1);
+        SignalRegionData results_SR1;
+        results_SR1.set_observation(15.);
+        results_SR1.set_background(17.5);
+        results_SR1.set_backgroundsys(3.2);
+        results_SR1.set_signalsys(0.);
+        results_SR1.set_signal(_numSR1);
+
+        SignalRegionData results_SR2;
+        results_SR2.set_observation(2.);
+        results_SR2.set_background(4.7);
+        results_SR2.set_backgroundsys(1.5);
+        results_SR2.set_signalsys(0.);
+        results_SR2.set_signal(_numSR2);
+
+        SignalRegionData results_SR3;
+        results_SR3.set_observation(1.);
+        results_SR3.set_background(2.7);
+        results_SR3.set_backgroundsys(1.2);
+        results_SR3.set_signalsys(0.);
+        results_SR3.set_signal(_numSR3);
+
+        addresult(results_SR1);
         addresult(results_SR2);
         addresult(results_SR3);
 
 
-	return;	
+        return;
       }
 
     };
-    
-    
+
+
     DEFINE_ANAFACTORY(ATLAS_0LEPStop_20invfb)
 
 

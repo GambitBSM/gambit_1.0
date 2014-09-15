@@ -2,20 +2,20 @@
 //   *********************************************
 ///  \file
 ///
-///  Rollcall header for module ColliderBit's 
+///  Rollcall header for module ColliderBit's
 ///  eventLoop functionality. Based heavily on the
 ///  eventLoopManager example in ExampleBit_A
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
 ///  \date 2013 Dec
 //  Aldo Saavedra
 //  2014 March 2nd
-///  
+///
 ///  *********************************************
 
 
@@ -116,7 +116,7 @@ START_MODULE
 /*
   #define CAPABILITY detectorReconstructedEvent
   START_CAPABILITY
-    
+
     /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
     #define FUNCTION reconstructFastSimEvent
     START_FUNCTION(BLAH_AldoDetEvent)
@@ -184,9 +184,9 @@ START_MODULE
     DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
     DEPENDENCY(scaleFactor, double)
     DEPENDENCY(ListOfAnalyses, AnalysisList)
-//BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
-//BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
-//BACKEND_GROUP(lnlike_marg_poisson)
+    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+    //BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
 
