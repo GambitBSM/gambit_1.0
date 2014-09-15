@@ -656,10 +656,10 @@ namespace Gambit {
         results_SRM120.set_signalsys(0.);
         results_SRM120.set_signal(_numSRM120SF+_numSRM120DF);
 
-        addresult(results_SRM90);
-        addresult(results_SRM100);
-        addresult(results_SRM110);
-        addresult(results_SRM120);
+        add_result(results_SRM90);
+        add_result(results_SRM100);
+        add_result(results_SRM110);
+        add_result(results_SRM120);
 
         return;
       }

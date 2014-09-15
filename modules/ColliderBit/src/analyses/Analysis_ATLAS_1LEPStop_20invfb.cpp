@@ -797,11 +797,11 @@ namespace Gambit {
         results_TN3.set_signalsys(0.);
         results_TN3.set_signal(_numTN3);
 
-        addresult(results_BC1);
-        addresult(results_BC2);
-        addresult(results_BC3);
-        addresult(results_TN2);
-        addresult(results_TN3);
+        add_result(results_BC1);
+        add_result(results_BC2);
+        add_result(results_BC3);
+        add_result(results_TN2);
+        add_result(results_TN3);
 
         return;
       }

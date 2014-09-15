@@ -371,12 +371,12 @@ namespace Gambit {
         results_SRB.set_signalsys(0.);
         results_SRB.set_signal(_numSRB);
 
-        addresult(results_SRA15);
-        addresult(results_SRA20);
-        addresult(results_SRA25);
-        addresult(results_SRA30);
-        addresult(results_SRA35);
-        addresult(results_SRB);
+        add_result(results_SRA15);
+        add_result(results_SRA20);
+        add_result(results_SRA25);
+        add_result(results_SRA30);
+        add_result(results_SRA35);
+        add_result(results_SRB);
 
         return;
       }

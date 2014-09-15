@@ -131,13 +131,16 @@ namespace Gambit {
       std::string name;
 
 
-    private:
+    protected:
 
       /// Add the given result to the internal results list
       void add_result(const SignalRegionData& res) { _results.push_back(res);}
 
       /// Gather together the info for likelihood calculation
       virtual void collect_results() = 0;
+
+
+    private:
 
       /// Number of events and cross-section internal variables
       /// @note C++11 default value syntax

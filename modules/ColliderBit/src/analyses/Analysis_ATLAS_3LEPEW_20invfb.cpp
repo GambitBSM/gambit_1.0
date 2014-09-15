@@ -463,12 +463,12 @@ namespace Gambit {
         results_SRZb.set_signalsys(0.);
         results_SRZb.set_signal(_numSRZb);
 
-        addresult(results_SRnoZa);
-        addresult(results_SRnoZb);
-        addresult(results_SRnoZc);
-        addresult(results_SRZa);
-        addresult(results_SRZb);
-        addresult(results_SRZc);
+        add_result(results_SRnoZa);
+        add_result(results_SRnoZb);
+        add_result(results_SRnoZc);
+        add_result(results_SRZa);
+        add_result(results_SRZb);
+        add_result(results_SRZc);
 
         return;
       }

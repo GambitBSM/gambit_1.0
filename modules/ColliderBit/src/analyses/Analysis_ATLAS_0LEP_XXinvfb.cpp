@@ -349,16 +349,16 @@ namespace Gambit {
         results_ET.set_signalsys(0.);
         results_ET.set_signal(_numET);
 
-        addresult(results_AM);
-        addresult(results_AL);
-        addresult(results_BT);
-        addresult(results_BM);
-        addresult(results_CT);
-        addresult(results_CM);
-        addresult(results_D);
-        addresult(results_ET);
-        addresult(results_EM);
-        addresult(results_EL);
+        add_result(results_AM);
+        add_result(results_AL);
+        add_result(results_BT);
+        add_result(results_BM);
+        add_result(results_CT);
+        add_result(results_CM);
+        add_result(results_D);
+        add_result(results_ET);
+        add_result(results_EM);
+        add_result(results_EL);
 
         return;
       }

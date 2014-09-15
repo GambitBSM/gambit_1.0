@@ -457,9 +457,9 @@ namespace Gambit {
         results_SR3.set_signalsys(0.);
         results_SR3.set_signal(_numSR3);
 
-        addresult(results_SR1);
-        addresult(results_SR2);
-        addresult(results_SR3);
+        add_result(results_SR1);
+        add_result(results_SR2);
+        add_result(results_SR3);
 
 
         return;

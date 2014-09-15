@@ -58,6 +58,7 @@ namespace Gambit {
       vector<shared_ptr<Analysis>> analyses;
     };
 
+
     class Pythia8Backend {
     public:
 
