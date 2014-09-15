@@ -644,7 +644,7 @@ minihelp: .minihelp
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
-	@ln -s $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
+	@ln -sf $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
 	@echo "Documentation found in $@"
 
 doxygen: $(DOCDIR)/html/index.html
