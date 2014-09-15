@@ -68,7 +68,7 @@ namespace Gambit
                       Models::ModelFunctorClaw &claw) :      
      myName          (func_name),
      myCapability    (func_capability),
-     myType          (strip_whitespace_except_after_const(result_type)),
+     myType          (strip_leading_namespace(strip_whitespace_except_after_const(result_type),"Gambit")),
      myOrigin        (origin_name),
      myClaw          (&claw),
      myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
@@ -749,7 +749,7 @@ namespace Gambit
     /// Add and activate unconditional dependencies.
     void module_functor_common::setDependency(str dep, str type, void(*resolver)(functor*, module_functor_common*), str purpose)
     {
-      sspair key (dep, type);
+      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
       myDependencies.push_back(key);
       dependency_map[key] = resolver;
       this->myPurpose = purpose; // only relevant for output nodes
@@ -771,7 +771,7 @@ namespace Gambit
     void module_functor_common::setBackendConditionalDependencySingular
      (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
-      sspair key (dep, dep_type);
+      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
       std::vector<str> quad;
       if (backendreq_types.find(req) != backendreq_types.end())
       {
@@ -813,7 +813,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalDependencySingular
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     { 
-      sspair key (dep, dep_type);
+      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
       if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
       {
         std::vector<sspair> newvec;
@@ -827,7 +827,7 @@ namespace Gambit
     /// The info gets updated later if this turns out to be conditional on a model. 
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
     { 
-      type = strip_whitespace_except_after_const(type);
+      type = strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit");
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
@@ -886,7 +886,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalBackendReqSingular
      (str model, str req, str type)
     { 
-      sspair key (req, type);
+      sspair key (req, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
 
       // Remove the entry from the resolvable backend reqs list...
       myResolvableBackendReqs.erase(std::remove(myResolvableBackendReqs.begin(), 

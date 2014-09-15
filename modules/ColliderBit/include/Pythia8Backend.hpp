@@ -37,11 +37,13 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
+
+    /// @todo Move to ColliderBit_types
+    /// @todo Generalise for other generators (MadGraph?) when necessary
     struct SubprocessGroup {
       SubprocessGroup()
         : xsec(-1), nevts(-1) { }
-      SubprocessGroup(double xs, const vector<int>& parts1,
-                      const vector<int>& parts2)
+      SubprocessGroup(double xs, const vector<int>& parts1, const vector<int>& parts2)
         : xsec(xs), nevts(-1), particlesInProcess1(parts1),
           particlesInProcess2(parts2) { }
       void addAnalysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
@@ -55,6 +57,7 @@ namespace Gambit {
       vector<int> particlesInProcess2;
       vector<shared_ptr<Analysis>> analyses;
     };
+
 
     class Pythia8Backend {
     public:

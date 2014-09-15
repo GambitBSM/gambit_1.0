@@ -294,8 +294,9 @@
             /* Create a safety_bucket for the backend variable/function.       \
             To be initialized by the dependency resolver at runtime. */        \
             typedef BEvariable_bucket<TYPE> CAT(REQ,var);                      \
-            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
-             CAT(REQ,func);                                                    \
+            typedef BEfunction_bucket<BOOST_PP_IIF(IS_VARIABLE,int,TYPE(*)     \
+             CONVERT_VARIADIC_ARG(ARGS)), TYPE                                 \
+             INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))> CAT(REQ,func);         \
             extern CAT(REQ,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQ;            \
           }                                                                    \
         }                                                                      \

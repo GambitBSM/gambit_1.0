@@ -1,9 +1,23 @@
 # GAMBIT Initialization file (in YAML)
 #
-# A testing Gambit ini file for ColliderBit
-#  - attempting to remove anything not needed for testing only
-#    ColliderBit.... Why is that so difficult?
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
 
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+  NormalDist:
+    mu:
+      fixed_value: 1
+    sigma:
+      fixed_value: 1
 
 ##############################
 # Printer setup
@@ -25,15 +39,39 @@ Printer:
     # name of info file (explains content of output file)
     info_file: "runs/example_minimal_test/samples/gambit_output.info"
 
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  plugin: crapsample
+  file_path:  ScannerBit/lib/libsample.so
+
+  enable_redirect: false
+  redirect_output:
+     scanner:  xterm
+  #   error:  test_errors
+      
+  crapsample:
+    point_number: 1
+    output_file:  output
+    like:  Observable
+
 ###############################
 # Observables of interest
 ###############################
 
 ObsLikes:
 
-  # Uncomment to test ColliderBit
-  - purpose:      Observable
-    capability:   analysisAccumulator
+  # ColliderBit
+  #- purpose:      Observable
+  #  capability:   LogLikelihood
+
+  # Test marginalised Poisson likelihood
+  - purpose:    Likelihood
+    capability: LogLikelihood
+
 
 #########################
 # Auxiliary entries
@@ -42,10 +80,18 @@ ObsLikes:
 Auxiliaries:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
-  - capability:  eventLoopManager
+
+  - capability: ListOfAnalyses
+    function: specifyAnalysisList
+    options:  
+      AnalysisList: ["ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb"]
+
+  - capability:  colliderLoopManager
     function:    manageVanillaLoop
     options:
       nEvents:   2000
+
+  - capability: AnalysisList
 
   - capability:  GambitColliderEvent
     function:    reconstructDelphesEvent
@@ -57,7 +103,12 @@ Auxiliaries:
     options:
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
 
-  - capability:   analysisAccumulator
+  - capability: LogLikelihood
+    function:   calcLogLike
+    backends:
+    - {capability: lnlike_marg_poisson_gaussian_error}
+
+  - capability: AnalysisNumbers
     dependencies:
     - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 
@@ -81,15 +132,6 @@ Logger:
     [Dependency Resolver] : "dependency_resolver.log"
     [ColliderBit] : "ColliderBit.log"
 
-
-###############################
-## Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
-
 ##########################
 # Name/Value Section
 ##########################
@@ -97,7 +139,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
@@ -108,14 +150,3 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
     scan_error: non-fatal #make this fatal to see an example error
-
-  enable_testing: false
-  test_function: uniform
-      
-  uniform:
-    dim: 2
-    priors:
-      gauss_prior:
-        parameters: [0, 1]
-        options:
-          cov: [[1, 0], [0, 1]]

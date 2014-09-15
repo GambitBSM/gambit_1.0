@@ -15,7 +15,7 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    bool SortPt(Particle *i, Particle *j) { return (i->pT() > j->pT()); }
+    bool SortPt(const Particle* i, const Particle* j) { return (i->pT() > j->pT()); }
 
 
     class Analysis_Perf : public Analysis {
@@ -126,6 +126,11 @@ namespace Gambit {
 
       double loglikelihood() {
         return 0;
+      }
+
+
+      void collect_results() {
+        // DO NOTHING
       }
 
 

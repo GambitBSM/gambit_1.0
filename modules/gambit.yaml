@@ -248,8 +248,8 @@ ObsLikes:
   #  capability:  HS_LHCchisq
 
   # Uncomment to test ColliderBit
-  - purpose:      Observable
-    capability:   analysisAccumulator
+  #- purpose:      Observable
+  #  capability:   analysisAccumulator
 
   # Test Pythia8 SLHA reader
   - purpose:      Likelihood

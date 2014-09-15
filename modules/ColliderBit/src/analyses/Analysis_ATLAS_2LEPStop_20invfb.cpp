@@ -79,14 +79,14 @@ namespace Gambit {
 
         int nTrueBJets=0;
         for(Jet * tmpJet: jets){
-          if(tmpJet->getPdgId()==5){
+          if(tmpJet->isBJet()){
             trueBjet1=tmpJet;
             nTrueBJets++;
           }
         }
 
         for(Jet * tmpJet: jets){
-          if(tmpJet->getPdgId()==5 && tmpJet!=trueBjet1){
+          if(tmpJet->isBJet() && tmpJet!=trueBjet1){
             trueBjet2=tmpJet;
             //  nTrueBJets++;
           }
@@ -623,6 +623,45 @@ namespace Gambit {
       double loglikelihood() {
         /// @todo Implement!
         return 0;
+      }
+
+      void collect_results() {
+
+
+        SignalRegionData results_SRM90;
+        results_SRM90.set_observation(260.);
+        results_SRM90.set_background(300.);
+        results_SRM90.set_backgroundsys(40.);
+        results_SRM90.set_signalsys(0.);
+        results_SRM90.set_signal(_numSRM90SF+_numSRM90DF);
+
+        SignalRegionData results_SRM100;
+        results_SRM100.set_observation(3.);
+        results_SRM100.set_background(4.8);
+        results_SRM100.set_backgroundsys(2.2);
+        results_SRM100.set_signalsys(0.);
+        results_SRM100.set_signal(_numSRM100SF+_numSRM100DF);
+
+        SignalRegionData results_SRM110;
+        results_SRM110.set_observation(7.);
+        results_SRM110.set_background(11.);
+        results_SRM110.set_backgroundsys(4.);
+        results_SRM110.set_signalsys(0.);
+        results_SRM110.set_signal(_numSRM110SF+_numSRM110DF);
+
+        SignalRegionData results_SRM120;
+        results_SRM120.set_observation(3.);
+        results_SRM120.set_background(4.3);
+        results_SRM120.set_backgroundsys(1.3);
+        results_SRM120.set_signalsys(0.);
+        results_SRM120.set_signal(_numSRM120SF+_numSRM120DF);
+
+        add_result(results_SRM90);
+        add_result(results_SRM100);
+        add_result(results_SRM110);
+        add_result(results_SRM120);
+
+        return;
       }
 
     };

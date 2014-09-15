@@ -470,7 +470,7 @@ int main( int, const char*[] )
   
 
   // for the fastsim backend
-  //ExampleBit_A::Functown::fast_sim.resolveBackendReq(&Gambit::Backends::LibFastSim_1_0::Functown::FastSim_Init);
+  ExampleBit_A::Functown::fast_sim.resolveBackendReq(&Gambit::Backends::LibFastSim_1_0::Functown::FastSim_Init);
 
 
 

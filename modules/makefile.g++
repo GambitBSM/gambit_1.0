@@ -11,4 +11,4 @@ CC = g++
 FC = gfortran
 CCEXTRA= -pipe -pg -Wextra -g -Wfatal-errors
 FMODULE = J
-FEXTRA = -ffixed-line-length-none
+FEXTRA = -ffixed-line-length-none -fno-range-check
