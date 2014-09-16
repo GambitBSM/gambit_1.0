@@ -20,8 +20,8 @@
 ///  *********************************************
 
 
-#ifndef __stream_printers_hpp__
-#define __stream_printers_hpp__
+#ifndef __stream_overloads_hpp__
+#define __stream_overloads_hpp__
 
 #include <map>
 #include <set>
@@ -93,5 +93,5 @@ namespace Gambit
 
 }
 
-#endif /* defined(__stream_printers_hpp__) */
+#endif /* defined(__stream_overloads_hpp__) */
 

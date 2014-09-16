@@ -26,7 +26,7 @@
 #include "module_macros_incore.hpp"
 #include "model_rollcall.hpp"
 #include "register_standalone_error_handlers.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
 using namespace Gambit;
 using std::cout;

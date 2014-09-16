@@ -24,7 +24,7 @@
 #include "backend_rollcall.hpp"
 #include "module_rollcall.hpp"
 #include "register_error_handlers.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 #include "printermanager.hpp"
 #include "inifile_interface.hpp"
 

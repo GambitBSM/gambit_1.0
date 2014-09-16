@@ -22,7 +22,7 @@
 #include "scannerbit.hpp"
 #include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 #include "priors_rollcall.hpp"
 #include "printermanager.hpp"
 #include "register_error_handlers.hpp"

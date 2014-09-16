@@ -29,7 +29,7 @@
 
 // Gambit
 #include "printers/asciiprinter.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
 // Code!
 namespace Gambit

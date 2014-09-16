@@ -31,7 +31,7 @@
 #include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>

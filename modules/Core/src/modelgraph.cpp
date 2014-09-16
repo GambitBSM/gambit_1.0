@@ -29,7 +29,7 @@
 
 #include "modelgraph.hpp"
 #include "models.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 #include "util_types.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
