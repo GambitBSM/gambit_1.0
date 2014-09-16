@@ -38,9 +38,6 @@
 #include "safety_bucket.hpp"
 #include "module_macros_common.hpp"
 
-#include <boost/preprocessor/punctuation/comma.hpp>
-#include <boost/preprocessor/control/iif.hpp>
-
 /// \name Rollcall macros
 /// These are called from within rollcall headers in each module to 
 /// register module functions, their capabilities, return types, dependencies,
@@ -54,9 +51,15 @@
 #define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, FLAG) \
                                                           MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
+#define LONG_DEPENDENCY(MODULE, FUNCTION, ...)            MODULE_DEPENDENCY(__VA_ARGS__)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
-#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
-#define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
+#define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
+#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) \
+                                                          MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
+#define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
+#define ALLOW_MODEL_COMBINATION(...)                      DUMMYARG(__VA_ARGS__)
+#define MODEL_GROUP(GROUPNAME, GROUP)                     DUMMYARG(GROUPNAME, GROUP)
+
 #define BE_GROUP(GROUP)                                   MODULE_BE_GROUP(GROUP)
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
                                                           MODULE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
@@ -64,10 +67,8 @@
 #define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
-#define DECLARE_BACKEND_REQ_deprecated(TYPE, IS_VARIABLE) MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
 #define FORCE_SAME_BACKEND(...)                           DUMMYARG(__VA_ARGS__)                               
-#define BE_OPTION_deprecated(BACKEND,VERSTRING)           DUMMYARG(BACKEND,VERSTRING)
 /// @}
 
 
@@ -204,7 +205,7 @@
 
 
 /// Redirection of ALLOW_MODEL when invoked from within a module.
-#define MODULE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                 \
+#define MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)                            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -228,7 +229,7 @@
   }                                                                            \
 
 //"Littleguys" version of allowed_model
-#define LITTLEGUY_ALLOWED_MODEL(CAPABILITY,FUNCTION,MODEL)                     \
+#define LITTLEGUY_ALLOWED_MODEL(FUNCTION,MODEL)                                \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -253,7 +254,7 @@
   }                                                                            \
 
 
-/// Redirection of BACKEND_GROUP(GROUP) when invoked from within the Core.
+/// Redirection of BACKEND_GROUP(GROUP) when invoked from within a module.
 #define MODULE_BE_GROUP(GROUP)                                                 \
                                                                                \
   namespace Gambit                                                             \
@@ -293,38 +294,10 @@
             /* Create a safety_bucket for the backend variable/function.       \
             To be initialized by the dependency resolver at runtime. */        \
             typedef BEvariable_bucket<TYPE> CAT(REQ,var);                      \
-            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
-             CAT(REQ,func);                                                    \
+            typedef BEfunction_bucket<BOOST_PP_IIF(IS_VARIABLE,int,TYPE(*)     \
+             CONVERT_VARIADIC_ARG(ARGS)), TYPE                                 \
+             INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))> CAT(REQ,func);         \
             extern CAT(REQ,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQ;            \
-          }                                                                    \
-        }                                                                      \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-
-
-/// Redirection of START_BACKEND_REQ_deprecated(TYPE, [VAR/FUNC]) when invoked from within
-/// a module. 
-#define MODULE_DECLARE_BACKEND_REQ(TYPE, IS_VARIABLE)                          \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-    namespace MODULE                                                           \
-    {                                                                          \
-      namespace Pipes                                                          \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace BEreq                                                      \
-          {                                                                    \
-            /* Create a safety_bucket for the backend variable/function.       \
-            To be initialized by the dependency resolver at runtime. */        \
-            BOOST_PP_IIF(IS_VARIABLE,                                          \
-              /* If IS_VARIABLE = 1: */                                        \
-              extern BEvariable_bucket<TYPE> BACKEND_REQ_deprecated;                      \
-              , /* If IS_VARAIBLE = 0: */                                      \
-              extern BEfunction_bucket_deprecated<TYPE> BACKEND_REQ_deprecated;           \
-            ) /* End BOOST_PP_IIF */                                           \
           }                                                                    \
         }                                                                      \
       }                                                                        \

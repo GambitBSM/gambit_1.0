@@ -41,15 +41,15 @@ namespace Gambit
 
     struct  FastSimEvent {
 
-      vector<HEColliderBit::Jet*> _jets;
-      vector<HEColliderBit::Jet*> _bjets;
+      vector<ColliderBit::Jet*> _jets;
+      vector<ColliderBit::Jet*> _bjets;
 
-      vector<HEColliderBit::Particle*> _iso_electrons;
-      vector<HEColliderBit::Particle*> _iso_muons;
-      vector<HEColliderBit::Particle*> _iso_photons;
-      vector<HEColliderBit::Particle*> _noniso_electrons;
-      vector<HEColliderBit::Particle*> _noniso_muons;
-      vector<HEColliderBit::Particle*> _noniso_photons;
+      vector<ColliderBit::Particle*> _iso_electrons;
+      vector<ColliderBit::Particle*> _iso_muons;
+      vector<ColliderBit::Particle*> _iso_photons;
+      vector<ColliderBit::Particle*> _noniso_electrons;
+      vector<ColliderBit::Particle*> _noniso_muons;
+      vector<ColliderBit::Particle*> _noniso_photons;
 
       double _MET;
       double _METPhi;

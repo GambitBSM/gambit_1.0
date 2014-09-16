@@ -43,13 +43,14 @@
 #include "util_types.hpp"
 #include "types_rollcall.hpp"
 #include "functors.hpp"
-#include "backend_type_macros.hpp"
-#include "backend_info.hpp"
 #include "log.hpp"
 #include "standalone_error_handlers.hpp"
 #include "module_macros_incore.hpp"
+#include "backend_type_macros.hpp"
+#include "backend_singleton.hpp"
+#include "claw_singleton.hpp"
 #ifndef STANDALONE
-  #include "gambit_core.hpp"
+  #include "core_singleton.hpp"
 #endif
 
 #include <boost/preprocessor/control/iif.hpp>
@@ -67,11 +68,6 @@ namespace Gambit
 {
   namespace Backends
   {
-
-    /// Global variables providing info on backend libraries; avoids needing actual backend objects
-    std::map<str,bool> works;
-    std::map<str,str> paths;
-    std::map<str,str> dlerrors;
 
     typedef void(*voidFptr)();
     /// Hack to suppress warnings about casting between void pointers and function pointers.
@@ -124,7 +120,7 @@ namespace Gambit                                                            \
   {                                                                         \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
-      namespace                                                             \       
+      namespace                                                             \
 
 /// Closer for convenience and initialisation function definitional boilerplate.
 #define DONE }}}    
@@ -254,13 +250,15 @@ namespace Gambit                                                            \
       std::vector<str> allowed_models;                                      \
       void loadLibrary()                                                    \
       {                                                                     \
-        paths[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)]= LIBPATH;           \
+        backendInfo().paths[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
+         LIBPATH;                                                           \
         pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
         if(not pHandle)                                                     \
         {                                                                   \
           std::ostringstream err;                                           \
           str error = dlerror();                                            \
-          dlerrors[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = error;       \
+          backendInfo().dlerrors[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =\
+           error;                                                           \
           err << "Failed loading library from " << LIBPATH                  \
               << " due to error: " << error << std::endl                    \
               << "All functors generated from this library will get "       \
@@ -274,7 +272,8 @@ namespace Gambit                                                            \
                    << LogTags::backends << LogTags::info << EOM;            \
           present = true;                                                   \
         }                                                                   \
-        works[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = present;          \
+        backendInfo().works[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
+         present;                                                           \
       }                                                                     \
                                                                             \
       /*The code within the void function 'loadLibrary' is executed         \
@@ -356,27 +355,18 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
 
 /// Macros for calling the appropriate constructor
 /// @{      
-#define BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,ARG,EXTRA1,EXTRA2)               \
+#define BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,ARG,EXTRA1,EXTRA2)                          \
         CAT(BE_VAR_CONSTRUCT,TYPEOPT)(NAME,TYPE,ARG,EXTRA1,EXTRA2)
 /// Fortran Array
-#define BE_VAR_CONSTRUCT0(NAME,TYPE,ARG,EXTRA1,EXTRA2)                      \
-  CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG,EXTRA1,EXTRA2);                \
-  NAME = &CAT(NAME,_keeper);
+#define BE_VAR_CONSTRUCT0(NAME,TYPE,ARG,EXTRA1,EXTRA2)                                 \
+  static STRIP_PARENS(TYPE) CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG,EXTRA1,EXTRA2); \
+  return &CAT(NAME,_keeper);
 /// General variable
-#define BE_VAR_CONSTRUCT1(NAME,TYPE,ARG,EXTRA1,EXTRA2) NAME = ARG;                                                 
+#define BE_VAR_CONSTRUCT1(NAME,TYPE,ARG,EXTRA1,EXTRA2) return ARG;                                                 
 /// Fortran Common Block
-#define BE_VAR_CONSTRUCT2(NAME,TYPE,ARG,EXTRA1,EXTRA2)                      \
-  CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG);                              \
-  NAME = &CAT(NAME,_keeper);
-/// @}
-
-
-/// Macros for getting an instance of the frontend object, for Fortran Arrays and Common Blocks
-/// @{  
-#define BE_VAR_INSTANCE(TYPEOPT,TYPE,NAME) CAT(BE_VAR_INSTANCE,TYPEOPT)(TYPE,NAME)
-#define BE_VAR_INSTANCE0(TYPE,NAME) STRIP_PARENS(TYPE) CAT(NAME,_keeper);                                     // Fortran Array
-#define BE_VAR_INSTANCE1(TYPE,NAME)                                                                           // General variable
-#define BE_VAR_INSTANCE2(TYPE,NAME) STRIP_PARENS(TYPE) CAT(NAME,_keeper);                                     // Fortran Common Block
+#define BE_VAR_CONSTRUCT2(NAME,TYPE,ARG,EXTRA1,EXTRA2)                                 \
+  static STRIP_PARENS(TYPE) CAT(NAME,_keeper) = STRIP_PARENS(TYPE)(ARG);               \
+  return &CAT(NAME,_keeper);
 /// @}
 
 
@@ -401,31 +391,8 @@ namespace Gambit                                                            \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
                                                                             \
-      BE_VAR_INSTANCE(TYPEOPT,TYPE,NAME)                                    \
-      STRIP_PARENS(TYPE) * NAME;                                            \
-                                                                            \
-      /* Construct 'getptr' function */                                     \
-      STRIP_PARENS(TYPE) * CAT(getptr,NAME)() { return NAME; }              \
-                                                                            \
-      /* Create functor objects */                                          \
-      namespace Functown                                                    \
-      {                                                                     \
-        backend_functor<STRIP_PARENS(TYPE)*> NAME(                          \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,                             \
-          SAFE_VERSION)::CAT(getptr,NAME),                                  \
-         STRINGIFY(NAME),   /* functor name */                              \
-         CAPABILITY,        /* functor capability */                        \
-         SAFE_STRINGIFY(STRIP_PARENS(TYPE)*),                               \
-         STRINGIFY(BACKENDNAME),                                            \
-         STRINGIFY(VERSION),                                                \
-         STRINGIFY(SAFE_VERSION) );                                         \
-                                                                            \
-      } /* end namespace Functown */                                        \
-                                                                            \
-      /* Set the allowed model properties of the functor. */                \
-      SET_ALLOWED_MODELS(NAME, MODELS)                                      \
-                                                                            \
-      void CAT(constructVarPointer_,NAME)()                                 \
+      /* Declare a function that provides the variable pointer. */          \
+      STRIP_PARENS(TYPE) * CAT(constructVarPointer_,NAME)()                 \
       {                                                                     \
         /* Obtain a void pointer (pSym) to the library symbol. */           \
         /* -- First clear error code by calling dlerror() */                \
@@ -435,6 +402,33 @@ namespace Gambit                                                            \
         STRIP_PARENS(PRECONSTR)                                             \
         BE_VAR_CONSTRUCT(NAME,TYPEOPT,TYPE,                                 \
         reinterpret_cast<BASETYPE*>(pSym.ptr), CONSTRARG1, CONSTRARG2)      \
+      }                                                                     \
+                                                                            \
+      /* Set the variable pointer and the getptr function. */               \
+      STRIP_PARENS(TYPE) * const NAME = CAT(constructVarPointer_,NAME)();   \
+      STRIP_PARENS(TYPE) * CAT(getptr,NAME)() { return NAME; }              \
+                                                                            \
+      /* Create functor objects */                                          \
+      namespace Functown                                                    \
+      {                                                                     \
+        backend_functor<STRIP_PARENS(TYPE)*(*)(),                           \
+         STRIP_PARENS(TYPE)*> NAME(                                         \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,                             \
+          SAFE_VERSION)::CAT(getptr,NAME),                                  \
+         STRINGIFY(NAME),   /* functor name */                              \
+         CAPABILITY,        /* functor capability */                        \
+         SAFE_STRINGIFY(STRIP_PARENS(TYPE)*),                               \
+         STRINGIFY(BACKENDNAME),                                            \
+         STRINGIFY(VERSION),                                                \
+         STRINGIFY(SAFE_VERSION),                                           \
+         Models::modelClaw() );                                             \
+      } /* end namespace Functown */                                        \
+                                                                            \
+      /* Set the allowed model properties of the functor. */                \
+      SET_ALLOWED_MODELS(NAME, MODELS)                                      \
+                                                                            \
+      void CAT(setVarFunctorStatus_,NAME)()                                 \
+      {                                                                     \
         /* -- Disable the functor if the library is not present             \
               or the symbol not found. */                                   \
         if(!present)                                                        \
@@ -452,12 +446,12 @@ namespace Gambit                                                            \
         }                                                                   \
       }                                                                     \
                                                                             \
-      /* The code within the void function 'constructVarPointer_NAME'       \
+      /* The code within the void function 'setVarFunctorStatus_NAME'       \
          is executed when we create the following instance of               \
          the 'ini_code' struct. */                                          \
       namespace ini                                                         \
       {                                                                     \
-        ini_code NAME(&CAT(constructVarPointer_,NAME));                     \
+        ini_code NAME(&CAT(setVarFunctorStatus_,NAME));                     \
       }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
@@ -618,23 +612,21 @@ namespace Gambit
 #define BEF_FPTR_CALLARGS_BE_I1(ARG,IDX) BOOST_PP_COMMA_IF(IDX) BOOST_PP_TUPLE_ELEM(1,ARG)*
 /// @}
 
-/// Add a function pointer of type NAME##_BEtype
-#define BE_FUNC_ADD_UNWRAPPED_POINTER(NAME) NAME##_BEtype NAME##_unwrapped;
-
 /// Add a wrapper function in the cases where the function exposed to the user and the function in the library differ
 /// @{
-#define BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS) CAT(BE_FUNC_GENERATE_WRAPPER_FUNC,TRANS)(TYPE,NAME,CALLARGS_FE,CALLARGS_BE)
-#define BE_FUNC_GENERATE_WRAPPER_FUNC0(TYPE,NAME,CALLARGS_FE,CALLARGS_BE)
-#define BE_FUNC_GENERATE_WRAPPER_FUNC1(TYPE,NAME,CALLARGS_FE,CALLARGS_BE) TYPE NAME##_wrapper CALLARGS_FE {return NAME##_unwrapped CALLARGS_BE ;}
+#define BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE)  \
+  NAME##_BEtype NAME##_unwrapped;                                         \
+  TYPE NAME##_wrapper CALLARGS_FE {return NAME##_unwrapped CALLARGS_BE ;}
 /// @}
 
 /// Connect pointers to the backend library
 /// @{
 #define BE_FUNC_CONNECT_POINTERS(NAME,TRANS) CAT(BE_FUNC_CONNECT_POINTERS,TRANS)(NAME)
-#define BE_FUNC_CONNECT_POINTERS0(NAME) NAME = reinterpret_cast<NAME##_type>(pSym.fptr);
-#define BE_FUNC_CONNECT_POINTERS1(NAME)                                                         \
-  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym.fptr);                                \
-  NAME = NAME##_wrapper;             
+#define BE_FUNC_CONNECT_POINTERS0(NAME)                                                                    \
+  NAME##_type NAME = reinterpret_cast<NAME##_type>(pSym.fptr);
+#define BE_FUNC_CONNECT_POINTERS1(NAME)                                                                    \
+  NAME##_unwrapped = reinterpret_cast<NAME##_BEtype>(pSym.fptr);                                           \
+  NAME##_type NAME = NAME##_wrapper;             
 /// @}
 
 /// Adds function to frontBackFuncMap
@@ -662,46 +654,16 @@ namespace Gambit                                                                
     {                                                                                           \
                                                                                                 \
       /* Define a type NAME_type to be a suitable function pointer. */                          \
-      typedef TYPE (*NAME##_type) FE_ARGS;                                                      \
-      typedef TYPE (*NAME##_BEtype) BE_ARGS;                                                    \
-      /* Declare a pointer NAME of type NAME_type */                                            \
-      NAME##_type NAME;                                                                         \
-      BOOST_PP_IIF(TRANS, BE_FUNC_ADD_UNWRAPPED_POINTER(NAME), )                                \
-                                                                                                \
-      /* Create functor object */                                                               \
-      namespace Functown                                                                        \
-      {                                                                                         \
-        backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> NAME(                                    \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
-         STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
-         CAPABILITY BOOST_PP_COMMA()                                                            \
-         STRINGIFY(TYPE) STRINGIFY(FE_ARGS) BOOST_PP_COMMA()                                    \
-         STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
-         STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
-      } /* end namespace Functown */                                                            \
-                                                                                                \
-      /* Create functor object FIXME DEPRECATED!!*/                                             \
-      namespace Functown                                                                        \
-      {                                                                                         \
-        backend_functor<TYPE INSERT_NONEMPTY(FE_ARGS)> CAT(NAME,_deprecated)(                   \
-         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
-         STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
-         CAPABILITY BOOST_PP_COMMA()                                                            \
-         STRINGIFY(TYPE) BOOST_PP_COMMA()                                                       \
-         STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
-         STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
-      } /* end namespace Functown */                                                            \
+      typedef TYPE (*NAME##_type) CONVERT_VARIADIC_ARG(FE_ARGS);                                \
+      typedef TYPE (*NAME##_BEtype) CONVERT_VARIADIC_ARG (BE_ARGS);                             \
                                                                                                 \
       /* If necessary, create a wrapper function which takes frontend args as input, and uses   \
          them to call the backend function with appropriate translated args */                  \
-      BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,CALLARGS_FE,CALLARGS_BE,TRANS)                    \
+      BOOST_PP_IIF(TRANS, BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,                              \
+       CONVERT_VARIADIC_ARG(CALLARGS_FE),CONVERT_VARIADIC_ARG(CALLARGS_BE)), )                  \
                                                                                                 \
-      /* Set the allowed model properties of the functor. */                                    \
-      SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
-                                                                                                \
-      void CAT(constructFuncPointer_,NAME)()                                                    \
+      /* Declare a function that can be used to get the pointer to the backend function. */     \
+      NAME##_type CAT(constructFuncPointer_,NAME)()                                             \
       {                                                                                         \
         /* Obtain a void pointer (pSym) to the library symbol. */                               \
         /* -- First clear error code by calling dlerror() */                                    \
@@ -710,15 +672,35 @@ namespace Gambit                                                                
         pSym.ptr = dlsym(pHandle BOOST_PP_COMMA() SYMBOLNAME);                                  \
         BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
         /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
-        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),                               \
-                                     BE_FUNC_ADD_TO_FPTR_MAP(NAME), )                           \
-        Functown::NAME.updatePointer(NAME);                                                     \
-        Functown::CAT(NAME,_deprecated).updatePointer(NAME);                                    \
-        /* -- Disable the functor if the library is not present or the symbol not found. */     \
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),BE_FUNC_ADD_TO_FPTR_MAP(NAME),)\
+        /* Hand over the pointer */                                                             \
+        return NAME;                                                                            \
+      }                                                                                         \
+                                                                                                \
+      /* Declare a pointer NAME of type NAME_type */                                            \
+      const NAME##_type NAME = CAT(constructFuncPointer_,NAME)();                               \
+                                                                                                \
+      /* Create functor object */                                                               \
+      namespace Functown                                                                        \
+      {                                                                                         \
+        backend_functor<TYPE(*)CONVERT_VARIADIC_ARG(FE_ARGS), TYPE                              \
+         INSERT_NONEMPTY(STRIP_VARIADIC_ARG(FE_ARGS))> NAME(                                    \
+         Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME BOOST_PP_COMMA()             \
+         STRINGIFY(NAME) BOOST_PP_COMMA()                                                       \
+         CAPABILITY BOOST_PP_COMMA()                                                            \
+         STRINGIFY(TYPE) STRINGIFY(CONVERT_VARIADIC_ARG(FE_ARGS)) BOOST_PP_COMMA()              \
+         STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
+         STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
+         STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
+         Models::modelClaw());                                                                  \
+      } /* end namespace Functown */                                                            \
+                                                                                                \
+      /* Disable the functor if the library is not present or the symbol not found. */          \
+      void CAT(setFunctorStatus_,NAME)()                                                        \
+      {                                                                                         \
         if(!present)                                                                            \
         {                                                                                       \
           Functown::NAME.setStatus(-1);                                                         \
-          Functown::CAT(NAME,_deprecated).setStatus(-1);                                        \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
@@ -727,18 +709,17 @@ namespace Gambit                                                                
               << "The functor generated for this symbol will get status=-2" << std::endl;       \
           backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
           Functown::NAME.setStatus(-2);                                                         \
-          Functown::CAT(NAME,_deprecated).setStatus(-2);                                        \
         }                                                                                       \
-                                                                                                \
       }                                                                                         \
                                                                                                 \
-      /* The code within the void function 'constructVarPointer_NAME'                           \
-         is executed when we create the following instance of                                   \
-         the 'ini_code' struct. */                                                              \
+      /* Set up the ini code object to execute the functor status-setting routine. */           \
       namespace ini                                                                             \
       {                                                                                         \
-        ini_code NAME(&CAT(constructFuncPointer_,NAME));                                        \
+        ini_code CAT(ini_for_setFunctorStatus_,NAME)(&CAT(setFunctorStatus_,NAME));             \
       }                                                                                         \
+                                                                                                \
+      /* Set the allowed model properties of the functor. */                                    \
+      SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
                                                                                                 \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
   } /* end namespace Backends */                                                                \
@@ -746,7 +727,8 @@ namespace Gambit                                                                
   /* Create the safe pointer to the 'in use' flag of the functor. */                            \
   MAKE_INUSE_POINTER(NAME)                                                                      \
                                                                                                 \
-} /* end namespace Gambit */                                                                    \
+} /* end namespace Gambit*/                                                
+   
 
 /// Supplemenentary backend function macro
 #define BE_FUNCTION_IMPL2_SUPP(NAME)                                                            \
@@ -761,11 +743,9 @@ namespace Gambit                                                                
       {                                                                                         \
         /* Register functor. */                                                                 \
         Core().registerBackendFunctor(Functown::NAME);                                          \
-        /* Register functor. FIXME Deprecated!!*/                                               \
-        Core().registerBackendFunctor(Functown::CAT(NAME,_deprecated));                         \
       }                                                                                         \
                                                                                                 \
-      /* The code within the void function 'constructVarPointer_supp_NAME'                      \
+      /* The code within the void function 'constructFuncPointer_supp_NAME'                     \
          is executed when we create the following instance of                                   \
          the 'ini_code' struct. */                                                              \
       namespace ini                                                                             \
@@ -800,18 +780,20 @@ namespace Gambit                                                                
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
       /* Forward declare function */                                                            \
-      namespace { TYPE NAME(STRIP_PARENS(ARGSLIST)); }                                          \
+      namespace { TYPE NAME(STRIP_PARENS(CONVERT_VARIADIC_ARG(ARGSLIST))); }                    \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \
-        backend_functor<TYPE INSERT_NONEMPTY(ARGSLIST)> NAME(                                   \
+        backend_functor<TYPE(*)CONVERT_VARIADIC_ARG(ARGSLIST), TYPE                             \
+         INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGSLIST))> NAME(                                   \
          Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                             \
          STRINGIFY(NAME),                                                                       \
          CAPABILITY,                                                                            \
-         STRINGIFY(TYPE) STRINGIFY(ARGSLIST),                                                   \
+         STRINGIFY(TYPE) STRINGIFY(CONVERT_VARIADIC_ARG(ARGSLIST)),                             \
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION),                                                                    \
-         STRINGIFY(SAFE_VERSION) );                                                             \
+         STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \
+         Models::modelClaw());                                                                  \
       } /* end namespace Functown */                                                            \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \

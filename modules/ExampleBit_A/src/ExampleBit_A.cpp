@@ -87,8 +87,8 @@ namespace Gambit
     void nevents_int(int &result)    
     { 
       result = (int) (*Pipes::nevents_int::Dep::nevents); 
-      // Randomly raise some ficticious alarms about this point in 40% of cases.
-      if (random_0to5(twistor) < 2.0)
+      // Randomly raise some ficticious alarms about this point in 10% of cases.
+      if (random_0to5(twistor) < 0.5)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
@@ -148,11 +148,11 @@ namespace Gambit
       
       using namespace Pipes::fast_sim;
       cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::FastSim_Init.name() << " from " <<
-        BEreq::FastSim_Init.backend() << ", v" << 
-        BEreq::FastSim_Init.version() << "." << endl;
+        BEreq::fast_sim_init.name() << " from " <<
+        BEreq::fast_sim_init.backend() << ", v" << 
+        BEreq::fast_sim_init.version() << "." << endl;
 
-      cout << " calling function from library" << BEreq::FastSim_Init(1) << endl;
+      cout << " calling function from library" << BEreq::fast_sim_init(1) << endl;
       which = 10;
 
     }

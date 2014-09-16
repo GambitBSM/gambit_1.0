@@ -115,8 +115,8 @@
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
   #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)
-  #pragma message "Included from types_rollcall: HEColliderBit_types.hpp"
-  #include "HEColliderBit_types.hpp"
+  #pragma message "Included from types_rollcall: ColliderBit_types.hpp"
+  #include "ColliderBit_types.hpp"
 #endif
 
 #endif /* defined __types_rollcall_hpp__ */

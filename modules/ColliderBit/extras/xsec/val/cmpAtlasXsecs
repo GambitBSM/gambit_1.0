@@ -1,0 +1,104 @@
+#! /usr/bin/env python
+# -*- python -*-
+
+## Run like ./cmpAtlasXsecs atlasxsecs.root
+
+import sys, ROOT
+ROOT.gROOT.SetBatch(True)
+
+
+## 1st (mandatory) arg is the comparison ROOT file
+if len(sys.argv) < 2:
+    print "Usage: %s <atlasrootfile>" % sys.argv[0]
+    sys.exit(1)
+else:
+    ROOTFILE = sys.argv[1]
+
+## 2nd (optional) arg is xsec cutoff
+XSECMIN = float(sys.argv[2]) if len(sys.argv) >= 3 else 1e-5
+
+
+from math import sqrt
+def dev(sig, sigref):
+    return (sig-sigref) / sigref
+def dev(sig, sigref, reg=0):
+    #return (sig-sigref) / (abs(sigref) + abs(reg))
+    return (sig-sigref) / sqrt(abs(sigref*reg))
+def dev(sig, sigref, reg=0):
+    #if sig < reg or sigref < reg:
+    if sigref < reg:
+        sys.stderr.write("Vetoing: {:7.2g} (sig) vs {:7.2g} (ref)  [reg = {:5.2g}]\n".format(sig, sigref, reg))
+        return -1.0
+    return (sig-sigref) / (abs(sigref) + abs(reg))
+    return (sig-sigref) / sqrt(abs(sigref*reg))
+
+
+## Extract ATLAS xsecs for each m0-m12 point and process group
+f = ROOT.TFile(ROOTFILE)
+tree = f.Get("SignalUncertainties")
+atlasxsecs = {}
+for e in tree:
+    #print e.finalState
+    atlasxsecs.setdefault((e.m0, e.m12), {})[e.finalState] = e.crossSection
+
+## Counters for stddevs of deviation distributions
+devs_gq = []
+devs_gg = []
+devs_qq = []
+
+## Run eval_xsec and compare
+import subprocess
+for m0, m12 in atlasxsecs.keys():
+    slhafile = "slha/susy_msugra_%d_%d_0_10_P_softsusy.slha" % (m0, m12)
+    s = subprocess.check_output(["../evalxsec", slhafile])
+    xsecs = [float(x) for x in s.splitlines()[-1].split()]
+    #print xsecs
+
+    def axsec(*fss):
+        return sum(atlasxsecs[m0,m12].get(fs, 0.0) for fs in fss)
+
+    ## m0, m12 params
+    out = "%5g %5g" % (m0, m12)
+    ## g~q~
+    xsec_gq = xsecs[3]
+    axsec_gq = axsec(1)
+    dev_gq = dev(xsec_gq, axsec_gq, reg=XSECMIN)
+    devs_gq.append(dev_gq)
+    out += " %15.3g % 8.2g" % (axsec_gq, dev_gq)
+    ## g~g~
+    xsec_gg = xsecs[0]
+    axsec_gg = axsec(2)
+    dev_gg = dev(xsec_gg, axsec_gg, reg=XSECMIN)
+    devs_gg.append(dev_gg)
+    out += " %15.3g % 8.2g" % (axsec_gg, dev_gg)
+    ## q~q~
+    xsec_qq = xsecs[5]
+    axsec_qq = axsec(3,4)
+    dev_qq = dev(xsec_qq, axsec_qq, reg=XSECMIN)
+    devs_qq.append(dev_qq)
+    out += " %15.3g % 8.2g" % (axsec_qq, dev_qq)
+    print out
+
+
+# def mean(xs):
+#     filtxs = list(x for x in xs if x != -1)
+#     return sum(x for x in filtxs if x != -1)/float(len(filtxs))
+# def rms(xs):
+#     from math import sqrt
+#     filtxs = list(x for x in xs if x != -1)
+#     return sqrt(sum(x**2 for x in filtxs)/float(len(filtxs)))
+# def absmean(xs):
+#     filtxs = list(x for x in xs if x != -1)
+#     return sum(abs(x) for x in filtxs)/float(len(filtxs))
+
+# print
+# print devs_gq
+# print mean(devs_gq), rms(devs_gq), absmean(devs_gq)
+# print
+# print devs_gg
+# print mean(devs_gg), rms(devs_gq), absmean(devs_gq)
+# print
+# print devs_qq
+# print mean(devs_qq), rms(devs_qq), absmean(devs_qq)
+# print
+# print rms(devs_gq), rms(devs_gg), rms(devs_qq)

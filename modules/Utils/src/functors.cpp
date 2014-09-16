@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar-May
+///  \date 2014 Jan, Mar-May, Sep
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -19,24 +19,26 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June, July 2013
+///  \date 2013 May, June, July
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 July, Sep, 2014 Jan
+///  \date 2013 July, Sep
+///  \date 2014 Jan
 ///
 ///  *********************************************
 
 #include "config.h"
 
 #include "functors.hpp"
+#include "models.hpp"
 #include "all_functor_types.hpp"
 #include "standalone_error_handlers.hpp"
 #include "log.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-#define FWDPRINT(r,data,elem) virtual void print(elem const&, const functor*) = 0;
+#define FWDPRINT(r,data,elem) virtual void print(elem const&, const std::string&, const int) = 0;
 
 namespace Gambit
 {
@@ -63,16 +65,23 @@ namespace Gambit
     functor::functor (str func_name,
                       str func_capability,
                       str result_type,
-                      str origin_name) :      
+                      str origin_name,
+                      Models::ModelFunctorClaw &claw) :      
      myName          (func_name),
      myCapability    (func_capability),
-     myType          (strip_whitespace_except_after_const(result_type)),
+     myType          (strip_leading_namespace(strip_whitespace_except_after_const(result_type),"Gambit")),
      myOrigin        (origin_name),
+     myClaw          (&claw),
+     myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false),    // For debugging.
      needs_recalculating (true)
-    {}
+    {
+       std::stringstream ss;
+       ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name(); 
+       setLabel(ss.str());
+    }
     
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
@@ -104,6 +113,9 @@ namespace Gambit
       setInUse(myStatus == 2);       
     }
 
+    /// Setter for label (used in printer system)
+    void functor::setLabel(str label) { if (this == NULL) failBigTime("setLabel"); myLabel = label; } 
+   
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
     /// Getter for the wrapped function's reported capability
@@ -126,6 +138,8 @@ namespace Gambit
     int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
+    /// Getter for the printer label
+    str functor::label()       const { if (this == NULL) failBigTime("label"); return myLabel; }
 
     /// Setter for indicating if the wrapped function's result should to be printed
     void functor::setPrintRequirement(bool flag)
@@ -285,7 +299,7 @@ namespace Gambit
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
     bool functor::modelAllowed(str model)
     {
-      if (allowedModels.empty()) return true;
+      if (allowedModels.empty() and allowedGroupCombos.empty()) return true;
       if (allowed_parent_model_exists(model)) return true;
       return false;        
     }
@@ -300,11 +314,79 @@ namespace Gambit
     /// Test whether the functor is allowed to be used with all models
     bool functor::allModelsAllowed()
     {
-      return allowedModels.empty();
+      return allowedModels.empty() and allowedGroupCombos.empty();
     }
 
     /// Add a model to the internal list of models for which this functor is allowed to be used.
     void functor::setAllowedModel(str model) { allowedModels.insert(model); }
+
+    /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
+    bool functor::modelComboAllowed(std::vector<str> combo)
+    {
+      // If any model in the combo is always allowed, then give the combo a thumbs up.
+      for(std::vector<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
+      {
+        if (modelAllowed(*model)) return true;
+      }
+      // Loop over the allowed combinations, and check if the passed combo matches any of them
+      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      {  
+        bool matches = true;
+        //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it somehow.
+        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        {
+          matches = matches and contains_any_descendents_of(combo, *group);
+          if (not matches) break;
+        }
+        //Return true immediately if all entries in the allowed group combination have been matched.
+        if (matches) return true;
+      }
+      return false;
+    }
+
+    /// Test whether the functor has been explictly allowed to be used with a given combination of models 
+    bool functor::modelComboExplicitlyAllowed(std::vector<str> combo)
+    {
+      // If any model in the combo is always explicitly allowed, then give the combo a thumbs up.
+      for(std::vector<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
+      {
+        if (modelExplicitlyAllowed(*model)) return true;
+      }
+      // Loop over the allowed combinations, and check if the passed combo matches any of them
+      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      {
+        bool matches = true;
+        //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it explicitly.
+        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        {
+          matches = matches and has_common_elements(combo, *group);
+          if (not matches) break;
+        }
+        //Return true immediately if all entries in the allowed group combination have been matched.
+        if (matches) return true;
+      }
+      return false;
+    }
+
+    /// Add a model group definition to the internal list of model groups.
+    void functor::setModelGroup(str group, str contents)
+    {
+      //Strip the group contents of its parentheses, then split it, turn it into a set and save it in the map
+      strip_parentheses(contents);
+      std::vector<str> v = delimiterSplit(contents, ",");
+      std::set<str> combo(v.begin(), v.end());
+      modelGroups[group] = combo;
+    }
+
+    /// Add a model group combination to the internal list of combinations for which this functor is allowed to be used.
+    void functor::setAllowedModelGroupCombo(str groups)
+    {
+      //Strip the group combo of its parentheses, then split it and save it in the vector of allowed combos
+      strip_parentheses(groups);
+      std::vector<str> group_combo = delimiterSplit(groups, ",");
+      allowedGroupCombos.insert(group_combo);
+    }
+
 
     /// Print function
     void functor::print(Printers::BasePrinter*)
@@ -331,15 +413,74 @@ namespace Gambit
     }
 
     /// Test if a model has a parent model in the functor's allowedModels list
-    bool functor::allowed_parent_model_exists(str model)
+    inline bool functor::allowed_parent_model_exists(str model)
     {
       for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
       {
-        if (model_is_registered(*it))
+        if (myClaw->model_exists(*it))
         {
-          if (descendant_of(model, *it)) return true;
+          if (myClaw->descended_from(model, *it)) return true;
         } 
       }    
+      return false;    
+    }
+
+    /// Check that a model is actually part of a combination that is allowed to be used with this functor.
+    inline bool functor::in_allowed_combo(str model)
+    {
+      // If the model is allowed on its own, just give the thumbs up immediately.
+      if (modelAllowed(model)) return true;
+      // Loop over the allowed combinations, and check if the passed model matches anything in any of them
+      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      {
+        //Loop over each group in the allowed group combination, and check if the model descends from or matches a model in the group.
+        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        {
+          // Work through the members of the model group
+          std::set<str> models = modelGroups.at(*group);
+          for (std::set<str>::reverse_iterator it = models.rbegin() ; it != models.rend(); ++it)
+          {
+            if (myClaw->model_exists(*it))
+            {
+              if (myClaw->descended_from(model, *it)) return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    /// Test whether any of the entries in a given model group has any descendents in a given combination
+    inline bool functor::contains_any_descendents_of(std::vector<str> combo, str group)
+    {
+      // Work through the members of the model group
+      std::set<str> models = modelGroups.at(group);
+      for (std::set<str>::const_iterator it = models.begin() ; it != models.end(); ++it)
+      {
+        if (myClaw->model_exists(*it))
+        {
+          // Work through the members of the combination
+          for (std::vector<str>::const_iterator jt = combo.begin() ; jt != combo.end(); ++jt)
+          {
+            if (myClaw->model_exists(*jt))
+            {
+              if (myClaw->descended_from(*jt, *it)) return true;
+            }
+          } 
+        }    
+      }
+      return false;    
+    }
+
+    /// Work out whether a given combination of models and a model group have any elements in common
+    inline bool functor::has_common_elements(std::vector<str> combo, str group)
+    {
+      // Work through the members of the model group
+      std::set<str> models = modelGroups.at(group);
+      for (std::set<str>::reverse_iterator it = models.rbegin() ; it != models.rend(); ++it)
+      {
+        if ( std::find(combo.begin(), combo.end(), *it) == combo.end() ) return true;
+      }
       return false;    
     }
 
@@ -348,9 +489,9 @@ namespace Gambit
     {
       for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
-        if (model_is_registered(it->first))
+        if (myClaw->model_exists(it->first))
         {
-          if (descendant_of(model, it->first)) return it->first;
+          if (myClaw->descended_from(model, it->first)) return it->first;
         } 
       }    
       return "";    
@@ -362,8 +503,9 @@ namespace Gambit
     module_functor_common::module_functor_common(str func_name,
                                                  str func_capability,
                                                  str result_type,
-                                                 str origin_name)
-    : functor            (func_name, func_capability, result_type, origin_name),
+                                                 str origin_name,
+                                                 Models::ModelFunctorClaw &claw)
+    : functor            (func_name, func_capability, result_type, origin_name, claw),
       runtime            (FUNCTORS_RUNTIME_INIT),
       runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
@@ -608,7 +750,7 @@ namespace Gambit
     /// Add and activate unconditional dependencies.
     void module_functor_common::setDependency(str dep, str type, void(*resolver)(functor*, module_functor_common*), str purpose)
     {
-      sspair key (dep, type);
+      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
       myDependencies.push_back(key);
       dependency_map[key] = resolver;
       this->myPurpose = purpose; // only relevant for output nodes
@@ -630,7 +772,7 @@ namespace Gambit
     void module_functor_common::setBackendConditionalDependencySingular
      (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
-      sspair key (dep, dep_type);
+      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
       std::vector<str> quad;
       if (backendreq_types.find(req) != backendreq_types.end())
       {
@@ -672,7 +814,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalDependencySingular
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     { 
-      sspair key (dep, dep_type);
+      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
       if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
       {
         std::vector<sspair> newvec;
@@ -686,7 +828,7 @@ namespace Gambit
     /// The info gets updated later if this turns out to be conditional on a model. 
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
     { 
-      type = strip_whitespace_except_after_const(type);
+      type = strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit");
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
@@ -745,7 +887,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalBackendReqSingular
      (str model, str req, str type)
     { 
-      sspair key (req, type);
+      sspair key (req, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
 
       // Remove the entry from the resolvable backend reqs list...
       myResolvableBackendReqs.erase(std::remove(myResolvableBackendReqs.begin(), 
@@ -890,42 +1032,6 @@ namespace Gambit
       }
     } 
 
-
-    /// FIXME!  delete! delete!
-    /// Add multiple versions of a permitted backend !FIXME deprecated!!
-    void module_functor_common::setPermittedBackend_deprecated(str req, str be, str ver)
-    {
-      // Split the version string and send each version to be registered
-      std::vector<str> versions = delimiterSplit(ver, ",");
-      for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
-      {
-        setPermittedBackend(req, be, *it);
-      }
-    }
-    /// Add an unconditional backend requirement
-    /// FIXME This is deprecated... 
-    void module_functor_common::setBackendReq_deprecated(str req, str type, void(*resolver)(functor*))
-    { 
-      sspair key (req, type);
-      backendreq_types[req] = type;
-      myBackendReqs.push_back(key);
-      myResolvableBackendReqs.push_back(key);
-      if ( std::find(myGroups.begin(), myGroups.end(), "none") == myGroups.end() )
-      {
-        myGroups.push_back("none");
-        std::vector<sspair> empty;
-        myGroupedBackendReqs["none"] = empty;
-      }
-      myGroupedBackendReqs["none"].push_back(key);
-      backendreq_map[key] = resolver;
-      std::vector<str> empty;
-      backendreq_tagmap[key] = empty;      
-      backendreq_groups[key] = "none";
-    }
-
-
-
-
     /// Resolve a dependency using a pointer to another functor object
     void module_functor_common::resolveDependency (functor* dep_functor)
     {
@@ -997,7 +1103,7 @@ namespace Gambit
 
           //Check if this backend requirement is part of a group.
           str group = backendreq_groups[key];
-          if (group != "none" and group !="") //FIXME second condition is deprecated!!           
+          if (group != "none")           
           {                                                      
             //If it is part of a group, make sure that group has actually been declared.
             if (chosenReqsFromGroups.find(group) != chosenReqsFromGroups.end() )
@@ -1052,14 +1158,8 @@ namespace Gambit
     /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
     void module_functor_common::notifyOfModel(str model)
     {
-      //Make sure this model is actually allowed to be used with this functor, otherwise die gracefully.
-      if (not modelAllowed(model))
-      {                                                                      
-        str errmsg = "Problem encountered when notifying functor of model:";
-        errmsg +=  "\nFunction " + myName + " in " + myOrigin + " cannot be used"
-                   "\nwith model " + model + ".  Check module header or input file for errors.";
-        utils_error().raise(LOCAL_INFO,errmsg);
-      }        
+      //Add the model to the internal list of models being scanned.
+      myModels.push_back(model);
       //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
       std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
       for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
@@ -1075,8 +1175,6 @@ namespace Gambit
         myResolvableBackendReqs.push_back(*it);
         myGroupedBackendReqs[backendreq_groups[*it]].push_back(*it);
       }
-      //Add the model to the internal list of models being scanned.
-      myModels.push_back(model);
     }
 
     /// Do pre-calculate timing things
@@ -1112,8 +1210,9 @@ namespace Gambit
                                    str func_name,
                                    str func_capability,
                                    str result_type,
-                                   str origin_name)
-    : module_functor_common(func_name, func_capability, result_type, origin_name),
+                                   str origin_name,
+                                   Models::ModelFunctorClaw &claw)
+    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction  (inputFunction),
       myPrintFlag (false)
     {
@@ -1144,11 +1243,11 @@ namespace Gambit
 
     /// Setter for indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag; }
+    void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
 
     /// Getter indicating if the wrapped function's result should to be printed
     template <typename TYPE>
-    bool module_functor<TYPE>::requiresPrinting() { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
+    bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
 
     /// Calculate method
     template <typename TYPE>
@@ -1194,15 +1293,11 @@ namespace Gambit
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
       // Check if this functor is set to output its contents
+      std::cout<<"printflag?"<<myPrintFlag<<std::endl;
       if(myPrintFlag)
       {
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
-        // We now pass the 'this' pointer for this functor to the print function. In principle we could
-        // probably pass only this, but it is a little tricky because we still have to call the overload
-        // of 'print' which is appropriate for the type of 'myValue'. If the printers only expect
-        // module_functors, then we could use the template type of the pointer to do the resolution, but 
-        // it might just be more straightforward to pass 'myValue' like we are currently doing...
-        printer->print(myValue[0],this);
+        printer->print(myValue[0],myLabel,myVertexID);
       }
     }
 
@@ -1218,8 +1313,9 @@ namespace Gambit
                                          str func_name,
                                          str func_capability,
                                          str result_type,
-                                         str origin_name)
-    : module_functor_common(func_name, func_capability, result_type, origin_name),
+                                         str origin_name,
+                                         Models::ModelFunctorClaw &claw)
+    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction (inputFunction) {}
 
     /// Calculate method
@@ -1255,12 +1351,9 @@ namespace Gambit
                                  str func_name,
                                  str func_capability,
                                  str result_type,
-                                 str origin_name)
-    : module_functor<ModelParameters>(inputFunction,
-                                      func_name,
-                                      func_capability,
-                                      result_type,
-                                      origin_name) {}   
+                                 str origin_name,
+                                 Models::ModelFunctorClaw &claw)
+    : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
     
     /// Function for adding a new parameter to the map inside the ModelParameters object
     void model_functor::addParameter(str parname)
@@ -1287,12 +1380,9 @@ namespace Gambit
                                                  str func_name,
                                                  str func_capability,
                                                  str result_type,
-                                                 str origin_name)
-    : model_functor(inputFunction,
-                    func_name,
-                    func_capability,
-                    result_type,
-                    origin_name) {}   
+                                                 str origin_name,
+                                                 Models::ModelFunctorClaw &claw)
+    : model_functor(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
     
     /// Functor contents raw pointer "get" function
     /// Returns a raw pointer to myValue, so that the contents may be 

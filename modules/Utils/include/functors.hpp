@@ -11,7 +11,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
-///  \date 2014 Jan, Mar-May
+///  \date 2014 Jan, Mar-May, Sep
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -19,11 +19,12 @@
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 May, June, July 2013
+///  \date 2013 May, June, July
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 July, Sep, 2014 Jan
+///  \date 2013 July, Sep
+///  \date 2014 Jan
 ///
 ///  *********************************************
 
@@ -42,7 +43,6 @@
 #include "util_types.hpp"
 #include "util_functions.hpp"
 #include "model_types.hpp"
-#include "model_functions.hpp"
 #include "yaml_options.hpp"
 #include "log.hpp"
 
@@ -59,6 +59,16 @@ namespace Gambit
   /// Forward declaration of Printers::BasePrinter class for use in print functions.
   namespace Printers { class BasePrinter; }
 
+  /// Forward declaration of Models::ModelFunctorClaw class for use in constructors.
+  namespace Models { class ModelFunctorClaw; }
+
+  /// Type redefinition to get around icc compiler bugs.
+  template <typename TYPE, typename... ARGS>
+  struct variadic_ptr { typedef TYPE(*type)(ARGS..., ...); };
+  
+
+  // ======================== Base Functor =====================================
+
   /// Function wrapper (functor) base class
   class functor
   {
@@ -66,7 +76,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      functor (str, str, str, str);
+      functor (str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate();
@@ -96,7 +106,9 @@ namespace Gambit
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
       void setVertexID(int);
-   
+      /// Setter for label (used in printer system)
+      void setLabel(str);  
+ 
       /// Getter for the wrapped function's name
       str name() const;
       /// Getter for the wrapped function's reported capability
@@ -117,6 +129,8 @@ namespace Gambit
       str purpose() const;
       /// Getter for vertex ID
       int vertexID() const;
+      /// Getter for string label
+      str label() const;
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
 
@@ -171,7 +185,7 @@ namespace Gambit
       /// Resolve a backend requirement using a pointer to another functor object
       virtual void resolveBackendReq (functor*);
 
-      /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies accordingly.
+      /// Notify the functor that a certain model is being scanned, so that it can activate itself accordingly.
       virtual void notifyOfModel(str);
 
       /// Notify the functor about an instance of the options class that contains
@@ -182,17 +196,29 @@ namespace Gambit
       /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
       safe_ptr<Options> getOptions();
 
-      /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
-      bool modelAllowed(str model);
-
-      /// Test whether the functor has been explictly allowed to be used with a given model 
-      bool modelExplicitlyAllowed(str model);
-
       /// Test whether the functor is allowed to be used with all models
       bool allModelsAllowed();
 
+      /// Test whether the functor is always allowed (either explicitly or implicitly) to be used with a given model
+      bool modelAllowed(str model);
+
+      /// Test whether the functor is explictly always allowed to be used with a given model 
+      bool modelExplicitlyAllowed(str model);
+
       /// Add a model to the internal list of models for which this functor is allowed to be used.
       void setAllowedModel(str model);
+
+      /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
+      bool modelComboAllowed(std::vector<str> combo);
+
+      /// Test whether the functor has been explictly allowed to be used with a given combination of models 
+      bool modelComboExplicitlyAllowed(std::vector<str> combo);
+
+      /// Add a model group definition to the internal list of model groups.
+      void setModelGroup(str group, str contents);
+
+      /// Add a combination of model groups to the internal list of combinations for which this functor is allowed to be used.
+      void setAllowedModelGroupCombo(str groups);
 
       /// Print function
       virtual void print(Printers::BasePrinter*);
@@ -211,6 +237,11 @@ namespace Gambit
       str myVersion;    
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
+      /// Bound model functor claw, for checking relationships between models
+      const Models::ModelFunctorClaw* myClaw;
+
+      /// String label, used to label functor results in printer system
+      str myLabel;
       /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
@@ -224,6 +255,12 @@ namespace Gambit
       /// List of allowed models
       std::set<str> allowedModels;
 
+      /// List of allowed model group combinations
+      std::set<std::vector<str> > allowedGroupCombos;
+
+      /// Map from model group names to group contents
+      std::map<str, std::set<str> > modelGroups;
+
       /// Needs recalculating or not?
       bool needs_recalculating;
 
@@ -231,7 +268,16 @@ namespace Gambit
       static void failBigTime(str method);
 
       /// Test if a model has a parent model in the functor's allowedModels list
-      bool allowed_parent_model_exists(str model);
+      inline bool allowed_parent_model_exists(str model);
+
+      /// Check that a model is actually part of a combination that is allowed to be used with this functor.
+      inline bool in_allowed_combo(str model);
+
+      /// Test whether any of the entries in a given model group has any descendents in a given combination
+      inline bool contains_any_descendents_of(std::vector<str> combo, str group);
+
+      /// Work out whether a given combination of models and a model group have any elements in common
+      inline bool has_common_elements(std::vector<str> combo, str group);
 
       /// Try to find a parent model in some user-supplied map from models to sspair vectors
       str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
@@ -239,16 +285,16 @@ namespace Gambit
   };
 
 
-  // ================================================================
-  /// Functor derived class for module functions
-  
+  // ======================== Module Functors =====================================
+
+  /// Functor derived class for module functions  
   class module_functor_common : public functor
   {
 
     public:
 
       /// Constructor
-      module_functor_common(str, str, str, str);
+      module_functor_common(str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Getter for averaged runtime
       double getRuntimeAverage();
@@ -359,15 +405,6 @@ namespace Gambit
 
       /// Add one or more rules for forcing backends reqs with the same tags to always be resolved from the same backend.
       void makeBackendMatchingRule(str tag);
-
-      // !FIXME delete!!
-      /// Add multiple versions of a permitted backend !FIXME deprecated!!
-      void setPermittedBackend_deprecated(str req, str be, str ver);
-      /// Add an unconditional backend requirement
-      /// FIXME (delete me) The info gets updated later if this turns out to be contitional on a model. 
-      void setBackendReq_deprecated(str, str, void(*)(functor*));
-      //
-
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);
@@ -497,7 +534,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      module_functor(void(*)(TYPE &), str, str, str, str);
+      module_functor(void(*)(TYPE &), str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Destructor
       ~module_functor();
@@ -509,7 +546,7 @@ namespace Gambit
       virtual void setPrintRequirement(bool flag);
 
       /// Getter indicating if the wrapped function's result should to be printed
-      virtual bool requiresPrinting();
+      virtual bool requiresPrinting() const;
 
       /// Calculate method
       void calculate();
@@ -549,7 +586,7 @@ namespace Gambit
     public:
 
       /// Constructor
-      module_functor(void (*)(), str, str, str, str);
+      module_functor(void (*)(), str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Calculate method
       void calculate();
@@ -565,10 +602,10 @@ namespace Gambit
   };
 
 
-  // ===============================================================================
-  /// Backend functor class for functions with result type TYPE and argumentlist ARGS 
+  // ======================== Backend Functors =====================================
 
-  template <typename TYPE, typename... ARGS>
+  /// Backend functor class for functions with result type TYPE and argumentlist ARGS 
+  template <typename PTR_TYPE, typename TYPE, typename... ARGS>
   class backend_functor_common : public functor
   {
 
@@ -578,7 +615,7 @@ namespace Gambit
       virtual void setInUse(bool); 
 
       /// Type of the function pointer being encapsulated
-      typedef TYPE (*funcPtrType)(ARGS...);
+      typedef PTR_TYPE funcPtrType;
 
       /// Internal storage of function pointer
       funcPtrType myFunction;
@@ -595,7 +632,7 @@ namespace Gambit
     public:
 
       /// Constructor 
-      backend_functor_common (funcPtrType, str, str, str, str, str, str);
+      backend_functor_common (funcPtrType, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Update the internal function pointer wrapped by the functor
       void updatePointer(funcPtrType inputFunction);
@@ -612,18 +649,21 @@ namespace Gambit
   };
 
 
-  /// Actual backend functor type for all but TYPE=void
+  /// Actual backend functor type
+  template <typename PTR_TYPE, typename TYPE, typename... ARGS> class backend_functor;
+
+  /// Template specialisation for non-variadic, non-void backend functions
   template <typename TYPE, typename... ARGS>
-  class backend_functor : public backend_functor_common<TYPE, ARGS...>
+  class backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...> : public backend_functor_common<TYPE(*)(ARGS...), TYPE, ARGS...>
   {
 
     public:
 
       /// Constructor 
-      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str);
+      backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Operation (execute function and return value) 
-      TYPE operator()(ARGS... args);
+      TYPE operator()(ARGS&&... args);
 
       /// Alternative to operation, in case the functor return value is 
       /// in fact a pointer to a backend variable. 
@@ -632,20 +672,61 @@ namespace Gambit
   };
 
 
-  /// Template specialisation of backend functor type for TYPE=void
+  /// Template specialisation for non-variadic, void backend functions
   template <typename... ARGS>
-  class backend_functor<void, ARGS...> : public backend_functor_common<void, ARGS...>
+  class backend_functor<void(*)(ARGS...), void, ARGS...> : public backend_functor_common<void(*)(ARGS...), void, ARGS...>
   {
 
     public:
 
       /// Constructor 
-      backend_functor (void (*)(ARGS...), str, str, str, str, str, str);
+      backend_functor (void (*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
     
-      /// Operation (execute function and return value) 
-      void operator()(ARGS... args);
+      /// Operation (execute function) 
+      void operator()(ARGS&&... args);
 
   };
+
+  /// Template specialisation for variadic, non-void backend functions
+  template <typename TYPE, typename... ARGS>
+  class backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...> 
+   : public backend_functor_common<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>
+  {
+
+    public:
+
+      /// Constructor 
+      backend_functor(typename variadic_ptr<TYPE,ARGS...>::type, str, str, str, str, str, str, Models::ModelFunctorClaw&);
+
+      /// Operation (execute function and return value) 
+      template <typename... VARARGS>
+      TYPE operator()(VARARGS&&... args);
+
+      /// Alternative to operation, in case the functor return value is 
+      /// in fact a pointer to a backend variable. 
+      safe_variable_ptr<TYPE> variablePtr();
+
+  };
+
+  /// Template specialisation for variadic void backend functions
+  template <typename... ARGS>
+  class backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>
+   : public backend_functor_common<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>
+  {
+
+    public:
+
+      /// Constructor 
+      backend_functor(typename variadic_ptr<void,ARGS...>::type, str, str, str, str, str, str, Models::ModelFunctorClaw&);
+    
+      /// Operation (execute function) 
+      template <typename... VARARGS>
+      void operator()(VARARGS&&... varargs);
+
+  };
+
+
+  // ======================== Model Functors =====================================
 
   /// Functors specific to ModelParameters objects
   class model_functor : public module_functor<ModelParameters>
@@ -654,7 +735,7 @@ namespace Gambit
     public:
     
       /// Constructor
-      model_functor(void (*)(ModelParameters &), str, str, str, str);
+      model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Function for adding a new parameter to the map inside the ModelParameters object
       void addParameter(str parname);
@@ -663,6 +744,7 @@ namespace Gambit
       void donateParameters(model_functor &receiver);
 
   };    
+
 
   /// Functors specific to primary ModelParameters objects
   ///
@@ -674,7 +756,7 @@ namespace Gambit
     public:
     
       /// Constructor
-      primary_model_functor(void (*)(ModelParameters &), str, str, str, str);
+      primary_model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Functor contents raw pointer "get" function
       /// Returns a raw pointer to myValue, so that the contents may be 
@@ -685,27 +767,29 @@ namespace Gambit
   };    
 
 
+
 //**********************************************************************
 // Everything below this point is implementation.  If we ever get the 
 // functor type harvester script to also harvest backend functor types
 // (along with their argument types), then we can move it all into the 
 // source file instead, and generate the specialisations using
 // BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_TYPES)
-// in that file. 
+// or similar in that file. 
 //**********************************************************************
 
   // Backend_functor_common class method definitions
 
     /// Constructor 
-    template <typename TYPE, typename... ARGS>
-    backend_functor_common<TYPE, ARGS...>::backend_functor_common (funcPtrType inputFunction, 
-                                                                   str func_name,
-                                                                   str func_capability, 
-                                                                   str result_type,
-                                                                   str origin_name,
-                                                                   str origin_version,
-                                                                   str origin_safe_version) 
-    : functor (func_name, func_capability, result_type, origin_name),
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    backend_functor_common<PTR_TYPE, TYPE, ARGS...>::backend_functor_common (funcPtrType inputFunction, 
+                                                                             str func_name,
+                                                                             str func_capability, 
+                                                                             str result_type,
+                                                                             str origin_name,
+                                                                             str origin_version,
+                                                                             str origin_safe_version,
+                                                                             Models::ModelFunctorClaw &claw) 
+    : functor (func_name, func_capability, result_type, origin_name, claw),
       myFunction (inputFunction),
       myLogTag(-1),
       inUse(false)
@@ -729,57 +813,58 @@ namespace Gambit
     }
 
     /// Update the internal function pointer wrapped by the functor
-    template <typename TYPE, typename... ARGS>
-    void backend_functor_common<TYPE, ARGS...>::updatePointer(funcPtrType inputFunction)
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    void backend_functor_common<PTR_TYPE, TYPE, ARGS...>::updatePointer(funcPtrType inputFunction)
     {
       myFunction = inputFunction;
     }
 
     /// Hand out the internal function pointer wrapped by the functor
-    template <typename TYPE, typename... ARGS>
-    typename backend_functor_common<TYPE, ARGS...>::funcPtrType backend_functor_common<TYPE, ARGS...>::handoutFunctionPointer() 
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    typename backend_functor_common<PTR_TYPE, TYPE, ARGS...>::funcPtrType backend_functor_common<PTR_TYPE, TYPE, ARGS...>::handoutFunctionPointer() 
     {
       return myFunction;
     }
 
     /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
-    template <typename TYPE, typename... ARGS>
-    str backend_functor_common<TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    str backend_functor_common<PTR_TYPE, TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
 
     /// Set the inUse flag.
-    template <typename TYPE, typename... ARGS>
-    void backend_functor_common<TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; } 
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    void backend_functor_common<PTR_TYPE, TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; } 
 
     /// Hand out a safe pointer to this backend functor's inUse flag.
-    template <typename TYPE, typename... ARGS>
-    safe_ptr<bool> backend_functor_common<TYPE, ARGS...>::inUsePtr()
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    safe_ptr<bool> backend_functor_common<PTR_TYPE, TYPE, ARGS...>::inUsePtr()
     { 
       if (this == NULL) functor::failBigTime("inUsePtr");
       return safe_ptr<bool>(&inUse);
     }       
 
 
-    // Actual backend functor class method definitions for TYPE != void
+    // Actual non-variadic backend functor class method definitions for TYPE != void
 
     /// Constructor 
     template <typename TYPE, typename... ARGS>
-    backend_functor<TYPE, ARGS...>::backend_functor (TYPE (*inputFunction)(ARGS...), 
-                                                     str func_name,
-                                                     str func_capability, 
-                                                     str result_type,
-                                                     str origin_name,
-                                                     str origin_version,
-                                                     str safe_version)
-    : backend_functor_common<TYPE, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version, safe_version) {}
+    backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::backend_functor (TYPE (*inputFunction)(ARGS...), 
+                                                                       str func_name,
+                                                                       str func_capability, 
+                                                                       str result_type,
+                                                                       str origin_name,
+                                                                       str origin_version,
+                                                                       str safe_version,
+                                                                       Models::ModelFunctorClaw &claw)
+    : backend_functor_common<TYPE(*)(ARGS...), TYPE, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
 
     /// Operation (execute function and return value) 
     template <typename TYPE, typename... ARGS>
-    TYPE backend_functor<TYPE, ARGS...>::operator()(ARGS... args) 
+    TYPE backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::operator()(ARGS&&... args) 
     {
       if (this == NULL) functor::failBigTime("operator()");
       logger().entering_backend(this->myLogTag);
-      TYPE tmp = this->myFunction(args...);
+      TYPE tmp = this->myFunction(std::forward<ARGS>(args)...);
       logger().leaving_backend();
       return tmp;
     }
@@ -787,34 +872,87 @@ namespace Gambit
     /// Alternative to operation, in case the functor return value is 
     /// in fact a pointer to a backend variable. 
     template <typename TYPE, typename... ARGS>
-    safe_variable_ptr<TYPE> backend_functor<TYPE, ARGS...>::variablePtr()
+    safe_variable_ptr<TYPE> backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::variablePtr()
     {
       if (this == NULL) functor::functor::failBigTime("variablePtr");
       return safe_variable_ptr<TYPE>(this->myFunction); 
     }
 
 
-    // Actual backend functor class method definitions for TYPE=void
+    // Actual non-variadic backend functor class method definitions for TYPE=void
 
     /// Constructor 
     template <typename... ARGS>
-    backend_functor<void, ARGS...>::backend_functor (void (*inputFunction)(ARGS...), 
-                                                     str func_name,
-                                                     str func_capability, 
-                                                     str result_type,
-                                                     str origin_name,
-                                                     str origin_version,
-                                                     str safe_version)
-    : backend_functor_common<void, ARGS...>(inputFunction, func_name,
-      func_capability, result_type, origin_name, origin_version, safe_version) {}
+    backend_functor<void(*)(ARGS...), void, ARGS...>::backend_functor (void (*inputFunction)(ARGS...), 
+                                                                       str func_name,
+                                                                       str func_capability, 
+                                                                       str result_type,
+                                                                       str origin_name,
+                                                                       str origin_version,
+                                                                       str safe_version, 
+                                                                       Models::ModelFunctorClaw &claw)
+    : backend_functor_common<void(*)(ARGS...), void, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
     
     /// Operation (execute function and return value) 
     template <typename... ARGS>
-    void backend_functor<void, ARGS...>::operator()(ARGS... args) 
+    void backend_functor<void(*)(ARGS...), void, ARGS...>::operator()(ARGS&&... args) 
     {
       if (this == NULL) functor::functor::failBigTime("operator()");
       logger().entering_backend(this->myLogTag);
-      this->myFunction(args...);
+      this->myFunction(std::forward<ARGS>(args)...);
+      logger().leaving_backend();
+    }
+
+
+    // Actual variadic backend functor class method definitions for TYPE != void
+
+    /// Constructor 
+    template <typename TYPE, typename... ARGS>
+    backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::backend_functor
+     (typename variadic_ptr<TYPE,ARGS...>::type inputFunction, str func_name, str func_capability, str result_type,
+     str origin_name, str origin_version, str safe_version, Models::ModelFunctorClaw &claw)
+    : backend_functor_common<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+
+    /// Operation (execute function and return value) 
+    template <typename TYPE, typename... ARGS> template <typename... VARARGS>
+    TYPE backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::operator()(VARARGS&&... varargs) 
+    {
+      if (this == NULL) functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
+      TYPE tmp = this->myFunction(std::forward<VARARGS>(varargs)...);
+      logger().leaving_backend();
+      return tmp;
+    }
+
+    /// Alternative to operation, in case the functor return value is 
+    /// in fact a pointer to a backend variable. 
+    template <typename TYPE, typename... ARGS>
+    safe_variable_ptr<TYPE> backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::variablePtr()
+    {
+      if (this == NULL) functor::functor::failBigTime("variablePtr");
+      return safe_variable_ptr<TYPE>(this->myFunction); 
+    }
+
+
+    // Actual variadic backend functor class method definitions for TYPE=void
+
+    /// Constructor 
+    template <typename... ARGS>
+    backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>::backend_functor
+     (typename variadic_ptr<void,ARGS...>::type inputFunction, str func_name, str func_capability, str result_type,
+     str origin_name, str origin_version, str safe_version, Models::ModelFunctorClaw &claw)
+    : backend_functor_common<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+    
+    /// Operation (execute function) 
+    template <typename... ARGS> template <typename... VARARGS>
+    void backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>::operator()(VARARGS&&... varargs) 
+    {
+      if (this == NULL) functor::functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
+      this->myFunction(std::forward<VARARGS>(varargs)...);
       logger().leaving_backend();
     }
 

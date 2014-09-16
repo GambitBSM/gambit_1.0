@@ -10,7 +10,12 @@
 ///   
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
-///  \date 2013 Apr, Dec
+///  \date 2013 Apr, July, Aug, Dec
+///  \date 2014 Mar
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@monash.edu.au)
+///  \date 2013 May, June, July
 ///
 ///  *********************************************
 
@@ -44,6 +49,9 @@ namespace Gambit
   /// Split a string into a vector of strings, using a delimiter,
   /// and removing any whitespace around the delimiter.
   std::vector<str> delimiterSplit(str, str);
+
+  /// Strips namespace from the start of a string, or after "const".
+  str strip_leading_namespace(str s, str ns);
 
   /// Strip all whitespace except that following "const", 
   /// in which case the whitespace is replaced by a single space.
@@ -84,6 +92,17 @@ namespace Gambit
       return true;
   }
 
+  /// Function to help static initialisation of our const data member vectors.
+  /// Returns a copy of the vector with the string argument appended.
+  std::vector<str> vecappend(const std::vector<str>&, const str&);
+   
+  /// Similar to vecappend(); joins two vectors and returns the result
+  std::vector<str> vecjoin(const std::vector<str>&, const std::vector<str>&);
+      
+  /// As per vecjoin() but joins three vectors and returns the result.
+  std::vector<str> vecjoin3(const std::vector<str>&, 
+                            const std::vector<str>&,
+                            const std::vector<str>&);
 
 }
         

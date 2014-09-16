@@ -25,7 +25,7 @@
 #include <cxxabi.h>
 
 #include "scanner_plugin.hpp"
-
+//#include "scanner_utils.hpp"
   
 class Ran
 {
@@ -59,7 +59,7 @@ scanner_plugin (crapsample)
         std::string output_file;
         void hiFunc(){std::cout << "This is crapsample " << std::endl;}
         
-        init_inifile_value(N, "point_numer", 10);
+        init_inifile_value(N, "point_number", 10);
         init_inifile_value(output_file, "output_file", "default_output");
         init_dimension(ma);
         init_functor(LogLike, "Scanner_Function", "Likelihood");

@@ -27,6 +27,8 @@
 #include "printermanager.hpp"
 #include "register_error_handlers.hpp"
 #include "log.hpp"
+#include "claw_singleton.hpp"
+#include "core_singleton.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
@@ -96,13 +98,13 @@ void beispiel()
   Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
 
   // Activate "primary" model functors
-  Core().registerActiveModelFunctors ( modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
+  Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
   // Set up the printer (redirection of scan output)
   Printers::PrinterManager printerManager(iniFile.getPrinterNode());
                                 
   // Set up dependency resolver
-  DRes::DependencyResolver dependencyResolver(Core(), iniFile, *printerManager.printerptr);
+  DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, *printerManager.printerptr);
 
   // Log module function infos
   dependencyResolver.printFunctorList();
@@ -111,7 +113,7 @@ void beispiel()
   dependencyResolver.doResolution();
 
   // Check that all requested models are used for at least one computation
-  modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
+  Models::modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
   // Examples for getting information from the key/value section of the
   // inifile
@@ -362,37 +364,31 @@ int main( int, const char*[] )
   
   // Model congruency tests
   // ------------------------
-  // So far the tools we have for this use are:
-  // function to check if a model is a descendant of, or is itself the, model
-  // named in the argument.
-  //  Models::MODEL::PARAMETERISATION::isdescendantof(str testmodel)
   
   cout<<endl;
   cout<<"Model congruency tests:"<<endl;
   cout<<"Checking congruency of "<<Models::CMSSM_demo::Accessors::name()<<"..."<<endl;
   cout<<"lineage is:"<<Models::CMSSM_demo::lineage<<endl;
-  cout<<"is descendant of MSSM_demo?         :"<<Models::CMSSM_demo::is_descendant_of("MSSM_demo")<<endl;
-  cout<<"is descendant of CMSSM_demo?        :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_demo")<<endl;
-  cout<<"is descendant of CMSSM_II_demo?       :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_II_demo")<<endl;
-  cout<<"is descendant of DMHalo_base_demo?  :"<<Models::CMSSM_demo::is_descendant_of("DMHalo_base_demo")<<endl;
-  cout<<"is descendant of Gaussian_Halo_demo?:"<<Models::CMSSM_demo::is_descendant_of("Gaussian_Halo_demo")<<endl;
+  cout<<"is descendant of MSSM_demo?         :"<<Models::CMSSM_demo::is_descendant_of("MSSM_demo",&Models::modelClaw())<<endl;
+  cout<<"is descendant of CMSSM_demo?        :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_demo",&Models::modelClaw())<<endl;
+  cout<<"is descendant of CMSSM_II_demo?     :"<<Models::CMSSM_demo::is_descendant_of("CMSSM_II_demo",&Models::modelClaw())<<endl;
+  cout<<"is descendant of DMHalo_base_demo?  :"<<Models::CMSSM_demo::is_descendant_of("DMHalo_base_demo",&Models::modelClaw())<<endl;
+  cout<<"is descendant of Gaussian_Halo_demo?:"<<Models::CMSSM_demo::is_descendant_of("Gaussian_Halo_demo",&Models::modelClaw())<<endl;
   cout<<endl;
   
   // New way of checking congruency using global lineage database
   cout<<"Checking congruency of "<<Models::CMSSM_demo::Accessors::name()<<" using database..."<<endl;
-  cout<<"lineage is:"<< modelClaw().get_lineage("CMSSM_demo") <<endl;
-  cout<<"is descendant of MSSM_demo?         :"<<strict_descendant_of("CMSSM_demo","MSSM_demo")<<endl;
-  cout<<"is descendant of CMSSM_demo?        :"<<strict_descendant_of("CMSSM_demo","CMSSM_demo")<<endl;
-  cout<<"is descendant of or == CMSSM_demo?  :"<<descendant_of("CMSSM_demo","CMSSM_demo")<<endl;
-  cout<<"is descendant of CMSSM_II_demo?       :"<<strict_descendant_of("CMSSM_demo","CMSSM_II_demo")<<endl;
+  cout<<"lineage is:"<< Models::modelClaw().get_lineage("CMSSM_demo") <<endl;
+  cout<<"is descendant of or == MSSM_demo?     :"<<Models::modelClaw().descended_from("CMSSM_demo","MSSM_demo")<<endl;
+  cout<<"is descendant of or == CMSSM_demo?    :"<<Models::modelClaw().descended_from("CMSSM_demo","CMSSM_demo")<<endl;
+  cout<<"is descendant of or == CMSSM_II_demo? :"<<Models::modelClaw().descended_from("CMSSM_demo","CMSSM_II_demo")<<endl;
     
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<Models::MSSM_demo::Accessors::name()<<" using database..."<<endl;
-  cout<<"descendants are:"<< modelClaw().get_descendants("MSSM_demo") <<endl;
-  cout<<"is ancestor of MSSM_demo?         :"<<strict_ancestor_of("MSSM_demo","MSSM_demo")<<endl;
-  cout<<"is ancestor of or == MSSM_demo?   :"<<ancestor_of("MSSM_demo","MSSM_demo")<<endl;
-  cout<<"is ancestor of CMSSM_demo?        :"<<strict_ancestor_of("MSSM_demo","CMSSM_demo")<<endl;
-  cout<<"is ancestor of CMSSM_II_demo?       :"<<strict_ancestor_of("MSSM_demo","CMSSM_II_demo")<<endl;
+  cout<<"descendants are:"<< Models::modelClaw().get_descendants("MSSM_demo") <<endl;
+  cout<<"is ancestor of or == MSSM_demo?     :"<<Models::modelClaw().ancestor_of("MSSM_demo","MSSM_demo")<<endl;
+  cout<<"is ancestor of or == CMSSM_demo?    :"<<Models::modelClaw().ancestor_of("MSSM_demo","CMSSM_demo")<<endl;
+  cout<<"is ancestor of or == CMSSM_II_demo? :"<<Models::modelClaw().ancestor_of("MSSM_demo","CMSSM_II_demo")<<endl;
             
   // Interpret_as_parent features
   // (currently just function wrapped in a functor, provided PARENT parameter 
@@ -531,7 +527,6 @@ int main( int, const char*[] )
     ExampleBit_A::Functown::Aldos_evgen.calculate();
     HEP_Simple_Lib::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0); 
     cout << " the number of muons generated " << myevent.visible_particles().size() << endl;
-    //cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::Aldos_evgen(0) << endl ;
   }
 
   cout << "I can do FastSim: " << ExampleBit_A::Accessors::provides("fast_sim") << endl;
@@ -540,9 +535,6 @@ int main( int, const char*[] )
     ExampleBit_A::Functown::fast_sim.calculate();
     cout << "  " << ExampleBit_A::Accessors::name() << " says: " << ExampleBit_A::Functown::fast_sim(0) << endl ;
   }
-
-
-
 
   cout <<  endl;
   cout << "My name is " << ExampleBit_B::Accessors::name() << endl;
@@ -623,18 +615,6 @@ int main( int, const char*[] )
   {
     cout<<"none."<<endl;
   }
-
-  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a generic backend req on runMe?" << endl;
-  cout << ExampleBit_B::Accessors::needs_from_backend("runMe", "nevents_postcuts") << endl;
-
-  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a generic backend req on SomeInt?" << endl;
-  cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts") << endl;
-
-  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a backend req on SomeInt conditional on CMSSM_demo?" << endl;
-  cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts", "CMSSM_demo") << endl;
-
-  cout << "Testing conditional backend requirement.  Does ExampleBit_B::nevents_postcuts have a backend req on SomeInt conditional on OtherModel?" << endl;
-  cout << ExampleBit_B::Accessors::needs_from_backend("SomeInt", "nevents_postcuts", "OtherModel") << endl;
 
   cout <<  endl;
 #endif

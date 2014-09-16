@@ -263,7 +263,7 @@ namespace Gambit
       initialisePrinter();
 
       // Generate graphviz plot
-      std::ofstream outf("graph.gv");
+      std::ofstream outf("GAMBIT_active_functor_graph.gv");
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
 
       // Done
@@ -300,36 +300,122 @@ namespace Gambit
     }
 
     // Pretty print function evaluation order
-    void DependencyResolver::printFunctorEvalOrder()
+    void DependencyResolver::printFunctorEvalOrder(bool toterminal)
     { 
       // Running this lets us check the order of execution. Also helps
       // to verify that we actually have pointers to all the required
       // functors.
-      //
+      
       // Get order of evaluation
+      std::set<VertexID> parents;
+      std::set<VertexID> done; //set of vertices already accounted for
       std::vector<VertexID> order = getObsLikeOrder();
 
-      str formatString = "%-5s %-25s %-25s\n";
+      str formatString  = "%-5s %-25s %-25s %-25s\n";
+      // Might need to check if terminal supports unicode characters...
+      str formatString0 = "%-7s %-23s %-25s %-25s %-6s\n";  // header
+      str formatString1a= "%-9s %-21s %-25s %-25s %-6s\n";  // target functors 
+      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-25s %-6s\n";  // target functors 
+      str formatString2a= "     \u250C\u2500 %-23s %-25s %-25s %-6s\n";  // parents
+      str formatString2b= "     \u251C\u2500 %-23s %-25s %-25s %-6s\n";
+      str formatString3a= "     \u250CX %-23s %-25s %-25s %-6s\n"; // "already done" parents
+      str formatString3b= "     \u251CX %-23s %-25s %-25s %-6s\n";
+
       int i = 0;
-      logger() << LogTags::dependency_resolver;
-      logger() << endl << "Initial functor evaluation order" << endl;
-      logger() << "----------------------------------" << endl;
-      logger() << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
-      logger() << EOM;
-       
+
+      // Show the order in which the target functors will be attacked.
+      std::ostringstream ss;
+      ss << endl << "Initial target functor evaluation order" << endl;
+      ss << "----------------------------------" << endl;
+      ss << boost::format(formatString)% "#"% "FUNCTION"% "CAPABILITY"% "ORIGIN";
+ 
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
                   vi != order.end(); ++vi) 
       {
-        logger() << LogTags::dependency_resolver;
-        logger() << boost::format(formatString)%
+        ss << boost::format(formatString)%
          i%
          (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).capability()%
          (*masterGraph[*vi]).origin();
-        logger() << EOM;
         i++;
       }
-    
+
+      ss << endl;
+
+      i = 0; // Reset counter
+      // Do another loop to show the full initial sequence of functor evaluation
+      // This doesn't figure out the sequence within each target functor group; I'm not 100% sure where that is determined. This does, however, show which groups get evaluated first, and which functors are already evaluated.
+      ss << endl << "Full initial functor evaluation order" << endl;
+      ss << "----------------------------------" << endl;
+      ss << boost::format(formatString0)% "#"% "FUNCTION"% "CAPABILITY"% "ORIGIN"% "PRINT?";
+ 
+      for (std::vector<VertexID>::const_iterator 
+                  vi  = order.begin(); 
+                  vi != order.end(); ++vi) 
+      {
+        // loop through parents of each target functor
+        parents = getParentVertices(*vi, masterGraph);
+        bool first = true;
+        for (std::set<VertexID>::const_iterator 
+                  vi2  = parents.begin(); 
+                  vi2 != parents.end(); ++vi2) 
+        {
+            str formatstr;
+            bool dowrite = false;
+            // Check if parent functor has been ticked off the list
+            bool is_done = done.find(*vi2) != done.end();
+            if( (not is_done) and (*vi != *vi2) )
+            {
+                formatstr = formatString2b;
+                if (first) formatstr = formatString2a;
+                dowrite = true;
+            }
+            else if( *vi != *vi2)
+            {
+                // Might be better to just do nothing here, i.e. set dowrite=false. For now just flagging functor as done with a special format string.
+                formatstr = formatString3b;
+                if (first) formatstr = formatString3a;
+                dowrite = true;
+            }
+
+            if (dowrite)
+            {
+              ss << boost::format(formatstr)%
+                (*masterGraph[*vi2]).name()%
+                (*masterGraph[*vi2]).capability()%
+                (*masterGraph[*vi2]).origin()%
+                (*masterGraph[*vi2]).requiresPrinting();
+            }
+            done.insert(*vi2); // tick parent functor off the list
+            first = false;
+        }
+
+        // Now show target functor info
+        str formatstr;
+        if(parents.size()==1) { formatstr = formatString1a; }
+        else { formatstr = formatString1b; }
+        ss << boost::format(formatstr)%
+         i%
+         (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).capability()%
+         (*masterGraph[*vi]).origin()%
+         (*masterGraph[*vi]).requiresPrinting();
+        i++;
+        
+        done.insert(*vi); // tick this target functor off the list
+
+      }
+      ss << "(\"X\" indicates that the functor is pre-evaluated before the marked position)" << endl << endl;
+      
+      if (toterminal)
+      {
+        // There is a command line flag to get this information, since it is very handy to check before launching a full job. It can always be checked via the logs, but I found myself wanting to see this often so I added this feature for convenience.
+        cout << ss.str();
+        str graphfile = "GAMBIT_active_functor_graph.gv"; // make sure this stays in sync with name in "doResolution" function. Probably should make a common variable for this.
+        cout << endl << "Please run ./graphviz.sh "+graphfile+" to get postscript plot of active functors." << endl;
+      }
+      logger() << LogTags::dependency_resolver << ss.str() << EOM;
     }
 
     //
@@ -510,19 +596,22 @@ namespace Gambit
       std::vector<functor *>::const_iterator fi, fi_end = boundCore->getBackendFunctors().end();
       std::vector<str> modelList = boundClaw->get_activemodels();
 
-      // Activate those functors that match one of the models being scanned.
-      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      // Activate those module functors that match the combination of models being scanned.
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        // Module functors
-        for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+        if (masterGraph[*vi]->modelComboAllowed(modelList))
         {
-          if (masterGraph[*vi]->modelAllowed(*it))
+          for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
           {
             masterGraph[*vi]->notifyOfModel(*it);
             masterGraph[*vi]->setStatus(1);
           }
         }
-        // Backend functors
+      }
+
+      // Activate those backend functors that match one of the models being scanned.
+      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      {
         for (fi = boundCore->getBackendFunctors().begin(); fi != fi_end; ++fi)
         {
           // Activate if the backend vertex permits the model and has not been (severely) disabled by the backend system
@@ -665,7 +754,7 @@ namespace Gambit
               if ( masterGraph[*it]->modelExplicitlyAllowed(*mit) ) newVertexCandidates.push_back(*it);
             }
             // Step up a level in the model hierarchy for this model.
-            *mit = parent(*mit);
+            *mit = boundClaw->get_parent(*mit);
           }
           parentModelList.erase(std::remove(parentModelList.begin(), parentModelList.end(), "none"), parentModelList.end());
         }
@@ -762,12 +851,9 @@ namespace Gambit
         logger() << (*masterGraph[fromVertex]).origin() << "]" << endl;
         //logger() << EOM;
 
-        // If toVertex is the Core, then fromVertex is one of our target functors, which are
-        // the things we want to output to the printer system.  Turn printing on for these.
-        if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        {
-           masterGraph[fromVertex]->setPrintRequirement(true);
-        }
+        // Check if we wanted to output this observable to the printer system.
+        //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
+        if(printme) masterGraph[fromVertex]->setPrintRequirement(true);
 
         // Apply resolved dependency to masterGraph and functors
         if ( toVertex != OBSLIKE_VERTEXID )

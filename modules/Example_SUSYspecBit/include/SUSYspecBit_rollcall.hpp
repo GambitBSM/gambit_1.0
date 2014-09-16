@@ -86,62 +86,7 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
-
-
-  // Old stuff...
-
-  // #define CAPABILITY MSSMspectrum           // Observable: low-scale MSSM spectrum
-  // START_CAPABILITY
-
-  //   #define FUNCTION genMSSMspec            // Name of specific function providing the observable
-  //   START_FUNCTION(MSSMspecQ)               // Returns special MSSMspecQ object
-  //   DEPENDENCY(SMparameters, SMpars)        // Dependency: needs SM parameters
-  //   DEPENDENCY(MSSMsoftmasses, MSSMsoftmassesQ) // Dependency: needs MSSM soft masses
-  //     #define BACKEND_REQ_deprecated BEgenMSSMspectrum // BEgenMSSMspectrum must be obtained from an external (backend) code, with
-  //     START_BACKEND_REQ_deprecated(MSSMspecQ)          // type MSSMspecQ.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-  //     BACKEND_OPTION(FakeSoftSUSY, 1.0)     // Specify that backend FakeSoftSUSY v1.0 is permitted to provide the CMSSMspectrum.
-  //     #undef BACKEND_REQ_deprecated                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
-  //      
-  //   #undef FUNCTION
-  //   
-  //   /* Not sure what will happen with this yet, since cannot specify model dependency. */
-  //   #define FUNCTION CMSSMspec              // Name of specific function providing the observable
-  //   START_FUNCTION(MSSMspecQ)               // Returns special MSSMspecQ object
-  //   DEPENDENCY(SMparameters, SMpars)        // Dependency: needs SM parameters
-  //   DEPENDENCY(CMSSMparameters, CMSSMpars)  // Dependency: needs CMSSM parameters
-  //     #define BACKEND_REQ_deprecated BECMSSMspectrum   // BECMSSMspectrum must be obtained from an external (backend) code, with
-  //     START_BACKEND_REQ_deprecated(MSSMspecQ)          // type MSSMspecQ.  Only one type is permitted per BACKEND_REQ per FUNCTION.
-  //     BACKEND_OPTION(FakeSoftSUSY, 1.0)     // Specify that backend FakeSoftSUSY v1.0 is permitted to provide the CMSSMspectrum.
-  //     #undef BACKEND_REQ_deprecated                    // If there are no BACKEND_OPTION statements, all backends are considered viable.
-  //      
-  //   #undef FUNCTION
-  //   
-  // #undef CAPABILITY
-  // 
-  // // Temporary! SM parameters should be supplied elsewhere
-  // #define CAPABILITY SMparameters           // Observable: Standard Model parameters
-  // START_CAPABILITY
-  //   #define FUNCTION setSMpars              // Name of specific function providing the observable
-  //   START_FUNCTION(SMpars)                  // Returns special SMpars object  
-  //   #undef FUNCTION
-  // #undef CAPABILITY
-  // 
-  // // Temporary! CMSSM parameters should be supplied elsewhere
-  // #define CAPABILITY CMSSMparameters           // Observable: Standard Model parameters
-  // START_CAPABILITY
-  //   #define FUNCTION setCMSSMpars              // Name of specific function providing the observable
-  //   START_FUNCTION(CMSSMpars)                  // Returns special SMpars object  
-  //   #undef FUNCTION
-  // #undef CAPABILITY
-  // 
-  // // Temporary! General MSSM soft masses should be supplied elsewhere
-  // #define CAPABILITY MSSMsoftmasses           // Observable: Standard Model parameters
-  // START_CAPABILITY
-  //   #define FUNCTION setsoftmasses              // Name of specific function providing the observable
-  //   START_FUNCTION(MSSMsoftmassesQ)                  // Returns special SMpars object  
-  //   #undef FUNCTION
-  // #undef CAPABILITY
-  
+ 
 
 #undef MODULE
 

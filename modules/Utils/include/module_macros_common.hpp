@@ -32,6 +32,7 @@
 #include "util_macros.hpp"
 
 #include <boost/preprocessor/comparison/greater.hpp>
+#include <boost/preprocessor/control/iif.hpp>
 
 
 /// \name Simple macro constants
@@ -46,7 +47,7 @@
 /// @{
 #define START_FUNCTION_AND_ALLOW_MODELS_MORE(MODULE, CAPABILITY, FUNCTION, TYPE, ...)        \
  LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)                                \
- ALLOW_MODELS_ABC(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)
+ ALLOW_MODELS_AB(MODULE, FUNCTION, __VA_ARGS__)
 #define START_FUNCTION_AND_ALLOW_MODELS_1(MODULE, CAPABILITY, FUNCTION, TYPE)                \
  LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)
 #define START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, ...)                   \
@@ -57,11 +58,56 @@
 /// Quick, one-line declaration of simple module functions.
 /// Allows declaration of capability, function name and type, as well as up to ten allowed 
 /// models, all in one hit.  Typically used to supplement standalone modules so that all 
-/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY
-/// flag can be either NEW_CAPABILITY or OLD_CAPABILITY.
+/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY_FLAG
+/// can be either NEW_CAPABILITY or OLD_CAPABILITY.
 #define QUICK_FUNCTION(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, ...)               \
  BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY()) \
  START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)        
+
+/// \name Variadic redirectors for \link QUICK_FUNCTION_NDEPS() QUICK_FUNCTION_NDEPS\endlink function.
+/// @{
+#define QFND_ALLOW_MODELS_MORE(A, B, ...)                           ALLOW_MODELS_AB(A, B, __VA_ARGS__)
+#define QFND_ALLOW_MODELS_1(A, _1)                                  DUMMYARG(A, _1)
+#define QFND_ALLOW_MODELS(A,...)                                    VARARG_SWITCH_ON_GT_ONE_A(QFND_ALLOW_MODELS, A, __VA_ARGS__)
+#define EXPAND_DEPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_10))
+#define EXPAND_DEPS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) 
+#define EXPAND_DEPS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8))
+#define EXPAND_DEPS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7))
+#define EXPAND_DEPS_6(A,B,_1, _2, _3, _4, _5, _6)                   LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6))
+#define EXPAND_DEPS_5(A,B,_1, _2, _3, _4, _5)                       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5))
+#define EXPAND_DEPS_4(A,B,_1, _2, _3, _4)                           LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
+                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) 
+#define EXPAND_DEPS_3(A,B,_1, _2, _3)                               LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) 
+#define EXPAND_DEPS_2(A,B,_1, _2)                                   LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2))  
+#define EXPAND_DEPS_1(A,B,_1)                                       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) 
+#define EXPAND_DEPS_AB(A,B,...)                                     VARARG_AB(EXPAND_DEPS, A, B, __VA_ARGS__)
+/// }@
+
+/// Quick, one-line declaration of simple module functions, including dependencies.
+/// Allows declaration of capability, function name and type, dependencies and up to ten allowed 
+/// models, all in one hit.  Typically used to supplement standalone modules so that all 
+/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY_FLAG
+/// can be either NEW_CAPABILITY or OLD_CAPABILITY.
+/// {@
+#define QUICK_FUNCTION_NDEPS(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, MODELS, ...) \
+ BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY())       \
+ START_FUNCTION_AND_ALLOW_MODELS_NDEPS(MODULE, CAPABILITY, FUNCTION, TYPE, MODELS, __VA_ARGS__)    
+#define START_FUNCTION_AND_ALLOW_MODELS_NDEPS(MODULE, CAPABILITY, FUNCTION, TYPE, MODELS, ...)     \
+ LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)                                      \
+ QFND_ALLOW_MODELS(MODULE, FUNCTION INSERT_NONEMPTY(MODELS))                                       \
+ EXPAND_DEPS_AB(MODULE, FUNCTION, __VA_ARGS__)
+/// }@
 
 
 /// \name Variadic redirection macro for START_FUNCTION(TYPE,[CAN_MANAGE_LOOPS/CANNOT_MANAGE_LOOPS])
@@ -83,18 +129,6 @@
 #define START_FUNCTION_1(_1)                                     CAT(START_FUNCTION_,CANNOT_MANAGE_LOOPS)(_1)
 #define START_FUNCTION(...)                                      VARARG(START_FUNCTION, __VA_ARGS__)
 
-
-/// \name Variadic redirection macro for START_BE_REQ(TYPE,[VAR/FUNC]) !FIXME DEPRECATED!!
-#define START_BACKEND_REQ_deprecated_VAR(TYPE)                        DECLARE_BACKEND_REQ_deprecated(TYPE,1)
-#define START_BACKEND_REQ_deprecated_FUNC(TYPE)                       DECLARE_BACKEND_REQ_deprecated(TYPE,0)
-#define START_BACKEND_REQ_deprecated_(TYPE)                           FAIL("Unrecognised flag in argument 2 of START_BACKEND_REQ_deprecated; should be VAR, FUNC or absent.")
-#define DEFINED_START_BACKEND_REQ_deprecated_VAR  ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
-#define DEFINED_START_BACKEND_REQ_deprecated_FUNC ()                  // Tells the IF_DEFINED macro that this function is indeed defined.
-#define START_BACKEND_REQ_deprecated_2(_1, _2)                        CAT(START_BACKEND_REQ_deprecated_,IF_DEFINED(START_BACKEND_REQ_deprecated_##_2,_2))(_1)  
-#define START_BACKEND_REQ_deprecated_1(_1)                            START_BACKEND_REQ_deprecated_FUNC(_1) 
-#define START_BACKEND_REQ_deprecated(...)                             VARARG(START_BACKEND_REQ_deprecated, __VA_ARGS__)
-
-
 /// \name Variadic redirection macro for BACKEND_REQ_FROM_GROUP(GROUP, CAPABILITY, (TAGS), TYPE, [(ARGS)])
 #define BACKEND_REQ_FROM_GROUP_5(_1, _2, _3, _4, _5)          DECLARE_BACKEND_REQ(_1, _2, _3, _4, _5, 0)  
 #define BACKEND_REQ_FROM_GROUP_4(_1, _2, _3, _4)              DECLARE_BACKEND_REQ(_1, _2, _3, _4, (), 1) 
@@ -108,6 +142,8 @@
 
 ///Simple alias for ALLOW_MODEL/S
 #define ALLOW_MODEL ALLOW_MODELS
+///Simple alias for ALLOW_MODEL/S_ONLY_VIA_GROUPS
+#define ALLOW_MODEL_ONLY_VIA_GROUPS ALLOW_MODELS_ONLY_VIA_GROUPS
 ///Simple alias for ACTIVATE_FOR_MODEL/S
 #define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
 ///Simple alias for BACKEND_GROUP/S
@@ -118,33 +154,101 @@
 /// only be used with the listed models.  The current maximum number
 /// of models that can be indicated this way is 10; if more models
 /// should be allowed, ALLOW_MODELS can be called multiple times.
-/// If ALLOW_MODELS is not present, all models are considered to be
-/// allowed.
+/// If ALLOW_MODELS and ALLOW_MODEL_COMBINATION are both absent,
+/// all models are considered to be allowed.
 /// @{
-#define ALLOW_MODELS_10(A,B,C,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
-                                                                       ALLOWED_MODEL(A,B,C,_7) ALLOWED_MODEL(A,B,C,_8) ALLOWED_MODEL(A,B,C,_9) \
-                                                                       ALLOWED_MODEL(A,B,C,_10)
-#define ALLOW_MODELS_9(A,B,C,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
-                                                                       ALLOWED_MODEL(A,B,C,_7) ALLOWED_MODEL(A,B,C,_8) ALLOWED_MODEL(A,B,C,_9) 
-#define ALLOW_MODELS_8(A,B,C,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
-                                                                       ALLOWED_MODEL(A,B,C,_7) ALLOWED_MODEL(A,B,C,_8)
-#define ALLOW_MODELS_7(A,B,C,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6) \
-                                                                       ALLOWED_MODEL(A,B,C,_7)
-#define ALLOW_MODELS_6(A,B,C,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5) ALLOWED_MODEL(A,B,C,_6)
-#define ALLOW_MODELS_5(A,B,C,_1, _2, _3, _4, _5)                       ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) ALLOWED_MODEL(A,B,C,_5)
-#define ALLOW_MODELS_4(A,B,C,_1, _2, _3, _4)                           ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) \
-                                                                       ALLOWED_MODEL(A,B,C,_4) 
-#define ALLOW_MODELS_3(A,B,C,_1, _2, _3)                               ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2) ALLOWED_MODEL(A,B,C,_3) 
-#define ALLOW_MODELS_2(A,B,C,_1, _2)                                   ALLOWED_MODEL(A,B,C,_1) ALLOWED_MODEL(A,B,C,_2)  
-#define ALLOW_MODELS_1(A,B,C,_1)                                       ALLOWED_MODEL(A,B,C,_1) 
-#define ALLOW_MODELS_ABC(A,B,C,...)                                    VARARG_ABC(ALLOW_MODELS, A, B, C, __VA_ARGS__)
-#define ALLOW_MODELS(...)                                              ALLOW_MODELS_ABC(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)
+#define ALLOW_MODELS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
+                                                                      ALLOWED_MODEL(A,B,_7) ALLOWED_MODEL(A,B,_8) ALLOWED_MODEL(A,B,_9) \
+                                                                      ALLOWED_MODEL(A,B,_10)
+#define ALLOW_MODELS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
+                                                                      ALLOWED_MODEL(A,B,_7) ALLOWED_MODEL(A,B,_8) ALLOWED_MODEL(A,B,_9) 
+#define ALLOW_MODELS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
+                                                                      ALLOWED_MODEL(A,B,_7) ALLOWED_MODEL(A,B,_8)
+#define ALLOW_MODELS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
+                                                                      ALLOWED_MODEL(A,B,_7)
+#define ALLOW_MODELS_6(A,B,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6)
+#define ALLOW_MODELS_5(A,B,_1, _2, _3, _4, _5)                       ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5)
+#define ALLOW_MODELS_4(A,B,_1, _2, _3, _4)                           ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+                                                                      ALLOWED_MODEL(A,B,_4) 
+#define ALLOW_MODELS_3(A,B,_1, _2, _3)                               ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) 
+#define ALLOW_MODELS_2(A,B,_1, _2)                                   ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2)  
+#define ALLOW_MODELS_1(A,B,_1)                                       ALLOWED_MODEL(A,B,_1) 
+#define ALLOW_MODELS_AB(A,B,...)                                     VARARG_AB(ALLOW_MODELS, A, B, __VA_ARGS__)
+#define ALLOW_MODELS(...)                                            ALLOW_MODELS_AB(MODULE, FUNCTION, __VA_ARGS__)
+/// @}
+
+
+/// \name Variadic redirection macros for ALLOW_MODELS_ONLY_VIA_GROUPS([MODELS])
+/// Register that the current \link FUNCTION() FUNCTION\endlink may only be used
+/// with the listed models, but only in certain combinations.  The current maximum
+/// number of models that can be indicated this way is 10; if more models
+/// should be allowed, ALLOW_MODELS_ONLY_VIA_GROUPS can be called multiple times.
+/// If ALLOW_MODELS and ALLOW_MODEL_COMBINATION are both absent, all models are 
+/// considered to be allowed.
+/// @{
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_8) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_9) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_10)
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_8) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_9) 
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_8)
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7)
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_6(A,B,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6)
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_5(A,B,_1, _2, _3, _4, _5)                       ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5)
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_4(A,B,_1, _2, _3, _4)                           ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) 
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_3(A,B,_1, _2, _3)                               ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) 
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_2(A,B,_1, _2)                                   ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
+                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2)  
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_1(A,B,_1)                                       ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) 
+#define ALLOW_MODELS_ONLY_VIA_GROUPS_AB(A,B,...)                                     VARARG_AB(ALLOW_MODELS_ONLY_VIA_GROUPS, A, B, __VA_ARGS__)
+#define ALLOW_MODELS_ONLY_VIA_GROUPS(...)                                            ALLOW_MODELS_ONLY_VIA_GROUPS_AB(MODULE, FUNCTION, __VA_ARGS__)
 /// @}
 
 
@@ -168,25 +272,6 @@
 #define BACKEND_GROUPS_2(_1, _2)                                   BE_GROUP(_1) BE_GROUP(_2)  
 #define BACKEND_GROUPS_1(_1)                                       BE_GROUP(_1)
 #define BACKEND_GROUPS(...)                                        VARARG(BACKEND_GROUPS, __VA_ARGS__)
-/// @}
-
-
-/// \name Variadic redirection macros for BACKEND_OPTION_deprecated(BACKEND, [VERSIONS])
-/// Register that the current \link BACKEND_REQ_deprecated() BACKEND_REQ_deprecated\endlink may
-/// be provided by backend \em BACKEND, versions \em [VERSIONS].  Permitted
-/// versions are passed as optional additional arguments; if no version 
-/// information is passed, all versions of \em BACKEND are considered valid.
-/// @{
-
-/// BACKEND_OPTION_deprecated() called with no versions; allow any backend version
-#define BE_OPTION_deprecated_0(_1)      BE_OPTION_deprecated(_1, "any")
-/// BACKEND_OPTION_deprecated() called with more than one argument; allow specified backend versions
-#define BE_OPTION_deprecated_1(_1, ...) BE_OPTION_deprecated(_1, #__VA_ARGS__)
-///  Redirects the BACKEND_OPTION_deprecated(BACKEND, [VERSIONS]) macro to the 
-///  BE_OPTION_deprecated(BACKEND, VERSTRING) macro according to whether it has been called with 
-///  version numbers or not (making the version number 'any' if it is omitted).
-#define BACKEND_OPTION_deprecated(...)  CAT(BE_OPTION_deprecated_, BOOST_PP_GREATER \
-                             (BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
 /// @}
 
 

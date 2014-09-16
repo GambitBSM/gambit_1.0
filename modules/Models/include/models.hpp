@@ -54,7 +54,7 @@ namespace Gambit
       private:
 
         /// Function pointer type
-        typedef bool (*LineageFunction)(std::string);
+        typedef bool (*LineageFunction)(const str, const ModelFunctorClaw*);
 
         /// Internal record of the active models
         std::vector<str> activemodels;         
@@ -105,6 +105,9 @@ namespace Gambit
         /// List all the models recognised by GAMBIT
         str list_models() const;
 
+        /// Verify that a string matches a model recognised by GAMBIT, crash otherwise
+        void verify_model(const str&) const;
+
         /// Return set of all models recognised by GAMBIT
         const std::set<str>& get_allmodels() const;
 
@@ -123,12 +126,12 @@ namespace Gambit
         /// Check if model 1 is descended from model 2
         bool descended_from (const str &, const str &) const;
 
+        /// Check if model 1 is an ancestor of model 2
+        bool ancestor_of (const str &, const str &) const;
+
     };
  
   }
-
-  /// Claw accessor function
-  Models::ModelFunctorClaw& modelClaw();
 
 }
 

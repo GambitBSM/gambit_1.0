@@ -275,7 +275,7 @@ namespace Gambit
   /// Gambit invalid point exception class methods.
 
     /// Constructor
-    invalid_point_exception::invalid_point_exception() : myThrower(NULL), special_exception("GAMBIT invalid point.") {}    
+    invalid_point_exception::invalid_point_exception() : special_exception("GAMBIT invalid point."), myThrower(NULL) {}    
 
     /// Set the pointer to the functor that threw the invalid point exception.
     void invalid_point_exception::set_thrower(functor* thrown_from) { myThrower = thrown_from; }

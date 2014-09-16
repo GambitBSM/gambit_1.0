@@ -28,13 +28,14 @@
 #define __likelihood_container_hpp__
 
 #include "container_factory.hpp"
-
+#include "baseprinter.hpp"
 
 namespace Gambit
 {
 
   class Likelihood_Container_Base : public Scanner::Function_Base
   {
+
     protected:
       std::vector<DRes::VertexID> target_vertices;
       std::vector<DRes::VertexID> aux_vertices;
@@ -54,11 +55,17 @@ namespace Gambit
       const std::vector<double> & getParameters() const;
       const std::vector<str> & getKeys() const;
       void print(double, const str &) const;
+
   };
 		
   /// Class for collecting pointers to all the likelihood components, then running and combining them.
   class Likelihood_Container : public Likelihood_Container_Base
   {
+
+    private:
+      /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
+      double min_valid_lnlike;
+
     public:
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
@@ -68,9 +75,6 @@ namespace Gambit
       /// Evaluate total likelihood function
       double operator() (const std::vector<double> &in);
 
-    private:
-      /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
-      double min_valid_lnlike;
   };
   
   // Register the Likelihood Container as an available target function for ScannerBit.

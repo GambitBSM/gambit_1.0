@@ -2,9 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  Helper macros for model definitions. Mostly 
-///  based on contents of Utils/include/observable.hpp
-///  (i.e. functors that wrap module functions).
+///  Helper macros for model definitions.
 ///
 ///  *********************************************
 ///
@@ -26,10 +24,10 @@
 
 #include "util_macros.hpp"
 #include "util_types.hpp"
-#include "model_functions.hpp"
 #include "module_macros_incore.hpp"
+#include "orphan.hpp"
 #include "types_rollcall.hpp"
-#include "models.hpp"
+#include "claw_singleton.hpp"
 #include "boost_fallbacks.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -59,7 +57,7 @@
                                                                                \
         /* Basic machinery, same as for modules 
            (macro from module_macros_incore.hpp) */                            \
-        CORE_START_MODULE_COMMON(MODEL)                                        \
+        CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
                                                                                \
         /* Model lineage                                                       
            Each model is automatically marked as a child of the parent model.*/\
@@ -70,9 +68,9 @@
            specified model (or is itself the specified model) ) 
            Returns 'true' if the supplied string is an element of 'lineage',
            else returns 'false'. */                                            \
-        bool is_descendant_of(str testmodel)                                   \
+        bool is_descendant_of(const str testmodel, const ModelFunctorClaw*claw)\
         {                                                                      \
-          verify_model(testmodel);                                             \
+          claw->verify_model(testmodel);                                        \
           for (std::vector<str>::const_iterator it = lineage.begin();          \
                it!=lineage.end(); ++it)                                        \
           {                                                                    \
@@ -217,7 +215,7 @@
                                                                                \
   }                                                                            \
   /* Tell this functor to only activate for MODEL */                           \
-  /*LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL)                */            \
+  /*LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)                */                   \
 //end LINK_PARAMETER_TO_CAPABILITY
 
   
@@ -443,7 +441,7 @@
   {                                                                            \
     primary_model_functor FUNCTION                                             \
      (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
-     "ModelParameters", STRINGIFY(ORIGIN));                                    \
+     "ModelParameters", STRINGIFY(ORIGIN), modelClaw());                       \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function. */  \

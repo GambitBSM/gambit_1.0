@@ -1,0 +1,62 @@
+# First, simply register parameters, whether they are fixed, what value they are fixed to etc
+# Ben: the 'ranges' keyword CAN be entered here. If this is done, GAMBIT assumes you want
+# to sample from a flat prior over this range. For any other prior, you need to specify it
+# properly in the "priors" section.
+
+# Standard_Model:
+#   alpha_emi:
+#     fixed_value: 80
+#   G_F:
+#     fixed_value: 80
+#   alpha_s:
+#     fixed_value: 80
+#   mZ:
+#     fixed_value: 80
+#   mb:
+#     fixed_value: 80
+#   mt:
+#     fixed_value: 80
+#   mtau:
+#     fixed_value: 80
+CMSSM_demo:
+  A0:
+    range: [-1000, 1000]
+  M0:
+    prior_type: log
+    range: [0.001,1000]
+  M12:
+  #  same_as: CMSSM_demo::M0
+  Mstop:
+  #  same_as: CMSSM_demo::M0
+  sgnmu:
+    range: [-1, 1]
+    fixed_value: 1
+  tanb:
+  #  fixed_value: 1
+
+NormalDist:
+  mu:
+    fixed_value: 1
+  sigma:
+    fixed_value: 1
+
+
+# Ben: this was in the old inifile: I don't know what it does 
+#  param_not_in_gambit:
+    # range: [-1, 1]
+
+# The "adhoc" model bypasses ModelBit and produces some model parameter nodes
+# on the fly. This can be used for testing purposes.
+#adhoc:
+#  m0:
+#    fixed: true
+#    range: [0, 5]
+#  m1:
+#    fixed: true
+#    range: [6, 10]
+#  m2:
+#    fixed: true
+#    range: [50, 500]
+
+# Ben: proposed replacement for the input parameters section (to allow more general treatment of priors)
+

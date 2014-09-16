@@ -463,7 +463,7 @@ START_MODULE
 
     
 
-// Tests for Torsten
+// Tests for Torsten.
 /*
 
 #define MODULE DarkBit
@@ -479,9 +479,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION provideF_func
     START_FUNCTION(fptr_dd)
-      #define BACKEND_REQ_deprecated funcGauss
-        START_BACKEND_REQ_deprecated(double)
-      #undef BACKEND_REQ_deprecated
+    BACKEND_REQ(funcGauss, (), double, (double(*)(double&), int&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -491,9 +489,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(provideN, int) 
       DEPENDENCY(provideF, fptr_dd) 
-      #define BACKEND_REQ_deprecated average
-        START_BACKEND_REQ_deprecated(double)
-      #undef BACKEND_REQ_deprecated
+      BACKEND_REQ(average, (), double, (double&))
     #undef FUNCTION
   #undef CAPABILITY
 
