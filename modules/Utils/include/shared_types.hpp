@@ -17,7 +17,7 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
-///  \date 2014 Mar
+///  \date 2014 Mar, Sep
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -32,20 +32,28 @@
 #ifndef __shared_types_hpp__
 #define __shared_types_hpp__
 
+// Type macros (required for macro calls below)
+#include "type_macros.hpp"
 // Definitions required to understand model parameter objects
 #include "model_types.hpp"
+// GAMBIT BaseFunction Objects
+#include "base_functions.hpp"
 
-// All the types from the different backends
+// 'By hand' types from different backends
 #include "SLHA_types.hpp"
 #include "DarkSUSY_types.hpp"
 #include "SuperIso_types.hpp"
 #include "libFarrayTest_types.hpp"
 #include "FastSim_types.hpp"
 #include "libfirst_types.hpp"
-//#include "Pythia_types.hpp"
 
-// GAMBIT BaseFunction Objects
-#include "base_functions.hpp"
+// BOSSed (class-loaded) types from different backends 
+#include "BOSSedbe_1_0_types.hpp"
+#include "BOSSedbe_1_1_types.hpp"
+
+// Choices about the default versions of backends to use for loading types (specific versions
+// of types can always be used by employing the qualified type BACKENDNAME_VERSION::TYPE)
+MAKE_DEFAULT_VERSION_FOR_LOADING_TYPES(BOSSedbe,1_1)
 
 // Other types that don't belong in any of the existing includes.  Should be progressively
 // organised into new headers and included from here as their number grows.
