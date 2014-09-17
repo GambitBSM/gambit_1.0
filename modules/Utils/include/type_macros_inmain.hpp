@@ -22,9 +22,7 @@
 
 #include "util_macros.hpp"
 #include "equivalency_singleton.hpp"
-#include "standalone_error_handlers.hpp"
 
-#include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 
 /// Set default backend version for BOSSed types.
