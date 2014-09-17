@@ -26,7 +26,7 @@
 
 // Gambit
 #include "printers/ostreamprinter.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
 // Code!
 namespace Gambit
