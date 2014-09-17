@@ -21,9 +21,9 @@
 
 #define STANDALONE
 
+#include "module_macros_incore.hpp"
 #include "log.hpp"
 #include "backend_rollcall.hpp"
-#include "module_macros_incore.hpp"
 #include "model_rollcall.hpp"
 #include "register_standalone_error_handlers.hpp"
 #include "stream_overloads.hpp"

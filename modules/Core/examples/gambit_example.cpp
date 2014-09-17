@@ -16,11 +16,11 @@
 ///
 ///  *********************************************
 
+#include "module_rollcall.hpp"
 #include "backend_rollcall.hpp"
 #include "depresolver.hpp"
 #include "yaml_parser.hpp"
 #include "scannerbit.hpp"
-#include "module_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "stream_overloads.hpp"
 #include "priors_rollcall.hpp"

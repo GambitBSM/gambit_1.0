@@ -32,8 +32,6 @@
 #ifndef __shared_types_hpp__
 #define __shared_types_hpp__
 
-// Type macros (required for macro calls below)
-#include "type_macros.hpp"
 // Definitions required to understand model parameter objects
 #include "model_types.hpp"
 // GAMBIT BaseFunction Objects

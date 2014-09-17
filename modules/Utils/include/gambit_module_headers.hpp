@@ -26,7 +26,6 @@
 #define __gambit_module_headers_hpp__
 
 #include "module_macros_inmodule.hpp"
-#include "type_macros.hpp"
 #include "shared_types.hpp"
 #include "util_types.hpp"
 #include "util_functions.hpp"

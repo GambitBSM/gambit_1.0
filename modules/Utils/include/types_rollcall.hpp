@@ -100,7 +100,7 @@
 #ifndef __types_rollcall_hpp__
 #define __types_rollcall_hpp__
 
-#include "type_macros.hpp"
+// All the shared types
 #include "shared_types.hpp"
 
 // Model-specific types

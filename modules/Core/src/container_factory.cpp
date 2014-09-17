@@ -23,6 +23,7 @@
 ///
 ///  *********************************************
 
+#include "type_macros_inother.hpp"
 #include "likelihood_container.hpp"
 
 

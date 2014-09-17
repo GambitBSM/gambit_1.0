@@ -23,6 +23,7 @@
 #include <getopt.h>
 
 // Gambit headers
+#include "type_macros_inother.hpp"
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"

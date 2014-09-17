@@ -20,6 +20,7 @@
 ///
 ///  *********************************************
 
+#include "type_macros_inother.hpp"
 #include "printermanager.hpp"
 #include "yaml_options.hpp"
 

@@ -27,6 +27,7 @@
 ///
 ///  *********************************************
 
+#include "type_macros_inother.hpp"
 #include "modelgraph.hpp"
 #include "models.hpp"
 #include "stream_overloads.hpp"
