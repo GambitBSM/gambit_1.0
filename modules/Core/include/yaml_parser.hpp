@@ -27,6 +27,7 @@
 #include <string>
 
 #include "util_types.hpp"
+#include "util_functions.hpp"
 #include "error_handlers.hpp"
 #include "variadic_functions.hpp"
 #include "yaml_options.hpp"
@@ -104,6 +105,9 @@ namespace YAML {
       READ(module)
       READ(backend)
       READ(version)
+
+      // Strip leading "Gambit::" namespaces, but preserve "const ".
+      rhs.type = Gambit::strip_leading_namespace(Gambit::strip_whitespace_except_after_const(rhs.type),"Gambit");
       
       if (node["printme"].IsDefined())
           rhs.printme = node["printme"].as<bool>();
