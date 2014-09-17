@@ -27,7 +27,7 @@
 #include "error_handlers.hpp"
 #include "version.hpp"
 #include "modelgraph.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 #include "yaml_description_database.hpp"
 
 namespace Gambit
