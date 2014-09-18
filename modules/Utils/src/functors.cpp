@@ -28,7 +28,6 @@
 ///
 ///  *********************************************
 
-#include "type_macros_inother.hpp"
 #include "functors.hpp"
 #include "models.hpp"
 #include "all_functor_types.hpp"

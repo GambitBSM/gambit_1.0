@@ -31,7 +31,6 @@
 #include <iomanip>
 
 // Gambit
-#include "type_macros_inother.hpp"
 #include "baseprinter.hpp"
 #include "yaml_options.hpp"
 

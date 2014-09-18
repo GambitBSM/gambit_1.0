@@ -13,24 +13,10 @@
 ///
 ///  *********************************************
 
-#include "module_rollcall.hpp"
-#include "test_function_rollcall.hpp"
-#include "priors_rollcall.hpp"
-#include "model_rollcall.hpp"
-#include "backend_rollcall.hpp"
-#include "log.hpp"
-#include "depresolver.hpp"
-#include "yaml_parser.hpp"
-#include "likelihood_container.hpp"
-#include "scannerbit.hpp"
-#include "register_error_handlers.hpp"
-#include "stream_overloads.hpp"
-#include "printermanager.hpp"
-#include "inifile_interface.hpp"
+#include "gambit_main.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
-
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])

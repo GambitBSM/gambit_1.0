@@ -53,7 +53,6 @@
 #include "static_members.hpp"
 #include "functors.hpp"
 #include "exceptions.hpp"
-#include "type_macros_inmain.hpp"
 #include "types_rollcall.hpp"
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"

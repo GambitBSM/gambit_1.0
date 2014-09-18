@@ -28,7 +28,6 @@
 
 #include <sstream>
 
-#include "type_macros_inother.hpp"
 #include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"

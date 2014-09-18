@@ -27,7 +27,6 @@
 
 
 // Gambit
-#include "type_macros_inother.hpp"
 #include "baseprinter.hpp"
 
 // Code!

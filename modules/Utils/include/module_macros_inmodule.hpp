@@ -32,7 +32,6 @@
 #ifndef __module_macros_inmodule_hpp__
 #define __module_macros_inmodule_hpp__
 
-#include "type_macros_inother.hpp"
 #include "functors.hpp"
 #include "exceptions.hpp"
 #include "util_macros.hpp"
