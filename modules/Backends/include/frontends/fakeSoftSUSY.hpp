@@ -10,9 +10,6 @@
 
 /* #define LIBPATH      "Backends/lib/softsusy-3.3.8/.libs/libsoft.so" */
 
-#include <SLHA_types.hpp>
-#include <shared_types.hpp>
-
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

@@ -4,8 +4,6 @@
  * \author Lars A. Dal
  */
 
-#include "libFarrayTest_types.hpp"
-
 #define LIBPATH      "Backends/lib/libFarrayTest.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME

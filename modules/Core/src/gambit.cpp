@@ -15,6 +15,8 @@
 
 #include "gambit_main.hpp"
 
+#include "equivalency_singleton.hpp"
+
 using namespace Gambit;
 using namespace LogTags;
 
@@ -23,6 +25,11 @@ int main(int argc, char* argv[])
 {
 
   std::set_terminate(terminator);
+
+  for (std::set<std::set<str> >::const_iterator it = Utils::typeEquivalencies().equivalency_classes.begin(); it != Utils::typeEquivalencies().equivalency_classes.end(); ++it)
+  {
+    cout << "Equivalency class: " << *it << endl;
+  }
 
   try
   {
