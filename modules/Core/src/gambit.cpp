@@ -26,11 +26,6 @@ int main(int argc, char* argv[])
 
   std::set_terminate(terminator);
 
-  for (std::set<std::set<str> >::const_iterator it = Utils::typeEquivalencies().equivalency_classes.begin(); it != Utils::typeEquivalencies().equivalency_classes.end(); ++it)
-  {
-    cout << "Equivalency class: " << *it << endl;
-  }
-
   try
   {
     // Parse command line arguments, launching into the appropriate diagnostic mode
@@ -76,7 +71,7 @@ int main(int argc, char* argv[])
     Printers::BasePrinter& printer (*printerManager.printerptr);   
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();

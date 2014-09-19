@@ -32,7 +32,7 @@ namespace Gambit
     struct type_equivalency
     {
       /// Define a new equivalency relation
-      /// { @
+      /// {@
       void add(str,str);
       void add(str,str,str);
       void add(str,str,str,str);
