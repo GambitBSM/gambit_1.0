@@ -180,9 +180,9 @@ namespace xsec{
 
     // Find scales
     double Qxsec = 1000.; // we want params at 1 TeV since that's where the interpolators were fitted
-    double Qmsoft = point.msoft.q()*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
+    double Qmsoft = point.msoft.q();//*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     double Qextpar = point.extpar(0);
-    double Qhmix = point.hmix.q()*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
+    double Qhmix = point.hmix.q();//*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     cout << "Qmsoft " << Qmsoft << endl;
     cout << "Qextpar " << Qextpar << endl;
 
@@ -317,10 +317,6 @@ namespace xsec{
 
   double Evaluator::xsec(const string& process, double* par) const {
     // Returns cross section in pb
-    // par is expected to be 24 parameter array with MSSM parameters:
-    // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
-    // meL, mmuL, mtauL, meR, mmuR, mtauR
-    // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
     // The NN gives log10 of cross section. If log(xs) = 0 there's an error: return 0
     try {
@@ -337,16 +333,12 @@ namespace xsec{
 
   double Evaluator::log10xsec(const string& process, double* par) const {
     // Returns log10(cross section in pb)
-    // par is expected to be 24 parameter array with MSSM parameters:
-    // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
-    // meL, mmuL, mtauL, meR, mmuR, mtauR
-    // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
     //#define NO_IMPL_PROC throw std::runtime_error(("Unimplemented xsec process type, " + process).c_str())
 
     // Check that parameters are reasonable, reset if not
     // cout << "CHECKING PARAMS" << endl;
-    for (int i = 1; i < 24; i++) {
+    for (int i = 0; i < 24; i++) {
       const double val = par[i];
       if (i == 0) { // tanB in [2,50]
         if (val < 2.) par[i] = 2.;
