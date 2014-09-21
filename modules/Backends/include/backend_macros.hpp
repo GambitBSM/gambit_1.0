@@ -252,6 +252,8 @@ namespace Gambit                                                            \
       {                                                                     \
         backendInfo().paths[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
          LIBPATH;                                                           \
+        backendInfo().link_versions(STRINGIFY(BACKENDNAME),                 \
+         STRINGIFY(VERSION), STRINGIFY(SAFE_VERSION));                      \
         pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
         if(not pHandle)                                                     \
         {                                                                   \

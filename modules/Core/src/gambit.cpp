@@ -15,7 +15,6 @@
 
 #include "gambit_main.hpp"
 
-#include "equivalency_singleton.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
