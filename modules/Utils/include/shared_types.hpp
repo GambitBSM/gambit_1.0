@@ -43,6 +43,7 @@
 #include "backend_types/libFarrayTest.hpp"
 #include "backend_types/FastSim.hpp"
 #include "backend_types/libfirst.hpp"
+#include "backend_types/micrOMEGAs.hpp"
 
 // Choices about the default versions of backends to use for loading types (specific versions
 // of types can always be used by employing the qualified type BACKENDNAME_SAFEVERSION::TYPE)

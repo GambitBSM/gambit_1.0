@@ -268,7 +268,13 @@ ObsLikes:
   #  type:         double
   #  function:     RD_oh2_micromegas
   #  function:     RD_oh2_DarkSUSY
-
+  
+  ## Test DarkBit DD couplings with micrOMEGAs and DarkSUSY
+  #- purpose:      Observable
+  #  capability:   DD_couplings
+  #  type:         DarkBit::DD_couplings
+  #  function:     DD_couplings_micrOMEGAs
+  #  function:     DD_couplings_DarkSUSY
 
 #########################
 # Auxiliary entries
