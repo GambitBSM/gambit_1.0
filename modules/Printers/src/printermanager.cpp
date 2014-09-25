@@ -30,12 +30,11 @@ namespace Gambit
 
     /// Manager class for creating printer objects  
     PrinterManager::PrinterManager(const Options& printerNode):
-      printerptr(NULL) 
+      printerptr(NULL),
+      tag(printerNode.getValue<std::string>("printer")),
+      options(printerNode.getNode("options"))
     {
-      std::string tag(printerNode.getValue<std::string>("printer"));
-      Options options(printerNode.getNode("options"));
       // Change printer pointer to actually point to the printer object
-
       if( printer_creators.find(tag)!=printer_creators.end() )
       {
          // If "tag" names a valid printer, create it.
@@ -58,10 +57,33 @@ namespace Gambit
 
     PrinterManager::~PrinterManager()
     {
-      // Delete the printer object
+      // Delete all the printer objects
       delete printerptr;
     }
- 
+
+    // Create new printer object (of the same type as the primary printer)
+    // and attach it to the provided name.
+    void PrinterManager::new_stream(std::string& streamname)
+    {
+       //TODO need some way for the scanners to change the options
+       //for the auxiliary printers, e.g. so we can print to a different file
+       auxprinters[streamname] = printer_creators.at(tag)(options);
+    }
+
+    // Retrieve pointer to named printer object
+    BasePrinter* PrinterManager::get_stream(std::string& streamname)
+    {
+      if(streamname=="")
+      {
+        return printerptr
+      }
+      else
+      {
+        ///TODO: add check to make sure that the requested stream exists
+        return auxprinters.at(streamname);
+      }
+    }
+
   }
 }
 
