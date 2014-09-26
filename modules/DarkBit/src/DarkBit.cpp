@@ -593,7 +593,7 @@ namespace Gambit {
       // Needed for the integration limits.
       double m_e      = 0.511e-3;   // GeV
       double m_mu     = 0.1057;     // GeV
-      double m_tau    = 177.7;      // GeV
+      double m_tau    = 1.77682;    // GeV
       double m_u      = 2.3e-3;     // GeV
       double m_d      = 4.8e-3;     // GeV
       double m_c      = 1.275;      // GeV
@@ -601,39 +601,31 @@ namespace Gambit {
       double m_t      = 173;        // GeV
       double m_b      = 4.18;       // GeV (MS bar)
       double m_W      = 80.4;       // GeV
-      double m_Z      = 91.2;       // GeV
-      double m_g      = 0.0;        // GeV 
-      double m_nue    = 0.0;        // GeV
-      double m_num    = 0.0;        // GeV
-      double m_nut    = 0.0;        // GeV
 
       // Loop over all channels for that process
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
               it != annProc.channelList.end(); ++it)
       {
         int flag = 0;
-        int ch = 0;
         double m1,m2;
         int yieldk = 152;
         BFptr dsigmavde;
         if ( it->nFinalStates == 3 )
         {
           // Find channel
-          if      ( it->isChannel("gamma", "Z0"    , "Z0"     )){ch = 1; m1 = m_Z;    m2 = m_Z;  }
-          else if ( it->isChannel("gamma", "W+"    , "W-"     )){ch = 1; m1 = m_W;    m2 = m_W;  } 
-          else if ( it->isChannel("gamma", "nu_e"  , "~nu_e"  )){ch = 1; m1 = m_nue;  m2 = m_nue;}
-          else if ( it->isChannel("gamma", "e+"    , "e-"     )){ch = 1; m1 = m_e;    m2 = m_e;  }
-          else if ( it->isChannel("gamma", "nu_mu" , "~nu_mu" )){ch = 1; m1 = m_num;  m2 = m_num;}
-          else if ( it->isChannel("gamma", "mu+"   , "mu-"    )){ch = 1; m1 = m_mu;   m2 = m_mu; }
-          else if ( it->isChannel("gamma", "nu_tau", "~nu_tau")){ch = 1; m1 = m_nut;  m2 = m_nut;}
-          else if ( it->isChannel("gamma", "tau+"  , "tau-"   )){ch = 1; m1 = m_tau;  m2 = m_tau;}
-          else if ( it->isChannel("gamma", "u"     , "ubar"   )){ch = 1; m1 = m_u;    m2 = m_u;  }
-          else if ( it->isChannel("gamma", "d"     , "dbar"   )){ch = 1; m1 = m_d;    m2 = m_d;  }
-          else if ( it->isChannel("gamma", "c"     , "cbar"   )){ch = 1; m1 = m_c;    m2 = m_c;  }
-          else if ( it->isChannel("gamma", "s"     , "sbar"   )){ch = 1; m1 = m_s;    m2 = m_s;  }
-          else if ( it->isChannel("gamma", "t"     , "tbar"   )){ch = 1; m1 = m_t;    m2 = m_t;  }
-          else if ( it->isChannel("gamma", "b"     , "bbar"   )){ch = 1; m1 = m_b;    m2 = m_b;  }
-          else if ( it->isChannel("gamma", "g"     , "g"      )){ch = 1; m1 = m_g;    m2 = m_g;  }
+          if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = m_W;    m2 = m_W;  }   
+//          else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = m_W;    m2 = m_Hc; }
+//          else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = m_W;    m2 = m_Hc; }
+//          else if ( it->isChannel("gamma", "H+"    , "H-"     )){m1 = m_Hc;   m2 = m_Hc; }    
+          else if ( it->isChannel("gamma", "e+"    , "e-"     )){m1 = m_e;    m2 = m_e;  }
+          else if ( it->isChannel("gamma", "mu+"   , "mu-"    )){m1 = m_mu;   m2 = m_mu; }
+          else if ( it->isChannel("gamma", "tau+"  , "tau-"   )){m1 = m_tau;  m2 = m_tau;}
+          else if ( it->isChannel("gamma", "u"     , "ubar"   )){m1 = m_u;    m2 = m_u;  }
+          else if ( it->isChannel("gamma", "d"     , "dbar"   )){m1 = m_d;    m2 = m_d;  }
+          else if ( it->isChannel("gamma", "c"     , "cbar"   )){m1 = m_c;    m2 = m_c;  }
+          else if ( it->isChannel("gamma", "s"     , "sbar"   )){m1 = m_s;    m2 = m_s;  }
+          else if ( it->isChannel("gamma", "t"     , "tbar"   )){m1 = m_t;    m2 = m_t;  }
+          else if ( it->isChannel("gamma", "b"     , "bbar"   )){m1 = m_b;    m2 = m_b;  }
           else
           {
               std::cout << "ERROR: Unsupported three-body final state." << std::endl;
@@ -645,12 +637,9 @@ namespace Gambit {
           // particle and integrate out the corresponding kinematical
           // variable).
           typedef shared_ptr<intLimitFunc> ILptr;
-
-          dsigmavde = it->dSigmadE->integrate(1,ILptr(new DSg3_IntLims_E1(mass,m1,m2)));//integrate(1, 0., 1000.);  
-          std::cout << "Integral evaluates to: " << (*dsigmavde)(10.0) << std::endl;
+          dsigmavde = it->dSigmadE->integrate(1,ILptr(new DSg3_IntLims_E1(mass,m1,m2)));
           // Add up individual constributions
-          //DiffYield3Body = DiffYield3Body->sum(dsigmavde);
-
+          DiffYield3Body = DiffYield3Body->sum(dsigmavde);
         }
       }
 
@@ -676,7 +665,7 @@ namespace Gambit {
 
         // TODO:  Check if this is really DM mass
         DS_MSPCTM mymspctm= *BEreq::mspctm;
-        double mass = mymspctm.mass[41];
+        double mass = mymspctm.mass[42];
 
         TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
         TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
@@ -730,23 +719,32 @@ namespace Gambit {
 //        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
     
         #undef SETUP_DS_PROCESS
-             
-        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_1, M_2, IBFUNC, FSRFUNC,SUBFSR)                       \
-            BFptr   CAT(kinematicFunction_,NAME)                                                                        \
-                    (new DSgamma3bdyKinFunc(IBCH, mass, M_1, M_2, STRIP_PARENS(IBFUNC),STRIP_PARENS(FSRFUNC),SUBFSR));  \
-            /* Create channel identifier string */                                                                      \
-            std::vector<std::string> CAT(finalStates_,NAME);                                                            \
-            CAT(finalStates_,NAME).push_back("gamma");                                                                  \
-            CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                                            \
-            CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                                            \
-            /* Create channel and push it into channel list of process */                                               \
-            TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));                        \
-            process.channelList.push_back(CAT(channel_,NAME));
+        
+        // DM mass parameter used in 3-body decays
+        BEreq::IBintvars->ibcom_mx = mass;
+        
+        // TODO: Channel is now only added if kinematically allowed. Might want to do this in a different way.
+        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_1, M_2, IBFUNC, SV_IDX)                                   \
+            if(M_1 + M_2 < 2*mass)                                                                                          \
+            {                                                                                                               \
+                index = SV_IDX;                                                                                             \
+                double sv = BEreq::dssigmav(index);                                                                         \
+                BFptr   CAT(kinematicFunction_,NAME)                                                                        \
+                        (new DSgamma3bdyKinFunc(IBCH, mass, M_1, M_2, STRIP_PARENS(IBFUNC), sv));                           \
+                /* Create channel identifier string */                                                                      \
+                std::vector<std::string> CAT(finalStates_,NAME);                                                            \
+                CAT(finalStates_,NAME).push_back("gamma");                                                                  \
+                CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                                            \
+                CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                                            \
+                /* Create channel and push it into channel list of process */                                               \
+                TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));                        \
+                process.channelList.push_back(CAT(channel_,NAME));                                                          \
+            }                                        
 
         // TODO: Implement masses properly
           double m_e      = 0.511e-3;   // GeV
           double m_mu     = 0.1057;     // GeV
-          double m_tau    = 177.7;      // GeV
+          double m_tau    = 1.77682;    // GeV
           double m_u      = 2.3e-3;     // GeV
           double m_d      = 4.8e-3;     // GeV
           double m_c      = 1.275;      // GeV
@@ -754,40 +752,20 @@ namespace Gambit {
           double m_t      = 173;        // GeV
           double m_b      = 4.18;       // GeV (MS bar)
           double m_W      = 80.4;       // GeV
-          double m_Z      = 91.2;       // GeV
-          double m_g      = 0.0;        // GeV 
-          double m_nue    = 0.0;        // GeV
-          double m_num    = 0.0;        // GeV
-          double m_nut    = 0.0;        // GeV
         
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,     W-,      m_W,    m_W,
-        //    (BEreq::dsIBwwdxdy.pointer<int& ,double&, double&>()),(NULL))     
-            
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,     H-,      m_W,  m_Hc, 
-        //    (BEreq::dsIBwhdxdy.pointer<int& ,double&, double&>()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this            
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,     H+,      m_W,  m_Hc, 
-        //    (BEreq::dsIBwhdxdy.pointer<int& ,double&, double&>()),(NULL))   // TODO: Check if DarkSUSY sums W+H- and W-H+ results. If so, fix this
-        //SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc, m_Hc 
-        //    (BEreq::dsIBhhdxdy.pointer<int& ,double&, double&>()),(NULL))                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e,    m_e,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu,   m_mu,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau,  m_tau,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u,    m_u,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d,    m_d,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c,    m_c,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s,    m_s,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t,    m_t,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b,    m_b,
-            (BEreq::dsIBffdxdy.pointer()), (BEreq::dsIBfsrdxdy.pointer()),false)
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,     W-,      m_W,    m_W,    (BEreq::dsIBwwdxdy.pointer()),  13 )     
+//        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,     H-,      m_W,    m_Hc,   (BEreq::dsIBwhdxdy.pointer()),  11 )   // TODO: Check how DarkSUSY sums W+H- and W-H+ results.         
+//        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,     H+,      m_W,    m_Hc,   (BEreq::dsIBwhdxdy.pointer()),  11 )   // TODO: Check how DarkSUSY sums W+H- and W-H+ results.
+//        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc,   m_Hc,   (BEreq::dsIBhhdxdy.pointer()),  0  )                    
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e,    m_e,    (BEreq::dsIBffdxdy.pointer()) , 15 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu,   m_mu,   (BEreq::dsIBffdxdy.pointer()) , 17 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau,  m_tau,  (BEreq::dsIBffdxdy.pointer()) , 19 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u,    m_u,    (BEreq::dsIBffdxdy.pointer()) , 20 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d,    m_d,    (BEreq::dsIBffdxdy.pointer()) , 21 )            
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c,    m_c,    (BEreq::dsIBffdxdy.pointer()) , 22 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s,    m_s,    (BEreq::dsIBffdxdy.pointer()) , 23 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t,    m_t,    (BEreq::dsIBffdxdy.pointer()) , 24 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b,    m_b,    (BEreq::dsIBffdxdy.pointer()) , 25 )
 
         #undef SETUP_DS_PROCESS_GAMMA3BODY
         // And process on process list
@@ -966,7 +944,7 @@ namespace Gambit {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        result.M_DM = (*BEreq::mspctm).mass[41];        
+        result.M_DM = (*BEreq::mspctm).mass[42];        
         std::cout << "dsddgpgn gives: \n";
         std::cout << " gps: " << result.gps << "\n";
         std::cout << " gns: " << result.gns << "\n";

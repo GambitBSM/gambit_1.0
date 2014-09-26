@@ -111,6 +111,7 @@ namespace Gambit
         public:
             virtual void operator ()(double &x0, double &x1, const BFargVec &args)
             {
+                (void) x0; (void) x1; (void) args;
                 std::cout << "ERROR: Virtual operator () of intLimitFunc called" << std::endl;
                 exit(1); 
             }
@@ -851,7 +852,7 @@ namespace Gambit
         public:
             BFintegrate(BF_temp_ptr(T) integrand, unsigned int i, double x0, double x1):
                 FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), x0(x0),
-                x1(x1), integrand(integrand), index(i), epsabs(0), hasFuncIntLimits(false),
+                x1(x1), hasFuncIntLimits(false), integrand(integrand), index(i), epsabs(0),
                 epsrel(1e-2), limit(10000), useDefInt(false)
             {
                 // Setup gsl workspace (just in case)
@@ -860,8 +861,8 @@ namespace Gambit
             }
             
             BFintegrate(BF_temp_ptr(T) integrand, unsigned int i, shared_ptr<intLimitFunc> intLimits):
-                FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), 
-                integrand(integrand), index(i), epsabs(0), intLimits(intLimits), hasFuncIntLimits(true),
+                FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), intLimits(intLimits),
+                hasFuncIntLimits(true), integrand(integrand), index(i), epsabs(0),
                 epsrel(1e-2), limit(10000), useDefInt(false)
             {
                 if(!integrand->hasDynamicIntegrator(i) && integrand->hasIntegrator(i))

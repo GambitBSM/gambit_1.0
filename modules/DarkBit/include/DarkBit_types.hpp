@@ -102,26 +102,20 @@ namespace Gambit
     {
       typedef double(*BEptr)(int&, double&, double&);
       public:
-        DSgamma3bdyKinFunc(int chn, double M, double m1, double m2, BEptr ib, BEptr fsr, bool subFSR)
+        DSgamma3bdyKinFunc(int chn, double M, double m1, double m2, BEptr ib, double sv)
         : BaseFunction("DSgamma3bdyKinFunc", 2)
         {
             M_DM = M;
             IBch = chn;
             IBfunc = ib;
-            FSRfunc = fsr;
             m_1 = m1;
             m_2 = m2;
-            subtractFSR = subFSR;
+            sigmav_norm = sv;
             if(IBfunc == NULL)
             {
                 // TODO: Throw error
             }
         }
-        shared_ptr<DSgamma3bdyKinFunc> set_subtractFSR(bool subFSR)
-        {
-            this->subtractFSR = subFSR;
-            return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
-        }        
         double value(const BFargVec &args)
         {
             double Eg = args[0]; // Photon energy
@@ -133,54 +127,19 @@ namespace Gambit
             double p22max = Eg*Eg+p12+2*Eg*sqrt(p12);
             
             // Check if the process is kinematically allowed
-            /*
             if((E1 < m_1) || (Eg+E1+m_2 > 2*M_DM) || (p22<p22min) || (p22>p22max))
             {
-                return 0;
-            }
-            */
-            // For debug purposes, print the actual case:
-            if(E1 < m_1)
-            {
-                cout << "E1 < m_1" << endl;
-                return 0;
-            }
-            else if(Eg+E1+m_2 > 2*M_DM)
-            {
-                cout << "Eg+E1+m_2 > 2*M_DM" << endl;
-                return 0;
-            }
-            else if(p22<p22min)
-            {
-                cout << "p22<p22min" << endl;
-                return 0;
-            }
-            else if(p22>p22max)
-            {
-                cout << "p22>p22max" << endl;
                 return 0;
             }
             double x = Eg/M_DM;
             double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);
             double result = IBfunc(IBch,x,y);          
-            if(subtractFSR)
-            {
-                if(FSRfunc != NULL)
-                { 
-                    result -= FSRfunc(IBch,x,y);
-                }
-                else
-                {
-                    // TODO: Throw error
-                }
-            }
-            std::cout << M_DM << "\t" << Eg << "\t" << E1 << "\t" << E2 << "\t" << x << "\t" << y << "\t" << result << std::endl;
-            return result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
+            //std::cout << M_DM << "\t" << Eg << "\t" << E1 << "\t" << E2 << "\t" << x << "\t" << y << "\t" << result << std::endl;
+            return sigmav_norm * result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
         }
       private:
-        bool subtractFSR;
         BEptr IBfunc;
-        BEptr FSRfunc;
+        double sigmav_norm;
         double M_DM;
         double m_1;        
         double m_2;

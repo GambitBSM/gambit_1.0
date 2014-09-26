@@ -158,6 +158,7 @@ START_MODULE
       START_FUNCTION(Gambit::BF::BFptr)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
+      BACKEND_REQ(dsibyieldone, (), double, (double&, int&, int&, int&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -169,10 +170,10 @@ START_MODULE
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
-      BACKEND_REQ(dsIBfsrdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
     #undef FUNCTION
   #undef CAPABILITY
 
