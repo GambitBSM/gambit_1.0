@@ -1,7 +1,7 @@
-#ifndef __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSedbe_1_1_HPP__
-#define __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSedbe_1_1_HPP__
+#ifndef __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSMinimalExample_1_1_HPP__
+#define __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSMinimalExample_1_1_HPP__
 
-#include "backend_types/BOSSedbe_1_1/identification.hpp"
+#include "backend_types/BOSSMinimalExample_1_1/identification.hpp"
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {

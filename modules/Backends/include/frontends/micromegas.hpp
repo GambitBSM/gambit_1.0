@@ -187,8 +187,5 @@ BE_INI_FUNCTION
 }
 DONE
 
-#undef LIBPATH
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

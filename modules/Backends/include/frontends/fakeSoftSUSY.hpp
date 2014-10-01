@@ -73,7 +73,5 @@ namespace Gambit
 //BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, (put some args here), "BEgenMSSMspectrum")
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
+

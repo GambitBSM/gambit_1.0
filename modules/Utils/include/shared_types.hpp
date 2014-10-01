@@ -46,11 +46,11 @@
 
 // Choices about the default versions of backends to use for loading types (specific versions
 // of types can always be used by employing the qualified type BACKENDNAME_SAFEVERSION::TYPE)
-#define  Default_BOSSedbe 1_0
+#define  Default_BOSSMinimalExample 1_1
 
 // BOSSed (class-loaded) types from different backends 
-#include "backend_types/BOSSedbe_1_0/loaded_types.hpp"
-#include "backend_types/BOSSedbe_1_1/loaded_types.hpp"
+#include "backend_types/BOSSMinimalExample_1_0/loaded_types.hpp"
+#include "backend_types/BOSSMinimalExample_1_1/loaded_types.hpp"
 
 
 // Other types that don't belong in any of the existing includes.  Should be progressively

@@ -81,6 +81,9 @@ namespace Gambit
   }
 }
 
+/// Turn classloading off by default (this is redefined by BOSSed backends).
+#define DO_CLASSLOADING 0
+
 /// Declare the backend initialisation module BackendIniBit.
 #define MODULE BackendIniBit
   START_MODULE
@@ -297,6 +300,65 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
+/* Register the factory functions for all classes loaded by this backend. */\
+BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
+
+/// Load factory functions for classes provided by this backend.
+#define LOAD_ALL_FACTORIES                                                  \
+ BOOST_PP_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, ()(),                           \
+  CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_types) )                            
+
+#define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                \
+ BOOST_PP_FOR_EACH_I(LOAD_NTH_FACTORY_FOR_TYPE, 
+
+#define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)
+ LOAD_SINGLE_FACTORY(CAT(
+
+#define LOAD_SINGLE_FACTORY(NAME, ARGS, SYMBOLNAME, WRAPPER)                                    \
+namespace Gambit                                                                                \
+{                                                                                               \
+  namespace Backends                                                                            \
+  {                                                                                             \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
+    {                                                                                           \
+                                                                                                \
+      /* Define a type NAME_type to be a suitable function pointer. */                          \
+      typedef TYPE (*NAME##_type) CONVERT_VARIADIC_ARG(ARGS);                                   \
+                                                                                                \
+      /* Get the pointer to the function in the shared library. */                              \
+      LOAD_BACKEND_FUNCTION(NAME, SYMBOLNAME, 0, 0)                                             \
+                                                                                                \
+      /* Provide the factory pointer to the loaded type's wrapper constructor.  If the library  \
+      is not present or the symbol not found, tell the wrapper this. */                         \
+      void CAT(handoverFactoryPointer_,NAME)()                                                  \
+      {                                                                                         \
+        if(!present)                                                                            \
+        {                                                                                       \
+          WRAPPER::setStatus(-1);                                                               \
+        }                                                                                       \
+        else if(dlerror() != NULL)                                                              \
+        {                                                                                       \
+          std::ostringstream err;                                                               \
+          err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
+              << "The BOSSed type relying on this factory (" << STRINGIFY(WRAPPER)              \
+              << ") will be unavailable." << std::endl;                                         \
+          backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
+          WRAPPER::setStatus(-2);                                                               \
+        }                                                                                       \
+        else                                                                                    \
+        {                                                                                       \
+          WRAPPER::setFactory(NAME);                                                            \
+      }                                                                                         \
+                                                                                                \
+      /* Set up the ini code object to execute the wrapper factory-setting routine. */          \
+      namespace ini                                                                             \
+      {                                                                                         \
+        ini_code CAT(ini_for_handoverFactoryPointer_,NAME)(&CAT(handoverFactoryPointer_,NAME)); \
+      }                                                                                         \
+                                                                                                \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
+  } /* end namespace Backends */                                                                \
+} /* end namespace Gambit*/                                                
 
 
 /// \name Variadic redirection macro for BE_VARIABLE(TYPEMACRO, SYMBOLNAME, CAPABILITY, [(ALLOWED_MODELS)])
@@ -664,23 +726,8 @@ namespace Gambit                                                                
       BOOST_PP_IIF(TRANS, BE_FUNC_GENERATE_WRAPPER_FUNC(TYPE,NAME,                              \
        CONVERT_VARIADIC_ARG(CALLARGS_FE),CONVERT_VARIADIC_ARG(CALLARGS_BE)), )                  \
                                                                                                 \
-      /* Declare a function that can be used to get the pointer to the backend function. */     \
-      NAME##_type CAT(constructFuncPointer_,NAME)()                                             \
-      {                                                                                         \
-        /* Obtain a void pointer (pSym) to the library symbol. */                               \
-        /* -- First clear error code by calling dlerror() */                                    \
-        dlerror();                                                                              \
-        /* -- Obtain pointer from symbol */                                                     \
-        pSym.ptr = dlsym(pHandle BOOST_PP_COMMA() SYMBOLNAME);                                  \
-        BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
-        /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
-        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),BE_FUNC_ADD_TO_FPTR_MAP(NAME),)\
-        /* Hand over the pointer */                                                             \
-        return NAME;                                                                            \
-      }                                                                                         \
-                                                                                                \
-      /* Declare a pointer NAME of type NAME_type */                                            \
-      const NAME##_type NAME = CAT(constructFuncPointer_,NAME)();                               \
+      /* Get the pointer to the function in the shared library. */                              \
+      LOAD_BACKEND_FUNCTION(NAME, SYMBOLNAME, TRANS, HAS_FARRAYS_AND_ETC)                       \
                                                                                                 \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
@@ -731,6 +778,25 @@ namespace Gambit                                                                
                                                                                                 \
 } /* end namespace Gambit*/                                                
    
+/* Retrieve a pointer to a function from a shared library. */
+#define LOAD_BACKEND_FUNCTION(NAME, SYMBOLNAME, TRANS, HAS_FARRAYS_AND_ETC)                     \
+      /* Declare a function that can be used to get the pointer to the backend function. */     \
+      NAME##_type CAT(constructFuncPointer_,NAME)()                                             \
+      {                                                                                         \
+        /* Obtain a void pointer (pSym) to the library symbol. */                               \
+        /* -- First clear error code by calling dlerror() */                                    \
+        dlerror();                                                                              \
+        /* -- Obtain pointer from symbol */                                                     \
+        pSym.ptr = dlsym(pHandle BOOST_PP_COMMA() SYMBOLNAME);                                  \
+        BE_FUNC_CONNECT_POINTERS(NAME,TRANS)                                                    \
+        /* Add function to frontBackFuncMap to give correct conversion if sent as an argument */\
+        BOOST_PP_IIF(BOOST_PP_BITAND(TRANS, HAS_FARRAYS_AND_ETC),BE_FUNC_ADD_TO_FPTR_MAP(NAME),)\
+        /* Hand over the pointer */                                                             \
+        return NAME;                                                                            \
+      }                                                                                         \
+      /* Declare a pointer NAME of type NAME_type */                                            \
+      const NAME##_type NAME = CAT(constructFuncPointer_,NAME)();                               \
+
 
 /// Supplemenentary backend function macro
 #define BE_FUNCTION_IMPL2_SUPP(NAME)                                                            \

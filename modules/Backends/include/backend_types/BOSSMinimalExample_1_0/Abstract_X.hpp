@@ -1,8 +1,8 @@
-#ifndef __ABSTRACT_X_BOSSedbe_1_0_HPP__
-#define __ABSTRACT_X_BOSSedbe_1_0_HPP__
+#ifndef __ABSTRACT_X_BOSSMinimalExample_1_0_HPP__
+#define __ABSTRACT_X_BOSSMinimalExample_1_0_HPP__
 
-#include "backend_types/BOSSedbe_1_0/forward_decls_abstract_classes.hpp"
-#include "backend_types/BOSSedbe_1_0/identification.hpp"
+#include "backend_types/BOSSMinimalExample_1_0/forward_decls_abstract_classes.hpp"
+#include "backend_types/BOSSMinimalExample_1_0/identification.hpp"
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -22,9 +22,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 // Undefine macros to avoid conflict with other backends.
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 
-#endif /* __ABSTRACT_X_BOSSedbe_1_0_HPP__ */
+#endif /* __ABSTRACT_X_BOSSMinimalExample_1_0_HPP__ */

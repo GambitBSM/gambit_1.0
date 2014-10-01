@@ -1,12 +1,12 @@
-#ifndef __GAMBIT_WRAPPER_X_BOSSedbe_1_0_HPP__
-#define __GAMBIT_WRAPPER_X_BOSSedbe_1_0_HPP__
+#ifndef __GAMBIT_WRAPPER_X_BOSSMinimalExample_1_1_HPP__
+#define __GAMBIT_WRAPPER_X_BOSSMinimalExample_1_1_HPP__
 
 #include <cstddef>
 #include "wrapperbase.hpp"
-#include "backend_types/BOSSedbe_1_0/Abstract_X.hpp"
-#include "backend_types/BOSSedbe_1_0/identification.hpp"
+#include "backend_types/BOSSMinimalExample_1_1/Abstract_X.hpp"
+#include "backend_types/BOSSMinimalExample_1_1/identification.hpp"
 
-namespace CAT_3(BACKENDNAME,_,SAFE_VERSION) { namespace nspace1 { namespace nspace2
+namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
 
   class X_GAMBIT : public WrapperBase<Abstract_X>
@@ -22,12 +22,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION) { namespace nspace1 { namespace nspa
             i(BEptr->i_ref_GAMBIT())
         {
         }
-        //X_GAMBIT() { __factory_()__}
-        //X_GAMBIT(int i_in) {__factory2(i_in)__ }
-
   };
 
-}}}
+}
 
 // Undefine macros to avoid conflict with other backends.
 #undef LIBPATH 
@@ -35,4 +32,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION) { namespace nspace1 { namespace nspa
 #undef VERSION
 #undef SAFE_VERSION
 
-#endif /* __GAMBIT_WRAPPER_X_BOSSedbe_1_0_HPP__ */
+#endif /* __GAMBIT_WRAPPER_X_BOSSMinimalExample_1_1_HPP__ */
