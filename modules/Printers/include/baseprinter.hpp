@@ -45,9 +45,10 @@
 //#pragma message BOOST_PP_STRINGIZE(PRINTABLE_TYPES) //PRINTABLE_TYPES resides in all_functor_types.hpp 
 
 // Virtual print methods for base printer class
-#define VPRINT(r,data,elem)                                        \
-  virtual void print(elem const&, const std::string& label, const int vertexID) \
-  {                                                                \
+#define VPRINT(r,data,elem)                                 \
+  virtual void print(elem const&, const std::string& label, \
+                     const int vertexID, const int thread = -1, const int pointID = -1) \
+  {                                                         \
     std::ostringstream err;                                 \
                                                             \
     err << "No print function override has been "           \
@@ -93,8 +94,11 @@ namespace Gambit
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true. (TODO: probably extend this to be a list of functors THIS printer is supposed to print, since we may want several printers handling different functors, for SLHA output or some such perhaps).
         virtual void initialise(const std::vector<int>&) = 0;
 
-        /// Function to signal to the printer to begin a new line/database entry/etc.
-        virtual void endline() = 0;
+        /// Function to signal to the printer to write buffer contents to disk
+        virtual void flush() = 0;
+
+        /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
+        virtual void reset() = 0;
     };
 
     // Need to implement the destructor, even though it is pure virtual. Seems like it will be called even if using derived classes, or something.

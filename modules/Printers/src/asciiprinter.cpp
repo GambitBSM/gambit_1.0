@@ -63,7 +63,20 @@ namespace Gambit
       buffer.resize(bufferlength); 
       my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
     }
-  
+ 
+    /// Auxiliary mode constructor 
+    asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool global=0):
+      buf_loc(0),
+      info_file_written(false),
+      bufferlength(10),
+      my_fstream(name+"-"+options.getValue<std::string>("output_file"), std::ofstream::out),
+      info_fstream(name+"-"+options.getValue<std::string>("info_file"), std::ofstream::out)
+    {
+      // Could set these things via options also if we like.
+      buffer.resize(bufferlength); 
+      my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
+    }
+ 
     /// Destructor
     // Overload the base class virtual destructor
     asciiPrinter::~asciiPrinter() {}
@@ -147,7 +160,7 @@ namespace Gambit
     }
   
     // add results to printer buffer
-    void asciiPrinter::addtobuffer(const int& vID, const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels) 
+    void asciiPrinter::addtobuffer(const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels, const int vID, const int thread, const int pointID) 
     {
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
       std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl;
@@ -229,14 +242,14 @@ namespace Gambit
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
-    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode)
+    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     {
       std::vector<double> vdvalue(1,value);
       std::vector<std::string> labels(1,label);
-      addtobuffer(IDcode,vdvalue,labels);       
+      addtobuffer(vdvalue,labels,IDcode,thread,pointID);       
     }
  
-    void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode)
+    void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     {
       std::vector<std::string> labels;
       labels.reserve(value.size());
@@ -247,10 +260,10 @@ namespace Gambit
         ss<<label<<"["<<i<<"]"; 
         labels.push_back(ss.str());
       }
-      addtobuffer(IDcode,value,labels);
+      addtobuffer(value,labels,IDcode,thread,pointID);
     }
    
-    void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode)
+    void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     {
       std::map<std::string, double> parameter_map = value.getValues();
       std::vector<std::string> names;
@@ -265,7 +278,7 @@ namespace Gambit
         names.push_back( ss.str() ); 
         vdvalue.push_back( it->second );
       }
-      addtobuffer(IDcode,vdvalue,names);
+      addtobuffer(vdvalue,names,IDcode,thread,pointID);
     }
      
   } // end namespace printers

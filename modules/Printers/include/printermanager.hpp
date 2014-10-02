@@ -50,6 +50,9 @@ namespace Gambit
         /// Destructor
         ~PrinterManager();
 
+        /// Create auxiliary printer object
+        void new_stream(std::string&);
+
         /// Getter for auxiliary printer objects
         BasePrinter* get_stream(std::string&);
     };

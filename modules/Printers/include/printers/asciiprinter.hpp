@@ -89,9 +89,9 @@ namespace Gambit
         // Need to define one of these for every type we want to print!
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
-        void print(double const&,              const std::string& label, const int IDcode);
-        void print(std::vector<double> const&, const std::string& label, const int IDcode);
-        void print(ModelParameters const&,     const std::string& label, const int IDcode);
+        void print(double const&,              const std::string& label, const int IDcode, const int thread, const int pointID);
+        void print(std::vector<double> const&, const std::string& label, const int IDcode, const int thread, const int pointID);
+        void print(ModelParameters const&,     const std::string& label, const int IDcode, const int thread, const int pointID);
       
       private:
         // Main output file stream

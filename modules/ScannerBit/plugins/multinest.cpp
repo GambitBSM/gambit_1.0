@@ -173,9 +173,9 @@ namespace Gambit {
                 Printers::BasePrinter* txt_stream(boundLogLike.printer.get_stream("txt"));
                 Printers::BasePrinter* live_stream(boundLogLike.printer.get_stream("live"));
 
-                stats_stream.reset(); // WARNING! (potentially) Deletes the old data
-                txt_stream.reset();   // WARNING! (potentially) Deletes the old data
-                live_stream.reset();  // WARNING! (potentially) Deletes the old data
+                stats_stream->reset(); // WARNING! (potentially) Deletes the old data
+                txt_stream->reset();   // WARNING! (potentially) Deletes the old data
+                live_stream->reset();  // WARNING! (potentially) Deletes the old data
 
                 // Ensure the "quantity" IDcode is UNIQUE across all printers! This way fancy printers
                 // have the option of ignoring duplicate writes and doing things like combine all the
@@ -183,11 +183,12 @@ namespace Gambit {
                 // unique for a given quanity to do this.
                 // Negative numbers not used by functors, so those are 'safe' to use here
 
-                //                  Quantity    Label       IDcode
+                //                  Quantity    Label         IDcode
                 // stats file stuff
-                stats_stream->print(maxLogLike, "maxLogLike",-1);
-                stats_stream->print(logZ,       "logZ",      -2);
-                stats_stream->print(logZerr,    "logZerr",   -3);
+                stats_stream->print(maxLogLike, "maxLogLike", -1);
+                stats_stream->print(logZ,       "logZ",       -2);
+                stats_stream->print(logZerr,    "logZerr",    -3);
+                stats_stream->flush(); // Empty printer buffer
 
                 // txt file stuff
                 // Send info for each point to printer one command at a time
@@ -196,29 +197,30 @@ namespace Gambit {
 
                 // The posterior distribution
                 for( int i = 0; i < nSamples; i++ )
-                   thread  = (*posterior)[0][(nPars-1) * nSamples + i] //thread number stored in second last entry of cube
-                   pointID = (*posterior)[0][(nPars-0) * nSamples + i] //pointID stored in last entry of cube
-                   txt_stream->newpoint(thread,pointID); // Trigger auxiliary printer to start recording for new point (optional parameter specifies point to write/overwrite)
-                   txt_stream->print((*posterior)[0][(nPar+1) * nSamples + i], "LogLike",   -4)
-                   txt_stream->print((*posterior)[0][(nPar+2) * nSamples + i], "Posterior", -5)
+                   thread  = (*posterior)[0][(nPar-1) * nSamples + i]; //thread number stored in second last entry of cube
+                   pointID = (*posterior)[0][(nPar-0) * nSamples + i]; //pointID stored in last entry of cube
+                   txt_stream->print((*posterior)[0][(nPar+1) * nSamples + i], "LogLike",   -4, thread, pointID);
+                   txt_stream->print((*posterior)[0][(nPar+2) * nSamples + i], "Posterior", -5, thread, pointID);
                    // Put rest of parameters into a vector for printing all together
                    std::vector<double> parameters;
                    for( int j = 0; j < nPar-1; j++ )
-                       parameters->push_back( (*posterior)[0][j * nSamples + i] )
-                   txt_stream->print(parameters, "Parameters", -6);
-                   
+                       parameters->push_back( (*posterior)[0][j * nSamples + i] );
+                   txt_stream->print(parameters, "Parameters", -6, thread, pointID);
+                txt_stream->flush(); // Empty the printer buffer
+
+                /// Therefore stick thread/point numbers into print function directly                  
+ 
                 // The last set of live points
                 for( int i = 0; i < nlive; i++ )
-                   thread  = (*physLive)[0][(nPars-1) * nlive + i] //thread number stored in second last entry of cube
-                   pointID = (*physLive)[0][(nPars-0) * nlive + i] //pointID stored in last entry of cube
-                   live_stream->newpoint(thread,pointID); // Trigger auxiliary printer to start recording for new point (optional parameter specifies point to write/overwrite)
-                   live_stream->print((*physLive)[0][(nPar+1) * nlive + i], "LogLike",   -4)
+                   thread  = (*physLive)[0][(nPars-1) * nlive + i]; //thread number stored in second last entry of cube
+                   pointID = (*physLive)[0][(nPars-0) * nlive + i]; //pointID stored in last entry of cube
+                   live_stream->print((*physLive)[0][(nPar+1) * nlive + i], "LogLike", -4, thread, pointID);
                    // Put rest of parameters into a vector for printing all together
                    std::vector<double> parameters;
                    for( int j = 0; j < nPar-1; j++ )
-                       parameters.push_back( (*physLive)[0][j * nlive + i] )
-                   live_stream->print(parameters, "Parameters", -6);
- 
+                       parameters.push_back( (*physLive)[0][j * nlive + i] );
+                   live_stream->print(parameters, "Parameters", -6, thread, pointID);
+                live_stream->flush(); 
 
                 // ------Old default stuff below---------
                 
@@ -339,7 +341,7 @@ scanner_plugin (multinest)
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
                 
                 // Initialise auxiliary print streams
-                LogLike->printer.new_stream("stats");
+                LogLike->printer.new_stream("stats",1); //Optional parameter sets this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
                 LogLike->printer.new_stream("txt");
                 LogLike->printer.new_stream("live");
 
