@@ -12,9 +12,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 // Undefine macros to avoid conflict with other backends.
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 
 #endif /* __FORWARD_DECLS_ABSTRACT_CLASSES_HPP__ */

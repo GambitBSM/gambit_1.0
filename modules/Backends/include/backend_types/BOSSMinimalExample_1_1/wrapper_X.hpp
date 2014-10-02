@@ -27,9 +27,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 // Undefine macros to avoid conflict with other backends.
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 
 #endif /* __GAMBIT_WRAPPER_X_BOSSMinimalExample_1_1_HPP__ */

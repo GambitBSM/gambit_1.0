@@ -5,7 +5,9 @@
 #include "backend_types/BOSSMinimalExample_1_0/identification.hpp"
 
 // Indicate which types are provided by this backend.
-#define BOSSMinimalExample_1_0_all_types ((nspace1)(nspace2)(X_GAMBIT))//((nm3)(Y_GAMBIT))
+#define BOSSMinimalExample_1_0_all_data \
+  (( /*class*/(nspace1)(nspace2)(X_GAMBIT),  /*constructors*/("_Z9Factory_Xi",()) ("_Z9Factory_Xv",(int)) )) \
+//(( /*class*/(nspace3)(Y_GAMBIT),           /*constructors*/("constructor_symbol",(args)) ))
 
 // If the default version has been loaded, set it as default.
 #if ALREADY_LOADED(CAT_3(BACKENDNAME,_,CAT(Default_,BACKENDNAME)))

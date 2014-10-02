@@ -301,17 +301,17 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
 /* Register the factory functions for all classes loaded by this backend. */\
-BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
+//BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
 
 /// Load factory functions for classes provided by this backend.
 #define LOAD_ALL_FACTORIES                                                  \
  BOOST_PP_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, ()(),                           \
-  CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_types) )                            
+  CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data) )                            
 
 #define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                \
  BOOST_PP_FOR_EACH_I(LOAD_NTH_FACTORY_FOR_TYPE, 
 
-#define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)
+#define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)                            \
  LOAD_SINGLE_FACTORY(CAT(
 
 #define LOAD_SINGLE_FACTORY(NAME, ARGS, SYMBOLNAME, WRAPPER)                                    \

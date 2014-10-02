@@ -28,12 +28,13 @@
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/seq/subseq.hpp>
 #include <boost/preprocessor/seq/subseq.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
 
 /// Set default backend version for BOSSed types.
 #define SET_DEFAULT_VERSION_FOR_LOADING_TYPES(BE, VER, DEFAULT)                       \
- BOOST_PP_SEQ_FOR_EACH(TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),           \
- CAT_5(BE,_,DEFAULT,_,all_types))       
+ BOOST_PP_SEQ_FOR_EACH(PRE_TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),       \
+ CAT_5(BE,_,DEFAULT,_,all_data) )       
 
 /// Open a namespace 
 #define START_NAMESPACE(r,data,i,elem) namespace elem { 
@@ -44,6 +45,8 @@
 /// An entry with a trailing namespace qualifier
 #define TRAILING_NSQUALIFIER(r,data,i,elem) elem::
 
+// Strip out the actual type info sequence from the all_data entry.
+#define PRE_TYPEDEFAULT(r,data,elem) TYPEDEFAULT(r,data,BOOST_PP_TUPLE_ELEM(2,0,elem))
 
 // If this file has been included from the main compilation unit, define TYPEDEFAULT
 // differently from the way it is normally defined.
