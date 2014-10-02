@@ -1,4 +1,11 @@
 # Ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs example modules ExampleBit_A and ExampleBit_B,
+# plus example backends libfirst and libFortran.
+#
+# To use this you'll need to 
+# make
+# make libfirst
+# make libfortran
 #
 # Don't commit modified versions of this file!
 # If you want to change it in order to test 
