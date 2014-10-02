@@ -16,12 +16,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         int& i;
 
         // Member functions: 
-        // Special pointer-based constructor: 
-        X_GAMBIT(Abstract_X* in, bool memvar_in=false) :
-            WrapperBase<Abstract_X>( in, memvar_in ),
+        // Constructors
+        X_GAMBIT(bool memvar_in=false) :
+            WrapperBase<Abstract_X>( __factory0(), memvar_in ),
             i(BEptr->i_ref_GAMBIT())
-        {
-        }
+        {}           
+        X_GAMBIT(int i1, bool memvar_in=false) :
+            WrapperBase<Abstract_X>( __factory1(i1), memvar_in ),
+            i(BEptr->i_ref_GAMBIT())
+        {}         
+        // Factory pointer handover functions
+        static void setFactory(Abstract_X*(*in)())    { __factory0 = in; }
+        static void setFactory(Abstract_X*(*in)(int)) { __factory1 = in; }
+
+    private:
+        static int status;
+        static Abstract_X*(*__factory0)();
+        static Abstract_X*(*__factory1)(int);
   };
 
 }

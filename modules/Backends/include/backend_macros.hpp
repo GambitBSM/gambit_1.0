@@ -301,20 +301,13 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
 /* Register the factory functions for all classes loaded by this backend. */\
-//BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
+BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
 
 /// Load factory functions for classes provided by this backend.
-#define LOAD_ALL_FACTORIES                                                  \
- BOOST_PP_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, ()(),                           \
-  CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data) )                            
+#define LOAD_ALL_FACTORIES                                                                      \
+ BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data) )                            
 
-#define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                \
- BOOST_PP_FOR_EACH_I(LOAD_NTH_FACTORY_FOR_TYPE, 
-
-#define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)                            \
- LOAD_SINGLE_FACTORY(CAT(
-
-#define LOAD_SINGLE_FACTORY(NAME, ARGS, SYMBOLNAME, WRAPPER)                                    \
+#define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                                    \
 namespace Gambit                                                                                \
 {                                                                                               \
   namespace Backends                                                                            \
@@ -322,8 +315,38 @@ namespace Gambit                                                                
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
                                                                                                 \
+      /*Typedef the wrapper type to avoid expanding type seq inside BOOST_PP_SEQ_FOR_EACH_I*/   \
+      typedef ::CAT_3(BACKENDNAME,_,SAFE_VERSION)::BOOST_PP_SEQ_FOR_EACH_I(TRAILING_NSQUALIFIER,\
+               , BOOST_PP_SEQ_SUBSEQ(BOOST_PP_TUPLE_ELEM(2,0,elem),0,                           \
+                BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)))              \
+              BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)\
+               ,BOOST_PP_TUPLE_ELEM(2,0,elem))                                                  \
+              CAT(BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)),_wrapper);                    \
+                                                                                                \
+      /*Typedef the abstract type to avoid expanding type seq inside BOOST_PP_SEQ_FOR_EACH_I*/  \
+      typedef ::CAT_3(BACKENDNAME,_,SAFE_VERSION)::BOOST_PP_SEQ_FOR_EACH_I(TRAILING_NSQUALIFIER,\
+               , BOOST_PP_SEQ_SUBSEQ(BOOST_PP_TUPLE_ELEM(2,0,elem),0,                           \
+                BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)))              \
+              /*CAT(Abstract_,BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(                   \
+               BOOST_PP_TUPLE_ELEM(2,0,elem)),1), BOOST_PP_TUPLE_ELEM(2,0,elem)))*/Abstract_X   \
+              CAT(BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)),_abstract);                   \
+                                                                                                \
+      /*Load up each factory in turn for this type*/                                            \
+      BOOST_PP_SEQ_FOR_EACH_I(LOAD_NTH_FACTORY_FOR_TYPE,                                        \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)), BOOST_PP_TUPLE_ELEM(2,1,elem))          \
+                                                                                                \
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
+  } /* end namespace Backends */                                                                \
+} /* end namespace Gambit*/                                                
+
+#define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)                                                \
+ LOAD_SINGLE_FACTORY(CAT_3(data,_factory,i), BOOST_PP_TUPLE_ELEM(2,1,elem),                     \
+ BOOST_PP_TUPLE_ELEM(2,0,elem), CAT(data,_wrapper), CAT(data,_abstract) )                       \
+
+#define LOAD_SINGLE_FACTORY(NAME, ARGS, SYMBOLNAME, WRAPPER, ABSTRACT)                          \
+                                                                                                \
       /* Define a type NAME_type to be a suitable function pointer. */                          \
-      typedef TYPE (*NAME##_type) CONVERT_VARIADIC_ARG(ARGS);                                   \
+      typedef ABSTRACT*(*CAT(NAME,_type))CONVERT_VARIADIC_ARG(ARGS);                            \
                                                                                                 \
       /* Get the pointer to the function in the shared library. */                              \
       LOAD_BACKEND_FUNCTION(NAME, SYMBOLNAME, 0, 0)                                             \
@@ -334,20 +357,21 @@ namespace Gambit                                                                
       {                                                                                         \
         if(!present)                                                                            \
         {                                                                                       \
-          WRAPPER::setStatus(-1);                                                               \
+          /*WRAPPER::setStatus(-1);*/                                                           \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
           std::ostringstream err;                                                               \
           err << "Library symbol " << SYMBOLNAME << " not found."  << std::endl                 \
-              << "The BOSSed type relying on this factory (" << STRINGIFY(WRAPPER)              \
+              << "The BOSSed type relying on this factory (" << STRINGIFY(NAME)                 \
               << ") will be unavailable." << std::endl;                                         \
           backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
-          WRAPPER::setStatus(-2);                                                               \
+          /*WRAPPER::setStatus(-2);*/                      \
         }                                                                                       \
         else                                                                                    \
         {                                                                                       \
-          WRAPPER::setFactory(NAME);                                                            \
+          WRAPPER::setFactory(NAME);                       \
+        }                                                                                       \
       }                                                                                         \
                                                                                                 \
       /* Set up the ini code object to execute the wrapper factory-setting routine. */          \
@@ -355,10 +379,6 @@ namespace Gambit                                                                
       {                                                                                         \
         ini_code CAT(ini_for_handoverFactoryPointer_,NAME)(&CAT(handoverFactoryPointer_,NAME)); \
       }                                                                                         \
-                                                                                                \
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
-  } /* end namespace Backends */                                                                \
-} /* end namespace Gambit*/                                                
 
 
 /// \name Variadic redirection macro for BE_VARIABLE(TYPEMACRO, SYMBOLNAME, CAPABILITY, [(ALLOWED_MODELS)])

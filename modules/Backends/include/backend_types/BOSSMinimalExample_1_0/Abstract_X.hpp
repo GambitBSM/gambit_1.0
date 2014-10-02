@@ -7,17 +7,27 @@
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
 
-  class Abstract_X
+  namespace nspace1
   {
-    public:
 
-        virtual int& i_ref_GAMBIT() =0;
+    namespace nspace2
+    {
 
-    public:
-        virtual void pointerAssign_GAMBIT(Abstract_X*) =0;
-        virtual Abstract_X* pointerCopy_GAMBIT() =0;
-        virtual ~Abstract_X() {};
-  };
+      class Abstract_X
+      {
+        public:
+
+            virtual int& i_ref_GAMBIT() =0;
+
+        public:
+            virtual void pointerAssign_GAMBIT(Abstract_X*) =0;
+            virtual Abstract_X* pointerCopy_GAMBIT() =0;
+            virtual ~Abstract_X() {};
+      };
+
+    }
+
+  }
 
 }
 

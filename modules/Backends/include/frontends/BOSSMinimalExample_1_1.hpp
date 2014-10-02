@@ -39,14 +39,9 @@ LOAD_LIBRARY
 // Convenience functions (registration)
 
 // Initialisation function (definition)
-BE_INI_FUNCTION
-{}
-DONE
+BE_INI_FUNCTION{} DONE
 
 // Convenience functions (definitions)
-BE_NAMESPACE
-{}
-DONE
 
 // End
 #include "backend_undefs.hpp"

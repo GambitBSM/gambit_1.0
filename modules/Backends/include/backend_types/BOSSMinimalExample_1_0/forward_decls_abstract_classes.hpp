@@ -5,10 +5,14 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-
-  class Abstract_X;
-  class Abstract_Y;
-
+  namespace nspace1
+  {
+    namespace nspace2
+    {
+      class Abstract_X;
+      class Abstract_Y;
+    }
+  }
 }
 
 // Undefine macros to avoid conflict with other backends.
