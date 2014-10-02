@@ -183,6 +183,12 @@ START_MODULE
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
       BACKEND_REQ(mspctm, (), DS_MSPCTM)      
     #undef FUNCTION
+    #define FUNCTION DD_couplings_micrOMEGAs
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY lnL_FakeLux

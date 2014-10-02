@@ -952,6 +952,27 @@ namespace Gambit {
         std::cout << " gns: " << result.gns << "\n";
         std::cout << " gpa: " << result.gpa << "\n";
         std::cout << " gna: " << result.gna << std::endl;
+        cout << " M_DM = " << result.M_DM << endl;
+    }
+
+    void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
+    {
+        using namespace Pipes::DD_couplings_micrOMEGAs;
+        //TODO: Add error catching to below function
+        BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), &result.gps, &result.gpa, &result.gns, &result.gna);
+        // Rescaling to agree with DarkSUSY convention:
+        result.gps *= 2;
+        result.gpa *= 2;
+        result.gns *= 2;
+        result.gna *= 2;
+        result.M_DM = (*BEreq::MOcommon).par[1];
+        //TODO: Move the following to logging/printer system.
+        cout << "micrOMEGAs nucleonAmplitudes gives:" << endl;
+        cout << " gps: " << result.gps << endl;
+        cout << " gns: " << result.gns << endl;
+        cout << " gpa: " << result.gpa << endl;
+        cout << " gna: " << result.gna << endl;
+        cout << " M_DM = " << result.M_DM << endl;
     }
 
     void lnL_FakeLux(double &result)
