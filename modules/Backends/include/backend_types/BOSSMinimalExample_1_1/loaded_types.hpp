@@ -5,8 +5,9 @@
 #include "backend_types/BOSSMinimalExample_1_1/identification.hpp"
 
 // Indicate which types are provided by this backend, and what the symbols of their factories are.
-#define BOSSMinimalExample_1_1_all_types ((X_GAMBIT))
-#define BOSSMinimalExample_1_1_symbols   (("_Z9Factory_Xi",())("_Z9Factory_Xv",(int)))
+#define BOSSMinimalExample_1_1_all_data \
+( /*(type::)(as::)(seq)*/(X_GAMBIT),  /*(constructor, args)(as, seq)*/("_Z9Factory_Xi",()) ("_Z9Factory_Xv",(int)) ) \
+/*another entry in the main seq*/
 
 // If the default verison has been loaded, set it as default.
 #if ALREADY_LOADED(CAT_3(BACKENDNAME,_,CAT(Default_,BACKENDNAME)))
@@ -14,10 +15,7 @@
 #endif
 
 // Undefine macros to avoid conflict with other backends.
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 
 #endif /* __loaded_types_BOSSMinimalExample_1_1_hpp__ */
 
