@@ -9,30 +9,26 @@
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
 
-  class X_GAMBIT : public WrapperBase<Abstract_X>
+  class X : public WrapperBase<Abstract_X>
   {
     public:
-        // Member variables: 
+        // Regular member variables: 
         int& i;
+
+        // Static factory pointers
+        static Abstract_X*(*__factory0)();
+        static Abstract_X*(*__factory1)(int);
 
         // Member functions: 
         // Constructors
-        X_GAMBIT(bool memvar_in=false) :
+        X(bool memvar_in=false) :
             WrapperBase<Abstract_X>( __factory0(), memvar_in ),
             i(BEptr->i_ref_GAMBIT())
         {}           
-        X_GAMBIT(int i1, bool memvar_in=false) :
+        X(int i1, bool memvar_in=false) :
             WrapperBase<Abstract_X>( __factory1(i1), memvar_in ),
             i(BEptr->i_ref_GAMBIT())
         {}         
-        // Factory pointer handover functions
-        static void setFactory(Abstract_X*(*in)())    { __factory0 = in; }
-        static void setFactory(Abstract_X*(*in)(int)) { __factory1 = in; }
-
-    private:
-        static int status;
-        static Abstract_X*(*__factory0)();
-        static Abstract_X*(*__factory1)(int);
   };
 
 }

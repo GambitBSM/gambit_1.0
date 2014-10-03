@@ -32,6 +32,8 @@ namespace Gambit
     {
       public: 
         std::map<str,bool> works;
+        std::map<str,bool> classloader;
+        std::map<str,bool> classes_OK;
         std::map<str,str> paths;
         std::map<str,str> dlerrors;
         str version_from_safe_version(str be, str sv) { return safe_version_map.at(be).at(sv); } 

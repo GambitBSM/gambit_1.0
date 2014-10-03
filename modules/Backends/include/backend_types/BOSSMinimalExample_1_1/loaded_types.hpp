@@ -6,8 +6,8 @@
 
 // Indicate which types are provided by this backend, and what the symbols of their factories are.
 #define BOSSMinimalExample_1_1_all_data \
-  (( /*class*/(X_GAMBIT),  /*constructors*/(("_Z9Factory_Xi",())) (("_Z9Factory_Xv",(int))) )) \
-//(( /*class*/(Y_GAMBIT),  /*constructors*/(("blahdy",())) )) 
+  (( /*class*/(X),  /*constructors*/(("_Z9Factory_Xi",())) (("_Z9Factory_Xv",(int))) )) \
+//(( /*class*/(Y),  /*constructors*/(("blahdy",())) )) 
 
 // If the default verison has been loaded, set it as default.
 #if ALREADY_LOADED(CAT_3(BACKENDNAME,_,CAT(Default_,BACKENDNAME)))
