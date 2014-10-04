@@ -1,5 +1,7 @@
 // Identify backend and set macro flags
 
+#include "cats.hpp"
+
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

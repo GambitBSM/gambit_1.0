@@ -82,6 +82,7 @@ MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
+BOSSMINIDIR = ../extras/boss_temp
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -330,7 +331,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -625,6 +626,11 @@ $(BACKENDDIR)/lib/libfastsim.so:
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
 	mv $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
+BOSSMINIS = $(BACKENDDIR)/lib/BOSSMinimalExample_1_0.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_1.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_2.so
+BOSSMinimalExample: $(BOSSMINIS)
+$(BOSSMINIS):
+	cd $(BOSSMINIDIR); make all
+	mv $(BOSSMINIDIR)/*.so $(BACKENDDIR)/lib/
 
 #### Documentation ##########
 
@@ -689,6 +695,7 @@ clean_backends:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
 	@cd $(NULIKEDIR); make clean
 	@cd $(FASTSIMDIR); make clean
+	@cd $(BOSSMINIDIR); make clean
 	@cd $(DDCALC0DIR); make clean
 
 clean_docs:

@@ -377,6 +377,30 @@ namespace Gambit
         logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
     }
 
+    /// Basic example use of some loaded classes.
+    void bossed_class_example1(X &result)
+    {
+      result.i = 0;
+      X localX(1);
+      cout << "Result X's int: " << result.i << endl;
+      result.i+=1;
+      cout << "After adding 1: " << result.i << endl;
+      cout << "Local X's int: " << localX.i << endl;
+      localX.i+=1;
+      cout << "After adding 1: " << localX.i << endl;
+      BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
+      cout << "v1.0 X's int: " << oldX.i << endl;      
+      // The following line doesn't work, as we still need 
+      // copy/move constructors for BOSSed classes.
+      //result = localX;
+    }
+
+    /// Higher-level example use of some loaded classes.
+    void bossed_class_example2(int &result)
+    {
+      using namespace Pipes::bossed_class_example2;
+      result = Dep::BOSSed_X->i;
+    }
 
     /// \name SLHA Examples
     /// Some example functions for getting and manipulating SLHA-style information

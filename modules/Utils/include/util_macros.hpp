@@ -20,6 +20,7 @@
 #define __util_macros_hpp__
 
 #include "boost_fallbacks.hpp"
+#include "cats.hpp"
 
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
@@ -56,19 +57,6 @@
 /// @{
 #define REMFIRST(...) REMFIRST_I(__VA_ARGS__)
 #define REMFIRST_I(A1,...) (__VA_ARGS__)
-/// @}
-
-/// \name Concatenation macros
-/// Concatenate macro arguments for 2-7 arguments.
-/// @{
-#define CAT(X,Y) CAT2(X,Y)
-#define CAT2(X,Y) X##Y
-#define CAT_2 CAT
-#define CAT_3(X,Y,Z) CAT(X,CAT(Y,Z))
-#define CAT_4(A,X,Y,Z) CAT(A,CAT_3(X,Y,Z))
-#define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
-#define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
-#define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
 /// @}
 
 /// \name Macro chain for stripping parantheses off an argument
