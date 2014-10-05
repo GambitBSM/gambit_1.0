@@ -100,19 +100,16 @@
 #ifndef __types_rollcall_hpp__
 #define __types_rollcall_hpp__
 
-// Include the shared types
+// All the shared types
 #include "shared_types.hpp"
 
-// Include the model-specific types
+// Model-specific types
 #include "MSSM_types.hpp"
 
-// Include the module-specific types
+// Module-specific types
 #include "DarkBit_types.hpp"
 #include "ExampleBit_A_types.hpp"
 #ifdef COLLIDE
-  // Debugging... No seriously, I am including these headers, right??
-  #pragma message "COLLIDE = " BOOST_PP_STRINGIZE(COLLIDE)
-  #pragma message "Included from types_rollcall: ColliderBit_types.hpp"
   #include "ColliderBit_types.hpp"
 #endif
 

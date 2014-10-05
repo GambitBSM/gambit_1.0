@@ -106,8 +106,8 @@ namespace YAML {
       READ(backend)
       READ(version)
 
-      // Strip leading "Gambit::" namespaces, but preserve "const ".
-      rhs.type = Gambit::strip_leading_namespace(Gambit::strip_whitespace_except_after_const(rhs.type),"Gambit");
+      // Strip leading "Gambit::" namespaces and whitespace, but preserve "const ".
+      rhs.type = Gambit::Utils::fix_type(rhs.type);
       
       if (node["printme"].IsDefined())
           rhs.printme = node["printme"].as<bool>();

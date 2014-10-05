@@ -28,7 +28,6 @@
 ///
 ///  *********************************************
 
-
 #include "functors.hpp"
 #include "models.hpp"
 #include "all_functor_types.hpp"
@@ -68,7 +67,7 @@ namespace Gambit
                       Models::ModelFunctorClaw &claw) :      
      myName          (func_name),
      myCapability    (func_capability),
-     myType          (strip_leading_namespace(strip_whitespace_except_after_const(result_type),"Gambit")),
+     myType          (Utils::fix_type(result_type)),
      myOrigin        (origin_name),
      myClaw          (&claw),
      myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
@@ -371,8 +370,8 @@ namespace Gambit
     void functor::setModelGroup(str group, str contents)
     {
       //Strip the group contents of its parentheses, then split it, turn it into a set and save it in the map
-      strip_parentheses(contents);
-      std::vector<str> v = delimiterSplit(contents, ",");
+      Utils::strip_parentheses(contents);
+      std::vector<str> v = Utils::delimiterSplit(contents, ",");
       std::set<str> combo(v.begin(), v.end());
       modelGroups[group] = combo;
     }
@@ -381,8 +380,8 @@ namespace Gambit
     void functor::setAllowedModelGroupCombo(str groups)
     {
       //Strip the group combo of its parentheses, then split it and save it in the vector of allowed combos
-      strip_parentheses(groups);
-      std::vector<str> group_combo = delimiterSplit(groups, ",");
+      Utils::strip_parentheses(groups);
+      std::vector<str> group_combo = Utils::delimiterSplit(groups, ",");
       allowedGroupCombos.insert(group_combo);
     }
 
@@ -749,7 +748,7 @@ namespace Gambit
     /// Add and activate unconditional dependencies.
     void module_functor_common::setDependency(str dep, str type, void(*resolver)(functor*, module_functor_common*), str purpose)
     {
-      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
+      sspair key (dep, Utils::fix_type(type));
       myDependencies.push_back(key);
       dependency_map[key] = resolver;
       this->myPurpose = purpose; // only relevant for output nodes
@@ -760,7 +759,7 @@ namespace Gambit
      (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
       // Split the version string and send each version to be registered
-      std::vector<str> versions = delimiterSplit(ver, ",");
+      std::vector<str> versions = Utils::delimiterSplit(ver, ",");
       for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
       {
         setBackendConditionalDependencySingular(req, be, *it, dep, dep_type, resolver);
@@ -771,7 +770,7 @@ namespace Gambit
     void module_functor_common::setBackendConditionalDependencySingular
      (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
-      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
+      sspair key (dep, Utils::fix_type(dep_type));
       std::vector<str> quad;
       if (backendreq_types.find(req) != backendreq_types.end())
       {
@@ -802,7 +801,7 @@ namespace Gambit
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
       // Split the model string and send each model to be registered
-      std::vector<str> models = delimiterSplit(model, ",");
+      std::vector<str> models = Utils::delimiterSplit(model, ",");
       for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
       {
         setModelConditionalDependencySingular(*it, dep, dep_type, resolver);
@@ -813,7 +812,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalDependencySingular
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     { 
-      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
+      sspair key (dep, Utils::fix_type(dep_type));
       if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
       {
         std::vector<sspair> newvec;
@@ -827,7 +826,7 @@ namespace Gambit
     /// The info gets updated later if this turns out to be conditional on a model. 
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
     { 
-      type = strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit");
+      type = Utils::fix_type(type);
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
@@ -840,8 +839,8 @@ namespace Gambit
       }
       myGroupedBackendReqs[group].push_back(key);
       backendreq_map[key] = resolver;
-      strip_parentheses(tags);
-      backendreq_tagmap[key] = delimiterSplit(tags, ",");      
+      Utils::strip_parentheses(tags);
+      backendreq_tagmap[key] = Utils::delimiterSplit(tags, ",");      
       backendreq_groups[key] = group;
     }
 
@@ -849,11 +848,11 @@ namespace Gambit
     void module_functor_common::makeBackendRuleForModel(str model, str tag)
     {
       //Strip the tag and model strings of their parentheses
-      strip_parentheses(tag);
-      strip_parentheses(model);
+      Utils::strip_parentheses(tag);
+      Utils::strip_parentheses(model);
 
       //Split the tag string and sort it.
-      std::vector<str> tags = delimiterSplit(tag, ",");
+      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
       std::sort(tags.begin(), tags.end());
 
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
@@ -861,7 +860,7 @@ namespace Gambit
       {
         std::vector<str> tagset = backendreq_tagmap[*it];
         std::sort(tagset.begin(), tagset.end());
-        if (not is_disjoint(tags, tagset))
+        if (not Utils::is_disjoint(tags, tagset))
         {
           // Make each of the matching backend requirements conditional on the models passed in.
           setModelConditionalBackendReq(model,it->first,it->second);
@@ -875,7 +874,7 @@ namespace Gambit
      (str model, str req, str type)
     {
       // Split the model string and send each model to be registered
-      std::vector<str> models = delimiterSplit(model, ",");
+      std::vector<str> models = Utils::delimiterSplit(model, ",");
       for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
       {
         setModelConditionalBackendReqSingular(*it, req, type);
@@ -886,7 +885,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalBackendReqSingular
      (str model, str req, str type)
     { 
-      sspair key (req, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
+      sspair key (req, Utils::fix_type(type));
 
       // Remove the entry from the resolvable backend reqs list...
       myResolvableBackendReqs.erase(std::remove(myResolvableBackendReqs.begin(), 
@@ -910,10 +909,10 @@ namespace Gambit
     void module_functor_common::makeBackendOptionRule(str be_and_ver, str tag)
     {
       //Strip the tag and be-ver strings of their parentheses, then split them
-      strip_parentheses(tag);
-      strip_parentheses(be_and_ver);
-      std::vector<str> tags = delimiterSplit(tag, ",");
-      std::vector<str> be_plus_versions = delimiterSplit(be_and_ver, ",");
+      Utils::strip_parentheses(tag);
+      Utils::strip_parentheses(be_and_ver);
+      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
+      std::vector<str> be_plus_versions = Utils::delimiterSplit(be_and_ver, ",");
 
       //Die if no backend and/or no tags were given.      
       if (tags.empty() or be_plus_versions.empty())  
@@ -937,7 +936,7 @@ namespace Gambit
       {
         std::vector<str> tagset = backendreq_tagmap[*it];
         std::sort(tagset.begin(), tagset.end());
-        if (not is_disjoint(tags, tagset))
+        if (not Utils::is_disjoint(tags, tagset))
         {
           // For each of the matching backend requirements, set the chosen backend-version pairs as permitted 
           for (std::vector<str>::iterator vit = versions.begin() ; vit != versions.end(); ++vit)
@@ -978,8 +977,8 @@ namespace Gambit
     void module_functor_common::makeBackendMatchingRule(str tag)
     {
       //Strip the tag string of any parentheses, then split it
-      strip_parentheses(tag);
-      std::vector<str> tags = delimiterSplit(tag, ",");
+      Utils::strip_parentheses(tag);
+      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
 
       //Die if no tags were given.      
       if (tags.empty())  

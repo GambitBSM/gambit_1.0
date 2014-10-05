@@ -4,8 +4,6 @@
  * \author Lars A. Dal
  */
 
-#include "libFarrayTest_types.hpp"
-
 #define LIBPATH      "Backends/lib/libFarrayTest.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
@@ -54,8 +52,5 @@ BE_INI_FUNCTION{}
 DONE
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

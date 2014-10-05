@@ -437,6 +437,10 @@ $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
+$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC) 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 $(PRINTERSDIR)/build/%.o: $(PRINTERSDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@

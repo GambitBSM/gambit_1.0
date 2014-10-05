@@ -1418,7 +1418,7 @@
          BETags::BACKEND_REQ, BETags::BACKEND> (str ver)                       \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
-          vec versions = delimiterSplit(VERSTRING, ",");                       \
+          vec versions = Utils::delimiterSplit(VERSTRING, ",");                \
           for (vec::iterator it= versions.begin() ; it != versions.end(); ++it)\
           {                                                                    \
             if (*it == ver) return true;                                       \
@@ -1536,7 +1536,7 @@
          <Gambit::Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)     \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
-          vec models = delimiterSplit(MODELSTRING, ",");                       \
+          vec models = Utils::delimiterSplit(MODELSTRING, ",");                \
           for (vec::iterator it = models.begin() ; it != models.end(); ++it)   \
           {                                                                    \
             if (*it == model) return true;                                     \

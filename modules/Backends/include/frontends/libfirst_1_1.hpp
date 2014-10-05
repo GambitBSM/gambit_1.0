@@ -111,8 +111,5 @@ BE_NAMESPACE
 DONE
 
 // End
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

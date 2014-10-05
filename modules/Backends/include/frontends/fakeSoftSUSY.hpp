@@ -10,9 +10,6 @@
 
 /* #define LIBPATH      "Backends/lib/softsusy-3.3.8/.libs/libsoft.so" */
 
-#include <SLHA_types.hpp>
-#include <shared_types.hpp>
-
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -76,7 +73,5 @@ namespace Gambit
 //BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, (put some args here), "BEgenMSSMspectrum")
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
+
