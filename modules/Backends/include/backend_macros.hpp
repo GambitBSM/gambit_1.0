@@ -316,7 +316,7 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
 /* Register the factory functions for all classes loaded by this backend. */\
-BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                                                        \
+BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
 
 /// Load factory functions for classes provided by this backend.
 #define LOAD_ALL_FACTORIES                                                                      \
@@ -329,6 +329,8 @@ namespace Gambit                                                                
   {                                                                                             \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
+      /*Alias the namespace that the classes live in, to avoid macro issues with "::" */        \
+      namespace my_ns = ::CAT_3(BACKENDNAME,_,SAFE_VERSION);                                    \
                                                                                                 \
       /*Typedef the wrapper type to avoid expanding type seq inside BOOST_PP_SEQ_FOR_EACH_I*/   \
       typedef ::CAT_3(BACKENDNAME,_,SAFE_VERSION)::BOOST_PP_SEQ_FOR_EACH_I(TRAILING_NSQUALIFIER,\
@@ -374,8 +376,8 @@ namespace Gambit                                                                
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                     \
 {                                                                                               \
   /* Define the static function pointer in the wrapper class for this factory. */               \
-  ::Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::CAT(NAME,_type)                        \
-   ::Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::PTRNAME;                              \
+  Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::CAT(NAME,_type)                          \
+   Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::PTRNAME;                                \
 }                                                                                               \
                                                                                                 \
 namespace Gambit                                                                                \

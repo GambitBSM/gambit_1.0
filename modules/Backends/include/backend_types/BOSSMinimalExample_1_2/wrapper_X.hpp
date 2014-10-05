@@ -28,7 +28,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         X(int i1, bool memvar_in=false) :
             WrapperBase<Abstract_X>( __factory1(i1), memvar_in ),
             i(BEptr->i_ref_GAMBIT())
-        {}         
+        {}
+        // Special pointer-based constructor 
+        X(Abstract_X* in, bool memvar_in=false) :
+            WrapperBase<Abstract_X>( in, memvar_in ),
+            i(BEptr->i_ref_GAMBIT())
+        {}
   };
 
 }

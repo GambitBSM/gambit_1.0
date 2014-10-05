@@ -34,6 +34,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             x._setMemberVariable(true);
         }
+        // Special pointer-based constructor: 
+        Y(Abstract_Y* in, bool memvar_in=false) :
+            WrapperBase<Abstract_Y>( in, memvar_in ),
+            x(&(BEptr->x_ref_GAMBIT()))
+        {
+            x._setMemberVariable(true);
+        }
         // Others
         X get_x()
         {

@@ -8,7 +8,7 @@
 // Indicate which types are provided by this backend, and what the symbols of their factories are.
 #define BOSSMinimalExample_1_1_all_data \
   (( /*class*/(X),  /*constructors*/(("_Z9Factory_Xv",())) (("_Z9Factory_Xi",(int))) )) \
-  (( /*class*/(Y),  /*constructors*/(("_Z9Factory_Yv",())) (("_Z9Factory_YRN22BOSSMinimalExample_1_11XE",(BOSSMinimalExample_1_1::X))) )) 
+  (( /*class*/(Y),  /*constructors*/(("_Z9Factory_Yv",())) (("_Z9Factory_YRN22BOSSMinimalExample_1_11XE",(my_ns::X))) )) 
 
 // If the default version has been loaded, set it as default.
 #if ALREADY_LOADED(CAT_3(BACKENDNAME,_,CAT(Default_,BACKENDNAME)))
