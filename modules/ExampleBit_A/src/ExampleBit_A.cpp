@@ -377,6 +377,65 @@ namespace Gambit
         logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
     }
 
+    /// Basic example use of some loaded classes.
+    void bossed_class_example1(X &result)
+    {
+      cout << "Testing X type." << endl;
+      cout << "===================" << endl;
+
+      result.i = 0;
+      cout << "Result X's int: " << result.i << endl;
+      result.i+=1;
+      cout << "After adding 1: " << result.i << endl;
+
+      X localX(1);
+      cout << "Local X's int: " << localX.i << endl;
+      localX.i+=1;
+      cout << "After adding 1: " << localX.i << endl;
+
+      BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
+      cout << "v1.0 X's int: " << oldX.i << endl;      
+
+      // The following line doesn't work, as we still need 
+      // copy (and move?) constructors for the wrappers of BOSSed 
+      // classes (specifically for the derived wrappers; 
+      // the base wrapper has a copy constructor, but the additional 
+      // reference member variables of the derived wrappers
+      // need special treatment).
+      //result = localX;
+
+      cout << "Testing Y type." << endl;
+      cout << "===================" << endl;
+
+      Y myY;
+      cout << "myY's X's int: " << myY.x.i << endl;
+      myY.x.i+=1;
+      cout << "After adding 1: " << myY.x.i << endl;
+
+      cout << "Making localY from localX." << endl;
+      Y localY(localX);
+      cout << "LocalY's int: " << localY.x.i << endl;
+      localY.x.i+=1;
+      cout << "After adding 1: " << localY.x.i << endl;
+      cout << "LocalX's int after LocalY's int has been incremented: " << localX.i << endl;
+      /* Can't do this due to absence of copy constructor in derived wrappers: localX = localY.get_x();       
+      cout << "i of X retrieved from localY: " localX.i << endl; */
+      /* Do this instead: */ cout << "i of X retrieved from localY: " << localY.get_x().i << endl;     
+      localX.i-=1;
+      localY.set_x(localX);
+      cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;      
+
+      BOSSMinimalExample_1_0::nspace3::Y oldY(oldX);
+      cout << "v1.0 Y's int: " << oldY.x.i << endl;
+    }
+
+    /// Higher-level example use of some loaded classes.
+    void bossed_class_example2(int &result)
+    {
+      using namespace Pipes::bossed_class_example2;
+      Y localY(*Dep::BOSSed_X);
+      result = localY.x.i;
+    }
 
     /// \name SLHA Examples
     /// Some example functions for getting and manipulating SLHA-style information

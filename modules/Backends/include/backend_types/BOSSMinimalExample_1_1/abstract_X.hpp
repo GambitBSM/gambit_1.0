@@ -1,8 +1,8 @@
 #ifndef __ABSTRACT_X_BOSSMinimalExample_1_1_HPP__
 #define __ABSTRACT_X_BOSSMinimalExample_1_1_HPP__
 
-#include "backend_types/BOSSMinimalExample_1_1/forward_decls_abstract_classes.hpp"
-#include "backend_types/BOSSMinimalExample_1_1/identification.hpp"
+#include "forward_decls_abstract_classes.hpp"
+#include "identification.hpp"
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
@@ -21,7 +21,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 }
 
-// Undefine macros to avoid conflict with other backends.
 #include "backend_undefs.hpp"
 
 #endif /* __ABSTRACT_X_BOSSMinimalExample_1_1_HPP__ */

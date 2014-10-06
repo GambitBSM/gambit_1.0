@@ -316,7 +316,7 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
 /* Register the factory functions for all classes loaded by this backend. */\
-BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                                                        \
+BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
 
 /// Load factory functions for classes provided by this backend.
 #define LOAD_ALL_FACTORIES                                                                      \
@@ -329,6 +329,8 @@ namespace Gambit                                                                
   {                                                                                             \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
+      /*Alias the namespace that the classes live in, to avoid macro issues with "::" */        \
+      namespace my_ns = ::CAT_3(BACKENDNAME,_,SAFE_VERSION);                                    \
                                                                                                 \
       /*Typedef the wrapper type to avoid expanding type seq inside BOOST_PP_SEQ_FOR_EACH_I*/   \
       typedef ::CAT_3(BACKENDNAME,_,SAFE_VERSION)::BOOST_PP_SEQ_FOR_EACH_I(TRAILING_NSQUALIFIER,\
@@ -355,10 +357,10 @@ BOOST_PP_SEQ_FOR_EACH_I(LOAD_NTH_FACTORY_FOR_TYPE,                              
  BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)), BOOST_PP_TUPLE_ELEM(2,1,elem))                \
 
 #define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)                                                \
- LOAD_SINGLE_FACTORY(CAT_3(data,_factory,i), BOOST_PP_TUPLE_ELEM(2,1,elem),                     \
+ LOAD_SINGLE_FACTORY(data, CAT_3(data,_factory,i), BOOST_PP_TUPLE_ELEM(2,1,elem),               \
  BOOST_PP_TUPLE_ELEM(2,0,elem), CAT(data,_abstract), CAT(data,_wrapper)::CAT(__factory,i) )     \
 
-#define LOAD_SINGLE_FACTORY(NAME, ARGS, SYMBOLNAME, ABSTRACT, PTRNAME)                          \
+#define LOAD_SINGLE_FACTORY(BARENAME, NAME, ARGS, SYMBOLNAME, ABSTRACT, PTRNAME)                \
 namespace Gambit                                                                                \
 {                                                                                               \
   namespace Backends                                                                            \
@@ -374,8 +376,8 @@ namespace Gambit                                                                
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                     \
 {                                                                                               \
   /* Define the static function pointer in the wrapper class for this factory. */               \
-  ::Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::CAT(NAME,_type)                        \
-   ::Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::PTRNAME;                              \
+  Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::CAT(NAME,_type)                          \
+   Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::PTRNAME;                                \
 }                                                                                               \
                                                                                                 \
 namespace Gambit                                                                                \
@@ -391,9 +393,12 @@ namespace Gambit                                                                
       ABSTRACT* CAT(backend_not_loaded_,NAME)CONVERT_VARIADIC_ARG(ARGS)                         \
       {                                                                                         \
         std::ostringstream err;                                                                 \
-        err << "Backend required for class factory" << STRINGIFY(NAME) << std::endl             \
+        err << "The backend library" << std::endl                                               \
+            << STRINGIFY(BACKENDNAME) << " v" << STRINGIFY(VERSION) << "," << std::endl         \
+            << "which is supposed to contain the factory for class " << std::endl               \
+            << STRINGIFY(BARENAME) << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) << ", " << std::endl\
             << "is missing or catastrophically broken." << std::endl                            \
-            << "Fix or find your backend, or do not use this type." << std::endl;               \
+            << "Fix or find that backend yo -- or don't use the type." << std::endl;            \
         backend_error().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                           \
         return NULL;                                                                            \
       }                                                                                         \
@@ -402,9 +407,10 @@ namespace Gambit                                                                
       ABSTRACT* CAT(factory_not_loaded_,NAME)CONVERT_VARIADIC_ARG(ARGS)                         \
       {                                                                                         \
         std::ostringstream err;                                                                 \
-        err << "Class factory" << STRINGIFY(NAME)                                               \
-            << " has not loaded properly from its backend!" << std::endl                        \
-            << "(This means you can't make an object with it.)" << std::endl;                   \
+        err << "Class factory " << STRINGIFY(BARENAME) << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) \
+            << " did not load properly from " << std::endl                                      \
+            << STRINGIFY(BACKENDNAME) << " v" << STRINGIFY(VERSION) << std::endl                \
+            << " ...so you can't make an object with it. Suck eggs." << std::endl;              \
         backend_error().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                           \
         return NULL;                                                                            \
       }                                                                                         \
@@ -431,7 +437,7 @@ namespace Gambit                                                                
         else                                                                                    \
         {                                                                                       \
           PTRNAME = NAME;                                                                       \
-          logger() << "Succeeded in loading factory " << STRINGIFY(NAME)                        \
+          logger() << "Succeeded in loading factory " << STRINGIFY(BARENAME)                    \
                    << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) << " from "<< std::endl             \
                    << LIBPATH << "." << LogTags::backends << LogTags::info << EOM;              \
         }                                                                                       \

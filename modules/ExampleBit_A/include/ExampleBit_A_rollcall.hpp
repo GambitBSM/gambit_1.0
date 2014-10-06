@@ -205,6 +205,23 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Tester 1 for BOSSed types.
+  #define CAPABILITY BOSSed_X
+  START_CAPABILITY
+    #define FUNCTION bossed_class_example1
+    START_FUNCTION(X)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Tester 2 for BOSSed types.
+  #define CAPABILITY BOSS_tester
+  START_CAPABILITY
+    #define FUNCTION bossed_class_example2
+    START_FUNCTION(int)
+    DEPENDENCY(BOSSed_X, X)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
 #undef MODULE
 
