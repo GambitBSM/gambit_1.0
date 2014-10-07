@@ -19,6 +19,11 @@
 ///  \author Pat Scott
 ///           (patscott@physics.mcgill.ca)
 ///  \date 2014 Apr
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Sep, Oct
+///
 ///  *********************************************
 
 #ifndef __base_functions_hpp__
@@ -31,6 +36,7 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <map>
 //#include <memory>
 
 #include "boost/shared_ptr.hpp"
@@ -105,18 +111,24 @@ namespace Gambit
             return vec[i];
     }
 
-
+    ///////////////////////////////////////////////////////////////////////////
+    // Integration limit functor
+    ///////////////////////////////////////////////////////////////////////////
     class intLimitFunc
     {
         public:
-            virtual void operator ()(double &x0, double &x1, const BFargVec &args)
+            virtual void operator ()(double &x0, double &x1, std::map<unsigned int,double> args)
             {
                 (void) x0; (void) x1; (void) args;
                 std::cout << "ERROR: Virtual operator () of intLimitFunc called" << std::endl;
                 exit(1); 
             }
+            // Function for checking whether or not the argument list contains a given argument
+            static bool argInList(std::map<unsigned int,double> &in, unsigned int index)
+            {
+                return in.find(index) != in.end();
+            }
     };
-
 
     ///////////////////////////////////////////////////////////////////////////
     // FunctionExpression class
@@ -262,7 +274,14 @@ namespace Gambit
                 (void)indices;
                 return false;
             }
-            // Do I have an integrator that takes functions as limits? Only useful for N!=1 dimensional functions
+            // Function that is overloaded by integrator baseFunctions. 
+            // This function takes the index of an argument, and returns the corresponding index you would use if passing the argument to the function without any integrals.
+            // Here: No integrals are applied, just return the same index.
+            unsigned int baseArgIdx(unsigned int myArgIdx)
+            {
+                return myArgIdx;
+            }
+            // Do I have an integrator that takes functions as limits? Only useful for N>1 dimensional functions
             bool hasDynamicIntegrator(unsigned int index){return hasDynamicIntegrator(vector<unsigned int>(1,index));}               
             bool hasDynamicIntegrator(vector<unsigned int> indices)
             {
@@ -937,6 +956,12 @@ namespace Gambit
 //                 return result;
 //             }//18002216903 4167762466
             
+            unsigned int baseArgIdx(unsigned int myArgIdx)
+            {
+                if(myArgIdx<index) return integrand->baseArgIdx(myArgIdx);
+                else return integrand->baseArgIdx(myArgIdx+1);
+            }
+            
             bool hasIntegrator(vector<unsigned int> indices)
             {
                 // Add my own parameter to the list of parameters,
@@ -1008,7 +1033,13 @@ namespace Gambit
                     // Otherwise, integrate using the default techinque
                     // Set integration limits
                     double _x0, _x1;
-                    (*intLimits)(_x0,_x1,args);
+                    // The integration limits require arguments as a map from argument index for the un-integrated function to argument value.
+                    std::map<unsigned int,double> limArgs;
+                    for(int i=0;i<args.size();i++)
+                    {
+                        limArgs[baseArgIdx(i)] = args[i];
+                    }
+                    (*intLimits)(_x0,_x1,limArgs);
                     return value_defInt(args, _x0, _x1);
                 }
             }

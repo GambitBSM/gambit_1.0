@@ -26,7 +26,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar
+///  \date 2014 Mar, Sep
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__

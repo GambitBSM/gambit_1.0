@@ -20,7 +20,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar, Jul
+///  \date 2014 Mar, Jul, Sep, Oct
 ///
 ///  *********************************************
 
@@ -642,7 +642,7 @@ namespace Gambit {
           DiffYield3Body = DiffYield3Body->sum(dsigmavde);
         }
       }
-
+      cout << "Yield calculated!" << endl;
       // Resample function
       DiffYield3Body = DiffYield3Body->tabulate(xgrid);
 

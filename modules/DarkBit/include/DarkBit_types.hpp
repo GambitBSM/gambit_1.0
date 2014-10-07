@@ -32,7 +32,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar, Jul
+///  \date 2014 Mar, Jul, Sep, Oct
 ///  *********************************************
 
 
@@ -76,9 +76,15 @@ namespace Gambit
         public:
             // Constructor
             DSg3_IntLims_E1(double M_DM,double m1,double m2) : M_DM(M_DM), m1(m1), m2(m2){}
-            void operator ()(double &x0, double &x1, const BFargVec &args)
+            void operator ()(double &x0, double &x1, std::map<unsigned int,double> args)
             {
-                // First, calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
+                // First, check if the argument list contains argument 0
+                // Argument indices correspond to the indices you would use if passing the arguments to the function (to be integrated) without any integrals.
+                if (!argInList(args,0))
+                {
+                    cout << "Error: Argument 0 not found in argument list" << endl;
+                }
+                // Calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
                 double Eg = args[0]; // Photon energy
                 double x = Eg/M_DM;
                 double eta = pow(m1/M_DM,2);
