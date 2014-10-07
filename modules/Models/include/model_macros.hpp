@@ -61,7 +61,7 @@
                                                                                \
         /* Model lineage                                                       
            Each model is automatically marked as a child of the parent model.*/\
-        const std::vector<str> lineage = vecappend( PARENT::lineage,           \
+        const std::vector<str> lineage = Utils::vecappend( PARENT::lineage,    \
                                                     STRINGIFY(MODEL) );        \
                                                                                \
         /* Congruency function (checks if this model is a descendent of the
@@ -70,7 +70,7 @@
            else returns 'false'. */                                            \
         bool is_descendant_of(const str testmodel, const ModelFunctorClaw*claw)\
         {                                                                      \
-          claw->verify_model(testmodel);                                        \
+          claw->verify_model(testmodel);                                       \
           for (std::vector<str>::const_iterator it = lineage.begin();          \
                it!=lineage.end(); ++it)                                        \
           {                                                                    \

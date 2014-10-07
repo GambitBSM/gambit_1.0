@@ -175,6 +175,10 @@ ObsLikes:
   - purpose:      Observable
     capability:   ptrmeth_arr_tester
 
+  # Uncomment to test BOSS
+  - purpose:      Observable
+    capability:   BOSS_tester
+
   # Test multi-required-models
   - purpose:      Observable
     capability:   normaldist_loglike
@@ -268,7 +272,13 @@ ObsLikes:
   #  type:         double
   #  function:     RD_oh2_micromegas
   #  function:     RD_oh2_DarkSUSY
-
+  
+  ## Test DarkBit DD couplings with micrOMEGAs and DarkSUSY
+  #- purpose:      Observable
+  #  capability:   DD_couplings
+  #  type:         DarkBit::DD_couplings
+  #  function:     DD_couplings_micrOMEGAs
+  #  function:     DD_couplings_DarkSUSY
 
 #########################
 # Auxiliary entries

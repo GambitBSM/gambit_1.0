@@ -17,7 +17,7 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
-///  \date 2014 Mar
+///  \date 2014 Mar, Sep
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -32,20 +32,27 @@
 #ifndef __shared_types_hpp__
 #define __shared_types_hpp__
 
-// Definitions required to understand model parameter objects
-#include "model_types.hpp"
+#include "type_macros.hpp"        // Macro definitions
+#include "model_types.hpp"        // Definitions required to understand model parameter objects
+#include "base_functions.hpp"     // GAMBIT BaseFunction Objects
+#include "SLHA_readers.hpp"       // SLHA readers from contributed packages
 
-// All the types from the different backends
-#include "SLHA_types.hpp"
-#include "DarkSUSY_types.hpp"
-#include "SuperIso_types.hpp"
-#include "libFarrayTest_types.hpp"
-#include "FastSim_types.hpp"
-#include "libfirst_types.hpp"
-//#include "Pythia_types.hpp"
+// 'By hand' types from different backends
+#include "backend_types/DarkSUSY.hpp"
+#include "backend_types/SuperIso.hpp"
+#include "backend_types/libFarrayTest.hpp"
+#include "backend_types/FastSim.hpp"
+#include "backend_types/libfirst.hpp"
+#include "backend_types/micrOMEGAs.hpp"
 
-// GAMBIT BaseFunction Objects
-#include "base_functions.hpp"
+// Choices about the default versions of backends to use for loading types (specific versions
+// of types can always be used by employing the qualified type BACKENDNAME_SAFEVERSION::TYPE)
+#define  Default_BOSSMinimalExample 1_1
+
+// BOSSed (class-loaded) types from different backends 
+#include "backend_types/BOSSMinimalExample_1_0/loaded_types.hpp"
+#include "backend_types/BOSSMinimalExample_1_1/loaded_types.hpp"
+#include "backend_types/BOSSMinimalExample_1_2/loaded_types.hpp"
 
 // Other types that don't belong in any of the existing includes.  Should be progressively
 // organised into new headers and included from here as their number grows.
@@ -55,27 +62,7 @@ namespace Gambit
   // Pointer to a function that takes an integer by reference and returns a double.
   // Just used for example purposes in ExampleBit_A and ExampleBit_B.
   typedef double(*fptr)(int&);
-
-  // Placeholder type for SM parameters. Will be used all over GAMBIT so will
-  // need to think hard about how this works (different energy scales,
-  // renormalisation schemese etc, automatic conversion?)
-  struct SMpars
-  {
-    double alphaem;
-    double alphas;
-    double mZ;
-    double mtop;
-    // ...etc...
-  };
   
-  // Placeholder for CMSSM parameters object
-  struct CMSSMpars
-  {
-    double m0;
-    double m12;
-    // ...etc...
-  };
-
 }
 
 #endif //__shared_types_hpp__

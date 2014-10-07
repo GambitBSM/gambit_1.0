@@ -20,6 +20,7 @@
 #define __util_macros_hpp__
 
 #include "boost_fallbacks.hpp"
+#include "cats.hpp"
 
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
@@ -54,21 +55,8 @@
 
 /// \name Macro returning all but the first argument passed
 /// @{
-#define REMFIRST(A1,...) REMFIRST_I(A1,##__VA_ARGS__)
+#define REMFIRST(...) REMFIRST_I(__VA_ARGS__)
 #define REMFIRST_I(A1,...) (__VA_ARGS__)
-/// @}
-
-/// \name Concatenation macros
-/// Concatenate macro arguments for 2-7 arguments.
-/// @{
-#define CAT(X,Y) CAT2(X,Y)
-#define CAT2(X,Y) X##Y
-#define CAT_2 CAT
-#define CAT_3(X,Y,Z) CAT(X,CAT(Y,Z))
-#define CAT_4(A,X,Y,Z) CAT(A,CAT_3(X,Y,Z))
-#define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
-#define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
-#define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
 /// @}
 
 /// \name Macro chain for stripping parantheses off an argument
@@ -105,37 +93,37 @@
 /// \name Macro chain checking if the argument(s) passed has commas. Accepts up to 128 arguments.
 /// Example: HAS_COMMA(1,2,3) expands to 1; HAS_COMMA(1) expands to 0
 /// @{
-#define _ARG128(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, 						\
-_16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, 							\
-_32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, 							\
-_48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, 							\
-_64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75, _76, _77, _78, _79, 							\
-_80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, _92, _93, _94, _95, 							\
-_96, _97, _98, _99, _100, _101, _102, _103, _104, _105, _106, _107, _108, _109, 							\
+#define _ARG128(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,                                           \
+_16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,                                                 \
+_32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,                                                 \
+_48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,                                                 \
+_64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75, _76, _77, _78, _79,                                                 \
+_80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, _92, _93, _94, _95,                                                 \
+_96, _97, _98, _99, _100, _101, _102, _103, _104, _105, _106, _107, _108, _109,                                                 \
 _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127, ...) _127
 
-#define HAS_COMMA(...) _ARG128(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,									\
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 												\
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,													\
+#define HAS_COMMA(...) _ARG128(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                                                       \
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                                                                     \
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                                                                     \
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                                                                     \
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                                                                     \
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                                                                     \
 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 /// @}
 
 /// \name Macro chain checking if the argument passed is empty
 /// Example: ISEMPTY() expands to 1; ISEMPTY(1,2,3) expands to 0
 /// @{
-#define ISEMPTY(ARG) ISEMPTY_I(_127ONES STRIP_PARENS(ARG) ())
+#define ISEMPTY(ARG) ISEMPTY_I(_129ONES STRIP_PARENS(ARG) ())
 #define ISEMPTY_I(A) ISEMPTY_II(A,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 #define ISEMPTY_II(...) _ARG128(__VA_ARGS__)
-#define _127ONES() 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, \
+#define _129ONES() 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, \
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,\
-    1,1,1,1,1,1,1,1,1,1
+    1,1,1,1,1,1,1,1,1,1,1,1
 /// @}
 
 /// \name Macro that expands to the argument list with a comma in front 
@@ -144,7 +132,7 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// @{
 #define INSERT_NONEMPTY(ARG) CAT(INSERT_NONEMPTY_I,ISEMPTY(ARG))(ARG)
 #define INSERT_NONEMPTY_I0(ARG) ,STRIP_PARENS(ARG)
-#define INSERT_NONEMPTY_I1(...) 
+#define INSERT_NONEMPTY_I1(...) DUMMYARG(__VA_ARGS__)
 /// @}
 
 /// \name Boost 2-tuple access macros
@@ -213,8 +201,8 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// \endcode 
 /// @{
 #define VA_NARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(X,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define VARARG_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
+#define VA_NARGS(...) VA_NARGS_IMPL(X,__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define VARARG_IMPL2(base, count, ...) CAT_3(base,_,count)(__VA_ARGS__)
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__) 
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 /// @}
@@ -222,8 +210,8 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// \name Variadic macro expanders taking 3 leading arguments 
 /// @{
 #define VA_NARGS_AB_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, N, ...) N
-#define VA_NARGS_AB(...) VA_NARGS_AB_IMPL(X,##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define VARARG_AB_IMPL2(base, A, B, count, ...) base##_##count(A, B, __VA_ARGS__)
+#define VA_NARGS_AB(...) VA_NARGS_AB_IMPL(X,__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define VARARG_AB_IMPL2(base, A, B, count, ...) CAT_3(base,_,count)(A, B, __VA_ARGS__)
 #define VARARG_AB_IMPL(base, A, B, count, ...) VARARG_AB_IMPL2(base, A, B, count, __VA_ARGS__) 
 #define VARARG_AB(base, A, B, ...) VARARG_AB_IMPL(base, A, B, VA_NARGS_AB(__VA_ARGS__), __VA_ARGS__)
 /// @}
@@ -232,8 +220,8 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// @{
 #define VARARG_SWITCH_ON_GT_ONE_TESTER_1 1)(1
 #define VA_NARGS_SWITCH_ON_GT_ONE_IMPL(_1, _2, _3, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_ONE_TESTER,N,N,MORE)
-#define VA_NARGS_SWITCH_ON_GT_ONE(...) VA_NARGS_SWITCH_ON_GT_ONE_IMPL(X,##__VA_ARGS__, 2, 1, 0)
-#define VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, ...) base##_##count(__VA_ARGS__)
+#define VA_NARGS_SWITCH_ON_GT_ONE(...) VA_NARGS_SWITCH_ON_GT_ONE_IMPL(X,__VA_ARGS__, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, ...) CAT_3(base,_,count)(__VA_ARGS__)
 #define VARARG_SWITCH_ON_GT_ONE_IMPL(base, count, ...) VARARG_SWITCH_ON_GT_ONE_IMPL2(base, count, __VA_ARGS__) 
 #define VARARG_SWITCH_ON_GT_ONE(base, ...) VARARG_SWITCH_ON_GT_ONE_IMPL(base, VA_NARGS_SWITCH_ON_GT_ONE(__VA_ARGS__), __VA_ARGS__)
 /// @}
@@ -242,8 +230,8 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// @{
 #define VARARG_SWITCH_ON_GT_ONE_A_TESTER_1 1)(1
 #define VA_NARGS_SWITCH_ON_GT_ONE_A_IMPL(_1, _2, _3, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_ONE_A_TESTER,N,N,MORE)
-#define VA_NARGS_SWITCH_ON_GT_ONE_A(...) VA_NARGS_SWITCH_ON_GT_ONE_A_IMPL(X,##__VA_ARGS__, 2, 1, 0)
-#define VARARG_SWITCH_ON_GT_ONE_A_IMPL2(base, A, count, ...) base##_##count(A, __VA_ARGS__)
+#define VA_NARGS_SWITCH_ON_GT_ONE_A(...) VA_NARGS_SWITCH_ON_GT_ONE_A_IMPL(X,__VA_ARGS__, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_ONE_A_IMPL2(base, A, count, ...) CAT_3(base,_,count)(A, __VA_ARGS__)
 #define VARARG_SWITCH_ON_GT_ONE_A_IMPL(base, A, count, ...) VARARG_SWITCH_ON_GT_ONE_A_IMPL2(base, A, count, __VA_ARGS__) 
 #define VARARG_SWITCH_ON_GT_ONE_A(base, A, ...) VARARG_SWITCH_ON_GT_ONE_A_IMPL(base, A, VA_NARGS_SWITCH_ON_GT_ONE_A(__VA_ARGS__), __VA_ARGS__)
 /// @}
@@ -252,8 +240,8 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 /// @{
 #define VARARG_SWITCH_ON_GT_ONE_ABC_TESTER_1 1)(1
 #define VA_NARGS_SWITCH_ON_GT_ONE_ABC_IMPL(_1, _2, _3, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_ONE_ABC_TESTER,N,N,MORE)
-#define VA_NARGS_SWITCH_ON_GT_ONE_ABC(...) VA_NARGS_SWITCH_ON_GT_ONE_ABC_IMPL(X,##__VA_ARGS__, 2, 1, 0)
-#define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, ...) base##_##count(A, B, C, __VA_ARGS__)
+#define VA_NARGS_SWITCH_ON_GT_ONE_ABC(...) VA_NARGS_SWITCH_ON_GT_ONE_ABC_IMPL(X,__VA_ARGS__, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, ...) CAT_3(base,_,count)(A, B, C, __VA_ARGS__)
 #define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, count, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
 #define VARARG_SWITCH_ON_GT_ONE_ABC(base, A, B, C, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, VA_NARGS_SWITCH_ON_GT_ONE_ABC(__VA_ARGS__), __VA_ARGS__)
 /// @}

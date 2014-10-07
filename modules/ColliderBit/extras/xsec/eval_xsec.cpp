@@ -45,13 +45,10 @@ int main(int argc, char* argv[]) {
 
 
   // Are's tests
-  //cout << xs_qq << endl;
-  //cout << ev.xsec("dLdL",argv[1]) << endl;
-
   // Make a little loop that changes the mass from SPS1a
   /// @todo Add dLuL now that it exists!
   double par_sps1a[24] = {10.0,9.91309967E+01,1.92736343E+02,5.80512390E+02,sqrt(1.54942703E+05),1.96641876E+02,1.96641876E+02,1.95753769E+02,1.36230148E+02,1.36230148E+02,1.33552856E+02,5.39857788E+02,5.39857788E+02,4.95912292E+02,5.21658875E+02,5.21658875E+02,4.24832855E+02,5.19530823E+02,5.19530823E+02,5.16859436E+02,-5.10005585E+02,-7.72662109E+02,-2.54197601E+02,3.52390930E+02};
-  cout << "mqL1" << "\t" << "dLdL" << "\t" << "dLdLbar" << "\t" << "sLdL" << "\t" << "cLdL" << "\t" << "sRcR"<< endl;
+  cout << "mqL1" << "\t" << "dLdL" << "\t" << "dLuL" << "\t" << "sLdL" << "\t" << "cLsLbar" << "\t" << "cLcL" << "cldL" << "\t" << "\t" << "sRcR"<< endl;
   for (int im = 0; im < 20; im++) {
     par_sps1a[11] += 100;
     cout << "@" << im << "\t" << par_sps1a[11] << "\t"

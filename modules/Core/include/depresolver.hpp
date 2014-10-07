@@ -91,7 +91,7 @@ namespace Gambit
     {
       public:
         /// Constructor, provide module and backend functor lists
-        DependencyResolver(const gambit_core&, const Models::ModelFunctorClaw&, const IniParser::IniFile&, Printers::BasePrinter&);
+        DependencyResolver(const gambit_core&, const Models::ModelFunctorClaw&, const IniParser::IniFile&, const Utils::type_equivalency&, Printers::BasePrinter&);
 
         /// The dependency resolution
         void doResolution();
@@ -171,6 +171,9 @@ namespace Gambit
 
         /// ini file to which this dependency resolver is bound
         const IniParser::IniFile *boundIniFile;
+
+        /// Type equivalency object to which this dependency resolver is bound
+        const Utils::type_equivalency *boundTEs;
 
         /// Printer object to which this dependency resolver is bound
         Printers::BasePrinter *boundPrinter;

@@ -31,7 +31,7 @@
 #include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -195,10 +195,20 @@ namespace Gambit
     DependencyResolver::DependencyResolver(const gambit_core &core, 
                                            const Models::ModelFunctorClaw &claw,
                                            const IniParser::IniFile &iniFile,
+                                           const Utils::type_equivalency &equiv_classes,
                                                  Printers::BasePrinter &printer)
-     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
+     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundTEs(&equiv_classes), boundPrinter(&printer), index(get(vertex_index,masterGraph))
     {
       addFunctors();
+      logger() << LogTags::dependency_resolver << endl;
+      logger() << "#######################################"   << endl;
+      logger() << "#  List of Type Equivalency Classes   #"   << endl;
+      logger() << "#######################################"   << endl;
+      for (std::set<std::set<str> >::const_iterator it = boundTEs->equivalency_classes.begin(); it != boundTEs->equivalency_classes.end(); ++it)
+      {
+        logger() << *it << endl;
+      }
+      logger() << EOM;
     }
 
     //
@@ -219,7 +229,7 @@ namespace Gambit
       logger() << "#        List of Target ObsLikes      #"   << endl;
       logger() << "#                                     #"   << endl;
       logger() << "# format: Capability (Type) [Purpose] #"   << endl;
-      logger() << "#######################################"   << endl << endl;
+      logger() << "#######################################"   << endl;
       for (auto it = observables.begin(); it != observables.end(); ++it)
       {
         // TODO: Format output

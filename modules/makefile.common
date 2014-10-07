@@ -82,6 +82,7 @@ MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
+BOSSMINIDIR = ../extras/boss_temp
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -330,7 +331,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -395,13 +396,14 @@ EXSUSYSPECINC:=$(wildcard $(EXSUSYSPECDIR)/include/*hpp) $(wildcard $(EXSUSYSPEC
 EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
-STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(PRINTINC) $(LOGINC)
-STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS)
+STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(LOGINC)
+GAMBITINC = $(PRINTINC) $(COREINC)
+STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(BACKENDOBJS)
 MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 ifdef COLLIDE
   MODULEOBJS += $(HECOLLIDEROBJS)
 endif
-ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(COREOBJS) 
+ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS) 
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -428,11 +430,15 @@ all: minihelp doxygen backends $(TARGETS)
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
 	python $(HARVESTER) $(HARVESTER_OPTS)
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(COREINC) $(ROLLCALL_HEADERS)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(GAMBITINC) $(ROLLCALL_HEADERS)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC) 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC) 
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -525,7 +531,7 @@ endif
 
 ##### Executables #############
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(STANDALONEINC) $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(STANDALONEINC) $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -620,6 +626,11 @@ $(BACKENDDIR)/lib/libfastsim.so:
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
 	mv $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
+BOSSMINIS = $(BACKENDDIR)/lib/BOSSMinimalExample_1_0.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_1.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_2.so
+BOSSMinimalExample: $(BOSSMINIS)
+$(BOSSMINIS):
+	cd $(BOSSMINIDIR); make all
+	mv $(BOSSMINIDIR)/*.so $(BACKENDDIR)/lib/
 
 #### Documentation ##########
 
@@ -644,7 +655,7 @@ minihelp: .minihelp
 
 $(DOCDIR)/html/index.html: $(DOCDIR)/doxygen.conf TODO
 	@doxygen $(DOCDIR)/doxygen.conf && echo "doxygen done."
-	@ln -s $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
+	@ln -sf $(DOCDIR)/html/index.html $(DOCDIR)/Manual.html
 	@echo "Documentation found in $@"
 
 doxygen: $(DOCDIR)/html/index.html
@@ -684,6 +695,7 @@ clean_backends:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
 	@cd $(NULIKEDIR); make clean
 	@cd $(FASTSIMDIR); make clean
+	@cd $(BOSSMINIDIR); make clean
 	@cd $(DDCALC0DIR); make clean
 
 clean_docs:

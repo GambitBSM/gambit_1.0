@@ -49,7 +49,7 @@
 #include <boost/preprocessor/config/config.hpp>
 #include <boost/detail/workaround.hpp>
 
-#pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
+//#pragma message "BOOST_LIB_VERSION = " BOOST_LIB_VERSION
 
 /// If we are working with version 1.41 or earlier, fix the buggy treatment of fpclassify. 
 #if BOOST_WORKAROUND(BOOST_VERSION, < 104200)
@@ -103,13 +103,13 @@
 #if BOOST_PP_VARIADICS
 
   // It does, so just include the relevant headers that only exist in such versions.
-  #pragma message "Boost version supports variadics."
+  //#pragma message "Boost version supports variadics."
   #include <boost/preprocessor/variadic/size.hpp>
 
 #else
 
   /// Compensate for the case where Boost version is too old to have variadic macros.
-  #pragma message "Boost version does not support variadics.  Redefining relevant macros."
+  //#pragma message "Boost version does not support variadics.  Redefining relevant macros."
 
   /// BOOST_PP_VARIADIC_SIZE; Returns the number of arguments passed.
   /// 

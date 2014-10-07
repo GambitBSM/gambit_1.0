@@ -296,6 +296,9 @@ namespace Gambit
       /// Constructor
       module_functor_common(str, str, str, str, Models::ModelFunctorClaw&);
 
+      /// Destructor
+      ~module_functor_common();
+
       /// Getter for averaged runtime
       double getRuntimeAverage();
 
@@ -318,8 +321,10 @@ namespace Gambit
       safe_ptr<str> getChosenReqFromGroup(str);
 
       /// Execute a single iteration in the loop managed by this functor.
-      void iterate(int iteration);
+      virtual void iterate(int iteration);
 
+      // Initialise the array holding the current iteration(s) of this functor.
+      virtual void init_myCurrentIteration();
       /// Setter for setting the iteration number in the loop in which this functor runs
       virtual void setIteration (int iteration);
       /// Return a safe pointer to the iteration number in the loop in which this functor runs.
@@ -539,9 +544,6 @@ namespace Gambit
       /// Destructor
       ~module_functor();
 
-      /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
-      virtual void setLoopManagerCapability (str manager);
-
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool flag);
 
@@ -574,6 +576,9 @@ namespace Gambit
 
       /// Flag to select whether or not the results of this functor should be sent to the printer object.
       bool myPrintFlag;
+
+      // Initialise the memory of this functor.
+      virtual void init_myValue();
 
   };
 
