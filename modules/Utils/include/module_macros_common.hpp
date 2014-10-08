@@ -139,6 +139,15 @@
 #define BACKEND_REQ_3(_1, _2, _3)                    DECLARE_BACKEND_REQ(none, _1, _2, _3, (), 1) 
 #define BACKEND_REQ(...)                             VARARG(BACKEND_REQ, __VA_ARGS__)
 
+/// NEEDS_CLASSES_FROM() called with no versions; use default
+#define CLASSLOAD_NEEDED_0(_1)      CLASSLOAD_NEEDED(_1, "default")
+/// CLASSLOAD_NEEDED() called with one or more versions; require specified backend versions
+#define CLASSLOAD_NEEDED_1(_1, ...) CLASSLOAD_NEEDED(_1, #__VA_ARGS__)
+/// Redirects the NEEDS_CLASSES_FROM(BACKEND, [VERSIONS]) macro to the 
+/// CLASSLOAD_NEEDED(BACKEND, VERSTRING) macro according to whether it has been called 
+/// with version numbers or not (making the version number 'default' if it is omitted).
+#define NEEDS_CLASSES_FROM(...)     CAT(CLASSLOAD_NEEDED_, BOOST_PP_GREATER(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), 1))(__VA_ARGS__)
+
 
 ///Simple alias for ALLOW_MODEL/S
 #define ALLOW_MODEL ALLOW_MODELS

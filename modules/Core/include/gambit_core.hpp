@@ -168,7 +168,7 @@ namespace Gambit
       const model_info get_model_info(const str&) const;
  
       /// Check the named database for conflicts and missing descriptions
-      // Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts
+      /// Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts.
       void check_databases();
  
       /// Vector of all capability_info objects

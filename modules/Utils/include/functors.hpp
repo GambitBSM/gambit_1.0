@@ -411,6 +411,12 @@ namespace Gambit
       /// Add one or more rules for forcing backends reqs with the same tags to always be resolved from the same backend.
       void makeBackendMatchingRule(str tag);
 
+      /// Add a rule indicating that classes from a given backend must be available
+      void setRequiredClassloader(str, str);
+
+      /// Indicate to the functor which backends are actually loaded and working
+      void informOfBackends(std::map<str, std::set<str> >);
+
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);
 
@@ -521,6 +527,9 @@ namespace Gambit
 
       /// Map from tags to sets of matching (backend requirement-type pairs) that are forced to use the same backend
       std::map< str, std::vector<sspair> > myForcedMatches;
+
+      /// Map from required classloading backends to their versions
+      std::map< str, std::set<str> > required_classloading_backends;
 
       /// Internal timespec object
       timespec tp;

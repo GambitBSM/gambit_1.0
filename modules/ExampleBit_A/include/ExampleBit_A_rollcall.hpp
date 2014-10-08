@@ -210,6 +210,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION bossed_class_example1
     START_FUNCTION(X)
+    NEEDS_CLASSES_FROM(BOSSMinimalExample, default, 1.0)
     #undef FUNCTION
   #undef CAPABILITY
   
@@ -219,6 +220,7 @@ START_MODULE
     #define FUNCTION bossed_class_example2
     START_FUNCTION(int)
     DEPENDENCY(BOSSed_X, X)
+    NEEDS_CLASSES_FROM(BOSSMinimalExample) // same as NEEDS_CLASSES_FROM(BOSSMinimalExample, default)
     #undef FUNCTION
   #undef CAPABILITY
 

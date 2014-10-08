@@ -69,6 +69,7 @@
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
 #define FORCE_SAME_BACKEND(...)                           DUMMYARG(__VA_ARGS__)                               
+#define CLASSLOAD_NEEDED(...)                             DUMMYARG(__VA_ARGS__)
 /// @}
 
 
