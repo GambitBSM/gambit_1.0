@@ -60,6 +60,12 @@
 #include "backend_types/BOSSMinimalExample_1_2/loaded_types.hpp"
 #include "backend_types/Pythia_8_186/loaded_types.hpp"
 
+// Spectrum object from SpecBit
+#include "Spectrum.hpp"
+
+// GAMBIT BaseFunction Objects
+#include "base_functions.hpp"
+
 // Other types that don't belong in any of the existing includes.  Should be progressively
 // organised into new headers and included from here as their number grows.
 namespace Gambit
