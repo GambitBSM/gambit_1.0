@@ -17,6 +17,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <sstream>
 
 // Headers for GNU getopt command line parsing library
 #include <stdlib.h>
@@ -163,6 +164,13 @@ namespace Gambit
       backendFunctorList.push_back(&f);
       backends.insert(f.origin());
       capabilities.insert(f.capability());
+    }
+
+    /// Register a new classloading backend
+    void gambit_core::registerClassloader(str be, str version)
+    {
+      backends.insert(be);
+      classloader_versions[be].insert(version);  
     }
 
     /// Add a new primary model functor to primaryModelFunctorList
@@ -460,10 +468,30 @@ namespace Gambit
       core_error().raise(LOCAL_INFO,errmsg.str());
     }
 
+    /// Compute the status of a given backend
+    inline str gambit_core::backend_status(str be, str version, bool& no_failures)
+    {
+      const str OK = "OK";
+      const str bad = "absent/broken";
+      const str badclass = "bad types";
+      str status;
+      if (backendData->works.at(be+version)) 
+      {
+        if (backendData->classloader.at(be+version)) 
+        {
+          status = (backendData->classes_OK.at(be+version) ? OK : badclass); 
+        }
+        else { status = OK; }
+      }
+      else { status = bad; }
+      if (status == bad or status == badclass) no_failures = false;
+      return status;
+    }
 
     /// Launch non-interactive command-line diagnostic mode, for printing info about current GAMBIT configuration.
     str gambit_core::run_diagnostic(int argc, char **argv)
     {
+
       str filename;
       const str command = argc > 1 ? argv[1] : "none";
       bool no_scan = false; // Set to true if something happens that means we should stop cleanly after checking commands
@@ -475,8 +503,8 @@ namespace Gambit
       {
         const int maxlen = 25;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Modules             Num. functions" << endl;
-        cout << "----------------------------------" << endl;
+        cout << "Modules                #functions" << endl;
+        cout << "---------------------------------" << endl;
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
           int nf = 0;
@@ -491,45 +519,73 @@ namespace Gambit
     
       else if (command == "backends")
       {
-        int maxlens[4] = {18, 7, 40, 15};
+        int maxlens[6] = {18, 7, 40, 13, 3, 3};
+        bool all_good = true;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status    Num. functions" << endl;
-        cout << "--------------------------------------------------------------------------------------------------------" << endl;
+        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status          #funcs  #types  #ctors" << endl;
+        cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
         for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
         {
           std::set<str> versions;
           std::map<str,int> nfuncs;
+          std::map<str,int> ntypes;
+          std::map<str,int> nctors;
           std::map<str,str> paths;
           std::map<str,str> status;
+          // Retrieve the status and path info for any versions of this backend that can load classes.
+          if (classloader_versions.find(*it) != classloader_versions.end())
+          {
+            versions = classloader_versions.at(*it);
+            for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
+            {
+              std::set<str> classes = backendData->classes.at(*it+*jt);  // Retrieve classes loaded by this version
+              paths[*jt]  = backendData->paths.at(*it+*jt);              // Get the path of this backend
+              status[*jt] = backend_status(*it, *jt, all_good);          // Save the status of this backend
+              ntypes[*jt] = classes.size();                              // Get the number of classes loaded by this backend
+              nctors[*jt] = 0;                                           // Initialise the count of constructors in this version
+              for (std::set<str>::const_iterator kt = classes.begin(); kt != classes.end(); ++kt)
+              {
+                nctors[*jt] += backendData->factory_args.at(*it+*jt+*kt).size(); // Add the number of factories for this class to the total
+              }
+            }
+          }	
+          // Retrieve the backend info for all backends with associated functors.
           for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
           {
             if ((*jt)->origin() == *it)              // Backend matches
             {
-              str version = (*jt)->version();        // Retrieve the version
+              const str version = (*jt)->version();  // Retrieve the version
               auto new_v = versions.insert(version); // Attempt to add this version to the set 
               if (new_v.second)                      // This version was not in the version set yet
               {
-                nfuncs[version] = 0;                                  // Initialise the count of functions in this version
-                paths[version]  = backendData->paths.at(*it+version); // Save the path of this backend
-                status[version] = backendData->works.at(*it+version) ? "present" : "absent/broken";  // Save the status of this backend 
+                nfuncs[version] = 0;                 // Initialise the count of functions in this version
+                paths[version]  = backendData->paths.at(*it+version);     // Get the path of this backend
+                status[version] = backend_status(*it, version, all_good); // Save the status of this backend 
+                ntypes[version] = 0;                 // No types if this is a version that wasn't already seen
+                nctors[version] = 0;                 // No constructors if this is a version that wasn't already seen
               }
               nfuncs[version]++; // Increment the count of the functions in this version
             }
           }         
           for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
           {
+            ostringstream ss1, ss2;
+            str ss1a, ss2a;
             str firstentry = "";
             if (jt == versions.begin()) firstentry = *it;
             cout << firstentry  << spacing(firstentry.length(),maxlens[0]);
             cout << *jt         << spacing(jt->length(),maxlens[1]);
             cout << paths[*jt]  << spacing(paths[*jt].length(),maxlens[2]);
             cout << status[*jt] << spacing(status[*jt].length(),maxlens[3]);
-            cout << nfuncs[*jt] << endl;
+            ss1 << nfuncs[*jt]; ss1a = spacing(ss1.str().length(),maxlens[4]);
+            ss2 << ntypes[*jt]; ss2a = spacing(ss2.str().length(),maxlens[5]);
+            cout << ss1.str() << ss1a << ss2.str() << ss2a << nctors[*jt] << endl;
           }
         }
+        if (all_good) cout << endl << "All your backend are belong to us." << endl;
         no_scan = true;
       }
-    
+   
       else if (command == "models")
       {
         int maxlen1 = 22;

@@ -144,5 +144,5 @@ namespace Gambit
     }
   
   }
-  
+
 }

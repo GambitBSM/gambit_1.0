@@ -27,13 +27,16 @@ namespace Gambit
   namespace Backends
   {
 
-    /// Structure providing info on backend libraries
+    /// Structure providing some basic info on backend libraries
     struct backend_info
     {
       public: 
-        std::map<str,bool> works;
-        std::map<str,bool> classloader;
-        std::map<str,bool> classes_OK;
+        std::map<str,bool> works;                  // Key: backend name + version
+        std::map<str,bool> classloader;            // Key: backend name + version
+        std::map<str,bool> classes_OK;             // Key: backend name + version
+        std::map<str,std::set<str> > classes;      // Key: backend name + version
+        std::map<str,std::set<str> > factory_args; // Key: backend name + version + class name
+        std::map<str,str> constructor_status;      // Key: backend name + version + class name + factory args
         std::map<str,str> paths;
         std::map<str,str> dlerrors;
         str version_from_safe_version(str be, str sv) { return safe_version_map.at(be).at(sv); } 

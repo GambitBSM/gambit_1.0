@@ -56,6 +56,9 @@ namespace Gambit
       /// List of all declared backends
       std::set<str> backends;
 
+      /// Map from backend names to a list of all versions able to perform classloading
+      std::map<str, std::set<str> > classloader_versions;
+
       /// List of all declared capabilities
       std::set<str> capabilities;
 
@@ -91,6 +94,9 @@ namespace Gambit
 
       /// Flag specifying whether command line options have been processed yet.
       bool processed_options;
+
+      /// Compute the status of a given backend
+      inline str backend_status(str, str, bool&);
  
     public:
 
@@ -121,6 +127,9 @@ namespace Gambit
 
       /// Add a new module to modules list
       void registerModule(str);
+
+      /// Add a new classloading backend to the backends list
+      void registerClassloader(str, str);
 
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
