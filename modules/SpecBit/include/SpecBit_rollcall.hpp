@@ -31,6 +31,10 @@ START_MODULE
   #define CAPABILITY particle_spectrum   // Supplies the physical mass spectrum of a particle model
   START_CAPABILITY                          
 
+    #define FUNCTION make_test_spectrum  // Get test MSSM spectrum
+    START_FUNCTION(Spectrum)
+    #undef FUNCTION
+
     #define FUNCTION get_lowE_MSSM_spectrum            // Get MSSM spectrum as a Spectrum object
     START_FUNCTION(Spectrum)                  
     ALLOW_MODELS(MSSM24, CMSSM)
@@ -63,6 +67,20 @@ START_MODULE
 
   #undef CAPABILITY
     
+
+  /// TEST FUNCTIONS
+  // Just some functions for testing SpecBit and Spectrum object components
+
+  #define CAPABILITY specbit_tests
+  START_CAPABILITY
+
+     #define FUNCTION specbit_tests
+     START_FUNCTION(bool)  // Returns test pass or fail
+     DEPENDENCY(particle_spectrum, Spectrum)            // Takes a Spectrum object and returns an eaSLHA object
+     #undef FUNCTION
+
+  #undef CAPABILITY
+
 
 #undef MODULE
 

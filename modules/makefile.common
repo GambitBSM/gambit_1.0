@@ -68,6 +68,7 @@ HECOLLIDERDIR = ColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
 HIGGSDIR = HiggsBit
+SPECDIR = SpecBit
 DECAYDIR = DecayBit
 EXAMPLEADIR = ExampleBit_A
 EXAMPLEBDIR = ExampleBit_B
@@ -98,6 +99,7 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(EXSUSYSPECDIR)/include \
   -I$(FLAVDIR)/include \
   -I$(HIGGSDIR)/include \
+  -I$(SPECDIR)/include \
   -I$(DECAYDIR)/include \
   -I$(YAMLDIR)/include \
   -I$(SLHAPy8DIR) \
@@ -448,6 +450,10 @@ HIGGSINC:=$(wildcard $(HIGGSDIR)/include/*hpp) $(wildcard $(HIGGSDIR)/include/*h
 HIGGSSRC:=$(wildcard $(HIGGSDIR)/src/*cpp)
 HIGGSOBJS:=$(addprefix $(HIGGSDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(HIGGSSRC))))
 
+SPECINC:=$(wildcard $(SPECDIR)/include/*hpp) $(wildcard $(SPECDIR)/include/*h)
+SPECSRC:=$(wildcard $(SPECDIR)/src/*cpp)
+SPECOBJS:=$(addprefix $(SPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(SPECSRC))))
+
 DECAYINC:=$(wildcard $(DECAYDIR)/include/*hpp) $(wildcard $(DECAYDIR)/include/*h)
 DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
 DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
@@ -470,7 +476,7 @@ EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
 GAMBITINC = $(COREINC) $(BACKENDINC) $(UTILSINC) $(MODELINC)
-ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+ALLOBJECTS = $(COREOBJS) $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS) $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(SPECOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 
 ifdef COLLIDE
   ALLOBJECTS += $(HECOLLIDEROBJS)
@@ -539,6 +545,10 @@ $(FLAVDIR)/build/%.o: $(FLAVDIR)/src/%.cpp $(GAMBITINC) $(FLAVINC)
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(GAMBITINC) $(HIGGSINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(SPECDIR)/build/%.o: $(SPECDIR)/src/%.cpp $(GAMBITINC) $(SPECINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
