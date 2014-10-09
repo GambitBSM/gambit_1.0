@@ -280,7 +280,7 @@ namespace Gambit
     }
 
     /// Indicate to the functor which backends are actually loaded and working
-    void functor::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
+    void functor::notifyOfBackends(std::map<str, std::set<str> >)
     {
       utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
     }
@@ -1051,13 +1051,18 @@ namespace Gambit
       for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)
       {
         // Check to make sure some version of the backend in question is connected.
-        if (be_ver_map.find(it->first) == be_ver_map.end()) this->myStatus = -3; 
-        // Loop over all the versions of the backend that are needed for this functor to work.
-        for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
+        if (be_ver_map.find(it->first) == be_ver_map.end())
         {
-          std::set<str> versions = be_ver_map.at(it->first);
-          // Check that the specific version needed is connected.
-          if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+          this->myStatus = -3;
+        }
+        else 
+        {  // Loop over all the versions of the backend that are needed for this functor to work.
+          for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
+          {
+            std::set<str> versions = be_ver_map.at(it->first);
+            // Check that the specific version needed is connected.
+            if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+          }
         }
       }
     } 
