@@ -2,7 +2,7 @@
 #define MSSMSPEC_H
 
 #include "MSSM_two_scale_model.hpp"
-#include "../../../Spectrum.hpp"
+#include "Spectrum.hpp"
 #include "two_scale_model.hpp"
 #include "MSSM_model.hpp"
 #include "config.h"

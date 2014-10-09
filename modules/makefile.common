@@ -64,6 +64,38 @@ MULTINESTINC = /usr/local/includes#                                       # path
 MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib#   # path containing "libmultinest.so"
 #**********************
 
+#********************** Temporary stuff for hard-linking against flexiblesusy libraries
+# Mostly grabbed from Peter's stand-alone example Makefile, contrib/flexiblesusy/MSSM/examples/standalone-new/Makefile
+# Need to make sure flexiblesusy libraries are compiled first!
+
+# Package information
+PKGNAME         := FlexibleSUSY
+VERSION         := 0.5.3
+ABSBASEDIR      := contrib/flexiblesusy/MSSM/
+
+LIBEXT          := .a
+
+MODEL           := MSSM
+
+MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
+CONFIGDIR       := $(ABSBASEDIR)/config
+FLEXIDIR        := $(ABSBASEDIR)/src
+LEGACYDIR       := $(ABSBASEDIR)/legacy
+
+INCMODEL        := -I$(MODELDIR)
+INCCONFIG       := -I$(CONFIGDIR)
+INCFLEXI        := -I$(FLEXIDIR)
+INCLEGACY       := -I$(LEGACYDIR)
+LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(LIBEXT)
+LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(LIBEXT)
+LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
+
+INCEIGEN        := -I../extras/eigen3
+
+FLEXINCS := $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCMODEL) $(INCEIGEN)
+FLEXLIBS := $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY)
+#**********************
+
 # Location of gambit sub-directories
 COREDIR = Core
 MODELDIR = Models
@@ -122,7 +154,8 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(HEPUTILSDIR)/include \
   -I$(MCUTILSDIR)/include \
   -I$(FASTSIMDIR)/include \
-  -I$(MULTINESTINC)
+  -I$(MULTINESTINC) \
+  $(FLEXINCS)
 
 ifdef CPPFLAGS
   CFLAGS += $(CPPFLAGS)
@@ -420,7 +453,7 @@ EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.
 STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(LOGINC)
 GAMBITINC = $(PRINTINC) $(COREINC)
 STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(BACKENDOBJS)
-MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(SPECOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(SPECOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS) $(FLEXLIBS)
 
 ifdef COLLIDE
   MODULEOBJS += $(COLLIDEROBJS)

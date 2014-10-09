@@ -60,7 +60,7 @@
 #include "backend_types/BOSSMinimalExample_1_2/loaded_types.hpp"
 #include "backend_types/Pythia_8_186/loaded_types.hpp"
 
-// Spectrum object from SpecBit
+// Spectrum object from flexiblesusy backend
 #include "Spectrum.hpp"
 
 // GAMBIT BaseFunction Objects

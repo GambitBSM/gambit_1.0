@@ -7,7 +7,7 @@ FLEXIBLESUSY_PATCH := 1
 FLEXIBLESUSY_EXTRA := 
 FLEXIBLESUSY_PKG   := $(PKGNAME)-$(FLEXIBLESUSY_VERSION)
 FLEXIBLESUSY_TAG   := v$(FLEXIBLESUSY_VERSION)
-ABSBASEDIR         := /home/peter/Downloads/MSSM-FS
+ABSBASEDIR         := /home/farmer/Monash005/gambit_tmp/GAMBIT/modules/contrib/flexiblesusy/MSSM
 INSTALL_DIR        := 
 
 # Switches
@@ -35,16 +35,16 @@ CXX_DEP_GEN        := g++
 CXXFLAGS_DEP_GEN   := -std=c++11
 FC                 := gfortran
 FFLAGS             := -O2 -frecursive
-FLIBS              := -L/usr/lib/gcc/x86_64-linux-gnu/4.6/ -lgfortran -lm
+FLIBS              := -L/usr/local/gcc/4.7.2/lib64/../lib64/ -lgfortran -lm
 FOR_DEP_GEN        := gfortran
 MAKELIB            := ar cru
 LIBEXT             := .a
 BOOSTTESTLIBS      := -lboost_unit_test_framework
 BOOSTTHREADLIBS    := 
 BOOSTFLAGS         := 
-EIGENFLAGS         := -I/usr/include/eigen3
-GSLLIBS            := -L/usr/lib -lgsl -lgslcblas -lm
-GSLFLAGS           := -I/usr/include
+EIGENFLAGS         := -I../../../../extras/eigen3
+GSLLIBS            := -L/usr/local/gsl/1.12-gcc/lib -lgsl -lgslcblas -lm
+GSLFLAGS           := -I/usr/local/gsl/1.12-gcc/include
 LAPACKLIBS         := -llapack
 LOOPTOOLSFLAGS     := 
 LOOPTOOLSLIBS      := 
