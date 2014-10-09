@@ -162,16 +162,11 @@ namespace Gambit
     void gambit_core::registerBackendFunctor(functor &f)
     {
       backendFunctorList.push_back(&f);
-      backends.insert(f.origin());
       capabilities.insert(f.capability());
     }
 
-    /// Register a new classloading backend
-    void gambit_core::registerClassloader(str be, str version)
-    {
-      backends.insert(be);
-      classloader_versions[be].insert(version);  
-    }
+    /// Register a new backend
+    void gambit_core::registerBackend(str be, str version) { backend_versions[be].insert(version); }
 
     /// Add a new primary model functor to primaryModelFunctorList
     void gambit_core::registerPrimaryModelFunctor(primary_model_functor &f)
@@ -204,6 +199,40 @@ namespace Gambit
     /// Get a reference to the map of all user-activated primary model functors
     const gambit_core::pmfMap& gambit_core::getActiveModelFunctors() const { return activeModelFunctorList; }
     
+    /// Tell the module functors which backends are actually present,
+    /// so that they can deactivate themselves if they require a class
+    /// that is supposed to be provided by a backend that is AWOL.
+    void gambit_core::accountForMissingClasses() const
+    {
+      // Create a map of all the registered backends that are connected and fully functional (including factories for classloading)
+      std::map<str, std::set<str> > working_bes;
+      // Start by looping over all registered backends
+      for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
+      {
+        // Then loop over all registered versions of this backend
+        for (std::set<str>::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+        {
+          const str be_ver = it->first+*jt;
+          if (backendData->works.at(be_ver))
+          {
+            if (backendData->classloader.at(be_ver))
+            {
+              if (backendData->classes_OK.at(be_ver)) working_bes[it->first].insert(*jt);
+            }
+            else
+            { 
+              working_bes[it->first].insert(*jt);
+            }
+          }
+        }
+      }
+      // Feed the new map to each of the module functors.
+      for (fVec::const_iterator it = functorList.begin(); it != functorList.end(); ++it)
+      {
+        (*it)->notifyOfBackends(working_bes);
+      }
+    }
+
     /// Check the capability and model databases for conflicts and missing descriptions
     // Emits a report to file regard missing and conflicting descriptions.
     void gambit_core::check_databases()
@@ -524,64 +553,53 @@ namespace Gambit
         cout << "\nThis is GAMBIT." << endl << endl; 
         cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status          #funcs  #types  #ctors" << endl;
         cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
-        for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
+
+        // Loop over all registered backends
+        for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
         {
-          std::set<str> versions;
-          std::map<str,int> nfuncs;
-          std::map<str,int> ntypes;
-          std::map<str,int> nctors;
-          std::map<str,str> paths;
-          std::map<str,str> status;
-          // Retrieve the status and path info for any versions of this backend that can load classes.
-          if (classloader_versions.find(*it) != classloader_versions.end())
+          // Loop over all registered versions of this backend
+          for (std::set<str>::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
           {
-            versions = classloader_versions.at(*it);
-            for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
+            int nfuncs = 0;
+            int ntypes = 0;
+            int nctors = 0;
+            str path, status;
+
+            // Retrieve the status and path info.
+            path = backendData->paths.at(it->first+*jt);                          // Get the path of this backend
+            status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
+
+            // Count up the number of functions in this version of the backend, using the registered functors.
+            for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
             {
-              std::set<str> classes = backendData->classes.at(*it+*jt);  // Retrieve classes loaded by this version
-              paths[*jt]  = backendData->paths.at(*it+*jt);              // Get the path of this backend
-              status[*jt] = backend_status(*it, *jt, all_good);          // Save the status of this backend
-              ntypes[*jt] = classes.size();                              // Get the number of classes loaded by this backend
-              nctors[*jt] = 0;                                           // Initialise the count of constructors in this version
+              if ((*kt)->origin() == it->first and (*kt)->version() == *jt) nfuncs++; // If backend matches, increment the count of the functions in this version
+            }
+
+            // Do things specific to versions that provide classes
+            if (backendData->classloader.at(it->first+*jt))
+            {
+              std::set<str> classes = backendData->classes.at(it->first+*jt);     // Retrieve classes loaded by this version
+              ntypes = classes.size();                                      // Get the number of classes loaded by this backend
               for (std::set<str>::const_iterator kt = classes.begin(); kt != classes.end(); ++kt)
               {
-                nctors[*jt] += backendData->factory_args.at(*it+*jt+*kt).size(); // Add the number of factories for this class to the total
+                nctors += backendData->factory_args.at(it->first+*jt+*kt).size(); // Add the number of factories for this class to the total
               }
             }
-          }	
-          // Retrieve the backend info for all backends with associated functors.
-          for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
-          {
-            if ((*jt)->origin() == *it)              // Backend matches
-            {
-              const str version = (*jt)->version();  // Retrieve the version
-              auto new_v = versions.insert(version); // Attempt to add this version to the set 
-              if (new_v.second)                      // This version was not in the version set yet
-              {
-                nfuncs[version] = 0;                 // Initialise the count of functions in this version
-                paths[version]  = backendData->paths.at(*it+version);     // Get the path of this backend
-                status[version] = backend_status(*it, version, all_good); // Save the status of this backend 
-                ntypes[version] = 0;                 // No types if this is a version that wasn't already seen
-                nctors[version] = 0;                 // No constructors if this is a version that wasn't already seen
-              }
-              nfuncs[version]++; // Increment the count of the functions in this version
-            }
-          }         
-          for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
-          {
+
+            // Print the info
             ostringstream ss1, ss2;
             str ss1a, ss2a;
-            str firstentry = "";
-            if (jt == versions.begin()) firstentry = *it;
-            cout << firstentry  << spacing(firstentry.length(),maxlens[0]);
-            cout << *jt         << spacing(jt->length(),maxlens[1]);
-            cout << paths[*jt]  << spacing(paths[*jt].length(),maxlens[2]);
-            cout << status[*jt] << spacing(status[*jt].length(),maxlens[3]);
-            ss1 << nfuncs[*jt]; ss1a = spacing(ss1.str().length(),maxlens[4]);
-            ss2 << ntypes[*jt]; ss2a = spacing(ss2.str().length(),maxlens[5]);
-            cout << ss1.str() << ss1a << ss2.str() << ss2a << nctors[*jt] << endl;
+            const str firstentry = (jt == it->second.begin() ? it->first : "");
+            cout << firstentry << spacing(firstentry.length(),maxlens[0]);
+            cout << *jt        << spacing(jt->length(),maxlens[1]);
+            cout << path       << spacing(path.length(),maxlens[2]);
+            cout << status     << spacing(status.length(),maxlens[3]);
+            ss1 << nfuncs; ss1a = spacing(ss1.str().length(),maxlens[4]);
+            ss2 << ntypes; ss2a = spacing(ss2.str().length(),maxlens[5]);
+            cout << ss1.str() << ss1a << ss2.str() << ss2a << nctors << endl;
           }
         }
+
         if (all_good) cout << endl << "All your backend are belong to us." << endl;
         no_scan = true;
       }
@@ -673,7 +691,8 @@ namespace Gambit
 
       else 
       {
-        // If we aren't just checking what stuff is registered, we could end up running a scan, or needing the descriptions of things. Therefore we must construct the description databases and make sure there are no naming conflicts etc.
+        // If we aren't just checking what stuff is registered, we could end up running a scan, or needing the descriptions of things.
+        // Therefore we must construct the description databases and make sure there are no naming conflicts etc.
         check_databases();
 
         //Iterate over all modules to see if command matches one of them
@@ -726,13 +745,13 @@ namespace Gambit
         }
     
         //Iterate over all backends to see if command matches one of them
-        for (std::set<str>::const_iterator it = backends.begin(); it != backends.end(); ++it)
+        for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
         {
-          if (command == *it)
+          if (command == it->first)
           {
             no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
-            cout << "Information for backend " << *it << "." << endl << endl;
+            cout << "Information for backend " << it->first << "." << endl << endl;
 
             std::set<str> versions;
             std::map<str,str> paths;
@@ -741,14 +760,14 @@ namespace Gambit
     
             for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
             {
-              if ((*jt)->origin() == *it)              // Backend matches
+              if ((*jt)->origin() == it->first)         // Backend matches
               {
                 str version = (*jt)->version();        // Retrieve the version
                 auto new_v = versions.insert(version); // Attempt to add this version to the set 
                 if (new_v.second)                      // This version was not in the version set yet
                 {
-                  paths[version]  = backendData->paths.at(*it+version); // Save the path of this backend
-                  status[version] = backendData->works.at(*it+version) ? "present" : "absent/broken";  // Save the status of this backend 
+                  paths[version]  = backendData->paths.at(it->first+version); // Save the path of this backend
+                  status[version] = backendData->works.at(it->first+version) ? "present" : "absent/broken";  // Save the status of this backend 
                 }
                 befunctors[version].push_back(*jt);
               }

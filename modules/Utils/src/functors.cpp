@@ -279,6 +279,12 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,"The notifyOfModel method has not been defined in this class.");
     }
 
+    /// Indicate to the functor which backends are actually loaded and working
+    void functor::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
+    {
+      utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
+    }
+
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
@@ -1039,7 +1045,7 @@ namespace Gambit
     void module_functor_common::setRequiredClassloader(str be, str ver) { required_classloading_backends[be].insert(ver); }
 
     /// Indicate to the functor which backends are actually loaded and working
-    void module_functor_common::informOfBackends(std::map<str, std::set<str> > be_ver_map)
+    void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
     {
       // Loop over all the backends that are needed for this functor to work.
       for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)

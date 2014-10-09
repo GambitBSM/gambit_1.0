@@ -609,7 +609,7 @@ namespace Gambit
       // Activate those module functors that match the combination of models being scanned.
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        if (masterGraph[*vi]->modelComboAllowed(modelList))
+        if (masterGraph[*vi]->status() >= 0 and masterGraph[*vi]->modelComboAllowed(modelList))
         {
           for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
           {

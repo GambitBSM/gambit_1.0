@@ -188,6 +188,9 @@ namespace Gambit
       /// Notify the functor that a certain model is being scanned, so that it can activate itself accordingly.
       virtual void notifyOfModel(str);
 
+      /// Indicate to the functor which backends are actually loaded and working
+      virtual void notifyOfBackends(std::map<str, std::set<str> >);
+
       /// Notify the functor about an instance of the options class that contains
       /// information from its corresponding ini-file entry in the auxiliaries or
       /// observables section.
@@ -415,7 +418,7 @@ namespace Gambit
       void setRequiredClassloader(str, str);
 
       /// Indicate to the functor which backends are actually loaded and working
-      void informOfBackends(std::map<str, std::set<str> >);
+      void notifyOfBackends(std::map<str, std::set<str> >);
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*> &newNestedList);
