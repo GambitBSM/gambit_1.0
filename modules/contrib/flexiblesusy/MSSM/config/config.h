@@ -1,5 +1,5 @@
 /* DO NOT EDIT! GENERATED AUTOMATICALLY! */
-/* generated at Wed, 11 Jun 2014 16:04:29 +0930 */
+/* generated at Thu, 09 Oct 2014 16:27:46 +1100 */
 
 #define PKGNAME "FlexibleSUSY"
 
@@ -18,14 +18,14 @@
 
 /* System information */
 #define OPERATING_SYSTEM      "Linux"
-#define KERNEL_VERSION        "3.2.0-64-generic"
+#define KERNEL_VERSION        "2.6.18-308.8.2.el5.centos.plusxen"
 
 /* Build variables */
 #define CXX                   "g++"
 #define CXXFLAGS              "-std=c++11 -O2"
 #define FC                    "gfortran"
 #define FFLAGS                "-O2 -frecursive"
-#define FLIBS                 "-L/usr/lib/gcc/x86_64-linux-gnu/4.6/ -lgfortran -lm"
+#define FLIBS                 "-L/usr/local/gcc/4.7.2/lib64/../lib64/ -lgfortran -lm"
 
 /* Switches */
 

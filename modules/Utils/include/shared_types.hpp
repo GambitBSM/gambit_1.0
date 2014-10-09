@@ -44,7 +44,7 @@
 #include "libfirst_types.hpp"
 //#include "Pythia_types.hpp"
 
-// Spectrum object from SpecBit
+// Spectrum object from flexiblesusy backend
 #include "Spectrum.hpp"
 
 // GAMBIT BaseFunction Objects

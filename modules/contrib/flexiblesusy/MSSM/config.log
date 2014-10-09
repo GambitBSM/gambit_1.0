@@ -1,54 +1,62 @@
 Package: FlexibleSUSY
 Version: 1.0.1
-Date:    Wed, 11 Jun 2014 16:04:29 +0930
+Date:    Thu, 09 Oct 2014 16:27:46 +1100
 
 # Platform information
 
-hostname = peter-K53SC
+hostname = m1-login1
 uname -m = x86_64
-uname -r = 3.2.0-64-generic
+uname -r = 2.6.18-308.8.2.el5.centos.plusxen
 uname -s = Linux
-uname -v = #97-Ubuntu SMP Wed Jun 4 22:04:21 UTC 2014
+uname -v = #1 SMP Tue Jun 12 16:27:53 EDT 2012
 Machine word size: 64
 
-PATH: /usr/lib/lightdm/lightdm
-PATH: /usr/local/sbin
+PATH: /home/farmer/bin
+PATH: /home/farmer/lib
+PATH: /home/farmer/lib/hdf5/lib
+PATH: /home/farmer/.local/lib
+PATH: /home/farmer/.local/bin
+PATH: /home/farmer/.local/include
+PATH: /home/farmer/Monash005/gambit/fastjet_libs/bin
+PATH: /usr/local/gsl/1.12-gcc/bin
+PATH: /usr/local/Modules/3.2.10/bin
+PATH: /usr/local/python/2.7.1-gcc/bin
+PATH: /usr/local/openmpi/1.4.3-gcc/bin
+PATH: /usr/local/gcc/4.7.2/bin
+PATH: /usr/local/gcc/4.4.5/bin
+PATH: /usr/kerberos/bin
 PATH: /usr/local/bin
-PATH: /usr/sbin
-PATH: /usr/bin
-PATH: /sbin
 PATH: /bin
-PATH: /usr/games
+PATH: /usr/bin
+PATH: /usr/lpp/mmfs/bin
 
 Checking for RGE solver algorithms ... 
    Result: ok (two_scale)
    Algorithms: two_scale
-Checking for dpkg-architecture ... 
-   Result: x86_64-linux-gnu
 Checking for C++ compiler g++ ... 
-   Result: found /usr/bin/g++
+   Result: found /usr/local/gcc/4.7.2/bin/g++
 Checking for type of C++ compiler g++ ... 
    Result: GNU
 C++ compiler type: gnu
 Checking for g++ compiler version >= 4.4.7 ... 
-   Result: ok (version 4.7.3)
+   Result: ok (version 4.7.2)
    Required g++ version: 4.4.7
-   g++ version found: 4.7.3
+   g++ version found: 4.7.2
 Checking for C++ file dependency generator g++ ... 
-   Result: found /usr/bin/g++
+   Result: found /usr/local/gcc/4.7.2/bin/g++
 Checking for type of C++ file dependency generator g++ ... 
    Result: GNU
 C++ dependency generator type: gnu
 Checking for g++ dependency generator version ... 
-   Result: 4.7.3
-   g++ dependency generator version found: 4.7.3
+   Result: 4.7.2
+   g++ dependency generator version found: 4.7.2
 Checking for Fortran compiler gfortran ... 
-   Result: found /usr/bin/gfortran
+   Result: found /usr/local/gcc/4.7.2/bin/gfortran
 Note: Adding -frecursive to FFLAGS for thread safety.
 Checking for Fortran file dependency generator gfortran ... 
-   Result: found /usr/bin/gfortran
+   Result: found /usr/local/gcc/4.7.2/bin/gfortran
 Checking for boost/version.hpp ... 
-   Result: found in /usr/local/include
+   Result: found in /usr/include
 Checking for boost version >= 1.49.0 ... 
 ===================================
 Trying to compile test program
@@ -56,28 +64,28 @@ Trying to compile test program
 Running executable: ./conftest.x
 The executable returned exit code: 0
 The executable produced output:
-1.52.0
+1.50.0
 ===================================
 
-   Result: ok (version 1.52.0)
+   Result: ok (version 1.50.0)
    Required boost version: 1.49.0
-   Boost version found: 1.52.0
+   Boost version found: 1.50.0
 Checking for boost/test/unit_test.hpp ... 
-   Result: found in /usr/local/include
+   Result: found in /usr/include
 Checking for libboost_unit_test_framework ... 
-   Result: found in /usr/local/lib
+   Result: found in /usr/lib
 Checking for Eigen/Core ... 
-   Result: found in /usr/include/eigen3
+   Result: found in ../../../../extras/eigen3
 Checking for libgfortran ... 
-   Result: found in /usr/lib/gcc/x86_64-linux-gnu/4.6/
+   Result: found in /usr/local/gcc/4.7.2/lib64/../lib64/
 Checking for GSL configuration gsl-config ... 
-   Result: found /usr/bin/gsl-config
+   Result: found /usr/local/gsl/1.12-gcc/bin/gsl-config
 pkg-config does not manage lapack
 Checking for liblapack ... 
-   Result: found in /usr/lib
- Checking in /usr/lib
-  /usr/lib/liblapack.a readable
-Checking for dgbsv_ in /usr/lib/liblapack.a ... symbol found
+   Result: found in /usr/local/lib
+ Checking in /usr/local/lib
+  /usr/local/lib/liblapack.a readable
+Checking for dgbsv_ in /usr/local/lib/liblapack.a ... symbol found
    Result: ok
 Checking for build library command ar cru ... 
    Result: found /usr/bin/ar
@@ -112,7 +120,7 @@ The executable produced no output.
 
    Result: ok
 Checking for libpthread ... 
-   Result: found in /usr/lib/x86_64-linux-gnu
+   Result: found in /usr/lib
 Checking for models ... 
 Note: No start script not found in models/MSSM
 

@@ -20,12 +20,22 @@
 #include "gambit_module_headers.hpp"
 #include "SpecBit_rollcall.hpp"
 
+// Flexible SUSY stuff (should not be needed by the rest of gambit)
+#include "MSSM_two_scale_model.hpp"
+#include "ew_input.hpp"
+//#include "logger.hpp"
+//#include "wrappers.hpp"
+#include "MSSMSpec.hpp"
+#include "numerics.hpp"
+
+
 namespace Gambit
 {
 
   namespace SpecBit
   {
     using namespace LogTags;
+    namespace FS = flexiblesusy; // flexiblesusy is too long to type all the time so using an alias...
 
     /// Quick macro to simplify the check of Pipe::Models
     #define QUERYMODELS(MODEL) std::find(Pipe::Models->begin(), Pipe::Models->end(), MODEL) != Pipe::Models->end()
@@ -34,33 +44,33 @@ namespace Gambit
     // These are not known to Gambit.
 
     /// Dump information from spectrum object to logger
-    void spec_print(Spectrum * spec) {
-       logger() << "spec->runningpars.GetScale() =" << spec->runningpars.GetScale() << std::endl;
-       logger() << "map mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") <<std::endl;
-       logger() << "map mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") <<std::endl;
-       logger() << "map BMu "  << spec->runningpars.get_mass2_parameter("BMu") <<std::endl;
-       logger() << "map mHd2 "  << spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-       logger() << "map mHu2 "  << spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-       logger() << "map BMu "  << spec->runningpars.get_mass2_par("BMu") <<std::endl;
+    void spec_print(const Spectrum& spec) {
+       logger() << "spec->runningpars.GetScale() =" << spec.runningpars->GetScale() << std::endl;
+       logger() << "map mHd2 "  << spec.runningpars->get_mass2_parameter("mHd2") <<std::endl;
+       logger() << "map mHu2 "  << spec.runningpars->get_mass2_parameter("mHu2") <<std::endl;
+       logger() << "map BMu "  << spec.runningpars->get_mass2_parameter("BMu") <<std::endl;
+       logger() << "map mHd2 "  << spec.runningpars->get_mass2_par("mHd2") <<std::endl;
+       logger() << "map mHu2 "  << spec.runningpars->get_mass2_par("mHu2") <<std::endl;
+       logger() << "map BMu "  << spec.runningpars->get_mass2_par("BMu") <<std::endl;
       
-       logger()<< "diff mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") 
-                 -  spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-       logger() << "diff mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") 
-                 - spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-       logger() << "diff BMu "  << spec->runningpars.get_mass2_parameter("BMu") 
-                 -  spec->runningpars.get_mass2_par("BMu") <<std::endl;
+       logger()<< "diff mHd2 "  << spec.runningpars->get_mass2_parameter("mHd2") 
+                 -  spec.runningpars->get_mass2_par("mHd2") <<std::endl;
+       logger() << "diff mHu2 "  << spec.runningpars->get_mass2_parameter("mHu2") 
+                 - spec.runningpars->get_mass2_par("mHu2") <<std::endl;
+       logger() << "diff BMu "  << spec.runningpars->get_mass2_parameter("BMu") 
+                 -  spec.runningpars->get_mass2_par("BMu") <<std::endl;
     
-       logger() << "mq2(1,1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
-       logger() << "fake mq2(1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
+       logger() << "mq2(1,1) =  " <<  spec.runningpars->get_mass2_parameter("mq2",1,1) << std::endl;
+       logger() << "fake mq2(1) =  " <<  spec.runningpars->get_mass2_parameter("mq2",1) << std::endl;
     
-       double mgluino_drbar =  spec->runningpars.get_tree_MassEigenstate("MGluino");
+       double mgluino_drbar =  spec.runningpars->get_tree_MassEigenstate("MGluino");
        logger() << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
-       double mgluino = spec->phys.get_Pole_Mass("MGluino");
+       double mgluino = spec.phys->get_Pole_Mass("MGluino");
        logger() << "mgluino = " << mgluino<< std::endl;
     }
 
     /// Fill test spectrum object with some parameters
-    void setup(flexiblesusy::MSSM<flexiblesusy::Two_scale>& mssm)
+    void setup(FS::MSSM<FS::Two_scale>& mssm)
     {
        Eigen::Matrix<double,3,3> Yu;
        Eigen::Matrix<double,3,3> Yd;
@@ -149,7 +159,7 @@ namespace Gambit
        MassG = 1114.45;
     
        // set parameters
-       mssm.set_scale(Electroweak_constants::MZ);
+       mssm.set_scale(FS::Electroweak_constants::MZ);
        mssm.set_Yu(Yu);
        mssm.set_Yd(Yd);
        mssm.set_Ye(Ye);
@@ -226,11 +236,11 @@ namespace Gambit
     /// Create a spectrum object for testing purposes
     void make_test_spectrum(Spectrum& result)
     {
-      flexiblesusy::MSSM<Two_scale> mssm1; //start with empty object
+      FS::MSSM<FS::Two_scale> mssm1; //start with empty object
       setup(mssm1); //fill with some parameters
       mssm1.calculate_DRbar_parameters(); //calculated DRbar masses 
       mssm1.calculate_pole_masses();//now calculate pole masses
-      flexiblesusy::MSSMSpec mssm(mssm1);
+      FS::MSSMSpec mssm(mssm1);
      
       // Store result for gambit to use 
       result = mssm;
@@ -243,22 +253,22 @@ namespace Gambit
       //using namespace Pipes::get_lowE_MSSM_spectrum;
       namespace Pipe = Pipes::specbit_tests; // I think I like this alias method better
 
-      Spectrum* spec(Pipe::particle_spectrum); // Get Spectrum object out of dependency pipe.      
+      const Spectrum& spec(*Pipe::Dep::particle_spectrum); // Get Spectrum object out of dependency pipe.      
 
       // Check contents
 
       logger() << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
 
-      double lowscale = spec->runningpars.GetScale();
+      double lowscale = spec.runningpars->GetScale();
       double highscale = 1e+15;
 
       logger() << "lowscale = " << lowscale << std::endl;
       spec_print(spec);
-      spec->runningpars.RunToScale(highscale);
+      spec.runningpars->RunToScale(highscale);
       std::cout << "after run scale to high scale" << std::endl;
       spec_print(spec);
-      spec->runningpars.RunToScale(lowscale);
-      std::cout << "After run scale back to low scale" << spec->runningpars.GetScale() << std::endl;
+      spec.runningpars->RunToScale(lowscale);
+      std::cout << "After run scale back to low scale" << spec.runningpars->GetScale() << std::endl;
       spec_print(spec);
 
       logger() << EOM; 
