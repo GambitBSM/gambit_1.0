@@ -31,6 +31,10 @@
 #include "stream_overloads.hpp"
 #include "yaml_description_database.hpp"
 
+// Boost
+#include <boost/algorithm/string/replace.hpp>
+
+
 namespace Gambit
 {
     /// Definitions of public methods in GAMBIT core class.
@@ -749,53 +753,78 @@ namespace Gambit
         {
           if (command == it->first)
           {
+            const std::set<str> versions = it->second;
+            bool has_classloader = false;
             no_scan = true;
             cout << "\nThis is GAMBIT." << endl << endl; 
             cout << "Information for backend " << it->first << "." << endl << endl;
 
-            std::set<str> versions;
-            std::map<str,str> paths;
-            std::map<str,str> status;
-            std::map<str,fVec> befunctors;
-    
-            for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
-            {
-              if ((*jt)->origin() == it->first)         // Backend matches
-              {
-                str version = (*jt)->version();        // Retrieve the version
-                auto new_v = versions.insert(version); // Attempt to add this version to the set 
-                if (new_v.second)                      // This version was not in the version set yet
-                {
-                  paths[version]  = backendData->paths.at(it->first+version); // Save the path of this backend
-                  status[version] = backendData->works.at(it->first+version) ? "present" : "absent/broken";  // Save the status of this backend 
-                }
-                befunctors[version].push_back(*jt);
-              }
-            }            
-
+            // Loop over all registered versions of this backend
             for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
             {
+              bool who_cares;
+              const str path = backendData->paths.at(it->first+*jt);        // Save the path of this backend
+              const str status = backend_status(it->first, *jt, who_cares); // Save the status of this backend
               cout << "Version: " << *jt << endl;
-              cout << "Path to library: " << paths[*jt] << endl;
-              cout << "Library status: " << status[*jt] << endl << endl; 
-              cout << "  Function                      Capability                              Type                                         Status         " << endl;
-              cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl;
-              for (fVec::const_iterator kt = befunctors[*jt].begin(); kt != befunctors[*jt].end(); ++kt)
+              cout << "Path to library: " << path << endl;
+              cout << "Library status: " << status << endl; 
+              bool first = true;
+              // Loop over all the backend functions and variables
+              for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
               {
-                str f = (*kt)->name();
-                str c = (*kt)->capability();
-                str t = (*kt)->type();
-                int s = (*kt)->status();
-                str ss;
-                if (s == -2) ss = "Function absent";
-                if (s == -1) ss = "Backend absent";
-                if (s >= 0)  ss = "Available";
-                cout << "  " << f << spacing(f.length(),25) << c << spacing(c.length(),35);
-                cout << t << spacing(t.length(),40) << ss << endl;
+                if ((*kt)->origin() == it->first) 
+                {
+                  if (first)
+                  {
+                    cout << "  Function/Variable              Capability                              Type                                         Status         " << endl;
+                    cout << "  -----------------------------------------------------------------------------------------------------------------------------------" << endl;
+                    first = false;
+                  }
+                  const str f = (*kt)->name();
+                  const str c = (*kt)->capability();
+                  const str t = (*kt)->type();
+                  const int s = (*kt)->status();
+                  str ss;
+                  if (s == -2) ss = "Function absent";
+                  if (s == -1) ss = "Backend absent";
+                  if (s >= 0)  ss = "Available";
+                  cout << "  " << f << spacing(f.length(),25) << c << spacing(c.length(),35);
+                  cout << t << spacing(t.length(),40) << ss << endl;
+                }
               }
+              // If this version has classes to offer, print out info on them too
+              if (backendData->classloader.at(it->first+*jt))
+              {
+                std::set<str> classes;
+                if (backendData->classes.find(it->first+*jt) != backendData->classes.end()) classes = backendData->classes.at(it->first+*jt);
+                has_classloader = true;
+                cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl;
+                cout << "  Class                                              Constructor overload                                             Status        " << endl;
+                cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl;
+                // Loop over the classes
+                for (std::set<str>::const_iterator kt = classes.begin(); kt != classes.end(); ++kt)
+                {
+                  const std::set<str> ctors = backendData->factory_args.at(it->first+*jt+*kt);
+                  // Loop over the constructors in each class
+                  for (std::set<str>::const_iterator lt = ctors.begin(); lt != ctors.end(); ++lt)
+                  {
+                    str args = *lt;
+                    boost::replace_all(args, "my_ns::", "");
+                    const str ss = backendData->constructor_status.at(it->first+*jt+*kt+args);
+                    const str firstentry = (lt == ctors.begin() ? *kt : "");
+                    cout << "  " << firstentry << spacing(firstentry.length(),46) << args << spacing(args.length(),60) << ss << endl; 
+                  }
+                }
+              } 
               cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl << endl;
             }
-
+            // Tell the user what the default version is for classes of this backend (if there are any).
+            if (has_classloader)
+            {
+              const std::map<str, str> defs = backendData->defaults;
+              const str my_def = (defs.find(it->first) != defs.end() ? backendData->version_from_safe_version(it->first,defs.at(it->first)) : "none");
+              cout << endl << "Default version for loaded classes: "  << my_def << endl << endl;
+            }
             break;
           }
         }
