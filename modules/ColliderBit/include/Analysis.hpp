@@ -2,21 +2,25 @@
 #include <vector>
 #include "Event.hpp"
 using namespace HEP_Simple_Lib;
-#include "MCUtils/MathUtils.h"
-using namespace MCUtils;
 
 
 
 namespace Gambit {
   namespace ColliderBit {
 
-
     // Macros for analysis factory fns
-    /// @todo Macros don't care about namespaces right? Move outside?
-    #define DECLARE_ANAFACTORY(A) Analysis* create_Analysis_ ## A()
-    #define DEFINE_ANAFACTORY(A) Analysis* create_Analysis_ ## A() { return new Analysis_ ## A(); }
+    #define DECLARE_ANALYSIS_FACTORY(A) \
+     Analysis* create_Analysis_ ## A();
+    #define DEFINE_ANALYSIS_FACTORY(A) \
+     Analysis* create_Analysis_ ## A() { return new Analysis_ ## A(); }
 
     struct SignalRegionData {
+
+      double n_observed;
+      double n_signal;
+      double n_background;
+      double signal_sys;
+      double background_sys;
 
       SignalRegionData() {}
 
@@ -26,21 +30,22 @@ namespace Gambit {
       void set_signalsys(double a) {signal_sys=a;}
       void set_backgroundsys(double a) {background_sys=a;}
 
-      double n_observed;
-      double n_signal;
-      double n_background;
-      double signal_sys;
-      double background_sys;
-
     };
 
 
     class Analysis {
+ 
+    private:
+
+      /// Number of events and cross-section internal variables
+      /// @note C++11 default value syntax
+      double _ntot, _xsec, _xsecerr;
+      std::vector<SignalRegionData> _results;
+
     public:
 
       /// Constructor
-      Analysis() : name(""), //< To be set in derived analysis classes
-                   _ntot(0), _xsec(-1), _xsecerr(-1) {  }
+      Analysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
 
       /// Virtual destructor (needed for correct deletion of inherited classes)
       virtual ~Analysis() { init(); }
@@ -78,7 +83,7 @@ namespace Gambit {
       /// Return the cross-section (in pb)
       double xsec() const { return _xsec; }
       /// Return the cross-section error (in pb)
-      double xsec_err() const { return _xsec; }
+      double xsec_err() const { return _xsecerr; }
       /// Return the cross-section relative error
       double xsec_relerr() const { return xsec() > 0 ? xsec_err()/xsec() : -1; }
       /// Return the cross-section per event seen (in pb)
@@ -127,10 +132,6 @@ namespace Gambit {
       //@}
 
 
-      /// Analysis name (normally the class name, without the Analysis_ prefix)
-      std::string name;
-
-
     protected:
 
       /// Add the given result to the internal results list
@@ -138,14 +139,6 @@ namespace Gambit {
 
       /// Gather together the info for likelihood calculation
       virtual void collect_results() = 0;
-
-
-    private:
-
-      /// Number of events and cross-section internal variables
-      /// @note C++11 default value syntax
-      double _ntot, _xsec, _xsecerr;
-      std::vector<SignalRegionData> _results;
 
     };
 

@@ -26,6 +26,7 @@
 
 #include "gambit_module_headers.hpp"
 #include "ColliderBit_types.hpp"
+#include "ColliderBit_macros.hpp"
 #include "ColliderBit_rollcall.hpp"
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
@@ -42,15 +43,13 @@ namespace Gambit {
     /// @todo Put in actual analyses rather than a simple counter
     double counter = 0.;
     /// @todo backend Pythia properly
-    std::vector<Pythia8Backend*> pythiaVector;
-    std::string slhaFilename = "";
+    std::vector<PythiaList> threadSpecificPythiaLists;
     Delphes3Backend* delphes = 0;
     std::string delphesConfigFilename = "";
-    bool isScatteringReady = false;
     bool isDetectorReady = false;
-    unsigned nEvents = 0;
+    int nEvents = 0;
 
-    void debugMe(std::string label) {
+    void debugMe(const std::string label) {
       #ifdef DEBUG
       std::cout<<"\n\nHECollider is here: "<<label;
       std::cout<<"\n    Checking locals: ";
@@ -60,10 +59,6 @@ namespace Gambit {
       std::cout<<"\n    delphesConfigFilename: "<<delphesConfigFilename;
       std::cout<<"\n    delphes (points to): "<<delphes;
       std::cout<<"\n    isDetectorReady: "<<isDetectorReady;
-      std::cout<<"\n    pythiaVector (points to): ";
-      for (auto ptr : pythiaVector)
-        std::cout<<"\n        "<<ptr;
-      std::cout<<"\n    isScatteringReady: "<<isScatteringReady;
       std::cout<<"\n\n [Press Enter]";
       std::getchar();
       #endif
@@ -73,45 +68,23 @@ namespace Gambit {
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
 
-    /// *** Initialization for managers ***
-    /// @todo More subprocesses. For current testing, only ~g and ~q.
-    /// \todo Will this get passed into the loop properly?
-    void getSubprocessGroup(SubprocessGroup &result) {
-      debugMe("getSubprocessGroup");
-      result = SubprocessGroup(0.6, //< xsec estimate
-                               {{1000021, 1000001, 1000002, 1000003, 1000004,
-                                     2000001, 2000002, 2000003, 2000004}},
-                               {{1000021, 1000001, 1000002, 1000003, 1000004,
-                                     2000001, 2000002, 2000003, 2000004}});
-
-    }
-
+    /// *** Initialization for analyses ***
     void specifyAnalysisList (AnalysisList &result) {
       using namespace Pipes::specifyAnalysisList;
       debugMe("specifyAnalysisList");
+      result.clear();
 
-      vector<std::string> analysisNames;
+      std::vector<std::string> analysisNames;
+      GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>)
 
-      try {
-        analysisNames = runOptions->getValue<std::vector<string>>("AnalysisList");
-        for(int i=0;i<analysisNames.size();i++){
-          cout << "Analysis name " << analysisNames[i] << endl;
-          result.addAnalysis( mkAnalysis(analysisNames[i]) );
-        }
-      } catch (...) {
-        ColliderBit_error().raise(LOCAL_INFO,"Specify 'AnalysisList' in yaml file.");
+      for(auto name : analysisNames){
+        cout << "Analysis name " << name << endl;
+        result.push_back( mkAnalysis(name) );
       }
-
-      /*result.addAnalysis( mkAnalysis("ATLAS_0LEP") );
-        result.addAnalysis( mkAnalysis("ATLAS_0LEPStop_20invfb") );
-        result.addAnalysis( mkAnalysis("ATLAS_1LEPStop_20invfb") );
-        result.addAnalysis( mkAnalysis("ATLAS_2bStop_20invfb") );
-        result.addAnalysis( mkAnalysis("ATLAS_2LEPStop_20invfb") );
-        result.addAnalysis( mkAnalysis("ATLAS_3LEPEW_20invfb") );*/
     }
 
-    /// *** Finalization for analyses ***
 
+    /// *** Finalization for analyses ***
     /// @todo Scaling will depend on nEvents, xsec, and analysis luminosity
     void getScaleFactor(double &result) {
       debugMe("getScaleFactor");
@@ -120,46 +93,61 @@ namespace Gambit {
 
 
     /// *** Loop Managers ***
-    void manageXsecDependentLoop() {
-      debugMe("manageXsecDependentLoop");
-      using namespace Pipes::manageXsecDependentLoop;
-      /// \todo Will need to remind myself how Andy's code works.
-      /// \todo Check out HEColliderMain.cpp in extras folder.
-      /// \todo Delete this entire module function if vanilla loops are better.
+    void operatePythia() {
+      debugMe("operatePythia");
+      using namespace Pipes::operatePythia;
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
-      logger() << "\"manageXsecDependentLoop() was called.\"" << endl;
-      logger() << LogTags::info << endl << EOM;
-      ColliderBit_error().raise(LOCAL_INFO,"Xsec dependent loop not implemented.");
-    }
-
-    void manageVanillaLoop() {
-      debugMe("manageVanillaLoop");
-      using namespace Pipes::manageVanillaLoop;
-      logger() << "==================" << endl;
-      logger() << "ColliderBit says,";
-      logger() << "\"manageVanillaLoop() was called.\"" << endl;
+      logger() << "\"operatePythia() was called.\"" << endl;
       logger() << "*** NOTE: Each iteration will report:" << endl;
       logger() << "  iteration, event met, thread, counts" << endl;
       logger() << LogTags::info << endl << EOM;
 
-      try {
-        nEvents = runOptions->getValue<unsigned>("nEvents");
-      } catch (...) {
-        ColliderBit_error().raise(LOCAL_INFO,"Specify 'nEvents' in yaml file.");
+      /// Variables for runOptions from the YAML file
+      std::vector<std::string> pythiaNames;
+      std::string slhaFilename;
+
+      /// Retrieve runOptions from the YAML file safely... 
+      GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>)
+      GET_COLLIDER_RUNOPTION(nEvents, int)
+      /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
+      GET_COLLIDER_RUNOPTION(slhaFilename, std::string)
+
+      /// Set up all the requested pythias for each thread.
+      #pragma omp parallel shared(threadSpecificPythiaLists)
+      {
+        int threadNum = omp_get_thread_num();
+        PythiaList tempList;
+        std::vector<std::string> pythiaOptions;
+
+        for(auto name : pythiaNames) {
+          pythiaOptions.clear();
+          try {
+            pythiaOptions = runOptions->getValue<std::vector<std::string>>(name);
+          } catch (...) {}  //< If the PythiaBase subclass is hard-coded, okay with no options.
+          pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+          pythiaOptions.push_back("Random:seed = " + std::to_string(threadNum));
+          tempList.push_back( mkPythia(name, pythiaOptions) );
+        }
+
+        #pragma omp critical (threadSpecificPythiaLists)
+        {
+          threadSpecificPythiaLists.push_back(tempList);
+        }
       }
 
       Loop::executeIteration(0);
-      #pragma omp parallel shared(pythiaVector)
+      #pragma omp parallel shared(threadSpecificPythiaLists)
       {
         #pragma omp for
-        for (unsigned it=1; it<nEvents-1; it++) {
+        for (int it=1; it<nEvents-1; it++) {
           Loop::executeIteration(it);
         }
       }
       Loop::executeIteration(nEvents);
 
-      isScatteringReady = false;
+      /// @TODO Check with someone who knows about shared_ptr to see if the memory is indeed freed.
+      threadSpecificPythiaLists.clear();
       isDetectorReady = false;
 
       logger() << "==================" << endl;
@@ -170,105 +158,164 @@ namespace Gambit {
 
 
     /// Hard Scattering Event Generators
-    void generatePythia8Event(Pythia8::Event &result) {
-      debugMe("generatePythia8Event");
-      using namespace Pipes::generatePythia8Event;
+    void generatePythia8Events(PythiaEventList &result) {
+      debugMe("generatePythia8Events");
+      using namespace Pipes::generatePythia8Events;
       result.clear();
 
-      if (!isScatteringReady) {
-        pythiaVector.clear();
-        try {
-          slhaFilename = runOptions->getValue<std::string>("slhaFilename");
-        } catch (...) {
-          ColliderBit_error().raise(LOCAL_INFO, "Specify 'slhaFilename' in yaml file.");
-        }
-        #pragma omp parallel shared(pythiaVector,slhaFilename)
-        {
-          Pythia8Backend* temp = new Pythia8Backend(omp_get_thread_num(), slhaFilename, *Dep::subprocessGroup);
-          #pragma omp critical (pythiaVector)
-          {
-            pythiaVector.push_back(temp);
-          }
-        }
-        isScatteringReady = true;
+      /// Get the next event from Pythia8 for each configured pythia
+      for (auto pythiaPtr : threadSpecificPythiaLists[omp_get_thread_num()]) {
+        result.push_back(pythiaPtr->nextEvent());
       }
-
-      /// Get the next event from Pythia8
-      pythiaVector[omp_get_thread_num()]->nextEvent(result);
     }
 
 
     /// Standard Event Format Functions
-    void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
-      debugMe("reconstructDelphesEvent");
-      using namespace Pipes::reconstructDelphesEvent;
+    void reconstructDelphesEvents(HEPSL_EventList &result) {
+      debugMe("reconstructDelphesEvents");
+      using namespace Pipes::reconstructDelphesEvents;
       result.clear();
+      HEP_Simple_Lib::Event recoEvent;
 
       #pragma omp critical (Delphes)
       {
         if (!isDetectorReady) {
-          try {
-            delphesConfigFilename = runOptions->getValue<std::string>("delphesConfigFilename");
-          } catch (...) {
-            ColliderBit_error().raise(LOCAL_INFO, "Specify 'delphesConfigFilename' in yaml file.");
-          }
+          GET_COLLIDER_RUNOPTION(delphesConfigFilename, std::string)
           delete delphes;
           delphes = new Delphes3Backend(delphesConfigFilename);
           isDetectorReady = true;
         }
         /// Feed the Pythia8 event to Delphes for detector simulation
         /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
-        delphes->processEvent(*Dep::hardScatteringEvent, result);
+        for (auto hardEventPtr : *Dep::hardScatteringEventList) {
+          recoEvent.clear();
+          delphes->processEvent(*hardEventPtr, recoEvent);
+          result.push_back(recoEvent);
+        }
       }
     }
 
 
-    void convertPythia8Event(HEP_Simple_Lib::Event &result) {
-      debugMe("convertPythia8Event");
-      using namespace Pipes::convertPythia8Event;
+    void convertPythia8Events(HEPSL_EventList &result) {
+      debugMe("convertPythia8Events");
+      using namespace Pipes::convertPythia8Events;
       result.clear();
-      /// Feed the Pythia8 event to the converter
-      fillGambitEvent(*Dep::hardScatteringEvent, result);
+      HEP_Simple_Lib::Event convEvent;
+      Pythia8::Vec4 ptot;
+      std::vector<fastjet::PseudoJet> jetparticles;
+      std::vector<fastjet::PseudoJet> bhadrons, taus;
+
+      for (auto hardEventPtr : *Dep::hardScatteringEventList) {
+        const auto pevt = *hardEventPtr;
+        convEvent.clear();
+        ptot.reset();
+        jetparticles.clear();
+        bhadrons.clear();
+        taus.clear();
+
+        // Make a first pass to gather unstable final B hadrons and taus
+        for (int i = 0; i < pevt.size(); ++i) {
+          const Pythia8::Particle& p = pevt[i];
+
+          // Find last b-hadrons in b decay chains as the best proxy for b-tagging
+          if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
+
+          // Find last tau in tau replica chains as a proxy for tau-tagging
+          // Also require that the tau are prompt
+          /// @todo Only accept hadronically decaying taus?
+          if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
+            taus.push_back(mk_pseudojet(p.p()));
+            HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+            gp->set_prompt();
+            convEvent.add_particle(gp); // Will be automatically categorised
+          }
+        }
+
+        for (int i = 0; i < pevt.size(); ++i) {
+          const Pythia8::Particle& p = pevt[i];
+
+          // Only consider final state particles within ATLAS/CMS acceptance
+          if (!p.isFinal()) continue;
+          if (abs(p.eta()) > 5.0) continue;
+          // Add to total final state momentum
+          ptot += p.p();
+
+          // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
+          /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
+          /// @todo Should we set up Pythia to make taus stable?
+          const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
+
+          if (prompt) {
+            HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+            gp->set_prompt();
+            convEvent.add_particle(gp); // Will be automatically categorised
+          } else {
+            // Choose jet constituents
+            jetparticles.push_back(mk_pseudojet(p.p()));
+          }
+
+        }
+
+        /// Jet finding
+        /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+        /// @todo choose jet algorithm via _settings?
+        const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
+        fastjet::ClusterSequence cseq(jetparticles, jet_def);
+        std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+
+        /// Do jet b-tagging, etc. and add to the Event
+        for (auto& pj : pjets) {
+          bool isB = false;
+          for (auto& pb : bhadrons) {
+            if (pj.delta_R(pb) < 0.3) {
+              isB = true;
+              break;
+            }
+          }
+          /// Add to the event
+          convEvent.addJet(new HEP_Simple_Lib::Jet(MCUtils::mk_p4(pj), isB));
+        }
+
+        /// MET (note: NOT just equal to sum of prompt invisibles)
+        convEvent.set_missingmom(-mk_p4(ptot));
+
+        result.push_back(convEvent);
+      }
     }
 
 
     /// Analysis Accumulators
 
-    void runAnalyses(vector<vector<SignalRegionData>>& result) {
+    void runAnalyses(ColliderLogLikes& result) {
       debugMe("runAnalyses");
       using namespace Pipes::runAnalyses;
 
       if (*Loop::iteration == 0) {
         // Nothing to do (analyses are already initialised)
-      }
-
-      else if (*Loop::iteration == nEvents) {
+      } else if (*Loop::iteration == nEvents) {
         // The final iteration: get log likelihoods for the analyses
-        vector<shared_ptr<Analysis>> analyses = (*Dep::ListOfAnalyses).analyses;
-        vector<vector<SignalRegionData>> finalnumbers;
-        for (shared_ptr<Analysis> ana : analyses) {
+        result.clear();
+        for (auto anaPtr : *Dep::ListOfAnalyses) {
           // ana->collect_results();
-          cout << "SR number test " << ana->get_results()[0].n_signal << endl;
-          finalnumbers.push_back(ana->get_results());
+          cout << "SR number test " << anaPtr->get_results()[0].n_signal << endl;
+          result.push_back(anaPtr->get_results());
         }
-        result = finalnumbers;
-      }
-
-      else
+      } else {
         #pragma omp critical (accumulator_update)
         {
-          //counter += 1.;
-          //cout << "Doing analysis in event loop" << endl;
-          vector<shared_ptr<Analysis>> analyses=(*Dep::ListOfAnalyses).analyses;
           // Loop over analyses and run them
-          for (shared_ptr<Analysis> ana : analyses) ana->analyze(*Dep::GambitColliderEvent);
+          for (auto anaPtr : *Dep::ListOfAnalyses)
+            for (auto eventPtr : *Dep::GambitColliderEventList)
+              anaPtr->analyze(*eventPtr);
         }
-      //result = ana->results();
+      }
+
       #pragma omp critical (print)
       {
         #ifdef DEBUG
         std::cout<<"\n    iteration number: "<<*Loop::iteration;
-        std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
+        for (auto eventPtr : *Dep::GambitColliderEventList)
+          std::cout<<"\n    event met: "<<event->met();
         #endif
       }
     }
@@ -277,13 +324,13 @@ namespace Gambit {
     void calcLogLike(double& result) {
       debugMe("calcLogLike");
       using namespace Pipes::calcLogLike;
-      vector< vector<SignalRegionData> >  analysisResults = (*Dep::AnalysisNumbers);
+      ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
       //Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
       cout << "In calcLogLike" << endl;
 
-      vector <double> observedLikelihoods;
-      for(int analysis=0;analysis<analysisResults.size();analysis++){
-        for(int SR=0;SR<analysisResults[analysis].size();SR++){
+      std::vector<double> observedLikelihoods;
+      for(unsigned analysis=0; analysis<analysisResults.size(); analysis++){
+        for(unsigned SR=0; SR<analysisResults[analysis].size(); SR++){
           SignalRegionData srData=analysisResults[analysis][SR];
           int n_obs = (int)srData.n_observed;                      // Actual observed number of events
           double n_predicted_exact = 0.;     // A contribution to the predicted number of events that is know exactly (e.g. from data-driven background estimate)

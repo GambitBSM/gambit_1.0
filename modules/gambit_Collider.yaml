@@ -80,37 +80,38 @@ ObsLikes:
 Auxiliaries:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
+  #TODO: Put in all the new options from the changes to ColliderBit and test that shite!!!!
 
   - capability: ListOfAnalyses
     function: specifyAnalysisList
     options:  
-      AnalysisList: ["ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb"]
+      analysisNames: ["ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb"]
 
-  - capability:  colliderLoopManager
-    function:    manageVanillaLoop
+  - capability:  ColliderOperator
+    function: operatePythia
     options:
-      nEvents:   2000
+      nEvents: 2000
+      slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
+      # Here's an example of using the yaml file to choose a subgroup
+      # TODO: Oh shit! What if I want to configure them all this way?
+      Pythia_SUSY_LHC_8TeV: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
 
   - capability: AnalysisList
 
-  - capability:  GambitColliderEvent
-    function:    reconstructDelphesEvent
+  - capability: GambitColliderEventList
+    function: reconstructDelphesEvents
     options:
       delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
 
-  - capability:  hardScatteringEvent
-    function:    generatePythia8Event
-    options:
-      slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
-
   - capability: LogLikelihood
-    function:   calcLogLike
+    function: calcLogLike
     backends:
     - {capability: lnlike_marg_poisson_gaussian_error}
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
+    - {capability: "GambitColliderEventList", type: "HEPSL_EventList", function: "reconstructDelphesEvents"}
 
 #########################
 # Logging setup

@@ -28,16 +28,8 @@
 #define MODULE ColliderBit
 START_MODULE
 
-  /// \todo Can fancy class instances like this somehow be specified in yaml?
-  #define CAPABILITY subprocessGroup
-  START_CAPABILITY
-    #define FUNCTION getSubprocessGroup
-    START_FUNCTION(SubprocessGroup)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Capability that holds list of analyses to run
-  // Eventually needs to be configurable from yaml file
+  /// Capability that holds list of analyses to run
+  /// Eventually needs to be configurable from yaml file
   #define CAPABILITY ListOfAnalyses
   START_CAPABILITY
     #define FUNCTION specifyAnalysisList
@@ -46,7 +38,7 @@ START_MODULE
   #undef CAPABILITY
 
   /// Finalization capabilities
-  #define CAPABILITY scaleFactor
+  #define CAPABILITY ScaleFactor
   START_CAPABILITY
     #define FUNCTION getScaleFactor
     START_FUNCTION(double)
@@ -56,23 +48,11 @@ START_MODULE
   /// @todo Aldo's FastSim
 
 
-  /// Event loop management capabilities
-  #define CAPABILITY legacyColliderLoopManager
+  /// Controls initialization and looping of Collider simulations
+  #define CAPABILITY ColliderOperator
   START_CAPABILITY
-    /// \note Got the impression from Andy that the "Vanilla" Loop may be better.
-    /// \todo Delete this entire module function if vanilla loops are better.
-    #define FUNCTION manageXsecDependentLoop
+    #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY colliderLoopManager
-  START_CAPABILITY
-    #define FUNCTION manageVanillaLoop
-    START_FUNCTION(void, CAN_MANAGE_LOOPS)
-    /// DEPENDENCY(nEvents, int)
-    /// instead of this dependency, use runOptions->hasKey("nEvents")
-    /// then adjust the yaml file for each run
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -84,15 +64,11 @@ START_MODULE
   /// \todo FINALLY, the Pythia instances were not receiving their init data
   ///       (slhaFilename) so I moved its specification to the yaml file.
   /// \TODO !!!! Do we really want it to be this tricky to configure loops?
-  #define CAPABILITY hardScatteringEvent
+  #define CAPABILITY hardScatteringEventList
   START_CAPABILITY
-    #define FUNCTION generatePythia8Event
-    START_FUNCTION(Pythia8::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
-    /// DEPENDENCY(slhaFilename, std::string)
-    /// instead of this dependency, use runOptions->hasKey("slhaFilename")
-    /// then adjust the yaml file for each run
-    DEPENDENCY(subprocessGroup, SubprocessGroup)
+    #define FUNCTION generatePythia8Events
+    START_FUNCTION(PythiaEventList)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -101,12 +77,12 @@ START_MODULE
   /*
     #define FUNCTION generateHerwigEvent
     START_FUNCTION(BLAH_herwigEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
 
     #define FUNCTION generateMadGraphEvent
     START_FUNCTION(BLAH_madGraphEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   */
   #undef CAPABILITY
@@ -120,29 +96,29 @@ START_MODULE
     /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
     #define FUNCTION reconstructFastSimEvent
     START_FUNCTION(BLAH_AldoDetEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
 
   #undef CAPABILITY
 */
 
-  #define CAPABILITY GambitColliderEvent
+  #define CAPABILITY GambitColliderEventList
   START_CAPABILITY
     /// Detector simulators which directly produce the standard event format
-    #define FUNCTION reconstructDelphesEvent
-    START_FUNCTION(HEP_Simple_Lib::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    #define FUNCTION reconstructDelphesEvents
+    START_FUNCTION(HEPSL_EventList)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     /// DEPENDENCY(delphesConfigFilename, std::string)
     /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
     /// then adjust the yaml file for each run
-    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(hardScatteringEventList, PythiaEventList)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
-    #define FUNCTION convertPythia8Event
-    START_FUNCTION(HEP_Simple_Lib::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
-    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
+    #define FUNCTION convertPythia8Events
+    START_FUNCTION(HEPSL_EventList)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(hardScatteringEventList, PythiaEventList)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -151,13 +127,13 @@ START_MODULE
   /*
     #define FUNCTION convertHerwigEvent
     START_FUNCTION(Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(hardScatteringEvent, BLAH_herwigEvent)
     #undef FUNCTION
 
     #define FUNCTION convertMadGraphEvent
     START_FUNCTION(Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(hardScatteringEvent, BLAH_madGraphEvent)
     #undef FUNCTION
   */
@@ -167,7 +143,7 @@ START_MODULE
   /*
     #define FUNCTION convertDelphesEvent
     START_FUNCTION(Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(detectorReconstructedEvent, BLAH_delphesEvent)
     #undef FUNCTION
   */
@@ -178,11 +154,11 @@ START_MODULE
   #define CAPABILITY AnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runAnalyses
-    START_FUNCTION(vector<vector<ColliderBit::SignalRegionData>>) //return type is colliderLogLikes struct
+    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     ALLOW_MODELS(NormalDist)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
-    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
-    DEPENDENCY(scaleFactor, double)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(GambitColliderEventList, HEPSL_EventList)
+    DEPENDENCY(ScaleFactor, double)
     DEPENDENCY(ListOfAnalyses, AnalysisList)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
@@ -196,7 +172,7 @@ START_MODULE
     #define FUNCTION calcLogLike
     START_FUNCTION(double)
     ALLOW_MODELS(NormalDist)
-    DEPENDENCY(AnalysisNumbers,vector<vector<ColliderBit::SignalRegionData>>)
+    DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
     BACKEND_GROUP(lnlike_marg_poisson)
@@ -211,9 +187,9 @@ START_MODULE
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     ALLOW_MODELS(NormalDist)
-    NEEDS_MANAGER_WITH_CAPABILITY(colliderLoopManager)
-    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
-    DEPENDENCY(scaleFactor, double)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(GambitColliderEvent, HEPSL_EventList)
+    DEPENDENCY(ScaleFactor, double)
     #undef FUNCTION
     #undef CAPABILITY*/
   /// \todo How many more do we need to define...?
