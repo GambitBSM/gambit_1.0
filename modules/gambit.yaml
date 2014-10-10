@@ -175,9 +175,10 @@ ObsLikes:
   - purpose:      Observable
     capability:   ptrmeth_arr_tester
 
-  # Uncomment to test BOSS
-  - purpose:      Observable
-    capability:   BOSS_tester
+  # Uncomment 'purpose' and one of the 'capability' entries to test BOSS
+  #- purpose:      Observable
+  #  capability:   BOSSedPythia_tester
+  #  capability:   BOSS_tester
 
   # Test multi-required-models
   - purpose:      Observable
