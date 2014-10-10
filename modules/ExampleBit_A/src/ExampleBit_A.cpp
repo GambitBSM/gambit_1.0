@@ -396,13 +396,9 @@ namespace Gambit
       BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
       cout << "v1.0 X's int: " << oldX.i << endl;      
 
-      // The following line doesn't work, as we still need 
-      // copy (and move?) constructors for the wrappers of BOSSed 
-      // classes (specifically for the derived wrappers; 
-      // the base wrapper has a copy constructor, but the additional 
-      // reference member variables of the derived wrappers
-      // need special treatment).
-      //result = localX;
+      result = localX;
+      cout << "Now we set result = localX" << endl;      
+      cout << "result.i: " << result.i << endl;      
 
       cout << "Testing Y type." << endl;
       cout << "===================" << endl;
@@ -418,9 +414,10 @@ namespace Gambit
       localY.x.i+=1;
       cout << "After adding 1: " << localY.x.i << endl;
       cout << "LocalX's int after LocalY's int has been incremented: " << localX.i << endl;
-      /* Can't do this due to absence of copy constructor in derived wrappers: localX = localY.get_x();       
-      cout << "i of X retrieved from localY: " localX.i << endl; */
-      /* Do this instead: */ cout << "i of X retrieved from localY: " << localY.get_x().i << endl;     
+      
+      localX = localY.get_x();       
+      cout << "i of X retrieved from localY: " << localX.i << endl; 
+
       localX.i-=1;
       localY.set_x(localX);
       cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;      
