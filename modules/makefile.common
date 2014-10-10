@@ -159,10 +159,10 @@ ifdef BOOST
   BOOST_CXXFLAGS := -I$(BOOSTINC)
   CFLAGS += $(BOOST_CXXFLAGS)
   BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
-  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME),-L$(BOOST)/stage/lib -lboost_date_time)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME),-L$(BOOST)/stage/lib -lboost_date_time -lboost_regex)
 else
   BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard /usr/lib/*)))
-  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time -lboost_regex)
 endif
 ifndef SHH
   $(info INFO:)

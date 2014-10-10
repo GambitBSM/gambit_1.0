@@ -53,6 +53,7 @@
 #include "backend_types/BOSSMinimalExample_1_0/loaded_types.hpp"
 #include "backend_types/BOSSMinimalExample_1_1/loaded_types.hpp"
 #include "backend_types/BOSSMinimalExample_1_2/loaded_types.hpp"
+#include "backend_types/BOSSedPythia_1_0/loaded_types.hpp"
 
 // Other types that don't belong in any of the existing includes.  Should be progressively
 // organised into new headers and included from here as their number grows.

@@ -126,7 +126,7 @@ namespace Gambit
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
-    /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Getter for the wrapped function current status (-3 = required classes absent, -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
@@ -277,6 +277,12 @@ namespace Gambit
     void functor::notifyOfModel(str)
     {
       utils_error().raise(LOCAL_INFO,"The notifyOfModel method has not been defined in this class.");
+    }
+
+    /// Indicate to the functor which backends are actually loaded and working
+    void functor::notifyOfBackends(std::map<str, std::set<str> >)
+    {
+      utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
     }
 
     /// Notify the functor about an instance of the options class that contains
@@ -1034,6 +1040,32 @@ namespace Gambit
       //different sets determinable only at resolution time, not initialisation time.
 
     }
+
+    /// Add a rule indicating that classes from a given backend must be available
+    void module_functor_common::setRequiredClassloader(str be, str ver) { required_classloading_backends[be].insert(ver); }
+
+    /// Indicate to the functor which backends are actually loaded and working
+    void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
+    {
+      // Loop over all the backends that are needed for this functor to work.
+      for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)
+      {
+        // Check to make sure some version of the backend in question is connected.
+        if (be_ver_map.find(it->first) == be_ver_map.end())
+        {
+          this->myStatus = -3;
+        }
+        else 
+        {  // Loop over all the versions of the backend that are needed for this functor to work.
+          for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
+          {
+            std::set<str> versions = be_ver_map.at(it->first);
+            // Check that the specific version needed is connected.
+            if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+          }
+        }
+      }
+    } 
 
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void module_functor_common::setNestedList (std::vector<functor*> &newNestedList)

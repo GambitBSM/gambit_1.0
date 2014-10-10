@@ -41,6 +41,7 @@
 #include "static_members.hpp"
 #include "util_macros.hpp"
 #include "util_types.hpp"
+#include "util_functions.hpp"
 #include "types_rollcall.hpp"
 #include "functors.hpp"
 #include "log.hpp"
@@ -57,12 +58,15 @@
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/bitor.hpp>
 #include <boost/preprocessor/list/size.hpp>
+#include <boost/preprocessor/seq/transform.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>
-#include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
+/// Define the separator to use instead of "::" when macros get gnarly.
+#define NS_SEP ___ns_separator_that_will_never_appear_naturally___
 
 namespace Gambit
 {
@@ -77,6 +81,29 @@ namespace Gambit
       void *ptr;      // Use this for objects
       voidFptr fptr;  // Use this for functions
     };
+
+    /// Get back the "::" from things that use NS_SEP instead
+    str fixns(str s)
+    {
+      str ns = STRINGIFY(NS_SEP);
+      const str cc = "::";
+      #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
+        regex rgx1(ns), rgx2("my_ns"+cc), rgx3(cc+"\\("), rgx4(cc+"$");
+        s = regex_replace(s, rgx1, cc);
+        s = regex_replace(s, rgx2, "");
+        s = regex_replace(s, rgx3, "(");
+        s = regex_replace(s, rgx4, "");
+      #else                                // Using lame-o methods >:(
+        boost::replace_all(s, ns, cc);
+        boost::replace_all(s, "my_ns"+cc, "");
+        boost::replace_all(s, cc+"(", "(");
+        const int cclen = cc.length();
+        const int slen = s.length();
+        if (cclen > slen) return s;
+        if (s.substr(slen-cclen,cclen) == cc) s.replace(slen-cclen,cclen,"");
+      #endif
+      return s;
+    }
 
   }
 }
@@ -145,34 +172,6 @@ BE_NAMESPACE                                                                \
                                                                             \
 }                                                                           \
 DONE                                                                        \
-
-
-/// Macro for adding a tag to the logging system for each backend
-//  We don't strictly need all the namespaces for this, but it's nice to have
-//  them for consistency with the other macros.
-#define REGISTER_BACKEND_LOGTAG                                             \
-namespace Gambit                                                            \
-{                                                                           \
-  namespace Backends                                                        \
-  {                                                                         \
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
-    {                                                                       \
-      void rt_register_backend_with_log ()                                  \
-      {                                                                     \
-        int mytag = Logging::getfreetag();                                  \
-        Logging::tag2str()[mytag] =                                         \
-         STRINGIFY(BACKENDNAME) /*"v" STRINGIFY(VERSION)*/;                 \
-        Logging::components().insert(mytag);                                \
-      }                                                                     \
-                                                                            \
-      namespace ini                                                         \
-      {                                                                     \
-        ini_code register_backend_with_log (&rt_register_backend_with_log); \
-      }                                                                     \
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
-  } /* end namespace Backends */                                            \
-} /* end namespace Gambit */                                                \
-
 
 /// Indicate to a backend functor that it can be used with a given model.
 #define SET_SINGLE_ALLOWED_MODEL(r,NAME,MODEL)                              \
@@ -303,11 +302,19 @@ namespace Gambit                                                            \
         ini_code cl_info(&BOOST_PP_IF(DO_CLASSLOADING,ibinBOSSd,noBOSS));   \
       }                                                                     \
                                                                             \
+      /* Register this backend with the Core if not running in standalone */\
+      REGISTER_BACKEND(BACKENDNAME, VERSION, SAFE_VERSION)                  \
+                                                                            \
+      /* Register a LogTag for this backend with the logging system */      \
+      REGISTER_BACKEND_LOGTAG                                               \
+                                                                            \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
-/* Register a LogTag for this backend with the logging system */            \
-REGISTER_BACKEND_LOGTAG                                                     \
+                                                                            \
+/* Register the factory functions for all classes loaded by this backend. */\
+BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
+                                                                            \
 /* Register the initialisation function for this backend */                 \
 CORE_START_CAPABILITY(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))                                  \
@@ -315,13 +322,45 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
-/* Register the factory functions for all classes loaded by this backend. */\
-BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
 
-/// Load factory functions for classes provided by this backend.
+/// Register this backend with the Core if not running in standalone mode.
+#ifdef STANDALONE
+  #define REGISTER_BACKEND(BE, VER, SAFEVER)   DUMMYARG(BE, VER, SAFEVER)   
+#else 
+  #define REGISTER_BACKEND(BE, VER, SAFEVER)   REGISTER_BACKEND_WITH_CORE(BE, VER, SAFEVER)
+#endif
+
+/// Register a backend with the GAMBIT Core
+#define REGISTER_BACKEND_WITH_CORE(BE, VER, SAFEVER)                                            \
+void CAT_4(register_backend_,BE,_,SAFEVER) ()                                                   \
+{                                                                                               \
+  Core().registerBackend(STRINGIFY(BE), STRINGIFY(VER));                                        \
+}                                                                                               \
+                                                                                                \
+namespace ini                                                                                   \
+{                                                                                               \
+  ini_code run_backend_rego(&CAT_4(register_backend_,BE,_,SAFEVER));                            \
+}                                                                                               \
+
+/// Macro for adding a tag to the logging system for each backend
+#define REGISTER_BACKEND_LOGTAG                                                                 \
+void rt_register_backend_with_log ()                                                            \
+{                                                                                               \
+  int mytag = Logging::getfreetag();                                                            \
+  Logging::tag2str()[mytag] = STRINGIFY(BACKENDNAME)/* "v" STRINGIFY(VERSION)*/;                \
+  Logging::components().insert(mytag);                                                          \
+}                                                                                               \
+                                                                                                \
+namespace ini                                                                                   \
+{                                                                                               \
+  ini_code register_backend_with_log (&rt_register_backend_with_log);                           \
+}                                                                                               \
+
+/// Load factory functions for classes provided by this backend
 #define LOAD_ALL_FACTORIES                                                                      \
- BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data) )                            
+ BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data))                            
 
+/// Load all factory functions for a given type.
 #define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                                    \
 namespace Gambit                                                                                \
 {                                                                                               \
@@ -338,7 +377,8 @@ namespace Gambit                                                                
                 BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)))              \
               BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)\
                ,BOOST_PP_TUPLE_ELEM(2,0,elem))                                                  \
-              CAT(BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)),_wrapper);                    \
+              CAT(BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,                         \
+               NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))),wrapper);                                \
                                                                                                 \
       /*Typedef the abstract type to avoid expanding type seq inside BOOST_PP_SEQ_FOR_EACH_I*/  \
       typedef ::CAT_3(BACKENDNAME,_,SAFE_VERSION)::BOOST_PP_SEQ_FOR_EACH_I(TRAILING_NSQUALIFIER,\
@@ -346,7 +386,29 @@ namespace Gambit                                                                
                 BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)))              \
               CAT(Abstract_,BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(                   \
                BOOST_PP_TUPLE_ELEM(2,0,elem)),1), BOOST_PP_TUPLE_ELEM(2,0,elem)))               \
-              CAT(BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)),_abstract);                   \
+              CAT(BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,                         \
+         NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))),abstract);                                     \
+                                                                                                \
+      /*Register the type with the backend info object*/                                        \
+      void CAT(register_type_,BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,             \
+         NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))) ) ()                                           \
+      {                                                                                         \
+        backendInfo().classes[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)].insert(                 \
+         Utils::strip_whitespace_except_after_const(                                            \
+         STRINGIFY(BOOST_PP_SEQ_FOR_EACH_I(TRAILING_NSQUALIFIER, ,                              \
+         BOOST_PP_SEQ_SUBSEQ(BOOST_PP_TUPLE_ELEM(2,0,elem),0,                                   \
+         BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1)))                     \
+         BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(BOOST_PP_TUPLE_ELEM(2,0,elem)),1),    \
+         BOOST_PP_TUPLE_ELEM(2,0,elem))) ));                                                    \
+      }                                                                                         \
+                                                                                                \
+      namespace ini                                                                             \
+      {                                                                                         \
+        ini_code CAT(run_type_rego, BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,       \
+         NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))) )                                              \
+         (&CAT(register_type_,BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,             \
+         NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))) ));                                            \
+      }                                                                                         \
                                                                                                 \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
   } /* end namespace Backends */                                                                \
@@ -354,12 +416,15 @@ namespace Gambit                                                                
                                                                                                 \
 /*Load up each factory in turn for this type*/                                                  \
 BOOST_PP_SEQ_FOR_EACH_I(LOAD_NTH_FACTORY_FOR_TYPE,                                              \
- BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_ELEM(2,0,elem)), BOOST_PP_TUPLE_ELEM(2,1,elem))                \
+ BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN, NS_SEP,                                  \
+ BOOST_PP_TUPLE_ELEM(2,0,elem))), BOOST_PP_TUPLE_ELEM(2,1,elem))                                \
 
+/// Redirector from within BOOST_PP_SEQ_FOR_EACH_I to LOAD_SINGLE_FACTORY
 #define LOAD_NTH_FACTORY_FOR_TYPE(r,data,i,elem)                                                \
- LOAD_SINGLE_FACTORY(data, CAT_3(data,_factory,i), BOOST_PP_TUPLE_ELEM(2,1,elem),               \
- BOOST_PP_TUPLE_ELEM(2,0,elem), CAT(data,_abstract), CAT(data,_wrapper)::CAT(__factory,i) )     \
+ LOAD_SINGLE_FACTORY(data, CAT_3(data,factory,i), BOOST_PP_TUPLE_ELEM(2,1,elem),                \
+ BOOST_PP_TUPLE_ELEM(2,0,elem), CAT(data,abstract), CAT(data,wrapper)::CAT(__factory,i) )       \
 
+/// Load a single factory function from a backend
 #define LOAD_SINGLE_FACTORY(BARENAME, NAME, ARGS, SYMBOLNAME, ABSTRACT, PTRNAME)                \
 namespace Gambit                                                                                \
 {                                                                                               \
@@ -396,7 +461,7 @@ namespace Gambit                                                                
         err << "The backend library" << std::endl                                               \
             << STRINGIFY(BACKENDNAME) << " v" << STRINGIFY(VERSION) << "," << std::endl         \
             << "which is supposed to contain the factory for class " << std::endl               \
-            << STRINGIFY(BARENAME) << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) << ", " << std::endl\
+            << fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))<<", "<<std::endl\
             << "is missing or catastrophically broken." << std::endl                            \
             << "Fix or find that backend yo -- or don't use the type." << std::endl;            \
         backend_error().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                           \
@@ -407,10 +472,11 @@ namespace Gambit                                                                
       ABSTRACT* CAT(factory_not_loaded_,NAME)CONVERT_VARIADIC_ARG(ARGS)                         \
       {                                                                                         \
         std::ostringstream err;                                                                 \
-        err << "Class factory " << STRINGIFY(BARENAME) << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) \
+        err << "Factory for class " << fixns(STRINGIFY(BARENAME)                                \
+                STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))                                          \
             << " did not load properly from " << std::endl                                      \
             << STRINGIFY(BACKENDNAME) << " v" << STRINGIFY(VERSION) << std::endl                \
-            << " ...so you can't make an object with it. Suck eggs." << std::endl;              \
+            << "...so you can't make an object with it." << std::endl;                          \
         backend_error().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                           \
         return NULL;                                                                            \
       }                                                                                         \
@@ -419,10 +485,14 @@ namespace Gambit                                                                
       is not present or the symbol not found, save this info in the backend info object. */     \
       void CAT(handoverFactoryPointer_,NAME)()                                                  \
       {                                                                                         \
+        backendInfo().factory_args[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+                    \
+         fixns(STRINGIFY(BARENAME))].insert(STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)));             \
         if(!present)                                                                            \
         {                                                                                       \
           PTRNAME = CAT(backend_not_loaded_,NAME);                                              \
           backendInfo().classes_OK[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = false;           \
+          backendInfo().constructor_status[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+            \
+           fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "lib absent";    \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
@@ -433,13 +503,17 @@ namespace Gambit                                                                
           backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
           PTRNAME = CAT(factory_not_loaded_,NAME);                                              \
           backendInfo().classes_OK[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = false;           \
+          backendInfo().constructor_status[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+            \
+           fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "broken";        \
         }                                                                                       \
         else                                                                                    \
         {                                                                                       \
           PTRNAME = NAME;                                                                       \
-          logger() << "Succeeded in loading factory " << STRINGIFY(BARENAME)                    \
-                   << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) << " from "<< std::endl             \
+          logger() << "Succeeded in loading constructor " << fixns(STRINGIFY(BARENAME)          \
+                      STRINGIFY(CONVERT_VARIADIC_ARG(ARGS))) << " from "<< std::endl            \
                    << LIBPATH << "." << LogTags::backends << LogTags::info << EOM;              \
+          backendInfo().constructor_status[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+            \
+           fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "OK";            \
         }                                                                                       \
       }                                                                                         \
                                                                                                 \

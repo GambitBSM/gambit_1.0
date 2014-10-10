@@ -34,6 +34,9 @@
 /// \name Compile-time error macro.
 #define FAIL(x) static_assert(false,"GAMBIT precompiler error: " x);
 
+/// \name Token appendment macro for use with BOOST_PP_SEQ_TRANSFORM
+#define APPEND_TOKEN(s,data,elem) CAT(elem,data)
+
 /// \name Dummy macros
 /// Dummy macros that expand to nothing.
 /// @{
