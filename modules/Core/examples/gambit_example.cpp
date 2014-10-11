@@ -16,6 +16,7 @@
 ///
 ///  *********************************************
 
+#include "gambit_main.hpp"
 #include "module_rollcall.hpp"
 #include "backend_rollcall.hpp"
 #include "depresolver.hpp"
@@ -29,6 +30,7 @@
 #include "log.hpp"
 #include "claw_singleton.hpp"
 #include "core_singleton.hpp"
+#include "equivalency_singleton.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
@@ -104,7 +106,7 @@ void beispiel()
   Printers::PrinterManager printerManager(iniFile.getPrinterNode());
                                 
   // Set up dependency resolver
-  DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, *printerManager.printerptr);
+  DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
 
   // Log module function infos
   dependencyResolver.printFunctorList();

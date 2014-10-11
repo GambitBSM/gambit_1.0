@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
     // Activate "primary" model functors
     Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
+    // Deactivate module functions reliant on classes from missing backends
+    Core().accountForMissingClasses();
+
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
     // Printers::ostreamPrinter printer(std::cout,1); 

@@ -1,0 +1,148 @@
+# GAMBIT Initialization file (in YAML)
+#
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
+
+ 
+Parameters: 
+#    CMSSM_demo:
+#        A0:
+#            range: [-1000, 1000]
+#        M0:
+#            prior_type: log
+#            range: [0.001,1000]
+#        M12:
+#        #  same_as: CMSSM_demo::M0
+#        Mstop:
+#        #  same_as: CMSSM_demo::M0
+#        sgnmu:
+#            range: [-1, 1]
+#            fixed_value: 1
+#        tanb:
+#        #  fixed_value: 1
+
+#    NormalDist:
+#        mu:
+#            fixed_value: 1
+#        sigma:
+#            fixed_value: 1
+    SingletDM:
+        lambda:
+            range: [0.001, 0.01]
+        mass:
+            range: [99, 100]
+
+Priors:
+#  m12_prior: 
+#    parameters: [CMSSM_demo::M12]
+#    prior_type: composite
+#    options: 
+#      new_prior: 
+#        parameters: [CMSSM_demo::M12]
+#        prior_type: log
+#        range: [100,2000]
+#
+#  tanbMstop_prior: 
+#    parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
+#    prior_type: cauchy
+#    options:
+#      cov: [[0.5, 0.1],[0.1, 0.6]]
+#      demo: 45
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
+    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+
+Scanner:
+  plugin: crapsample
+  file_path:  ScannerBit/lib/libsample.so
+  enable_redirect: false
+  redirect_output:
+     scanner:  xterm
+  crapsample:
+    point_number: 2
+    output_file:  output
+    like:  Likelihood
+  loopsample:
+    point_number: 20
+    output_file:  output
+    like:  Likelihood
+    files:
+      output_file: "weights ..."
+  multinest:
+    nlive: 500
+    tol: 0.1
+    output_file:  output
+  twalk_beta:
+    kwalk_ratio: 0.9836
+    projection_dimension: 4
+    gaussian_distance: 2.4
+    walk_distance: 2.5
+    transverse_distance: 6.0
+    ran_seed: 0
+    file_name: output_file
+    tolorance: 1.01
+    thread_number: 10
+    cut: 100
+    
+ObsLikes:
+    #- capability: TH_ProcessCatalog
+    #- capability: RD_oh2
+      #function:   RD_oh2_micromegas
+      #function:   RD_oh2_micromegas
+    #  function:   RD_oh2_general
+    - capability: dump_GammaSpectrum
+    #- capability: GA_AnnYield
+    #  purpose: Observable
+
+Auxiliaries:
+  - capability:   RD_oh2
+    function:     RD_oh2_micromegas
+    options:
+      fast: 1
+      Beps: 1e-5
+
+Logger:
+  prefix : "runs/example_minimal_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "stdout"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+  #  [Logger, Debug] : "stdout"
+  #  [Core] : "stdout"
+  #  [Dependency Resolver] : "stdout"
+
+KeyValues:
+  dependency_resolution:
+    prefer_model_specific_functions: true
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    scan_error: non-fatal #make this fatal to see an example error
+    ExampleBit_A_error: non-fatal
+  enable_testing: false
+  test_function: uniform
+  uniform:
+    dim: 2
+    priors:
+      gauss_prior:
+        parameters: [0, 1]
+        options:
+          cov: [[1, 0], [0, 1]]

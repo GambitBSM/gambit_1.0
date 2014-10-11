@@ -173,34 +173,6 @@ BE_NAMESPACE                                                                \
 }                                                                           \
 DONE                                                                        \
 
-
-/// Macro for adding a tag to the logging system for each backend
-//  We don't strictly need all the namespaces for this, but it's nice to have
-//  them for consistency with the other macros.
-#define REGISTER_BACKEND_LOGTAG                                             \
-namespace Gambit                                                            \
-{                                                                           \
-  namespace Backends                                                        \
-  {                                                                         \
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
-    {                                                                       \
-      void rt_register_backend_with_log ()                                  \
-      {                                                                     \
-        int mytag = Logging::getfreetag();                                  \
-        Logging::tag2str()[mytag] =                                         \
-         STRINGIFY(BACKENDNAME) /*"v" STRINGIFY(VERSION)*/;                 \
-        Logging::components().insert(mytag);                                \
-      }                                                                     \
-                                                                            \
-      namespace ini                                                         \
-      {                                                                     \
-        ini_code register_backend_with_log (&rt_register_backend_with_log); \
-      }                                                                     \
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
-  } /* end namespace Backends */                                            \
-} /* end namespace Gambit */                                                \
-
-
 /// Indicate to a backend functor that it can be used with a given model.
 #define SET_SINGLE_ALLOWED_MODEL(r,NAME,MODEL)                              \
   Functown::NAME.setAllowedModel(STRINGIFY(MODEL));
@@ -330,11 +302,19 @@ namespace Gambit                                                            \
         ini_code cl_info(&BOOST_PP_IF(DO_CLASSLOADING,ibinBOSSd,noBOSS));   \
       }                                                                     \
                                                                             \
+      /* Register this backend with the Core if not running in standalone */\
+      REGISTER_BACKEND(BACKENDNAME, VERSION, SAFE_VERSION)                  \
+                                                                            \
+      /* Register a LogTag for this backend with the logging system */      \
+      REGISTER_BACKEND_LOGTAG                                               \
+                                                                            \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
   } /* end namespace Backends */                                            \
 } /* end namespace Gambit */                                                \
-/* Register a LogTag for this backend with the logging system */            \
-REGISTER_BACKEND_LOGTAG                                                     \
+                                                                            \
+/* Register the factory functions for all classes loaded by this backend. */\
+BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
+                                                                            \
 /* Register the initialisation function for this backend */                 \
 CORE_START_CAPABILITY(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))                                  \
@@ -342,42 +322,43 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
  void,2)                                                                    \
-/* Register the factory functions for all classes loaded by this backend. */\
-BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
 
-/// Load factory functions for classes provided by this backend,
-//, and register the backend as a classloader if not in standalone mode.
+/// Register this backend with the Core if not running in standalone mode.
 #ifdef STANDALONE
-  #define LOAD_ALL_FACTORIES                                                                    \
-   BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data))                            
-#else
-  #define LOAD_ALL_FACTORIES                                                                    \
-   REGISTER_CLASSLOADER_WITH_CORE(BACKENDNAME, VERSION, SAFE_VERSION)                           \
-   BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data))                            
+  #define REGISTER_BACKEND(BE, VER, SAFEVER)   DUMMYARG(BE, VER, SAFEVER)   
+#else 
+  #define REGISTER_BACKEND(BE, VER, SAFEVER)   REGISTER_BACKEND_WITH_CORE(BE, VER, SAFEVER)
 #endif
 
-/// Register a backend that provides classes with the GAMBIT core
-#define REGISTER_CLASSLOADER_WITH_CORE(BE, VER, SAFEVER)                                        \
-namespace Gambit                                                                                \
+/// Register a backend with the GAMBIT Core
+#define REGISTER_BACKEND_WITH_CORE(BE, VER, SAFEVER)                                            \
+void CAT_4(register_backend_,BE,_,SAFEVER) ()                                                   \
 {                                                                                               \
-  namespace Backends                                                                            \
-  {                                                                                             \
-    namespace CAT_3(BE,_,SAFEVER)                                                               \
-    {                                                                                           \
-                                                                                                \
-      void CAT_4(register_classloader_,BE,_,SAFEVER) ()                                         \
-      {                                                                                         \
-        Core().registerClassloader(STRINGIFY(BE), STRINGIFY(VER));                              \
-      }                                                                                         \
-                                                                                                \
-      namespace ini                                                                             \
-      {                                                                                         \
-        ini_code run_classload_rego(&CAT_4(register_classloader_,BE,_,SAFEVER));                \
-      }                                                                                         \
-                                                                                                \
-    }                                                                                           \
-  }                                                                                             \
+  Core().registerBackend(STRINGIFY(BE), STRINGIFY(VER));                                        \
 }                                                                                               \
+                                                                                                \
+namespace ini                                                                                   \
+{                                                                                               \
+  ini_code run_backend_rego(&CAT_4(register_backend_,BE,_,SAFEVER));                            \
+}                                                                                               \
+
+/// Macro for adding a tag to the logging system for each backend
+#define REGISTER_BACKEND_LOGTAG                                                                 \
+void rt_register_backend_with_log ()                                                            \
+{                                                                                               \
+  int mytag = Logging::getfreetag();                                                            \
+  Logging::tag2str()[mytag] = STRINGIFY(BACKENDNAME)/* "v" STRINGIFY(VERSION)*/;                \
+  Logging::components().insert(mytag);                                                          \
+}                                                                                               \
+                                                                                                \
+namespace ini                                                                                   \
+{                                                                                               \
+  ini_code register_backend_with_log (&rt_register_backend_with_log);                           \
+}                                                                                               \
+
+/// Load factory functions for classes provided by this backend
+#define LOAD_ALL_FACTORIES                                                                      \
+ BOOST_PP_SEQ_FOR_EACH(LOAD_FACTORIES_FOR_TYPE, , CAT_4(BACKENDNAME,_,SAFE_VERSION,_all_data))                            
 
 /// Load all factory functions for a given type.
 #define LOAD_FACTORIES_FOR_TYPE(r,data,elem)                                                    \

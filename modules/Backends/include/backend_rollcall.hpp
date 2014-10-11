@@ -40,6 +40,8 @@
 #include "frontends/DDCalc0.hpp"
 #include "frontends/HiggsBounds.hpp"
 #include "frontends/HiggsSignals.hpp"
+#include "frontends/BOSSedPythia.hpp"
+
 //#include "frontend_Pythia8.hpp"
 
 // Get a bit fancy and include duplicate backends 

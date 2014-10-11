@@ -225,6 +225,16 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // BOSSedPythia tester
+  #define CAPABILITY BOSSedPythia_tester
+  START_CAPABILITY
+    #define FUNCTION bossed_pythia_test_function
+    START_FUNCTION(bool)
+    NEEDS_CLASSES_FROM(BOSSedPythia, 1.0)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
 #undef MODULE
 
 
