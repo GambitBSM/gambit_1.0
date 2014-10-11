@@ -174,6 +174,10 @@ START_MODULE
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
     #undef FUNCTION
+    #define FUNCTION TH_ProcessCatalog_SingletDM
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(SingletDM)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY DD_couplings
