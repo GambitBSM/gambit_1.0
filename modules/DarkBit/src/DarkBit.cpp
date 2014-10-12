@@ -927,9 +927,8 @@ namespace Gambit {
         for (int i = 0; i<=50; i++)
         {
             double energy = pow(10., i/10. - 2.);
-            std::cout << energy << ": " << (*spectrum)(energy) << std::endl;
+            std::cout << energy << " " << (*spectrum)(energy) << std::endl;
         }
-
         result = 0.;
     }
 
@@ -1122,6 +1121,38 @@ namespace Gambit {
     void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
     void mwimp_toy        (double &result)                  { result = 250.0;            }
     void annrate_toy      (double &result)                  { result = 1.e20;            }
+
+
+    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    {
+        using namespace Pipes::TH_ProcessCatalog_SingletDM;
+        double mass = *Param["mass"];
+        double lambda = *Param["lambda"];
+
+        double sigma = lambda * lambda;
+
+        // Initialize catalog
+        TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
+        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
+
+        // Initialize channel
+        BFptr kinematicFunction(new BFconstant(sigma,1));
+        std::vector<std::string> finalStates;
+        finalStates.push_back("b");
+        finalStates.push_back("bbar");
+        TH_Channel channel(finalStates, kinematicFunction);
+        process.channelList.push_back(channel);
+             
+        // And process on process list
+        catalog.processList.push_back(process);
+
+        // Finally, store properties of "chi" in particleProperty list
+        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+
+        result = catalog;
+    }
+
 
 
 /*
