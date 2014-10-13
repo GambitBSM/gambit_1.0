@@ -443,7 +443,7 @@ namespace Gambit
       cout << "Testing BOSSed Pythia." << endl;
       cout << "======================" << endl;
 
-      BOSSedPythia_1_0::Pythia8::Pythia pythia("/home/anders/UiO/tools/pythia8186/xmldoc", false);
+      BOSSedPythia_1_0::Pythia8::Pythia pythia("../extras/boss/bossed_pythia_source/xmldoc", false);
 
       pythia.readString("Beams:eCM = 8000.");
       pythia.readString("HardQCD:all = on");
