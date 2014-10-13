@@ -1,7 +1,7 @@
 # Package information
 PKGNAME         := FlexibleSUSY
 VERSION         := 0.5.3
-ABSBASEDIR      := /home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM/
+ABSBASEDIR      := ../../
 
 LIBEXT          := .a
 
@@ -22,7 +22,7 @@ LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
 
 # Variables for compilation
 CXX             := g++
-CPPFLAGS        :=  -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
+CPPFLAGS        :=  -I. -I$(ABSBASEDIR) $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
                    $(INCMODEL)
 CXXFLAGS        := -std=c++11 -O2
 CXX_DEP_GEN     := g++
@@ -34,10 +34,10 @@ FOR_DEP_GEN     := gfortran
 BOOSTTESTLIBS   := -lboost_unit_test_framework
 BOOSTTHREADLIBS := 
 BOOSTFLAGS      := 
-EIGENFLAGS      := -I/usr/include/eigen3
+EIGENFLAGS      := -I../../../../../../extras/eigen3
 GSLLIBS         := -L/usr/lib -lgsl -lgslcblas -lm
-GSLFLAGS        := -I/usr/include
-LAPACKLIBS      := -llapack
+GSLFLAGS        := -I/usr/include -I$(GSL_DIR)/include
+LAPACKLIBS      := -llapack -lblas -latlas
 LOOPTOOLSFLAGS  := 
 LOOPTOOLSLIBS   := 
 THREADLIBS      := -lpthread

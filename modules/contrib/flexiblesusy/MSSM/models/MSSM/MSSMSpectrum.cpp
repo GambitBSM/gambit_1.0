@@ -6,8 +6,8 @@ using namespace flexiblesusy;
 //    mssmsoft = m.;
 // }
 
-MSSMSpectrum::MSSMSpectrum() : mssmsoft(), phys(), DRbar(), problems(MSSM_info::particle_names) {
-}
+//MSSMSpectrum::MSSMSpectrum() : mssmsoft(), phys(), DRbar(), problems(MSSM_info::particle_names) {
+//}
 
 MSSMSpectrum::MSSMSpectrum(MSSM_soft_parameters ms, MSSM_physical mp, MSSM_physical mdr, Problems<MSSM_info::NUMBER_OF_PARTICLES> p) : problems(MSSM_info::particle_names) {
    mssmsoft = ms;

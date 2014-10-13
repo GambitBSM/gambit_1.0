@@ -75,11 +75,11 @@ private:
 
 protected:
    /// Constructor
-   Spectrum(RunningPars* rp, Phys* p) : phys(p), runningpars(rp) {}
+   Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
 
 public:
-   Phys* phys;
-   RunningPars* runningpars;
+   Phys& phys;
+   RunningPars& runningpars;
    ///  returns the lightest stable particle (lsp) mass 
    ///   gives 3 integers to specify the state 
    ///  for most general case of a particle type with mass matrix 

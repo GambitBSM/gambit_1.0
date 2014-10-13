@@ -154,6 +154,7 @@ namespace flexiblesusy {
       //constructors
       MSSMSpec(MSSM<Two_scale>);
       //Could more constructors to interface with other generators
+
       //Destructor
       virtual ~MSSMSpec();
         //some model independent stuff
