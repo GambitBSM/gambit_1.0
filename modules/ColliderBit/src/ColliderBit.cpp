@@ -10,10 +10,8 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Abram Krislock
-///          (abram.krislock@fysik.su.se)
-///    \date 2013 Dec
-//  //  Aldo Saavedra
-//  //  2014 March 2nd
+///          (a.m.b.krislock@fys.uio.no)
+///  \author Aldo Saavedra
 ///
 ///  *********************************************
 
@@ -40,10 +38,9 @@ namespace Gambit {
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
 
-    /// @todo Put in actual analyses rather than a simple counter
-    double counter = 0.;
+    enum specialEvents {INIT = -1, FINALIZE = -999};
     /// @todo backend Pythia properly
-    std::vector<PythiaList> threadSpecificPythiaLists;
+    PythiaPointerVector pythiaPtrVec;
     Delphes3Backend* delphes = 0;
     std::string delphesConfigFilename = "";
     bool isDetectorReady = false;
@@ -53,9 +50,10 @@ namespace Gambit {
       #ifdef DEBUG
       std::cout<<"\n\nHECollider is here: "<<label;
       std::cout<<"\n    Checking locals: ";
-      std::cout<<"\n    counter: "<<counter;
       std::cout<<"\n    nEvents: "<<nEvents;
-      std::cout<<"\n    slhaFilename: "<<slhaFilename;
+      std::cout<<"\n    pythiaPtrVec: ";
+      for (auto pyPtr : pythiaPtrVec)
+        std::cout<<"\n      "<<pyPtr;
       std::cout<<"\n    delphesConfigFilename: "<<delphesConfigFilename;
       std::cout<<"\n    delphes (points to): "<<delphes;
       std::cout<<"\n    isDetectorReady: "<<isDetectorReady;
@@ -69,9 +67,9 @@ namespace Gambit {
     /// *************************************************
 
     /// *** Initialization for analyses ***
-    void specifyAnalysisList (AnalysisList &result) {
-      using namespace Pipes::specifyAnalysisList;
-      debugMe("specifyAnalysisList");
+    void specifyAnalysisPointerVector (AnalysisPointerVector &result) {
+      using namespace Pipes::specifyAnalysisPointerVector;
+      debugMe("specifyAnalysisPointerVector");
       result.clear();
 
       std::vector<std::string> analysisNames;
@@ -84,18 +82,12 @@ namespace Gambit {
     }
 
 
-    /// *** Finalization for analyses ***
-    /// @todo Scaling will depend on nEvents, xsec, and analysis luminosity
-    void getScaleFactor(double &result) {
-      debugMe("getScaleFactor");
-      result = 1.5;
-    }
-
-
     /// *** Loop Managers ***
     void operatePythia() {
-      debugMe("operatePythia");
       using namespace Pipes::operatePythia;
+      debugMe("operatePythia");
+      pythiaPtrVec.clear();
+
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
       logger() << "\"operatePythia() was called.\"" << endl;
@@ -113,43 +105,35 @@ namespace Gambit {
       /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
       GET_COLLIDER_RUNOPTION(slhaFilename, std::string)
 
-      /// Set up all the requested pythias for each thread.
-      #pragma omp parallel shared(threadSpecificPythiaLists)
-      {
-        int threadNum = omp_get_thread_num();
-        PythiaList tempList;
-        std::vector<std::string> pythiaOptions;
+      Loop::executeIteration(INIT);
+      /// For every collider requested in the yaml file:
+      for(auto name : pythiaNames) {
+        #pragma omp parallel shared(pythiaPtrVec)
+        {
+          int threadNum = omp_get_thread_num();
+          std::vector<std::string> pythiaOptions;
 
-        for(auto name : pythiaNames) {
-          pythiaOptions.clear();
           try {
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(name);
           } catch (...) {}  //< If the PythiaBase subclass is hard-coded, okay with no options.
           pythiaOptions.push_back("SLHA:file = " + slhaFilename);
           pythiaOptions.push_back("Random:seed = " + std::to_string(threadNum));
-          tempList.push_back( mkPythia(name, pythiaOptions) );
+
+          pythiaPtrVec.push_back( mkPythia(name, pythiaOptions) );
+          pythiaOptions.clear();
         }
 
-        #pragma omp critical (threadSpecificPythiaLists)
+        #pragma omp parallel shared(pythiaPtrVec)
         {
-          threadSpecificPythiaLists.push_back(tempList);
+          #pragma omp for
+          for (int it=0; it<nEvents; it++) {
+            Loop::executeIteration(it);
+          }
         }
       }
+      Loop::executeIteration(FINALIZE);
 
-      Loop::executeIteration(0);
-      #pragma omp parallel shared(threadSpecificPythiaLists)
-      {
-        #pragma omp for
-        for (int it=1; it<nEvents-1; it++) {
-          Loop::executeIteration(it);
-        }
-      }
-      Loop::executeIteration(nEvents);
-
-      /// @TODO Check with someone who knows about shared_ptr to see if the memory is indeed freed.
-      threadSpecificPythiaLists.clear();
       isDetectorReady = false;
-
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
       logger() << "\"manageVanillaLoop() completed.\"" << endl;
@@ -158,24 +142,23 @@ namespace Gambit {
 
 
     /// Hard Scattering Event Generators
-    void generatePythia8Events(PythiaEventList &result) {
-      debugMe("generatePythia8Events");
-      using namespace Pipes::generatePythia8Events;
+    void generatePythia8Event(Pythia8::Event &result) {
+      using namespace Pipes::generatePythia8Event;
+      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
+      debugMe("generatePythia8Event");
       result.clear();
 
-      /// Get the next event from Pythia8 for each configured pythia
-      for (auto pythiaPtr : threadSpecificPythiaLists[omp_get_thread_num()]) {
-        result.push_back(pythiaPtr->nextEvent());
-      }
+      /// Get the next event from Pythia8
+      result = pythiaPtrVec[omp_get_thread_num()]->nextEvent();
     }
 
 
     /// Standard Event Format Functions
-    void reconstructDelphesEvents(HEPSL_EventList &result) {
-      debugMe("reconstructDelphesEvents");
-      using namespace Pipes::reconstructDelphesEvents;
+    void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
+      using namespace Pipes::reconstructDelphesEvent;
+      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
+      debugMe("reconstructDelphesEvent");
       result.clear();
-      HEP_Simple_Lib::Event recoEvent;
 
       #pragma omp critical (Delphes)
       {
@@ -187,112 +170,104 @@ namespace Gambit {
         }
         /// Feed the Pythia8 event to Delphes for detector simulation
         /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
-        for (auto hardEventPtr : *Dep::hardScatteringEventList) {
-          recoEvent.clear();
-          delphes->processEvent(*hardEventPtr, recoEvent);
-          result.push_back(recoEvent);
-        }
+        delphes->processEvent(*Dep::hardScatteringEvent, result);
       }
     }
 
 
-    void convertPythia8Events(HEPSL_EventList &result) {
-      debugMe("convertPythia8Events");
-      using namespace Pipes::convertPythia8Events;
+    void convertPythia8Event(HEP_Simple_Lib::Event &result) {
+      using namespace Pipes::convertPythia8Event;
+      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
+      debugMe("convertPythia8Event");
       result.clear();
-      HEP_Simple_Lib::Event convEvent;
+
       Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
-      for (auto hardEventPtr : *Dep::hardScatteringEventList) {
-        const auto pevt = *hardEventPtr;
-        convEvent.clear();
-        ptot.reset();
-        jetparticles.clear();
-        bhadrons.clear();
-        taus.clear();
+      const auto pevt = *Dep::hardScatteringEvent;
+      ptot.reset();
+      jetparticles.clear();
+      bhadrons.clear();
+      taus.clear();
 
-        // Make a first pass to gather unstable final B hadrons and taus
-        for (int i = 0; i < pevt.size(); ++i) {
-          const Pythia8::Particle& p = pevt[i];
+      // Make a first pass to gather unstable final B hadrons and taus
+      for (int i = 0; i < pevt.size(); ++i) {
+        const Pythia8::Particle& p = pevt[i];
 
-          // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-          if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
+        // Find last b-hadrons in b decay chains as the best proxy for b-tagging
+        if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
-          // Find last tau in tau replica chains as a proxy for tau-tagging
-          // Also require that the tau are prompt
-          /// @todo Only accept hadronically decaying taus?
-          if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
-            taus.push_back(mk_pseudojet(p.p()));
-            HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
-            gp->set_prompt();
-            convEvent.add_particle(gp); // Will be automatically categorised
-          }
+        // Find last tau in tau replica chains as a proxy for tau-tagging
+        // Also require that the tau are prompt
+        /// @todo Only accept hadronically decaying taus?
+        if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
+          /// @todo Nothing is done with taus after this....
+          taus.push_back(mk_pseudojet(p.p()));
+          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+          gp->set_prompt();
+          result.add_particle(gp); // Will be automatically categorised
         }
-
-        for (int i = 0; i < pevt.size(); ++i) {
-          const Pythia8::Particle& p = pevt[i];
-
-          // Only consider final state particles within ATLAS/CMS acceptance
-          if (!p.isFinal()) continue;
-          if (abs(p.eta()) > 5.0) continue;
-          // Add to total final state momentum
-          ptot += p.p();
-
-          // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-          /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
-          /// @todo Should we set up Pythia to make taus stable?
-          const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
-
-          if (prompt) {
-            HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
-            gp->set_prompt();
-            convEvent.add_particle(gp); // Will be automatically categorised
-          } else {
-            // Choose jet constituents
-            jetparticles.push_back(mk_pseudojet(p.p()));
-          }
-
-        }
-
-        /// Jet finding
-        /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
-        /// @todo choose jet algorithm via _settings?
-        const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
-        fastjet::ClusterSequence cseq(jetparticles, jet_def);
-        std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
-
-        /// Do jet b-tagging, etc. and add to the Event
-        for (auto& pj : pjets) {
-          bool isB = false;
-          for (auto& pb : bhadrons) {
-            if (pj.delta_R(pb) < 0.3) {
-              isB = true;
-              break;
-            }
-          }
-          /// Add to the event
-          convEvent.addJet(new HEP_Simple_Lib::Jet(MCUtils::mk_p4(pj), isB));
-        }
-
-        /// MET (note: NOT just equal to sum of prompt invisibles)
-        convEvent.set_missingmom(-mk_p4(ptot));
-
-        result.push_back(convEvent);
       }
+
+      for (int i = 0; i < pevt.size(); ++i) {
+        const Pythia8::Particle& p = pevt[i];
+
+        // Only consider final state particles within ATLAS/CMS acceptance
+        if (!p.isFinal()) continue;
+        if (abs(p.eta()) > 5.0) continue;
+        // Add to total final state momentum
+        ptot += p.p();
+
+        // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
+        /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
+        /// @todo Should we set up Pythia to make taus stable?
+        const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
+
+        if (prompt) {
+          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+          gp->set_prompt();
+          result.add_particle(gp); // Will be automatically categorised
+        } else {
+          // Choose jet constituents
+          jetparticles.push_back(mk_pseudojet(p.p()));
+        }
+
+      }
+
+      /// Jet finding
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// @todo choose jet algorithm via _settings?
+      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
+      fastjet::ClusterSequence cseq(jetparticles, jet_def);
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+
+      /// Do jet b-tagging, etc. and add to the Event
+      for (auto& pj : pjets) {
+        bool isB = false;
+        for (auto& pb : bhadrons) {
+          if (pj.delta_R(pb) < 0.3) {
+            isB = true;
+            break;
+          }
+        }
+        /// Add to the event
+        result.addJet(new HEP_Simple_Lib::Jet(MCUtils::mk_p4(pj), isB));
+      }
+
+      /// MET (note: NOT just equal to sum of prompt invisibles)
+      result.set_missingmom(-mk_p4(ptot));
     }
 
 
     /// Analysis Accumulators
 
     void runAnalyses(ColliderLogLikes& result) {
-      debugMe("runAnalyses");
       using namespace Pipes::runAnalyses;
+      if (*Loop::iteration == INIT) return;  //< Only whatever init Gambit needs
+      debugMe("runAnalyses");
 
-      if (*Loop::iteration == 0) {
-        // Nothing to do (analyses are already initialised)
-      } else if (*Loop::iteration == nEvents) {
+      if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         for (auto anaPtr : *Dep::ListOfAnalyses) {
@@ -301,12 +276,11 @@ namespace Gambit {
           result.push_back(anaPtr->get_results());
         }
       } else {
-        #pragma omp critical (accumulator_update)
+        #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
           for (auto anaPtr : *Dep::ListOfAnalyses)
-            for (auto eventPtr : *Dep::GambitColliderEventList)
-              anaPtr->analyze(*eventPtr);
+            anaPtr->analyze(*Dep::GambitColliderEvent);
         }
       }
 
@@ -314,16 +288,16 @@ namespace Gambit {
       {
         #ifdef DEBUG
         std::cout<<"\n    iteration number: "<<*Loop::iteration;
-        for (auto eventPtr : *Dep::GambitColliderEventList)
-          std::cout<<"\n    event met: "<<event->met();
+        std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
         #endif
       }
     }
 
 
     void calcLogLike(double& result) {
-      debugMe("calcLogLike");
       using namespace Pipes::calcLogLike;
+      debugMe("calcLogLike");
+
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
       //Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
       cout << "In calcLogLike" << endl;
@@ -366,3 +340,4 @@ namespace Gambit {
 
   }
 }
+#undef DEBUG

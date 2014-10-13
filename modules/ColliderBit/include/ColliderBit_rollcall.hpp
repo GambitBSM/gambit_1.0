@@ -2,19 +2,15 @@
 //   *********************************************
 ///  \file
 ///
-///  Rollcall header for module ColliderBit's
-///  eventLoop functionality. Based heavily on the
-///  eventLoopManager example in ExampleBit_A
+///  Rollcall header for ColliderBit module.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Abram Krislock
-///          (abram.krislock@fysik.su.se)
-///  \date 2013 Dec
-//  Aldo Saavedra
-//  2014 March 2nd
+///          (a.m.b.krislock@fys.uio.no)
+///  \author Aldo Saavedra
 ///
 ///  *********************************************
 
@@ -32,20 +28,10 @@ START_MODULE
   /// Eventually needs to be configurable from yaml file
   #define CAPABILITY ListOfAnalyses
   START_CAPABILITY
-    #define FUNCTION specifyAnalysisList
-    START_FUNCTION(AnalysisList)
+    #define FUNCTION specifyAnalysisPointerVector
+    START_FUNCTION(AnalysisPointerVector)
     #undef FUNCTION
   #undef CAPABILITY
-
-  /// Finalization capabilities
-  #define CAPABILITY ScaleFactor
-  START_CAPABILITY
-    #define FUNCTION getScaleFactor
-    START_FUNCTION(double)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  /// @todo Aldo's FastSim
 
 
   /// Controls initialization and looping of Collider simulations
@@ -58,16 +44,10 @@ START_MODULE
 
 
   /// Event capabilities
-  /// \todo I had huge problems putting the initialization of this outside the loop.
-  /// \todo THEN, I had problems initializing enough Pythia instances inside the
-  ///       loop, BUT ONLY ONCE, at the start of the loop.
-  /// \todo FINALLY, the Pythia instances were not receiving their init data
-  ///       (slhaFilename) so I moved its specification to the yaml file.
-  /// \TODO !!!! Do we really want it to be this tricky to configure loops?
-  #define CAPABILITY hardScatteringEventList
+  #define CAPABILITY hardScatteringEvent
   START_CAPABILITY
-    #define FUNCTION generatePythia8Events
-    START_FUNCTION(PythiaEventList)
+    #define FUNCTION generatePythia8Event
+    START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
 
@@ -102,23 +82,23 @@ START_MODULE
   #undef CAPABILITY
 */
 
-  #define CAPABILITY GambitColliderEventList
+  #define CAPABILITY GambitColliderEvent
   START_CAPABILITY
     /// Detector simulators which directly produce the standard event format
-    #define FUNCTION reconstructDelphesEvents
-    START_FUNCTION(HEPSL_EventList)
+    #define FUNCTION reconstructDelphesEvent
+    START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     /// DEPENDENCY(delphesConfigFilename, std::string)
     /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
     /// then adjust the yaml file for each run
-    DEPENDENCY(hardScatteringEventList, PythiaEventList)
+    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
-    #define FUNCTION convertPythia8Events
-    START_FUNCTION(HEPSL_EventList)
+    #define FUNCTION convertPythia8Event
+    START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(hardScatteringEventList, PythiaEventList)
+    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -157,9 +137,8 @@ START_MODULE
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEventList, HEPSL_EventList)
-    DEPENDENCY(ScaleFactor, double)
-    DEPENDENCY(ListOfAnalyses, AnalysisList)
+    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
+    DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_GROUP(lnlike_marg_poisson)
@@ -188,8 +167,7 @@ START_MODULE
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEPSL_EventList)
-    DEPENDENCY(ScaleFactor, double)
+    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
     #undef FUNCTION
     #undef CAPABILITY*/
   /// \todo How many more do we need to define...?

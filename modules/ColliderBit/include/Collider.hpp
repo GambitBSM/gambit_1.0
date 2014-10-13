@@ -3,6 +3,7 @@
 #include <vector>
 #include <exception>
 
+#include "ColliderBit_macros.hpp"
 /// @TODO worry about adding Analyses later.
 //#include "Analysis.hpp"
 #include "Py8Utils.hpp"
@@ -11,31 +12,19 @@
 /// @note To configure a new collider, follow these steps:
 /// @note (To configure a new subprocess group, only do STEPS >= 5) 
 /// @note STEP1)  #include the header from your favorite simulation software
-/// @todo ** Replace with a proper backend **
+/// @todo ** Backend properly **
 #include "Pythia8/Pythia.h"
 
 
 namespace Gambit {
   namespace ColliderBit {
 
-    /// Macros for collider factory fns
-    #define DECLARE_COLLIDER_FACTORY(CNAME, CCLASS)                            \
-        CCLASS* create_ ## CNAME(const std::vector<std::string>& settings);
-    #define DEFINE_COLLIDER_FACTORY(CNAME, CCLASS)                             \
-        CCLASS* create_ ## CNAME(const std::vector<std::string>& settings) {   \
-          CCLASS* result = new CNAME();                                        \
-          result->defaults();                                                   \
-          result->init(settings);                                               \
-          return result;                                                       \
-        }
-
-
     /// @note Abstract base class Collider
     template <typename EventT>
     class Collider {
     protected:
       /// @TODO implement these properly!!
-      /// @TODO Is nevts any of Collider's fuggin business??
+      /// @TODO Is nevts any of this class's fuggin business??
       double xsec;
       int nevts;
 
@@ -64,10 +53,7 @@ namespace Gambit {
     };
 
 
-
-/// @note STEP2)  Sub-class Collider. One may find it easy to make a very
-///               general "Base" sub-class, then sub-class it further
-///               for more specific set-ups.
+/// @note STEP2)  Sub-class Collider as a general Base class for your simulator.
     class PythiaBase : public Collider<Pythia8::Event> {
       protected:
         Pythia8::Pythia* _pythiaInstance;
@@ -80,6 +66,7 @@ namespace Gambit {
         };
 
       public:
+        PythiaBase() { _pythiaInstance = new Pythia8::Pythia("DUMMYPATH", false); }
         virtual ~PythiaBase() { delete _pythiaInstance; }
 
         /// @name Initialization functions
@@ -87,8 +74,6 @@ namespace Gambit {
         virtual void defaults() = 0;
 
         virtual void init(const std::vector<std::string>& settings) {
-          _pythiaInstance = new Pythia8::Pythia("DUMMYPATH", false);
-
           /// @note As long as the settings are pythia commands, no parsing!
           for(const auto command : settings) { set(command); }
 
@@ -123,7 +108,6 @@ namespace Gambit {
 
         /// @name Event generation functions
         //@{
-        /// Generate an event, Gambit style reference return
         /// @note I already 'forgot' the event type, so let's use the typedef.
         virtual EventType& nextEvent() {
           // Try to make and populate an event
@@ -133,13 +117,12 @@ namespace Gambit {
 
     };
 
-/// @note STEP3)  Create factory functions for further subclasses.
     /// @brief Create a new Pythia Collider based on a name string
     ///
     /// The caller is responsible for deleting the returned PythiaBase.
     PythiaBase* mkPythia(const std::string& name,
                          const std::vector<std::string>& settings);
 
-/// @note STEP4)  Continue to Collider.cpp
+/// @note STEP3)  Continue to Collider.cpp
   }
 }

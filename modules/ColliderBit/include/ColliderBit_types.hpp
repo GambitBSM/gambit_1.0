@@ -16,11 +16,10 @@
 ///
 ///  *********************************************
 ///
-///  Authors (add name and date if you modify):
+///  Authors (add name if you modify):
 ///   
 ///  \author Abram Krislock
-///          (abram.krislock@fysik.su.se)
-///  \date 2013 Dec
+///          (a.m.b.krislock@fys.uio.no)
 ///
 ///  *********************************************
 
@@ -36,35 +35,41 @@
 #include "Analysis.hpp"
 #include "Collider.hpp"
 
+using std::vector;
+using std::shared_ptr;
+
 namespace Gambit {
   
   namespace ColliderBit {
 
     /// @brief What is this ColliderLogLikes struct mentioned in the rollcall??
-    typedef std::vector<std::vector<SignalRegionData>> ColliderLogLikes;
+    typedef vector<vector<SignalRegionData>> ColliderLogLikes;
 
     /// @brief ColliderBit is using vectors like this quite often...
     template <typename T>
-    class SharedPointerVector : public std::vector<std::shared_ptr<T>> {
+    class SharedPointerVector : public vector<shared_ptr<T>> {
+      /// @note Not as thread-safe as it looks, since it uses shared_ptr.
+      ///     Each thread must have a SharedPointerVector pointing to unique Ts.
     public:
-      void push_back(std::shared_ptr<T> entry) {
-        std::vector<std::shared_ptr<T>>::push_back(entry);
+      void push_back(shared_ptr<T> entry) {
+        #pragma omp critical (vectorUpdate)
+        { vector<shared_ptr<T>>::push_back(entry); }
       }
-      void push_back(T& entry) { push_back(std::shared_ptr<T>(&entry)); }
-      void push_back(T* entry) { push_back(std::shared_ptr<T>(entry)); }
+      void inline push_back(T& entry) { push_back(shared_ptr<T>(&entry)); }
+      void inline push_back(T* entry) { push_back(shared_ptr<T>(entry)); }
+
+      void pop_back() {
+        #pragma omp critical (vectorUpdate)
+        { vector<shared_ptr<T>>::pop_back(); }
+      }
+      void inline clear() { while(vector<shared_ptr<T>>::size()) pop_back(); }
     };
 
     /// @brief A list of collider subclasses to be run during a scan
-    typedef SharedPointerVector<PythiaBase> PythiaList;
-
-    /// @brief A list of events corresponding to each PythiaBase subclass
-    typedef SharedPointerVector<Pythia8::Event> PythiaEventList;
-
-    /// @brief A list of events converted to HEP_Simple_Lib format
-    typedef SharedPointerVector<HEP_Simple_Lib::Event> HEPSL_EventList;
+    typedef SharedPointerVector<PythiaBase> PythiaPointerVector;
 
     /// @brief A list of analyses to be run on some events
-    typedef SharedPointerVector<Analysis> AnalysisList;
+    typedef SharedPointerVector<Analysis> AnalysisPointerVector;
   }
 }
 

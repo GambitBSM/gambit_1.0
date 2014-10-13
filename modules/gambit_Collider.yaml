@@ -83,24 +83,22 @@ Auxiliaries:
   #TODO: Put in all the new options from the changes to ColliderBit and test that shite!!!!
 
   - capability: ListOfAnalyses
-    function: specifyAnalysisList
+    function: specifyAnalysisPointerVector
     options:  
-      analysisNames: ["ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb"]
+      analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
 
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 2000
+      nEvents: 20
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       # Here's an example of using the yaml file to choose a subgroup
       # TODO: Oh shit! What if I want to configure them all this way?
       Pythia_SUSY_LHC_8TeV: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
 
-  - capability: AnalysisList
-
-  - capability: GambitColliderEventList
-    function: reconstructDelphesEvents
+  - capability: GambitColliderEvent
+    function: reconstructDelphesEvent
     options:
       delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
 
@@ -111,7 +109,7 @@ Auxiliaries:
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "GambitColliderEventList", type: "HEPSL_EventList", function: "reconstructDelphesEvents"}
+    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
 
 #########################
 # Logging setup

@@ -544,7 +544,7 @@ $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(STANDALONEINC) $(EXAMP
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so
+gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 

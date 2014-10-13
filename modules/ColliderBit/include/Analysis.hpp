@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "ColliderBit_macros.hpp"
 #include "Event.hpp"
 using namespace HEP_Simple_Lib;
 
@@ -7,12 +8,6 @@ using namespace HEP_Simple_Lib;
 
 namespace Gambit {
   namespace ColliderBit {
-
-    // Macros for analysis factory fns
-    #define DECLARE_ANALYSIS_FACTORY(A) \
-     Analysis* create_Analysis_ ## A();
-    #define DEFINE_ANALYSIS_FACTORY(A) \
-     Analysis* create_Analysis_ ## A() { return new Analysis_ ## A(); }
 
     struct SignalRegionData {
 
