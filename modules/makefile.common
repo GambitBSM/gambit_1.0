@@ -82,7 +82,8 @@ MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
-BOSSMINIDIR = ../extras/boss_temp
+PYTHIA8DIR = ../extras/boss/bossed_pythia_source
+BOSSMINIDIR = ../extras/boss
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -331,7 +332,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -619,18 +620,23 @@ higgssignals:
 nulike: $(BACKENDDIR)/lib/libnulike.so
 $(BACKENDDIR)/lib/libnulike.so:
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
-	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
+	cp $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
 fastsim: $(BACKENDDIR)/lib/libfastsim.so
 $(BACKENDDIR)/lib/libfastsim.so:
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
-	mv $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
+	cp $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
+
+pythia: $(BACKENDDIR)/lib/libpythia8.so
+$(BACKENDDIR)/lib/libpythia8.so:
+	cd $(PYTHIA8DIR); make;
+	cp $(PYTHIA8DIR)/lib/libpythia8.so $(BACKENDDIR)/lib/
 
 BOSSMINIS = $(BACKENDDIR)/lib/BOSSMinimalExample_1_0.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_1.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_2.so
 BOSSMinimalExample: $(BOSSMINIS)
 $(BOSSMINIS):
 	cd $(BOSSMINIDIR); make all
-	mv $(BOSSMINIDIR)/*.so $(BACKENDDIR)/lib/
+	cp $(BOSSMINIDIR)/*.so $(BACKENDDIR)/lib/
 
 #### Documentation ##########
 
@@ -696,6 +702,7 @@ clean_backends:
 	@cd $(NULIKEDIR); make clean
 	@cd $(FASTSIMDIR); make clean
 	@cd $(BOSSMINIDIR); make clean
+	@cd $(PYTHIA8DIR); make clean
 	@cd $(DDCALC0DIR); make clean
 
 clean_docs:
