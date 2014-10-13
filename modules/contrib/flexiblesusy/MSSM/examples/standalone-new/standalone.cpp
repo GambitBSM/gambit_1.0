@@ -2,7 +2,7 @@
 #include "ew_input.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
-#include "../../../Spectrum.hpp"
+#include "Spectrum.hpp"
 #include "MSSMSpec.hpp"
 #include "numerics.hpp"
 

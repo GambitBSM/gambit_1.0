@@ -6,7 +6,7 @@
 #include "problems.hpp"
 #include "MSSM_info.hpp"
 #include "MSSM_physical.hpp"
-#include "../../../Spectrum.hpp"
+#include "Spectrum.hpp"
 
 
 namespace flexiblesusy {
@@ -23,7 +23,7 @@ private:
 public:
    //constructors
    // MSSMSpectrum(MSSM<Two_scale>);
-   MSSMSpectrum();
+   //MSSMSpectrum();
    MSSMSpectrum(MSSM_soft_parameters, MSSM_physical, MSSM_physical, Problems<MSSM_info::NUMBER_OF_PARTICLES> );
    //Could more constructors to interface with other generators
    //Destructor
