@@ -607,10 +607,9 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
-DDCalc0: $(BACKENDDIR)/lib/libDDCalc0.so
-$(BACKENDDIR)/lib/libDDCalc0.so:
+DDCalc0: 
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
-	mv $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
+	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
 
 micromegas:
 
@@ -622,24 +621,19 @@ higgsbounds:
 
 higgssignals:
 
-nulike: $(BACKENDDIR)/lib/libnulike.so
-$(BACKENDDIR)/lib/libnulike.so:
+nulike: 
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
 	cp $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
-fastsim: $(BACKENDDIR)/lib/libfastsim.so
-$(BACKENDDIR)/lib/libfastsim.so:
+fastsim: 
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
 	cp $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
-pythia: $(BACKENDDIR)/lib/libpythia8.so
-$(BACKENDDIR)/lib/libpythia8.so:
+pythia: 
 	cd $(PYTHIA8DIR); make;
 	cp $(PYTHIA8DIR)/lib/libpythia8.so $(BACKENDDIR)/lib/
 
-BOSSMINIS = $(BACKENDDIR)/lib/BOSSMinimalExample_1_0.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_1.so $(BACKENDDIR)/lib/BOSSMinimalExample_1_2.so
-BOSSMinimalExample: $(BOSSMINIS)
-$(BOSSMINIS):
+BOSSMinimalExample:
 	cd $(BOSSMINIDIR); make all
 	cp $(BOSSMINIDIR)/*.so $(BACKENDDIR)/lib/
 
