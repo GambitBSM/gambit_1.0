@@ -1,6 +1,7 @@
 #ifndef MSSMSPEC_H
 #define MSSMSPEC_H
 
+#include <memory>
 #include "MSSM_two_scale_model.hpp"
 #include "Spectrum.hpp"
 #include "two_scale_model.hpp"
@@ -19,7 +20,7 @@ namespace flexiblesusy {
       
       REDO_TYPEDEFS(MssmFS,MSSM_physical)
    private:
-      //reference to spectrim class for accessing model object
+      //reference to spectrum class for accessing model object
       MSSMSpec & my_parent;
 
       static fmap TreeMass_map;
@@ -112,7 +113,7 @@ namespace flexiblesusy {
       virtual double get_dimensionless_par(std::string, int) const;
       virtual double get_dimensionless_par(std::string, int, int) const;
       
-      MssmFS get_bound_spec() const; 
+      MssmFS& get_bound_spec() const; 
    };
    
    //physical class for accessing physical spectrum
@@ -138,7 +139,7 @@ namespace flexiblesusy {
       virtual double get_Mixing_angle(std::string) const;
       virtual double get_Mixing_element(std::string, int, int) const;
       
-      MssmFS get_bound_spec() const; 
+      MssmFS& get_bound_spec() const; 
    };
     
 
@@ -153,7 +154,8 @@ namespace flexiblesusy {
       MSSM_DRbarPars mssm_drbar_pars;
       //constructors
       MSSMSpec(MSSM<Two_scale>);
-      //Could more constructors to interface with other generators
+
+      //Could more constructors to interface with other generators   
 
       //Destructor
       virtual ~MSSMSpec();
@@ -166,8 +168,8 @@ namespace flexiblesusy {
 
    //Need a method to return model since it is private
       MSSM<Two_scale> get_modelobject();
-      MssmFS get_bound_spec() const; 
-      MSSM_physical get_bound_phys() const; 
+      MssmFS& get_bound_spec() const; 
+      MSSM_physical& get_bound_phys() const; 
 
 };
 
