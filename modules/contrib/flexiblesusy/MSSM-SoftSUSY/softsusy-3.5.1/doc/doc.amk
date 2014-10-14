@@ -1,0 +1,37 @@
+docdir = ${datadir}/doc/${PACKAGE}
+
+doc_DATA = doc/rpcManual.pdf \
+           doc/rpvManual.pdf \
+           doc/neutManual.pdf \
+	   doc/nmssmManual.pdf \
+	   doc/threeLoop.pdf
+
+EXTRA_DIST += \
+        doc/anc/*.eps \
+	doc/rpcManual.tex \
+	doc/rpvManual.tex \
+	doc/neutManual.tex \
+	doc/nmssmManual.tex \
+        doc/threeLoop.bib \
+	doc/tableTwo.tex \
+	doc/threeLoop.tex \
+	doc/tableOne.tex \
+	doc/axodraw.sty \
+	doc/jheppub.sty \
+	doc/elsarticle.cls doc/elsarticle-num.bst
+
+doc: $(doc_DATA)
+
+doc/threeLoop.tex: doc/tableOne.tex doc/tableTwo.tex doc/threeLoop.bib
+
+doc/%.pdf: doc/%.tex
+	cd $(top_builddir)/doc;\
+	latex $(*F).tex ; bibtex $(*F); latex $(*F).tex; latex $(*F).tex ;\
+	dvips -f $(*F) > $(*F).ps ;\
+	ps2pdf $(*F).ps
+
+clean-local:
+	-rm -f doc/*.log doc/*.spl doc/*.aux doc/*.dvi doc/*.ps doc/*.toc doc/*.out doc/*.pdf
+
+distclean-local: clean-local
+	-rm -f $(doc_DATA)
