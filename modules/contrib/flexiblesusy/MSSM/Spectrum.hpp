@@ -117,7 +117,7 @@ template <class SpecType, class PhysType>
    private:      
       virtual fmap& get_PoleMass_map() const = 0;  
       virtual fmap1& get_PoleMass_map1() const = 0;
-   virtual SpecType get_bound_spec() const = 0;
+      virtual SpecType& get_bound_spec() const = 0;
    public: 
       virtual double get_Pole_Mass(std::string) const;
       virtual double get_Pole_Mass(std::string, int) const;
@@ -127,7 +127,7 @@ template <class SpecType, class PhysType>
    class RunparDer : public Spectrum::RunningPars {
       REDO_TYPEDEFS(SpecType,PhysType)
    private:
-      virtual SpecType get_bound_spec() const = 0;
+      virtual SpecType& get_bound_spec() const = 0;
       virtual fmap& get_mass4_map() const = 0;  
       virtual fmap1& get_mass4_map1() const = 0;
       virtual fmap2& get_mass4_map2() const = 0;  
@@ -516,8 +516,8 @@ public:
       myphys(pp),
       Spectrum(rp,pp)
    {}
-   virtual S get_bound_spec() const = 0; 
-   virtual P get_bound_phys() const = 0; 
+   virtual S& get_bound_spec() const = 0; 
+   virtual P& get_bound_phys() const = 0; 
 };
 
 
