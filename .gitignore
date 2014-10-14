@@ -19,7 +19,7 @@ a.out
 .*
 
 # gccxml files for testing BOSS
-extras/boss/**/*.xml
+extras/boss/*.xml
 
 # BOSS output folders
 extras/boss/**/output
