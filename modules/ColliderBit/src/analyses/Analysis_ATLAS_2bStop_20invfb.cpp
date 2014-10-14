@@ -384,7 +384,7 @@ namespace Gambit {
     };
 
 
-    DEFINE_ANAFACTORY(ATLAS_2bStop_20invfb)
+    DEFINE_ANALYSIS_FACTORY(ATLAS_2bStop_20invfb)
 
 
   }

@@ -79,8 +79,6 @@ namespace Gambit {
       Candidate *candidate;
       TParticlePDG *pdgParticle;
       Int_t pdgCode;
-
-      // TODO: rollcall?
     };
 
 
