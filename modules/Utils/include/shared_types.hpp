@@ -54,6 +54,7 @@
 // organised into new headers and included from here as their number grows.
 namespace Gambit
 {
+  typedef Spectrum* SpectrumPtr;
   
   // Pointer to a function that takes an integer by reference and returns a double.
   // Just used for example purposes in ExampleBit_A and ExampleBit_B.

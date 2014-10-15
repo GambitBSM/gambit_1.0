@@ -20,13 +20,13 @@
 #include "gambit_module_headers.hpp"
 #include "SpecBit_rollcall.hpp"
 
-// Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "MSSM_two_scale_model.hpp"
-#include "ew_input.hpp"
-//#include "logger.hpp"
-//#include "wrappers.hpp"
-#include "MSSMSpec.hpp"
-#include "numerics.hpp"
+// // Flexible SUSY stuff (should not be needed by the rest of gambit)
+// #include "MSSM_two_scale_model.hpp"
+// #include "ew_input.hpp"
+// //#include "logger.hpp"
+// //#include "wrappers.hpp"
+// #include "MSSMSpec.hpp"
+// #include "numerics.hpp"
 
 
 namespace Gambit
@@ -34,156 +34,156 @@ namespace Gambit
 
   namespace SpecBit
   {
-    using namespace LogTags;
-    namespace FS = flexiblesusy; // flexiblesusy is too long to type all the time so using an alias...
+    //  using namespace LogTags;
+    //  namespace FS = flexiblesusy; // flexiblesusy is too long to type all the time so using an alias...
 
-    /// Quick macro to simplify the check of Pipe::Models
-    #define QUERYMODELS(MODEL) std::find(Pipe::Models->begin(), Pipe::Models->end(), MODEL) != Pipe::Models->end()
+    //  /// Quick macro to simplify the check of Pipe::Models
+    //  #define QUERYMODELS(MODEL) std::find(Pipe::Models->begin(), Pipe::Models->end(), MODEL) != Pipe::Models->end()
 
-    /// Module convenience functions
-    // These are not known to Gambit.
+    //  /// Module convenience functions
+    //  // These are not known to Gambit.
 
-    /// Dump information from spectrum object to logger
-    void spec_print(const Spectrum& spec) {
-       logger() << "spec->runningpars.GetScale() =" << spec.runningpars.GetScale() << std::endl;
-       logger() << "map mHd2 "  << spec.runningpars.get_mass2_parameter("mHd2") <<std::endl;
-       logger() << "map mHu2 "  << spec.runningpars.get_mass2_parameter("mHu2") <<std::endl;
-       logger() << "map BMu "  << spec.runningpars.get_mass2_parameter("BMu") <<std::endl;
-       logger() << "map mHd2 "  << spec.runningpars.get_mass2_par("mHd2") <<std::endl;
-       logger() << "map mHu2 "  << spec.runningpars.get_mass2_par("mHu2") <<std::endl;
-       logger() << "map BMu "  << spec.runningpars.get_mass2_par("BMu") <<std::endl;
-      
-       logger()<< "diff mHd2 "  << spec.runningpars.get_mass2_parameter("mHd2") 
-                 -  spec.runningpars.get_mass2_par("mHd2") <<std::endl;
-       logger() << "diff mHu2 "  << spec.runningpars.get_mass2_parameter("mHu2") 
-                 - spec.runningpars.get_mass2_par("mHu2") <<std::endl;
-       logger() << "diff BMu "  << spec.runningpars.get_mass2_parameter("BMu") 
-                 -  spec.runningpars.get_mass2_par("BMu") <<std::endl;
-    
-       logger() << "mq2(1,1) =  " <<  spec.runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
-       logger() << "fake mq2(1) =  " <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
-    
-       double mgluino_drbar =  spec.runningpars.get_tree_MassEigenstate("MGluino");
-       logger() << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
-       double mgluino = spec.phys.get_Pole_Mass("MGluino");
-       logger() << "mgluino = " << mgluino<< std::endl;
-    }
+    //  /// Dump information from spectrum object to logger
+    //  void spec_print(const Spectrum& spec) {
+    //     logger() << "spec->runningpars.GetScale() =" << spec.runningpars.GetScale() << std::endl;
+    //     logger() << "map mHd2 "  << spec.runningpars.get_mass2_parameter("mHd2") <<std::endl;
+    //     logger() << "map mHu2 "  << spec.runningpars.get_mass2_parameter("mHu2") <<std::endl;
+    //     logger() << "map BMu "  << spec.runningpars.get_mass2_parameter("BMu") <<std::endl;
+    //     logger() << "map mHd2 "  << spec.runningpars.get_mass2_par("mHd2") <<std::endl;
+    //     logger() << "map mHu2 "  << spec.runningpars.get_mass2_par("mHu2") <<std::endl;
+    //     logger() << "map BMu "  << spec.runningpars.get_mass2_par("BMu") <<std::endl;
+    //    
+    //     logger()<< "diff mHd2 "  << spec.runningpars.get_mass2_parameter("mHd2") 
+    //               -  spec.runningpars.get_mass2_par("mHd2") <<std::endl;
+    //     logger() << "diff mHu2 "  << spec.runningpars.get_mass2_parameter("mHu2") 
+    //               - spec.runningpars.get_mass2_par("mHu2") <<std::endl;
+    //     logger() << "diff BMu "  << spec.runningpars.get_mass2_parameter("BMu") 
+    //               -  spec.runningpars.get_mass2_par("BMu") <<std::endl;
+    //  
+    //     logger() << "mq2(1,1) =  " <<  spec.runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
+    //     logger() << "fake mq2(1) =  " <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
+    //  
+    //     double mgluino_drbar =  spec.runningpars.get_tree_MassEigenstate("MGluino");
+    //     logger() << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
+    //     double mgluino = spec.phys.get_Pole_Mass("MGluino");
+    //     logger() << "mgluino = " << mgluino<< std::endl;
+    //  }
 
-    /// Fill test spectrum object with some parameters
-    void setup(FS::MSSM<FS::Two_scale>& mssm)
-    {
-       Eigen::Matrix<double,3,3> Yu;
-       Eigen::Matrix<double,3,3> Yd;
-       Eigen::Matrix<double,3,3> Ye;
-       double Mu;
-       double g1;
-       double g2;
-       double g3;
-       double vd;
-       double vu;
-       Eigen::Matrix<double,3,3> TYu;
-       Eigen::Matrix<double,3,3> TYd;
-       Eigen::Matrix<double,3,3> TYe;
-       double BMu;
-       Eigen::Matrix<double,3,3> mq2;
-       Eigen::Matrix<double,3,3> ml2;
-       double mHd2;
-       double mHu2;
-       Eigen::Matrix<double,3,3> md2;
-       Eigen::Matrix<double,3,3> mu2;
-       Eigen::Matrix<double,3,3> me2;
-       double MassB;
-       double MassWB;
-       double MassG;
-    
-       // susy parameters
-       Yu << 1.26136e-05, 0, 0,
-                       0, 0.00667469, 0,
-                       0, 0, 0.857849;
-    
-       Yd << 0.000242026, 0, 0,
-                       0, 0.00529911, 0,
-                       0, 0, 0.193602;
-    
-       Ye << 2.84161e-05, 0, 0,
-                       0, 0.00587557, 0,
-                       0, 0, 0.10199;
-    
-       Mu = 627.164;
-       g1 = 0.468171;
-       g2 = 0.642353;
-       g3 = 1.06459;
-       vd = 25.0944;
-       vu = 242.968;
-    
-       // soft parameters
-       TYu << -0.0144387, 0, 0,
-                       0, -7.64037, 0,
-                       0, 0, -759.305;
-    
-       TYd << -0.336207, 0, 0,
-                      0, -7.36109, 0,
-                      0, 0, -250.124;
-    
-       TYe << -0.00825134, 0, 0,
-                        0, -1.70609, 0,
-                        0, 0, -29.4466;
-    
-       BMu = 52140.8;
-    
-       mq2 << 1.03883e+06, 0, 0,
-                        0, 1.03881e+06, 0,
-                        0, 0, 879135;
-    
-       ml2 << 124856, 0, 0,
-                   0, 124853, 0,
-                   0, 0, 124142;
-    
-       mHd2 = 92436.9;
-       mHu2 = -380337;
-    
-       md2 << 954454, 0, 0,
-                   0, 954439, 0,
-                   0, 0, 934727;
-    
-       mu2 << 963422, 0, 0,
-                   0, 963400, 0,
-                   0, 0, 656621;
-    
-       me2 << 49215.8, 0, 0,
-                    0, 49210.9, 0,
-                    0, 0, 47759.2;
-    
-       MassB = 210.328;
-       MassWB = 389.189;
-       MassG = 1114.45;
-    
-       // set parameters
-       mssm.set_scale(FS::Electroweak_constants::MZ);
-       mssm.set_Yu(Yu);
-       mssm.set_Yd(Yd);
-       mssm.set_Ye(Ye);
-       mssm.set_Mu(Mu);
-       mssm.set_g1(g1);
-       mssm.set_g2(g2);
-       mssm.set_g3(g3);
-       mssm.set_vd(vd);
-       mssm.set_vu(vu);
-       mssm.set_TYu(TYu);
-       mssm.set_TYd(TYd);
-       mssm.set_TYe(TYe);
-       mssm.set_BMu(BMu);
-       mssm.set_mq2(mq2);
-       mssm.set_ml2(ml2);
-       mssm.set_mHd2(mHd2);
-       mssm.set_mHu2(mHu2);
-       mssm.set_md2(md2);
-       mssm.set_mu2(mu2);
-       mssm.set_me2(me2);
-       mssm.set_MassB(MassB);
-       mssm.set_MassWB(MassWB);
-       mssm.set_MassG(MassG);
-    }
+    //  /// Fill test spectrum object with some parameters
+    //  void setup(FS::MSSM<FS::Two_scale>& mssm)
+    //  {
+    //     Eigen::Matrix<double,3,3> Yu;
+    //     Eigen::Matrix<double,3,3> Yd;
+    //     Eigen::Matrix<double,3,3> Ye;
+    //     double Mu;
+    //     double g1;
+    //     double g2;
+    //     double g3;
+    //     double vd;
+    //     double vu;
+    //     Eigen::Matrix<double,3,3> TYu;
+    //     Eigen::Matrix<double,3,3> TYd;
+    //     Eigen::Matrix<double,3,3> TYe;
+    //     double BMu;
+    //     Eigen::Matrix<double,3,3> mq2;
+    //     Eigen::Matrix<double,3,3> ml2;
+    //     double mHd2;
+    //     double mHu2;
+    //     Eigen::Matrix<double,3,3> md2;
+    //     Eigen::Matrix<double,3,3> mu2;
+    //     Eigen::Matrix<double,3,3> me2;
+    //     double MassB;
+    //     double MassWB;
+    //     double MassG;
+    //  
+    //     // susy parameters
+    //     Yu << 1.26136e-05, 0, 0,
+    //                     0, 0.00667469, 0,
+    //                     0, 0, 0.857849;
+    //  
+    //     Yd << 0.000242026, 0, 0,
+    //                     0, 0.00529911, 0,
+    //                     0, 0, 0.193602;
+    //  
+    //     Ye << 2.84161e-05, 0, 0,
+    //                     0, 0.00587557, 0,
+    //                     0, 0, 0.10199;
+    //  
+    //     Mu = 627.164;
+    //     g1 = 0.468171;
+    //     g2 = 0.642353;
+    //     g3 = 1.06459;
+    //     vd = 25.0944;
+    //     vu = 242.968;
+    //  
+    //     // soft parameters
+    //     TYu << -0.0144387, 0, 0,
+    //                     0, -7.64037, 0,
+    //                     0, 0, -759.305;
+    //  
+    //     TYd << -0.336207, 0, 0,
+    //                    0, -7.36109, 0,
+    //                    0, 0, -250.124;
+    //  
+    //     TYe << -0.00825134, 0, 0,
+    //                      0, -1.70609, 0,
+    //                      0, 0, -29.4466;
+    //  
+    //     BMu = 52140.8;
+    //  
+    //     mq2 << 1.03883e+06, 0, 0,
+    //                      0, 1.03881e+06, 0,
+    //                      0, 0, 879135;
+    //  
+    //     ml2 << 124856, 0, 0,
+    //                 0, 124853, 0,
+    //                 0, 0, 124142;
+    //  
+    //     mHd2 = 92436.9;
+    //     mHu2 = -380337;
+    //  
+    //     md2 << 954454, 0, 0,
+    //                 0, 954439, 0,
+    //                 0, 0, 934727;
+    //  
+    //     mu2 << 963422, 0, 0,
+    //                 0, 963400, 0,
+    //                 0, 0, 656621;
+    //  
+    //     me2 << 49215.8, 0, 0,
+    //                  0, 49210.9, 0,
+    //                  0, 0, 47759.2;
+    //  
+    //     MassB = 210.328;
+    //     MassWB = 389.189;
+    //     MassG = 1114.45;
+    //  
+    //     // set parameters
+    //     mssm.set_scale(FS::Electroweak_constants::MZ);
+    //     mssm.set_Yu(Yu);
+    //     mssm.set_Yd(Yd);
+    //     mssm.set_Ye(Ye);
+    //     mssm.set_Mu(Mu);
+    //     mssm.set_g1(g1);
+    //     mssm.set_g2(g2);
+    //     mssm.set_g3(g3);
+    //     mssm.set_vd(vd);
+    //     mssm.set_vu(vu);
+    //     mssm.set_TYu(TYu);
+    //     mssm.set_TYd(TYd);
+    //     mssm.set_TYe(TYe);
+    //     mssm.set_BMu(BMu);
+    //     mssm.set_mq2(mq2);
+    //     mssm.set_ml2(ml2);
+    //     mssm.set_mHd2(mHd2);
+    //     mssm.set_mHu2(mHu2);
+    //     mssm.set_md2(md2);
+    //     mssm.set_mu2(mu2);
+    //     mssm.set_me2(me2);
+    //     mssm.set_MassB(MassB);
+    //     mssm.set_MassWB(MassWB);
+    //     mssm.set_MassG(MassG);
+    //  }
 
     /// Gambit module functions
     //  These are wrapped up in Gambit functor objects according to the
@@ -234,24 +234,25 @@ namespace Gambit
     //}
 
     /// Create a spectrum object for testing purposes
-    void make_test_spectrum(Spectrum* result)
+    void make_test_spectrum(int &result) //Spectrum* &result)
     {
-      static FS::MSSM<FS::Two_scale> mssm1; //start with empty flexiblesusy object
+      //  static FS::MSSM<FS::Two_scale> FS_model; //start with empty flexiblesusy object
    
-      // Create Spectrum object to wrap flexiblesusy object
-      
-      //std::unique_ptr<FS::MSSMSpec> mssm(new FS::MSSMSpec(mssm1));      
-      static FS::MSSMSpec mssm(mssm1);
+      //  // Create Spectrum object to wrap flexiblesusy object
+      //  
+      //  //std::unique_ptr<FS::MSSMSpec> mssm(new FS::MSSMSpec(mssm1));      
+      //  static FS::MSSMSpec mssm(FS_model);
 
-      // I think these objects should only get created once since they are static...      
-      // ...and they should be destructed automatically when the program ends.
+      //  // I think these objects should only get created once since they are static...      
+      //  // ...and they should be destructed automatically when the program ends.
 
-      setup(mssm.get_bound_spec()); //fill with some parameters
-      mssm.get_bound_spec().calculate_DRbar_parameters(); //calculated DRbar masses 
-      mssm.get_bound_spec().calculate_pole_masses();//now calculate pole masses
+      //  setup(mssm.model); //fill with some parameters
+      //  mssm.model.calculate_DRbar_parameters(); //calculated DRbar masses 
+      //  mssm.model.calculate_pole_masses();//now calculate pole masses
  
       // Store result for gambit to use
-      result = &mssm;
+      //result = &mssm;
+      result = 1;
     }
 
     /// Function to test out SpecBit features
@@ -260,30 +261,31 @@ namespace Gambit
       // Access the pipes for this function to get model and parameter information
       using namespace Pipes::specbit_test_func;
 
-      Spectrum* spec = *Dep::particle_spectrum; //Test retrieve pointer to Spectrum object 
-
+      //Spectrum* spec = *Dep::testcap; //particle_spectrum; //Test retrieve pointer to Spectrum object 
+      int test = *Dep::testcap; 
+     
       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
 
       // Check contents
 
-      logger() << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
+      //  logger() << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
 
-      double lowscale = spec->runningpars.GetScale();
-      double highscale = 1e+15;
+      //  double lowscale = spec->runningpars.GetScale();
+      //  double highscale = 1e+15;
 
-      logger() << "lowscale = " << lowscale << std::endl;
-      spec_print(*spec);
-      spec->runningpars.RunToScale(highscale);
-      std::cout << "after run scale to high scale" << std::endl;
-      spec_print(*spec);
-      spec->runningpars.RunToScale(lowscale);
-      std::cout << "After run scale back to low scale" << spec->runningpars.GetScale() << std::endl;
-      spec_print(*spec);
+      //  logger() << "lowscale = " << lowscale << std::endl;
+      //  spec_print(*spec);
+      //  spec->runningpars.RunToScale(highscale);
+      //  std::cout << "after run scale to high scale" << std::endl;
+      //  spec_print(*spec);
+      //  spec->runningpars.RunToScale(lowscale);
+      //  std::cout << "After run scale back to low scale" << spec->runningpars.GetScale() << std::endl;
+      //  spec_print(*spec);
 
-      logger() << EOM; 
+      //  logger() << EOM; 
      
     }
 
   } // end namespace SpecBit
-} // end namespace SpecBit
+} // end namespace Gambit
 
