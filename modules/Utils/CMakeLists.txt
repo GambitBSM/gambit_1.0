@@ -1,11 +1,14 @@
-set(source_files src/exceptions.cpp
+set(source_files src/backend_singleton.cpp
+                 src/exceptions.cpp
                  src/functors.cpp
                  src/standalone_error_handlers.cpp
                  src/terminator.cpp
                  src/util_functions.cpp
+                 src/yaml_description_database.cpp
 )
 
 set(header_files include/backend_macros.hpp
+                 include/backend_singleton.hpp
                  include/backend_type_macros.hpp
                  include/base_functions.hpp
                  include/boost_fallbacks.hpp
@@ -29,10 +32,8 @@ set(header_files include/backend_macros.hpp
                  include/util_macros.hpp
                  include/util_types.hpp
                  include/variadic_functions.hpp
+                 include/yaml_description_database.hpp
                  include/yaml_options.hpp
 )
-
-#add_gambit_sources(gambitcore ${source_files})
-#add_gambit_headers(gambitcore ${header_files})
 
 add_gambit_library(Utils SOURCES ${source_files} HEADERS ${header_files})

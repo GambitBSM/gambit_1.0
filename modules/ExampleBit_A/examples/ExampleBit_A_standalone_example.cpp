@@ -43,8 +43,8 @@ int main()
   try
   {
 
-    cout << endl << "Start ExampleBit_A standalone example" << endl;
-    cout << "----------" << endl;
+    std::cout << std::endl << "Start ExampleBit_A standalone example" << std::endl;
+    std::cout << "----------" << std::endl;
 
 
     //------- Initialise (or disable) logging -------------
@@ -83,18 +83,18 @@ int main()
     ModelParameters* CMSSM_primary_parameters = Models::CMSSM_demo::Functown::primary_parameters.getcontentsPtr();
 
     // Print some example diagnostics about ExampleBit_A
-    cout << endl << "My name is " << name() << endl;
-    cout << " I can calculate: " << endl << iCanDo << endl;
-    cout << " ...but I may need: " << endl << iMayNeed << endl << endl;  
-    cout << "I can do nevents: " << provides("nevents") << endl;
+    std::cout << std::endl << "My name is " << name() << std::endl;
+    std::cout << " I can calculate: " << endl << iCanDo << std::endl;
+    std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
+    std::cout << "I can do nevents: " << provides("nevents") << std::endl;
     if (requires("nevents_like","nevents"))
     { 
-      cout << " (I require nevents_like to do this though.)" << endl;
+      std::cout << " (I require nevents_like to do this though.)" << std::endl;
     }
-    cout << "I can do nevents_like: " << provides("nevents_like") << endl;
+    std::cout << "I can do nevents_like: " << provides("nevents_like") << std::endl;
     if (requires("nevents","nevents_like"))
     { 
-      cout << " (I require nevents to do this though.)" << endl;
+      std::cout << " (I require nevents to do this though.)" << std::endl;
     }  
 
     // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
@@ -115,29 +115,29 @@ int main()
     nevents_int.resolveDependency(&nevents_dbl);
 
     // Double-check which backend requirements have been filled with what
-    cout << endl << "My function function_pointer_retriever has had its backend requirement on externalFunction filled by:" << endl;
-    cout << ExampleBit_A::Pipes::function_pointer_retriever::BEreq::externalFunction.origin() << "::";
-    cout << ExampleBit_A::Pipes::function_pointer_retriever::BEreq::externalFunction.name() << endl;
+    std::cout << std::endl << "My function function_pointer_retriever has had its backend requirement on externalFunction filled by:" << std::endl;
+    std::cout << ExampleBit_A::Pipes::function_pointer_retriever::BEreq::externalFunction.origin() << "::";
+    std::cout << ExampleBit_A::Pipes::function_pointer_retriever::BEreq::externalFunction.name() << std::endl;
 
     // Double-check which dependencies have been filled with what
-    cout << endl << "My function nevents_int has had its dependency on nevents filled by:" << endl;
-    cout << ExampleBit_A::Pipes::nevents_int::Dep::nevents.origin() << "::";
-    cout << ExampleBit_A::Pipes::nevents_int::Dep::nevents.name() << endl;
-    cout << endl << "My function nevents_dbl has had its dependency on xsection filled by:" << endl;
-    cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.origin() << "::";
-    cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.name() << endl;
-    cout << endl << "My function local_xsection has had its dependency on MSSM parameters filled by:" << endl;
-    cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.origin() << "::";
-    cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.name() << endl;
-    cout << endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on nevents filled by:" << endl;
-    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.origin() << "::";
-    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.name() << endl;
-    cout << endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on CMSSM parameters filled by:" << endl;
-    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.origin() << "::";
-    cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.name() << endl << endl;
+    std::cout << std::endl << "My function nevents_int has had its dependency on nevents filled by:" << endl;
+    std::cout << ExampleBit_A::Pipes::nevents_int::Dep::nevents.origin() << "::";
+    std::cout << ExampleBit_A::Pipes::nevents_int::Dep::nevents.name() << std::endl;
+    std::cout << std::endl << "My function nevents_dbl has had its dependency on xsection filled by:" << endl;
+    std::cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.origin() << "::";
+    std::cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.name() << std::endl;
+    std::cout << std::endl << "My function local_xsection has had its dependency on MSSM parameters filled by:" << std::endl;
+    std::cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.origin() << "::";
+    std::cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.name() << std::endl;
+    std::cout << std::endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on nevents filled by:" << std::endl;
+    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.origin() << "::";
+    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.name() << std::endl;
+    std::cout << std::endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on CMSSM parameters filled by:" << endl;
+    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.origin() << "::";
+    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.name() << std::endl << std::endl;
 
     // Start a loop over some low-E points in the primary model parameter space
-    cout << "Starting model scan..." << endl << endl;
+    std::cout << "Starting model scan..." << std::endl << std::endl;
     for (int i = 0; i<5; i++)
     {
 
@@ -166,25 +166,25 @@ int main()
         // Retrieve the (cached) results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
         double r1 = nevents_dbl(0); 
         int r2 = nevents_int(0);
-        cout << endl << "Retrieved results: " << r1 << ", " << r2 << endl << endl;
+        std::cout << std::endl << "Retrieved results: " << r1 << ", " << r2 << std::endl << std::endl;
 
       }
 
       // Be sure to do something sensible in cases where the point was invalidated by one of functions.
       catch (Gambit::invalid_point_exception& e)
       {
-        cout << endl << "That was a bad point.  Oh well, try again." << endl << endl;
+        std::cout << std::endl << "That was a bad point.  Oh well, try again." << std::endl << std::endl;
       }
 
     }
 
-    std::cout << "ExampleBit_A standalone example has finished successfully." << endl << endl;
+    std::cout << "ExampleBit_A standalone example has finished successfully." << std::endl << std::endl;
    
   }
 
   catch (std::exception& e)
   {
-    cout << "ExampleBit_A standalone example has exited with fatal exception: " << e.what() << endl;
+    std::cout << "ExampleBit_A standalone example has exited with fatal exception: " << e.what() << std::endl;
   }
 
   return 0;

@@ -107,10 +107,8 @@
 #include "MSSM_types.hpp"
 
 // Include the module-specific types
-#ifdef DARKBIT
-  #include "DarkBit_types.hpp"
-  #include "ExampleBit_A_types.hpp"
-#endif
+#include "DarkBit_types.hpp"
+#include "ExampleBit_A_types.hpp"
 
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??

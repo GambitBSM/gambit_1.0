@@ -1,17 +1,28 @@
 # CMakeLists files in this project can refer to the root source directory of the project as ${GAMBIT_SOURCE_DIR} and to the root binary directory of the project as ${GAMBIT_BINARY_DIR}.
 
 # require a minimum cmake version of 2.6
-cmake_minimum_required(VERSION 2.6)
-#if(POLICY CMP0012)
-#  cmake_policy(SET CMP0012 NEW)
-#endif()
-#if(POLICY CMP0022)
-#  cmake_policy(SET CMP0022 NEW)
-#endif()
-#if(POLICY CMP0042)
-#  cmake_policy(SET CMP0042 NEW)
-#endif()
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
+if(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
+
+# Set certain policies to NEW
+foreach(p
+  CMP0012 # CMake 2.8.0
+  CMP0022 # CMake 2.8.12
+  CMP0025 # CMake 3.0
+  CMP0042 # CMake 3.0
+  )
+  if(POLICY ${p})
+    cmake_policy(SET ${p} NEW)
+  endif()
+endforeach()
+
+# Set a consistent MACOSX_RPATH default across all CMake versions.
+# When CMake 2.8.12 is required, change this default to 1.
+# When CMake 3.0.0 is required, remove this block (see CMP0042).
 if(NOT DEFINED CMAKE_MACOSX_RPATH)
   set(CMAKE_MACOSX_RPATH 0)
 endif()
@@ -36,7 +47,6 @@ include_directories("${PROJECT_BINARY_DIR}")
 ###################### FIXME
 set(HAVE_MAC 1)
 set(SSH 1)
-set(STANDALONE 1)
 ###################### FIXME
 
 # add -fPIC for 64 bit systems
@@ -50,9 +60,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if (${DEPLOY})
     message(STATUS "Deployment build on Mac is on")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7")
-    EXEC_PROGRAM(xcodebuild
-                 ARGS -version -sdk macosx10.9 Path
-		 OUTPUT_VARIABLE SDKPATH)
+    EXEC_PROGRAM(xcodebuild 
+      ARGS -version -sdk macosx10.9 Path
+      OUTPUT_VARIABLE SDKPATH
+      )
     set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -isysroot ${SDKPATH}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mmacosx-version-min=10.7")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mmacosx-version-min=10.7")
@@ -136,28 +147,19 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
 endif()
 
-# check for yaml
-include(FindPkgConfig)
-pkg_check_modules(yaml yaml-cpp>=0.5.1)
-
-if(NOT yaml_FOUND)
-  message(STATUS "No yaml package found. Need to compile the distributed one")
-  include(ExternalProject)
-  ExternalProject_Add(yaml-cpp
-   SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
-   BUILD_IN_SOURCE 1
-   CONFIGURE_COMMAND ""
-   BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${CMAKE_CXX_FLAGS}
-   INSTALL_COMMAND ""
-   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
-   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
-  )
-  add_custom_target(yaml COMMAND make yaml-cpp)
-  set(yaml_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
-  set(yaml_LIBRARIES "yaml-cpp")
+find_package(OpenMP REQUIRED)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
-  include_directories("${yaml_INCLUDE_DIRS}")
 
+# check for Gnu Scientific Library (GSL)
+include(cmake/FindGSL.cmake)
+
+# check for DL libraries
+include(cmake/FindLibDL.cmake)
+
+# check for Python and create all_functor_types.hpp
 include(FindPythonInterp)
 find_package (PythonInterp)
 if(EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
@@ -169,24 +171,46 @@ endif()
 # include cmake scripts
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
+include(cmake/contrib.cmake)
+include(cmake/mergestaticlibs.cmake)
+
 
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
 add_subdirectory(Logs)
 add_subdirectory(Utils)
 add_subdirectory(Models)
-add_subdirectory(Printers)
-add_subdirectory(ScannerBit)
-add_subdirectory(Core)
 
-add_gambit_executable(gambit_example SOURCES Core/examples/gambit_example.cpp)
+# list static libs to link
+set(GAMBIT_LIBRARIES Logs
+                     Utils
+                     Models
+)
+
+#merge_static_libs(gambitbase ${GAMBIT_LIBRARIES})
+#set_target_properties(gambitbase PROPERTIES VERSION "${GAMBIT_MAJOR_VERSION}.${GAMBIT_MINOR_VERSION}")
+
+#set link_interface_libraries to an empty string, otherwise cmake will link all binaries with the static libs
+#set_target_properties(gambitbase PROPERTIES LINK_INTERFACE_LIBRARIES "")
+#set_target_properties(gambitbase PROPERTIES INTERFACE_LINK_LIBRARIES "")
+
+#add_subdirectory(Printers)
+#add_subdirectory(ScannerBit)
+#add_subdirectory(Core)
+
+#add_gambit_executable(gambit_example SOURCES Core/examples/gambit_example.cpp HEADERS)
+#if(NOT yaml_FOUND)
+#  add_dependencies(gambit_example yaml)
+#endif()
+#target_link_libraries(gambit_example ScannerBit)
+
+add_subdirectory(ExampleBit_A)
+add_gambit_executable(ExampleBit_A_standalone SOURCES ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp)
 if(NOT yaml_FOUND)
-  add_dependencies(gambit_example yaml)
+  add_dependencies(ExampleBit_A_standalone yaml)
 endif()
-target_link_libraries(gambit_example ScannerBit)
-
-
-link_directories(${yaml_LIBRARY_DIRS})
-
+ 
+add_dependencies(ExampleBit_A_standalone slha)
+target_link_libraries(ExampleBit_A_standalone ${GAMBIT_LIBRARIES} ExampleBit_A fortran ${slha_LDFLAGS})
 
 export(PACKAGE GAMBIT)

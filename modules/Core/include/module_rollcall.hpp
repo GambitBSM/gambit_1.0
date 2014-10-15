@@ -36,7 +36,6 @@
 #include "module_macros_incore.hpp"
 
 // Create all the modules
-#ifdef DARKBIT
 #include "ExampleBit_A_rollcall.hpp"
 #include "ExampleBit_B_rollcall.hpp"
 #include "DarkBit_rollcall.hpp"
@@ -44,7 +43,6 @@
 #include "FlavBit_rollcall.hpp"
 #include "HiggsBit_rollcall.hpp"
 #include "DecayBit_rollcall.hpp"
-#endif
 
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
