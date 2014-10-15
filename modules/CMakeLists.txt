@@ -212,6 +212,6 @@ if(NOT yaml_FOUND)
 endif()
  
 add_dependencies(ExampleBit_A_standalone slha)
-target_link_libraries(ExampleBit_A_standalone ${GAMBIT_LIBRARIES} ExampleBit_A fortran ${} ${slha_LDFLAGS})
+target_link_libraries(ExampleBit_A_standalone ${GAMBIT_LIBRARIES} ExampleBit_A fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
 export(PACKAGE GAMBIT)
