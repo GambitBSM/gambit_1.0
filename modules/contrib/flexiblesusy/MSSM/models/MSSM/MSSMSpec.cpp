@@ -16,12 +16,12 @@ MSSMSpec::~MSSMSpec()
 }
 
 
-MssmFS& MSSM_DRbarPars::get_bound_spec() const
+MssmFS MSSM_DRbarPars::get_bound_spec() const
 {
    return my_parent.get_bound_spec();   
 } 
 
-MssmFS& MSSM_Phys::get_bound_spec() const
+MssmFS MSSM_Phys::get_bound_spec() const
 {
    return my_parent.get_bound_spec();
 } 

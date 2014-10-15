@@ -113,7 +113,7 @@ namespace flexiblesusy {
       virtual double get_dimensionless_par(std::string, int) const;
       virtual double get_dimensionless_par(std::string, int, int) const;
       
-      MssmFS& get_bound_spec() const; 
+      MssmFS get_bound_spec() const; 
    };
    
    //physical class for accessing physical spectrum
@@ -139,7 +139,7 @@ namespace flexiblesusy {
       virtual double get_Mixing_angle(std::string) const;
       virtual double get_Mixing_element(std::string, int, int) const;
       
-      MssmFS& get_bound_spec() const; 
+      MssmFS get_bound_spec() const; 
    };
     
 
@@ -147,8 +147,10 @@ namespace flexiblesusy {
       friend class MSSM_DRbarPars;
       friend class MSSM_Phys;
    private:
-      flexiblesusy::MSSM<Two_scale> model;
+      //flexiblesusy::MSSM<Two_scale> model;
    public:
+      flexiblesusy::MSSM<Two_scale> model;
+
       /// Internal instances of the derived inner classes
       MSSM_Phys mssm_ph;
       MSSM_DRbarPars mssm_drbar_pars;
@@ -159,17 +161,24 @@ namespace flexiblesusy {
 
       //Destructor
       virtual ~MSSMSpec();
-        //some model independent stuff
+      
+      //some model independent stuff
       virtual double get_lsp_mass(int & particle_type, 
                                   int & row, int & col) const;
       virtual int get_numbers_stable_particles() const; 
       //may use something like this to pass error to Gambit
       virtual std::string AccessError(std::string state) const;
 
-   //Need a method to return model since it is private
+      //Need a method to return model since it is private
+      ///TODO: Ben: What are these for? They seem to just return copies
+      // of the internal objects, which doesn't seem very useful. I have
+      // made the model object public for now so that I can manipulate it
+      // inside gambit, but perhaps these functions should return pointers
+      // or references to the internal object instead? Though in that case
+      // the model object might as well be public I think.
       MSSM<Two_scale> get_modelobject();
-      MssmFS& get_bound_spec() const; 
-      MSSM_physical& get_bound_phys() const; 
+      MssmFS get_bound_spec() const; 
+      MSSM_physical get_bound_phys() const; 
 
 };
 

@@ -43,6 +43,7 @@
 #include "FlavBit_rollcall.hpp"
 #include "HiggsBit_rollcall.hpp"
 #include "DecayBit_rollcall.hpp"
+#include "SpecBit_rollcall.hpp"
 
 #ifdef COLLIDE
   // Debugging... No seriously, I am including these headers, right??
