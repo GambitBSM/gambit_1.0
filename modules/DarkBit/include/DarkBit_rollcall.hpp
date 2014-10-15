@@ -174,6 +174,10 @@ START_MODULE
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
     #undef FUNCTION
+    #define FUNCTION TH_ProcessCatalog_SingletDM
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(SingletDM)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY DD_couplings
@@ -182,6 +186,12 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
       BACKEND_REQ(mspctm, (), DS_MSPCTM)      
+    #undef FUNCTION
+    #define FUNCTION DD_couplings_micrOMEGAs
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
     #undef FUNCTION
   #undef CAPABILITY
 

@@ -64,7 +64,7 @@ PRINTERSDIR = Printers
 LOGGINGDIR = Logs
 SCANDIR = ScannerBit
 BACKENDDIR = Backends
-HECOLLIDERDIR = ColliderBit
+COLLIDERDIR = ColliderBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
 HIGGSDIR = HiggsBit
@@ -82,6 +82,8 @@ MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
+PYTHIA8DIR = ../extras/boss/bossed_pythia_source
+BOSSMINIDIR = ../extras/boss
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -92,7 +94,7 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SCANDIR)/include \
   -I$(BACKENDDIR)/include \
   -I$(DARKDIR)/include \
-  -I$(HECOLLIDERDIR)/include \
+  -I$(COLLIDERDIR)/include \
   -I$(EXAMPLEADIR)/include \
   -I$(EXAMPLEBDIR)/include \
   -I$(DARKDIR)/include \
@@ -158,10 +160,10 @@ ifdef BOOST
   BOOST_CXXFLAGS := -I$(BOOSTINC)
   CFLAGS += $(BOOST_CXXFLAGS)
   BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard $(BOOST)/stage/lib/*)))
-  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME),-L$(BOOST)/stage/lib -lboost_date_time)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME),-L$(BOOST)/stage/lib -lboost_date_time -lboost_regex)
 else
   BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard /usr/lib/*)))
-  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time)
+  BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time -lboost_regex)
 endif
 ifndef SHH
   $(info INFO:)
@@ -330,7 +332,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -378,10 +380,10 @@ DECAYINC:=$(wildcard $(DECAYDIR)/include/*hpp) $(wildcard $(DECAYDIR)/include/*h
 DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
 DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
 
-HECOLLIDERINC:=$(wildcard $(HECOLLIDERDIR)/include/*hpp) $(wildcard $(HECOLLIDERDIR)/include/*h)
-HECOLLIDERSRC:=$(wildcard $(HECOLLIDERDIR)/src/*cpp) $(wildcard $(HECOLLIDERDIR)/src/*c) $(wildcard $(HECOLLIDERDIR)/src/analyses/*cpp)
-HECOLLIDERDELPHESSRC:=$(wildcard $(HECOLLIDERDIR)/src/delphes/*Module.cc) 
-HECOLLIDEROBJS:=$(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(HECOLLIDERSRC)))) $(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(HECOLLIDERDELPHESSRC)))) $(addprefix $(HECOLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(HECOLLIDERDELPHESSRC)))) 
+COLLIDERINC:=$(wildcard $(COLLIDERDIR)/include/*hpp) $(wildcard $(COLLIDERDIR)/include/*h)
+COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp)
+COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc) 
+COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC)))) 
 
 EXAMPLE_AINC:=$(wildcard $(EXAMPLEADIR)/include/*hpp) $(wildcard $(EXAMPLEADIR)/include/*h)
 EXAMPLE_ASRC:=$(wildcard $(EXAMPLEADIR)/src/*cpp)
@@ -395,13 +397,14 @@ EXSUSYSPECINC:=$(wildcard $(EXSUSYSPECDIR)/include/*hpp) $(wildcard $(EXSUSYSPEC
 EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
 EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
 
-STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(PRINTINC) $(LOGINC)
-STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(PRINTOBJS) $(LOGOBJS) $(BACKENDOBJS)
+STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(LOGINC)
+GAMBITINC = $(PRINTINC) $(COREINC)
+STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(BACKENDOBJS)
 MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
 ifdef COLLIDE
-  MODULEOBJS += $(HECOLLIDEROBJS)
+  MODULEOBJS += $(COLLIDEROBJS)
 endif
-ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(COREOBJS) 
+ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS) 
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -428,11 +431,15 @@ all: minihelp doxygen backends $(TARGETS)
 $(FUNCTOR_TYPES): $(HARVESTER) $(ROLLCALL_HEADERS)
 	python $(HARVESTER) $(HARVESTER_OPTS)
 
-$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(COREINC) $(ROLLCALL_HEADERS)
+$(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(GAMBITINC) $(ROLLCALL_HEADERS)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC) 
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC) 
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -487,37 +494,42 @@ $(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(STANDALONEINC) $(EXSUSY
 ifdef COLLIDE
 
 # Analysis...:
-$(HECOLLIDERDIR)/build/mt2_bisect.o: $(HECOLLIDERDIR)/src/analyses/mt2_bisect.cpp \
-   $(HECOLLIDERDIR)/src/analyses/mt2_bisect.h
+$(COLLIDERDIR)/build/mt2_bisect.o: $(COLLIDERDIR)/src/analyses/mt2_bisect.cpp \
+   $(COLLIDERDIR)/src/analyses/mt2_bisect.h
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(COLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
 
-$(HECOLLIDERDIR)/build/Anal%.o: $(HECOLLIDERDIR)/src/analyses/Anal%.cpp
+$(COLLIDERDIR)/build/Anal%.o: $(COLLIDERDIR)/src/analyses/Anal%.cpp
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+# Colliders...:
+$(COLLIDERDIR)/build/Collider%.o: $(COLLIDERDIR)/src/colliders/Collider%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 # Delphes modules...:
-$(HECOLLIDERDIR)/build/%Module.o: $(HECOLLIDERDIR)/src/delphes/%Module.cc
+$(COLLIDERDIR)/build/%Module.o: $(COLLIDERDIR)/src/delphes/%Module.cc
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(COLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
 
-$(HECOLLIDERDIR)/build/%Module_dict.o: $(HECOLLIDERDIR)/src/delphes/%Module_dict.cc
+$(COLLIDERDIR)/build/%Module_dict.o: $(COLLIDERDIR)/src/delphes/%Module_dict.cc
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -I$(HECOLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(COLLIDERDIR)/src/delphes $(CCEXTRA) -c $< -o $@
 
-$(HECOLLIDERDIR)/src/delphes/%Module_dict.cc: \
-   $(HECOLLIDERDIR)/src/delphes/%Module.h \
-   $(HECOLLIDERDIR)/src/delphes/%ModuleLinkDef.h
+$(COLLIDERDIR)/src/delphes/%Module_dict.cc: \
+   $(COLLIDERDIR)/src/delphes/%Module.h \
+   $(COLLIDERDIR)/src/delphes/%ModuleLinkDef.h
 	@echo ___________Generating Dictionary from $^:
 	@rootcint -f $@ -c $(DELPHES_CXXFLAGS) $^
 	# hack, but blame rootcint for being dumb
-	@sed 's,$(HECOLLIDERDIR)/src/delphes/,,g' $@ > temp_dict.cc
+	@sed 's,$(COLLIDERDIR)/src/delphes/,,g' $@ > temp_dict.cc
 	@mv temp_dict.cc $@
-	@sed 's,$(HECOLLIDERDIR)/src/delphes/,,g' $(patsubst %.cc,%.h,$@) > temp_dict.h
+	@sed 's,$(COLLIDERDIR)/src/delphes/,,g' $(patsubst %.cc,%.h,$@) > temp_dict.h
 	@mv temp_dict.h $(patsubst %.cc,%.h,$@)
 
 # ColliderBit
-$(HECOLLIDERDIR)/build/%.o: $(HECOLLIDERDIR)/src/%.cpp $(STANDALONEINC)
+$(COLLIDERDIR)/build/%.o: $(COLLIDERDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 endif
@@ -525,7 +537,7 @@ endif
 
 ##### Executables #############
 
-$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(STANDALONEINC) $(COREINC)
+$(COREDIR)/build/%.o: $(COREDIR)/examples/%.cpp $(STANDALONEINC) $(GAMBITINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -533,7 +545,7 @@ $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(STANDALONEINC) $(EXAMP
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so
+gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 
@@ -595,10 +607,9 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
-DDCalc0: $(BACKENDDIR)/lib/libDDCalc0.so
-$(BACKENDDIR)/lib/libDDCalc0.so:
+DDCalc0: 
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
-	mv $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
+	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
 
 micromegas:
 
@@ -610,16 +621,21 @@ higgsbounds:
 
 higgssignals:
 
-nulike: $(BACKENDDIR)/lib/libnulike.so
-$(BACKENDDIR)/lib/libnulike.so:
+nulike: 
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
-	mv $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
+	cp $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
-fastsim: $(BACKENDDIR)/lib/libfastsim.so
-$(BACKENDDIR)/lib/libfastsim.so:
+fastsim: 
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
-	mv $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
+	cp $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
+pythia: 
+	cd $(PYTHIA8DIR); make;
+	cp $(PYTHIA8DIR)/lib/libpythia8.so $(BACKENDDIR)/lib/
+
+BOSSMinimalExample:
+	cd $(BOSSMINIDIR); make all
+	cp $(BOSSMINIDIR)/*.so $(BACKENDDIR)/lib/
 
 #### Documentation ##########
 
@@ -658,7 +674,7 @@ clean:  clean_modules clean_executables clean_contributed clean_plugins clean_ba
 distclean: clean
         # also removes ~ files and other weirdly generated files
 	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
-	@rm -f $(HECOLLIDERDIR)/src/delphes/*_dict*
+	@rm -f $(COLLIDERDIR)/src/delphes/*_dict*
 	@rm -f Example_SUSYspecBit/test_output.slha
 	@rm -f output report.txt testmodule.mod
 
@@ -668,7 +684,7 @@ sterile: distclean
 clean_modules:
 	@rm -rf $(FUNCTOR_TYPES)
 	@rm -rf */build/*
-	@rm -f $(HECOLLIDERDIR)/src/analyses/*.o
+	@rm -f $(COLLIDERDIR)/src/analyses/*.o
 
 clean_executables:
 	@rm -rf $(TARGETS)
@@ -684,6 +700,8 @@ clean_backends:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
 	@cd $(NULIKEDIR); make clean
 	@cd $(FASTSIMDIR); make clean
+	@cd $(BOSSMINIDIR); make clean
+	@cd $(PYTHIA8DIR); make clean
 	@cd $(DDCALC0DIR); make clean
 
 clean_docs:

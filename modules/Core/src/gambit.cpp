@@ -13,24 +13,11 @@
 ///
 ///  *********************************************
 
-#include "log.hpp"
-#include "depresolver.hpp"
-#include "yaml_parser.hpp"
-#include "likelihood_container.hpp"
-#include "scannerbit.hpp"
-#include "test_function_rollcall.hpp"
-#include "priors_rollcall.hpp"
-#include "model_rollcall.hpp"
-#include "backend_rollcall.hpp"
-#include "module_rollcall.hpp"
-#include "register_error_handlers.hpp"
-#include "stream_printers.hpp"
-#include "printermanager.hpp"
-#include "inifile_interface.hpp"
+#include "gambit_main.hpp"
+
 
 using namespace Gambit;
 using namespace LogTags;
-
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
@@ -69,6 +56,9 @@ int main(int argc, char* argv[])
     // Activate "primary" model functors
     Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
+    // Deactivate module functions reliant on classes from missing backends
+    Core().accountForMissingClasses();
+
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
     // Printers::ostreamPrinter printer(std::cout,1); 
@@ -83,7 +73,7 @@ int main(int argc, char* argv[])
     Printers::BasePrinter& printer (*printerManager.printerptr);   
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();
@@ -96,26 +86,30 @@ int main(int argc, char* argv[])
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
-    if(Core().show_runorder) return 0; // Bail out: just wanted the run order, not a scan
- 
-    //Define the prior
-    Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
-  
-    //Define the likelihood container object for the scanner
-    Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
- 
-    //Define the iniFile interface for the scanner
-    Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
 
-    //Run the scanner!
-    Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
-    //cout << "keys = " << scanner->getKeys() << endl;
-    //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
-    logger() << core << "Starting scan." << EOM;
-    scanner->Run(); 
+    // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
+    if (not Core().show_runorder)
+    {
  
-    std::cout << "GAMBIT has finished successfully! Any errors following this message ";
-    std::cout << "are probably caused by cleanup problems, i.e in destructors etc."<<std::endl;
+      //Define the prior
+      Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
+  
+      //Define the likelihood container object for the scanner
+      Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
+ 
+      //Define the iniFile interface for the scanner
+      Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
+
+      //Run the scanner!
+      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
+      //cout << "keys = " << scanner->getKeys() << endl;
+      //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+      logger() << core << "Starting scan." << EOM;
+      scanner->Run(); 
+ 
+      std::cout << "GAMBIT has finished successfully!"<<std::endl;
+
+    }
   
   }
 

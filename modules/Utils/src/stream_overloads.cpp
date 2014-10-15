@@ -20,9 +20,10 @@
 ///
 ///  *********************************************
 
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
-namespace Gambit {
+namespace Gambit
+{
 
   // Spacing utility for stream overloads below
   std::string spacing(int len, int maxlen)

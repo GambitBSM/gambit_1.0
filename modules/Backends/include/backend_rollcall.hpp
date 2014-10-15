@@ -27,6 +27,9 @@
 #include "frontends/libfirst_1_0.hpp"
 #include "frontends/libfirst_1_1.hpp"
 #include "frontends/libfortran.hpp"
+#include "frontends/BOSSMinimalExample_1_0.hpp"
+#include "frontends/BOSSMinimalExample_1_1.hpp"
+#include "frontends/BOSSMinimalExample_1_2.hpp"
 #include "frontends/fakeSoftSUSY.hpp"
 #include "frontends/DarkSUSY.hpp"
 #include "frontends/SuperIso.hpp"
@@ -37,6 +40,8 @@
 #include "frontends/DDCalc0.hpp"
 #include "frontends/HiggsBounds.hpp"
 #include "frontends/HiggsSignals.hpp"
+#include "frontends/BOSSedPythia.hpp"
+
 //#include "frontend_Pythia8.hpp"
 
 // Get a bit fancy and include duplicate backends 

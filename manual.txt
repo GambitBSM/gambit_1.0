@@ -37,7 +37,7 @@ finally "Logger" and "KeyValues" which contain information about the general
 logging of GAMBIT output during the scan and an additional globally accessible
 option section.
 
-We will no describe each section in detail.
+We will now describe each section in detail.
 
 
 Individual sections

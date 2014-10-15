@@ -377,6 +377,106 @@ namespace Gambit
         logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
     }
 
+    /// Basic example use of some loaded classes.
+    void bossed_class_example1(X &result)
+    {
+      cout << "Testing X type." << endl;
+      cout << "===================" << endl;
+
+      result.i = 0;
+      cout << "Result X's int: " << result.i << endl;
+      result.i+=1;
+      cout << "After adding 1: " << result.i << endl;
+
+      X localX(1);
+      cout << "Local X's int: " << localX.i << endl;
+      localX.i+=1;
+      cout << "After adding 1: " << localX.i << endl;
+
+      BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
+      cout << "v1.0 X's int: " << oldX.i << endl;      
+
+      result = localX;
+      cout << "Now we set result = localX" << endl;      
+      cout << "result.i: " << result.i << endl;      
+
+      cout << "Testing Y type." << endl;
+      cout << "===================" << endl;
+
+      Y myY;
+      cout << "myY's X's int: " << myY.x.i << endl;
+      myY.x.i+=1;
+      cout << "After adding 1: " << myY.x.i << endl;
+
+      cout << "Making localY from localX." << endl;
+      Y localY(localX);
+      cout << "LocalY's int: " << localY.x.i << endl;
+      localY.x.i+=1;
+      cout << "After adding 1: " << localY.x.i << endl;
+      cout << "LocalX's int after LocalY's int has been incremented: " << localX.i << endl;
+      
+      localX = localY.get_x();       
+      cout << "i of X retrieved from localY: " << localX.i << endl; 
+
+      localX.i-=1;
+      localY.set_x(localX);
+      cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;      
+
+      BOSSMinimalExample_1_0::nspace3::Y oldY(oldX);
+      cout << "v1.0 Y's int: " << oldY.x.i << endl;
+    }
+
+    /// Higher-level example use of some loaded classes.
+    void bossed_class_example2(int &result)
+    {
+      using namespace Pipes::bossed_class_example2;
+      Y localY(*Dep::BOSSed_X);
+      result = localY.x.i;
+    }
+
+
+    /// Example of using a BOSSed version of Pythia
+    void bossed_pythia_test_function(bool &result)
+    {
+      using namespace Pipes::bossed_pythia_test_function;
+      
+      cout << "Testing BOSSed Pythia." << endl;
+      cout << "======================" << endl;
+
+      BOSSedPythia_1_0::Pythia8::Pythia pythia("../extras/boss/bossed_pythia_source/xmldoc", false);
+
+      pythia.readString("Beams:eCM = 8000.");
+      pythia.readString("HardQCD:all = on");
+      pythia.readString("PhaseSpace:pTHatMin = 20.");
+
+      pythia.readString("Next:numberShowInfo = 0");
+      pythia.readString("Next:numberShowProcess = 0");
+      pythia.readString("Next:numberShowEvent = 0");
+
+      pythia.init();
+
+      BOSSedPythia_1_0::Pythia8::Hist mult("charged multiplicity", 2, -0.5, 799.5);
+      // Begin event loop. Generate event. Skip if error. List first one.
+      for (int iEvent = 0; iEvent < 2; ++iEvent) {
+        if (!pythia.next()) continue;
+        // Find number of all final charged particles and fill histogram.
+        int nCharged = 0;
+        for (int i = 0; i < pythia.event.size(); ++i)
+          if (pythia.event[i].isFinal() && pythia.event[i].isCharged())
+            ++nCharged;
+        mult.fill( nCharged );
+        cout << "Event: " << iEvent << "   nCharged: " << nCharged << endl;
+      // End of event loop. Statistics. Histogram. Done.
+      }
+
+      pythia.stat();
+
+      cout << "Done testing BOSSed Pythia." << endl;
+      cout << "===========================" << endl;
+      
+      result = true;
+    }
+
 
     /// \name SLHA Examples
     /// Some example functions for getting and manipulating SLHA-style information

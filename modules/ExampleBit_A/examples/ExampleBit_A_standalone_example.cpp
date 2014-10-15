@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "standalone.hpp"
+#include "standalone_module.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
 using namespace ExampleBit_A::Accessors;    // Helper functions that provide some info about the module

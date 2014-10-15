@@ -71,7 +71,7 @@ namespace Gambit
                       Models::ModelFunctorClaw &claw) :      
      myName          (func_name),
      myCapability    (func_capability),
-     myType          (strip_leading_namespace(strip_whitespace_except_after_const(result_type),"Gambit")),
+     myType          (Utils::fix_type(result_type)),
      myOrigin        (origin_name),
      myClaw          (&claw),
      myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
@@ -130,7 +130,7 @@ namespace Gambit
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
-    /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Getter for the wrapped function current status (-3 = required classes absent, -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
@@ -283,6 +283,12 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,"The notifyOfModel method has not been defined in this class.");
     }
 
+    /// Indicate to the functor which backends are actually loaded and working
+    void functor::notifyOfBackends(std::map<str, std::set<str> >)
+    {
+      utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
+    }
+
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
@@ -374,8 +380,8 @@ namespace Gambit
     void functor::setModelGroup(str group, str contents)
     {
       //Strip the group contents of its parentheses, then split it, turn it into a set and save it in the map
-      strip_parentheses(contents);
-      std::vector<str> v = delimiterSplit(contents, ",");
+      Utils::strip_parentheses(contents);
+      std::vector<str> v = Utils::delimiterSplit(contents, ",");
       std::set<str> combo(v.begin(), v.end());
       modelGroups[group] = combo;
     }
@@ -384,8 +390,8 @@ namespace Gambit
     void functor::setAllowedModelGroupCombo(str groups)
     {
       //Strip the group combo of its parentheses, then split it and save it in the vector of allowed combos
-      strip_parentheses(groups);
-      std::vector<str> group_combo = delimiterSplit(groups, ",");
+      Utils::strip_parentheses(groups);
+      std::vector<str> group_combo = Utils::delimiterSplit(groups, ",");
       allowedGroupCombos.insert(group_combo);
     }
 
@@ -507,18 +513,19 @@ namespace Gambit
                                                  str result_type,
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
-    : functor            (func_name, func_capability, result_type, origin_name, claw),
-      runtime            (FUNCTORS_RUNTIME_INIT),
-      runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
-      fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
-      pInvalidation      (FUNCTORS_BASE_INVALIDATION_RATE),
-      iCanManageLoops    (false),
-      iRunNested         (false),
+    : functor                 (func_name, func_capability, result_type, origin_name, claw),
+      runtime                 (FUNCTORS_RUNTIME_INIT),
+      runtime_average         (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
+      fadeRate                (FUNCTORS_FADE_RATE),              // can be set individually for each functor
+      pInvalidation           (FUNCTORS_BASE_INVALIDATION_RATE),
+      iCanManageLoops         (false),
+      iRunNested              (false),
       myLoopManagerCapability ("none"),
       myLoopManagerName       ("none"),
       myLoopManagerOrigin     ("none"),
-      globlMaxThreads    (omp_get_max_threads()),
-      myLogTag(-1)
+      myCurrentIteration      (NULL),
+      globlMaxThreads         (omp_get_max_threads()),
+      myLogTag                (-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
 
@@ -538,6 +545,12 @@ namespace Gambit
       {
         logger() <<warn<<debug<<EOM;
       }
+    }
+
+    /// Destructor
+    module_functor_common::~module_functor_common() 
+    { 
+      if (myCurrentIteration != NULL)  delete [] myCurrentIteration;
     }
 
     /// Getter for averaged runtime
@@ -610,12 +623,26 @@ namespace Gambit
       }
     } 
 
+    // Initialise the array holding the current iteration(s) of this functor.
+    void module_functor_common::init_myCurrentIteration()
+    {
+      int nslots = (iRunNested ? globlMaxThreads : 1); // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
+      myCurrentIteration = new int[nslots];            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
+      std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
+    }
+
     /// Setter for setting the iteration number in the loop in which this functor runs
-    void module_functor_common::setIteration (int iteration) { myCurrentIteration[omp_get_thread_num()] = iteration; }
+    void module_functor_common::setIteration (int iteration)
+    {
+      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through. 
+      myCurrentIteration[omp_get_thread_num()] = iteration;
+    }
+
     /// Return a safe pointer to the iteration number in the loop in which this functor runs.
     omp_safe_ptr<int> module_functor_common::iterationPtr() 
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
+      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through. 
       return omp_safe_ptr<int>(myCurrentIteration); 
     }
 
@@ -752,7 +779,7 @@ namespace Gambit
     /// Add and activate unconditional dependencies.
     void module_functor_common::setDependency(str dep, str type, void(*resolver)(functor*, module_functor_common*), str purpose)
     {
-      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
+      sspair key (dep, Utils::fix_type(type));
       myDependencies.push_back(key);
       dependency_map[key] = resolver;
       this->myPurpose = purpose; // only relevant for output nodes
@@ -763,7 +790,7 @@ namespace Gambit
      (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
       // Split the version string and send each version to be registered
-      std::vector<str> versions = delimiterSplit(ver, ",");
+      std::vector<str> versions = Utils::delimiterSplit(ver, ",");
       for (std::vector<str>::iterator it = versions.begin() ; it != versions.end(); ++it)
       {
         setBackendConditionalDependencySingular(req, be, *it, dep, dep_type, resolver);
@@ -774,7 +801,7 @@ namespace Gambit
     void module_functor_common::setBackendConditionalDependencySingular
      (str req, str be, str ver, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
-      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
+      sspair key (dep, Utils::fix_type(dep_type));
       std::vector<str> quad;
       if (backendreq_types.find(req) != backendreq_types.end())
       {
@@ -805,7 +832,7 @@ namespace Gambit
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     {
       // Split the model string and send each model to be registered
-      std::vector<str> models = delimiterSplit(model, ",");
+      std::vector<str> models = Utils::delimiterSplit(model, ",");
       for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
       {
         setModelConditionalDependencySingular(*it, dep, dep_type, resolver);
@@ -816,7 +843,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalDependencySingular
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
     { 
-      sspair key (dep, strip_leading_namespace(strip_whitespace_except_after_const(dep_type),"Gambit"));
+      sspair key (dep, Utils::fix_type(dep_type));
       if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
       {
         std::vector<sspair> newvec;
@@ -830,7 +857,7 @@ namespace Gambit
     /// The info gets updated later if this turns out to be conditional on a model. 
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
     { 
-      type = strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit");
+      type = Utils::fix_type(type);
       sspair key (req, type);
       backendreq_types[req] = type;
       myBackendReqs.push_back(key);
@@ -843,8 +870,8 @@ namespace Gambit
       }
       myGroupedBackendReqs[group].push_back(key);
       backendreq_map[key] = resolver;
-      strip_parentheses(tags);
-      backendreq_tagmap[key] = delimiterSplit(tags, ",");      
+      Utils::strip_parentheses(tags);
+      backendreq_tagmap[key] = Utils::delimiterSplit(tags, ",");      
       backendreq_groups[key] = group;
     }
 
@@ -852,11 +879,11 @@ namespace Gambit
     void module_functor_common::makeBackendRuleForModel(str model, str tag)
     {
       //Strip the tag and model strings of their parentheses
-      strip_parentheses(tag);
-      strip_parentheses(model);
+      Utils::strip_parentheses(tag);
+      Utils::strip_parentheses(model);
 
       //Split the tag string and sort it.
-      std::vector<str> tags = delimiterSplit(tag, ",");
+      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
       std::sort(tags.begin(), tags.end());
 
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
@@ -864,7 +891,7 @@ namespace Gambit
       {
         std::vector<str> tagset = backendreq_tagmap[*it];
         std::sort(tagset.begin(), tagset.end());
-        if (not is_disjoint(tags, tagset))
+        if (not Utils::is_disjoint(tags, tagset))
         {
           // Make each of the matching backend requirements conditional on the models passed in.
           setModelConditionalBackendReq(model,it->first,it->second);
@@ -878,7 +905,7 @@ namespace Gambit
      (str model, str req, str type)
     {
       // Split the model string and send each model to be registered
-      std::vector<str> models = delimiterSplit(model, ",");
+      std::vector<str> models = Utils::delimiterSplit(model, ",");
       for (std::vector<str>::iterator it = models.begin() ; it != models.end(); ++it)
       {
         setModelConditionalBackendReqSingular(*it, req, type);
@@ -889,7 +916,7 @@ namespace Gambit
     void module_functor_common::setModelConditionalBackendReqSingular
      (str model, str req, str type)
     { 
-      sspair key (req, strip_leading_namespace(strip_whitespace_except_after_const(type),"Gambit"));
+      sspair key (req, Utils::fix_type(type));
 
       // Remove the entry from the resolvable backend reqs list...
       myResolvableBackendReqs.erase(std::remove(myResolvableBackendReqs.begin(), 
@@ -913,10 +940,10 @@ namespace Gambit
     void module_functor_common::makeBackendOptionRule(str be_and_ver, str tag)
     {
       //Strip the tag and be-ver strings of their parentheses, then split them
-      strip_parentheses(tag);
-      strip_parentheses(be_and_ver);
-      std::vector<str> tags = delimiterSplit(tag, ",");
-      std::vector<str> be_plus_versions = delimiterSplit(be_and_ver, ",");
+      Utils::strip_parentheses(tag);
+      Utils::strip_parentheses(be_and_ver);
+      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
+      std::vector<str> be_plus_versions = Utils::delimiterSplit(be_and_ver, ",");
 
       //Die if no backend and/or no tags were given.      
       if (tags.empty() or be_plus_versions.empty())  
@@ -940,7 +967,7 @@ namespace Gambit
       {
         std::vector<str> tagset = backendreq_tagmap[*it];
         std::sort(tagset.begin(), tagset.end());
-        if (not is_disjoint(tags, tagset))
+        if (not Utils::is_disjoint(tags, tagset))
         {
           // For each of the matching backend requirements, set the chosen backend-version pairs as permitted 
           for (std::vector<str>::iterator vit = versions.begin() ; vit != versions.end(); ++vit)
@@ -981,8 +1008,8 @@ namespace Gambit
     void module_functor_common::makeBackendMatchingRule(str tag)
     {
       //Strip the tag string of any parentheses, then split it
-      strip_parentheses(tag);
-      std::vector<str> tags = delimiterSplit(tag, ",");
+      Utils::strip_parentheses(tag);
+      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
 
       //Die if no tags were given.      
       if (tags.empty())  
@@ -1017,6 +1044,32 @@ namespace Gambit
       //different sets determinable only at resolution time, not initialisation time.
 
     }
+
+    /// Add a rule indicating that classes from a given backend must be available
+    void module_functor_common::setRequiredClassloader(str be, str ver) { required_classloading_backends[be].insert(ver); }
+
+    /// Indicate to the functor which backends are actually loaded and working
+    void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
+    {
+      // Loop over all the backends that are needed for this functor to work.
+      for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)
+      {
+        // Check to make sure some version of the backend in question is connected.
+        if (be_ver_map.find(it->first) == be_ver_map.end())
+        {
+          this->myStatus = -3;
+        }
+        else 
+        {  // Loop over all the versions of the backend that are needed for this functor to work.
+          for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
+          {
+            std::set<str> versions = be_ver_map.at(it->first);
+            // Check that the specific version needed is connected.
+            if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+          }
+        }
+      }
+    } 
 
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void module_functor_common::setNestedList (std::vector<functor*> &newNestedList)
@@ -1216,38 +1269,22 @@ namespace Gambit
                                    Models::ModelFunctorClaw &claw)
     : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction  (inputFunction),
+      myValue     (NULL),
       myPrintFlag (false)
-    {
-      myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
-      myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
-      myCurrentIteration[0] = 0;              // Zero the iteration counter to start off.
-    }
+    {}
 
     /// Destructor
     template <typename TYPE>
     module_functor<TYPE>::~module_functor() 
     { 
-      delete [] myValue;
-      delete [] myCurrentIteration;
+      if (myValue != NULL) delete [] myValue;
     }
 
-    /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
-    template <typename TYPE>
-    void module_functor<TYPE>::setLoopManagerCapability (str manager) 
-    { 
-      module_functor_common::setLoopManagerCapability(manager); // Call the regular version of this method.
-      delete [] myValue;                              // Get rid of the scalar result container
-      delete [] myCurrentIteration;                   // Get rid of the scalar iteration container
-      myValue = new TYPE[globlMaxThreads];            // Reserve enough space to hold as many results as there are threads allowed
-      myCurrentIteration = new int[globlMaxThreads];  // Reserve enough space to hold as many iteration numbers as there are threads allowed
-      std::fill(myCurrentIteration, myCurrentIteration+globlMaxThreads, 0); // Zero them to start off
-    }
-
-    /// Setter for indicating if the wrapped function's result should to be printed
+    /// Setter for indicating if the wrapped function's result should be printed
     template <typename TYPE>
     void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
 
-    /// Getter indicating if the wrapped function's result should to be printed
+    /// Getter indicating if the wrapped function's result should be printed
     template <typename TYPE>
     bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
 
@@ -1255,7 +1292,9 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      if (needs_recalculating)
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
+      if (needs_recalculating)             // Do the actual calculation if required.
+
       {
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
@@ -1272,6 +1311,15 @@ namespace Gambit
         this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         logger().leaving_module();
       }
+
+    }
+
+    // Initialise the memory of this functor.
+    template <typename TYPE>
+    void module_functor<TYPE>::init_myValue()
+    {
+      // Reserve enough space to hold as many results as there are slots (threads) allowed
+      myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];                      
     }
 
     /// Operation (return value)
@@ -1279,6 +1327,7 @@ namespace Gambit
     TYPE module_functor<TYPE>::operator()(int index) 
     { 
       if (this == NULL) functor::failBigTime("operator()");
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
       return (iRunNested ? myValue[index] : myValue[0]);
     }
 
@@ -1287,6 +1336,7 @@ namespace Gambit
     safe_ptr<TYPE> module_functor<TYPE>::valuePtr()
     {
       if (this == NULL) functor::failBigTime("valuePtr");
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
       return safe_ptr<TYPE>(myValue);
     }
 
@@ -1294,12 +1344,11 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
-      // Check if this functor is set to output its contents
-      std::cout<<"printflag?"<<myPrintFlag<<std::endl;
       if(myPrintFlag)
       {
+        if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
-        printer->print(myValue[0],myLabel,myVertexID);
+        printer->print(myValue[index],myLabel,myVertexID);
       }
     }
 
@@ -1355,7 +1404,10 @@ namespace Gambit
                                  str result_type,
                                  str origin_name,
                                  Models::ModelFunctorClaw &claw)
-    : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
+    : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw)
+    {
+      init_myValue();
+    }   
     
     /// Function for adding a new parameter to the map inside the ModelParameters object
     void model_functor::addParameter(str parname)

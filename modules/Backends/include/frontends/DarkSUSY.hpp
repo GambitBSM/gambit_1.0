@@ -138,7 +138,8 @@ BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
 BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
 BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 
-BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
+//BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
+BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM)
 
 BE_INI_FUNCTION
 {
@@ -157,19 +158,22 @@ BE_INI_FUNCTION
     }
     scan_level = false;
 
-    // Save eaSLHA file to disk
-    mySLHA = *Dep::MSSMspectrum;
-    ofstream ofs("DarkBit_temp.slha");
-    ofs << mySLHA;
-    ofs.close();
+    // Check if model requires SLHA initialization
+    if(std::find(Models->begin(), Models->end(), "CMSSM") != Models->end())
+    {
+        // Save eaSLHA file to disk
+        mySLHA = *Dep::MSSMspectrum;
+        ofstream ofs("DarkBit_temp.slha");
+        ofs << mySLHA;
+        ofs.close();
 
-    // Initialize SUSY spectrum from SLHA
-    int len = 17;
-    int flag = 15;
-    char * filename = "DarkBit_temp.slha";
-    dsSLHAread(byVal(filename),flag, byVal(len));
-    dsprep();
-
+        // Initialize SUSY spectrum from SLHA
+        int len = 17;
+        int flag = 15;
+        char * filename = "DarkBit_temp.slha";
+        dsSLHAread(byVal(filename),flag, byVal(len));
+        dsprep();
+    }
 }
 DONE
 
@@ -229,8 +233,5 @@ DONE
 
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

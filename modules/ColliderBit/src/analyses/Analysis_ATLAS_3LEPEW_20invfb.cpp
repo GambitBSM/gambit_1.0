@@ -31,7 +31,7 @@ namespace Gambit {
       vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
-      int NCUTS=8;
+      const static int NCUTS=8;
 
       // Debug histos
 
@@ -475,6 +475,6 @@ namespace Gambit {
 
     };
 
-    DEFINE_ANAFACTORY(ATLAS_3LEPEW_20invfb)
+    DEFINE_ANALYSIS_FACTORY(ATLAS_3LEPEW_20invfb)
   }
 }

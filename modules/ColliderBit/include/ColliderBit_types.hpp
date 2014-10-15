@@ -16,11 +16,10 @@
 ///
 ///  *********************************************
 ///
-///  Authors (add name and date if you modify):
+///  Authors (add name if you modify):
 ///   
 ///  \author Abram Krislock
-///          (abram.krislock@fysik.su.se)
-///  \date 2013 Dec
+///          (a.m.b.krislock@fys.uio.no)
 ///
 ///  *********************************************
 
@@ -28,24 +27,49 @@
 #ifndef __ColliderBit_types_hpp__
 #define __ColliderBit_types_hpp__
 
+#include <vector>
+#include <memory>
 /// \todo Some of these includes may eventually need to be in shared_types
 /// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
 #include "Delphes3Backend.hpp"
-#include "Pythia8Backend.hpp"
 #include "Analysis.hpp"
+#include "Collider.hpp"
+
+using std::vector;
+using std::shared_ptr;
 
 namespace Gambit {
   
   namespace ColliderBit {
-    
-    //A list of analyses to be run 
-    struct AnalysisList {
-      AnalysisList() {}
-      
-      void addAnalysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
-      vector<shared_ptr<Analysis>> analyses;
+
+    /// @brief What is this ColliderLogLikes struct mentioned in the rollcall??
+    typedef vector<vector<SignalRegionData>> ColliderLogLikes;
+
+    /// @brief ColliderBit is using vectors like this quite often...
+    template <typename T>
+    class SharedPointerVector : public vector<shared_ptr<T>> {
+      /// @note Not as thread-safe as it looks, since it uses shared_ptr.
+      ///     Each thread must have a SharedPointerVector pointing to unique Ts.
+    public:
+      void push_back(shared_ptr<T> entry) {
+        #pragma omp critical (vectorUpdate)
+        { vector<shared_ptr<T>>::push_back(entry); }
+      }
+      void inline push_back(T& entry) { push_back(shared_ptr<T>(&entry)); }
+      void inline push_back(T* entry) { push_back(shared_ptr<T>(entry)); }
+
+      void pop_back() {
+        #pragma omp critical (vectorUpdate)
+        { vector<shared_ptr<T>>::pop_back(); }
+      }
+      void inline clear() { while(vector<shared_ptr<T>>::size()) pop_back(); }
     };
-    
+
+    /// @brief A list of collider subclasses to be run during a scan
+    typedef SharedPointerVector<PythiaBase> PythiaPointerVector;
+
+    /// @brief A list of analyses to be run on some events
+    typedef SharedPointerVector<Analysis> AnalysisPointerVector;
   }
 }
 

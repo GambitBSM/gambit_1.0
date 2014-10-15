@@ -192,8 +192,6 @@ namespace Gambit
     {
        if(not silenced)
        {
-         // Later on this should clean up the logger objects
-         std::cout<<"Logger is being destroyed. Checking if there are messages left to deliver..."<<std::endl;
          // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
          if (prelim_buffer.size()!=0)
          { 
@@ -309,7 +307,7 @@ namespace Gambit
       for(std::map<std::string, std::string>::iterator infopair = loggerinfo.begin(); 
             infopair != loggerinfo.end(); ++infopair)
       {
-        std::vector<std::string> tags_vec(delimiterSplit(infopair->first, ","));
+        std::vector<std::string> tags_vec(Utils::delimiterSplit(infopair->first, ","));
         std::set<std::string> tags_set(tags_vec.begin(), tags_vec.end());
         loggerinfo_set[tags_set] = infopair->second;
       }
@@ -514,7 +512,7 @@ namespace Gambit
        // Check the 'ignore' set; if any of the specified tags are in this set, then do nothing more, i.e. ignore the message.
        // (need to add extra stuff to ignore modules and backends, since these cannot be normal tags)
        // Also ignore the message if logs have been 'silenced'.
-       if( silenced or not is_disjoint(mail.tags, ignore) ) 
+       if( silenced or not Utils::is_disjoint(mail.tags, ignore) ) 
        { 
          //std::cout<<"Ignoring message..."<<std::endl;
          return; 
