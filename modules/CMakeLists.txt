@@ -182,7 +182,8 @@ add_subdirectory(Utils)
 add_subdirectory(Models)
 
 # list static libs to link
-set(GAMBIT_LIBRARIES Logs
+set(GAMBIT_LIBRARIES Backends
+                     Logs
                      Utils
                      Models
 )
@@ -211,6 +212,6 @@ if(NOT yaml_FOUND)
 endif()
  
 add_dependencies(ExampleBit_A_standalone slha)
-target_link_libraries(ExampleBit_A_standalone ${GAMBIT_LIBRARIES} ExampleBit_A fortran ${slha_LDFLAGS})
+target_link_libraries(ExampleBit_A_standalone ${GAMBIT_LIBRARIES} ExampleBit_A fortran ${} ${slha_LDFLAGS})
 
 export(PACKAGE GAMBIT)
