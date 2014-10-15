@@ -34,7 +34,7 @@ function(add_gambit_library libraryname)
   add_library(${libraryname} ${ARG_SOURCES} ${ARG_HEADERS})
   set_target_properties(${libraryname} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "")
   
-  string(FIND "${libraryname}" "Bit" ModuleBit REVERSE)
+#  string(FIND "${libraryname}" "Bit" ModuleBit REVERSE)
 #  if(${ModuleBit} GREATER -1)
 #    add_dependencies(${libraryname} gambitbase)
 #  endif()

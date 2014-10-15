@@ -174,7 +174,6 @@ include(cmake/gambit.cmake)
 include(cmake/contrib.cmake)
 include(cmake/mergestaticlibs.cmake)
 
-
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
 add_subdirectory(Logs)

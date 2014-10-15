@@ -1,10 +1,10 @@
 # check for yaml
-include(FindPkgConfig)
-pkg_check_modules(yaml yaml-cpp>=0.5.1)
+#include(FindPkgConfig)
+#pkg_check_modules(yaml yaml-cpp>=0.5.1)
 
 include(ExternalProject)
 
-if(NOT yaml_FOUND)
+#if(NOT yaml_FOUND)
   message(STATUS "No yaml package found. Need to compile the distributed one")
   ExternalProject_Add(yaml-cpp
    SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
@@ -18,8 +18,8 @@ if(NOT yaml_FOUND)
   add_custom_target(yaml COMMAND make yaml-cpp)
   set(yaml_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
   set(yaml_LIBRARIES "yaml-cpp")
-  set(yaml_LDFLAGS "-L${yaml_INCLUDE_DIRS} -l${yaml_LIBRARIES}")
-endif()
+  set(yaml_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/ -l${yaml_LIBRARIES}")
+#endif()
 
 include_directories(${yaml_INCLUDE_DIRS})
 
