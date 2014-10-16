@@ -37,6 +37,7 @@
 #include "frontends/micromegas.hpp"
 #include "frontends/FastSim.hpp"
 #include "frontends/nulike.hpp"
+#include "frontends/gamLike.hpp"
 #include "frontends/DDCalc0.hpp"
 #include "frontends/HiggsBounds.hpp"
 #include "frontends/HiggsSignals.hpp"
