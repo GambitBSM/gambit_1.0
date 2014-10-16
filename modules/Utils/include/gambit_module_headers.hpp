@@ -27,10 +27,10 @@
 #define __gambit_module_headers_hpp__
 
 #ifdef __module_macros_incore_hpp__
-  FAIL("You can't include gambit_module_headers.hpp from a rollcall header, only from module source files.")
+  FAIL("You cannot include gambit_module_headers.hpp from a rollcall header, only from module source files.")
 #endif
 #ifdef __module_rollcall_hpp__
-  FAIL("You can't include gambit_module_headers.hpp from a rollcall header, only from module source files.")
+  FAIL("You cannot include gambit_module_headers.hpp from a rollcall header, only from module source files.")
 #endif
 
 #include "module_macros_inmodule.hpp"
