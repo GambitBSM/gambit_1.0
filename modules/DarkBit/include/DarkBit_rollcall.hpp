@@ -195,13 +195,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY lnL_FakeLux
-  START_CAPABILITY
-    #define FUNCTION lnL_FakeLux
-      START_FUNCTION(double)
-      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
-    #undef FUNCTION
-  #undef CAPABILITY
+//  #define CAPABILITY lnL_FakeLux
+//  START_CAPABILITY
+//    #define FUNCTION lnL_FakeLux
+//      START_FUNCTION(double)
+//      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+//    #undef FUNCTION
+//  #undef CAPABILITY
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY

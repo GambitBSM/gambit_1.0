@@ -1021,11 +1021,13 @@ namespace Gambit {
         cout << " M_DM = " << result.M_DM << endl;
     }
 
+    /*
     void lnL_FakeLux(double &result)
     {
         using namespace Pipes::lnL_FakeLux;
         result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
     }
+    */
 
 //////////////////////////////////////////////////////////////////////////
 //
