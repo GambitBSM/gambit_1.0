@@ -49,12 +49,15 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    /*
     void DarkBit_PointInit_Default()
     {
       using namespace Pipes::DarkBit_PointInit_Default;
       // Nothing
     }
+    */
 
+    /*
     void DarkBit_PointInit_MSSM7()
     {
       using namespace Pipes::DarkBit_PointInit_MSSM7;
@@ -97,7 +100,9 @@ namespace Gambit {
       *BEreq::mssmpar = mssmpar;
       BEreq::dssusy(unphys, hwarning);
     }
+    */
 
+    /*
     eaSLHA mySLHA;
 
     //The function below has been moved into the DarkSUSY
@@ -131,7 +136,9 @@ namespace Gambit {
       BEreq::dsprep();
 
     }
+    */
 
+    /*
     void DarkBit_PointInit_CMSSM()
     {
       using namespace Pipes::DarkBit_PointInit_CMSSM;
@@ -158,6 +165,7 @@ namespace Gambit {
       BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
       BEreq::dssusy_isasugra(unphys, hwarning);
     }
+    */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -912,11 +920,50 @@ namespace Gambit {
         std::cout << "phi: " << phi << std::endl;
     }
 
+    void lnL_FermiLATdwarfs_gamLike(double &result)
+    {
+        using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
+        
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        BFptr mult (new BFconstant(1/mass/mass/8./3.1415, 0));
+
+        std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
+        std::vector<double> y = (*((*Dep::GA_AnnYield) * mult)->fixPar(1,0.))(x);
+
+        result = BEreq::lnL_dwarfs(x, y);
+
+        std::cout << "GamLike likelihood is lnL = " << result << std::endl;
+    }
+
+    void lnL_FermiGC_gamLike(double &result)
+    {
+        using namespace Pipes::lnL_FermiGC_gamLike;
+        
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        BFptr mult (new BFconstant(1/mass/mass/8./3.1415, 0));
+
+        std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
+        std::vector<double> y = (*((*Dep::GA_AnnYield) * mult)->fixPar(1,0.))(x);
+
+        result = BEreq::lnL_GC(x, y);
+
+        std::cout << "GamLike likelihood is lnL = " << result << std::endl;
+    }
+
     void lnL_oh2_Simple(double &result)
     {
       using namespace Pipes::lnL_oh2_Simple;
       double oh2 = *Dep::RD_oh2;
-      result = pow(oh2 - 0.11, 2)/pow(0.01, 2);
+      double oh2_mean, oh2_err;
+      if (runOptions->hasKey("oh2_mean"))
+          oh2_mean = runOptions->getValue<double>("oh2_mean");
+      else
+          oh2_mean = 0.11;
+      if (runOptions->hasKey("oh2_err"))
+          oh2_err = runOptions->getValue<double>("oh2_err");
+      else
+          oh2_err = 0.01;
+      result = pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);
     }
 
     void dump_GammaSpectrum(double &result)
@@ -1126,25 +1173,37 @@ namespace Gambit {
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
-        double mass = *Param["mass"];
-        double lambda = *Param["lambda"];
+        std::vector<std::string> finalStates;
 
-        double sigma = lambda * lambda;
+        double mass = *Param["mass"];
+        double lambda = *Param["lambda"];  // Lambda is interpreted as sv for now
+
+        // TODO: Update to real singlet DM
+        double sigma_bb     = 1e-26 * lambda * 0.8;  // partial sv
+        double sigma_tautau = 1e-26 * lambda * 0.2;  // partial sv
 
         // Initialize catalog
         TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
-        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
+        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
 
-        // Initialize channel
-        BFptr kinematicFunction(new BFconstant(sigma,1));
-        std::vector<std::string> finalStates;
+        // Initialize channel bb
+        BFptr kinematicFunction_bb(new BFconstant(sigma_bb,1));
+        finalStates.clear();
         finalStates.push_back("b");
         finalStates.push_back("bbar");
-        TH_Channel channel(finalStates, kinematicFunction);
-        process.channelList.push_back(channel);
+        TH_Channel channel_bb(finalStates, kinematicFunction_bb);
+        process_ann.channelList.push_back(channel_bb);
+
+        // Initialize channel tautau
+        BFptr kinematicFunction_tautau(new BFconstant(sigma_tautau,1));
+        finalStates.clear();
+        finalStates.push_back("tau+");
+        finalStates.push_back("tau-");
+        TH_Channel channel_tautau(finalStates, kinematicFunction_tautau);
+        process_ann.channelList.push_back(channel_tautau);
              
         // And process on process list
-        catalog.processList.push_back(process);
+        catalog.processList.push_back(process_ann);
 
         // Finally, store properties of "chi" in particleProperty list
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
