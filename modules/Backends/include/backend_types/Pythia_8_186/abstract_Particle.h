@@ -1,5 +1,5 @@
-#ifndef __ABSTRACT_PARTICLE_BOSSedPythia_1_0_H__
-#define __ABSTRACT_PARTICLE_BOSSedPythia_1_0_H__
+#ifndef __ABSTRACT_PARTICLE_Pythia_8_186_H__
+#define __ABSTRACT_PARTICLE_Pythia_8_186_H__
 
 #include "abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
@@ -43,11 +43,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // IGNORED: Field  -- Name: evtPtr  -- XML id: _19581
             public:
     
-                virtual Pythia8::Abstract_Particle* operator_equal_GAMBIT(const Pythia8::Abstract_Particle&) =0;
+                virtual Pythia8::Abstract_Particle* operator_equal__BOSS(const Pythia8::Abstract_Particle&) =0;
     
-                virtual void setEvtPtr_GAMBIT(Pythia8::Abstract_Event*) =0;
+                virtual void setEvtPtr__BOSS(Pythia8::Abstract_Event*) =0;
     
-                virtual Pythia8::Abstract_Event* getEvtPtr_GAMBIT() =0;
+                virtual Pythia8::Abstract_Event* getEvtPtr__BOSS() =0;
     
                 virtual void id(int) =0;
     
@@ -65,9 +65,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void mothers(int, int) =0;
     
-                virtual void mothers_GAMBIT(int) =0;
+                virtual void mothers__BOSS(int) =0;
     
-                virtual void mothers_GAMBIT() =0;
+                virtual void mothers__BOSS() =0;
     
                 virtual void daughter1(int) =0;
     
@@ -75,9 +75,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void daughters(int, int) =0;
     
-                virtual void daughters_GAMBIT(int) =0;
+                virtual void daughters__BOSS(int) =0;
     
-                virtual void daughters_GAMBIT() =0;
+                virtual void daughters__BOSS() =0;
     
                 virtual void col(int) =0;
     
@@ -85,11 +85,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void cols(int, int) =0;
     
-                virtual void cols_GAMBIT(int) =0;
+                virtual void cols__BOSS(int) =0;
     
-                virtual void cols_GAMBIT() =0;
+                virtual void cols__BOSS() =0;
     
-                virtual void p_GAMBIT(Pythia8::Abstract_Vec4&) =0;
+                virtual void p__BOSS(Pythia8::Abstract_Vec4&) =0;
     
                 virtual void p(double, double, double, double) =0;
     
@@ -107,7 +107,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void pol(double) =0;
     
-                virtual void vProd_GAMBIT(Pythia8::Abstract_Vec4&) =0;
+                virtual void vProd__BOSS(Pythia8::Abstract_Vec4&) =0;
     
                 virtual void vProd(double, double, double, double) =0;
     
@@ -137,7 +137,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual int acol() const =0;
     
-                virtual Pythia8::Abstract_Vec4* p_GAMBIT() const =0;
+                virtual Pythia8::Abstract_Vec4* p__BOSS() const =0;
     
                 virtual double px() const =0;
     
@@ -155,7 +155,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool hasVertex() const =0;
     
-                virtual Pythia8::Abstract_Vec4* vProd_GAMBIT() const =0;
+                virtual Pythia8::Abstract_Vec4* vProd__BOSS() const =0;
     
                 virtual double xProd() const =0;
     
@@ -213,7 +213,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double eta() const =0;
     
-                virtual Pythia8::Abstract_Vec4* vDec_GAMBIT() const =0;
+                virtual Pythia8::Abstract_Vec4* vDec__BOSS() const =0;
     
                 virtual double xDec() const =0;
     
@@ -241,7 +241,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::vector<int, std::allocator<int> > sisterList(bool) const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterList_GAMBIT() const =0;
+                virtual std::vector<int, std::allocator<int> > sisterList__BOSS() const =0;
     
                 virtual bool isAncestor(int) const =0;
     
@@ -251,7 +251,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::string nameWithStatus(int) const =0;
     
-                virtual std::string nameWithStatus_GAMBIT() const =0;
+                virtual std::string nameWithStatus__BOSS() const =0;
     
                 virtual int spinType() const =0;
     
@@ -313,33 +313,33 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void bst(double, double, double, double) =0;
     
-                virtual void bst_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual void bst__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual void bst_GAMBIT(const Pythia8::Abstract_Vec4&, double) =0;
+                virtual void bst__BOSS(const Pythia8::Abstract_Vec4&, double) =0;
     
-                virtual void bstback_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual void bstback__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual void bstback_GAMBIT(const Pythia8::Abstract_Vec4&, double) =0;
+                virtual void bstback__BOSS(const Pythia8::Abstract_Vec4&, double) =0;
     
                 virtual void offsetHistory(int, int, int, int) =0;
     
                 virtual void offsetCol(int) =0;
     
             public:
-                virtual void pointerAssign_GAMBIT(Abstract_Particle*) =0;
-                virtual Abstract_Particle* pointerCopy_GAMBIT() =0;
+                virtual void pointerAssign__BOSS(Abstract_Particle*) =0;
+                virtual Abstract_Particle* pointerCopy__BOSS() =0;
     
             private:
                 Particle* wptr;
     
             public:
-                void wrapper_GAMBIT(Particle* wptr_in)
+                void wrapper__BOSS(Particle* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
                 }
     
-                Particle* wrapper_GAMBIT()
+                Particle* wrapper__BOSS()
                 {
                     return wptr;
                 }
@@ -361,4 +361,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 #include "backend_undefs.hpp"
 
 
-#endif /* __ABSTRACT_PARTICLE_BOSSedPythia_1_0_H__ */
+#endif /* __ABSTRACT_PARTICLE_Pythia_8_186_H__ */

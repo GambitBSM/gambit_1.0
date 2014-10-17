@@ -1,5 +1,5 @@
-#ifndef __ABSTRACT_EVENT_BOSSedPythia_1_0_H__
-#define __ABSTRACT_EVENT_BOSSedPythia_1_0_H__
+#ifndef __ABSTRACT_EVENT_Pythia_8_186_H__
+#define __ABSTRACT_EVENT_Pythia_8_186_H__
 
 #include "abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
@@ -38,65 +38,65 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _24578
             public:
     
-                virtual Pythia8::Abstract_Event* operator_equal_GAMBIT(const Pythia8::Abstract_Event&) =0;
+                virtual Pythia8::Abstract_Event* operator_equal__BOSS(const Pythia8::Abstract_Event&) =0;
     
                 virtual void clear() =0;
     
                 virtual void reset() =0;
     
-                virtual Pythia8::Abstract_Particle* operator_square_bracket_pair_GAMBIT(int) =0;
+                virtual Pythia8::Abstract_Particle* operator_square_bracket_pair__BOSS(int) =0;
     
-                virtual const Pythia8::Abstract_Particle* operator_square_bracket_pair_GAMBIT(int) const =0;
+                virtual const Pythia8::Abstract_Particle* operator_square_bracket_pair__BOSS(int) const =0;
     
-                virtual Pythia8::Abstract_Particle* front_GAMBIT() =0;
+                virtual Pythia8::Abstract_Particle* front__BOSS() =0;
     
-                virtual Pythia8::Abstract_Particle* at_GAMBIT(int) =0;
+                virtual Pythia8::Abstract_Particle* at__BOSS(int) =0;
     
-                virtual Pythia8::Abstract_Particle* back_GAMBIT() =0;
+                virtual Pythia8::Abstract_Particle* back__BOSS() =0;
     
                 virtual int size() const =0;
     
-                virtual int append_GAMBIT(Pythia8::Abstract_Particle&) =0;
+                virtual int append__BOSS(Pythia8::Abstract_Particle&) =0;
     
                 virtual int append(int, int, int, int, int, int, int, int, double, double, double, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, double, double, double, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, double, double, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, double, double, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, double, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, double, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&, double) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&) =0;
+                virtual int append__BOSS(int, int, int, int, int, int, int, int, Pythia8::Abstract_Vec4&) =0;
     
                 virtual int append(int, int, int, int, double, double, double, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, double, double, double, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, double, double, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, double, double, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, double, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, double, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, double, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, Pythia8::Abstract_Vec4&, double, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, Pythia8::Abstract_Vec4&, double, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, Pythia8::Abstract_Vec4&, double, double) =0;
+                virtual int append__BOSS(int, int, int, int, Pythia8::Abstract_Vec4&, double, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, Pythia8::Abstract_Vec4&, double) =0;
+                virtual int append__BOSS(int, int, int, int, Pythia8::Abstract_Vec4&, double) =0;
     
-                virtual int append_GAMBIT(int, int, int, int, Pythia8::Abstract_Vec4&) =0;
+                virtual int append__BOSS(int, int, int, int, Pythia8::Abstract_Vec4&) =0;
     
                 virtual void setEvtPtr(int) =0;
     
-                virtual void setEvtPtr_GAMBIT() =0;
+                virtual void setEvtPtr__BOSS() =0;
     
                 virtual int copy(int, int) =0;
     
-                virtual int copy_GAMBIT(int) =0;
+                virtual int copy__BOSS(int) =0;
     
                 virtual void list() const =0;
     
@@ -104,13 +104,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void list(bool, bool) const =0;
     
-                virtual void list_GAMBIT(bool) const =0;
+                virtual void list__BOSS(bool) const =0;
     
                 virtual void list(bool, bool, std::ostream&) const =0;
     
                 virtual void popBack(int) =0;
     
-                virtual void popBack_GAMBIT() =0;
+                virtual void popBack__BOSS() =0;
     
                 virtual void remove(int, int) =0;
     
@@ -126,7 +126,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void initColTag(int) =0;
     
-                virtual void initColTag_GAMBIT() =0;
+                virtual void initColTag__BOSS() =0;
     
                 virtual int lastColTag() const =0;
     
@@ -158,7 +158,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::vector<int, std::allocator<int> > sisterListTopBot(int, bool) const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterListTopBot_GAMBIT(int) const =0;
+                virtual std::vector<int, std::allocator<int> > sisterListTopBot__BOSS(int) const =0;
     
                 virtual bool isAncestor(int, int) const =0;
     
@@ -168,7 +168,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void bst(double, double, double, double) =0;
     
-                virtual void bst_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual void bst__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
                 virtual void clearJunctions() =0;
     
@@ -202,25 +202,25 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void listJunctions(std::ostream&) const =0;
     
-                virtual void listJunctions_GAMBIT() const =0;
+                virtual void listJunctions__BOSS() const =0;
     
-                virtual Pythia8::Abstract_Event* operator_plus_equal_GAMBIT(const Pythia8::Abstract_Event&) =0;
+                virtual Pythia8::Abstract_Event* operator_plus_equal__BOSS(const Pythia8::Abstract_Event&) =0;
     
             public:
-                virtual void pointerAssign_GAMBIT(Abstract_Event*) =0;
-                virtual Abstract_Event* pointerCopy_GAMBIT() =0;
+                virtual void pointerAssign__BOSS(Abstract_Event*) =0;
+                virtual Abstract_Event* pointerCopy__BOSS() =0;
     
             private:
                 Event* wptr;
     
             public:
-                void wrapper_GAMBIT(Event* wptr_in)
+                void wrapper__BOSS(Event* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
                 }
     
-                Event* wrapper_GAMBIT()
+                Event* wrapper__BOSS()
                 {
                     return wptr;
                 }
@@ -242,4 +242,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 #include "backend_undefs.hpp"
 
 
-#endif /* __ABSTRACT_EVENT_BOSSedPythia_1_0_H__ */
+#endif /* __ABSTRACT_EVENT_Pythia_8_186_H__ */

@@ -12,10 +12,14 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Oct
 ///
+///  \author Anders Kvellestad
+///          (anderkve@fys.uio.no)
+///  \date 2014 Oct
+///
 ///  *********************************************
 
 // Specify the path to the shared library along with a backend name. */
-#include "backend_types/BOSSedPythia_1_0/identification.hpp"
+#include "backend_types/Pythia_8_186/identification.hpp"
 
 // Begin
 LOAD_LIBRARY

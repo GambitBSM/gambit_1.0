@@ -1,5 +1,5 @@
-#ifndef __ABSTRACT_PYTHIA_BOSSedPythia_1_0_H__
-#define __ABSTRACT_PYTHIA_BOSSedPythia_1_0_H__
+#ifndef __ABSTRACT_PYTHIA_Pythia_8_186_H__
+#define __ABSTRACT_PYTHIA_Pythia_8_186_H__
 
 #include "abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
@@ -28,11 +28,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
-                virtual Pythia8::Abstract_Event& process_ref_GAMBIT() =0;
+                virtual Pythia8::Abstract_Event& process_ref__BOSS() =0;
     
-                virtual Pythia8::Abstract_Event& event_ref_GAMBIT() =0;
+                virtual Pythia8::Abstract_Event& event_ref__BOSS() =0;
     
-                virtual Pythia8::Abstract_Info& info_ref_GAMBIT() =0;
+                virtual Pythia8::Abstract_Info& info_ref__BOSS() =0;
                 // IGNORED: Field  -- Name: settings  -- XML id: _24818
                 // IGNORED: Field  -- Name: particleData  -- XML id: _24819
                 // IGNORED: Field  -- Name: rndm  -- XML id: _24820
@@ -151,23 +151,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool readString(std::string, bool) =0;
     
-                virtual bool readString_GAMBIT(std::string) =0;
+                virtual bool readString__BOSS(std::string) =0;
     
                 virtual bool readFile(std::string, bool, int) =0;
     
-                virtual bool readFile_GAMBIT(std::string, bool) =0;
+                virtual bool readFile__BOSS(std::string, bool) =0;
     
-                virtual bool readFile_GAMBIT(std::string) =0;
+                virtual bool readFile__BOSS(std::string) =0;
     
                 virtual bool readFile(std::string, int) =0;
     
                 virtual bool readFile(std::istream&, bool, int) =0;
     
-                virtual bool readFile_GAMBIT(std::istream&, bool) =0;
+                virtual bool readFile__BOSS(std::istream&, bool) =0;
     
-                virtual bool readFile_GAMBIT(std::istream&) =0;
+                virtual bool readFile__BOSS(std::istream&) =0;
     
-                virtual bool readFile_GAMBIT() =0;
+                virtual bool readFile__BOSS() =0;
     
                 virtual bool readFile(std::istream&, int) =0;
     
@@ -181,17 +181,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool init(std::string, bool) =0;
     
-                virtual bool init_GAMBIT(std::string) =0;
+                virtual bool init__BOSS(std::string) =0;
     
                 virtual bool next() =0;
     
                 virtual int forceTimeShower(int, int, double, int) =0;
     
-                virtual int forceTimeShower_GAMBIT(int, int, double) =0;
+                virtual int forceTimeShower__BOSS(int, int, double) =0;
     
                 virtual bool forceHadronLevel(bool) =0;
     
-                virtual bool forceHadronLevel_GAMBIT() =0;
+                virtual bool forceHadronLevel__BOSS() =0;
     
                 virtual bool moreDecays() =0;
     
@@ -199,7 +199,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void LHAeventList(std::ostream&) =0;
     
-                virtual void LHAeventList_GAMBIT() =0;
+                virtual void LHAeventList__BOSS() =0;
     
                 virtual bool LHAeventSkip(int) =0;
     
@@ -207,9 +207,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void statistics(bool, bool) =0;
     
-                virtual void statistics_GAMBIT(bool) =0;
+                virtual void statistics__BOSS(bool) =0;
     
-                virtual void statistics_GAMBIT() =0;
+                virtual void statistics__BOSS() =0;
     
                 virtual bool flag(std::string) =0;
     
@@ -220,17 +220,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual std::string word(std::string) =0;
             private:
     
-                virtual Pythia8::Abstract_Pythia* operator_equal_GAMBIT(const Pythia8::Abstract_Pythia&) =0;
+                virtual Pythia8::Abstract_Pythia* operator_equal__BOSS(const Pythia8::Abstract_Pythia&) =0;
     
                 virtual void banner(std::ostream&) =0;
     
-                virtual void banner_GAMBIT() =0;
+                virtual void banner__BOSS() =0;
     
                 virtual int readSubrun(std::string, bool, std::ostream&) =0;
     
-                virtual int readSubrun_GAMBIT(std::string, bool) =0;
+                virtual int readSubrun__BOSS(std::string, bool) =0;
     
-                virtual int readSubrun_GAMBIT(std::string) =0;
+                virtual int readSubrun__BOSS(std::string) =0;
     
                 virtual int readCommented(std::string) =0;
     
@@ -250,23 +250,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool check(std::ostream&) =0;
     
-                virtual bool check_GAMBIT() =0;
+                virtual bool check__BOSS() =0;
     
             public:
-                virtual void pointerAssign_GAMBIT(Abstract_Pythia*) =0;
-                virtual Abstract_Pythia* pointerCopy_GAMBIT() =0;
+                virtual void pointerAssign__BOSS(Abstract_Pythia*) =0;
+                virtual Abstract_Pythia* pointerCopy__BOSS() =0;
     
             private:
                 Pythia* wptr;
     
             public:
-                void wrapper_GAMBIT(Pythia* wptr_in)
+                void wrapper__BOSS(Pythia* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
                 }
     
-                Pythia* wrapper_GAMBIT()
+                Pythia* wrapper__BOSS()
                 {
                     return wptr;
                 }
@@ -288,4 +288,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 #include "backend_undefs.hpp"
 
 
-#endif /* __ABSTRACT_PYTHIA_BOSSedPythia_1_0_H__ */
+#endif /* __ABSTRACT_PYTHIA_Pythia_8_186_H__ */

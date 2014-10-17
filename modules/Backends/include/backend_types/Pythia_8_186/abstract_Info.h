@@ -1,5 +1,5 @@
-#ifndef __ABSTRACT_INFO_BOSSedPythia_1_0_H__
-#define __ABSTRACT_INFO_BOSSedPythia_1_0_H__
+#ifndef __ABSTRACT_INFO_Pythia_8_186_H__
+#define __ABSTRACT_INFO_Pythia_8_186_H__
 
 #include "abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
@@ -121,7 +121,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void list(std::ostream&) const =0;
     
-                virtual void list_GAMBIT() const =0;
+                virtual void list__BOSS() const =0;
     
                 virtual int idA() const =0;
     
@@ -169,75 +169,75 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool hasSub(int) const =0;
     
-                virtual bool hasSub_GAMBIT() const =0;
+                virtual bool hasSub__BOSS() const =0;
     
                 virtual std::string nameSub(int) const =0;
     
-                virtual std::string nameSub_GAMBIT() const =0;
+                virtual std::string nameSub__BOSS() const =0;
     
                 virtual int codeSub(int) const =0;
     
-                virtual int codeSub_GAMBIT() const =0;
+                virtual int codeSub__BOSS() const =0;
     
                 virtual int nFinalSub(int) const =0;
     
-                virtual int nFinalSub_GAMBIT() const =0;
+                virtual int nFinalSub__BOSS() const =0;
     
                 virtual int id1(int) const =0;
     
-                virtual int id1_GAMBIT() const =0;
+                virtual int id1__BOSS() const =0;
     
                 virtual int id2(int) const =0;
     
-                virtual int id2_GAMBIT() const =0;
+                virtual int id2__BOSS() const =0;
     
                 virtual double x1(int) const =0;
     
-                virtual double x1_GAMBIT() const =0;
+                virtual double x1__BOSS() const =0;
     
                 virtual double x2(int) const =0;
     
-                virtual double x2_GAMBIT() const =0;
+                virtual double x2__BOSS() const =0;
     
                 virtual double y(int) const =0;
     
-                virtual double y_GAMBIT() const =0;
+                virtual double y__BOSS() const =0;
     
                 virtual double tau(int) const =0;
     
-                virtual double tau_GAMBIT() const =0;
+                virtual double tau__BOSS() const =0;
     
                 virtual int id1pdf(int) const =0;
     
-                virtual int id1pdf_GAMBIT() const =0;
+                virtual int id1pdf__BOSS() const =0;
     
                 virtual int id2pdf(int) const =0;
     
-                virtual int id2pdf_GAMBIT() const =0;
+                virtual int id2pdf__BOSS() const =0;
     
                 virtual double x1pdf(int) const =0;
     
-                virtual double x1pdf_GAMBIT() const =0;
+                virtual double x1pdf__BOSS() const =0;
     
                 virtual double x2pdf(int) const =0;
     
-                virtual double x2pdf_GAMBIT() const =0;
+                virtual double x2pdf__BOSS() const =0;
     
                 virtual double pdf1(int) const =0;
     
-                virtual double pdf1_GAMBIT() const =0;
+                virtual double pdf1__BOSS() const =0;
     
                 virtual double pdf2(int) const =0;
     
-                virtual double pdf2_GAMBIT() const =0;
+                virtual double pdf2__BOSS() const =0;
     
                 virtual double QFac(int) const =0;
     
-                virtual double QFac_GAMBIT() const =0;
+                virtual double QFac__BOSS() const =0;
     
                 virtual double Q2Fac(int) const =0;
     
-                virtual double Q2Fac_GAMBIT() const =0;
+                virtual double Q2Fac__BOSS() const =0;
     
                 virtual bool isValence1() const =0;
     
@@ -245,63 +245,63 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double alphaS(int) const =0;
     
-                virtual double alphaS_GAMBIT() const =0;
+                virtual double alphaS__BOSS() const =0;
     
                 virtual double alphaEM(int) const =0;
     
-                virtual double alphaEM_GAMBIT() const =0;
+                virtual double alphaEM__BOSS() const =0;
     
                 virtual double QRen(int) const =0;
     
-                virtual double QRen_GAMBIT() const =0;
+                virtual double QRen__BOSS() const =0;
     
                 virtual double Q2Ren(int) const =0;
     
-                virtual double Q2Ren_GAMBIT() const =0;
+                virtual double Q2Ren__BOSS() const =0;
     
                 virtual double scalup(int) const =0;
     
-                virtual double scalup_GAMBIT() const =0;
+                virtual double scalup__BOSS() const =0;
     
                 virtual double mHat(int) const =0;
     
-                virtual double mHat_GAMBIT() const =0;
+                virtual double mHat__BOSS() const =0;
     
                 virtual double sHat(int) const =0;
     
-                virtual double sHat_GAMBIT() const =0;
+                virtual double sHat__BOSS() const =0;
     
                 virtual double tHat(int) const =0;
     
-                virtual double tHat_GAMBIT() const =0;
+                virtual double tHat__BOSS() const =0;
     
                 virtual double uHat(int) const =0;
     
-                virtual double uHat_GAMBIT() const =0;
+                virtual double uHat__BOSS() const =0;
     
                 virtual double pTHat(int) const =0;
     
-                virtual double pTHat_GAMBIT() const =0;
+                virtual double pTHat__BOSS() const =0;
     
                 virtual double pT2Hat(int) const =0;
     
-                virtual double pT2Hat_GAMBIT() const =0;
+                virtual double pT2Hat__BOSS() const =0;
     
                 virtual double m3Hat(int) const =0;
     
-                virtual double m3Hat_GAMBIT() const =0;
+                virtual double m3Hat__BOSS() const =0;
     
                 virtual double m4Hat(int) const =0;
     
-                virtual double m4Hat_GAMBIT() const =0;
+                virtual double m4Hat__BOSS() const =0;
     
                 virtual double thetaHat(int) const =0;
     
-                virtual double thetaHat_GAMBIT() const =0;
+                virtual double thetaHat__BOSS() const =0;
     
                 virtual double phiHat(int) const =0;
     
-                virtual double phiHat_GAMBIT() const =0;
+                virtual double phiHat__BOSS() const =0;
     
                 virtual double weight() const =0;
     
@@ -345,53 +345,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::string nameProc(int) =0;
     
-                virtual std::string nameProc_GAMBIT() =0;
+                virtual std::string nameProc__BOSS() =0;
     
                 virtual long int nTried(int) =0;
     
-                virtual long int nTried_GAMBIT() =0;
+                virtual long int nTried__BOSS() =0;
     
                 virtual long int nSelected(int) =0;
     
-                virtual long int nSelected_GAMBIT() =0;
+                virtual long int nSelected__BOSS() =0;
     
                 virtual long int nAccepted(int) =0;
     
-                virtual long int nAccepted_GAMBIT() =0;
+                virtual long int nAccepted__BOSS() =0;
     
                 virtual double sigmaGen(int) =0;
     
-                virtual double sigmaGen_GAMBIT() =0;
+                virtual double sigmaGen__BOSS() =0;
     
                 virtual double sigmaErr(int) =0;
     
-                virtual double sigmaErr_GAMBIT() =0;
+                virtual double sigmaErr__BOSS() =0;
     
                 virtual int getCounter(int) const =0;
     
                 virtual void setCounter(int, int) =0;
     
-                virtual void setCounter_GAMBIT(int) =0;
+                virtual void setCounter__BOSS(int) =0;
     
                 virtual void addCounter(int, int) =0;
     
-                virtual void addCounter_GAMBIT(int) =0;
+                virtual void addCounter__BOSS(int) =0;
     
                 virtual void errorReset() =0;
     
                 virtual void errorMsg(std::string, std::string, bool, std::ostream&) =0;
     
-                virtual void errorMsg_GAMBIT(std::string, std::string, bool) =0;
+                virtual void errorMsg__BOSS(std::string, std::string, bool) =0;
     
-                virtual void errorMsg_GAMBIT(std::string, std::string) =0;
+                virtual void errorMsg__BOSS(std::string, std::string) =0;
     
-                virtual void errorMsg_GAMBIT(std::string) =0;
+                virtual void errorMsg__BOSS(std::string) =0;
     
                 virtual int errorTotalNumber() =0;
     
                 virtual void errorStatistics(std::ostream&) =0;
     
-                virtual void errorStatistics_GAMBIT() =0;
+                virtual void errorStatistics__BOSS() =0;
     
                 virtual void setTooLowPTmin(bool) =0;
     
@@ -440,17 +440,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setType(std::string, int, int, bool, bool, bool, bool, bool, bool) =0;
     
-                virtual void setType_GAMBIT(std::string, int, int, bool, bool, bool, bool, bool) =0;
+                virtual void setType__BOSS(std::string, int, int, bool, bool, bool, bool, bool) =0;
     
-                virtual void setType_GAMBIT(std::string, int, int, bool, bool, bool, bool) =0;
+                virtual void setType__BOSS(std::string, int, int, bool, bool, bool, bool) =0;
     
-                virtual void setType_GAMBIT(std::string, int, int, bool, bool, bool) =0;
+                virtual void setType__BOSS(std::string, int, int, bool, bool, bool) =0;
     
-                virtual void setType_GAMBIT(std::string, int, int, bool, bool) =0;
+                virtual void setType__BOSS(std::string, int, int, bool, bool) =0;
     
-                virtual void setType_GAMBIT(std::string, int, int, bool) =0;
+                virtual void setType__BOSS(std::string, int, int, bool) =0;
     
-                virtual void setType_GAMBIT(std::string, int, int) =0;
+                virtual void setType__BOSS(std::string, int, int) =0;
     
                 virtual void setSubType(int, std::string, int, int) =0;
     
@@ -462,11 +462,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setTypeMPI(int, double, int, int, double) =0;
     
-                virtual void setTypeMPI_GAMBIT(int, double, int, int) =0;
+                virtual void setTypeMPI__BOSS(int, double, int, int) =0;
     
-                virtual void setTypeMPI_GAMBIT(int, double, int) =0;
+                virtual void setTypeMPI__BOSS(int, double, int) =0;
     
-                virtual void setTypeMPI_GAMBIT(int, double) =0;
+                virtual void setTypeMPI__BOSS(int, double) =0;
     
                 virtual void sigmaReset() =0;
     
@@ -476,7 +476,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setImpact(double, double, bool) =0;
     
-                virtual void setImpact_GAMBIT(double, double) =0;
+                virtual void setImpact__BOSS(double, double) =0;
     
                 virtual void setPartEvolved(int, int) =0;
     
@@ -493,20 +493,20 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual void setHeader(const std::string&, const std::string&) =0;
     
             public:
-                virtual void pointerAssign_GAMBIT(Abstract_Info*) =0;
-                virtual Abstract_Info* pointerCopy_GAMBIT() =0;
+                virtual void pointerAssign__BOSS(Abstract_Info*) =0;
+                virtual Abstract_Info* pointerCopy__BOSS() =0;
     
             private:
                 Info* wptr;
     
             public:
-                void wrapper_GAMBIT(Info* wptr_in)
+                void wrapper__BOSS(Info* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
                 }
     
-                Info* wrapper_GAMBIT()
+                Info* wrapper__BOSS()
                 {
                     return wptr;
                 }
@@ -528,4 +528,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 #include "backend_undefs.hpp"
 
 
-#endif /* __ABSTRACT_INFO_BOSSedPythia_1_0_H__ */
+#endif /* __ABSTRACT_INFO_Pythia_8_186_H__ */

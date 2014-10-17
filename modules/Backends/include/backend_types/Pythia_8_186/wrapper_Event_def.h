@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_EVENT_DEF_BOSSedPythia_1_0_H__
-#define __WRAPPER_EVENT_DEF_BOSSedPythia_1_0_H__
+#ifndef __WRAPPER_EVENT_DEF_Pythia_8_186_H__
+#define __WRAPPER_EVENT_DEF_Pythia_8_186_H__
 
 #include <vector>
 #include <string>
@@ -28,27 +28,27 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Particle& Event::operator[](int i)
         {
-            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->operator_square_bracket_pair_GAMBIT(i) );
+            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->operator_square_bracket_pair__BOSS(i) );
         }
         
         inline const Pythia8::Particle& Event::operator[](int i) const
         {
-            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->operator_square_bracket_pair_GAMBIT(i) );
+            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->operator_square_bracket_pair__BOSS(i) );
         }
         
         inline Pythia8::Particle& Event::front()
         {
-            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->front_GAMBIT() );
+            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->front__BOSS() );
         }
         
         inline Pythia8::Particle& Event::at(int i)
         {
-            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->at_GAMBIT(i) );
+            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->at__BOSS(i) );
         }
         
         inline Pythia8::Particle& Event::back()
         {
-            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->back_GAMBIT() );
+            return reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( BEptr->back__BOSS() );
         }
         
         inline int Event::size() const
@@ -58,7 +58,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Event::append(WrapperBase< Pythia8::Abstract_Particle > entryIn)
         {
-            return BEptr->append_GAMBIT(*entryIn.BEptr);
+            return BEptr->append__BOSS(*entryIn.BEptr);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn, double polIn)
@@ -68,37 +68,37 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m, scaleIn);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m, scaleIn);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn, double polIn)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m, scaleIn, polIn);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m, scaleIn, polIn);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m, scaleIn);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m, scaleIn);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p)
         {
-            return BEptr->append_GAMBIT(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr);
+            return BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr);
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn, double polIn)
@@ -108,37 +108,37 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, px, py, pz, e, m, scaleIn);
+            return BEptr->append__BOSS(id, status, col, acol, px, py, pz, e, m, scaleIn);
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, px, py, pz, e, m);
+            return BEptr->append__BOSS(id, status, col, acol, px, py, pz, e, m);
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, px, py, pz, e);
+            return BEptr->append__BOSS(id, status, col, acol, px, py, pz, e);
         }
         
         inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn, double polIn)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, *p.BEptr, m, scaleIn, polIn);
+            return BEptr->append__BOSS(id, status, col, acol, *p.BEptr, m, scaleIn, polIn);
         }
         
         inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, *p.BEptr, m, scaleIn);
+            return BEptr->append__BOSS(id, status, col, acol, *p.BEptr, m, scaleIn);
         }
         
         inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, *p.BEptr, m);
+            return BEptr->append__BOSS(id, status, col, acol, *p.BEptr, m);
         }
         
         inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p)
         {
-            return BEptr->append_GAMBIT(id, status, col, acol, *p.BEptr);
+            return BEptr->append__BOSS(id, status, col, acol, *p.BEptr);
         }
         
         inline void Event::setEvtPtr(int iSet)
@@ -148,7 +148,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Event::setEvtPtr()
         {
-            BEptr->setEvtPtr_GAMBIT();
+            BEptr->setEvtPtr__BOSS();
         }
         
         inline int Event::copy(int iCopy, int newStatus)
@@ -158,7 +158,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Event::copy(int iCopy)
         {
-            return BEptr->copy_GAMBIT(iCopy);
+            return BEptr->copy__BOSS(iCopy);
         }
         
         inline void Event::list() const
@@ -178,7 +178,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Event::list(bool showScaleAndVertex) const
         {
-            BEptr->list_GAMBIT(showScaleAndVertex);
+            BEptr->list__BOSS(showScaleAndVertex);
         }
         
         inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, std::ostream& os) const
@@ -193,7 +193,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Event::popBack()
         {
-            BEptr->popBack_GAMBIT();
+            BEptr->popBack__BOSS();
         }
         
         inline void Event::remove(int iFirst, int iLast)
@@ -233,7 +233,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Event::initColTag()
         {
-            BEptr->initColTag_GAMBIT();
+            BEptr->initColTag__BOSS();
         }
         
         inline int Event::lastColTag() const
@@ -313,7 +313,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline std::vector<int, std::allocator<int> > Event::sisterListTopBot(int i) const
         {
-            return BEptr->sisterListTopBot_GAMBIT(i);
+            return BEptr->sisterListTopBot__BOSS(i);
         }
         
         inline bool Event::isAncestor(int i, int iAncestor) const
@@ -338,7 +338,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Event::bst(const WrapperBase< Pythia8::Abstract_Vec4 >& vec)
         {
-            BEptr->bst_GAMBIT(*vec.BEptr);
+            BEptr->bst__BOSS(*vec.BEptr);
         }
         
         inline void Event::clearJunctions()
@@ -423,12 +423,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Event::listJunctions() const
         {
-            BEptr->listJunctions_GAMBIT();
+            BEptr->listJunctions__BOSS();
         }
         
         inline Pythia8::Event& Event::operator+=(const Pythia8::Event& addEvent)
         {
-            return reference_returner< Pythia8::Event, Pythia8::Abstract_Event >( BEptr->operator_plus_equal_GAMBIT(*addEvent.BEptr) );
+            return reference_returner< Pythia8::Event, Pythia8::Abstract_Event >( BEptr->operator_plus_equal__BOSS(*addEvent.BEptr) );
         }
         
         
@@ -436,27 +436,27 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Event::Event(int capacity) :
             WrapperBase<Pythia8::Abstract_Event>( __factory0(capacity), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Event::Event() :
             WrapperBase<Pythia8::Abstract_Event>( __factory1(), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Event::Event(Pythia8::Abstract_Event* in, bool memvar_in) :
             WrapperBase<Pythia8::Abstract_Event>( in, memvar_in )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Copy constructor: 
         inline Pythia8::Event::Event(const Event& in) :
             WrapperBase<Pythia8::Abstract_Event>(in)
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Assignment operator: 
@@ -473,4 +473,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_EVENT_DEF_BOSSedPythia_1_0_H__ */
+#endif /* __WRAPPER_EVENT_DEF_Pythia_8_186_H__ */

@@ -5,13 +5,13 @@
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME BOSSedPythia
+  #define BACKENDNAME Pythia
 #endif
 
 #define LIBPATH "Backends/lib/libpythia8.so"
 
-#define VERSION 1.0
-#define SAFE_VERSION 1_0
+#define VERSION 8.186
+#define SAFE_VERSION 8_186
 
 #undef DO_CLASSLOADING
 #define DO_CLASSLOADING 1

@@ -13,15 +13,15 @@ class WrapperBase
         // Constructor
         WrapperBase(T* BEptr_in, bool memvar_in) : BEptr(BEptr_in), memvar(memvar_in)
         {
-            // BEptr->wrapper_GAMBIT(this);
+            // BEptr->wrapper__BOSS(this);
         }
 
         // Copy constructor: 
         WrapperBase(const WrapperBase<T>& in) :
-            BEptr(in.BEptr->pointerCopy_GAMBIT()),
+            BEptr(in.BEptr->pointerCopy__BOSS()),
             memvar(in.memvar)
         {
-            // BEptr->wrapper_GAMBIT(this);
+            // BEptr->wrapper__BOSS(this);
         }
 
         // Assignment operator
@@ -29,7 +29,7 @@ class WrapperBase
         {
             if (this != &in) 
             { 
-                BEptr->pointerAssign_GAMBIT(in.BEptr); 
+                BEptr->pointerAssign__BOSS(in.BEptr); 
             }
             return *this;        
         }
@@ -60,13 +60,13 @@ class WrapperBase
         {
             if (ptr->is_wrapped())
             {
-                return (ptr->wrapper_GAMBIT());
+                return (ptr->wrapper__BOSS());
             }
 
             else
             {
                 U* wptr = new U(ptr);
-                ptr->wrapper_GAMBIT(wptr);
+                ptr->wrapper__BOSS(wptr);
                 ptr->can_delete_wrapper(true);
                 return wptr;
             }
@@ -79,13 +79,13 @@ class WrapperBase
         {
             if (ptr->is_wrapped())
             {
-                return *(ptr->wrapper_GAMBIT());
+                return *(ptr->wrapper__BOSS());
             }
 
             else
             {
                 U* wptr = new U(ptr);
-                ptr->wrapper_GAMBIT(wptr);
+                ptr->wrapper__BOSS(wptr);
                 ptr->can_delete_wrapper(true);
                 return *wptr;
             }
@@ -97,13 +97,13 @@ class WrapperBase
         {
             if (ptr->is_wrapped())
             {
-                return *(ptr->wrapper_GAMBIT());
+                return *(ptr->wrapper__BOSS());
             }
 
             else
             {
                 U* wptr = new U(ptr);
-                ptr->wrapper_GAMBIT(wptr);
+                ptr->wrapper__BOSS(wptr);
                 ptr->can_delete_wrapper(true);
                 return *wptr;
             }

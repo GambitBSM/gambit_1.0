@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_VEC4_DEF_BOSSedPythia_1_0_H__
-#define __WRAPPER_VEC4_DEF_BOSSedPythia_1_0_H__
+#ifndef __WRAPPER_VEC4_DEF_Pythia_8_186_H__
+#define __WRAPPER_VEC4_DEF_Pythia_8_186_H__
 
 
 
@@ -24,7 +24,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Vec4::p(WrapperBase< Pythia8::Abstract_Vec4 > pIn)
         {
-            BEptr->p_GAMBIT(*pIn.BEptr);
+            BEptr->p__BOSS(*pIn.BEptr);
         }
         
         inline void Vec4::px(double xIn)
@@ -174,7 +174,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Vec4::rotaxis(double phiIn, const WrapperBase< Pythia8::Abstract_Vec4 >& n)
         {
-            BEptr->rotaxis_GAMBIT(phiIn, *n.BEptr);
+            BEptr->rotaxis__BOSS(phiIn, *n.BEptr);
         }
         
         inline void Vec4::bst(double betaX, double betaY, double betaZ)
@@ -189,47 +189,47 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Vec4::bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn)
         {
-            BEptr->bst_GAMBIT(*pIn.BEptr);
+            BEptr->bst__BOSS(*pIn.BEptr);
         }
         
         inline void Vec4::bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn, double mIn)
         {
-            BEptr->bst_GAMBIT(*pIn.BEptr, mIn);
+            BEptr->bst__BOSS(*pIn.BEptr, mIn);
         }
         
         inline void Vec4::bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn)
         {
-            BEptr->bstback_GAMBIT(*pIn.BEptr);
+            BEptr->bstback__BOSS(*pIn.BEptr);
         }
         
         inline void Vec4::bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pIn, double mIn)
         {
-            BEptr->bstback_GAMBIT(*pIn.BEptr, mIn);
+            BEptr->bstback__BOSS(*pIn.BEptr, mIn);
         }
         
         inline Pythia8::Vec4 Vec4::operator-()
         {
-            return Pythia8::Vec4( BEptr->operator_minus_GAMBIT() );
+            return Pythia8::Vec4( BEptr->operator_minus__BOSS() );
         }
         
         inline Pythia8::Vec4& Vec4::operator+=(const Pythia8::Vec4& v)
         {
-            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_plus_equal_GAMBIT(*v.BEptr) );
+            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_plus_equal__BOSS(*v.BEptr) );
         }
         
         inline Pythia8::Vec4& Vec4::operator-=(const Pythia8::Vec4& v)
         {
-            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_minus_equal_GAMBIT(*v.BEptr) );
+            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_minus_equal__BOSS(*v.BEptr) );
         }
         
         inline Pythia8::Vec4& Vec4::operator*=(double f)
         {
-            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_asterix_equal_GAMBIT(f) );
+            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_asterix_equal__BOSS(f) );
         }
         
         inline Pythia8::Vec4& Vec4::operator/=(double f)
         {
-            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_slash_equal_GAMBIT(f) );
+            return reference_returner< Pythia8::Vec4, Pythia8::Abstract_Vec4 >( BEptr->operator_slash_equal__BOSS(f) );
         }
         
         
@@ -237,45 +237,45 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Vec4::Vec4(double xIn, double yIn, double zIn, double tIn) :
             WrapperBase<Pythia8::Abstract_Vec4>( __factory0(xIn, yIn, zIn, tIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Vec4::Vec4(double xIn, double yIn, double zIn) :
             WrapperBase<Pythia8::Abstract_Vec4>( __factory1(xIn, yIn, zIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Vec4::Vec4(double xIn, double yIn) :
             WrapperBase<Pythia8::Abstract_Vec4>( __factory2(xIn, yIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Vec4::Vec4(double xIn) :
             WrapperBase<Pythia8::Abstract_Vec4>( __factory3(xIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Vec4::Vec4() :
             WrapperBase<Pythia8::Abstract_Vec4>( __factory4(), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Vec4::Vec4(Pythia8::Abstract_Vec4* in, bool memvar_in) :
             WrapperBase<Pythia8::Abstract_Vec4>( in, memvar_in )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Copy constructor: 
         inline Pythia8::Vec4::Vec4(const Vec4& in) :
             WrapperBase<Pythia8::Abstract_Vec4>(in)
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Assignment operator: 
@@ -292,4 +292,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_VEC4_DEF_BOSSedPythia_1_0_H__ */
+#endif /* __WRAPPER_VEC4_DEF_Pythia_8_186_H__ */
