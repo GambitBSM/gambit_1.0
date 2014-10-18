@@ -443,7 +443,7 @@ namespace Gambit
       cout << "Testing BOSSed Pythia." << endl;
       cout << "======================" << endl;
 
-      BOSSedPythia_1_0::Pythia8::Pythia pythia("/home/anders/UiO/tools/pythia8186/xmldoc", false);
+      Pythia8::Pythia pythia("../extras/boss/bossed_pythia_source/xmldoc", false);
 
       pythia.readString("Beams:eCM = 8000.");
       pythia.readString("HardQCD:all = on");
@@ -455,7 +455,7 @@ namespace Gambit
 
       pythia.init();
 
-      BOSSedPythia_1_0::Pythia8::Hist mult("charged multiplicity", 2, -0.5, 799.5);
+      Pythia8::Hist mult("charged multiplicity", 2, -0.5, 799.5);
       // Begin event loop. Generate event. Skip if error. List first one.
       for (int iEvent = 0; iEvent < 2; ++iEvent) {
         if (!pythia.next()) continue;

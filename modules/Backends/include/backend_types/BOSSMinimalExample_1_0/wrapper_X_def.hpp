@@ -16,49 +16,49 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             // Member functions: 
             inline nspace1::nspace2::X& X::return_ref_this()
             {
-                return reference_returner< nspace1::nspace2::X, nspace1::nspace2::Abstract_X >( BEptr->return_ref_this_GAMBIT() );
+                return reference_returner< nspace1::nspace2::X, nspace1::nspace2::Abstract_X >( BEptr->return_ref_this__BOSS() );
             }
             
             inline nspace1::nspace2::X* X::return_ptr_this()
             {
-                return pointer_returner< nspace1::nspace2::X, nspace1::nspace2::Abstract_X >( BEptr->return_ptr_this_GAMBIT() );
+                return pointer_returner< nspace1::nspace2::X, nspace1::nspace2::Abstract_X >( BEptr->return_ptr_this__BOSS() );
             }
             
             inline nspace1::nspace2::X X::operator+(nspace1::nspace2::X& x_rhs)
             {
-                return nspace1::nspace2::X( BEptr->operator_plus_GAMBIT(*x_rhs.BEptr) );
+                return nspace1::nspace2::X( BEptr->operator_plus__BOSS(*x_rhs.BEptr) );
             }
             
             
             // Wrappers for original constructors: 
             inline nspace1::nspace2::X::X() :
                 WrapperBase<nspace1::nspace2::Abstract_X>( __factory0(), false ),
-                i(BEptr->i_ref_GAMBIT())
+                i(BEptr->i_ref__BOSS())
             {
-                BEptr->wrapper_GAMBIT(this);
+                BEptr->wrapper__BOSS(this);
             }
             
             inline nspace1::nspace2::X::X(int i_in) :
                 WrapperBase<nspace1::nspace2::Abstract_X>( __factory1(i_in), false ),
-                i(BEptr->i_ref_GAMBIT())
+                i(BEptr->i_ref__BOSS())
             {
-                BEptr->wrapper_GAMBIT(this);
+                BEptr->wrapper__BOSS(this);
             }
             
             // Special pointer-based constructor: 
             inline nspace1::nspace2::X::X(nspace1::nspace2::Abstract_X* in, bool memvar_in) :
                 WrapperBase<nspace1::nspace2::Abstract_X>( in, memvar_in ),
-                i(BEptr->i_ref_GAMBIT())
+                i(BEptr->i_ref__BOSS())
             {
-                BEptr->wrapper_GAMBIT(this);
+                BEptr->wrapper__BOSS(this);
             }
             
             // Copy constructor: 
             inline nspace1::nspace2::X::X(const X& in) :
                 WrapperBase<nspace1::nspace2::Abstract_X>(in),
-                i(BEptr->i_ref_GAMBIT())
+                i(BEptr->i_ref__BOSS())
             {
-                BEptr->wrapper_GAMBIT(this);
+                BEptr->wrapper__BOSS(this);
             }
             
             // Assignment operator: 

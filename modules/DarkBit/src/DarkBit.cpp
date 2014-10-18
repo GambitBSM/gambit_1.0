@@ -992,7 +992,7 @@ namespace Gambit {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        result.M_DM = (*BEreq::mspctm).mass[41];        
+        result.M_DM = (*BEreq::mspctm).mass[42];
         std::cout << "dsddgpgn gives: \n";
         std::cout << " gps: " << result.gps << "\n";
         std::cout << " gns: " << result.gns << "\n";
