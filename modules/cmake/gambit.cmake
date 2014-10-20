@@ -26,18 +26,13 @@ include(CMakeParseArguments)
 
 # function to add static GAMBIT library
 function(add_gambit_library libraryname)
-  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS;" "" ${ARGN})
   foreach (dir ${GAMBIT_INCDIRS})
     include_directories(${dir})
   endforeach()
 
-  add_library(${libraryname} ${ARG_SOURCES} ${ARG_HEADERS})
+  add_library(${libraryname} ${ARG_OPTION} ${ARG_SOURCES} ${ARG_HEADERS})
   set_target_properties(${libraryname} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "")
-  
-#  string(FIND "${libraryname}" "Bit" ModuleBit REVERSE)
-#  if(${ModuleBit} GREATER -1)
-#    add_dependencies(${libraryname} gambitbase)
-#  endif()
 endfunction()
 
 # function to add GAMBIT executable

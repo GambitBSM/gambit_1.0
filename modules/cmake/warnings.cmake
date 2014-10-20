@@ -8,9 +8,9 @@ else()
  message(STATUS "Werror is disabled")
 endif()
 
-# set gcc and clang warnings for AMS root
+# set gcc and clang warnings
 if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas -Wno-unused-local-typedefs")
 endif()
 
 # supress additional warnings when using clang and ccache

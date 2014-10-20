@@ -7,4 +7,4 @@ set(header_files include/log.hpp
                  include/logging.hpp
 )
 
-add_gambit_library(Logs SOURCES ${source_files} HEADERS ${header_files})
+add_gambit_library(Logs OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

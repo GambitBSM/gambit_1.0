@@ -13,4 +13,4 @@ set(source_files src/backend_singleton.cpp)
 
 set(header_files include/backend_singleton.hpp)
 
-add_gambit_library(Backends SOURCES ${source_files} HEADERS ${header_files})
+add_gambit_library(Backends OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

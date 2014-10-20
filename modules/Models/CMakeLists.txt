@@ -16,4 +16,4 @@ set(header_files include/MSSM_types.hpp
                  include/models/demo.hpp
 )
 
-add_gambit_library(Models SOURCES ${source_files} HEADERS ${header_files})
+add_gambit_library(Models OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

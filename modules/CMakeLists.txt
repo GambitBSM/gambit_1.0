@@ -181,11 +181,19 @@ add_subdirectory(Utils)
 add_subdirectory(Models)
 
 # list static libs to link
-set(GAMBIT_LIBRARIES Backends
-                     Logs
-                     Utils
-                     Models
+set(GAMBIT_LIBRARIES #Backends
+#Logs
+#                     Utils
+#                     Models
 )
+
+# list of GAMBIT object files to link
+set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Backends>
+                   $<TARGET_OBJECTS:Logs>
+                   $<TARGET_OBJECTS:Utils>
+                   $<TARGET_OBJECTS:Models>
+)
+
 
 #merge_static_libs(gambitbase ${GAMBIT_LIBRARIES})
 #set_target_properties(gambitbase PROPERTIES VERSION "${GAMBIT_MAJOR_VERSION}.${GAMBIT_MINOR_VERSION}")
@@ -205,7 +213,7 @@ set(GAMBIT_LIBRARIES Backends
 #target_link_libraries(gambit_example ScannerBit)
 
 add_subdirectory(ExampleBit_A)
-add_gambit_executable(ExampleBit_A_standalone SOURCES ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp)
+add_gambit_executable(ExampleBit_A_standalone SOURCES ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp ${GAMBIT_OBJECTS})
 if(NOT yaml_FOUND)
   add_dependencies(ExampleBit_A_standalone yaml)
 endif()

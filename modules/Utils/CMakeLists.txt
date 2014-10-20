@@ -41,4 +41,4 @@ set(header_files include/SLHA_readers.hpp
                  include/yaml_options.hpp
 )
 
-add_gambit_library(Utils SOURCES ${source_files} HEADERS ${header_files})
+add_gambit_library(Utils OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
