@@ -70,7 +70,6 @@ namespace Gambit {
 
     /// @brief Will these typedefs save the type harvester some grief?
     typedef shared_ptr<PythiaBase> PythiaPtr;
-    typedef PythiaPtr* PythiaPtrPtr;
   }
 }
 

@@ -49,7 +49,7 @@ START_MODULE
   #define CAPABILITY hardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
-    START_FUNCTION(PythiaPtrPtr)
+    START_FUNCTION(PythiaPtr)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
@@ -63,7 +63,7 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(hardScatteringSim, PythiaPtrPtr)
+    DEPENDENCY(hardScatteringSim, PythiaPtr)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.

@@ -128,25 +128,26 @@ namespace Gambit {
 
 
     /// Hard Scattering Collider Simulators
-    void getPythia(PythiaPtrPtr &result) {
+    void getPythia(PythiaPtr &result) {
       using namespace Pipes::getPythia;
+      if (*Loop::iteration <= INIT) return;
       debugMe("getPythia");
-      std::vector<std::string> pythiaOptions;
 
-      if (*Loop::iteration == INIT) {
-        result = new PythiaPtr[omp_get_max_threads()];
-      } else if (*Loop::iteration == FINALIZE) {
-        delete [] result;
-      } else if (!isPythiaReady) {
+      if (!isPythiaReady) {
         /// Should be within omp parallel block now.
-        pythiaOptions.clear();
+        std::vector<std::string> pythiaOptions;
         try {
           pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter);
-        } catch (...) {}  //< If the PythiaBase subclass is hard-coded, okay with no options.
+        } catch (...) {
+          std::cout<<"  NOTE: Error downgraded to warning.\n";
+          std::cout<<"  However, you may want to check the options for:\n";
+          std::cout<<"    "<<*iter<<"\n\n";
+        }  //< If the PythiaBase subclass is hard-coded, okay with no options.
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
-        result[omp_get_thread_num()].reset( mkPythia(*iter, pythiaOptions) );
+        result.reset( mkPythia(*iter, pythiaOptions) );
+        pythiaOptions.clear();
         isPythiaReady = true;
       }
     }
@@ -159,14 +160,14 @@ namespace Gambit {
       result.clear();
 
       /// Get the next event from Pythia8
-      result = (*Dep::hardScatteringSim)[omp_get_thread_num()]->nextEvent();
+      result = (*Dep::hardScatteringSim)->nextEvent();
     }
 
 
     /// Standard Event Format Functions
     void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
+      if (*Loop::iteration <= INIT) return;
       debugMe("reconstructDelphesEvent");
       result.clear();
 

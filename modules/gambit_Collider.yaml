@@ -95,6 +95,10 @@ Auxiliaries:
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       # Here's an example of using the yaml file to choose a subgroup
       # TODO: Oh shit! What if I want to configure them all this way?
+  
+  - capability:  hardScatteringSim
+    function:  getPythia
+    options:
       Pythia_SUSY_LHC_8TeV: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
 
   - capability: GambitColliderEvent
