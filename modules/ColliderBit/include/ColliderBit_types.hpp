@@ -67,9 +67,6 @@ namespace Gambit {
 
     /// @brief A list of analyses to be run on some events
     typedef SharedPointerVector<Analysis> AnalysisPointerVector;
-
-    /// @brief Will these typedefs save the type harvester some grief?
-    typedef shared_ptr<PythiaBase> PythiaPtr;
   }
 }
 

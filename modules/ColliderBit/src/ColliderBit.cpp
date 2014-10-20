@@ -128,7 +128,7 @@ namespace Gambit {
 
 
     /// Hard Scattering Collider Simulators
-    void getPythia(PythiaPtr &result) {
+    void getPythia(shared_ptr<ColliderBit::PythiaBase> &result) {
       using namespace Pipes::getPythia;
       if (*Loop::iteration <= INIT) return;
       debugMe("getPythia");
