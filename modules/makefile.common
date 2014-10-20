@@ -213,6 +213,8 @@ else
   BOOST_DATE_TIME := $(filter libboost_date_time.%,$(notdir $(wildcard /usr/lib/*)))
   BOOST_LDFLAGS += $(if $(BOOST_DATE_TIME), -lboost_date_time -lboost_regex)
 endif
+# Ben> I had a need to create directories in the logging system, and boost_filesystem seemed the most portable option. However, it is not a header-only library, so we need to link to it now, and also to boost_system which it apparently depends on.
+BOOST_LDFLAGS += -lboost_system -lboost_filesystem
 ifndef SHH
   $(info INFO:)
   $(info -- Boost Flags --)
@@ -250,7 +252,7 @@ ifndef SHH
   $(info )
 endif
 
-LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS = $(LDFLAGS) -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else

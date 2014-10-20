@@ -22,6 +22,8 @@
 #include <fstream>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 #include "util_types.hpp"
 #include "yaml_parser.hpp"
 #include "log.hpp"
@@ -187,6 +189,13 @@ namespace Gambit
           else
           {
             loggerinfo[tags] = prefix + filename;
+            // The logger won't be able to create the log files if the prefix directory doesn't exist, so let us now make sure that it does
+            boost::filesystem::path dir(prefix);
+
+            if(!(boost::filesystem::exists(dir)))
+            {
+              boost::filesystem::create_directories(dir);
+            }
           }
       }
       // Initialise global LogMaster object
