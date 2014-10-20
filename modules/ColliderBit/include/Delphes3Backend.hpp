@@ -42,13 +42,13 @@
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
 
-#include "Pythia8/Pythia.h"
-
+#include "shared_types.hpp"
 #include "Event.hpp"
 #include "Particle.hpp"
 #include "Jet.hpp"
 #include "Py8Utils.hpp"
 #include "MCUtils/PIDCodes.h"
+
 
 namespace Gambit {
   namespace ColliderBit {

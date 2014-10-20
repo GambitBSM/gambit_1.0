@@ -19,7 +19,9 @@
 #define __ColliderBit_rollcall_hpp__
 
 #include <string>
+#include "shared_types.hpp"
 #include "ColliderBit_types.hpp"
+#include "ColliderBit_macros.hpp"
 
 #define MODULE ColliderBit
 START_MODULE
@@ -34,11 +36,22 @@ START_MODULE
   #undef CAPABILITY
 
 
-  /// Controls initialization and looping of Collider simulations
+  /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  /// Collider sim capabilities
+  #define CAPABILITY hardScatteringSim
+  START_CAPABILITY
+    #define FUNCTION getPythia
+    START_FUNCTION(PythiaPtrPtr)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -49,6 +62,8 @@ START_MODULE
     #define FUNCTION generatePythia8Event
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(hardScatteringSim, PythiaPtrPtr)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -91,6 +106,7 @@ START_MODULE
     /// DEPENDENCY(delphesConfigFilename, std::string)
     /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
     /// then adjust the yaml file for each run
+    NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
@@ -98,6 +114,7 @@ START_MODULE
     #define FUNCTION convertPythia8Event
     START_FUNCTION(HEP_Simple_Lib::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
